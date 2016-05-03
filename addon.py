@@ -11,14 +11,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# main imports
-import sys
-import os
-
+# --- Main imports ---
 import sys, os, fnmatch, time, datetime, math, random, shutil
 import re, urllib, urllib2, socket, exceptions
 from traceback import print_exc
 from operator import itemgetter
+from xml.dom.minidom import parse
 
 # Dharma compatibility (import md5)
 try:
@@ -26,14 +24,15 @@ try:
 except:
     import md5
 
+# --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin
 from xbmcaddon import Addon
 
 # --- Modules/packages in this plugin ---
-import resources.lib.subprocess_hack
-from user_agent import getUserAgent
-from file_item import Thumbnails
-from xml.dom.minidom import parse
+import resources.subprocess_hack
+from resources.user_agent import getUserAgent
+from resources.file_item import Thumbnails
+
 
 # --- Plugin constants ---
 __plugin__  = "Advanced Emulator Launcher"
@@ -41,60 +40,65 @@ __author__  = "Wintermute0110, Angelscry"
 __url__     = "https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher"
 __git_url__ = "https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher"
 __credits__ = "Leo212 CinPoU, JustSomeUser, Zerqent, Zosky, Atsumori"
-__version__ = "2.5.8"
+__version__ = "1.0.0"
 
-# Addon paths definition
-PLUGIN_DATA_PATH = xbmc.translatePath(os.path.join("special://profile/addon_data","plugin.program.advanced.launcher"))
-BASE_PATH = xbmc.translatePath(os.path.join("special://","profile"))
-HOME_PATH = xbmc.translatePath(os.path.join("special://","home"))
-FAVOURITES_PATH = xbmc.translatePath( 'special://profile/favourites.xml' )
-ADDONS_PATH = xbmc.translatePath(os.path.join(HOME_PATH,"addons"))
-CURRENT_ADDON_PATH = xbmc.translatePath(os.path.join(ADDONS_PATH,"plugin.program.advanced.launcher"))
-BASE_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH,"launchers.xml")
-TEMP_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH,"launchers.tmp")
-MERGED_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH,"merged-launchers.xml")
-DEFAULT_THUMB_PATH = os.path.join(PLUGIN_DATA_PATH,"thumbs")
-DEFAULT_FANART_PATH = os.path.join(PLUGIN_DATA_PATH,"fanarts")
-DEFAULT_NFO_PATH = os.path.join(PLUGIN_DATA_PATH,"nfos")
-DEFAULT_BACKUP_PATH = os.path.join(PLUGIN_DATA_PATH,"backups")
-SHORTCUT_FILE = os.path.join(PLUGIN_DATA_PATH,"shortcut.cut")
-ICON_IMG_FILE = os.path.join(CURRENT_ADDON_PATH,"icon.png")
+# --- Addon paths definition ---
+PLUGIN_DATA_PATH         = xbmc.translatePath(os.path.join("special://profile/addon_data", "plugin.program.advanced.emulator.launcher"))
+BASE_PATH                = xbmc.translatePath(os.path.join("special://", "profile"))
+HOME_PATH                = xbmc.translatePath(os.path.join("special://", "home"))
+FAVOURITES_PATH          = xbmc.translatePath( 'special://profile/favourites.xml' )
+ADDONS_PATH              = xbmc.translatePath(os.path.join(HOME_PATH, "addons"))
+CURRENT_ADDON_PATH       = xbmc.translatePath(os.path.join(ADDONS_PATH, "plugin.program.advanced.emulator.launcher"))
+ICON_IMG_FILE            = os.path.join(CURRENT_ADDON_PATH, "icon.png")
+BASE_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.xml")
+TEMP_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.tmp")
+MERGED_SOURCE_PATH       = os.path.join(PLUGIN_DATA_PATH, "merged-launchers.xml")
+DEFAULT_THUMB_PATH       = os.path.join(PLUGIN_DATA_PATH, "thumbs")
+DEFAULT_FANART_PATH      = os.path.join(PLUGIN_DATA_PATH, "fanarts")
+DEFAULT_NFO_PATH         = os.path.join(PLUGIN_DATA_PATH, "nfos")
+DEFAULT_BACKUP_PATH      = os.path.join(PLUGIN_DATA_PATH, "backups")
+SHORTCUT_FILE            = os.path.join(PLUGIN_DATA_PATH, "shortcut.cut")
 
-# Addon paths creation
+# --- Addon data paths creation ---
 if not os.path.exists(DEFAULT_THUMB_PATH): os.makedirs(DEFAULT_THUMB_PATH)
 if not os.path.exists(DEFAULT_FANART_PATH): os.makedirs(DEFAULT_FANART_PATH)
 if not os.path.exists(DEFAULT_NFO_PATH): os.makedirs(DEFAULT_NFO_PATH)
 if not os.path.exists(DEFAULT_BACKUP_PATH): os.makedirs(DEFAULT_BACKUP_PATH)
 if not os.path.isdir(PLUGIN_DATA_PATH): os.makedirs(PLUGIN_DATA_PATH)
 
-# Addon commands
-REMOVE_COMMAND = "%%REMOVE%%"
-BACKUP_COMMAND = "%%BACKUP%%"
-APPEND_COMMAND = "%%APPEND%%"
-FILE_MANAGER_COMMAND = "%%FILEMANAGER%%"
-ADD_COMMAND = "%%ADD%%"
-EDIT_COMMAND = "%%EDIT%%"
-COMMAND_ARGS_SEPARATOR = "^^"
-GET_INFO = "%%GET_INFO%%"
-GET_THUMB = "%%GET_THUMB%%"
-GET_FANART = "%%GET_FANART%%"
-SEARCH_COMMAND = "%%SEARCH%%"
-SEARCH_ITEM_COMMAND = "%%SEARCH_ITEM%%"
-SEARCH_DATE_COMMAND = "%%SEARCH_DATE%%"
+# --- Addon commands ---
+REMOVE_COMMAND          = "%%REMOVE%%"
+BACKUP_COMMAND          = "%%BACKUP%%"
+APPEND_COMMAND          = "%%APPEND%%"
+FILE_MANAGER_COMMAND    = "%%FILEMANAGER%%"
+ADD_COMMAND             = "%%ADD%%"
+EDIT_COMMAND            = "%%EDIT%%"
+COMMAND_ARGS_SEPARATOR  = "^^"
+GET_INFO                = "%%GET_INFO%%"
+GET_THUMB               = "%%GET_THUMB%%"
+GET_FANART              = "%%GET_FANART%%"
+SEARCH_COMMAND          = "%%SEARCH%%"
+SEARCH_ITEM_COMMAND     = "%%SEARCH_ITEM%%"
+SEARCH_DATE_COMMAND     = "%%SEARCH_DATE%%"
 SEARCH_PLATFORM_COMMAND = "%%SEARCH_PLATFORM%%"
-SEARCH_STUDIO_COMMAND = "%%SEARCH_STUDIO%%"
-SEARCH_GENRE_COMMAND = "%%SEARCH_GENRE%%"
-SCAN_NEW_ITEM_COMMAND = "%%SCAN_NEW_ITEM%%"
+SEARCH_STUDIO_COMMAND   = "%%SEARCH_STUDIO%%"
+SEARCH_GENRE_COMMAND    = "%%SEARCH_GENRE%%"
+SCAN_NEW_ITEM_COMMAND   = "%%SCAN_NEW_ITEM%%"
 
-# Locales parameters
-__settings__ = Addon( id="plugin.program.advanced.launcher" )
+# --- Locales parameters ---
+__settings__ = Addon( id="plugin.program.advanced.emulator.launcher" )
 __lang__ = __settings__.getLocalizedString
 
 def __language__(string):
     return __lang__(string).encode('utf-8','ignore')
 
-# Main code
+# --- Some debug stuff ---
+xbmc.log('---------- Called AEL addon.py ----------')
+xbmc.log(sys.version)
+for i in range(len(sys.argv)):
+    xbmc.log('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
 
+# --- Main code ---
 class Main:
     launchers = {}
     categories = {}
@@ -114,7 +118,7 @@ class Main:
         self._get_scrapers()
 
         # get emulators preference
-        exec "import resources.lib.emulators as _emulators_data"
+        exec "import resources.emulators as _emulators_data"
         self._get_program_arguments = _emulators_data._get_program_arguments
         self._get_program_extensions = _emulators_data._get_program_extensions
         self._get_mame_title = _emulators_data._get_mame_title
@@ -3052,5 +3056,5 @@ def _find_category_roms( self, search, category ):
     xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
 # --- main ----------------------------------------------------------------------------------------
-if ( __name__ == "__main__" ):
-   plugin.Main()
+if( __name__ == "__main__" ):
+    Main()
