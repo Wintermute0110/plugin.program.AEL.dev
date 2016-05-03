@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+
+    <!--games scrapers-->
+
+    <category label="30126">
+        <setting id="separator" type="lsep" label="30174"/>
+        <setting label="30158" type="bool" id="recursive_scan" default="true" />
+        <setting label="30166" type="enum" id="datas_method" lvalues="30148|30167|30168|30169" default="0"/>
+        <setting label="30120" type="enum" id="scrap_info" lvalues="30149|30150" default="0" visible="eq(-1,2) | eq(-1,3)"/>
+        <setting id="separator" type="lsep" label="30173"/>
+        <setting label="30121" type="fileenum" id="datas_scraper" default="AllGame" mask="/" values="/resources/scrapers/datas/"/>
+        <setting label="30129" type="bool" id="ignore_bios" default="true" visible="eq(-1,arcadeHITS)"/>
+        <setting id="separator" type="lsep" label="30171"/>
+        <setting label="30159" type="bool" id="ignore_title" default="false"/>
+        <setting label="30128" type="bool" id="clean_title" default="true" visible="eq(-1,false)"/>
+        <setting label="30151" type="bool" id="title_formating" default="true" visible="eq(-2,false)"/>
+    </category>
+
+    <category label="30122">
+        <setting id="separator" type="lsep" label="30174"/>
+        <setting label="30166" type="enum" id="thumbs_method" lvalues="30148|30172|30168" default="0"/>
+        <setting label="30120" type="enum" id="scrap_thumbs" lvalues="30149|30150" default="0" visible="eq(-1,2)"/>
+        <setting id="separator" type="lsep" label="30173"/>
+        <setting label="30121" type="fileenum" id="thumbs_scraper" default="GameFAQs" mask="/" values="/resources/scrapers/thumbs/"/>
+        <setting label="30134" type="enum" id="game_region" lvalues="30136|30144|30145|30146" default="0" visible="eq(-1,GameFAQs)| eq(-1,MobyGames)"/>
+        <setting label="30135" type="enum" id="thumb_image_size" lvalues="30136|30137|30138|30139|30140|30141|30142|30143" default="0" visible="eq(-2,Google)"/>
+        <setting label="30177" type="enum" id="snap_flyer" lvalues="30178|30179" default="0" visible="eq(-3,arcadeHITS)"/>
+        <setting label="30147" type="bool" id="overwrite_thumbs" default="false"/>
+    </category>
+
+    <category label="30123">
+        <setting id="separator" type="lsep" label="30174"/>
+        <setting label="30166" type="enum" id="fanarts_method" lvalues="30148|30172|30168" default="0"/>
+        <setting label="30120" type="enum" id="scrap_fanarts" lvalues="30149|30150" default="0" visible="eq(-1,2)"/>
+        <setting id="separator" type="lsep" label="30173"/>
+        <setting label="30121" type="fileenum" id="fanarts_scraper" default="GameFAQs" mask="/" values="/resources/scrapers/fanarts"/>
+        <setting label="30135" type="enum" id="fanart_image_size" lvalues="30136|30137|30138|30139|30140|30141|30142|30143" default="0" visible="eq(-1,Google)"/>
+        <setting label="30162" type="enum" id="select_fanarts" default="0" lvalues="30163|30164|30165"/>
+        <setting label="30147" type="bool" id="overwrite_fanarts" default="false"/>
+    </category>
+
+    <category label="30124">
+        <setting id="separator" type="lsep" label="30193"/>
+        <setting label="30152" type="enum" id="media_state" lvalues="30153|30154|30155" default="0" />
+        <setting label="30175" type="bool" id="lirc_state" default="true" />
+        <setting label="30180" type="slider" id="start_tempo" default="1000" range="0,100,15000" option="int"/>
+        <setting id="separator" type="lsep" label="30188"/>
+        <setting label="30176" type="bool" id="hide_finished" default="false" />
+        <setting label="30189" type="bool" id="hide_default_cat" default="false" />
+        <setting label="30195" type="bool" id="open_default_cat" default="false" />
+        <setting label="30160" type="bool" id="launcher_notification" default="false" />
+        <setting id="separator" type="lsep" label="30170"/>
+        <setting label="30125" type="folder" id="launcher_thumb_path" default="" source="auto" />
+        <setting label="30127" type="folder" id="launcher_fanart_path" default="" source="auto"/>
+        <setting label="30161" type="folder" id="launcher_nfo_path" default="" source="auto" />
+    </category>
+
+    <category label="30183">
+        <setting id="separator" type="lsep" label="30181"/>
+        <setting label="30182" type="bool" id="auto_backup" default="true" />
+        <setting label="30184" type="slider" id="nb_backup_files" default="10" range="5,5,100" option="int" visible="eq(-1,true)"/>
+        <setting label="30185" type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.launcher/?%%BACKUP%%)"/>
+        <setting label="30190" type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.launcher/?%%APPEND%%)"/>
+        <setting id="separator" type="lsep" label="30156"/>
+        <setting label="30187" type="bool" id="show_log" default="true"/>
+        <setting label="30157" type="bool" id="show_batch" default="false"/>
+    </category>
+
+</settings>
