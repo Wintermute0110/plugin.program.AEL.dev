@@ -50,9 +50,14 @@ FAVOURITES_PATH          = xbmc.translatePath( 'special://profile/favourites.xml
 ADDONS_PATH              = xbmc.translatePath(os.path.join(HOME_PATH, "addons"))
 CURRENT_ADDON_PATH       = xbmc.translatePath(os.path.join(ADDONS_PATH, "plugin.program.advanced.emulator.launcher"))
 ICON_IMG_FILE            = os.path.join(CURRENT_ADDON_PATH, "icon.png")
+
+CATEGORIES_FILE_PATH     = os.path.join(PLUGIN_DATA_PATH, "categories.xml")
+
 BASE_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.xml")
 TEMP_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.tmp")
+
 MERGED_SOURCE_PATH       = os.path.join(PLUGIN_DATA_PATH, "merged-launchers.xml")
+
 DEFAULT_THUMB_PATH       = os.path.join(PLUGIN_DATA_PATH, "thumbs")
 DEFAULT_FANART_PATH      = os.path.join(PLUGIN_DATA_PATH, "fanarts")
 DEFAULT_NFO_PATH         = os.path.join(PLUGIN_DATA_PATH, "nfos")
@@ -115,7 +120,7 @@ class Main:
         self._get_settings()
 
         # Load launchers
-        self._load_launchers(self.get_xml_source(BASE_CURRENT_SOURCE_PATH))
+        self._load_launchers(self._get_xml_source(BASE_CURRENT_SOURCE_PATH))
 
         # get users scrapers preference
         self._get_scrapers()
@@ -1840,7 +1845,12 @@ class Main:
                 else:
                     xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30611 ) % os.path.basename(launcher["application"]),3000)
 
-    def get_xml_source( self, xmlpath ):
+    #
+    # Reads a XML text file and return file contents as a string.
+    # Do some XML cleaning.
+    # If exceptions, return an empty string ""
+    #
+    def _get_xml_source( self, xmlpath ):
         try:
             usock = open( xmlpath, 'r' )
             # read source
@@ -1850,20 +1860,25 @@ class Main:
             ok = True
         except:
             ok = False
+
         if ( ok ):
+            # Wintermute: this does not make sense... so we replace &amp; with &, then do the opposite,
+            # and save the same file again! When this file is called in constructor xmlpath = BASE_CURRENT_SOURCE_PATH!!!
             # clean, save and return the xml string
             xmlSource = xmlSource.replace("&amp;", "&")
             xmlSource = xmlSource.replace("&", "&amp;")
             f = open(BASE_CURRENT_SOURCE_PATH, 'w')
             f.write(xmlSource)
             f.close()
+            
             return xmlSource.replace("\n","").replace("\r","")
         else:
             return ""
 
     def _save_launchers (self):
-        self._print_log(__language__( 30746 )) 
+        self._print_log('Saving launchers.xml file') 
         xbmc.executebuiltin( "ActivateWindow(busydialog)" )
+        
         if ( self.settings[ "auto_backup" ] ):
             # Delete oldest backup file
             fileData = {}
@@ -1883,13 +1898,17 @@ class Main:
                     shutil.copy2(BASE_CURRENT_SOURCE_PATH, BACKUP_CURRENT_SOURCE_PATH)
                 except OSError:
                     xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30600 ),3000)
+        
         try:
-            xml_content = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n<advanced_launcher version=\"1.0\">\n\t<categories>\n"
+            xml_content =  "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n"
+            xml_content += "<advanced_launcher version=\"1.0\">\n\t<categories>\n"
+
             # Create Categories XML list
             for categoryIndex in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
                 category = self.categories[categoryIndex]
                 xml_content += "\t\t<category>\n\t\t\t<id>"+categoryIndex+"</id>\n\t\t\t<name>"+category["name"]+"</name>\n\t\t\t<thumb>"+category["thumb"]+"</thumb>\n\t\t\t<fanart>"+category["fanart"]+"</fanart>\n\t\t\t<genre>"+category["genre"]+"</genre>\n\t\t\t<description>"+category["plot"]+"</description>\n\t\t\t<finished>"+category["finished"]+"</finished>\n\t\t</category>\n"
             xml_content += "\t</categories>\n\t<launchers>\n"
+            
             # Create Launchers XML list
             for launcherIndex in sorted(self.launchers, key= lambda x : self.launchers[x]["name"]):
                 launcher = self.launchers[launcherIndex]
@@ -1926,10 +1945,13 @@ class Main:
         xbmc.executebuiltin("Container.Refresh")
 
     def _load_launchers(self, xmlSource):
-        self._print_log(__language__( 30747 )) 
+        self._print_log('Loading launchers.xml file')
+
         # clean, save and return the xml string
         xmlSource = xmlSource.replace("&amp;", "&").replace('\r','').replace('\n','').replace('\t','')
-        # Get categories list from XML source
+        
+        
+        # Get categories list from XML source -----------------------------------------------------
         xml_categories = re.findall( "<categories>(.*?)</categories>", xmlSource )
         # If categories exist ()...
         if len(xml_categories) > 0 :
@@ -1947,7 +1969,8 @@ class Main:
         # Else create the default category
         else:
             self.categories["default"] = {"id":"default", "name":"Default", "thumb":"", "fanart":"", "genre":"", "plot":"", "finished":"false"}
-        # Get launchers list from XML source
+
+        # Get launchers list from XML source ------------------------------------------------------
         xml_launchers = re.findall( "<launchers>(.*?)</launchers>", xmlSource )
         # If launchers exist ()...
         if len(xml_launchers) > 0 :
@@ -1986,13 +2009,22 @@ class Main:
     def _get_categories( self ):
         for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
             if ( not self.settings[ "hide_default_cat" ] or self.categories[key]['id'] != "default" ):
-                self._add_category(self.categories[key]["name"], self.categories[key]["thumb"], self.categories[key]["fanart"], self.categories[key]["genre"], self.categories[key]["plot"], self.categories[key]["finished"], len(self.categories), key)
+                self._add_category(self.categories[key]["name"], self.categories[key]["thumb"], 
+                                   self.categories[key]["fanart"], self.categories[key]["genre"], 
+                                   self.categories[key]["plot"], self.categories[key]["finished"], len(self.categories), key)
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
     def _get_launchers( self, categoryID ):
         for key in sorted(self.launchers, key= lambda x : self.launchers[x]["application"]):
             if ( self.launchers[key]["category"] == categoryID ) :
-                self._add_launcher(self.launchers[key]["name"], self.launchers[key]["category"], self.launchers[key]["application"], self.launchers[key]["rompath"], self.launchers[key]["thumbpath"], self.launchers[key]["fanartpath"], self.launchers[key]["trailerpath"], self.launchers[key]["custompath"], self.launchers[key]["romext"], self.launchers[key]["gamesys"], self.launchers[key]["thumb"], self.launchers[key]["fanart"], self.launchers[key]["genre"], self.launchers[key]["release"], self.launchers[key]["studio"], self.launchers[key]["plot"], self.launchers[key]["finished"], self.launchers[key]["lnk"], self.launchers[key]["minimize"], self.launchers[key]["roms"], len(self.launchers), key)
+                self._add_launcher(self.launchers[key]["name"], self.launchers[key]["category"], 
+                                   self.launchers[key]["application"], self.launchers[key]["rompath"], self.launchers[key]["thumbpath"], 
+                                   self.launchers[key]["fanartpath"], self.launchers[key]["trailerpath"], self.launchers[key]["custompath"], 
+                                   self.launchers[key]["romext"], self.launchers[key]["gamesys"], self.launchers[key]["thumb"], 
+                                   self.launchers[key]["fanart"], self.launchers[key]["genre"], self.launchers[key]["release"], 
+                                   self.launchers[key]["studio"], self.launchers[key]["plot"], self.launchers[key]["finished"], 
+                                   self.launchers[key]["lnk"], self.launchers[key]["minimize"], self.launchers[key]["roms"], 
+                                   len(self.launchers), key)
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
     def _get_roms( self, launcherID ):
