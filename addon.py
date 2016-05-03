@@ -25,7 +25,7 @@ except:
     import md5
 
 # --- Kodi stuff ---
-import xbmc, xbmcgui, xbmcplugin
+import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 from xbmcaddon import Addon
 
 # --- Modules/packages in this plugin ---
@@ -60,11 +60,11 @@ DEFAULT_BACKUP_PATH      = os.path.join(PLUGIN_DATA_PATH, "backups")
 SHORTCUT_FILE            = os.path.join(PLUGIN_DATA_PATH, "shortcut.cut")
 
 # --- Addon data paths creation ---
-if not os.path.exists(DEFAULT_THUMB_PATH): os.makedirs(DEFAULT_THUMB_PATH)
+if not os.path.exists(DEFAULT_THUMB_PATH):  os.makedirs(DEFAULT_THUMB_PATH)
 if not os.path.exists(DEFAULT_FANART_PATH): os.makedirs(DEFAULT_FANART_PATH)
-if not os.path.exists(DEFAULT_NFO_PATH): os.makedirs(DEFAULT_NFO_PATH)
+if not os.path.exists(DEFAULT_NFO_PATH):    os.makedirs(DEFAULT_NFO_PATH)
 if not os.path.exists(DEFAULT_BACKUP_PATH): os.makedirs(DEFAULT_BACKUP_PATH)
-if not os.path.isdir(PLUGIN_DATA_PATH): os.makedirs(PLUGIN_DATA_PATH)
+if not os.path.isdir(PLUGIN_DATA_PATH):     os.makedirs(PLUGIN_DATA_PATH)
 
 # --- Addon commands ---
 REMOVE_COMMAND          = "%%REMOVE%%"
@@ -86,8 +86,8 @@ SEARCH_GENRE_COMMAND    = "%%SEARCH_GENRE%%"
 SCAN_NEW_ITEM_COMMAND   = "%%SCAN_NEW_ITEM%%"
 
 # --- Locales parameters ---
-__settings__ = Addon( id="plugin.program.advanced.emulator.launcher" )
-__lang__ = __settings__.getLocalizedString
+addon_obj = xbmcaddon.Addon( id="plugin.program.advanced.emulator.launcher" )
+__lang__ = addon_obj.getLocalizedString
 
 def __language__(string):
     return __lang__(string).encode('utf-8','ignore')
@@ -100,6 +100,7 @@ for i in range(len(sys.argv)):
 
 # --- Main code ---
 class Main:
+    settings = {}
     launchers = {}
     categories = {}
 
@@ -107,8 +108,10 @@ class Main:
         # store an handle pointer
         self._handle = int(sys.argv[ 1 ])
         self._path = sys.argv[ 0 ]
+        # if a commmand is passed as parameter
+        param = sys.argv[ 2 ].replace("%2f", "/")
 
-        # get users preference
+        # Fill in settings dictionary using addon_obj.getSetting
         self._get_settings()
 
         # Load launchers
@@ -124,11 +127,9 @@ class Main:
         self._get_mame_title = _emulators_data._get_mame_title
         self._test_bios_file = _emulators_data._test_bios_file
 
-        self._print_log(__language__( 30700 ))
+        self._print_log('Initialisation')
 
-        # if a commmand is passed as parameter
-        param = sys.argv[ 2 ].replace("%2f","/")
-
+        # Adds a sorting method for the media list.
         if ( self._handle > 0 ):
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
@@ -252,7 +253,7 @@ class Main:
                     self._get_launchers(category)
 
         else:
-            self._print_log(__language__( 30739 ))
+            self._print_log('Advanced Launcher root folder > Categories list')
             if (len(self.categories) == 0):
                 if (len(self.launchers) == 0):
                     self._add_new_launcher('default')
@@ -1622,48 +1623,51 @@ class Main:
     def _get_settings( self ):
         # get the users preference settings
         self.settings = {}
-        self.settings[ "datas_method" ] = __settings__.getSetting( "datas_method" )
-        self.settings[ "thumbs_method" ] = __settings__.getSetting( "thumbs_method" )
-        self.settings[ "fanarts_method" ] = __settings__.getSetting( "fanarts_method" )
-        self.settings[ "scrap_info" ] = __settings__.getSetting( "scrap_info" )
-        self.settings[ "scrap_thumbs" ] = __settings__.getSetting( "scrap_thumbs" )
-        self.settings[ "scrap_fanarts" ] = __settings__.getSetting( "scrap_fanarts" )
-        self.settings[ "select_fanarts" ] = __settings__.getSetting( "select_fanarts" )
-        self.settings[ "overwrite_thumbs" ] = ( __settings__.getSetting( "overwrite_thumbs" ) == "true" )
-        self.settings[ "overwrite_fanarts" ] = ( __settings__.getSetting( "overwrite_fanarts" ) == "true" )
-        self.settings[ "clean_title" ] = ( __settings__.getSetting( "clean_title" ) == "true" )
-        self.settings[ "ignore_bios" ] = ( __settings__.getSetting( "ignore_bios" ) == "true" )
-        self.settings[ "ignore_title" ] = ( __settings__.getSetting( "ignore_title" ) == "true" )
-        self.settings[ "title_formating" ] = ( __settings__.getSetting( "title_formating" ) == "true" )
-        self.settings[ "datas_scraper" ] = __settings__.getSetting( "datas_scraper" )
-        self.settings[ "thumbs_scraper" ] = __settings__.getSetting( "thumbs_scraper" )
-        self.settings[ "fanarts_scraper" ] = __settings__.getSetting( "fanarts_scraper" )
-        self.settings[ "game_region" ] = ['All','EU','JP','US'][int(__settings__.getSetting('game_region'))]
-        self.settings[ "display_game_region" ] = [__language__( 30136 ),__language__( 30144 ),__language__( 30145 ),__language__( 30146 )][int(__settings__.getSetting('game_region'))]
-        self.settings[ "thumb_image_size" ] = ['','icon','small','medium','large','xlarge','xxlarge','huge'][int(__settings__.getSetting('thumb_image_size'))]
-        self.settings[ "thumb_image_size_display" ] = [__language__( 30136 ),__language__( 30137 ),__language__( 30138 ),__language__( 30139 ),__language__( 30140 ),__language__( 30141 ),__language__( 30142 ),__language__( 30143 )][int(__settings__.getSetting('thumb_image_size'))]
-        self.settings[ "fanart_image_size" ] = ['','icon','small','medium','large','xlarge','xxlarge','huge'][int(__settings__.getSetting('fanart_image_size'))]
-        self.settings[ "fanart_image_size_display" ] = [__language__( 30136 ),__language__( 30137 ),__language__( 30138 ),__language__( 30139 ),__language__( 30140 ),__language__( 30141 ),__language__( 30142 ),__language__( 30143 )][int(__settings__.getSetting('fanart_image_size'))]
-        self.settings[ "launcher_thumb_path" ] = __settings__.getSetting( "launcher_thumb_path" )
-        self.settings[ "launcher_fanart_path" ] = __settings__.getSetting( "launcher_fanart_path" )
-        self.settings[ "launcher_nfo_path" ] = __settings__.getSetting( "launcher_nfo_path" )
-        self.settings[ "media_state" ] = __settings__.getSetting( "media_state" )
-        self.settings[ "show_batch" ] = ( __settings__.getSetting( "show_batch" ) == "true" )
-        self.settings[ "recursive_scan" ] = ( __settings__.getSetting( "recursive_scan" ) == "true" )
-        self.settings[ "launcher_notification" ] = ( __settings__.getSetting( "launcher_notification" ) == "true" )
-        self.settings[ "lirc_state" ] = ( __settings__.getSetting( "lirc_state" ) == "true" )
-        self.settings[ "hide_finished" ] = ( __settings__.getSetting( "hide_finished" ) == "true" )
-        self.settings[ "snap_flyer" ] = __settings__.getSetting( "snap_flyer" )
-        self.settings[ "start_tempo" ] = int(round(float(__settings__.getSetting( "start_tempo" ))))
-        self.settings[ "auto_backup" ] = ( __settings__.getSetting( "auto_backup" ) == "true" )
-        self.settings[ "nb_backup_files" ] = int(round(float(__settings__.getSetting( "nb_backup_files" ))))
-        self.settings[ "show_log" ] = ( __settings__.getSetting( "show_log" ) == "true" )
-        self.settings[ "hide_default_cat" ] = ( __settings__.getSetting( "hide_default_cat" ) == "true" )
-        self.settings[ "open_default_cat" ] = ( __settings__.getSetting( "open_default_cat" ) == "true" )
+        self.settings[ "datas_method" ] = addon_obj.getSetting( "datas_method" )
+        self.settings[ "thumbs_method" ] = addon_obj.getSetting( "thumbs_method" )
+        self.settings[ "fanarts_method" ] = addon_obj.getSetting( "fanarts_method" )
+        self.settings[ "scrap_info" ] = addon_obj.getSetting( "scrap_info" )
+        self.settings[ "scrap_thumbs" ] = addon_obj.getSetting( "scrap_thumbs" )
+        self.settings[ "scrap_fanarts" ] = addon_obj.getSetting( "scrap_fanarts" )
+        self.settings[ "select_fanarts" ] = addon_obj.getSetting( "select_fanarts" )
+        self.settings[ "overwrite_thumbs" ] = ( addon_obj.getSetting( "overwrite_thumbs" ) == "true" )
+        self.settings[ "overwrite_fanarts" ] = ( addon_obj.getSetting( "overwrite_fanarts" ) == "true" )
+        self.settings[ "clean_title" ] = ( addon_obj.getSetting( "clean_title" ) == "true" )
+        self.settings[ "ignore_bios" ] = ( addon_obj.getSetting( "ignore_bios" ) == "true" )
+        self.settings[ "ignore_title" ] = ( addon_obj.getSetting( "ignore_title" ) == "true" )
+        self.settings[ "title_formating" ] = ( addon_obj.getSetting( "title_formating" ) == "true" )
+        self.settings[ "datas_scraper" ] = addon_obj.getSetting( "datas_scraper" )
+        self.settings[ "thumbs_scraper" ] = addon_obj.getSetting( "thumbs_scraper" )
+        self.settings[ "fanarts_scraper" ] = addon_obj.getSetting( "fanarts_scraper" )
+        self.settings[ "game_region" ] = ['All','EU','JP','US'][int(addon_obj.getSetting('game_region'))]
+        self.settings[ "display_game_region" ] = [__language__( 30136 ),__language__( 30144 ),__language__( 30145 ),__language__( 30146 )][int(addon_obj.getSetting('game_region'))]
+        self.settings[ "thumb_image_size" ] = ['','icon','small','medium','large','xlarge','xxlarge','huge'][int(addon_obj.getSetting('thumb_image_size'))]
+        self.settings[ "thumb_image_size_display" ] = [__language__( 30136 ),__language__( 30137 ),__language__( 30138 ),__language__( 30139 ),__language__( 30140 ),__language__( 30141 ),__language__( 30142 ),__language__( 30143 )][int(addon_obj.getSetting('thumb_image_size'))]
+        self.settings[ "fanart_image_size" ] = ['','icon','small','medium','large','xlarge','xxlarge','huge'][int(addon_obj.getSetting('fanart_image_size'))]
+        self.settings[ "fanart_image_size_display" ] = [__language__( 30136 ),__language__( 30137 ),__language__( 30138 ),__language__( 30139 ),__language__( 30140 ),__language__( 30141 ),__language__( 30142 ),__language__( 30143 )][int(addon_obj.getSetting('fanart_image_size'))]
+        self.settings[ "launcher_thumb_path" ] = addon_obj.getSetting( "launcher_thumb_path" )
+        self.settings[ "launcher_fanart_path" ] = addon_obj.getSetting( "launcher_fanart_path" )
+        self.settings[ "launcher_nfo_path" ] = addon_obj.getSetting( "launcher_nfo_path" )
+        self.settings[ "media_state" ] = addon_obj.getSetting( "media_state" )
+        self.settings[ "show_batch" ] = ( addon_obj.getSetting( "show_batch" ) == "true" )
+        self.settings[ "recursive_scan" ] = ( addon_obj.getSetting( "recursive_scan" ) == "true" )
+        self.settings[ "launcher_notification" ] = ( addon_obj.getSetting( "launcher_notification" ) == "true" )
+        self.settings[ "lirc_state" ] = ( addon_obj.getSetting( "lirc_state" ) == "true" )
+        self.settings[ "hide_finished" ] = ( addon_obj.getSetting( "hide_finished" ) == "true" )
+        self.settings[ "snap_flyer" ] = addon_obj.getSetting( "snap_flyer" )
+        self.settings[ "start_tempo" ] = int(round(float(addon_obj.getSetting( "start_tempo" ))))
+        self.settings[ "auto_backup" ] = ( addon_obj.getSetting( "auto_backup" ) == "true" )
+        self.settings[ "nb_backup_files" ] = int(round(float(addon_obj.getSetting( "nb_backup_files" ))))
+        self.settings[ "show_log" ] = ( addon_obj.getSetting( "show_log" ) == "true" )
+        self.settings[ "hide_default_cat" ] = ( addon_obj.getSetting( "hide_default_cat" ) == "true" )
+        self.settings[ "open_default_cat" ] = ( addon_obj.getSetting( "open_default_cat" ) == "true" )
+
+        # Temporally activate log
+        self.settings["show_log"] = True
 
     def _print_log(self,string):
-        if (self.settings[ "show_log" ]):
-            print __language__( 30744 )+": "+string
+        if(self.settings["show_log"]):
+            xbmc.log("AdvancedLauncher: " + string)
 
     def _get_scrapers( self ):
         # get the users gamedata scrapers preference
