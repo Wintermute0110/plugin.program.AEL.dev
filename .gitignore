@@ -1,1 +1,6 @@
+# Python stuff
+*.pyo
+
+# KDE Kate temp files
+*.kate-swp
 
