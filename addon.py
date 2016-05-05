@@ -128,9 +128,7 @@ class Main:
         #
         # Create a default categories.xml file if does not exist yet (plugin just installed)
         if not os.path.isfile(CATEGORIES_FILE_PATH):
-            dialog = xbmcgui.Dialog()
-            ok = dialog.ok('Advanced Emulator Launcher - WARNING', 
-                           'Creating default categories.xml')
+            gui_kodi_dialog_OK('Advanced Emulator Launcher - WARNING', 'Creating default categories.xml')
             self._cat_create_default()
             self._fs_write_catfile()
 
@@ -161,138 +159,133 @@ class Main:
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
 
-        # If parameters are passed...
-        if param:
-            param = param[1:]
-            command = param.split(COMMAND_ARGS_SEPARATOR)
-            command_part = command[0].split("/")
-
-            # check the action needed
-            if ( len(command_part) == 4 ):
-                category = command_part[0]
-                launcher = command_part[1]
-                rom = command_part[2]
-                action = command_part[3]
-
-                if (action == SEARCH_COMMAND):
-                    self._find_roms(False)
-                if (action == REMOVE_COMMAND):
-                    self._remove_rom(launcher, rom)
-                elif (action == EDIT_COMMAND):
-                    self._edit_rom(launcher, rom)
-                elif (action == GET_INFO):
-                    self._scrap_rom(launcher, rom)
-                elif (action == GET_THUMB):
-                    self._scrap_thumb_rom(launcher, rom)
-                elif (action == GET_FANART):
-                    self._scrap_fanart_rom(launcher, rom)
-
-            if ( len(command_part) == 3 ):
-                category = command_part[0]
-                launcher = command_part[1]
-                rom = command_part[2]
-
-                if (rom == SEARCH_COMMAND):
-                    self._find_roms(False)
-                if (rom == REMOVE_COMMAND):
-                    self._remove_launcher(launcher)
-                elif (rom == EDIT_COMMAND):
-                    self._edit_launcher(launcher)
-                elif (rom == GET_INFO):
-                    self._scrap_launcher(launcher)
-                elif (rom == GET_THUMB):
-                    self._scrap_thumb_launcher(launcher)
-                elif (rom == GET_FANART):
-                    self._scrap_fanart_launcher(launcher)
-                elif (category == SCAN_NEW_ITEM_COMMAND):
-					self._import_roms(launcher, addRoms = False)
-                elif (rom == ADD_COMMAND):
-                    self._add_roms(launcher)
-                else:
-                    self._run_rom(launcher, rom)
-
-            if ( len(command_part) == 2 ):
-                category = command_part[0]
-                launcher = command_part[1]
-
-                if (launcher == SEARCH_COMMAND):
-                    self._find_roms(False)
-                elif (launcher == FILE_MANAGER_COMMAND):
-                    self._file_manager()
-                elif (launcher == EDIT_COMMAND):
-                    self._edit_category(category)
-                elif (launcher == GET_INFO):
-                    self._modify_category(category)
-                    xbmc.executebuiltin("Container.Refresh")
-                elif (launcher == GET_THUMB):
-                    self._scrap_thumb_category(category)
-                elif (launcher == GET_FANART):
-                    self._scrap_fanart_category(category)
-                elif (launcher == ADD_COMMAND):
-                    self._add_new_launcher(category)
-                    
-                # Search commands
-                elif (launcher == SEARCH_ITEM_COMMAND):
-                    self._find_add_roms(category)
-                elif (launcher == SEARCH_DATE_COMMAND):
-                    self._find_date_add_roms(category)
-                elif (launcher == SEARCH_PLATFORM_COMMAND):
-                    self._find_platform_add_roms(category)
-                elif (launcher == SEARCH_STUDIO_COMMAND):
-                    self._find_studio_add_roms(category)
-                elif (launcher == SEARCH_GENRE_COMMAND):
-                    self._find_genre_add_roms(category)
-
-                else:
-                    if (self.launchers[launcher]["rompath"] == ""):
-                        self._run_launcher(launcher)
-                    else:
-                        self._get_roms(launcher)
-
-            if ( len(command_part) == 1 ):
-                category = command_part[0]
-                self._print_log(__language__( 30740 ) % category)
-
-                if (category == SCAN_NEW_ITEM_COMMAND):
-					self._find_roms(False)
-                if (category == SEARCH_COMMAND):
-                    self._find_roms(False)
-                elif (category == FILE_MANAGER_COMMAND):
-                    self._file_manager()
-                elif (category == ADD_COMMAND):
-                    self._add_new_category()
-                elif (category == BACKUP_COMMAND):
-                    self._print_log(__language__( 30185 ))
-                    backup_file = xbmcgui.Dialog().browse(1,__language__( 30186 ),"files",".xml", False, False, os.path.join(DEFAULT_BACKUP_PATH+"/"))
-                    if (os.path.isfile(backup_file)):
-                        self._load_launchers(self.get_xml_source(backup_file))
-                elif (category == APPEND_COMMAND):
-                    self._print_log(__language__( 30185 ))
-                    append_file = xbmcgui.Dialog().browse(1,__language__( 30191 ),"files",".xml", False, False, os.path.join(PLUGIN_DATA_PATH+"/"))
-                    if (os.path.isfile(append_file)):
-                        self._append_launchers(append_file)
-                elif ( self._empty_cat(category) ):
-                    self._add_new_launcher(category)
-                else:
-                    self._get_launchers(category)
-
-        else:
+        # If no parameters display categories
+        self._print_log('param = {0}'.format(param))
+        if param == '':
             self._print_log('Advanced Launcher root folder > Categories list')
-            # NOTE self.categories length must never be 0 because a default launcher is created before we reach
-            #      this point.
-            if len(self.categories) == 0:
-                gui_kodi_notify('DEBUG', 'len(self.categories) == 0')
-                if len(self.launchers) == 0:
-                    self._add_new_launcher('default')
-                else:
-                    categorydata = {}
-                    categorydata["name"] = 'Default'
-                    self.categories['default'] = categorydata
-                    self._save_launchers()
-                    self._get_launchers('default')
+            # Display categories listbox (addon root directory)
+            self._gui_render_categories()
+            return
+
+        # Process script parameters
+        param = param[1:]
+        command = param.split(COMMAND_ARGS_SEPARATOR)
+        command_part = command[0].split("/")
+        self._print_log('command = {0}'.format(command))
+        self._print_log('command_part = {0}'.format(command_part))
+
+
+        # check the action needed
+        if ( len(command_part) == 4 ):
+            category = command_part[0]
+            launcher = command_part[1]
+            rom = command_part[2]
+            action = command_part[3]
+
+            if (action == SEARCH_COMMAND):
+                self._find_roms(False)
+            if (action == REMOVE_COMMAND):
+                self._remove_rom(launcher, rom)
+            elif (action == EDIT_COMMAND):
+                self._edit_rom(launcher, rom)
+            elif (action == GET_INFO):
+                self._scrap_rom(launcher, rom)
+            elif (action == GET_THUMB):
+                self._scrap_thumb_rom(launcher, rom)
+            elif (action == GET_FANART):
+                self._scrap_fanart_rom(launcher, rom)
+
+        if ( len(command_part) == 3 ):
+            category = command_part[0]
+            launcher = command_part[1]
+            rom = command_part[2]
+
+            if (rom == SEARCH_COMMAND):
+                self._find_roms(False)
+            if (rom == REMOVE_COMMAND):
+                self._remove_launcher(launcher)
+            elif (rom == EDIT_COMMAND):
+                self._edit_launcher(launcher)
+            elif (rom == GET_INFO):
+                self._scrap_launcher(launcher)
+            elif (rom == GET_THUMB):
+                self._scrap_thumb_launcher(launcher)
+            elif (rom == GET_FANART):
+                self._scrap_fanart_launcher(launcher)
+            elif (category == SCAN_NEW_ITEM_COMMAND):
+                self._import_roms(launcher, addRoms = False)
+            elif (rom == ADD_COMMAND):
+                self._add_roms(launcher)
             else:
-                # Display categories listbox (addon root directory)
-                self._gui_render_categories()
+                self._run_rom(launcher, rom)
+
+        if ( len(command_part) == 2 ):
+            category = command_part[0]
+            launcher = command_part[1]
+
+            if (launcher == SEARCH_COMMAND):
+                self._find_roms(False)
+            elif (launcher == FILE_MANAGER_COMMAND):
+                self._file_manager()
+            elif (launcher == EDIT_COMMAND):
+                self._edit_category(category)
+            elif (launcher == GET_INFO):
+                self._modify_category(category)
+                xbmc.executebuiltin("Container.Refresh")
+            elif (launcher == GET_THUMB):
+                self._scrap_thumb_category(category)
+            elif (launcher == GET_FANART):
+                self._scrap_fanart_category(category)
+            elif (launcher == ADD_COMMAND):
+                self._add_new_launcher(category)
+                
+            # Search commands
+            elif (launcher == SEARCH_ITEM_COMMAND):
+                self._find_add_roms(category)
+            elif (launcher == SEARCH_DATE_COMMAND):
+                self._find_date_add_roms(category)
+            elif (launcher == SEARCH_PLATFORM_COMMAND):
+                self._find_platform_add_roms(category)
+            elif (launcher == SEARCH_STUDIO_COMMAND):
+                self._find_studio_add_roms(category)
+            elif (launcher == SEARCH_GENRE_COMMAND):
+                self._find_genre_add_roms(category)
+
+            else:
+                if (self.launchers[launcher]["rompath"] == ""):
+                    self._run_launcher(launcher)
+                else:
+                    self._get_roms(launcher)
+
+        # param is of the form "?md5_hash_str"
+        # User selected one category in the root folder. Display that category launchers
+        if len(command_part) == 1:
+            category = command_part[0]
+            self._print_log('%s category folder > Launcher list' % category)
+
+            if (category == SCAN_NEW_ITEM_COMMAND):
+                self._find_roms(False)
+            if (category == SEARCH_COMMAND):
+                self._find_roms(False)
+            elif (category == FILE_MANAGER_COMMAND):
+                self._file_manager()
+            elif (category == ADD_COMMAND):
+                self._add_new_category()
+            elif (category == BACKUP_COMMAND):
+                self._print_log(__language__( 30185 ))
+                backup_file = xbmcgui.Dialog().browse(1,__language__( 30186 ),"files",".xml", False, False, os.path.join(DEFAULT_BACKUP_PATH+"/"))
+                if (os.path.isfile(backup_file)):
+                    self._load_launchers(self.get_xml_source(backup_file))
+            elif (category == APPEND_COMMAND):
+                self._print_log(__language__( 30185 ))
+                append_file = xbmcgui.Dialog().browse(1,__language__( 30191 ),"files",".xml", False, False, os.path.join(PLUGIN_DATA_PATH+"/"))
+                if (os.path.isfile(append_file)):
+                    self._append_launchers(append_file)
+            elif ( self._empty_cat(category) ):
+                self._add_new_launcher(category)
+            else:
+                self._get_launchers(category)
+
 
     #
     # Creates default categories data struct
@@ -367,7 +360,7 @@ class Main:
     # Loads categories.xml from disk and fills dictionary self.categories
     #
     def _fs_load_catfile(self):
-        __debug_xml_parser = 1
+        __debug_xml_parser = 0
         self.categories = {}
         
         # --- Parse using cElementTree ---
@@ -3054,6 +3047,14 @@ def MyDialog(img_list):
         print_exc()
         return False
     del w
+
+#
+# Displays a modal dialog with an OK button.
+# Dialog can have up to 3 rows of text.
+#
+def gui_kodi_dialog_OK(title, row1, row2='', row3=''):
+    dialog = xbmcgui.Dialog()
+    ok = dialog.ok(title, row1, row2='', row3='')
 
 #
 # Displays a small box in the low right corner
