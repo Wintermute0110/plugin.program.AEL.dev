@@ -2133,15 +2133,7 @@ class Main:
 
 
     def _gui_render_category_row(self, category_dic, key):
-        # Create context menu
-        commands = []
-        commands.append(('Search',              "XBMC.RunPlugin(%s?%s)"    % (self._path, SEARCH_COMMAND) , ))
-        commands.append(('Manage sources',      "XBMC.RunPlugin(%s?%s)"    % (self._path, FILE_MANAGER_COMMAND) , ))
-        commands.append(('Create New Category', "XBMC.RunPlugin(%s?%s)"    % (self._path, ADD_COMMAND) , ))
-        commands.append(('Edit Category',       "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, EDIT_COMMAND) , ))
-        commands.append(('Add New Launcher',    "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, ADD_COMMAND) , ))
-
-        # Create listitem row
+        # --- Create listitem row ---
         icon = "DefaultFolder.png"        
         if category_dic['thumb'] != '':
             listitem = xbmcgui.ListItem( category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
@@ -2152,7 +2144,16 @@ class Main:
         listitem.setProperty("fanart_image", category_dic['fanart'])
         listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'], 
                                     "Plot" : category_dic['plot'], "overlay": ICON_OVERLAY } )
-        listitem.addContextMenuItems( commands )
+        
+        # --- Create context menu ---
+        # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
+        commands = []
+        commands.append(('Create New Category', "XBMC.RunPlugin(%s?%s)"    % (self._path, ADD_COMMAND) , ))
+        commands.append(('Edit Category',       "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, EDIT_COMMAND) , ))
+        commands.append(('Add New Launcher',    "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, ADD_COMMAND) , ))
+        commands.append(('Search',              "XBMC.RunPlugin(%s?%s)"    % (self._path, SEARCH_COMMAND) , ))
+        commands.append(('Manage sources',      "XBMC.RunPlugin(%s?%s)"    % (self._path, FILE_MANAGER_COMMAND) , ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
         
         # Add row
         # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
