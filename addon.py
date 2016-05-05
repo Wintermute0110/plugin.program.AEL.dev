@@ -293,7 +293,7 @@ class Main:
                 self._command_add_new_launcher(categoryID)
 
             else:
-                self._get_launchers(categoryID)
+                self._gui_render_launchers(categoryID)
 
     #
     # Creates default categories data struct
@@ -348,11 +348,11 @@ class Main:
             str_list.append('<advanced_emulator_launcher version="1.0">\n')
 
             # Create Categories XML list
-            for categoryIndex in sorted(self.categories, key = lambda x : self.categories[x]["name"]):
-                category = self.categories[categoryIndex]
+            for categoryID in sorted(self.categories, key = lambda x : self.categories[x]["name"]):
+                category = self.categories[categoryID]
                 # Data which is not string must be converted to string
                 str_list.append("  <category>\n" +
-                                "    <id>"          + categoryIndex              + "</id>\n" +
+                                "    <id>"          + categoryID              + "</id>\n" +
                                 "    <name>"        + category["name"]           + "</name>\n" +
                                 "    <thumb>"       + category["thumb"]          + "</thumb>\n"
                                 "    <fanart>"      + category["fanart"]         + "</fanart>\n" +
@@ -361,10 +361,11 @@ class Main:
                                 "    <finished>"    + str(category["finished"])  + "</finished>\n" +
                                 "  </category>\n")
             # Write launchers
-            for launcherIndex in sorted(self.launchers, key = lambda x : self.launchers[x]["name"]):
-                launcher = self.launchers[launcherIndex]
+            for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]["name"]):
+                launcher = self.launchers[launcherID]
                 # Data which is not string must be converted to string
                 str_list.append("  <launcher>\n" +
+                                "    <id>"            + launcherID                + "</id>\n" +
                                 "    <name>"          + launcher["name"]          + "</name>\n" +
                                 "    <category>"      + launcher["category"]      + "</category>\n" +
                                 "    <application>"   + launcher["application"]   + "</application>\n"
@@ -408,7 +409,8 @@ class Main:
     def _fs_load_catfile(self):
         __debug_xml_parser = 0
         self.categories = {}
-        
+        self.launchers = {}
+
         # --- Parse using cElementTree ---
         xbmc.log('Parsing {0}'.format(CATEGORIES_FILE_PATH))
 
@@ -416,27 +418,55 @@ class Main:
         xml_tree = ET.parse(CATEGORIES_FILE_PATH)
         xml_root = xml_tree.getroot()
         for category_element in xml_root:
-            if __debug_xml_parser: xbmc.log('Root child {0}'.format(category_element.tag))            
-            # Default values
-            category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 'plot' : '', 'finished' : False}
+            if __debug_xml_parser: xbmc.log('Root child {0}'.format(category_element.tag))
 
-            # Parse child tags of category
-            for category_child in category_element:
-                # By default read strings
-                xml_text = category_child.text if category_child.text is not None else ''
-                xml_tag  = category_child.tag
-                if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
-                category[xml_tag] = xml_text
+            if category_element.tag == 'category':
+                # Default values
+                category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 'plot' : '', 'finished' : False}
 
-                # Now transform data depending on tag name
-                if xml_tag == 'finished':
-                    xml_bool = False if xml_text == 'False' else True
-                    category[xml_tag] = xml_bool
+                # Parse child tags of category
+                for category_child in category_element:
+                    # By default read strings
+                    xml_text = category_child.text if category_child.text is not None else ''
+                    xml_tag  = category_child.tag
+                    if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                    category[xml_tag] = xml_text
 
-            # Add category to categories dictionary
-            self.categories[category['id']] = category
+                    # Now transform data depending on tag name
+                    if xml_tag == 'finished':
+                        xml_bool = False if xml_text == 'False' else True
+                        category[xml_tag] = xml_bool
 
+                # Add category to categories dictionary
+                self.categories[category['id']] = category
 
+            elif category_element.tag == 'launcher':
+                # Default values
+                launcher = {
+                    "id" : '',
+                    "name" : '', "category" : '', "application" : '',  "args" : '',
+                    "rompath" : "", "thumbpath" : '', "fanartpath" : '',
+                    "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : '',
+                    "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "",
+                    "plot" : "",  "lnk" : '',
+                    "finished": False, "minimize" : False,
+                    "roms_xml_file" : '' }
+
+                # Parse child tags of category
+                for category_child in category_element:
+                    # By default read strings
+                    xml_text = category_child.text if category_child.text is not None else ''
+                    xml_tag  = category_child.tag
+                    if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                    launcher[xml_tag] = xml_text
+
+                    # Now transform data depending on tag name
+                    if xml_tag == 'finished' or xml_tag == 'minimize':
+                        xml_bool = False if xml_text == 'False' else True
+                        launcher[xml_tag] = xml_bool
+
+                # Add launcher to categories dictionary
+                self.launchers[category['id']] = launcher
 
     def _remove_rom(self, launcherID, rom):
         dialog = xbmcgui.Dialog()
@@ -2187,7 +2217,7 @@ class Main:
         commands.append(('Manage sources',      "XBMC.RunPlugin(%s?%s)"    % (self._path, FILE_MANAGER_COMMAND) , ))
         listitem.addContextMenuItems(commands, replaceItems=True)
         
-        # Add row
+        # --- Add row ---
         # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
         xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s"  % (self._path, key), listitem=listitem, isFolder=True)
 
@@ -2196,24 +2226,63 @@ class Main:
     # Renders the categories (addon root window)
     #
     def _gui_render_categories( self ):
-        # For every cateogyr, add it to the listbox
+        # For every category, add it to the listbox
         # Order alphabetically by name
         for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
             self._gui_render_category_row(self.categories[key], key)
         xbmcplugin.endOfDirectory( handle = int( self._handle ), succeeded=True, cacheToDisc=False )
 
-    def _get_launchers( self, categoryID ):
+    def _gui_render_launcher_row(self, launcher_dic, key) :
+        # --- Create listitem row ---
+        commands = []
+        # Executable launcher
+        if launcher_dic['rompath'] == '':
+            folder = False
+            icon = "DefaultProgram.png"
+        # Files launcher
+        else:
+            folder = True
+            icon = "DefaultFolder.png"
+            commands.append(('Add Items', "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, launcher_dic['category'], key, ADD_COMMAND) , ))
+        if launcher_dic['thumb']:
+            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
+        else:
+            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon )
+        if launcher_dic['finished'] != True:
+            ICON_OVERLAY = 6
+        else:
+            ICON_OVERLAY = 7
+        listitem.setProperty("fanart_image", launcher_dic['fanart'])
+        listitem.setInfo( "video", {"Title": launcher_dic['name'], "Label": os.path.basename(launcher_dic['rompath']),
+                                    "Plot" : launcher_dic['plot'], "Studio" : launcher_dic['studio'],
+                                    "Genre" : launcher_dic['genre'], "Premiered" : launcher_dic['release'],
+                                    "Year" : launcher_dic['release'], "Writer" : launcher_dic['gamesys'],
+                                    "Trailer" : os.path.join(launcher_dic['trailerpath']),
+                                    "Director" : os.path.join(launcher_dic['custompath']), 
+                                    "overlay": ICON_OVERLAY } )
+
+        # --- Create context menu ---
+        commands.append(('Edit Launcher', "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, launcher_dic['category'], key, EDIT_COMMAND) , ))
+        commands.append(('Create New Launcher', "XBMC.RunPlugin(%s?%s/%s)" % (self._path, launcher_dic['category'], ADD_COMMAND) , ))
+        commands.append(('Search', "XBMC.RunPlugin(%s?%s/%s)" % (self._path, launcher_dic['category'], SEARCH_COMMAND) , ))
+        commands.append(('Manage sources', "XBMC.RunPlugin(%s?%s/%s)" % (self._path, launcher_dic['category'], FILE_MANAGER_COMMAND) , ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
+
+        # --- Add row ---
+        xbmcplugin.addDirectoryItem(handle=int( self._handle ), url="%s?%s/%s"  % (self._path, launcher_dic['category'], key), 
+                                    listitem=listitem, isFolder=folder)
+
+    #
+    # Former  _get_launchers
+    # Renders the launcher for a given category
+    #
+    def _gui_render_launchers( self, categoryID ):
         for key in sorted(self.launchers, key= lambda x : self.launchers[x]["application"]):
-            if ( self.launchers[key]["category"] == categoryID ) :
-                self._add_launcher(self.launchers[key]["name"], self.launchers[key]["category"], 
-                                   self.launchers[key]["application"], self.launchers[key]["rompath"], self.launchers[key]["thumbpath"], 
-                                   self.launchers[key]["fanartpath"], self.launchers[key]["trailerpath"], self.launchers[key]["custompath"], 
-                                   self.launchers[key]["romext"], self.launchers[key]["gamesys"], self.launchers[key]["thumb"], 
-                                   self.launchers[key]["fanart"], self.launchers[key]["genre"], self.launchers[key]["release"], 
-                                   self.launchers[key]["studio"], self.launchers[key]["plot"], self.launchers[key]["finished"], 
-                                   self.launchers[key]["lnk"], self.launchers[key]["minimize"], self.launchers[key]["roms"], 
-                                   len(self.launchers), key)
+            if self.launchers[key]["category"] == categoryID:
+                self._gui_render_launcher_row(self.launchers[key], key)
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+
+
 
     def _get_roms( self, launcherID ):
         if (self.launchers.has_key(launcherID)):
@@ -2629,43 +2698,6 @@ class Main:
         else:
             xbmc_notify(__language__( 30000 ), __language__( 30016 ) % (romsCount, skipCount) + " " + __language__( 30050 ),3000)
 
-    def _add_launcher(self, name, category, cmd, path, thumbpath, fanartpath, trailerpath, custompath, ext, gamesys, thumb, fanart, genre, release, studio, plot, finished, lnk, minimize, roms, total, key) :
-        if (int(xbmc.getInfoLabel("System.BuildVersion")[0:2]) < 12 ):
-            # Dharma / Eden compatible
-            display_date_format = "Date"
-        else:
-            # Frodo & + compatible
-            display_date_format = "Year"
-        commands = []
-        commands.append((__language__( 30512 ), "XBMC.RunPlugin(%s?%s/%s)" % (self._path, category, SEARCH_COMMAND) , ))
-        commands.append((__language__( 30051 ), "XBMC.RunPlugin(%s?%s/%s)" % (self._path, category, FILE_MANAGER_COMMAND) , ))
-        commands.append((__language__( 30101 ), "XBMC.RunPlugin(%s?%s/%s)" % (self._path, category, ADD_COMMAND) , ))
-        commands.append(( __language__( 30109 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, category, key, EDIT_COMMAND) , ))
-
-        if (path == ""):
-            folder = False
-            icon = "DefaultProgram.png"
-        else:
-            folder = True
-            icon = "DefaultFolder.png"
-            commands.append((__language__( 30106 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, category, key, ADD_COMMAND) , ))
-
-        if (thumb):
-            listitem = xbmcgui.ListItem( name, iconImage=icon, thumbnailImage=thumb )
-        else:
-            listitem = xbmcgui.ListItem( name, iconImage=icon )
-
-        filename = os.path.splitext(cmd)
-        if ( finished != "true" ):
-            ICON_OVERLAY = 6
-        else:
-            ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", fanart)
-        listitem.setInfo( "video", { "Title": name, "Label": os.path.basename(cmd), "Plot" : plot , "Studio" : studio , "Genre" : genre , "Premiered" : release  , display_date_format : release  , "Writer" : gamesys , "Trailer" : os.path.join(trailerpath), "Director" : os.path.join(custompath), "overlay": ICON_OVERLAY } )
-        listitem.addContextMenuItems( commands )
-        if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-            xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s/%s"  % (self._path, category, key), listitem=listitem, isFolder=folder)
-
     def _add_rom( self, launcherID, name, cmd , romgamesys, thumb, romfanart, romtrailer, romcustom, romgenre, romrelease, romstudio, romplot, finished, altapp, altarg, total, key, search, search_url):
         if (int(xbmc.getInfoLabel("System.BuildVersion")[0:2]) < 12 ):
             # Dharma / Eden compatible
@@ -2846,7 +2878,10 @@ class Main:
                 launcher_lnk = "true"
             else:
                 launcher_lnk = ""
+            # add launcher to the launchers dictionary (using name as index)
+            launcherID = misc_generate_random_SID()
             launcherdata = {
+                "id" : launcherID,
                 "name" : title, "category" : categoryID, "application" : app,  "args" : args, 
                 "rompath" : "", "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
                 "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : launcher_gamesys, 
@@ -2854,8 +2889,6 @@ class Main:
                 "plot" : "",  "lnk" : launcher_lnk, 
                 "finished": False, "minimize" : False, 
                 "roms_xml_file" : '' }
-            # add launcher to the launchers dictionary (using name as index)
-            launcherID = misc_generate_random_SID()
             self.launchers[launcherID] = launcherdata
             self._fs_write_catfile()
             xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self._path, categoryID))
@@ -2911,7 +2944,10 @@ class Main:
                 launcher_lnk = "true"
             else:
                 launcher_lnk = ""
+            # add launcher to the launchers dictionary (using name as index)
+            launcherID = misc_generate_random_SID()
             launcherdata = {
+                "id" : launcherID,
                 "name" : title, "category" : categoryID, "application" : app,  "args" : args, 
                 "rompath" : "", "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
                 "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : launcher_gamesys, 
@@ -2919,8 +2955,6 @@ class Main:
                 "plot" : "",  "lnk" : launcher_lnk, 
                 "finished": False, "minimize" : False, 
                 "roms_xml_file" : '' }
-            # add launcher to the launchers list (using name as index)
-            launcherID = misc_generate_random_SID()
             self.launchers[launcherID] = launcherdata
             self._fs_write_catfile()
             xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self._path, categoryID))
