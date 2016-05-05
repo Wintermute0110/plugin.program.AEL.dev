@@ -179,6 +179,29 @@ class Main:
         # For some reason args['com'] is a list, so get first element of the list (a string)
         if args['com'][0] == 'SHOW_LAUNCHERS':
             self._gui_render_launchers(args['catID'][0])
+            
+        elif args['com'][0] == 'ADD_CATEGORY':
+            self._command_add_new_category()
+
+        elif args['com'][0] == 'EDIT_CATEGORY':
+            self._command_edit_category(args['catID'][0])
+
+        elif args['com'][0] == 'ADD_LAUNCHER':
+            # elif self._cat_empty_cat(categoryID):
+            self._command_add_new_launcher(args['catID'][0])
+
+        elif args['com'][0] == 'EDIT_LAUNCHER':
+            self._command_edit_launcher(args['launID'][0])
+
+        elif args['com'][0] == 'SHOW_ROMS':
+            launcherID = args['launID'][0]
+            # User clicked on a launcher. For executable launchers then run.
+            # For emulator launchers then show roms
+            if self.launchers[launcherID]["rompath"] == '':
+                self._run_launcher(launcherID)
+            else:
+                self._gui_render_roms(launcherID)
+
         else:
             gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
             return
@@ -220,8 +243,6 @@ class Main:
                 self._find_roms(False)
             if (rom == REMOVE_COMMAND):
                 self._remove_launcher(launcher)
-            elif (rom == EDIT_COMMAND):
-                self._edit_launcher(launcher)
             elif (rom == GET_INFO):
                 self._scrap_launcher(launcher)
             elif (rom == GET_THUMB):
@@ -243,8 +264,6 @@ class Main:
                 self._find_roms(False)
             elif (launcher == FILE_MANAGER_COMMAND):
                 self._file_manager()
-            elif (launcher == EDIT_COMMAND):
-                self._edit_category(category)
             elif (launcher == GET_INFO):
                 self._modify_category(category)
                 xbmc.executebuiltin("Container.Refresh")
@@ -267,12 +286,6 @@ class Main:
             elif (launcher == SEARCH_GENRE_COMMAND):
                 self._find_genre_add_roms(category)
 
-            else:
-                if (self.launchers[launcher]["rompath"] == ""):
-                    self._run_launcher(launcher)
-                else:
-                    self._get_roms(launcher)
-
         # param is of the form "?md5_hash_str"
         # User selected one category in the root folder. Display that category launchers
         if len(command_part) == 1:
@@ -285,10 +298,6 @@ class Main:
                 self._find_roms(False)
             elif (categoryID == FILE_MANAGER_COMMAND):
                 self._file_manager()
-
-            elif (categoryID == ADD_COMMAND):
-                self._command_add_new_category()
-
             elif (categoryID == BACKUP_COMMAND):
                 self._print_log('Import XML file (restore backup)')
                 backup_file = xbmcgui.Dialog().browse(1, 
@@ -296,7 +305,6 @@ class Main:
                                                       False, False, os.path.join(DEFAULT_BACKUP_PATH+"/"))
                 if (os.path.isfile(backup_file)):
                     self._load_launchers(self.get_xml_source(backup_file))
-
             elif (categoryID == APPEND_COMMAND):
                 self._print_log('Import XML file (restore backup)')
                 append_file = xbmcgui.Dialog().browse(1, 
@@ -304,10 +312,6 @@ class Main:
                                                       False, False, os.path.join(PLUGIN_DATA_PATH+"/"))
                 if (os.path.isfile(append_file)):
                     self._append_launchers(append_file)
-
-            elif self._cat_empty_cat(categoryID):
-                self._command_add_new_launcher(categoryID)
-
 
     #
     # Creates default categories data struct
@@ -1189,7 +1193,7 @@ class Main:
                 text_plot.close()
                 self._save_launchers()
 
-    def _edit_category(self, categoryID):
+    def _command_edit_category(self, categoryID):
         dialog = xbmcgui.Dialog()
         if (self.categories[categoryID]["finished"] != "true"):
             finished_display = __language__( 30339 )
@@ -1300,7 +1304,7 @@ class Main:
         # Return to the category directory
         xbmc.executebuiltin("Container.Refresh")
 
-    def _edit_launcher(self, launcherID):
+    def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
         title=os.path.basename(self.launchers[launcherID]["name"])
         if (self.launchers[launcherID]["finished"] != "true"):
@@ -2225,16 +2229,16 @@ class Main:
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
         categoryID = category_dic['id']
-        commands.append(('Edit Category',       self._misc_url_2('EDIT_CATEGORY', categoryID), ))
-        commands.append(('Create New Category', self._misc_url_1('ADD_CATEGORY'), ))
-        commands.append(('Add New Launcher',    self._misc_url_2('ADD_LAUNCHER', categoryID), ))
-        commands.append(('Search',              self._misc_url_1('SEARCH_COMMAND'), ))
-        commands.append(('Manage sources',      self._misc_url_1('FILE_MANAGER_COMMAND'), ))
+        commands.append(('Edit Category',       self._misc_url_2_RunPlugin('EDIT_CATEGORY', categoryID), ))
+        commands.append(('Create New Category', self._misc_url_1_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('Add New Launcher',    self._misc_url_2_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        commands.append(('Search',              self._misc_url_1_RunPlugin('SEARCH_COMMAND'), ))
+        commands.append(('Manage sources',      self._misc_url_1_RunPlugin('FILE_MANAGER_COMMAND'), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
         # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-        url_str = '{0}?com={1}&catID={2}'.format(self._path, 'SHOW_LAUNCHERS', key)
+        url_str = self._misc_url_2('SHOW_LAUNCHERS', key)
         xbmcplugin.addDirectoryItem( handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=True)
 
     # 
@@ -2280,15 +2284,15 @@ class Main:
         # --- Create context menu ---
         launcherID = launcher_dic['id']
         categoryID = launcher_dic['category']
-        commands.append(('Edit Launcher',    self._misc_url_3('EDIT_LAUNCHER', categoryID, launcherID), ))
-        commands.append(('Add New Launcher', self._misc_url_2('ADD_LAUNCHER', categoryID), ))
-        commands.append(('Search',           self._misc_url_1('SEARCH_COMMAND'), ))
-        commands.append(('Manage sources',   self._misc_url_1('FILE_MANAGER_COMMAND'), ))
+        commands.append(('Edit Launcher',    self._misc_url_3_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
+        commands.append(('Add New Launcher', self._misc_url_2_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        commands.append(('Search',           self._misc_url_1_RunPlugin('SEARCH_COMMAND'), ))
+        commands.append(('Manage sources',   self._misc_url_1_RunPlugin('FILE_MANAGER_COMMAND'), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
-        xbmcplugin.addDirectoryItem(handle=int( self._handle ), url="%s?%s/%s"  % (self._path, launcher_dic['category'], key), 
-                                    listitem=listitem, isFolder=folder)
+        url_str = self._misc_url_3('SHOW_ROMS', launcher_dic['category'], key)
+        xbmcplugin.addDirectoryItem(handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=folder)
 
     #
     # Former  _get_launchers
@@ -2301,21 +2305,43 @@ class Main:
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
     #
-    # A set of functions to help making plugin URLs
+    # Former  _add_rom
     #
-    def _misc_url_4(self, command, categoryID, launcherID, romID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
+    def _gui_render_rom_row( self, launcherID, name, cmd , romgamesys, thumb, romfanart, romtrailer, romcustom, romgenre, romrelease, romstudio, romplot, finished, altapp, altarg, total, key, search, search_url):
+        if (int(xbmc.getInfoLabel("System.BuildVersion")[0:2]) < 12 ):
+            # Dharma / Eden compatible
+            display_date_format = "Date"
+        else:
+            # Frodo & + compatible
+            display_date_format = "Year"
+        filename = os.path.splitext(cmd)
+        icon = "DefaultProgram.png"
+        if (thumb):
+            listitem = xbmcgui.ListItem( name, iconImage=icon, thumbnailImage=thumb)
+        else:
+            listitem = xbmcgui.ListItem( name, iconImage=icon)
+        if ( finished != "true" ):
+            ICON_OVERLAY = 6
+        else:
+            ICON_OVERLAY = 7
+        listitem.setProperty("fanart_image", romfanart)
+        listitem.setInfo( "video", { "Title": name, "Label": os.path.basename(cmd), "Plot" : romplot, "Studio" : romstudio, "Genre" : romgenre, "Premiered" : romrelease  , display_date_format : romrelease, "Writer" : romgamesys, "Trailer" : os.path.join(romtrailer), "Director" : os.path.join(romcustom), "overlay": ICON_OVERLAY } )
 
-    def _misc_url_3(self, command, categoryID, launcherID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
+        commands = []
+        commands.append((__language__( 30512 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, SEARCH_COMMAND) , ))
+        commands.append(( __language__( 30107 ), "XBMC.RunPlugin(%s?%s/%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, key, EDIT_COMMAND) , ))
+        if search :
+            commands.append((__language__( 30513 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, SEARCH_COMMAND) , ))
+        listitem.addContextMenuItems( commands )
+        if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
+            xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s/%s/%s"  % (self._path, self.launchers[launcherID]["category"], launcherID, key), listitem=listitem, isFolder=False)
 
-    def _misc_url_2(self, command, categoryID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
 
-    def _misc_url_1(self, command):
-        return 'XBMC.RunPlugin({0}?com={1})'.format(self._path, command)
-
-    def _get_roms( self, launcherID ):
+    #
+    # Former  _get_roms
+    # Renders the roms listbox for a given launcher
+    #
+    def _gui_render_roms( self, launcherID ):
         if (self.launchers.has_key(launcherID)):
             selectedLauncher = self.launchers[launcherID]
             roms = selectedLauncher["roms"]
@@ -2328,7 +2354,7 @@ class Main:
                     self._add_rom(launcherID, roms[key]["name"], roms[key]["filename"], roms[key]["gamesys"], roms[key]["thumb"], defined_fanart, roms[key]["trailer"], roms[key]["custom"], roms[key]["genre"], roms[key]["release"], roms[key]["studio"], roms[key]["plot"], roms[key]["finished"], roms[key]["altapp"], roms[key]["altarg"], len(roms), key, False, "")
                 xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
             else:
-                xbmc_notify(__language__( 30000 ), __language__( 30349 ),3000)
+                xbmc_notify('Advanced Launcher', 'Items list is empty : Add items first.', 3000)
 
     def _report_hook( self, count, blocksize, totalsize ):
          percent = int( float( count * blocksize * 100) / totalsize )
@@ -2729,35 +2755,6 @@ class Main:
         else:
             xbmc_notify(__language__( 30000 ), __language__( 30016 ) % (romsCount, skipCount) + " " + __language__( 30050 ),3000)
 
-    def _add_rom( self, launcherID, name, cmd , romgamesys, thumb, romfanart, romtrailer, romcustom, romgenre, romrelease, romstudio, romplot, finished, altapp, altarg, total, key, search, search_url):
-        if (int(xbmc.getInfoLabel("System.BuildVersion")[0:2]) < 12 ):
-            # Dharma / Eden compatible
-            display_date_format = "Date"
-        else:
-            # Frodo & + compatible
-            display_date_format = "Year"
-        filename = os.path.splitext(cmd)
-        icon = "DefaultProgram.png"
-        if (thumb):
-            listitem = xbmcgui.ListItem( name, iconImage=icon, thumbnailImage=thumb)
-        else:
-            listitem = xbmcgui.ListItem( name, iconImage=icon)
-        if ( finished != "true" ):
-            ICON_OVERLAY = 6
-        else:
-            ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", romfanart)
-        listitem.setInfo( "video", { "Title": name, "Label": os.path.basename(cmd), "Plot" : romplot, "Studio" : romstudio, "Genre" : romgenre, "Premiered" : romrelease  , display_date_format : romrelease, "Writer" : romgamesys, "Trailer" : os.path.join(romtrailer), "Director" : os.path.join(romcustom), "overlay": ICON_OVERLAY } )
-
-        commands = []
-        commands.append((__language__( 30512 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, SEARCH_COMMAND) , ))
-        commands.append(( __language__( 30107 ), "XBMC.RunPlugin(%s?%s/%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, key, EDIT_COMMAND) , ))
-        if search :
-            commands.append((__language__( 30513 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, SEARCH_COMMAND) , ))
-        listitem.addContextMenuItems( commands )
-        if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-            xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s/%s/%s"  % (self._path, self.launchers[launcherID]["category"], launcherID, key), listitem=listitem, isFolder=False)
-
     def _add_new_rom ( self , launcherID) :
         dialog = xbmcgui.Dialog()
         launcher = self.launchers[launcherID]
@@ -3077,6 +3074,33 @@ class Main:
 
     def _find_genre_add_roms( self, search ):
         _find_category_roms( self, search, "genre" )
+
+    #
+    # A set of functions to help making plugin URLs
+    #
+    def _misc_url_4_RunPlugin(self, command, categoryID, launcherID, romID):
+        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
+
+    def _misc_url_3_RunPlugin(self, command, categoryID, launcherID):
+        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
+
+    def _misc_url_2_RunPlugin(self, command, categoryID):
+        return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
+
+    def _misc_url_1_RunPlugin(self, command):
+        return 'XBMC.RunPlugin({0}?com={1})'.format(self._path, command)
+
+    def _misc_url_4(self, command, categoryID, launcherID, romID):
+        return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self._path, command, categoryID, launcherID, romID)
+
+    def _misc_url_3(self, command, categoryID, launcherID):
+        return '{0}?com={1}&catID={2}&launID={3}'.format(self._path, command, categoryID, launcherID)
+
+    def _misc_url_2(self, command, categoryID):
+        return '{0}?com={1}&catID={2}'.format(self._path, command, categoryID)
+
+    def _misc_url_1(self, command):
+        return '{0}?com={1}'.format(self._path, command)
 
 class MainGui( xbmcgui.WindowXMLDialog ):
     def __init__( self, *args, **kwargs ):
