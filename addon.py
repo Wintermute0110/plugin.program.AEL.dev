@@ -195,12 +195,16 @@ class Main:
 
         elif args['com'][0] == 'SHOW_ROMS':
             launcherID = args['launID'][0]
+            self._print_log('SHOW_ROMS | launcherID = {0}'.format(launcherID))
+
             # User clicked on a launcher. For executable launchers then run.
             # For emulator launchers then show roms
-            if self.launchers[launcherID]["rompath"] == '':
-                self._run_launcher(launcherID)
-            else:
-                self._gui_render_roms(launcherID)
+            # if self.launchers[launcherID]["rompath"] == '':
+            #     self._print_log('SHOW_ROMS | Calling _run_launcher()')
+            #     self._run_launcher(launcherID)
+            # else:
+            self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
+            self._gui_render_roms(launcherID)
 
         else:
             gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
@@ -2307,7 +2311,7 @@ class Main:
     #
     # Former  _add_rom
     #
-    def _gui_render_rom_row( self, launcherID, name, cmd , romgamesys, thumb, romfanart, romtrailer, romcustom, romgenre, romrelease, romstudio, romplot, finished, altapp, altarg, total, key, search, search_url):
+    def _gui_render_rom_row( self, launcherID, rom, key):
         if (int(xbmc.getInfoLabel("System.BuildVersion")[0:2]) < 12 ):
             # Dharma / Eden compatible
             display_date_format = "Date"
@@ -2336,25 +2340,42 @@ class Main:
         if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
             xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s/%s/%s"  % (self._path, self.launchers[launcherID]["category"], launcherID, key), listitem=listitem, isFolder=False)
 
-
     #
     # Former  _get_roms
     # Renders the roms listbox for a given launcher
     #
     def _gui_render_roms( self, launcherID ):
-        if (self.launchers.has_key(launcherID)):
-            selectedLauncher = self.launchers[launcherID]
-            roms = selectedLauncher["roms"]
-            if ( len(roms) != 0 ):
-                for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-                    if (roms[key]["fanart"] ==""):
-                        defined_fanart = selectedLauncher["fanart"]
-                    else:
-                        defined_fanart = roms[key]["fanart"]
-                    self._add_rom(launcherID, roms[key]["name"], roms[key]["filename"], roms[key]["gamesys"], roms[key]["thumb"], defined_fanart, roms[key]["trailer"], roms[key]["custom"], roms[key]["genre"], roms[key]["release"], roms[key]["studio"], roms[key]["plot"], roms[key]["finished"], roms[key]["altapp"], roms[key]["altarg"], len(roms), key, False, "")
-                xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
-            else:
-                xbmc_notify('Advanced Launcher', 'Items list is empty : Add items first.', 3000)
+        if launcherID not in self.launchers:
+            gui_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
+            return
+        # Load ROMs for this launcher and display them
+        selectedLauncher = self.launchers[launcherID]
+        roms_xml_file = selectedLauncher["roms_xml_file"]
+
+        # Check if XML file with ROMs exist
+        if not os.path.isfile(roms_xml_file):
+            xbmc_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.', 10000)
+            return
+            
+        # Load ROMs
+        roms = _fs_load_ROM_XML_file(roms_xml_file)
+        if not roms:
+            xbmc_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
+            return
+
+        # Display ROMs
+        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
+            # If ROM has no fanart then use launcher fanart
+            if (roms[key]["fanart"] ==""): defined_fanart = selectedLauncher["fanart"]
+            else:                          defined_fanart = roms[key]["fanart"]
+            # self._add_rom(launcherID, 
+            #               roms[key]["name"], roms[key]["filename"], roms[key]["gamesys"], roms[key]["thumb"], 
+            #               defined_fanart, roms[key]["trailer"], roms[key]["custom"], roms[key]["genre"], 
+            #               roms[key]["release"], roms[key]["studio"], roms[key]["plot"], roms[key]["finished"], 
+            #               roms[key]["altapp"], roms[key]["altarg"], len(roms), key, False, "")
+            self._gui_render_rom_row(launcherID, roms[key], key)
+        xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+
 
     def _report_hook( self, count, blocksize, totalsize ):
          percent = int( float( count * blocksize * 100) / totalsize )
