@@ -13,16 +13,15 @@
 
 # --- Main imports ---
 import sys, os, fnmatch, time, datetime, math, random, shutil
-import re, urllib, urllib2, socket, exceptions
+import re, urllib, urllib2, socket, exceptions, hashlib
 from traceback import print_exc
 from operator import itemgetter
-from xml.dom.minidom import parse
 
-# Dharma compatibility (import md5)
-try:
-    import hashlib
-except:
-    import md5
+# --- XML stuff ---
+# ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
+# import xml.etree.cElementTree as ET
+# ~~~ Using ElementTree seems to solve the problem
+import xml.etree.ElementTree as ET
 
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
@@ -43,25 +42,28 @@ __credits__ = "Leo212 CinPoU, JustSomeUser, Zerqent, Zosky, Atsumori"
 __version__ = "1.0.0"
 
 # --- Addon paths definition ---
+# _PATH is a filename
+# _DIR is a directory (with trailing /)
 PLUGIN_DATA_PATH         = xbmc.translatePath(os.path.join("special://profile/addon_data", "plugin.program.advanced.emulator.launcher"))
 BASE_PATH                = xbmc.translatePath(os.path.join("special://", "profile"))
 HOME_PATH                = xbmc.translatePath(os.path.join("special://", "home"))
 FAVOURITES_PATH          = xbmc.translatePath( 'special://profile/favourites.xml' )
 ADDONS_PATH              = xbmc.translatePath(os.path.join(HOME_PATH, "addons"))
 CURRENT_ADDON_PATH       = xbmc.translatePath(os.path.join(ADDONS_PATH, "plugin.program.advanced.emulator.launcher"))
-ICON_IMG_FILE            = os.path.join(CURRENT_ADDON_PATH, "icon.png")
+ICON_IMG_FILE            = os.path.join(CURRENT_ADDON_PATH, "icon.png") # Old deprecated definition
 
+ICON_IMG_FILE_PATH       = os.path.join(CURRENT_ADDON_PATH, "icon.png") # New one, uses correct suffix
 CATEGORIES_FILE_PATH     = os.path.join(PLUGIN_DATA_PATH, "categories.xml")
 
-BASE_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.xml")
-TEMP_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.tmp")
+BASE_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.xml") # Old deprecated definition
+TEMP_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.tmp") # Old deprecated definition
 
-MERGED_SOURCE_PATH       = os.path.join(PLUGIN_DATA_PATH, "merged-launchers.xml")
+MERGED_SOURCE_PATH       = os.path.join(PLUGIN_DATA_PATH, "merged-launchers.xml") # Old deprecated definition
 
-DEFAULT_THUMB_PATH       = os.path.join(PLUGIN_DATA_PATH, "thumbs")
-DEFAULT_FANART_PATH      = os.path.join(PLUGIN_DATA_PATH, "fanarts")
-DEFAULT_NFO_PATH         = os.path.join(PLUGIN_DATA_PATH, "nfos")
-DEFAULT_BACKUP_PATH      = os.path.join(PLUGIN_DATA_PATH, "backups")
+DEFAULT_THUMB_PATH       = os.path.join(PLUGIN_DATA_PATH, "thumbs") # Old deprecated definition
+DEFAULT_FANART_PATH      = os.path.join(PLUGIN_DATA_PATH, "fanarts") # Old deprecated definition
+DEFAULT_NFO_PATH         = os.path.join(PLUGIN_DATA_PATH, "nfos") # Old deprecated definition
+DEFAULT_BACKUP_PATH      = os.path.join(PLUGIN_DATA_PATH, "backups") # Old deprecated definition
 SHORTCUT_FILE            = os.path.join(PLUGIN_DATA_PATH, "shortcut.cut")
 
 # --- Addon data paths creation ---
@@ -119,8 +121,25 @@ class Main:
         # Fill in settings dictionary using addon_obj.getSetting
         self._get_settings()
 
+        # --- WORKAROUND ---
+        # When the addon is installed and the file categories.xml does not exist, just
+        # create an empty one with a default launcher. Later on, when I am more familiar
+        # with the addon add a welcome wizard or something similar.
+        #
+        # Create a default categories.xml file if does not exist yet (plugin just installed)
+        if not os.path.isfile(CATEGORIES_FILE_PATH):
+            dialog = xbmcgui.Dialog()
+            ok = dialog.ok('Advanced Emulator Launcher - WARNING', 
+                           'Creating default categories.xml')
+            self._cat_create_default()
+            self._fs_write_catfile()
+
+        # Load categories.xml and fill categories dictionary
+        self._fs_load_catfile()
+
         # Load launchers
-        self._load_launchers(self._get_xml_source(BASE_CURRENT_SOURCE_PATH))
+        # This function fills both launchers and categories dictionaries
+        # self._load_launchers(self._get_xml_source(BASE_CURRENT_SOURCE_PATH))
 
         # get users scrapers preference
         self._get_scrapers()
@@ -259,8 +278,11 @@ class Main:
 
         else:
             self._print_log('Advanced Launcher root folder > Categories list')
-            if (len(self.categories) == 0):
-                if (len(self.launchers) == 0):
+            # NOTE self.categories length must never be 0 because a default launcher is created before we reach
+            #      this point.
+            if len(self.categories) == 0:
+                gui_kodi_notify('DEBUG', 'len(self.categories) == 0')
+                if len(self.launchers) == 0:
                     self._add_new_launcher('default')
                 else:
                     categorydata = {}
@@ -269,10 +291,113 @@ class Main:
                     self._save_launchers()
                     self._get_launchers('default')
             else:
-                if (self.settings[ "open_default_cat" ] ):
-                    self._get_launchers('default')
-                else:
-                    self._get_categories()
+                # Display categories listbox (addon root directory)
+                self._gui_render_categories()
+
+    #
+    # Creates default categories data struct
+    # CAREFUL deletes current categories!
+    # From _load_launchers
+    # Else create the default category
+    # self.categories["default"] = {"id":"default", "name":"Default", "thumb":"", "fanart":"", "genre":"", "plot":"", "finished":"false"}
+    #
+    def _cat_create_default(self):
+        category = {}
+        category['name']     = 'Games'
+        category['thumb']    = ''
+        category['fanart']   = ''
+        category['genre']    = ''
+        category['plot']     = ''
+        category['finished'] = False
+
+        # The key in the categories dictionary is an MD5 hash generate with current time plus some random number.
+        # This will make it unique and different for every category created.
+        category_key = misc_generate_random_SID()
+        self.categories = {}
+        self.categories[category_key] = category
+
+    #
+    # Write to disk categories.xml
+    #
+    def _fs_write_catfile(self):
+        self._print_log('_fs_create_default_catfile() Saving categories.xml file')
+       
+        xbmc.executebuiltin( "ActivateWindow(busydialog)" )
+
+        # Original Angelscry method for generating the XML was to grow a string, like this
+        # xml_content = 'test'
+        # xml_content += 'more test'
+        # However, this method is very slow because string has to be reallocated every time is grown.
+        # It is much faster to create a list of string and them join them!
+        # See https://waymoot.org/home/python_string/
+        try:
+            str_list = []
+            str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+            str_list.append('<advanced_emulator_launcher_categories version="1.0">\n')
+
+            # Create Categories XML list
+            for categoryIndex in sorted(self.categories, key = lambda x : self.categories[x]["name"]):
+                category = self.categories[categoryIndex]
+                # Data which is not string must be converted to string
+                str_list.append("  <category>\n" +
+                                "    <id>"          + categoryIndex              + "</id>\n" +
+                                "    <name>"        + category["name"]           + "</name>\n" +
+                                "    <thumb>"       + category["thumb"]          + "</thumb>\n"
+                                "    <fanart>"      + category["fanart"]         + "</fanart>\n" +
+                                "    <genre>"       + category["genre"]          + "</genre>\n" +
+                                "    <description>" + category["plot"]           + "</description>\n" +
+                                "    <finished>"    + str(category["finished"])  + "</finished>\n" +
+                                "  </category>\n")
+            str_list.append('</advanced_emulator_launcher_categories>\n')
+
+            # Save categories.xml file
+            file_obj = open(CATEGORIES_FILE_PATH, 'wt' )
+            # --- Join list of strings into a big string and write to file ---
+            file_obj.write(''.join(str_list))
+            file_obj.close()
+        except OSError:
+            gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write categories.xml file. (OSError)')
+        except IOError:
+            gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write categories.xml file. (IOError)')
+
+        # --- We are not busy anymore ---
+        xbmc.executebuiltin( "Dialog.Close(busydialog)" )
+
+    #
+    # Loads categories.xml from disk and fills dictionary self.categories
+    #
+    def _fs_load_catfile(self):
+        __debug_xml_parser = 1
+        self.categories = {}
+        
+        # --- Parse using cElementTree ---
+        xbmc.log('Parsing {0}'.format(CATEGORIES_FILE_PATH))
+
+        # If file = '' is not used then instead of reading a file CATEGORIES_FILE_PATH is considered a string!!!
+        xml_tree = ET.parse(CATEGORIES_FILE_PATH)
+        xml_root = xml_tree.getroot()
+        for category_element in xml_root:
+            if __debug_xml_parser: xbmc.log('Root child {0}'.format(category_element.tag))            
+            # Default values
+            category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 'plot' : '', 'finished' : False}
+
+            # Parse child tags of category
+            for category_child in category_element:
+                # By default read strings
+                xml_text = category_child.text if category_child.text is not None else ''
+                xml_tag  = category_child.tag
+                if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                category[xml_tag] = xml_text
+
+                # Now transform data depending on tag name
+                if xml_tag == 'finished':
+                    xml_bool = False if xml_text == 'False' else True
+                    category[xml_tag] = xml_bool
+
+            # Add category to categories dictionary
+            self.categories[category['id']] = category
+
+
 
     def _empty_cat(self, categoryID):
         empty_category = True
@@ -2006,13 +2131,43 @@ class Main:
                 launcherdata["roms"] = roms_list
                 self.launchers[launcherdata["id"]] = launcherdata
 
-    def _get_categories( self ):
+
+    def _gui_render_category_row(self, category_dic, key):
+        # Create context menu
+        commands = []
+        commands.append(('Search',              "XBMC.RunPlugin(%s?%s)"    % (self._path, SEARCH_COMMAND) , ))
+        commands.append(('Manage sources',      "XBMC.RunPlugin(%s?%s)"    % (self._path, FILE_MANAGER_COMMAND) , ))
+        commands.append(('Create New Category', "XBMC.RunPlugin(%s?%s)"    % (self._path, ADD_COMMAND) , ))
+        commands.append(('Edit Category',       "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, EDIT_COMMAND) , ))
+        commands.append(('Add New Launcher',    "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, ADD_COMMAND) , ))
+
+        # Create listitem row
+        icon = "DefaultFolder.png"        
+        if category_dic['thumb'] != '':
+            listitem = xbmcgui.ListItem( category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
+        else:
+            listitem = xbmcgui.ListItem( category_dic['name'], iconImage=icon )
+        if category_dic['finished'] == False: ICON_OVERLAY = 6
+        else:                                 ICON_OVERLAY = 7
+        listitem.setProperty("fanart_image", category_dic['fanart'])
+        listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'], 
+                                    "Plot" : category_dic['plot'], "overlay": ICON_OVERLAY } )
+        listitem.addContextMenuItems( commands )
+        
+        # Add row
+        # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
+        xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s"  % (self._path, key), listitem=listitem, isFolder=True)
+
+    # 
+    # Former _get_categories()
+    # Renders the categories (addon root window)
+    #
+    def _gui_render_categories( self ):
+        # For every cateogyr, add it to the listbox
+        # Order alphabetically by name
         for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
-            if ( not self.settings[ "hide_default_cat" ] or self.categories[key]['id'] != "default" ):
-                self._add_category(self.categories[key]["name"], self.categories[key]["thumb"], 
-                                   self.categories[key]["fanart"], self.categories[key]["genre"], 
-                                   self.categories[key]["plot"], self.categories[key]["finished"], len(self.categories), key)
-        xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+            self._gui_render_category_row(self.categories[key], key)
+        xbmcplugin.endOfDirectory( handle = int( self._handle ), succeeded=True, cacheToDisc=False )
 
     def _get_launchers( self, categoryID ):
         for key in sorted(self.launchers, key= lambda x : self.launchers[x]["application"]):
@@ -2441,30 +2596,6 @@ class Main:
         else:
             xbmc_notify(__language__( 30000 ), __language__( 30016 ) % (romsCount, skipCount) + " " + __language__( 30050 ),3000)
 
-    def _add_category(self, name, thumb, fanart, genre, plot, finished, total, key):
-        commands = []
-        commands.append((__language__( 30512 ), "XBMC.RunPlugin(%s?%s)" % (self._path, SEARCH_COMMAND) , ))
-        commands.append((__language__( 30051 ), "XBMC.RunPlugin(%s?%s)" % (self._path, FILE_MANAGER_COMMAND) , ))
-        commands.append((__language__( 30111 ), "XBMC.RunPlugin(%s?%s)" % (self._path, ADD_COMMAND) , ))
-        if (not self.categories[key]['id'] == "default" ):
-            commands.append(( __language__( 30110 ), "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, EDIT_COMMAND) , ))
-        folder = True
-        icon = "DefaultFolder.png"
-        if (thumb):
-            listitem = xbmcgui.ListItem( name, iconImage=icon, thumbnailImage=thumb )
-        else:
-            listitem = xbmcgui.ListItem( name, iconImage=icon )
-        commands.append(( __language__( 30194 ), "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, ADD_COMMAND) , ))
-        if ( finished != "true" ):
-            ICON_OVERLAY = 6
-        else:
-            ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", fanart)
-        listitem.setInfo( "video", { "Title": name, "Genre" : genre, "Plot" : plot, "overlay": ICON_OVERLAY } )
-        listitem.addContextMenuItems( commands )
-        if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-            xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s"  % (self._path, key), listitem=listitem, isFolder=True)
-
     def _add_launcher(self, name, category, cmd, path, thumbpath, fanartpath, trailerpath, custompath, ext, gamesys, thumb, fanart, genre, release, studio, plot, finished, lnk, minimize, roms, total, key) :
         if (int(xbmc.getInfoLabel("System.BuildVersion")[0:2]) < 12 ):
             # Dharma / Eden compatible
@@ -2609,7 +2740,7 @@ class Main:
         keyboard = xbmc.Keyboard("", __language__( 30112 ))
         keyboard.doModal()
         if (keyboard.isConfirmed()):
-            categorydata = {"name":keyboard.getText(),"thumb":"","fanart":"","genre":"","plot":"","finished":"false"}
+            categorydata = {"name":keyboard.getText(), "thumb":"", "fanart":"", "genre":"", "plot":"", "finished":"false"}
             categoryid = _get_SID()
             self.categories[categoryid] = categorydata
             self._save_launchers()
@@ -2923,8 +3054,16 @@ def MyDialog(img_list):
         return False
     del w
 
-def xbmc_notify(title,text,time):
-    xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title,text,time,ICON_IMG_FILE))
+#
+# Displays a small box in the low right corner
+#
+def gui_kodi_notify(title, text, time=10000):
+    xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
+
+# Deprecated and will be removed
+def xbmc_notify(title, text, time):
+    xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
+
     
 def get_encoding():
     try:
@@ -2992,6 +3131,18 @@ def _toogle_fullscreen():
         # Frodo & + compatible
         xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
 
+#
+# Generates a random an unique MD5 hash and returns a string with the hash
+#
+def misc_generate_random_SID():
+    t1 = time.time()
+    t2 = t1 + random.getrandbits(32)
+    base = hashlib.md5( str(t1 +t2) )
+    sid = base.hexdigest()
+
+    return sid
+
+# Deprecated and will be removed
 def _get_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
@@ -3002,6 +3153,7 @@ def _get_SID():
         # Dharma compatible
         base = md5.new( str(t1 +t2) )
     sid = base.hexdigest()
+
     return sid
 
 def _get_game_system_list():
