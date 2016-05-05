@@ -345,7 +345,7 @@ class Main:
         try:
             str_list = []
             str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-            str_list.append('<advanced_emulator_launcher_categories version="1.0">\n')
+            str_list.append('<advanced_emulator_launcher version="1.0">\n')
 
             # Create Categories XML list
             for categoryIndex in sorted(self.categories, key = lambda x : self.categories[x]["name"]):
@@ -360,7 +360,34 @@ class Main:
                                 "    <description>" + category["plot"]           + "</description>\n" +
                                 "    <finished>"    + str(category["finished"])  + "</finished>\n" +
                                 "  </category>\n")
-            str_list.append('</advanced_emulator_launcher_categories>\n')
+            # Write launchers
+            for launcherIndex in sorted(self.launchers, key = lambda x : self.launchers[x]["name"]):
+                launcher = self.launchers[launcherIndex]
+                # Data which is not string must be converted to string
+                str_list.append("  <launcher>\n" +
+                                "    <name>"          + launcher["name"]          + "</name>\n" +
+                                "    <category>"      + launcher["category"]      + "</category>\n" +
+                                "    <application>"   + launcher["application"]   + "</application>\n"
+                                "    <args>"          + launcher["args"]          + "</args>\n" +
+                                "    <rompath>"       + launcher["rompath"]       + "</rompath>\n" +
+                                "    <thumbpath>"     + launcher["thumbpath"]     + "</thumbpath>\n" +
+                                "    <fanartpath>"    + launcher["fanartpath"]    + "</fanartpath>\n" +
+                                "    <custompath>"    + launcher["custompath"]    + "</custompath>\n" +
+                                "    <trailerpath>"   + launcher["trailerpath"]   + "</trailerpath>\n" +
+                                "    <romext>"        + launcher["romext"]        + "</romext>\n" +
+                                "    <gamesys>"       + launcher["gamesys"]       + "</gamesys>\n" +
+                                "    <thumb>"         + launcher["thumb"]         + "</thumb>\n" +
+                                "    <genre>"         + launcher["genre"]         + "</genre>\n" +
+                                "    <release>"       + launcher["release"]       + "</release>\n" +
+                                "    <studio>"        + launcher["studio"]        + "</studio>\n" +
+                                "    <plot>"          + launcher["plot"]          + "</plot>\n" +
+                                "    <lnk>"           + launcher["lnk"]           + "</lnk>\n" +
+                                "    <finished>"      + str(launcher["finished"]) + "</finished>\n" +
+                                "    <minimize>"      + str(launcher["minimize"]) + "</minimize>\n" +
+                                "    <roms_xml_file>" + launcher["roms_xml_file"] + "</roms_xml_file>\n" +
+                                "  </launcher>\n")
+            # End of file
+            str_list.append('</advanced_emulator_launcher>\n')
 
             # Save categories.xml file
             file_obj = open(CATEGORIES_FILE_PATH, 'wt' )
@@ -2823,9 +2850,10 @@ class Main:
                 "name" : title, "category" : categoryID, "application" : app,  "args" : args, 
                 "rompath" : "", "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
                 "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : launcher_gamesys, 
-                "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "", "plot" : "", 
-                "finished": "false", "lnk" : launcher_lnk, "minimize" : "false", 
-                "roms" : {} }
+                "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "", 
+                "plot" : "",  "lnk" : launcher_lnk, 
+                "finished": False, "minimize" : False, 
+                "roms_xml_file" : '' }
             # add launcher to the launchers dictionary (using name as index)
             launcherID = misc_generate_random_SID()
             self.launchers[launcherID] = launcherdata
@@ -2884,12 +2912,13 @@ class Main:
             else:
                 launcher_lnk = ""
             launcherdata = {
-                "name" : title, "category" : categoryID, "application" : app, "args" : args, 
-                "rompath" : path, "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
-                "custompath" : "", "trailerpath" : "", "romext" : ext, "gamesys" : launcher_gamesys, 
+                "name" : title, "category" : categoryID, "application" : app,  "args" : args, 
+                "rompath" : "", "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
+                "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : launcher_gamesys, 
                 "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "", 
-                "plot" : "", "finished" : "false", "lnk" : launcher_lnk, "minimize" : "false", 
-                "roms" : {}}
+                "plot" : "",  "lnk" : launcher_lnk, 
+                "finished": False, "minimize" : False, 
+                "roms_xml_file" : '' }
             # add launcher to the launchers list (using name as index)
             launcherID = misc_generate_random_SID()
             self.launchers[launcherID] = launcherdata
