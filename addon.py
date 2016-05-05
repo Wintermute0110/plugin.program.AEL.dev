@@ -13,7 +13,7 @@
 
 # --- Main imports ---
 import sys, os, fnmatch, time, datetime, math, random, shutil
-import re, urllib, urllib2, socket, exceptions, hashlib
+import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 from traceback import print_exc
 from operator import itemgetter
 
@@ -112,14 +112,21 @@ class Main:
     categories = {}
 
     def __init__( self, *args, **kwargs ):
-        # store an handle pointer
+        # Fill in settings dictionary using addon_obj.getSetting
+        self._get_settings()
+
+        # New Kodi URL code
+        self.base_url = sys.argv[0]
+        self.addon_handle = int(sys.argv[1])
+        args = urlparse.parse_qs(sys.argv[2][1:])
+        xbmc.log('args = {0}'.format(args))
+
+        # store an handle pointer (Legacy deprecated code)
         self._handle = int(sys.argv[ 1 ])
         self._path = sys.argv[ 0 ]
         # if a commmand is passed as parameter
         param = sys.argv[ 2 ].replace("%2f", "/")
-
-        # Fill in settings dictionary using addon_obj.getSetting
-        self._get_settings()
+        self._print_log('param = {0}'.format(param))
 
         # --- WORKAROUND ---
         # When the addon is installed and the file categories.xml does not exist, just
@@ -158,13 +165,22 @@ class Main:
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
-
-        # If no parameters display categories
-        self._print_log('param = {0}'.format(param))
-        if param == '':
+    
+        # ~~~~~ Process URL commands ~~~~~
+        # If no parameters display categories. There are no parameters when the user first runs AEL.
+        if not args:
             self._print_log('Advanced Launcher root folder > Categories list')
             # Display categories listbox (addon root directory)
             self._gui_render_categories()
+
+            return
+
+        # There is a command to process
+        # For some reason args['com'] is a list, so get first element of the list (a string)
+        if args['com'][0] == 'SHOW_LAUNCHERS':
+            self._gui_render_launchers(args['catID'][0])
+        else:
+            gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
             return
 
         # Process script parameters
@@ -292,8 +308,6 @@ class Main:
             elif self._cat_empty_cat(categoryID):
                 self._command_add_new_launcher(categoryID)
 
-            else:
-                self._gui_render_launchers(categoryID)
 
     #
     # Creates default categories data struct
@@ -2210,16 +2224,18 @@ class Main:
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
-        commands.append(('Create New Category', "XBMC.RunPlugin(%s?%s)"    % (self._path, ADD_COMMAND) , ))
-        commands.append(('Edit Category',       "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, EDIT_COMMAND) , ))
-        commands.append(('Add New Launcher',    "XBMC.RunPlugin(%s?%s/%s)" % (self._path, key, ADD_COMMAND) , ))
-        commands.append(('Search',              "XBMC.RunPlugin(%s?%s)"    % (self._path, SEARCH_COMMAND) , ))
-        commands.append(('Manage sources',      "XBMC.RunPlugin(%s?%s)"    % (self._path, FILE_MANAGER_COMMAND) , ))
+        categoryID = category_dic['id']
+        commands.append(('Edit Category',       self._misc_url_2('EDIT_CATEGORY', categoryID), ))
+        commands.append(('Create New Category', self._misc_url_1('ADD_CATEGORY'), ))
+        commands.append(('Add New Launcher',    self._misc_url_2('ADD_LAUNCHER', categoryID), ))
+        commands.append(('Search',              self._misc_url_1('SEARCH_COMMAND'), ))
+        commands.append(('Manage sources',      self._misc_url_1('FILE_MANAGER_COMMAND'), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
-        
+
         # --- Add row ---
         # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-        xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s"  % (self._path, key), listitem=listitem, isFolder=True)
+        url_str = '{0}?com={1}&catID={2}'.format(self._path, 'SHOW_LAUNCHERS', key)
+        xbmcplugin.addDirectoryItem( handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=True)
 
     # 
     # Former _get_categories()
@@ -2262,10 +2278,12 @@ class Main:
                                     "overlay": ICON_OVERLAY } )
 
         # --- Create context menu ---
-        commands.append(('Edit Launcher', "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, launcher_dic['category'], key, EDIT_COMMAND) , ))
-        commands.append(('Create New Launcher', "XBMC.RunPlugin(%s?%s/%s)" % (self._path, launcher_dic['category'], ADD_COMMAND) , ))
-        commands.append(('Search', "XBMC.RunPlugin(%s?%s/%s)" % (self._path, launcher_dic['category'], SEARCH_COMMAND) , ))
-        commands.append(('Manage sources', "XBMC.RunPlugin(%s?%s/%s)" % (self._path, launcher_dic['category'], FILE_MANAGER_COMMAND) , ))
+        launcherID = launcher_dic['id']
+        categoryID = launcher_dic['category']
+        commands.append(('Edit Launcher',    self._misc_url_3('EDIT_LAUNCHER', categoryID, launcherID), ))
+        commands.append(('Add New Launcher', self._misc_url_2('ADD_LAUNCHER', categoryID), ))
+        commands.append(('Search',           self._misc_url_1('SEARCH_COMMAND'), ))
+        commands.append(('Manage sources',   self._misc_url_1('FILE_MANAGER_COMMAND'), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
@@ -2282,7 +2300,20 @@ class Main:
                 self._gui_render_launcher_row(self.launchers[key], key)
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
+    #
+    # A set of functions to help making plugin URLs
+    #
+    def _misc_url_4(self, command, categoryID, launcherID, romID):
+        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
 
+    def _misc_url_3(self, command, categoryID, launcherID):
+        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
+
+    def _misc_url_2(self, command, categoryID):
+        return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
+
+    def _misc_url_1(self, command):
+        return 'XBMC.RunPlugin({0}?com={1})'.format(self._path, command)
 
     def _get_roms( self, launcherID ):
         if (self.launchers.has_key(launcherID)):
@@ -3106,7 +3137,7 @@ def MyDialog(img_list):
 #
 def gui_kodi_dialog_OK(title, row1, row2='', row3=''):
     dialog = xbmcgui.Dialog()
-    ok = dialog.ok(title, row1, row2='', row3='')
+    ok = dialog.ok(title, row1, row2, row3)
 
 #
 # Displays a small box in the low right corner
