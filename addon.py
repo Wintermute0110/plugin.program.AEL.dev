@@ -1979,43 +1979,47 @@ class Main:
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     #
-    def _run_before_execution():
-        if ( self.settings[ "media_state" ] != "2" ):
-            if ( xbmc.Player().isPlaying() ):
-                if ( self.settings[ "media_state" ] == "0" ):
+    def _run_before_execution(self, launcher, name_str):
+        if self.settings[ "media_state" ] != "2" :
+            if xbmc.Player().isPlaying():
+                if self.settings[ "media_state" ] == "0":
                     xbmc.Player().stop()
-                if ( self.settings[ "media_state" ] == "1" ):
+                if self.settings[ "media_state" ] == "1":
                     xbmc.Player().pause()
-                xbmc.sleep(self.settings[ "start_tempo" ]+100)
+                xbmc.sleep(self.settings[ "start_tempo" ] + 100)
                 try:
                     xbmc.audioSuspend()
                 except:
                     pass
-        if (launcher["minimize"] == "true"):
+        if launcher["minimize"] == "true":
             _toogle_fullscreen()
-        if ( self.settings[ "launcher_notification" ] ):
-            xbmc_notify(__language__( 30000 ), __language__( 30034 ) % rom["name"],3000)
+
+        if self.settings[ "launcher_notification" ]:
+            xbmc_notify('AEL', 'Launching {0}.'.format(name_str), 5000)
+
         try:
             xbmc.enableNavSounds(False)                                 
         except:
             pass
         xbmc.sleep(self.settings[ "start_tempo" ])
 
-    def _run_after_execution():
+    def _run_after_execution(self, launcher):
         xbmc.sleep(self.settings[ "start_tempo" ])
         try:
             xbmc.enableNavSounds(True)                            
         except:
             pass
-        if (launcher["minimize"] == "true"):
+
+        if launcher["minimize"] == "true":
             _toogle_fullscreen()
-        if ( self.settings[ "media_state" ] != "2" ):
+
+        if self.settings[ "media_state" ] != "2" :
             try:
                 xbmc.audioResume()
             except:
                 pass
             if ( self.settings[ "media_state" ] == "1" ):
-                xbmc.sleep(self.settings[ "start_tempo" ]+100)
+                xbmc.sleep(self.settings[ "start_tempo" ] + 100)
                 xbmc.Player().play()
 
     #
@@ -2024,13 +2028,13 @@ class Main:
     def _run_launcher(self, launcherID):
         # Check launcher is OK
         if launcherID not in self.launchers:
-            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID'
+            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
             return
         launcher = self.launchers[launcherID]
 
         # Kodi built-in
         apppath = os.path.dirname(launcher["application"])
-        if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or 
+        if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or \
            "xbmc-fav-" in launcher["application"] or "xbmc-sea-" in launcher["application"]:
             xbmc.executebuiltin('XBMC.%s' % launcher["args"])
             return
@@ -2043,7 +2047,7 @@ class Main:
         arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
         
         # Do stuff before execution
-        self._run_before_execution()
+        self._run_before_execution(launcher, apppath)
 
         # Execute
         if (sys.platform == 'win32'):
@@ -2071,7 +2075,7 @@ class Main:
             xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30609 ),3000)
 
         # Do stuff after execution
-        self._run_after_execution()
+        self._run_after_execution(launcher)
 
     #
     # Launchs a ROM
@@ -2079,54 +2083,53 @@ class Main:
     def _run_rom(self, categoryID, launcherID, romID):
         # Check launcher is OK
         if launcherID not in self.launchers:
-            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID'
+            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
             return
         launcher = self.launchers[launcherID]
         
         # Load ROMs
-        roms = _fs_load_ROM_XML_file(launcher['roms_xml_file'])
-        
+        roms = self._fs_load_ROM_XML_file(launcher['roms_xml_file'])
+
         # Check ROM is XML data just read
         if romID not in roms:
-            gui_kodi_dialog_OK('ERROR', 'romID not in roms_dic'
+            gui_kodi_dialog_OK('ERROR', 'romID not in roms_dic')
             return
             
         # Launch ROM
-        rom = self.launchers[launcherID]["roms"][romName]
-        romfile = os.path.basename(rom["filename"])
-        if ( rom["altapp"] != "" ):
-            application = rom["altapp"]
-        else:
-            application = launcher["application"]
+        rom = roms[romID]
+        if rom["altapp"] != "": application = rom["altapp"]
+        else:                   application = launcher["application"]
         apppath = os.path.dirname(application)
+        romfile = os.path.basename(rom["filename"])
         rompath = os.path.dirname(rom["filename"])
         romname = os.path.splitext(romfile)[0]
+        self._print_log('_run_rom() application = "{0}"'.format(application))
+        self._print_log('_run_rom() apppath     = "{0}"'.format(apppath))
+        self._print_log('_run_rom() romfile     = "{0}"'.format(romfile))
+        self._print_log('_run_rom() rompath     = "{0}"'.format(rompath))
+        self._print_log('_run_rom() romname     = "{0}"'.format(romname))
 
         # Check that app exists and ROM file exists
         if not os.path.exists(apppath):
-            xbmc_notify("AEL - ERROR", 'File %s not found.' % os.path.basename(launcher["application"]), 10000)
+            xbmc_notify("AEL - ERROR", 'File %s not found.' % apppath, 10000)
             return
-        if os.path.exists(rompath):
-            xbmc_notify("AEL - ERROR", 'File %s not found.' % os.path.basename(rom["filename"]), 10000)
+        if os.path.exists(romfile):
+            xbmc_notify("AEL - ERROR", 'File %s not found.' % romfile, 10000)
             return
 
         # ~~~~ Argument substitution ~~~~~
-        if rom["altarg"] != "":
-            arguments = rom["altarg"]
-        else:
-            arguments = launcher["args"]
-        arguments = arguments.replace("%rom%" , rom["filename"]).replace("%ROM%" , rom["filename"])
+        if rom["altarg"] != "": arguments = rom["altarg"]
+        else:                   arguments = launcher["args"]
+        arguments = arguments.replace("%rom%" ,     rom["filename"]).replace("%ROM%" , rom["filename"])
         arguments = arguments.replace("%romfile%" , romfile).replace("%ROMFILE%" , romfile)
         arguments = arguments.replace("%romname%" , romname).replace("%ROMNAME%" , romname)
         arguments = arguments.replace("%rombasename%" , base_filename(romname)).replace("%ROMBASENAME%" , base_filename(romname))
         arguments = arguments.replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
         arguments = arguments.replace("%rompath%" , rompath).replace("%ROMPATH%" , rompath)
         arguments = arguments.replace("%romtitle%" , rom["name"]).replace("%ROMTITLE%" , rom["name"])
-        arguments = arguments.replace("%romspath%" , launcher["rompath"]).replace("%ROMSPATH%" , launcher["rompath"])
+        arguments = arguments.replace("%romspath%" , rompath).replace("%ROMSPATH%" , rompath)
+        self._print_log('_run_rom() arguments   = "{0}"'.format(arguments))
 
-        self._print_log('application : %s' % application) 
-        self._print_log('arguments   : %s' % arguments)
-        
         # Execute Kodi internal function (RetroPlayer?)
         if os.path.basename(application).lower().replace(".exe" , "") == "xbmc":
             xbmc.executebuiltin('XBMC.' + arguments)
@@ -2134,8 +2137,8 @@ class Main:
 
         # ~~~~~ Execute external application ~~~~~
         # Do stuff before execution
-        self._run_before_execution()
-        
+        self._run_before_execution(launcher, romname)
+
         # Determine platform and launch application
         if sys.platform == 'win32':
             if launcher["lnk"] == "true" and launcher["romext"] == "lnk":
@@ -2163,7 +2166,7 @@ class Main:
             xbmc_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
 
         # Do stuff after application execution
-        self._run_after_execution()
+        self._run_after_execution(launcher)
 
     #
     # Reads a XML text file and return file contents as a string.
