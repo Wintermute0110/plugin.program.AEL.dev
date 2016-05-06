@@ -43,7 +43,7 @@ __author__  = "Wintermute0110, Angelscry"
 __url__     = "https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher"
 __git_url__ = "https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher"
 __credits__ = "Leo212 CinPoU, JustSomeUser, Zerqent, Zosky, Atsumori"
-__version__ = "1.0.0"
+__version__ = "0.9.0"
 
 # --- Addon paths definition ---
 # _PATH is a filename
@@ -54,58 +54,30 @@ HOME_PATH                = xbmc.translatePath(os.path.join("special://", "home")
 FAVOURITES_PATH          = xbmc.translatePath( 'special://profile/favourites.xml' )
 ADDONS_PATH              = xbmc.translatePath(os.path.join(HOME_PATH, "addons"))
 CURRENT_ADDON_PATH       = xbmc.translatePath(os.path.join(ADDONS_PATH, "plugin.program.advanced.emulator.launcher"))
-ICON_IMG_FILE            = os.path.join(CURRENT_ADDON_PATH, "icon.png") # Old deprecated definition
-
-ICON_IMG_FILE_PATH       = os.path.join(CURRENT_ADDON_PATH, "icon.png") # New one, uses correct suffix
+ICON_IMG_FILE_PATH       = os.path.join(CURRENT_ADDON_PATH, "icon.png")
 CATEGORIES_FILE_PATH     = os.path.join(PLUGIN_DATA_PATH, "categories.xml")
-
-BASE_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.xml") # Old deprecated definition
-TEMP_CURRENT_SOURCE_PATH = os.path.join(PLUGIN_DATA_PATH, "launchers.tmp") # Old deprecated definition
-
-MERGED_SOURCE_PATH       = os.path.join(PLUGIN_DATA_PATH, "merged-launchers.xml") # Old deprecated definition
-
-DEFAULT_THUMB_PATH       = os.path.join(PLUGIN_DATA_PATH, "thumbs") # Old deprecated definition
-DEFAULT_FANART_PATH      = os.path.join(PLUGIN_DATA_PATH, "fanarts") # Old deprecated definition
-DEFAULT_NFO_PATH         = os.path.join(PLUGIN_DATA_PATH, "nfos") # Old deprecated definition
-DEFAULT_BACKUP_PATH      = os.path.join(PLUGIN_DATA_PATH, "backups") # Old deprecated definition
-SHORTCUT_FILE            = os.path.join(PLUGIN_DATA_PATH, "shortcut.cut")
+# DEFAULT_THUMB_PATH       = os.path.join(PLUGIN_DATA_PATH, "thumbs") # Old deprecated definition
+# DEFAULT_FANART_PATH      = os.path.join(PLUGIN_DATA_PATH, "fanarts") # Old deprecated definition
+# DEFAULT_NFO_PATH         = os.path.join(PLUGIN_DATA_PATH, "nfos") # Old deprecated definition
+# DEFAULT_BACKUP_PATH      = os.path.join(PLUGIN_DATA_PATH, "backups") # Old deprecated definition
+# SHORTCUT_FILE            = os.path.join(PLUGIN_DATA_PATH, "shortcut.cut")
 
 # --- Addon data paths creation ---
+if not os.path.isdir(PLUGIN_DATA_PATH):     os.makedirs(PLUGIN_DATA_PATH)
 if not os.path.exists(DEFAULT_THUMB_PATH):  os.makedirs(DEFAULT_THUMB_PATH)
 if not os.path.exists(DEFAULT_FANART_PATH): os.makedirs(DEFAULT_FANART_PATH)
 if not os.path.exists(DEFAULT_NFO_PATH):    os.makedirs(DEFAULT_NFO_PATH)
-if not os.path.exists(DEFAULT_BACKUP_PATH): os.makedirs(DEFAULT_BACKUP_PATH)
-if not os.path.isdir(PLUGIN_DATA_PATH):     os.makedirs(PLUGIN_DATA_PATH)
-
-# --- Addon commands ---
-REMOVE_COMMAND          = "%%REMOVE%%"
-BACKUP_COMMAND          = "%%BACKUP%%"
-APPEND_COMMAND          = "%%APPEND%%"
-FILE_MANAGER_COMMAND    = "%%FILEMANAGER%%"
-ADD_COMMAND             = "%%ADD%%"
-EDIT_COMMAND            = "%%EDIT%%"
-COMMAND_ARGS_SEPARATOR  = "^^"
-GET_INFO                = "%%GET_INFO%%"
-GET_THUMB               = "%%GET_THUMB%%"
-GET_FANART              = "%%GET_FANART%%"
-SEARCH_COMMAND          = "%%SEARCH%%"
-SEARCH_ITEM_COMMAND     = "%%SEARCH_ITEM%%"
-SEARCH_DATE_COMMAND     = "%%SEARCH_DATE%%"
-SEARCH_PLATFORM_COMMAND = "%%SEARCH_PLATFORM%%"
-SEARCH_STUDIO_COMMAND   = "%%SEARCH_STUDIO%%"
-SEARCH_GENRE_COMMAND    = "%%SEARCH_GENRE%%"
-SCAN_NEW_ITEM_COMMAND   = "%%SCAN_NEW_ITEM%%"
 
 # --- Locales parameters ---
-addon_obj = xbmcaddon.Addon( id="plugin.program.advanced.emulator.launcher" )
-__lang__ = addon_obj.getLocalizedString
+# addon_obj = xbmcaddon.Addon( id="plugin.program.advanced.emulator.launcher" )
+# __lang__ = addon_obj.getLocalizedString
 
-def __language__(string):
-    return __lang__(string).encode('utf-8','ignore')
+# def __language__(string):
+#    return __lang__(string).encode('utf-8', 'ignore')
 
 # --- Some debug stuff ---
 xbmc.log('---------- Called AEL addon.py ----------')
-xbmc.log(sys.version)
+# xbmc.log(sys.version)
 for i in range(len(sys.argv)):
     xbmc.log('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
 
@@ -126,11 +98,8 @@ class Main:
         xbmc.log('args = {0}'.format(args))
 
         # store an handle pointer (Legacy deprecated code)
-        self._handle = int(sys.argv[ 1 ])
         self._path = sys.argv[ 0 ]
-        # if a commmand is passed as parameter
-        param = sys.argv[ 2 ].replace("%2f", "/")
-        self._print_log('param = {0}'.format(param))
+        self._handle = int(sys.argv[ 1 ])
 
         # --- WORKAROUND ---
         # When the addon is installed and the file categories.xml does not exist, just
@@ -146,15 +115,11 @@ class Main:
         # Load categories.xml and fill categories dictionary
         self._fs_load_catfile()
 
-        # Load launchers
-        # This function fills both launchers and categories dictionaries
-        # self._load_launchers(self._get_xml_source(BASE_CURRENT_SOURCE_PATH))
-
         # get users scrapers preference
         self._get_scrapers()
 
         # Adds a sorting method for the media list.
-        if ( self._handle > 0 ):
+        if self._handle > 0:
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
@@ -163,31 +128,40 @@ class Main:
     
         # ~~~~~ Process URL commands ~~~~~
         # If no parameters display categories. There are no parameters when the user first runs AEL.
+        # Display categories listbox (addon root directory)
         if not args:
-            self._print_log('Advanced Launcher root folder > Categories list')
-            # Display categories listbox (addon root directory)
+            self._print_log('Advanced Emulator Launcher root folder > Categories list')
             self._gui_render_categories()
             return
 
         # There is a command to process
         # For some reason args['com'] is a list, so get first element of the list (a string)
-        if args['com'][0] == 'ADD_CATEGORY':
+        command = args['com'][0]
+        if command == 'ADD_CATEGORY':
             self._command_add_new_category()
 
-        elif args['com'][0] == 'EDIT_CATEGORY':
+        elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
 
-        elif args['com'][0] == 'SHOW_LAUNCHERS':
+        elif command == 'DELETE_CATEGORY':
+            gui_kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
+
+        elif command == 'SHOW_LAUNCHERS':
             self._gui_render_launchers(args['catID'][0])
 
-        elif args['com'][0] == 'ADD_LAUNCHER':
+        elif command == 'ADD_LAUNCHER':
             # elif self._cat_empty_cat(categoryID):
             self._command_add_new_launcher(args['catID'][0])
 
-        elif args['com'][0] == 'EDIT_LAUNCHER':
+        elif command == 'EDIT_LAUNCHER':
             self._command_edit_launcher(args['launID'][0])
 
-        elif args['com'][0] == 'SHOW_ROMS':
+        elif command == 'DELETE_LAUNCHER':
+            gui_kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
+            # if (rom == REMOVE_COMMAND):
+            #    self._remove_launcher(launcher)
+
+        elif command == 'SHOW_ROMS':
             categoryID = args['catID'][0]
             launcherID = args['launID'][0]
             self._print_log('SHOW_ROMS | categoryID = {0}'.format(categoryID))
@@ -202,14 +176,28 @@ class Main:
             self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
             self._gui_render_roms(categoryID, launcherID)
 
-        elif args['com'][0] == 'ADD_ROMS':
+        elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
+
+        elif command == 'EDIT_ROM':
+            categoryID = args['catID'][0]
+            launcherID = args['launID'][0]
+            romID      = args['romID'][0]
+            self._command_edit_rom(categoryID, launcherID, romID)
+
+        elif command == 'DELETE_ROM':
+            gui_kodi_dialog_OK('ERROR', 'DELETE_ROM not implemented yet')
+            # if (action == REMOVE_COMMAND):
+            #    self._remove_rom(launcher, rom)
 
         elif args['com'][0] == 'LAUNCH_ROM':
             categoryID = args['catID'][0]
             launcherID = args['launID'][0]
-            romID = args['romID'][0]
+            romID      = args['romID'][0]
             self._run_rom(categoryID, launcherID, romID)
+
+        # elif (launcher == FILE_MANAGER_COMMAND):
+        #    self._file_manager()
 
         else:
             gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
@@ -234,10 +222,7 @@ class Main:
 
             if (action == SEARCH_COMMAND):
                 self._find_roms(False)
-            if (action == REMOVE_COMMAND):
-                self._remove_rom(launcher, rom)
-            elif (action == EDIT_COMMAND):
-                self._edit_rom(launcher, rom)
+
             elif (action == GET_INFO):
                 self._scrap_rom(launcher, rom)
             elif (action == GET_THUMB):
@@ -252,16 +237,13 @@ class Main:
 
             if (rom == SEARCH_COMMAND):
                 self._find_roms(False)
-            if (rom == REMOVE_COMMAND):
-                self._remove_launcher(launcher)
+
             elif (rom == GET_INFO):
                 self._scrap_launcher(launcher)
             elif (rom == GET_THUMB):
                 self._scrap_thumb_launcher(launcher)
             elif (rom == GET_FANART):
                 self._scrap_fanart_launcher(launcher)
-            elif (category == SCAN_NEW_ITEM_COMMAND):
-                self._import_roms(launcher, addRoms = False)
 
         if ( len(command_part) == 2 ):
             category = command_part[0]
@@ -269,18 +251,17 @@ class Main:
 
             if (launcher == SEARCH_COMMAND):
                 self._find_roms(False)
-            elif (launcher == FILE_MANAGER_COMMAND):
-                self._file_manager()
+
             elif (launcher == GET_INFO):
                 self._modify_category(category)
                 xbmc.executebuiltin("Container.Refresh")
+
             elif (launcher == GET_THUMB):
                 self._scrap_thumb_category(category)
+
             elif (launcher == GET_FANART):
                 self._scrap_fanart_category(category)
-            elif (launcher == ADD_COMMAND):
-                self._add_new_launcher(category)
-                
+            
             # Search commands
             elif (launcher == SEARCH_ITEM_COMMAND):
                 self._find_add_roms(category)
@@ -301,10 +282,9 @@ class Main:
 
             if (categoryID == SCAN_NEW_ITEM_COMMAND):
                 self._find_roms(False)
+
             if (categoryID == SEARCH_COMMAND):
                 self._find_roms(False)
-            elif (categoryID == FILE_MANAGER_COMMAND):
-                self._file_manager()
 
     #
     # Creates default categories data struct
@@ -689,7 +669,10 @@ class Main:
                 self._save_launchers()
         xbmc.executebuiltin("Container.Update")
 
-    def _edit_rom(self, launcher, rom):
+    #
+    # Former _edit_rom()
+    #
+    def _command_edit_rom(self, launcher, rom):
         dialog = xbmcgui.Dialog()
         title=os.path.basename(self.launchers[launcher]["roms"][rom]["name"])
         if (self.launchers[launcher]["roms"][rom]["finished"] != "true"):
@@ -2480,12 +2463,6 @@ class Main:
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key])
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
-    def _report_hook( self, count, blocksize, totalsize ):
-         percent = int( float( count * blocksize * 100) / totalsize )
-         msg1 = __language__( 30033 )  % ( os.path.split( self.url )[ 1 ], )
-         pDialog.update( percent, msg1 )
-         if ( pDialog.iscanceled() ): raise
-
     #
     # ROM scanner. Called when user chooses "Add items" -> "Scan items"
     # Note that actually this command is "Add/Update" ROMs.
@@ -3228,32 +3205,110 @@ class Main:
     def _find_genre_add_roms( self, search ):
         _find_category_roms( self, search, "genre" )
 
-    #
-    # A set of functions to help making plugin URLs
-    #
-    def _misc_url_4_RunPlugin(self, command, categoryID, launcherID, romID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
+def _search_category(self, category):
+    search = []
+    if (len(self.launchers) > 0):
+        for key in sorted(self.launchers.iterkeys()):
+            if (len(self.launchers[key]["roms"]) > 0) :
+                for keyr in sorted(self.launchers[key]["roms"].iterkeys()):
+                    if ( self.launchers[key]["roms"][keyr][category] == "" ):
+                        search.append("[ %s ]" % __language__( 30410 ))
+                    else:
+                        search.append(self.launchers[key]["roms"][keyr][category])
+    search = list(set(search))
+    search.sort()
+    return search
 
-    def _misc_url_3_RunPlugin(self, command, categoryID, launcherID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
+def _find_category_roms(self, search, category ):
+    #sorted by name
+    if category == 'name' : 
+        s_cmd = SEARCH_ITEM_COMMAND
+    if category == 'release' :
+        s_cmd = SEARCH_DATE_COMMAND
+    if category == 'gamesys' :
+        s_cmd = SEARCH_PLATFORM_COMMAND
+    if category == 'studio' :
+        s_cmd = SEARCH_STUDIO_COMMAND
+    if category == 'genre' :
+        s_cmd = SEARCH_GENRE_COMMAND
+    s_url = 'plugin://plugin.program.advanced.launcher/?'+search+'/'+s_cmd
+    if (len(self.launchers) > 0):
+        rl = {}
+        for launcherID in sorted(self.launchers.iterkeys()):
+            selectedLauncher = self.launchers[launcherID]
+            roms = selectedLauncher["roms"]
+            notset = ("[ %s ]" % __language__( 30410 ))
+            text = search.lower()
+            empty = notset.lower()
+            if (len(roms) > 0) :
+                #go through rom list and search for user input
+                for keyr in sorted(roms.iterkeys()):
+                    rom = roms[keyr][category].lower()
+                    if (rom == "") and (text == empty):
+                        rl[keyr] = roms[keyr]
+                        rl[keyr]["launcherID"] = launcherID
+                    if category == 'name':
+                        if (not rom.find(text) == -1):
+                            rl[keyr] = roms[keyr]
+                            rl[keyr]["launcherID"] = launcherID
+                    else:
+                        if (rom == text):
+                            rl[keyr] = roms[keyr]
+                            rl[keyr]["launcherID"] = launcherID
+    #print the list sorted
+    for key in sorted(rl.iterkeys()):
+        self._add_rom(rl[key]["launcherID"], rl[key]["name"], rl[key]["filename"], rl[key]["gamesys"], rl[key]["thumb"], rl[key]["fanart"], rl[key]["trailer"], rl[key]["custom"], rl[key]["genre"], rl[key]["release"], rl[key]["studio"], rl[key]["plot"], rl[key]["finished"], rl[key]["altapp"], rl[key]["altarg"], len(rl), key, True, s_url)
+    xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
-    def _misc_url_2_RunPlugin(self, command, categoryID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
+#
+# NOTE In Python, objects methods can be defined outside the class definition!
+#      See https://docs.python.org/2/tutorial/classes.html#random-remarks
+#
+def _text_ROM_title_format(self, title):
+    if self.settings[ "clean_title" ]:
+       title = re.sub('\[.*?\]', '', title)
+       title = re.sub('\(.*?\)', '', title)
+       title = re.sub('\{.*?\}', '', title)
+    new_title = title.rstrip()
+    
+    if self.settings[ "title_formating" ]:
+        if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
+        if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
+        if (title.startswith("An ")): new_title = title.replace("An ","", 1)+", An"
+    else:
+        if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The", 1))
+        if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
+        if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
 
-    def _misc_url_1_RunPlugin(self, command):
-        return 'XBMC.RunPlugin({0}?com={1})'.format(self._path, command)
+    return new_title
 
-    def _misc_url_4(self, command, categoryID, launcherID, romID):
-        return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self._path, command, categoryID, launcherID, romID)
+#
+# A set of functions to help making plugin URLs
+# NOTE probably this can be implemented in a more elegant way with optinal arguments...
+#
+def _misc_url_4_RunPlugin(self, command, categoryID, launcherID, romID):
+    return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
 
-    def _misc_url_3(self, command, categoryID, launcherID):
-        return '{0}?com={1}&catID={2}&launID={3}'.format(self._path, command, categoryID, launcherID)
+def _misc_url_3_RunPlugin(self, command, categoryID, launcherID):
+    return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
 
-    def _misc_url_2(self, command, categoryID):
-        return '{0}?com={1}&catID={2}'.format(self._path, command, categoryID)
+def _misc_url_2_RunPlugin(self, command, categoryID):
+    return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
 
-    def _misc_url_1(self, command):
-        return '{0}?com={1}'.format(self._path, command)
+def _misc_url_1_RunPlugin(self, command):
+    return 'XBMC.RunPlugin({0}?com={1})'.format(self._path, command)
+
+def _misc_url_4(self, command, categoryID, launcherID, romID):
+    return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self._path, command, categoryID, launcherID, romID)
+
+def _misc_url_3(self, command, categoryID, launcherID):
+    return '{0}?com={1}&catID={2}&launID={3}'.format(self._path, command, categoryID, launcherID)
+
+def _misc_url_2(self, command, categoryID):
+    return '{0}?com={1}&catID={2}'.format(self._path, command, categoryID)
+
+def _misc_url_1(self, command):
+    return '{0}?com={1}'.format(self._path, command)
 
 class MainGui( xbmcgui.WindowXMLDialog ):
     def __init__( self, *args, **kwargs ):
@@ -3319,49 +3374,22 @@ def gui_kodi_dialog_OK(title, row1, row2='', row3=''):
 #
 # Displays a small box in the low right corner
 #
-def gui_kodi_notify(title, text, time=10000):
+def gui_kodi_notify(title, text, time=5000):
     xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
 
-# Deprecated and will be removed
-def xbmc_notify(title, text, time):
-    xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
-
-    
 def get_encoding():
     try:
         return sys.getfilesystemencoding()
     except (UnicodeEncodeError, UnicodeDecodeError):
         return "utf-8"
 
-def _update_cache(file_path):
+def update_cache(file_path):
     cached_thumb = Thumbnails().get_cached_covers_thumb( file_path ).replace("tbn" , os.path.splitext(file_path)[-1][1:4])
     try:
         shutil.copy2( file_path.decode(get_encoding(),'ignore'), cached_thumb.decode(get_encoding(),'ignore') )
     except OSError:
         xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30608 ),3000)
     xbmc.executebuiltin("XBMC.ReloadSkin()")
-
-#
-# NOTE In Python, objects methods can be defined outside the class definition!
-#      See https://docs.python.org/2/tutorial/classes.html#random-remarks
-#
-def _text_ROM_title_format(self, title):
-    if self.settings[ "clean_title" ]:
-       title = re.sub('\[.*?\]', '', title)
-       title = re.sub('\(.*?\)', '', title)
-       title = re.sub('\{.*?\}', '', title)
-    new_title = title.rstrip()
-    
-    if self.settings[ "title_formating" ]:
-        if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
-        if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
-        if (title.startswith("An ")): new_title = title.replace("An ","", 1)+", An"
-    else:
-        if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The", 1))
-        if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
-        if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
-
-    return new_title
 
 def download_img(img_url,file_path):
     req = urllib2.Request(img_url)
@@ -3391,13 +3419,9 @@ def base_filename(filename):
     filename = re.sub('(\.|-| |_)cd\d+$', '', filename)
     return filename.rstrip()
 
-def _toogle_fullscreen():
-    try:
-        # Dharma / Eden compatible
-        xbmc.executehttpapi("Action(199)")
-    except:
-        # Frodo & + compatible
-        xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
+def toogle_fullscreen():
+    # Frodo & + compatible
+    xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
 
 #
 # Generates a random an unique MD5 hash and returns a string with the hash
@@ -3410,7 +3434,7 @@ def misc_generate_random_SID():
 
     return sid
 
-def _get_game_system_list():
+def get_game_system_list():
     platforms = []
     try:
         rootDir = __settings__.getAddonInfo('path')
@@ -3427,7 +3451,7 @@ def _get_game_system_list():
     except:
         return platforms
 
-def _get_favourites_list():
+def get_favourites_list():
     favourites = []
     fav_names = []
     if os.path.isfile( FAVOURITES_PATH ):
@@ -3441,61 +3465,6 @@ def _get_favourites_list():
             favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'), fav_icon.encode('utf8','ignore'), favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
             fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
     return favourites, fav_names
-
-def _search_category(self,category):
-    search = []
-    if (len(self.launchers) > 0):
-        for key in sorted(self.launchers.iterkeys()):
-            if (len(self.launchers[key]["roms"]) > 0) :
-                for keyr in sorted(self.launchers[key]["roms"].iterkeys()):
-                    if ( self.launchers[key]["roms"][keyr][category] == "" ):
-                        search.append("[ %s ]" % __language__( 30410 ))
-                    else:
-                        search.append(self.launchers[key]["roms"][keyr][category])
-    search = list(set(search))
-    search.sort()
-    return search
-
-def _find_category_roms( self, search, category ):
-    #sorted by name
-    if category == 'name' : 
-        s_cmd = SEARCH_ITEM_COMMAND
-    if category == 'release' :
-        s_cmd = SEARCH_DATE_COMMAND
-    if category == 'gamesys' :
-        s_cmd = SEARCH_PLATFORM_COMMAND
-    if category == 'studio' :
-        s_cmd = SEARCH_STUDIO_COMMAND
-    if category == 'genre' :
-        s_cmd = SEARCH_GENRE_COMMAND
-    s_url = 'plugin://plugin.program.advanced.launcher/?'+search+'/'+s_cmd
-    if (len(self.launchers) > 0):
-        rl = {}
-        for launcherID in sorted(self.launchers.iterkeys()):
-            selectedLauncher = self.launchers[launcherID]
-            roms = selectedLauncher["roms"]
-            notset = ("[ %s ]" % __language__( 30410 ))
-            text = search.lower()
-            empty = notset.lower()
-            if (len(roms) > 0) :
-                #go through rom list and search for user input
-                for keyr in sorted(roms.iterkeys()):
-                    rom = roms[keyr][category].lower()
-                    if (rom == "") and (text == empty):
-                        rl[keyr] = roms[keyr]
-                        rl[keyr]["launcherID"] = launcherID
-                    if category == 'name':
-                        if (not rom.find(text) == -1):
-                            rl[keyr] = roms[keyr]
-                            rl[keyr]["launcherID"] = launcherID
-                    else:
-                        if (rom == text):
-                            rl[keyr] = roms[keyr]
-                            rl[keyr]["launcherID"] = launcherID
-    #print the list sorted
-    for key in sorted(rl.iterkeys()):
-        self._add_rom(rl[key]["launcherID"], rl[key]["name"], rl[key]["filename"], rl[key]["gamesys"], rl[key]["thumb"], rl[key]["fanart"], rl[key]["trailer"], rl[key]["custom"], rl[key]["genre"], rl[key]["release"], rl[key]["studio"], rl[key]["plot"], rl[key]["finished"], rl[key]["altapp"], rl[key]["altarg"], len(rl), key, True, s_url)
-    xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
 # --- main ----------------------------------------------------------------------------------------
 if( __name__ == "__main__" ):
