@@ -16,7 +16,7 @@
 #    main body.
 
 # --- Main imports ---
-import sys, os, fnmatch, time, datetime, math, random, shutil
+import sys, os, fnmatch, time, datetime, math, random, shutil, string
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 from traceback import print_exc
 from operator import itemgetter
@@ -387,7 +387,7 @@ class Main:
                                 "  <release>"       + launcher["release"]       + "</release>\n" +
                                 "  <studio>"        + launcher["studio"]        + "</studio>\n" +
                                 "  <plot>"          + launcher["plot"]          + "</plot>\n" +
-                                "  <lnk>"           + launcher["lnk"]           + "</lnk>\n" +
+                                "  <lnk>"           + str(launcher["lnk"])      + "</lnk>\n" +
                                 "  <finished>"      + str(launcher["finished"]) + "</finished>\n" +
                                 "  <minimize>"      + str(launcher["minimize"]) + "</minimize>\n" +
                                 "  <roms_xml_file>" + launcher["roms_xml_file"] + "</roms_xml_file>\n" +
@@ -456,8 +456,7 @@ class Main:
                     "rompath" : "", "thumbpath" : '', "fanartpath" : '',
                     "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : '',
                     "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "",
-                    "plot" : "",  "lnk" : '',
-                    "finished": False, "minimize" : False,
+                    "plot" : "",  "lnk" : False, "finished": False, "minimize" : False,
                     "roms_xml_file" : '' }
 
                 # Parse child tags of category
@@ -469,7 +468,7 @@ class Main:
                     launcher[xml_tag] = xml_text
 
                     # Now transform data depending on tag name
-                    if xml_tag == 'finished' or xml_tag == 'minimize':
+                    if xml_tag == 'lnk' or xml_tag == 'finished' or xml_tag == 'minimize':
                         xml_bool = True if xml_text == 'True' else False
                         launcher[xml_tag] = xml_bool
 
@@ -3004,8 +3003,7 @@ class Main:
         # Show "Create New Launcher" dialog
         dialog = xbmcgui.Dialog()
         type = dialog.select('Create New Launcher', 
-                             ['Standalone launcher (normal executable)', 
-                              'Files launcher (game emulator)'])
+                             ['Standalone launcher (normal executable)', 'Files launcher (game emulator)'])
         xbmc.log('_command_add_new_launcher() type = {0}'.format(type))
 
         if os.environ.get( "OS", "xbox" ) == "xbox": filter = ".xbe|.cut"
@@ -3017,10 +3015,12 @@ class Main:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
             if not app:
                 return False
+
             argument = ""
             argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
             argkeyboard.doModal()
             args = argkeyboard.getText()
+
             title = os.path.basename(app)
             keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
             keyboard.doModal()
@@ -3028,33 +3028,29 @@ class Main:
             if title == "" :
                 title = os.path.basename(app)
                 title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+
             # Selection of the launcher game system
             dialog = xbmcgui.Dialog()
-            platforms = _get_game_system_list()
+            platforms = emudata_game_system_list()
             gamesystem = dialog.select('Select the platform', platforms)
+
             # Selection of the thumbnails and fanarts path
             if self.settings[ "launcher_thumb_path" ] == "":
                 thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False)
             else:
                 thumb_path = self.settings[ "launcher_thumb_path" ]
-            if ( self.settings[ "launcher_fanart_path" ] == "" ):
+            if self.settings[ "launcher_fanart_path" ] == "":
                 fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False)
             else:
                 fanart_path = self.settings[ "launcher_fanart_path" ]
 
-            # --- Create launcher object data ---
-            if not (thumb_path):
-                thumb_path = ""
-            if not (fanart_path):
-                fanart_path = ""
-            if (not gamesystem == -1 ):
-                launcher_gamesys = platforms[gamesystem]
-            else:
-                launcher_gamesys = ""
-            if (sys.platform == "win32"):
-                launcher_lnk = "true"
-            else:
-                launcher_lnk = ""
+            # --- Create launcher object data, add to dictionary and write XML file ---
+            if not thumb_path:  thumb_path = ""
+            if not fanart_path: fanart_path = ""
+            if (not gamesystem == -1 ): launcher_gamesys = platforms[gamesystem]
+            else:                       launcher_gamesys = ""
+            if sys.platform == "win32": launcher_lnk = True
+            else:                       launcher_lnk = False
             # add launcher to the launchers dictionary (using name as index)
             launcherID = misc_generate_random_SID()
             launcherdata = {
@@ -3074,12 +3070,12 @@ class Main:
 
         # 'Files launcher (e.g. game emulator)'
         elif type == 1:
-            app = xbmcgui.Dialog().browse(1, 'Select the launcher application',"files", filter)
+            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
             if not app:
                 return False
             
-            path = xbmcgui.Dialog().browse(0, 'Select Files path', "files", "", False, False)
-            if not path:
+            files_path = xbmcgui.Dialog().browse(0, 'Select Files path', "files", "")
+            if not files_path:
                 return False
 
             extensions = emudata_get_program_extensions(os.path.basename(app))
@@ -3088,10 +3084,12 @@ class Main:
             if not extkey.isConfirmed():
                 return False
             ext = extkey.getText()
-            
+
             argument = emudata_get_program_arguments(os.path.basename(app))
             argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
             argkeyboard.doModal()
+            if not argkeyboard.isConfirmed():
+                return False
             args = argkeyboard.getText()
 
             title = os.path.basename(app)
@@ -3106,30 +3104,31 @@ class Main:
             dialog = xbmcgui.Dialog()
             platforms = emudata_game_system_list()
             gamesystem = dialog.select('Select the platform', platforms)
+
             # Selection of the thumbnails and fanarts path
-            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False, os.path.join(path))
-            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False, os.path.join(path))
+            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False, files_path)
+            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False, files_path)
             
-            # --- create launcher object data ---
-            if not (thumb_path):
-                thumb_path = ""
-            if not (fanart_path):
-                fanart_path = ""
-            if (not gamesystem == -1 ):
-                launcher_gamesys = platforms[gamesystem]
-            else:
-                launcher_gamesys = ""
-            if (sys.platform == "win32"):
-                launcher_lnk = "true"
-            else:
-                launcher_lnk = ""
-            # add launcher to the launchers dictionary (using name as index)
+            # --- Create launcher object data, add to dictionary and write XML file ---
+            if not thumb_path:          thumb_path = ""
+            if not fanart_path:         fanart_path = ""
+            if (not gamesystem == -1 ): launcher_gamesys = platforms[gamesystem]
+            else:                       launcher_gamesys = ""
+            if sys.platform == "win32": launcher_lnk = True
+            else:                       launcher_lnk = False
             launcherID = misc_generate_random_SID()
+            category_name = self.categories[categoryID]['name']
+            clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
+            clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
+            roms_xml_file = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:8] + '.xml'
+            roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file)
+            self._print_log('Chosen roms_xml_file = "{0}"'.format(roms_xml_file))
+            self._print_log('Chosen roms_xml_file = "{0}"'.format(roms_xml_file_path))
             launcherdata = {
                 "id" : launcherID,
                 "name" : title, "category" : categoryID, "application" : app,  "args" : args, 
-                "rompath" : "", "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
-                "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : launcher_gamesys, 
+                "rompath" : files_path, "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
+                "custompath" : "", "trailerpath" : "", "romext" : ext, "gamesys" : launcher_gamesys, 
                 "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "", 
                 "plot" : "",  "lnk" : launcher_lnk, 
                 "finished": False, "minimize" : False, 
