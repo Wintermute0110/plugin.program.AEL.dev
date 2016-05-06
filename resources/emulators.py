@@ -1,6 +1,6 @@
 ﻿# -*- coding: UTF-8 -*-
 
-def _emudata_get_program_arguments( app ):
+def emudata_get_program_arguments( app ):
     # Based on the app. name, retrieve the default arguments for the app.
     app = app.lower()
     applications = {
@@ -33,10 +33,11 @@ def _emudata_get_program_arguments( app ):
     for application, arguments in applications.iteritems():
         if (app.find(application) >= 0):
             return arguments
+
     return '"%rom%"'
 
 
-def _emudata_get_program_extensions( app ):
+def emudata_get_program_extensions( app ):
     # Based on the app. name, retrieve the recognized extension of the app.
     app = app.lower()
     applications = {
@@ -67,4 +68,22 @@ def _emudata_get_program_extensions( app ):
     for application, extensions in applications.iteritems():
         if (app.find(application) >= 0):
             return extensions
+
     return ""
+
+def emudata_game_system_list():
+    game_list = [
+        "MAME", 
+        "DOS",
+        "Game Boy",
+        "Game Boy Advance",
+        "Game Boy Color",
+        "Nintendo 64",
+        "Nintendo DS",
+        "Sega CD",
+        "Sega Game Gear",
+        "Sega Genesis",
+        "Sega 32X",
+    ]
+
+    return game_list
