@@ -31,7 +31,7 @@ from xbmcaddon import Addon
 import resources.subprocess_hack
 from resources.user_agent import getUserAgent
 from resources.file_item import Thumbnails
-
+import resources.emulators
 
 # --- Plugin constants ---
 __plugin__  = "Advanced Emulator Launcher"
@@ -149,15 +149,6 @@ class Main:
         # get users scrapers preference
         self._get_scrapers()
 
-        # get emulators preference
-        exec "import resources.emulators as _emulators_data"
-        self._get_program_arguments = _emulators_data._get_program_arguments
-        self._get_program_extensions = _emulators_data._get_program_extensions
-        self._get_mame_title = _emulators_data._get_mame_title
-        self._test_bios_file = _emulators_data._test_bios_file
-
-        self._print_log('Initialisation')
-
         # Adds a sorting method for the media list.
         if ( self._handle > 0 ):
             xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
@@ -205,6 +196,9 @@ class Main:
             # else:
             self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
             self._gui_render_roms(launcherID)
+
+        elif args['com'][0] == 'ADD_ROMS':
+            self._command_add_roms(args['launID'][0])
 
         else:
             gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
@@ -255,8 +249,6 @@ class Main:
                 self._scrap_fanart_launcher(launcher)
             elif (category == SCAN_NEW_ITEM_COMMAND):
                 self._import_roms(launcher, addRoms = False)
-            elif (rom == ADD_COMMAND):
-                self._add_roms(launcher)
             else:
                 self._run_rom(launcher, rom)
 
@@ -373,49 +365,53 @@ class Main:
             for categoryID in sorted(self.categories, key = lambda x : self.categories[x]["name"]):
                 category = self.categories[categoryID]
                 # Data which is not string must be converted to string
-                str_list.append("  <category>\n" +
-                                "    <id>"          + categoryID              + "</id>\n" +
-                                "    <name>"        + category["name"]           + "</name>\n" +
-                                "    <thumb>"       + category["thumb"]          + "</thumb>\n"
-                                "    <fanart>"      + category["fanart"]         + "</fanart>\n" +
-                                "    <genre>"       + category["genre"]          + "</genre>\n" +
-                                "    <description>" + category["plot"]           + "</description>\n" +
-                                "    <finished>"    + str(category["finished"])  + "</finished>\n" +
-                                "  </category>\n")
+                str_list.append("<category>\n" +
+                                "  <id>"          + categoryID                 + "</id>\n" +
+                                "  <name>"        + category["name"]           + "</name>\n" +
+                                "  <thumb>"       + category["thumb"]          + "</thumb>\n"
+                                "  <fanart>"      + category["fanart"]         + "</fanart>\n" +
+                                "  <genre>"       + category["genre"]          + "</genre>\n" +
+                                "  <description>" + category["plot"]           + "</description>\n" +
+                                "  <finished>"    + str(category["finished"])  + "</finished>\n" +
+                                "</category>\n")
             # Write launchers
             for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]["name"]):
                 launcher = self.launchers[launcherID]
                 # Data which is not string must be converted to string
-                str_list.append("  <launcher>\n" +
-                                "    <id>"            + launcherID                + "</id>\n" +
-                                "    <name>"          + launcher["name"]          + "</name>\n" +
-                                "    <category>"      + launcher["category"]      + "</category>\n" +
-                                "    <application>"   + launcher["application"]   + "</application>\n"
-                                "    <args>"          + launcher["args"]          + "</args>\n" +
-                                "    <rompath>"       + launcher["rompath"]       + "</rompath>\n" +
-                                "    <thumbpath>"     + launcher["thumbpath"]     + "</thumbpath>\n" +
-                                "    <fanartpath>"    + launcher["fanartpath"]    + "</fanartpath>\n" +
-                                "    <custompath>"    + launcher["custompath"]    + "</custompath>\n" +
-                                "    <trailerpath>"   + launcher["trailerpath"]   + "</trailerpath>\n" +
-                                "    <romext>"        + launcher["romext"]        + "</romext>\n" +
-                                "    <gamesys>"       + launcher["gamesys"]       + "</gamesys>\n" +
-                                "    <thumb>"         + launcher["thumb"]         + "</thumb>\n" +
-                                "    <genre>"         + launcher["genre"]         + "</genre>\n" +
-                                "    <release>"       + launcher["release"]       + "</release>\n" +
-                                "    <studio>"        + launcher["studio"]        + "</studio>\n" +
-                                "    <plot>"          + launcher["plot"]          + "</plot>\n" +
-                                "    <lnk>"           + launcher["lnk"]           + "</lnk>\n" +
-                                "    <finished>"      + str(launcher["finished"]) + "</finished>\n" +
-                                "    <minimize>"      + str(launcher["minimize"]) + "</minimize>\n" +
-                                "    <roms_xml_file>" + launcher["roms_xml_file"] + "</roms_xml_file>\n" +
-                                "  </launcher>\n")
+                str_list.append("<launcher>\n" +
+                                "  <id>"            + launcherID                + "</id>\n" +
+                                "  <name>"          + launcher["name"]          + "</name>\n" +
+                                "  <category>"      + launcher["category"]      + "</category>\n" +
+                                "  <application>"   + launcher["application"]   + "</application>\n"
+                                "  <args>"          + launcher["args"]          + "</args>\n" +
+                                "  <rompath>"       + launcher["rompath"]       + "</rompath>\n" +
+                                "  <thumbpath>"     + launcher["thumbpath"]     + "</thumbpath>\n" +
+                                "  <fanartpath>"    + launcher["fanartpath"]    + "</fanartpath>\n" +
+                                "  <custompath>"    + launcher["custompath"]    + "</custompath>\n" +
+                                "  <trailerpath>"   + launcher["trailerpath"]   + "</trailerpath>\n" +
+                                "  <romext>"        + launcher["romext"]        + "</romext>\n" +
+                                "  <gamesys>"       + launcher["gamesys"]       + "</gamesys>\n" +
+                                "  <thumb>"         + launcher["thumb"]         + "</thumb>\n" +
+                                "  <fanart>"        + launcher["fanart"]        + "</fanart>\n" +
+                                "  <genre>"         + launcher["genre"]         + "</genre>\n" +
+                                "  <release>"       + launcher["release"]       + "</release>\n" +
+                                "  <studio>"        + launcher["studio"]        + "</studio>\n" +
+                                "  <plot>"          + launcher["plot"]          + "</plot>\n" +
+                                "  <lnk>"           + launcher["lnk"]           + "</lnk>\n" +
+                                "  <finished>"      + str(launcher["finished"]) + "</finished>\n" +
+                                "  <minimize>"      + str(launcher["minimize"]) + "</minimize>\n" +
+                                "  <roms_xml_file>" + launcher["roms_xml_file"] + "</roms_xml_file>\n" +
+                                "</launcher>\n")
             # End of file
             str_list.append('</advanced_emulator_launcher>\n')
 
+            # Join string and escape XML characters
+            full_string = ''.join(str_list)
+            full_string = self._fs_escape_XML(full_string)
+
             # Save categories.xml file
             file_obj = open(CATEGORIES_FILE_PATH, 'wt' )
-            # --- Join list of strings into a big string and write to file ---
-            file_obj.write(''.join(str_list))
+            file_obj.write(full_string)
             file_obj.close()
         except OSError:
             gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write categories.xml file. (OSError)')
@@ -484,11 +480,166 @@ class Main:
 
                     # Now transform data depending on tag name
                     if xml_tag == 'finished' or xml_tag == 'minimize':
-                        xml_bool = False if xml_text == 'False' else True
+                        xml_bool = True if xml_text == 'True' else False
                         launcher[xml_tag] = xml_bool
 
                 # Add launcher to categories dictionary
                 self.launchers[category['id']] = launcher
+
+    def _fs_escape_XML(self, str):
+        return str.replace('&', '&amp;')
+
+    #
+    # Write to disk categories.xml
+    #
+    def _fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
+        self._print_log('_fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
+       
+        xbmc.executebuiltin( "ActivateWindow(busydialog)" )
+
+        # Original Angelscry method for generating the XML was to grow a string, like this
+        # xml_content = 'test'
+        # xml_content += 'more test'
+        # However, this method is very slow because string has to be reallocated every time is grown.
+        # It is much faster to create a list of string and them join them!
+        # See https://waymoot.org/home/python_string/
+        try:
+            str_list = []
+            str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+            str_list.append('<advanced_emulator_launcher_ROMs version="1.0">\n')
+
+            # Print some information in the XML so the user can now which launcher created it.
+            # Note that this is ignored when reading the file.
+            str_list.append('<launcher>\n')
+            str_list.append('  <id        >{0}</id>\n'.format(launcherID))
+            str_list.append('  <name      >{0}</name>\n'.format(self.launchers[launcherID]['name']))            
+            str_list.append('  <category  >{0}</category>\n'.format(self.launchers[launcherID]['category']))
+            str_list.append('  <rompath   >{0}</rompath>\n'.format(self.launchers[launcherID]['rompath']))
+            str_list.append('  <thumbpath >{0}</thumbpath>\n'.format(self.launchers[launcherID]['thumbpath']))
+            str_list.append('  <fanartpath>{0}</fanartpath>\n'.format(self.launchers[launcherID]['fanartpath']))
+            str_list.append('</launcher>\n')
+
+            # Create list of ROMs
+            for romID in sorted(roms, key = lambda x : roms[x]["name"]):
+                rom = roms[romID]
+                # Data which is not string must be converted to string
+                str_list.append("<rom>\n" +
+                                "  <id>"       + romID                + "</id>\n" +
+                                "  <name>"     + rom["name"]          + "</name>\n" +
+                                "  <filename>" + rom["filename"]      + "</filename>\n" +
+                                "  <gamesys>"  + rom["gamesys"]       + "</gamesys>\n" +
+                                "  <thumb>"    + rom["thumb"]         + "</thumb>\n" +
+                                "  <fanart>"   + rom["fanart"]        + "</fanart>\n" +
+                                "  <trailer>"  + rom["trailer"]       + "</trailer>\n" +
+                                "  <custom>"   + rom["custom"]        + "</custom>\n" +
+                                "  <genre>"    + rom["genre"]         + "</genre>\n" +
+                                "  <release>"  + rom["release"]       + "</release>\n" +
+                                "  <studio>"   + rom["studio"]        + "</studio>\n" +
+                                "  <plot>"     + rom["plot"]          + "</plot>\n" +
+                                "  <altapp>"   + rom["altapp"]        + "</altapp>\n" +
+                                "  <altarg>"   + rom["altarg"]        + "</altarg>\n" +
+                                "  <finished>" + str(rom["finished"]) + "</finished>\n" +
+                                "</rom>\n")
+            # End of file
+            str_list.append('</advanced_emulator_launcher_ROMs>\n')
+
+            # Join string and escape XML characters
+            full_string = ''.join(str_list)
+            full_string = self._fs_escape_XML(full_string)
+
+            # Save categories.xml file
+            file_obj = open(roms_xml_file, 'wt' )
+            file_obj.write(full_string)
+            file_obj.close()
+        except OSError:
+            gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (OSError)'.format(roms_xml_file))
+        except IOError:
+            gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (IOError)'.format(roms_xml_file))
+
+        # --- We are not busy anymore ---
+        xbmc.executebuiltin( "Dialog.Close(busydialog)" )
+
+    #
+    # Loads a launcher XML with the ROMs
+    #
+    def _fs_load_ROM_XML_file(self, roms_xml_file):
+        __debug_xml_parser = 0
+        roms = {}
+
+        # --- If file does not exist return empty dictionary ---
+        if not os.path.isfile(roms_xml_file):
+            return {}
+
+        # --- Parse using cElementTree ---
+        xbmc.log('_fs_load_ROM_XML_file() Loading XML file {0}'.format(roms_xml_file))
+        xml_tree = ET.parse(roms_xml_file)
+        xml_root = xml_tree.getroot()
+        for root_element in xml_root:
+            if __debug_xml_parser: xbmc.log('Root child {0}'.format(root_element.tag))
+
+            if root_element.tag == 'rom':
+                # Default values
+                rom = {'id' : '', 'name' : '', "filename" : '', "gamesys" : '', "thumb" : '', "fanart" : '',
+                       "trailer" : '', "custom" : '', "genre" : '', "release" : '', "studio" : '',
+                       "plot" : '', "finished" : False, "altapp" : '', "altarg" : '' }
+                for rom_child in root_element:
+                    # By default read strings
+                    xml_text = rom_child.text if rom_child.text is not None else ''
+                    xml_tag  = rom_child.tag
+                    if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                    rom[xml_tag] = xml_text
+                    
+                    # Now transform data depending on tag name
+                    if xml_tag == 'finished':
+                        xml_bool = True if xml_text == 'True' else False
+                        rom[xml_tag] = xml_bool
+                roms[rom['id']] = rom
+
+        return roms
+
+    #
+    # Reads an NFO file with ROM information and places items in a dictionary.
+    #
+    def _fs_load_NFO_file(nfo_file):
+        self._print_log('_fs_load_NFO_file() Loading "{0}"'.format(nfo_file))
+        
+        # Read file, put in a string and remove line endings
+        ff = open(nfo_file, 'rt')
+        nfo_str = ff.read().replace('\r', '').replace('\n', '')
+        ff.close()
+
+        # Fill default values
+        nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '', 'genre' : '', 'plot' : ''}
+
+        # Search for items
+        item_title     = re.findall( "<title>(.*?)</title>", nfo_str )
+        item_platform  = re.findall( "<platform>(.*?)</platform>", nfo_str )
+        item_year      = re.findall( "<year>(.*?)</year>", nfo_str )
+        item_publisher = re.findall( "<publisher>(.*?)</publisher>", nfo_str )
+        item_genre     = re.findall( "<genre>(.*?)</genre>", nfo_str )
+        item_plot      = re.findall( "<plot>(.*?)</plot>", nfo_str )
+
+        if len(item_title) > 0:     nfo_dic['title']     = item_title[0]
+        if len(item_title) > 0:     nfo_dic['platform']  = item_platform[0]
+        if len(item_year) > 0:      nfo_dic['year']      = item_year[0]
+        if len(item_publisher) > 0: nfo_dic['publisher'] = item_publisher[0]
+        if len(item_genre) > 0:     nfo_dic['genre']     = item_genre[0]
+        # Should end of lines deeconded from the XML file???
+        # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
+        if len(item_plot) > 0:
+            plot_str = item_plot[0]
+            plot_str.replace('&quot;', '"')
+            nfo_dic['plot'] = plot_str
+
+        # DEBUG
+        self._print_log(' title     : "{0}"'.format(nfo_dic['title']))
+        self._print_log(' platform  : "{0}"'.format(nfo_dic['platform']))
+        self._print_log(' year      : "{0}"'.format(nfo_dic['year']))
+        self._print_log(' publisher : "{0}"'.format(nfo_dic['publisher']))
+        self._print_log(' genre     : "{0}"'.format(nfo_dic['genre']))
+        self._print_log(' plot      : "{0}"'.format(nfo_dic['plot']))
+
+        return nfo_dic
 
     def _remove_rom(self, launcherID, rom):
         dialog = xbmcgui.Dialog()
@@ -1157,16 +1308,19 @@ class Main:
             usock.close()
             xbmc_notify(__language__( 30000 ), __language__( 30086 ) % os.path.basename(nfo_file).encode('utf8','ignore'),3000)
 
-    def _add_roms(self, launcher):
+    #
+    # Add ROMS to launcher
+    #
+    def _command_add_roms(self, launcher):
         dialog = xbmcgui.Dialog()
-        type = dialog.select(__language__( 30106 ), [__language__( 30105 ),__language__( 30320 )])
-        if (type == 0 ):
-            self._import_roms(launcher)
-        if (type == 1 ):
-            self._add_new_rom(launcher)
+        type = dialog.select('Add/Update Items', ['Scan for New Items', 'Manually Add Item'])
+        if type == 0:
+            self._roms_import_roms(launcher)
+        if type == 1:
+            self._roms_add_new_rom(launcher)
+
         # Return to the launcher directory
         xbmc.executebuiltin("Container.Refresh")
-
 
     def _modify_category(self, categoryID):
         dialog = xbmcgui.Dialog()
@@ -1881,7 +2035,7 @@ class Main:
 
     def _print_log(self,string):
         if(self.settings["show_log"]):
-            xbmc.log("AdvancedLauncher: " + string)
+            xbmc.log("AEL: " + string)
 
     def _get_scrapers( self ):
         # get the users gamedata scrapers preference
@@ -2259,15 +2413,13 @@ class Main:
     def _gui_render_launcher_row(self, launcher_dic, key) :
         # --- Create listitem row ---
         commands = []
-        # Executable launcher
-        if launcher_dic['rompath'] == '':
+        if launcher_dic['rompath'] == '': # Executable launcher
             folder = False
             icon = "DefaultProgram.png"
-        # Files launcher
-        else:
+        else:                             # Files launcher
             folder = True
             icon = "DefaultFolder.png"
-            commands.append(('Add Items', "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, launcher_dic['category'], key, ADD_COMMAND) , ))
+            commands.append(('Add Items', self._misc_url_3_RunPlugin('ADD_ROMS', launcher_dic['category'], key), ))
         if launcher_dic['thumb']:
             listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
         else:
@@ -2288,6 +2440,7 @@ class Main:
         # --- Create context menu ---
         launcherID = launcher_dic['id']
         categoryID = launcher_dic['category']
+        
         commands.append(('Edit Launcher',    self._misc_url_3_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
         commands.append(('Add New Launcher', self._misc_url_2_RunPlugin('ADD_LAUNCHER', categoryID), ))
         commands.append(('Search',           self._misc_url_1_RunPlugin('SEARCH_COMMAND'), ))
@@ -2383,400 +2536,426 @@ class Main:
          pDialog.update( percent, msg1 )
          if ( pDialog.iscanceled() ): raise
 
-    def _import_roms(self, launcherID, addRoms = False):
-        dialog = xbmcgui.Dialog()
-        romsCount = 0
-        filesCount = 0
-        skipCount = 0
-        selectedLauncher = self.launchers[launcherID]
-        pDialog = xbmcgui.DialogProgress()
-        app = selectedLauncher["application"]
-        path = selectedLauncher["rompath"]
-        exts = selectedLauncher["romext"]
-        roms = selectedLauncher["roms"]
-        self._print_log(__language__( 30701 ) % selectedLauncher["name"]) 
-        self._print_log(__language__( 30105 )) 
-        # Get game system, thumbnails and fanarts paths from launcher
-        thumb_path = selectedLauncher["thumbpath"]
-        fanart_path = selectedLauncher["fanartpath"]
-        trailer_path = selectedLauncher["trailerpath"]
-        custom_path = selectedLauncher["custompath"]
-        gamesys = selectedLauncher["gamesys"]
+    #
+    # ROM scanner. Called when user chooses "Add items" -> "Scan items"
+    # Note that actually this command is "Add/Update" ROMs.
+    #
+    def _roms_import_roms(self, launcherID):
+        self._print_log('_roms_import_roms() BEGIN')
 
-        #remove dead entries
-        if (len(roms) > 0):
-            self._print_log(__language__( 30717 ) % len(roms))
-            self._print_log(__language__( 30718 ))
+        dialog = xbmcgui.Dialog()
+        pDialog = xbmcgui.DialogProgress()
+        # Get game system, thumbnails and fanarts paths from launcher
+        selectedLauncher = self.launchers[launcherID]
+        launch_app          = selectedLauncher["application"]
+        launch_path         = selectedLauncher["rompath"]
+        launch_exts         = selectedLauncher["romext"]
+        self._print_log('Launcher "%s" selected' % selectedLauncher["name"]) 
+        self._print_log('launch_app  = {0}'.format(launch_app)) 
+        self._print_log('launch_path = {0}'.format(launch_path)) 
+        self._print_log('launch_exts = {0}'.format(launch_exts)) 
+
+        # Check if there is an XML for this launcher. If so, load it.
+        # If file does not exist or is empty then return an empty dictionary.
+        rom_xml_path = selectedLauncher["roms_xml_file"]
+        roms = self._fs_load_ROM_XML_file(rom_xml_path)
+
+        # ~~~~~ Remove dead entries ~~~~~
+        if len(roms) > 0:
+            self._print_log('Launcher list contain %s items' % len(roms))
+            self._print_log('Starting dead items scan')
             i = 0
             removedRoms = 0
-            ret = pDialog.create(__language__( 30000 ), __language__( 30501 ) % (path))
-
+            ret = pDialog.create('Advanced Emulator Launcher', 
+                                 'Checking for dead entries',
+                                 'Path: %s...' % (launch_path))
             for key in sorted(roms.iterkeys()):
-                self._print_log(__language__( 30719 ) % roms[key]["filename"] )
+                self._print_log('Searching %s' % roms[key]["filename"] )
                 pDialog.update(i * 100 / len(roms))
                 i += 1
                 if (not os.path.isfile(roms[key]["filename"])):
-                    self._print_log(__language__( 30716 ))
-                    self._print_log(__language__( 30720 ) % roms[key]["filename"] )
+                    self._print_log('Not found')
+                    self._print_log('Delete %s item entry' % roms[key]["filename"] )
                     del roms[key]
                     removedRoms += 1
                 else:
-                    self._print_log(__language__( 30715 ))
+                    self._print_log('Found')
 
             pDialog.close()
             if not (removedRoms == 0):
-                self._print_log(__language__( 30502 ) % removedRoms)
-                xbmc_notify(__language__( 30000 ), __language__( 30502 ) % removedRoms,3000)
+                self._print_log('%s entries removed successfully' % removedRoms)
+                xbmc_notify('AEL', '%s entries removed successfully' % removedRoms, 3000)
             else:
-                self._print_log(__language__( 30721 ))
-                
+                self._print_log('No dead item entry')
         else:
-            self._print_log(__language__( 30722 ))
+            self._print_log('Launcher is empty')
 
-        self._print_log(__language__( 30014 ) % path)
-        ret = pDialog.create(__language__( 30000 ), __language__( 30014 ) % path)
-
+        # ~~~ Scan for new files (*.*) and put them in a list ~~~
+        xbmc_notify('AEL', 'Scanning files...', 3000)
+        xbmc.executebuiltin("ActivateWindow(busydialog)")
+        self._print_log('Scanning files in {0}'.format(launch_path))
         files = []
-        if ( self.settings[ "recursive_scan" ] ):
-            self._print_log(__language__( 30723 ))
-            for root, dirs, filess in os.walk(path):
+        if self.settings[ "recursive_scan" ]:
+            self._print_log('Recursive scan activated')
+            for root, dirs, filess in os.walk(launch_path):
                 for filename in fnmatch.filter(filess, '*.*'):
                     files.append(os.path.join(root, filename))
         else:
-            self._print_log(__language__( 30724 ))
-            filesname = os.listdir(path)
+            self._print_log('Recursive scan not activated')
+            filesname = os.listdir(launch_path)
             for filename in filesname:
-                files.append(os.path.join(path, filename))
+                files.append(os.path.join(launch_path, filename))
+        xbmc.executebuiltin("Dialog.Close(busydialog)")
+        self._print_log('Found {0} files'.format(len(files)))
 
-        for fullname in files:
-            f = os.path.basename(fullname)
-            thumb = ""
-            fanart = ""
-            if ( self.settings[ "datas_method" ] == "0" ):
-                import_text = __language__( 30062 ) % (f.replace("."+f.split(".")[-1],""))
-            if ( self.settings[ "datas_method" ] == "1" ):
-                import_text = __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),__language__( 30167 ))
-            if ( self.settings[ "datas_method" ] == "2" ):
-                import_text = __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),self.settings[ "datas_scraper" ].encode('utf-8','ignore'))
-            if ( self.settings[ "datas_method" ] == "3" ):
-                import_text = __language__( 30084 ) % (f.replace("."+f.split(".")[-1],""),self.settings[ "datas_scraper" ].encode('utf-8','ignore'))
-            pDialog.update(filesCount * 100 / len(files), import_text)
-            self._print_log(__language__( 30725 ) % fullname)
-            for ext in exts.split("|"):
-                romadded = False
-                if f.upper().endswith("." + ext.upper()):
-                    self._print_log(__language__( 30726 ) % ext.upper()) 
-                    foundromfile = False
-                    for g in roms:
-                        if ( roms[g]["filename"] == fullname ):
-                            self._print_log(__language__( 30727 )) 
-                            foundromfile = True
-                    ext3s = ['.cd', '-cd', '_cd', ' cd']
-                    for ext3 in ext3s:
-                       for nums in range(2, 9):
-                           if ( f.lower().find(ext3 + str(nums)) > 0 ):
-                               self._print_log(__language__( 30728 )) 
-                               foundromfile = True
-                    # Ignore MAME bios roms
-                    romname = f[:-len(ext)-1]
-                    romname = romname.replace('.',' ')
-                    if ( app.lower().find('mame') > 0 ) or ( self.settings[ "thumbs_scraper" ] == 'arcadeHITS' ):
-                        if ( self.settings["ignore_bios"] ):
-                            if ( self._test_bios_file(romname)):
-                                self._print_log(__language__( 30729 )) 
-                                foundromfile = True
-                    if ( foundromfile == False ):
-                        self._print_log(__language__( 30730 )) 
-                        # prepare rom object data
-                        romdata = {}
-                        results = []
-                        # Romname conversion if MAME
-                        if ( app.lower().find('mame') > 0 ) or ( self.settings[ "thumbs_scraper" ] == 'arcadeHITS' ):
-                            romname = self._get_mame_title(romname)
-                        # Clean multi-cd Title Name
-                        ext3s = ['.cd1', '-cd1', '_cd1', ' cd1']
-                        for ext3 in ext3s:
-                            if ( romname.lower().find(ext3) > 0 ):
-                               romname = romname[:-len(ext3)]
-                        romdata["filename"] = fullname
-                        romdata["gamesys"] = gamesys
-                        romdata["trailer"] = ""
-                        romdata["custom"] = custom_path
-                        romdata["genre"] = ""
-                        romdata["release"] = ""
-                        romdata["studio"] = ""
-                        romdata["plot"] = ""
-                        romdata["finished"] = "false"
-                        romdata["altapp"] = ""
-                        romdata["altarg"] = ""
+        # ~~~ String to inform the user of scrapers used ~~~
+        if self.settings[ "datas_method" ] == "0":
+            metadata_scraper_text = 'Metadata scraper: None'
+        elif self.settings[ "datas_method" ] == "1":
+            metadata_scraper_text = 'Metadata scraper: NFO files'
+        elif self.settings[ "datas_method" ] == "2":
+            metadata_scraper_text = 'Metadata scraper: {0}'.format(self.settings[ "datas_scraper" ].encode('utf-8', 'ignore'))
+        elif self.settings[ "datas_method" ] == "3":
+            metadata_scraper_text = 'Metadata scraper: NFO files or {0}'.format(self.settings[ "datas_scraper" ].encode('utf-8','ignore'))
 
-                        self._print_log(import_text) 
-                        self._print_log(__language__( 30732 ) % romname) 
-                        # Search game title from scrapers
-                        
-                        # Scrap from NFO files
-                        if ( self.settings[ "datas_method" ] == "1" ) or ( self.settings[ "datas_method" ] == "3" ) :
-                            nfo_file=os.path.splitext(romdata["filename"])[0]+".nfo"
-                            self._print_log(__language__( 30719 ) % nfo_file) 
-                            if (os.path.isfile(nfo_file)):
-                                found_nfo = 1
-                                self._print_log(__language__( 30715 )) 
-                                self._print_log(__language__( 30733 ) % nfo_file) 
-                                ff = open(nfo_file, 'r')
-                                item_nfo = ff.read().replace('\r','').replace('\n','')
-                                item_title = re.findall( "<title>(.*?)</title>", item_nfo )
-                                item_platform = re.findall( "<platform>(.*?)</platform>", item_nfo )
-                                item_year = re.findall( "<year>(.*?)</year>", item_nfo )
-                                item_publisher = re.findall( "<publisher>(.*?)</publisher>", item_nfo )
-                                item_genre = re.findall( "<genre>(.*?)</genre>", item_nfo )
-                                item_plot = re.findall( "<plot>(.*?)</plot>", item_nfo )
-                                if len(item_title) > 0 : romdata["name"] = item_title[0].rstrip()
-                                romdata["gamesys"] = romdata["gamesys"]
-                                if len(item_year) > 0 :  romdata["release"] = item_year[0]
-                                if len(item_publisher) > 0 : romdata["studio"] = item_publisher[0]
-                                if len(item_genre) > 0 : romdata["genre"] = item_genre[0]
-                                if len(item_plot) > 0 : romdata["plot"] = item_plot[0].replace('&quot;','"')
-                                ff.close()
-                            else:
-                                found_nfo = 0
-                                self._print_log(__language__( 30726 )) 
-                                romdata["name"] = title_format(self,romname)
-                                self._print_log(__language__( 30734 ))
-                                 
-                        # Scrap from www database
-                        if ( self.settings[ "datas_method" ] == "2" ) or ((self.settings[ "datas_method" ] == "3") and (found_nfo == 0)) :
-                            romdata["name"] = clean_filename(romname)
-                            if ( app.lower().find('mame') > 0 ) or ( self.settings[ "datas_scraper" ] == 'arcadeHITS' ):
-                                self._print_log(__language__( 30735 )) 
-                                results = self._get_first_game(f[:-len(ext)-1],gamesys)
-                                selectgame = 0
-                            else:
-                                if ( self.settings[ "scrap_info" ] == "1" ):
-                                    self._print_log(__language__( 30736 )) 
-                                    results = self._get_first_game(romdata["name"],gamesys)
-                                    selectgame = 0
-                                else:
-                                    self._print_log(__language__( 30737 )) 
-                                    results,display = self._get_games_list(romdata["name"])
-                                    if display:
-                                        # Display corresponding game list found
-                                        dialog = xbmcgui.Dialog()
-                                        # Game selection
-                                        selectgame = dialog.select(__language__( 30078 ) % ( self.settings[ "datas_scraper" ] ), display)
-                                        if (selectgame == -1):
-                                            results = []
-                            if results:
-                                foundname = results[selectgame]["title"]
-                                if (foundname != ""):
-                                    if ( self.settings[ "ignore_title" ] ):
-                                        romdata["name"] = title_format(self,romname)
-                                    else:
-                                        romdata["name"] = title_format(self,foundname)
-
-                                    # Game other game data
-                                    gamedata = self._get_game_data(results[selectgame]["id"])
-                                    romdata["genre"] = gamedata["genre"]
-                                    romdata["release"] = gamedata["release"]
-                                    romdata["studio"] = gamedata["studio"]
-                                    romdata["plot"] = gamedata["plot"]
-                                    progress_display = romdata["name"] + " (" + romdata["release"] + ")"
-                                else:
-                                    progress_display = romname + ": " +__language__( 30503 )
-                            else:
-                                romdata["name"] = title_format(self,romname)
-                                progress_display = romname + ": " +__language__( 30503 )
-
-                        # No scrap
-                        if ( self.settings[ "datas_method" ] == "0" ):
-                            self._print_log(__language__( 30738 )) 
-                            romdata["name"] = title_format(self,romname)
-
-                        # Search if thumbnails and fanarts already exist
-                        self._print_log(__language__( 30704 ) % fullname )
-                        if ( thumb_path == fanart_path ):
-                            self._print_log(__language__( 30705 ))
-                        else:
-                            self._print_log(__language__( 30706 ))
-                        if ( thumb_path == path ):
-                            self._print_log(__language__( 30707 ))
-                        else:
-                            self._print_log(__language__( 30708 ))
-                        if ( fanart_path == path ):
-                            self._print_log(__language__( 30709 ))
-                        else:
-                            self._print_log(__language__( 30710 ))
-                            
-                        ext2s = ['png', 'jpg', 'gif', 'jpeg', 'bmp', 'PNG', 'JPG', 'GIF', 'JPEG', 'BMP']
-                        for ext2 in ext2s:
-                            if ( thumb_path == fanart_path ):
-                                if ( thumb_path == path ):
-                                    test_thumb = fullname.replace('.'+ext, '_thumb.'+ext2)
-                                else:
-                                    test_thumb = os.path.join(thumb_path, f.replace('.'+ext, '_thumb.'+ext2))
-                                if ( fanart_path == path ):
-                                    test_fanart = fullname.replace('.'+ext, '_fanart.'+ext2)
-                                else:
-                                    test_fanart = os.path.join(fanart_path, f.replace('.'+ext, '_fanart.'+ext2))
-                            else:
-                                if ( thumb_path == path ):
-                                    test_thumb = fullname.replace('.'+ext, '.'+ext2)
-                                else:
-                                    test_thumb = os.path.join(thumb_path, f.replace('.'+ext, '.'+ext2))
-                                if ( fanart_path == path ):
-                                    test_fanart = fullname.replace('.'+ext, '.'+ext2)
-                                else:
-                                    test_fanart = os.path.join(fanart_path, f.replace('.'+ext, '.'+ext2))
-                            self._print_log(__language__( 30711 ) % test_thumb)
-                            if ( os.path.isfile(test_thumb) ):
-                                thumb = test_thumb
-                                self._print_log(__language__( 30715 ))
-                            else:
-                                self._print_log(__language__( 30716 ))
-                            self._print_log(__language__( 30712 ) % test_fanart)
-                            if ( os.path.isfile(test_fanart) ):
-                                fanart = test_fanart
-                                self._print_log(__language__( 30715 ))
-                            else:
-                                self._print_log(__language__( 30716 ))
-
-                        self._print_log(__language__( 30713 ) % thumb)
-                        self._print_log(__language__( 30714 ) % fanart)
-
-                        title = os.path.basename(romdata["filename"]).split(".")[0]
-                        
-                        if ( self.settings[ "thumbs_method" ] == "2" ):
-                            # If overwrite is activated or thumb file not exist
-                            if ( self.settings[ "overwrite_thumbs"] ) or ( thumb == "" ):
-                                pDialog.update(filesCount * 100 / len(files), __language__( 30065 ) % (f.replace("."+f.split(".")[-1],""),self.settings[ "thumbs_scraper" ].encode('utf-8','ignore')))
-                                img_url=""
-                                if (thumb_path == fanart_path):
-                                    if (thumb_path == path):
-                                        thumb = fullname.replace("."+f.split(".")[-1], '_thumb.jpg')
-                                    else:
-                                        thumb = os.path.join(thumb_path, f.replace("."+f.split(".")[-1], '_thumb.jpg'))
-                                else:
-                                    if (thumb_path == path):
-                                        thumb = fullname.replace("."+f.split(".")[-1], '.jpg')
-                                    else:
-                                        thumb = os.path.join(thumb_path, f.replace("."+f.split(".")[-1], '.jpg'))
-                                if ( app.lower().find('mame') > 0 ) or ( self.settings[ "thumbs_scraper" ] == 'arcadeHITS' ):
-                                    covers = self._get_thumbnails_list(romdata["gamesys"],title,self.settings[ "game_region" ],self.settings[ "thumb_image_size" ])
-                                else:
-                                    covers = self._get_thumbnails_list(romdata["gamesys"],romdata["name"],self.settings[ "game_region" ],self.settings[ "thumb_image_size" ])
-                                if covers:
-                                    if ( self.settings[ "scrap_thumbs" ] == "1" ):
-                                        if ( self.settings[ "snap_flyer" ] == "1" ) and ( self.settings[ "thumbs_scraper" ] == 'arcadeHITS' ):
-                                            img_url = self._get_thumbnail(covers[-1][0])
-                                        else:
-                                            img_url = self._get_thumbnail(covers[0][0])
-                                    else:
-                                        nb_images = len(covers)
-                                        pDialog.close()
-                                        self.image_url = MyDialog(covers)
-                                        if ( self.image_url ):
-                                            img_url = self._get_thumbnail(self.image_url)
-                                            ret = pDialog.create(__language__( 30000 ), __language__( 30014 ) % (path))
-                                            pDialog.update(filesCount * 100 / len(files), __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),self.settings[ "datas_scraper" ].encode('utf-8','ignore')))
-                                    cached_thumb = Thumbnails().get_cached_covers_thumb( thumb ).replace("tbn" , "jpg")
-                                    if ( img_url !='' ):
-                                        try:
-                                            download_img(img_url,thumb)
-                                            shutil.copy2( thumb.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
-                                        except socket.timeout:
-                                            xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30604 ),3000)
-                                        except exceptions.IOError:
-                                            xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30605 ),3000)
-                                    else:
-                                        if ( not os.path.isfile(thumb) ) & ( os.path.isfile(cached_thumb) ):
-                                            os.remove(cached_thumb)
-                            romdata["thumb"] = thumb
-                        else :
-                            if ( self.settings[ "thumbs_method" ] == "0" ):
-                                romdata["thumb"] = ""
-                            else:
-                                pDialog.update(filesCount * 100 / len(files), __language__( 30065 ) % (f.replace("."+f.split(".")[-1],""),__language__( 30172 )))
-                                romdata["thumb"] = thumb
-
-                        if ( self.settings[ "fanarts_method" ] == "2" ):
-                            # If overwrite activated or fanart file not exist
-                            if ( self.settings[ "overwrite_fanarts"] ) or ( fanart == "" ):
-                                pDialog.update(filesCount * 100 / len(files), __language__( 30071 ) % (f.replace("."+f.split(".")[-1],""),self.settings[ "fanarts_scraper" ].encode('utf-8','ignore')))
-                                img_url=""
-                                if (fanart_path == thumb_path):
-                                    if (fanart_path == path):
-                                        fanart = fullname.replace("."+f.split(".")[-1], '_fanart.jpg')
-                                    else:
-                                        fanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '_fanart.jpg'))
-                                else:
-                                    if (fanart_path == path):
-                                        fanart = fullname.replace("."+f.split(".")[-1], '.jpg')
-                                    else:
-                                        fanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.jpg'))
-                                if ( app.lower().find('mame') > 0 ) or ( self.settings[ "fanarts_scraper" ] == 'arcadeHITS' ):
-                                    covers = self._get_fanarts_list(romdata["gamesys"],title,self.settings[ "fanart_image_size" ])
-                                else:
-                                    covers = self._get_fanarts_list(romdata["gamesys"],romdata["name"],self.settings[ "fanart_image_size" ])
-                                if covers:
-                                    if ( self.settings[ "scrap_fanarts" ] == "1" ):
-                                        if ( self.settings[ "select_fanarts" ] == "0" ):
-                                            img_url = self._get_fanart(covers[0][0])
-                                        if ( self.settings[ "select_fanarts" ] == "1" ):
-                                            img_url = self._get_fanart(covers[int(round(len(covers)/2))-1][0])
-                                        if ( self.settings[ "select_fanarts" ] == "2" ):
-                                            img_url = self._get_fanart(covers[len(covers)-1][0])
-                                    else:
-                                        nb_images = len(covers)
-                                        pDialog.close()
-                                        self.image_url = MyDialog(covers)
-                                        if ( self.image_url ):
-                                            img_url = self._get_fanart(self.image_url)
-                                            ret = pDialog.create(__language__( 30000 ), __language__( 30014 ) % (path))
-                                            pDialog.update(filesCount * 100 / len(files), __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),self.settings[ "datas_scraper" ].encode('utf-8','ignore')))
-                                    cached_thumb = Thumbnails().get_cached_covers_thumb( fanart ).replace("tbn" , "jpg")
-                                    if ( img_url !='' ):
-                                        try:
-                                            download_img(img_url,fanart)
-                                            shutil.copy2( fanart.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
-                                        except socket.timeout:
-                                            xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30606 ),3000)
-                                        except exceptions.IOError:
-                                            xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30607 ),3000)
-                                    else:
-                                        if ( not os.path.isfile(fanart) ) & ( os.path.isfile(cached_thumb) ):
-                                            os.remove(cached_thumb)
-                            romdata["fanart"] = fanart
-                        else :
-                            if ( self.settings[ "fanarts_method" ] == "0" ):
-                                romdata["fanart"] = ""
-                            else:
-                                pDialog.update(filesCount * 100 / len(files), __language__( 30071 ) % (f.replace("."+f.split(".")[-1],""),__language__( 30172 )))
-                                romdata["fanart"] = fanart
-
-                        # add rom to the roms list (using name as index)
-                        romid = _get_SID()
-                        roms[romid] = romdata
-                        romsCount = romsCount + 1
-
-                        if (addRoms):
-                            self._add_rom(launcherID, romdata["name"], romdata["filename"], romdata["gamesys"], romdata["thumb"], romdata["fanart"], romdata["trailer"], romdata["custom"], romdata["genre"], romdata["release"], romdata["studio"], romdata["plot"], romdata["finished"], romdata["altapp"], romdata["altarg"], len(files), key, False, "")
-                            romadded = True
-            if not romadded:
-                self._print_log(__language__( 30731 )) 
-                skipCount = skipCount + 1
-
+        # ~~~ Now go processing file by file ~~~
+        ret = pDialog.create('AEL', 'Importing files from %s' % launch_path)
+        self._print_log('_roms_import_roms(): ======= Processing ROMs ======')
+        romsCount = 0
+        filesCount = 0
+        # f_path       Full path
+        # f_path_noext Full path with no extension
+        # f_base       File name with no path
+        # f_base_noext File name with no path and no extension
+        # f_ext        File extension
+        for f_path in files:
             filesCount = filesCount + 1
-            self._save_launchers()
+            
+            # Get file name combinations.
+            (root, ext)  = os.path.splitext(f_path)
+            f_path_noext = root
+            f_base       = os.path.basename(f_path)
+            (root, ext)  = os.path.splitext(f_base)
+            f_base_noext = root
+            f_ext        = ext
+            self._print_log('*** Processing f_path       = "{0}"'.format(f_path))
+            self._print_log('               f_path_noext = "{0}"'.format(f_path_noext))
+            self._print_log('               f_base       = "{0}"'.format(f_base))
+            self._print_log('               f_base_noext = "{0}"'.format(f_base_noext))
+            self._print_log('               f_ext        = "{0}"'.format(f_ext))
+            
+            # ~~~ Update progress dialog ~~~
+            file_text = 'File {0}'.format(f_base)
+            pDialog.update(filesCount * 100 / len(files), file_text, metadata_scraper_text)
 
-        if ( self.settings[ "scrap_info" ] != "0" ):
-            pDialog.close()
+            # ~~~ Find ROM file ~~~
+            # The recursive scan has scanned all file. Check if this file matches some of the extensions
+            # for ROMs. If not, skip this file and go for next one in the list.
+            processROM = False
+            for ext in launch_exts.split("|"):
+                # Check if filename matchs extension
+                if f_ext == '.' + ext:
+                    self._print_log('Expected %s extension detected' % ext) 
+                    processROM = True
+            # If file does not match any of the ROM extensions skip it
+            if not processROM:
+                continue
 
-        if (skipCount == 0):
-            xbmc_notify(__language__( 30000 ), __language__( 30015 ) % (romsCount) + " " + __language__( 30050 ),3000)
-            xbmc.executebuiltin("XBMC.ReloadSkin()")
+            # Check that ROM is not already in the list of ROMs
+            repeatedROM = False
+            for g in roms:
+                if roms[g]["filename"] == f_path:
+                    self._print_log('File already into launcher list') 
+                    repeatedROM = True
+            # If file already in ROM list skip it
+            if repeatedROM:
+                continue
+            
+            # ~~~~~ Process new ROM and add to the list ~~~~~
+            romdata = self._roms_process_scanned_ROM(selectedLauncher, f_path, f_path_noext, f_base, f_base_noext, f_ext)
+            romID = romdata["id"]
+            roms[romID] = romdata
+            romsCount = romsCount + 1
+        pDialog.close()
+
+        # ~~~ Save launchers ~~~
+        self._fs_write_ROM_XML_file(roms, launcherID, rom_xml_path)
+
+        # ~~~ Notify user ~~~
+        xbmc_notify('Advanced Emulator Launcher', '%s files imported' % (romsCount), 3000)
+        xbmc.executebuiltin("XBMC.ReloadSkin()")
+
+    def _roms_process_scanned_ROM(self, selectedLauncher, f_path, f_path_noext, f_base, f_base_noext, f_ext):
+        # Grab info
+        launch_gamesys      = selectedLauncher["gamesys"]
+
+        # Prepare rom object data
+        romdata = {}
+        romdata["id"]       = misc_generate_random_SID()
+        romdata["name"]     = ''
+        romdata["filename"] = f_path
+        romdata["gamesys"]  = launch_gamesys
+        romdata["thumb"]    = ''
+        romdata["fanart"]   = ''
+        romdata["trailer"]  = ''
+        romdata["custom"]   = ''
+        romdata["genre"]    = ''
+        romdata["release"]  = ''
+        romdata["studio"]   = ''
+        romdata["plot"]     = ''
+        romdata["finished"] = False
+        romdata["altapp"]   = ''
+        romdata["altarg"]   = ''
+
+        # ~~~~~ Scrape game metadata information ~~~~~
+        # From now force NFO files scraper
+        self.settings[ "datas_method" ] == "1"
+        
+        # No metadata scrap
+        if self.settings[ "datas_method" ] == "0":
+            self._print_log('Scraping disabled') 
+            romdata["name"] = _text_ROM_title_format(self, f_base_noext)
         else:
-            xbmc_notify(__language__( 30000 ), __language__( 30016 ) % (romsCount, skipCount) + " " + __language__( 30050 ),3000)
+            # Scrap metadata from NFO files
+            found_NFO_file = False
+            if self.settings[ "datas_method" ] == "1" or self.settings[ "datas_method" ] == "3":
+                nfo_file_path = os.path.join(f_path_noext, ".nfo")
+                self._print_log('Trying NFO file "{0}"...'.format(nfo_file_path))
+                if os.path.isfile(nfo_file):
+                    found_NFO_file = True
+                    nfo_dic = _fs_load_NFO_file(nfo_file_path)
+                    romdata['name']    = nfo_dic['title']     # <title>
+                    # <platform> is chosen by AEL, not read from NFO files
+                    # romdata['gamesys'] = nfo_dic['platform']  # <platform>
+                    romdata['release'] = nfo_dic['year']      # <year>
+                    romdata['studio']  = nfo_dic['publisher'] # <publisher>
+                    romdata['genre']   = nfo_dic['genre']     # <genre>
+                    romdata['plot']    = nfo_dic['plot']      # <plot>
+                else:
+                    found_NFO_file = False
+                    self._print_log('Only update item name')
+                    romdata['name'] = _text_ROM_title_format(self, romname)
 
-    def _add_new_rom ( self , launcherID) :
+            # Scrap metadata from www database
+            if self.settings[ "datas_method" ] == "2" or (self.settings[ "datas_method" ] == "3" and found_NFO_file == False):
+                romdata["name"] = clean_filename(romname)
+                if ( self.settings[ "scrap_info" ] == "1" ):
+                    self._print_log(__language__( 30736 )) 
+                    results = self._get_first_game(romdata["name"],gamesys)
+                    selectgame = 0
+                else:
+                    self._print_log(__language__( 30737 )) 
+                    results,display = self._get_games_list(romdata["name"])
+                    if display:
+                        # Display corresponding game list found
+                        dialog = xbmcgui.Dialog()
+                        # Game selection
+                        selectgame = dialog.select(__language__( 30078 ) % ( self.settings[ "datas_scraper" ] ), display)
+                        if (selectgame == -1):
+                            results = []
+                if results:
+                    foundname = results[selectgame]["title"]
+                    if (foundname != ""):
+                        if ( self.settings[ "ignore_title" ] ):
+                            romdata["name"] = title_format(self,romname)
+                        else:
+                            romdata["name"] = title_format(self,foundname)
+
+                        # Game other game data
+                        gamedata = self._get_game_data(results[selectgame]["id"])
+                        romdata["genre"] = gamedata["genre"]
+                        romdata["release"] = gamedata["release"]
+                        romdata["studio"] = gamedata["studio"]
+                        romdata["plot"] = gamedata["plot"]
+                        progress_display = romdata["name"] + " (" + romdata["release"] + ")"
+                    else:
+                        progress_display = romname + ": " + 'not found'
+                else:
+                    romdata["name"] = title_format(self,romname)
+                    progress_display = romname + ": " + 'not found'
+
+        # ~~~~~ Search if thumbnails and fanarts already exist ~~~~~
+        # If thumbs/fanart have the same path, then have names like _thumb, _fanart
+        # Otherwise, thumb/fanart name is same as ROM, but different extension.
+        # f_path, f_path_noext, f_base, f_base_noext, f_ext
+        thumb_path   = selectedLauncher["thumbpath"]
+        fanart_path  = selectedLauncher["fanartpath"]
+        self._print_log('Searching local tumb/fanart')
+
+        if thumb_path == fanart_path:
+            self._print_log('Thumbs/Fanarts have the same path')
+            tumb_path_noext   = os.path.join(thumb_path, f_base_noext + '_thumb')
+            fanart_path_noext = os.path.join(fanart_path, f_base_noext + '_fanart')
+        else:
+            self._print_log('Thumbs/Fanarts into different folders')
+            tumb_path_noext   = os.path.join(thumb_path, f_base_noext)
+            fanart_path_noext = os.path.join(fanart_path, f_base_noext)
+        self._print_log('tumb_path_noext   = "{0}"'.format(tumb_path_noext))
+        self._print_log('fanart_path_noext = "{0}"'.format(fanart_path_noext))
+
+        # Search for local artwork
+        thumb = ''
+        fanart = ''
+        ext2s = ['png', 'jpg', 'gif', 'jpeg', 'bmp', 'PNG', 'JPG', 'GIF', 'JPEG', 'BMP']
+        # Thumbs first
+        for ext2 in ext2s:
+            test_img = tumb_path_noext + '.' + ext2
+            self._print_log('Testing Thumb  "{0}"'.format(test_img))
+            if os.path.isfile(test_img):
+                thumb = test_img
+                self._print_log('Found Thumb    "{0}"'.format(test_img))
+                break
+
+        # Fanart second
+        for ext2 in ext2s:
+            test_img = fanart_path_noext + '.' + ext2
+            self._print_log('Testing Fanart "{0}"'.format(test_img))
+            if os.path.isfile(test_img):
+                fanart = test_img
+                self._print_log('Found Fanart   "{0}"'.format(test_img))
+                break
+
+        # Add to ROM dictionary
+        romdata["thumb"]  = thumb
+        romdata["fanart"] = fanart
+        self._print_log('Set Thumb  = "{0}"'.format(thumb))
+        self._print_log('Set Fanart = "{0}"'.format(fanart))
+
+        # Deactivate Thumb scraping
+        if None:
+            if self.settings[ "thumbs_method" ] == "2":
+                # If overwrite is activated or thumb file not exist
+                if self.settings[ "overwrite_thumbs"] or thumb == "":
+                    pDialog.update(filesCount * 100 / len(files), 
+                                __language__( 30065 ) % (f.replace("."+f.split(".")[-1],""), 
+                                self.settings[ "thumbs_scraper" ].encode('utf-8','ignore')))
+                    img_url=""
+                    if (thumb_path == fanart_path):
+                        if (thumb_path == path):
+                            thumb = fullname.replace("."+f.split(".")[-1], '_thumb.jpg')
+                        else:
+                            thumb = os.path.join(thumb_path, f.replace("."+f.split(".")[-1], '_thumb.jpg'))
+                    else:
+                        if (thumb_path == path):
+                            thumb = fullname.replace("."+f.split(".")[-1], '.jpg')
+                        else:
+                            thumb = os.path.join(thumb_path, f.replace("."+f.split(".")[-1], '.jpg'))
+                    if app.lower().find('mame') > 0 or self.settings[ "thumbs_scraper" ] == 'arcadeHITS':
+                        covers = self._get_thumbnails_list(romdata["gamesys"], 
+                                                        title,
+                                                        self.settings[ "game_region" ],
+                                                        self.settings[ "thumb_image_size" ])
+                    else:
+                        covers = self._get_thumbnails_list(romdata["gamesys"], 
+                                                        romdata["name"],
+                                                        self.settings[ "game_region" ],
+                                                        self.settings[ "thumb_image_size" ])
+                    if covers:
+                        if ( self.settings[ "scrap_thumbs" ] == "1" ):
+                            if ( self.settings[ "snap_flyer" ] == "1" ) and ( self.settings[ "thumbs_scraper" ] == 'arcadeHITS' ):
+                                img_url = self._get_thumbnail(covers[-1][0])
+                            else:
+                                img_url = self._get_thumbnail(covers[0][0])
+                        else:
+                            nb_images = len(covers)
+                            pDialog.close()
+                            self.image_url = MyDialog(covers)
+                            if ( self.image_url ):
+                                img_url = self._get_thumbnail(self.image_url)
+                                ret = pDialog.create(__language__( 30000 ), __language__( 30014 ) % (path))
+                                pDialog.update(filesCount * 100 / len(files), 
+                                            __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),
+                                            self.settings[ "datas_scraper" ].encode('utf-8','ignore')))
+                        cached_thumb = Thumbnails().get_cached_covers_thumb( thumb ).replace("tbn" , "jpg")
+                        if ( img_url !='' ):
+                            try:
+                                download_img(img_url,thumb)
+                                shutil.copy2( thumb.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
+                            except socket.timeout:
+                                xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30604 ),3000)
+                            except exceptions.IOError:
+                                xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30605 ),3000)
+                        else:
+                            if ( not os.path.isfile(thumb) ) & ( os.path.isfile(cached_thumb) ):
+                                os.remove(cached_thumb)
+                romdata["thumb"] = thumb
+            else:
+                if self.settings[ "thumbs_method" ] == "0":
+                    romdata["thumb"] = ""
+                else:
+                    pDialog.update(filesCount * 100 / len(files), 
+                                __language__( 30065 ) % (f.replace("."+f.split(".")[-1],""), __language__( 30172 )))
+                    romdata["thumb"] = thumb
+
+        # Deactivate Fanart scraping
+        if None:
+            if ( self.settings[ "fanarts_method" ] == "2" ):
+                # If overwrite activated or fanart file not exist
+                if ( self.settings[ "overwrite_fanarts"] ) or ( fanart == "" ):
+                    pDialog.update(filesCount * 100 / len(files), 
+                                __language__( 30071 ) % (f.replace("."+f.split(".")[-1],""),
+                                self.settings[ "fanarts_scraper" ].encode('utf-8','ignore')))
+                    img_url=""
+                    if (fanart_path == thumb_path):
+                        if (fanart_path == path):
+                            fanart = fullname.replace("."+f.split(".")[-1], '_fanart.jpg')
+                        else:
+                            fanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '_fanart.jpg'))
+                    else:
+                        if (fanart_path == path):
+                            fanart = fullname.replace("."+f.split(".")[-1], '.jpg')
+                        else:
+                            fanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.jpg'))
+                    if ( app.lower().find('mame') > 0 ) or ( self.settings[ "fanarts_scraper" ] == 'arcadeHITS' ):
+                        covers = self._get_fanarts_list(romdata["gamesys"],title,self.settings[ "fanart_image_size" ])
+                    else:
+                        covers = self._get_fanarts_list(romdata["gamesys"],romdata["name"],self.settings[ "fanart_image_size" ])
+                    if covers:
+                        if ( self.settings[ "scrap_fanarts" ] == "1" ):
+                            if ( self.settings[ "select_fanarts" ] == "0" ):
+                                img_url = self._get_fanart(covers[0][0])
+                            if ( self.settings[ "select_fanarts" ] == "1" ):
+                                img_url = self._get_fanart(covers[int(round(len(covers)/2))-1][0])
+                            if ( self.settings[ "select_fanarts" ] == "2" ):
+                                img_url = self._get_fanart(covers[len(covers)-1][0])
+                        else:
+                            nb_images = len(covers)
+                            pDialog.close()
+                            self.image_url = MyDialog(covers)
+                            if ( self.image_url ):
+                                img_url = self._get_fanart(self.image_url)
+                                ret = pDialog.create(__language__( 30000 ), __language__( 30014 ) % (path))
+                                pDialog.update(filesCount * 100 / len(files), 
+                                            __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),
+                                            self.settings[ "datas_scraper" ].encode('utf-8','ignore')))
+                        cached_thumb = Thumbnails().get_cached_covers_thumb( fanart ).replace("tbn" , "jpg")
+                        if ( img_url !='' ):
+                            try:
+                                download_img(img_url,fanart)
+                                shutil.copy2( fanart.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
+                            except socket.timeout:
+                                xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30606 ),3000)
+                            except exceptions.IOError:
+                                xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30607 ),3000)
+                        else:
+                            if ( not os.path.isfile(fanart) ) & ( os.path.isfile(cached_thumb) ):
+                                os.remove(cached_thumb)
+                romdata["fanart"] = fanart
+            else:
+                if self.settings[ "fanarts_method" ] == "0":
+                    romdata["fanart"] = ""
+                else:
+                    pDialog.update(filesCount * 100 / len(files), 
+                                __language__( 30071 ) % (f.replace("."+f.split(".")[-1],""),
+                                __language__( 30172 )))
+                    romdata["fanart"] = fanart
+
+        # Return romdata dictionary
+        return romdata
+    #
+    # Manually add a new ROM instead of a recursive scan
+    #
+    def _roms_add_new_rom ( self , launcherID) :
         dialog = xbmcgui.Dialog()
         launcher = self.launchers[launcherID]
         app = launcher["application"]
@@ -2842,11 +3021,13 @@ class Main:
                             else:
                                 if (os.path.isfile(os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.'+ext2)))):
                                     romfanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.'+ext2))
-                romdata = {"name":romname,"filename":romfile,"gamesys":launcher["gamesys"],"thumb":romthumb,"fanart":romfanart,"custom":launcher["custompath"],"trailer":"","genre":"","release":"","studio":"","plot":"","finished":"false","altapp":"","altarg":""}
+                romdata = {"name" : romname, "filename" : romfile, "gamesys" : launcher["gamesys"], "thumb" : romthumb, 
+                           "fanart" : romfanart, "custom" : launcher["custompath"], "trailer" : "", "genre" : "",
+                           "release" : "", "studio" : "", "plot" : "", "finished" : "false", "altapp" : "", "altarg" : "" }
                 # add rom to the roms list (using name as index)
                 romid = _get_SID()
                 roms[romid] = romdata
-                xbmc_notify(__language__( 30000 ), __language__( 30019 ) + " " + __language__( 30050 ),3000)
+                xbmc_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes', 3000)
         self._save_launchers()
 
     def _command_add_new_category ( self ) :
@@ -2855,8 +3036,9 @@ class Main:
         keyboard.doModal()
         if not keyboard.isConfirmed():
             return False
-        categorydata = {"name":keyboard.getText(), "thumb":"", "fanart":"", "genre":"", "plot":"", "finished":"false"}
         categoryID = misc_generate_random_SID()
+        categorydata = {"id" : categoryID, "name" : keyboard.getText(), 
+                        "thumb" : "", "fanart" : "", "genre" : "", "plot" : "", "finished" : False}
         self.categories[categoryID] = categorydata
         self._save_launchers()
         xbmc.executebuiltin("Container.Refresh")
@@ -3209,20 +3391,26 @@ def _update_cache(file_path):
         xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30608 ),3000)
     xbmc.executebuiltin("XBMC.ReloadSkin()")
 
-def title_format(self,title):
-    if ( self.settings[ "clean_title" ] ):
+#
+# NOTE In Python, objects methods can be defined outside the class definition!
+#      See https://docs.python.org/2/tutorial/classes.html#random-remarks
+#
+def _text_ROM_title_format(self, title):
+    if self.settings[ "clean_title" ]:
        title = re.sub('\[.*?\]', '', title)
        title = re.sub('\(.*?\)', '', title)
        title = re.sub('\{.*?\}', '', title)
     new_title = title.rstrip()
-    if ( self.settings[ "title_formating" ] ):
-        if (title.startswith("The ")): new_title = title.replace("The ","",1)+", The"
-        if (title.startswith("A ")): new_title = title.replace("A ","",1)+", A"
-        if (title.startswith("An ")): new_title = title.replace("An ","",1)+", An"
+    
+    if self.settings[ "title_formating" ]:
+        if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
+        if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
+        if (title.startswith("An ")): new_title = title.replace("An ","", 1)+", An"
     else:
-        if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The",1))
-        if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A",1))
-        if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An",1))
+        if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The", 1))
+        if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
+        if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
+
     return new_title
 
 def download_img(img_url,file_path):
@@ -3267,21 +3455,7 @@ def _toogle_fullscreen():
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5( str(t1 +t2) )
-    sid = base.hexdigest()
-
-    return sid
-
-# Deprecated and will be removed
-def _get_SID():
-    t1 = time.time()
-    t2 = t1 + random.getrandbits(32)
-    try: 
-        # Eden & + compatible
-        base = hashlib.md5( str(t1 +t2) )
-    except:
-        # Dharma compatible
-        base = md5.new( str(t1 +t2) )
+    base = hashlib.md5( str(t1 + t2) )
     sid = base.hexdigest()
 
     return sid
