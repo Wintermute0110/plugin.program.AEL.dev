@@ -11,6 +11,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# Addon programming conventions,
+# 1) A function with a underline _function() belongs to the Main object, even if not defined in the
+#    main body.
+
 # --- Main imports ---
 import sys, os, fnmatch, time, datetime, math, random, shutil
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
@@ -163,19 +167,18 @@ class Main:
             self._print_log('Advanced Launcher root folder > Categories list')
             # Display categories listbox (addon root directory)
             self._gui_render_categories()
-
             return
 
         # There is a command to process
         # For some reason args['com'] is a list, so get first element of the list (a string)
-        if args['com'][0] == 'SHOW_LAUNCHERS':
-            self._gui_render_launchers(args['catID'][0])
-            
-        elif args['com'][0] == 'ADD_CATEGORY':
+        if args['com'][0] == 'ADD_CATEGORY':
             self._command_add_new_category()
 
         elif args['com'][0] == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
+
+        elif args['com'][0] == 'SHOW_LAUNCHERS':
+            self._gui_render_launchers(args['catID'][0])
 
         elif args['com'][0] == 'ADD_LAUNCHER':
             # elif self._cat_empty_cat(categoryID):
@@ -202,9 +205,17 @@ class Main:
         elif args['com'][0] == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
 
+        elif args['com'][0] == 'LAUNCH_ROM':
+            categoryID = args['catID'][0]
+            launcherID = args['launID'][0]
+            romID = args['romID'][0]
+            self._run_rom(categoryID, launcherID, romID)
+
         else:
             gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
             return
+        
+        return
 
         # Process script parameters
         param = param[1:]
@@ -251,8 +262,6 @@ class Main:
                 self._scrap_fanart_launcher(launcher)
             elif (category == SCAN_NEW_ITEM_COMMAND):
                 self._import_roms(launcher, addRoms = False)
-            else:
-                self._run_rom(launcher, rom)
 
         if ( len(command_part) == 2 ):
             category = command_part[0]
@@ -296,20 +305,6 @@ class Main:
                 self._find_roms(False)
             elif (categoryID == FILE_MANAGER_COMMAND):
                 self._file_manager()
-            elif (categoryID == BACKUP_COMMAND):
-                self._print_log('Import XML file (restore backup)')
-                backup_file = xbmcgui.Dialog().browse(1, 
-                                                      'Select the XML file to import', "files", ".xml", 
-                                                      False, False, os.path.join(DEFAULT_BACKUP_PATH+"/"))
-                if (os.path.isfile(backup_file)):
-                    self._load_launchers(self.get_xml_source(backup_file))
-            elif (categoryID == APPEND_COMMAND):
-                self._print_log('Import XML file (restore backup)')
-                append_file = xbmcgui.Dialog().browse(1, 
-                                                      'Select the XML file to append', "files", ".xml", 
-                                                      False, False, os.path.join(PLUGIN_DATA_PATH+"/"))
-                if (os.path.isfile(append_file)):
-                    self._append_launchers(append_file)
 
     #
     # Creates default categories data struct
@@ -1915,81 +1910,6 @@ class Main:
             usock.close()
             xbmc_notify(__language__( 30000 ), __language__( 30086 ) % os.path.basename(nfo_file),3000)
 
-    def _run_launcher(self, launcherID):
-        if (self.launchers.has_key(launcherID)):
-            launcher = self.launchers[launcherID]
-            apppath = os.path.dirname(launcher["application"])
-            if ( os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc" ) or ("xbmc-fav-" in launcher["application"]) or ("xbmc-sea-" in launcher["application"]):
-                xbmc.executebuiltin('XBMC.%s' % launcher["args"])
-            else:
-                if ( os.path.exists(apppath) ) :
-                    arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
-                    if ( self.settings[ "media_state" ] != "2" ):
-                        if ( xbmc.Player().isPlaying() ):
-                            if ( self.settings[ "media_state" ] == "0" ):
-                                xbmc.Player().stop()
-                            if ( self.settings[ "media_state" ] == "1" ):
-                                xbmc.Player().pause()
-                            xbmc.sleep(self.settings[ "start_tempo" ]+100)
-                            try:
-                                xbmc.audioSuspend()
-                            except:
-                                pass
-                    if (launcher["minimize"] == "true"):
-                        _toogle_fullscreen()
-                    if ( self.settings[ "launcher_notification" ] ):
-                        xbmc_notify(__language__( 30000 ), __language__( 30034 ) % launcher["name"],3000)
-                    try:
-                        xbmc.enableNavSounds(False)                                 
-                    except:
-                        pass
-                    xbmc.sleep(self.settings[ "start_tempo" ])
-                    if (os.environ.get( "OS", "xbox" ) == "xbox"):
-                        xbmc.executebuiltin('XBMC.Runxbe(' + launcher["application"] + ')')
-                    else:
-                        if (sys.platform == 'win32'):
-                            if ( launcher["application"].split(".")[-1] == "lnk" ):
-                                os.system("start \"\" \"%s\"" % (launcher["application"]))
-                            else:
-                                if ( launcher["application"].split(".")[-1] == "bat" ):
-                                    info = subprocess_hack.STARTUPINFO()
-                                    info.dwFlags = 1
-                                    if ( self.settings[ "show_batch" ] ):
-                                        info.wShowWindow = 5
-                                    else:
-                                        info.wShowWindow = 0
-                                else:
-                                    info = None
-                                startproc = subprocess_hack.Popen(r'%s %s' % (launcher["application"], arguments), cwd=apppath, startupinfo=info)
-                                startproc.wait()
-                        elif (sys.platform.startswith('linux')):
-                            if ( self.settings[ "lirc_state" ] ):
-                                xbmc.executebuiltin('LIRC.stop')
-                            os.system("\"%s\" %s " % (launcher["application"], arguments))
-                            if ( self.settings[ "lirc_state" ] ):
-                                xbmc.executebuiltin('LIRC.start')
-                        elif (sys.platform.startswith('darwin')):
-                            os.system("\"%s\" %s " % (launcher["application"], arguments))
-                        else:
-                            xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30609 ),3000)
-                    xbmc.sleep(self.settings[ "start_tempo" ])
-                    if (launcher["minimize"] == "true"):
-                        _toogle_fullscreen()
-                    try:
-                        xbmc.enableNavSounds(True)                            
-                    except:
-                        pass
-                    if ( self.settings[ "media_state" ] != "2" ):
-                        try:
-                            xbmc.audioResume()
-                        except:
-                            pass
-                        if ( self.settings[ "media_state" ] == "1" ):
-                            xbmc.sleep(self.settings[ "start_tempo" ]+100)
-                            xbmc.Player().play()
-                else:
-                    xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30611 ) % os.path.basename(launcher["application"]),3000)
-
     def _get_settings( self ):
         # get the users preference settings
         self.settings = {}
@@ -2056,159 +1976,194 @@ class Main:
         self._get_fanarts_list = _fanarts_scraper._get_fanarts_list
         self._get_fanart = _fanarts_scraper._get_fanart
 
-    def _run_rom(self, launcherID, romName):
-        if (self.launchers.has_key(launcherID)):
-            launcher = self.launchers[launcherID]
-            if (launcher["roms"].has_key(romName)):
-                rom = self.launchers[launcherID]["roms"][romName]
-                romfile = os.path.basename(rom["filename"])
-                if ( rom["altapp"] != "" ):
-                    application = rom["altapp"]
-                else:
-                    application = launcher["application"]
-                apppath = os.path.dirname(application)
-                rompath = os.path.dirname(rom["filename"])
-                romname = os.path.splitext(romfile)[0]
-    
-                if ( os.path.exists(apppath) ) :
-                    if ( os.path.exists(rompath) ) :
-                        files = []
-                        filesnames = []
-                        ext3s = ['.cd1', '-cd1', '_cd1', ' cd1']
-                        for ext3 in ext3s:
-                            cleanromname = re.sub('(\[.*?\]|\{.*?\}|\(.*?\))', '', romname)
-                            if ( cleanromname.lower().find(ext3) > -1 ):
-                                temprompath = os.path.dirname(rom["filename"])
-                                try:
-                                    filesnames = os.listdir(temprompath)
-                                except:
-                                    xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30610 ),3000)
-                                namestem = cleanromname[:-len(ext3)]
+    #
+    # These two functions do things like stopping music before lunch, toggling full screen, etc.
+    #
+    def _run_before_execution():
+        if ( self.settings[ "media_state" ] != "2" ):
+            if ( xbmc.Player().isPlaying() ):
+                if ( self.settings[ "media_state" ] == "0" ):
+                    xbmc.Player().stop()
+                if ( self.settings[ "media_state" ] == "1" ):
+                    xbmc.Player().pause()
+                xbmc.sleep(self.settings[ "start_tempo" ]+100)
+                try:
+                    xbmc.audioSuspend()
+                except:
+                    pass
+        if (launcher["minimize"] == "true"):
+            _toogle_fullscreen()
+        if ( self.settings[ "launcher_notification" ] ):
+            xbmc_notify(__language__( 30000 ), __language__( 30034 ) % rom["name"],3000)
+        try:
+            xbmc.enableNavSounds(False)                                 
+        except:
+            pass
+        xbmc.sleep(self.settings[ "start_tempo" ])
 
-                                for filesname in filesnames:
-                                    altname=re.findall('\{.*?\}',filesname)
-                                    searchname = re.sub('(\[.*?\]|\{.*?\}|\(.*?\))', '', filesname)
-                                    if searchname[0:len(namestem)] == namestem and searchname[len(namestem):len(namestem)+len(ext3) - 1]  == ext3[:-1]:
-                                        for romext in launcher["romext"].split("|"):
-                                            if searchname[-len(romext):].lower() == romext.lower() :
-                                                Discnum = searchname[(len(namestem)+len(ext3)-1):searchname.rfind(".")]
-                                                try:
-                                                    int(Discnum)
-                                                    if not altname:
-                                                        files.append([Discnum, xbmc.getLocalizedString(427)+" "+Discnum, os.path.join(os.path.dirname(rom["filename"]),filesname)])
-                                                    else:
-                                                        files.append([Discnum, altname[0][1:-1], os.path.join(os.path.dirname(rom["filename"]),filesname)])
-                                                except:
-                                                    pass
-                                if len(files) > 0:
-                                    files.sort(key=lambda x: int(x[0]))
-                                    discs = []
-                                    for file in files:
-                                        discs.append(file[1])
-                                    dialog = xbmcgui.Dialog()
-                                    type3 = dialog.select("%s:" % __language__( 30035 ), discs)
-                                    if type3 > -1 :
-                                        myresult = files[type3]
-                                        rom["filename"] = myresult[2]
-                                        romfile = os.path.basename(rom["filename"])
-                                        rompath = os.path.dirname(rom["filename"])
-                                        romname = os.path.splitext(romfile)[0]
-                                    else:
-                                        return ""
+    def _run_after_execution():
+        xbmc.sleep(self.settings[ "start_tempo" ])
+        try:
+            xbmc.enableNavSounds(True)                            
+        except:
+            pass
+        if (launcher["minimize"] == "true"):
+            _toogle_fullscreen()
+        if ( self.settings[ "media_state" ] != "2" ):
+            try:
+                xbmc.audioResume()
+            except:
+                pass
+            if ( self.settings[ "media_state" ] == "1" ):
+                xbmc.sleep(self.settings[ "start_tempo" ]+100)
+                xbmc.Player().play()
 
-                        if ( rom["altarg"] != "" ):
-                            arguments = rom["altarg"]
-                        else:
-                            arguments = launcher["args"]
-                        arguments = arguments.replace("%rom%" , rom["filename"]).replace("%ROM%" , rom["filename"])
-                        arguments = arguments.replace("%romfile%" , romfile).replace("%ROMFILE%" , romfile)
-                        arguments = arguments.replace("%romname%" , romname).replace("%ROMNAME%" , romname)
-                        arguments = arguments.replace("%rombasename%" , base_filename(romname)).replace("%ROMBASENAME%" , base_filename(romname))
-                        arguments = arguments.replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
-                        arguments = arguments.replace("%rompath%" , rompath).replace("%ROMPATH%" , rompath)
-                        arguments = arguments.replace("%romtitle%" , rom["name"]).replace("%ROMTITLE%" , rom["name"])
-                        arguments = arguments.replace("%romspath%" , launcher["rompath"]).replace("%ROMSPATH%" , launcher["rompath"])
+    #
+    # Launchs an application
+    #
+    def _run_launcher(self, launcherID):
+        # Check launcher is OK
+        if launcherID not in self.launchers:
+            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID'
+            return
+        launcher = self.launchers[launcherID]
 
-                        self._print_log(__language__( 30742 ) % application) 
-                        self._print_log(__language__( 30743 ) % arguments) 
-                        if ( os.path.basename(application).lower().replace(".exe" , "") == "xbmc" ):
-                            xbmc.executebuiltin('XBMC.' + arguments)
-                        else:
-                            if ( self.settings[ "media_state" ] != "2" ):
-                                if ( xbmc.Player().isPlaying() ):
-                                    if ( self.settings[ "media_state" ] == "0" ):
-                                        xbmc.Player().stop()
-                                    if ( self.settings[ "media_state" ] == "1" ):
-                                        xbmc.Player().pause()
-                                    xbmc.sleep(self.settings[ "start_tempo" ]+100)
-                                    try:
-                                        xbmc.audioSuspend()
-                                    except:
-                                        pass
-                            if (launcher["minimize"] == "true"):
-                                _toogle_fullscreen()
-                            if ( self.settings[ "launcher_notification" ] ):
-                                xbmc_notify(__language__( 30000 ), __language__( 30034 ) % rom["name"],3000)
-                            try:
-                                xbmc.enableNavSounds(False)                                 
-                            except:
-                                pass
-                            xbmc.sleep(self.settings[ "start_tempo" ])
-                            if (os.environ.get( "OS", "xbox" ) == "xbox"):
-                                f=open(SHORTCUT_FILE, "wb")
-                                f.write("<shortcut>\n")
-                                f.write("    <path>" + application + "</path>\n")
-                                f.write("    <custom>\n")
-                                f.write("       <game>" + rom["filename"] + "</game>\n")
-                                f.write("    </custom>\n")
-                                f.write("</shortcut>\n")
-                                f.close()
-                                xbmc.executebuiltin('XBMC.Runxbe(' + SHORTCUT_FILE + ')')
-                            else:
-                                if (sys.platform == 'win32'):
-                                    if ( launcher["lnk"] == "true" ) and ( launcher["romext"] == "lnk" ):
-                                        os.system("start \"\" \"%s\"" % (arguments))
-                                    else:
-                                        if ( application.split(".")[-1] == "bat" ):
-                                            info = subprocess_hack.STARTUPINFO()
-                                            info.dwFlags = 1
-                                            if ( self.settings[ "show_batch" ] ):
-                                                info.wShowWindow = 5
-                                            else:
-                                                info.wShowWindow = 0
-                                        else:
-                                            info = None
-                                        startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
-                                        startproc.wait()
-                                elif (sys.platform.startswith('linux')):
-                                    if ( self.settings[ "lirc_state" ] ):
-                                        xbmc.executebuiltin('LIRC.stop')
-                                    os.system("\"%s\" %s " % (application, arguments))
-                                    if ( self.settings[ "lirc_state" ] ):
-                                        xbmc.executebuiltin('LIRC.start')
-                                elif (sys.platform.startswith('darwin')):
-                                    os.system("\"%s\" %s " % (application, arguments))
-                                else:
-                                    xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30609 ),3000)
-                            xbmc.sleep(self.settings[ "start_tempo" ])
-                            try:
-                                xbmc.enableNavSounds(True)                            
-                            except:
-                                pass
-                            if (launcher["minimize"] == "true"):
-                                _toogle_fullscreen()
-                            if ( self.settings[ "media_state" ] != "2" ):
-                                try:
-                                    xbmc.audioResume()
-                                except:
-                                    pass
-                                if ( self.settings[ "media_state" ] == "1" ):
-                                    xbmc.sleep(self.settings[ "start_tempo" ]+100)
-                                    xbmc.Player().play()
+        # Kodi built-in
+        apppath = os.path.dirname(launcher["application"])
+        if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or 
+           "xbmc-fav-" in launcher["application"] or "xbmc-sea-" in launcher["application"]:
+            xbmc.executebuiltin('XBMC.%s' % launcher["args"])
+            return
+
+        # ~~~~~ External application ~~~~~
+        if ( os.path.exists(apppath) ) :
+            xbmc_notify('AEL - ERROR', 
+                        'File %s not found.' % os.path.basename(launcher["application"]), 3000)
+            return
+        arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
+        
+        # Do stuff before execution
+        self._run_before_execution()
+
+        # Execute
+        if (sys.platform == 'win32'):
+            if ( launcher["application"].split(".")[-1] == "lnk" ):
+                os.system("start \"\" \"%s\"" % (launcher["application"]))
+            else:
+                if ( launcher["application"].split(".")[-1] == "bat" ):
+                    info = subprocess_hack.STARTUPINFO()
+                    info.dwFlags = 1
+                    if ( self.settings[ "show_batch" ] ):
+                        info.wShowWindow = 5
                     else:
-                        xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30611 ) % os.path.basename(rom["filename"]),3000)
+                        info.wShowWindow = 0
                 else:
-                    xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30611 ) % os.path.basename(launcher["application"]),3000)
+                    info = None
+                startproc = subprocess_hack.Popen(r'%s %s' % (launcher["application"], arguments), cwd=apppath, startupinfo=info)
+                startproc.wait()
+        elif (sys.platform.startswith('linux')):
+            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.stop')
+            os.system("\"%s\" %s " % (launcher["application"], arguments))
+            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.start')
+        elif sys.platform.startswith('darwin'):
+            os.system("\"%s\" %s " % (launcher["application"], arguments))
+        else:
+            xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30609 ),3000)
+
+        # Do stuff after execution
+        self._run_after_execution()
+
+    #
+    # Launchs a ROM
+    #
+    def _run_rom(self, categoryID, launcherID, romID):
+        # Check launcher is OK
+        if launcherID not in self.launchers:
+            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID'
+            return
+        launcher = self.launchers[launcherID]
+        
+        # Load ROMs
+        roms = _fs_load_ROM_XML_file(launcher['roms_xml_file'])
+        
+        # Check ROM is XML data just read
+        if romID not in roms:
+            gui_kodi_dialog_OK('ERROR', 'romID not in roms_dic'
+            return
+            
+        # Launch ROM
+        rom = self.launchers[launcherID]["roms"][romName]
+        romfile = os.path.basename(rom["filename"])
+        if ( rom["altapp"] != "" ):
+            application = rom["altapp"]
+        else:
+            application = launcher["application"]
+        apppath = os.path.dirname(application)
+        rompath = os.path.dirname(rom["filename"])
+        romname = os.path.splitext(romfile)[0]
+
+        # Check that app exists and ROM file exists
+        if not os.path.exists(apppath):
+            xbmc_notify("AEL - ERROR", 'File %s not found.' % os.path.basename(launcher["application"]), 10000)
+            return
+        if os.path.exists(rompath):
+            xbmc_notify("AEL - ERROR", 'File %s not found.' % os.path.basename(rom["filename"]), 10000)
+            return
+
+        # ~~~~ Argument substitution ~~~~~
+        if rom["altarg"] != "":
+            arguments = rom["altarg"]
+        else:
+            arguments = launcher["args"]
+        arguments = arguments.replace("%rom%" , rom["filename"]).replace("%ROM%" , rom["filename"])
+        arguments = arguments.replace("%romfile%" , romfile).replace("%ROMFILE%" , romfile)
+        arguments = arguments.replace("%romname%" , romname).replace("%ROMNAME%" , romname)
+        arguments = arguments.replace("%rombasename%" , base_filename(romname)).replace("%ROMBASENAME%" , base_filename(romname))
+        arguments = arguments.replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
+        arguments = arguments.replace("%rompath%" , rompath).replace("%ROMPATH%" , rompath)
+        arguments = arguments.replace("%romtitle%" , rom["name"]).replace("%ROMTITLE%" , rom["name"])
+        arguments = arguments.replace("%romspath%" , launcher["rompath"]).replace("%ROMSPATH%" , launcher["rompath"])
+
+        self._print_log('application : %s' % application) 
+        self._print_log('arguments   : %s' % arguments)
+        
+        # Execute Kodi internal function (RetroPlayer?)
+        if os.path.basename(application).lower().replace(".exe" , "") == "xbmc":
+            xbmc.executebuiltin('XBMC.' + arguments)
+            return
+
+        # ~~~~~ Execute external application ~~~~~
+        # Do stuff before execution
+        self._run_before_execution()
+        
+        # Determine platform and launch application
+        if sys.platform == 'win32':
+            if launcher["lnk"] == "true" and launcher["romext"] == "lnk":
+                os.system("start \"\" \"%s\"" % (arguments))
+            else:
+                if application.split(".")[-1] == "bat":
+                    info = subprocess_hack.STARTUPINFO()
+                    info.dwFlags = 1
+                    if self.settings[ "show_batch" ]:
+                        info.wShowWindow = 5
+                    else:
+                        info.wShowWindow = 0
+                else:
+                    info = None
+                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
+                startproc.wait()
+        elif sys.platform.startswith('linux'):
+            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.stop')
+            os.system("\"%s\" %s " % (application, arguments))
+            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.start')
+        # Android???
+        elif sys.platform.startswith('darwin'):
+            os.system("\"%s\" %s " % (application, arguments))
+        else:
+            xbmc_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
+
+        # Do stuff after application execution
+        self._run_after_execution()
 
     #
     # Reads a XML text file and return file contents as a string.
