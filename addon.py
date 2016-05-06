@@ -185,7 +185,9 @@ class Main:
             self._command_edit_launcher(args['launID'][0])
 
         elif args['com'][0] == 'SHOW_ROMS':
+            categoryID = args['catID'][0]
             launcherID = args['launID'][0]
+            self._print_log('SHOW_ROMS | categoryID = {0}'.format(categoryID))
             self._print_log('SHOW_ROMS | launcherID = {0}'.format(launcherID))
 
             # User clicked on a launcher. For executable launchers then run.
@@ -195,7 +197,7 @@ class Main:
             #     self._run_launcher(launcherID)
             # else:
             self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
-            self._gui_render_roms(launcherID)
+            self._gui_render_roms(categoryID, launcherID)
 
         elif args['com'][0] == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
@@ -2464,40 +2466,36 @@ class Main:
     #
     # Former  _add_rom
     #
-    def _gui_render_rom_row( self, launcherID, rom, key):
-        if (int(xbmc.getInfoLabel("System.BuildVersion")[0:2]) < 12 ):
-            # Dharma / Eden compatible
-            display_date_format = "Date"
-        else:
-            # Frodo & + compatible
-            display_date_format = "Year"
-        filename = os.path.splitext(cmd)
+    def _gui_render_rom_row( self, categoryID, launcherID, romID, rom):
+        # --- Create listitem row ---
         icon = "DefaultProgram.png"
-        if (thumb):
-            listitem = xbmcgui.ListItem( name, iconImage=icon, thumbnailImage=thumb)
-        else:
-            listitem = xbmcgui.ListItem( name, iconImage=icon)
-        if ( finished != "true" ):
-            ICON_OVERLAY = 6
-        else:
-            ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", romfanart)
-        listitem.setInfo( "video", { "Title": name, "Label": os.path.basename(cmd), "Plot" : romplot, "Studio" : romstudio, "Genre" : romgenre, "Premiered" : romrelease  , display_date_format : romrelease, "Writer" : romgamesys, "Trailer" : os.path.join(romtrailer), "Director" : os.path.join(romcustom), "overlay": ICON_OVERLAY } )
+        if rom['thumb']: listitem = xbmcgui.ListItem(rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
+        else:            listitem = xbmcgui.ListItem(rom['name'], iconImage=icon)
+        if rom['finished'] is not True: ICON_OVERLAY = 6
+        else:                           ICON_OVERLAY = 7
+        listitem.setProperty("fanart_image", rom['fanart'])
+        listitem.setInfo( "video", { "Title": rom['name'], "Label": 'test label', 
+                                    "Plot" : rom['plot'], "Studio" : rom['studio'], 
+                                    "Genre" : rom['genre'], "Premiered" : rom['release'], 
+                                    'Year' : rom['release'], "Writer" : rom['gamesys'], 
+                                    "Trailer" : 'test trailer', "Director" : 'test director', 
+                                    "overlay": ICON_OVERLAY } )
 
+        # --- Create context menu ---
         commands = []
-        commands.append((__language__( 30512 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, SEARCH_COMMAND) , ))
-        commands.append(( __language__( 30107 ), "XBMC.RunPlugin(%s?%s/%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, key, EDIT_COMMAND) , ))
-        if search :
-            commands.append((__language__( 30513 ), "XBMC.RunPlugin(%s?%s/%s/%s)" % (self._path, self.launchers[launcherID]["category"], launcherID, SEARCH_COMMAND) , ))
-        listitem.addContextMenuItems( commands )
-        if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-            xbmcplugin.addDirectoryItem( handle=int( self._handle ), url="%s?%s/%s/%s"  % (self._path, self.launchers[launcherID]["category"], launcherID, key), listitem=listitem, isFolder=False)
+        commands.append(('Edit ROM', self._misc_url_4_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
+
+        # --- Add row ---
+        # if finished != "true" or self.settings[ "hide_finished" ] == False:
+        url_str = self._misc_url_4('LAUNCH_ROM', categoryID, launcherID, romID)
+        xbmcplugin.addDirectoryItem(handle=int(self._handle), url=url_str, listitem=listitem, isFolder=False)
 
     #
     # Former  _get_roms
     # Renders the roms listbox for a given launcher
     #
-    def _gui_render_roms( self, launcherID ):
+    def _gui_render_roms( self, categoryID, launcherID):
         if launcherID not in self.launchers:
             gui_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             return
@@ -2511,7 +2509,7 @@ class Main:
             return
             
         # Load ROMs
-        roms = _fs_load_ROM_XML_file(roms_xml_file)
+        roms = self._fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
             xbmc_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
             return
@@ -2521,14 +2519,8 @@ class Main:
             # If ROM has no fanart then use launcher fanart
             if (roms[key]["fanart"] ==""): defined_fanart = selectedLauncher["fanart"]
             else:                          defined_fanart = roms[key]["fanart"]
-            # self._add_rom(launcherID, 
-            #               roms[key]["name"], roms[key]["filename"], roms[key]["gamesys"], roms[key]["thumb"], 
-            #               defined_fanart, roms[key]["trailer"], roms[key]["custom"], roms[key]["genre"], 
-            #               roms[key]["release"], roms[key]["studio"], roms[key]["plot"], roms[key]["finished"], 
-            #               roms[key]["altapp"], roms[key]["altarg"], len(roms), key, False, "")
-            self._gui_render_rom_row(launcherID, roms[key], key)
+            self._gui_render_rom_row(categoryID, launcherID, key, roms[key])
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
-
 
     def _report_hook( self, count, blocksize, totalsize ):
          percent = int( float( count * blocksize * 100) / totalsize )
