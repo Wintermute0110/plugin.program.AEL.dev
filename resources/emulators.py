@@ -1,10 +1,6 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import os
-import re
-import urllib
-
-def _get_program_arguments( app ):
+def _emudata_get_program_arguments( app ):
     # Based on the app. name, retrieve the default arguments for the app.
     app = app.lower()
     applications = {
@@ -40,7 +36,7 @@ def _get_program_arguments( app ):
     return '"%rom%"'
 
 
-def _get_program_extensions( app ):
+def _emudata_get_program_extensions( app ):
     # Based on the app. name, retrieve the recognized extension of the app.
     app = app.lower()
     applications = {
@@ -72,27 +68,3 @@ def _get_program_extensions( app ):
         if (app.find(application) >= 0):
             return extensions
     return ""
-
-
-def _get_mame_title(filename):
-    try:
-        f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+filename)
-        page = f.read().replace('\r\n', '').replace('\n', '')
-        title = ''.join(re.findall('<h4>(.*?)</h4>', page))
-        if title != '':
-            return title
-        else:
-            return filename    
-    except:
-        return filename
-
-
-def _test_bios_file(filename):
-    try:
-        f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+filename)
-        page = f.read().replace('\r\n', '').replace('\n', '').replace('\r', '').replace('          ', '')
-        game_genre = re.findall('<span class=mini>Genre: </span></td><td align=left>&nbsp;&nbsp;<strong>(.*?)>(.*?)</a>', page)
-        if ( game_genre[0][1].lower() == 'bios' ):
-            return True
-    except:
-        return False
