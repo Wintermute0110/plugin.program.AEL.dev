@@ -180,14 +180,15 @@ class Main:
             self._print_log('SHOW_ROMS | categoryID = {0}'.format(categoryID))
             self._print_log('SHOW_ROMS | launcherID = {0}'.format(launcherID))
 
-            # User clicked on a launcher. For executable launchers then run.
-            # For emulator launchers then show roms
-            # if self.launchers[launcherID]["rompath"] == '':
-            #     self._print_log('SHOW_ROMS | Calling _run_launcher()')
-            #     self._run_launcher(launcherID)
-            # else:
-            self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
-            self._gui_render_roms(categoryID, launcherID)
+            # User clicked on a launcher. For executable launchers run the executable.
+            # For emulator launchers show roms.
+            if self.launchers[launcherID]["rompath"] == '':
+                self._print_log('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
+                self._print_log('SHOW_ROMS | Calling _run_launcher()')
+                self._run_standalone_launcher(categoryID, launcherID)
+            else:
+                self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
+                self._gui_render_roms(categoryID, launcherID)
 
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
@@ -1995,7 +1996,7 @@ class Main:
             _toogle_fullscreen()
 
         if self.settings[ "launcher_notification" ]:
-            xbmc_notify('AEL', 'Launching {0}.'.format(name_str), 5000)
+            gui_kodi_notify('AEL', 'Launching {0}'.format(name_str), 5000)
 
         try:
             xbmc.enableNavSounds(False)                                 
@@ -2025,14 +2026,14 @@ class Main:
     #
     # Launchs an application
     #
-    def _run_launcher(self, launcherID):
+    def _run_standalone_launcher(self, categoryID, launcherID):
         # Check launcher is OK
         if launcherID not in self.launchers:
             gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
             return
         launcher = self.launchers[launcherID]
 
-        # Kodi built-in
+        # Kodi built-in???
         apppath = os.path.dirname(launcher["application"])
         if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or \
            "xbmc-fav-" in launcher["application"] or "xbmc-sea-" in launcher["application"]:
@@ -2040,21 +2041,27 @@ class Main:
             return
 
         # ~~~~~ External application ~~~~~
-        if ( os.path.exists(apppath) ) :
-            xbmc_notify('AEL - ERROR', 
-                        'File %s not found.' % os.path.basename(launcher["application"]), 3000)
+        application = launcher["application"]
+        application_basename = os.path.basename(launcher["application"])
+        if not os.path.exists(apppath):
+            gui_kodi_notify('AEL - ERROR', 
+                            'File {0} not found.'.format(application_basename), 3000)
             return
         arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
+        self._print_log('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
+        self._print_log('_run_standalone_launcher() application          = "{0}"'.format(application))
+        self._print_log('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
+        self._print_log('_run_standalone_launcher() arguments            = "{0}"'.format(arguments))
         
         # Do stuff before execution
-        self._run_before_execution(launcher, apppath)
+        self._run_before_execution(launcher, application_basename)
 
         # Execute
-        if (sys.platform == 'win32'):
-            if ( launcher["application"].split(".")[-1] == "lnk" ):
-                os.system("start \"\" \"%s\"" % (launcher["application"]))
+        if sys.platform == 'win32':
+            if launcher["application"].split(".")[-1] == "lnk":
+                os.system("start \"\" \"%s\"" % (application))
             else:
-                if ( launcher["application"].split(".")[-1] == "bat" ):
+                if application.split(".")[-1] == "bat":
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
                     if ( self.settings[ "show_batch" ] ):
@@ -2063,16 +2070,16 @@ class Main:
                         info.wShowWindow = 0
                 else:
                     info = None
-                startproc = subprocess_hack.Popen(r'%s %s' % (launcher["application"], arguments), cwd=apppath, startupinfo=info)
+                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
                 startproc.wait()
-        elif (sys.platform.startswith('linux')):
+        elif sys.platform.startswith('linux'):
             if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.stop')
-            os.system("\"%s\" %s " % (launcher["application"], arguments))
+            os.system("\"%s\" %s " % (application, arguments))
             if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.start')
         elif sys.platform.startswith('darwin'):
-            os.system("\"%s\" %s " % (launcher["application"], arguments))
+            os.system("\"%s\" %s " % (application, arguments))
         else:
-            xbmc_notify(__language__( 30000 )+" - "+__language__( 30612 ), __language__( 30609 ),3000)
+            xbmc_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
 
         # Do stuff after execution
         self._run_after_execution(launcher)
