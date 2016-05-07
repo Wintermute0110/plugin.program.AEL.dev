@@ -125,7 +125,10 @@ class Main:
         #
         # Create a default categories.xml file if does not exist yet (plugin just installed)
         if not os.path.isfile(CATEGORIES_FILE_PATH):
-            gui_kodi_dialog_OK('Advanced Emulator Launcher - WARNING', 'Creating default categories.xml')
+            gui_kodi_dialog_OK('Advanced Emulator Launcher',
+                               'It looks it is the first time you run AEL!',
+                               '',
+                               'Creating default categories.xml')
             self._cat_create_default()
             self._fs_write_catfile()
 
@@ -636,7 +639,7 @@ class Main:
 
         return nfo_dic
 
-    def _remove_rom(self, launcherID, rom):
+    def _gui_remove_rom(self, launcherID, rom):
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno(__language__( 30000 ), __language__( 30010 ) % self.launchers[launcherID]["roms"][rom]["name"])
         if (ret):
@@ -647,54 +650,45 @@ class Main:
             else:
                 xbmc.executebuiltin("Container.Update")
 
-    def _empty_launcher(self, launcherID):
-        dialog = xbmcgui.Dialog()
-        ret = dialog.yesno(__language__( 30000 ), __language__( 30133 ) % self.launchers[launcherID]["name"])
-        if (ret):
-            self.launchers[launcherID]["roms"].clear()
-            self._save_launchers()
-            xbmc.executebuiltin("Container.Update")
-            
-    def _remove_launcher(self, launcherID):
-        dialog = xbmcgui.Dialog()
-        ret = dialog.yesno(__language__( 30000 ), __language__( 30010 ) % self.launchers[launcherID]["name"])
-        if (ret):
-            category = self.launchers[launcherID]["category"]
-            self.launchers.pop(launcherID)
-            self._save_launchers()
-            if ( not self._empty_cat(category) ):
-                xbmc.executebuiltin("Container.Update")
-            else:
-                xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self._path))
-
     #
     # Former _edit_rom()
     #
     def _command_edit_rom(self, launcher, rom):
-        dialog = xbmcgui.Dialog()
-        title=os.path.basename(self.launchers[launcher]["roms"][rom]["name"])
-        if (self.launchers[launcher]["roms"][rom]["finished"] != "true"):
-            finished_display = __language__( 30339 )
-        else:
-            finished_display = __language__( 30340 )
-        type = dialog.select(__language__( 30300 ) % title, [__language__( 30338 ),__language__( 30301 ),__language__( 30302 ),__language__( 30303 ),finished_display,__language__( 30323 ),__language__( 30304 )])
 
-        if (type == 0 ):
+        dialog = xbmcgui.Dialog()
+        title = os.path.basename(self.launchers[launcher]["roms"][rom]["name"])
+        finished_display = 'Status : Finished' if self.launchers[launcher]["roms"][rom]["finished"] == True else 'Status : Unfinished'
+
+        type = dialog.select('Select Action for %s' % title, 
+                             ['Scrape Metadata, Thumbnail and Fanart', 'Modify Metadata',
+                              'Change Thumbnail Image', 'Change Fanart Image',
+                              finished_display,
+                              'Advanced Modifications', 'Delete ROM'])
+
+        if type == 0:
             # Scrap item (infos and images)
             self._full_scrap_rom(launcher,rom)
 
-        if (type == 1 ):
+        if type == 1:
             dialog = xbmcgui.Dialog()
 
-            type2 = dialog.select(__language__( 30305 ), [__language__( 30311 ) % self.settings[ "datas_scraper" ],__language__( 30333 ),__language__( 30306 ) % self.launchers[launcher]["roms"][rom]["name"],__language__( 30308 ) % self.launchers[launcher]["roms"][rom]["release"],__language__( 30309 ) % self.launchers[launcher]["roms"][rom]["studio"],__language__( 30310 ) % self.launchers[launcher]["roms"][rom]["genre"],__language__( 30328 ) % self.launchers[launcher]["roms"][rom]["plot"][0:20],__language__( 30316 )])
-                # Scrap rom Infos
-            if (type2 == 0 ):
+            type2 = dialog.select('Modify Item Infos', 
+                                  ['Import from %s' % self.settings[ "datas_scraper" ],
+                                   'Import from .nfo file',
+                                   'Modify Title : %s' % self.launchers[launcher]["roms"][rom]["name"],
+                                   'Modify Release Date : %s' % self.launchers[launcher]["roms"][rom]["release"],
+                                   'Modify Studio : %s' % self.launchers[launcher]["roms"][rom]["studio"],
+                                   'Modify Genre : %s' % self.launchers[launcher]["roms"][rom]["genre"],
+                                   'Modify Description : %s ...' % self.launchers[launcher]["roms"][rom]["plot"][0:20],
+                                   'Save to .nfo file'])
+            # Scrap rom Infos
+            if type2 == 0:
                 self._scrap_rom(launcher,rom)
-            if (type2 == 1 ):
+            elif type2 == 1:
                 self._import_rom_nfo(launcher,rom)
-            if (type2 == 2 ):
+            elif type2 == 2:
                 # Edition of the rom title
-                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], __language__( 30037 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], 'Edit title')
                 keyboard.doModal()
                 if (keyboard.isConfirmed()):
                     title = keyboard.getText()
@@ -702,46 +696,48 @@ class Main:
                         title = self.launchers[launcher]["roms"][rom]["name"]
                     self.launchers[launcher]["roms"][rom]["name"] = title.rstrip()
                     self._save_launchers()
-            if (type2 == 3 ):
+            elif type2 == 3:
                 # Edition of the rom release date
-                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["release"], __language__( 30038 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["release"], 'Edit release year')
                 keyboard.doModal()
                 if (keyboard.isConfirmed()):
                     self.launchers[launcher]["roms"][rom]["release"] = keyboard.getText()
                     self._save_launchers()
-            if (type2 == 4 ):
+            elif type2 == 4:
                 # Edition of the rom studio name
-                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["studio"], __language__( 30039 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["studio"], 'Edit studio')
                 keyboard.doModal()
                 if (keyboard.isConfirmed()):
                     self.launchers[launcher]["roms"][rom]["studio"] = keyboard.getText()
                     self._save_launchers()
-            if (type2 == 5 ):
+            elif type2 == 5:
                 # Edition of the rom game genre
-                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["genre"], __language__( 30040 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["genre"], 'Edit genre')
                 keyboard.doModal()
                 if (keyboard.isConfirmed()):
                     self.launchers[launcher]["roms"][rom]["genre"] = keyboard.getText()
                     self._save_launchers()
-            if (type2 == 6 ):
+            elif type2 == 6:
                 # Import of the rom game plot
-                text_file = xbmcgui.Dialog().browse(1,__language__( 30080 ),"files",".txt|.dat", False, False)
+                text_file = xbmcgui.Dialog().browse(1, 'Select description file. (e.g txt|dat)', "files", ".txt|.dat", False, False)
                 if (os.path.isfile(text_file)):
                     text_plot = open(text_file)
                     string_plot = text_plot.read()
                     text_plot.close()
                     self.launchers[launcher]["roms"][rom]["plot"] = string_plot.replace('&quot;','"')
                     self._save_launchers()
-            if (type2 == 7 ):
+            elif type2 == 7:
                 self._export_rom_nfo(launcher,rom)
 
-        if (type == 2 ):
+        # Edit Thumb
+        if type == 2:
             dialog = xbmcgui.Dialog()
             thumb_diag = __language__( 30312 ) % ( self.settings[ "thumbs_scraper" ] )
             if ( self.settings[ "thumbs_scraper" ] == "GameFAQs" ) | ( self.settings[ "thumbs_scraper" ] == "MobyGames" ):
                 thumb_diag = __language__( 30321 ) % ( self.settings[ "thumbs_scraper" ],self.settings[ "display_game_region" ])
             if ( self.settings[ "thumbs_scraper" ] == "Google" ):
                 thumb_diag = __language__( 30322 ) % ( self.settings[ "thumbs_scraper" ],self.settings[ "thumb_image_size_display" ].capitalize())
+            
             type2 = dialog.select(__language__( 30302 ), [thumb_diag,__language__( 30332 ),__language__( 30313 )])
             if (type2 == 0 ):
                 self._scrap_thumb_rom(launcher,rom)
@@ -885,8 +881,8 @@ class Main:
                 self.launchers[launcher]["roms"][rom]["custom"] = custom
                 self._save_launchers()
 
-        if (type == 6 ):
-            self._remove_rom(launcher,rom)
+        if type == 6:
+            self._remove_rom(launcher, rom)
 
         # Return to the launcher directory
         xbmc.executebuiltin("Container.Refresh")
@@ -1504,6 +1500,26 @@ class Main:
 
         # Return to the category directory
         xbmc.executebuiltin("Container.Refresh")
+
+    def _gui_empty_launcher(self, launcherID):
+        dialog = xbmcgui.Dialog()
+        ret = dialog.yesno(__language__( 30000 ), __language__( 30133 ) % self.launchers[launcherID]["name"])
+        if (ret):
+            self.launchers[launcherID]["roms"].clear()
+            self._save_launchers()
+            xbmc.executebuiltin("Container.Update")
+
+    def _gui_remove_launcher(self, launcherID):
+        dialog = xbmcgui.Dialog()
+        ret = dialog.yesno(__language__( 30000 ), __language__( 30010 ) % self.launchers[launcherID]["name"])
+        if (ret):
+            category = self.launchers[launcherID]["category"]
+            self.launchers.pop(launcherID)
+            self._save_launchers()
+            if ( not self._empty_cat(category) ):
+                xbmc.executebuiltin("Container.Update")
+            else:
+                xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self._path))
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
