@@ -47,17 +47,18 @@ __credits__ = "Leo212 CinPoU, JustSomeUser, Zerqent, Zosky, Atsumori"
 # --- Addon paths definition ---
 # _FILE_PATH is a filename
 # _DIR is a directory (with trailing /)
-PLUGIN_DATA_DIR      = xbmc.translatePath(os.path.join("special://profile/addon_data", "plugin.program.advanced.emulator.launcher"))
-BASE_DIR             = xbmc.translatePath(os.path.join("special://", "profile"))
-HOME_DIR             = xbmc.translatePath(os.path.join("special://", "home"))
-FAVOURITES_DIR       = xbmc.translatePath( 'special://profile/favourites.xml' )
-ADDONS_DIR           = xbmc.translatePath(os.path.join(HOME_DIR, "addons"))
-CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, "plugin.program.advanced.emulator.launcher"))
-ICON_IMG_FILE_PATH   = os.path.join(CURRENT_ADDON_DIR, "icon.png")
-CATEGORIES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, "categories.xml")
-DEFAULT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, "thumbs") # Old deprecated definition
-DEFAULT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, "fanarts") # Old deprecated definition
-DEFAULT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, "nfos") # Old deprecated definition
+PLUGIN_DATA_DIR      = xbmc.translatePath(os.path.join('special://profile/addon_data', 'plugin.program.advanced.emulator.launcher'))
+BASE_DIR             = xbmc.translatePath(os.path.join('special://', 'profile'))
+HOME_DIR             = xbmc.translatePath(os.path.join('special://', 'home'))
+KODI_FAV_FILE_PATH   = xbmc.translatePath( 'special://profile/favourites.xml' )
+ADDONS_DIR           = xbmc.translatePath(os.path.join(HOME_DIR, 'addons'))
+CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, 'plugin.program.advanced.emulator.launcher'))
+ICON_IMG_FILE_PATH   = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
+CATEGORIES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
+FAVOURITES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
+DEFAULT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'thumbs')
+DEFAULT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'fanarts')
+DEFAULT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'nfos')
 
 # --- Some more constants ---
 ADDON_ID = "plugin.program.advanced.emulator.launcher"
@@ -105,10 +106,13 @@ class Main:
         xbmc.log('args = {0}'.format(args))
 
         # store an handle pointer (Legacy deprecated code)
-        self._path = sys.argv[ 0 ]
-        self._handle = int(sys.argv[ 1 ])
+        self._path = sys.argv[0]
+        self._handle = int(sys.argv[1])
 
-        xbmcplugin.setContent(handle = self._handle, content = 'movies')
+        #
+        # Experiment to try to increase the number of views the addon supports
+        #
+        # xbmcplugin.setContent(handle = self._handle, content = 'movies')
 
         # Adds a sorting method for the media list.
         if self._handle > 0:
@@ -166,6 +170,9 @@ class Main:
 
         elif command == 'DELETE_CATEGORY':
             gui_kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
+
+        elif command == 'SHOW_FAVOURITES':
+            self._command_show_favourites()
 
         elif command == 'SHOW_LAUNCHERS':
             self._gui_render_launchers(args['catID'][0])
@@ -580,6 +587,46 @@ class Main:
                 rom = {'id' : '', 'name' : '', "filename" : '', "gamesys" : '', "thumb" : '', "fanart" : '',
                        "trailer" : '', "custom" : '', "genre" : '', "release" : '', "studio" : '',
                        "plot" : '', "finished" : False, "altapp" : '', "altarg" : '' }
+                for rom_child in root_element:
+                    # By default read strings
+                    xml_text = rom_child.text if rom_child.text is not None else ''
+                    xml_tag  = rom_child.tag
+                    if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                    rom[xml_tag] = xml_text
+                    
+                    # Now transform data depending on tag name
+                    if xml_tag == 'finished':
+                        xml_bool = True if xml_text == 'True' else False
+                        rom[xml_tag] = xml_bool
+                roms[rom['id']] = rom
+
+        return roms
+
+    #
+    # Loads an XML file containing the favourite ROMs
+    # It is basically the same as ROMs, but with some more fields to store launching application data.
+    #
+    def _fs_load_Favourites_XML_file(self, roms_xml_file):
+        __debug_xml_parser = 0
+        roms = {}
+
+        # --- If file does not exist return empty dictionary ---
+        if not os.path.isfile(roms_xml_file):
+            return {}
+
+        # --- Parse using cElementTree ---
+        xbmc.log('_fs_load_Favourites_XML_file() Loading XML file {0}'.format(roms_xml_file))
+        xml_tree = ET.parse(roms_xml_file)
+        xml_root = xml_tree.getroot()
+        for root_element in xml_root:
+            if __debug_xml_parser: xbmc.log('Root child {0}'.format(root_element.tag))
+
+            if root_element.tag == 'rom':
+                # Default values
+                rom = {'id' : '', 'name' : '', 'filename' : '', 'gamesys' : '', 'thumb' : '', 'fanart' : '',
+                       'trailer' : '', 'custom' : '', 'genre' : '', 'release' : '', 'studio' : '',
+                       'plot' : '', 'finished' : False, 'altapp' : '', 'altarg' : '', 
+                       'application' : '',  'args' : '', 'launcherID' : '' }
                 for rom_child in root_element:
                     # By default read strings
                     xml_text = rom_child.text if rom_child.text is not None else ''
@@ -2449,6 +2496,28 @@ class Main:
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
         xbmcplugin.addDirectoryItem( handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=True)
 
+    def _gui_render_category_favourites(self):
+        # --- Create listitem row ---
+        fav_name = '<Favourites>'
+        fav_thumb = ''
+        fav_fanart = ''
+        icon = "DefaultFolder.png"        
+        listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
+        listitem.setProperty("fanart_image", fav_fanart)
+        listitem.setInfo("video", { "Title": fav_name, "Genre" : 'All', 
+                                    "Plot" : 'AEL favourite ROMs', "overlay": 7 } )
+        
+        # --- Create context menu ---
+        commands = []
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(ADDON_ID), ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
+
+        # --- Add row ---
+        url_str = self._misc_url('SHOW_FAVOURITES')
+        xbmcplugin.addDirectoryItem( handle=int(self._handle), url=url_str, listitem=listitem, isFolder=True)
+
     # 
     # Former _get_categories()
     # Renders the categories (addon root window)
@@ -2458,6 +2527,8 @@ class Main:
         # Order alphabetically by name
         for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
             self._gui_render_category_row(self.categories[key], key)
+        # AEL Favourites special category
+        self._gui_render_category_favourites()
         xbmcplugin.endOfDirectory( handle = int( self._handle ), succeeded=True, cacheToDisc=False )
 
     def _gui_render_launcher_row(self, launcher_dic, key):
@@ -2563,7 +2634,7 @@ class Main:
     # Former  _get_roms
     # Renders the roms listbox for a given launcher
     #
-    def _gui_render_roms( self, categoryID, launcherID):
+    def _gui_render_roms(self, categoryID, launcherID):
 
         #xbmcplugin.setContent(handle = self._handle, content = 'movies')
 
@@ -2601,6 +2672,33 @@ class Main:
             if (roms[key]["fanart"] ==""): defined_fanart = selectedLauncher["fanart"]
             else:                          defined_fanart = roms[key]["fanart"]
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key])
+        xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+
+    #
+    # Renders the special category favourites, which is actually very similar to a ROM launcher
+    # Note that only ROMs in a launcher can be added to favourites. Thus, no standalone launchers.
+    # If user deletes launcher or favourite ROMs the ROM in favourites remain. 
+    # Favourites ROM information includes the application launcher and arguments to launch the ROM.
+    # Basically, once a ROM is added to favourites is becomes kind of a standalone launcher.
+    # Favourites has categoryID = 0 and launcherID = 0. Thus, other functions can differentiate
+    # between a standard ROM and a favourite ROM.
+    # 
+    # What if user changes the favourites Thumb/Fanart??? Where do we store them???
+    # What about the NFO files of favourite ROMs???
+    #
+    def _command_show_favourites(self):
+        # Load favourites
+        roms = self._fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+        if not roms:
+            gui_kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
+            return
+
+        # Display Favourites
+        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
+            # If ROM has no fanart then use launcher fanart
+            if (roms[key]["fanart"] ==""): defined_fanart = selectedLauncher["fanart"]
+            else:                          defined_fanart = roms[key]["fanart"]
+            self._gui_render_rom_row(0, 0, key, roms[key])
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
     #
