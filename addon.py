@@ -667,26 +667,6 @@ class Main:
             else:
                 xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self._path))
 
-    def _remove_category(self, categoryID):
-        dialog = xbmcgui.Dialog()
-        launcher_list = []
-        for launcherID in sorted(self.launchers.iterkeys()):
-            if (self.launchers[launcherID]['category'] == categoryID):
-                launcher_list.append(launcherID)
-        if ( len(launcher_list) > 0 ):
-            ret = dialog.yesno(__language__( 30000 ), __language__( 30345 ) % (self.categories[categoryID]["name"],len(launcher_list)), __language__( 30346 ) % self.categories[categoryID]["name"], __language__( 30010 ) % self.categories[categoryID]["name"])
-            if (ret):
-                for launcherID in launcher_list:
-                    self.launchers.pop(launcherID)
-                self.categories.pop(categoryID)
-                self._save_launchers()
-        else:
-            ret = dialog.yesno(__language__( 30000 ), __language__( 30010 ) % self.categories[categoryID]["name"])
-            if (ret):
-                self.categories.pop(categoryID)
-                self._save_launchers()
-        xbmc.executebuiltin("Container.Update")
-
     #
     # Former _edit_rom()
     #
@@ -1320,89 +1300,152 @@ class Main:
         # Return to the launcher directory
         xbmc.executebuiltin("Container.Refresh")
 
-    def _modify_category(self, categoryID):
+    #
+    # Removes a category.
+    # Also removes all launchers in this category!
+    #
+    def _gui_remove_category(self, categoryID):
         dialog = xbmcgui.Dialog()
-        type2 = dialog.select(__language__( 30344 ),[__language__( 30306 ) % self.categories[categoryID]["name"],__language__( 30310 ) % self.categories[categoryID]["genre"],__language__( 30328 ) % self.categories[categoryID]["plot"]])
-        if (type2 == 0 ):
-            # Edition of the category name
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], __language__( 30037 ))
+        launcher_list = []
+        for launcherID in sorted(self.launchers.iterkeys()):
+            if self.launchers[launcherID]['category'] == categoryID:
+                launcher_list.append(launcherID)
+        if len(launcher_list) > 0:
+            ret = dialog.yesno('AEL', 
+                               'Category "%s" contains %s launchers.' % (self.categories[categoryID]["name"], len(launcher_list)),
+                               'Deleting "%s" will also delete related launchers.' % self.categories[categoryID]["name"],
+                               'Are you sure you want to delete "%s" ?' % self.categories[categoryID]["name"])
+            if ret:
+                for launcherID in launcher_list:
+                    self.launchers.pop(launcherID)
+                self.categories.pop(categoryID)
+                self._fs_write_catfile()
+        else:
+            ret = dialog.yesno('AEL',
+                               'Category "%s" contains %s launchers.' % (self.categories[categoryID]["name"], len(launcher_list)),
+                               'Are you sure you want to delete "%s" ?' % self.categories[categoryID]["name"])
+            if ret:
+                self.categories.pop(categoryID)
+                self._fs_write_catfile()
+        xbmc.executebuiltin("Container.Update")
+
+    def _gui_edit_category_metadata(self, categoryID):
+        dialog = xbmcgui.Dialog()
+        type2 = dialog.select('Edit Category Metadata', 
+                              ['Edit Title: "%s"' % self.categories[categoryID]["name"],
+                               'Edit Genre: "%s"' % self.categories[categoryID]["genre"],
+                               'Edit Description: "%s"' % self.categories[categoryID]["plot"],
+                               'Import Description from file...' ])
+        # Edition of the category name
+        if type2 == 0:
+            keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Edit title')
             keyboard.doModal()
-            if (keyboard.isConfirmed()):
+            if keyboard.isConfirmed():
                 title = keyboard.getText()
-                if ( title == "" ):
+                if title == "":
                     title = self.categories[categoryID]["name"]
                 self.categories[categoryID]["name"] = title.rstrip()
-                self._save_launchers()
-        if (type2 == 1 ):
-            # Edition of the category genre
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], __language__( 30040 ))
+                self._fs_write_catfile()
+            else:
+                gui_kodi_dialog_OK('AEL Information', 
+                                   'Category name "{0}" not changed.'.format(self.categories[categoryID]["name"]))
+        # Edition of the category genre
+        elif type2 == 1:
+            keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], 'Edit genre')
             keyboard.doModal()
-            if (keyboard.isConfirmed()):
+            if keyboard.isConfirmed():
                 self.categories[categoryID]["genre"] = keyboard.getText()
-                self._save_launchers()
-        if (type2 == 2 ):
-            # Import category description
-            text_file = xbmcgui.Dialog().browse(1,__language__( 30080 ),"files",".txt|.dat", False, False)
-            if ( os.path.isfile(text_file) == True ):
-                text_plot = open(text_file, 'r')
+                self._fs_write_catfile()
+            else:
+                gui_kodi_dialog_OK('AEL Information', 
+                                   'Category genre "{0}" not changed.'.format(self.categories[categoryID]["genre"]))
+        # Edition of the plot
+        elif type2 == 2:
+            keyboard = xbmc.Keyboard(self.categories[categoryID]["plot"], 'Edit plot')
+            keyboard.doModal()
+            if keyboard.isConfirmed():
+                self.categories[categoryID]["plot"] = keyboard.getText()
+                self._fs_write_catfile()
+            else:
+                gui_kodi_dialog_OK('AEL Information', 
+                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["plot"]))
+
+        # Import category description
+        elif type2 == 3:
+            text_file = xbmcgui.Dialog().browse(1, 'Select description file (txt|dat)', "files", ".txt|.dat", False, False)
+            if os.path.isfile(text_file) == True:
+                text_plot = open(text_file, 'rt')
                 self.categories[categoryID]["plot"] = text_plot.read()
                 text_plot.close()
-                self._save_launchers()
+                self._fs_write_catfile()
+            else:
+                gui_kodi_dialog_OK('AEL Information', 
+                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["plot"]))
 
     def _command_edit_category(self, categoryID):
+        
+        # Shows a select box with the options to edit
         dialog = xbmcgui.Dialog()
-        if (self.categories[categoryID]["finished"] != "true"):
-            finished_display = __language__( 30339 )
-        else:
-            finished_display = __language__( 30340 )
-        type = dialog.select(__language__( 30300 ) % self.categories[categoryID]["name"], [__language__( 30301 ),__language__( 30302 ),__language__( 30303 ),finished_display,__language__( 30304 )])
-        if (type == 0 ):
-            self._modify_category(categoryID)
-        # Category Thumb menu option
-        if (type == 1 ):
+        if self.categories[categoryID]["finished"] == True: finished_display = 'Status: Finished'
+        else:                                               finished_display = 'Status: Unfinished'
+        type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]["name"]), 
+                             ['Edit metadata', 'Edit Thumbnail image', 'Edit Fanart image', 
+                              finished_display, 'Delete category'])
+        # Edit metadata
+        if type == 0:
+            self._gui_edit_category_metadata(categoryID)
+
+        # Edit Thumbnail image
+        elif type == 1:
             dialog = xbmcgui.Dialog()
-            thumb_diag = __language__( 30312 ) % ( self.settings[ "thumbs_scraper" ] )
-            if ( self.settings[ "thumbs_scraper" ] == "Google" ):
-                thumb_diag = __language__( 30322 ) % ( self.settings[ "thumbs_scraper" ],self.settings[ "thumb_image_size_display" ].capitalize())
-            type2 = dialog.select(__language__( 30302 ), [thumb_diag,__language__( 30332 ),__language__( 30313 )])
-            if (type2 == 0 ):
+            thumb_diag = 'Import Image from %s' % ( self.settings[ "thumbs_scraper" ] )
+            if self.settings[ "thumbs_scraper" ] == "Google":
+                thumb_diag = 'Import from %s : %s size' % ( self.settings[ "thumbs_scraper" ],
+                             self.settings[ "thumb_image_size_display" ].capitalize())
+            type2 = dialog.select('Change Thumbnail Image', 
+                                  [thumb_diag, 'Import Local Image (Copy and Rename)',
+                                   'Select Local Image (Link)'])
+            # Scrape thumb
+            if type2 == 0:
                 self._scrap_thumb_category(categoryID)
-            if (type2 == 1 ):
-                # Import a category thumbnail image
-                image = xbmcgui.Dialog().browse(2,__language__( 30041 ),"files",".jpg|.jpeg|.gif|.png", True, False, DEFAULT_THUMB_PATH)
-                if (image):
-                    if (os.path.isfile(image)):
-                        img_ext = os.path.splitext(image)[-1][0:4]
-                        if ( img_ext != '' ):
-                            filename = self.categories[categoryID]["name"]
-                            file_path = os.path.join(DEFAULT_THUMB_PATH,os.path.basename(self.categories[categoryID]["name"])+'_thumb'+img_ext)
-                            if ( image != file_path ):
-                                try:
-                                    shutil.copy2( image.decode(get_encoding(),'ignore') , file_path.decode(get_encoding(),'ignore') )
-                                    if ( self.categories[categoryID]["thumb"] != "" ):
-                                        _update_cache(file_path)
-                                    self.categories[categoryID]["thumb"] = file_path
-                                    self._save_launchers()
-                                    xbmc_notify(__language__( 30000 ), __language__( 30070 ),3000)
-                                except OSError:
-                                    xbmc_notify(__language__( 30000 ), __language__( 30063 ) % self.categories[categoryID]["name"],3000)
-            if (type2 == 2 ):
-                # Link to a category thumbnail image
-                if (self.categories[categoryID]["thumb"] == ""):
+            # Import a category thumbnail image
+            elif type2 == 1:
+                image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', 
+                                                "files", ".jpg|.jpeg|.gif|.png", True, False, DEFAULT_THUMB_PATH)
+                if not image or not os.path.isfile(image):
+                    return
+                img_ext = os.path.splitext(image)[-1][0:4]
+                if img_ext != '':
+                    filename = self.categories[categoryID]["name"]
+                    file_path = os.path.join(DEFAULT_THUMB_PATH, os.path.basename(self.categories[categoryID]["name"])+'_thumb'+img_ext)
+                    if image != file_path:
+                        try:
+                            shutil.copy2( image.decode(get_encoding(),'ignore') , file_path.decode(get_encoding(),'ignore') )
+                            if ( self.categories[categoryID]["thumb"] != "" ):
+                                _update_cache(file_path)
+                            self.categories[categoryID]["thumb"] = file_path
+                            self._save_launchers()
+                            xbmc_notify('AEL', 'Thumb has been updated', 3000)
+                        except OSError:
+                            xbmc_notify('AEL', 'Impossible to assign thumb for %s' % self.categories[categoryID]["name"], 3000)
+            # Link to a category thumbnail image
+            elif type2 == 2:
+                if self.categories[categoryID]["thumb"] == "":
                     imagepath = DEFAULT_THUMB_PATH
                 else:
                     imagepath = self.categories[categoryID]["thumb"]
-                image = xbmcgui.Dialog().browse(2,__language__( 30041 ),"files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(imagepath))
-                if (image):
-                    if (os.path.isfile(image)):
-                        if ( self.categories[categoryID]["thumb"] != "" ):
+                image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', 
+                                                "files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(imagepath))
+                if image:
+                    if os.path.isfile(image):
+                        if self.categories[categoryID]["thumb"] != "":
                             _update_cache(image)
                         self.categories[categoryID]["thumb"] = image
                         self._save_launchers()
-                        xbmc_notify(__language__( 30000 ), __language__( 30070 ),3000)
+                        xbmc_notify('AEL', 'Thumb has been updated', 3000)
 
         # Launcher Fanart menu option
-        if (type == 2 ):
+        elif type == 2:
             dialog = xbmcgui.Dialog()
             fanart_diag = __language__( 30312 ) % ( self.settings[ "fanarts_scraper" ] )
             if ( self.settings[ "fanarts_scraper" ] == "Google" ):
@@ -1445,18 +1488,19 @@ class Main:
                         xbmc_notify(__language__( 30000 ), __language__( 30075 ),3000)
 
         # Category status
-        if (type == 3 ):
-            if (self.categories[categoryID]["finished"] != "true"):
-                self.categories[categoryID]["finished"] = "true"
-            else:
-                self.categories[categoryID]["finished"] = "false"
-            self._save_launchers()
+        elif type == 3:
+            finished = self.categories[categoryID]["finished"]
+            finished = False if finished else True
+            finished_display = 'Finished' if finished == True else 'Unfinished'
+            self.categories[categoryID]["finished"] = finished
+            self._fs_write_catfile()
+            gui_kodi_dialog_OK('AEL Information', 
+                               'Category Status is now {0}'.format(finished_display))
+        elif type == 4:
+            self._gui_remove_category(categoryID)
 
-        if (type == 4 ):
-            self._remove_category(categoryID)
-
-        if (type == -1 ):
-            self._save_launchers()
+        elif type == -1:
+            self._fs_write_catfile()
 
         # Return to the category directory
         xbmc.executebuiltin("Container.Refresh")
