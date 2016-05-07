@@ -225,8 +225,11 @@ class Main:
             romID      = args['romID'][0]
             self._run_rom(categoryID, launcherID, romID)
 
-        # elif (launcher == FILE_MANAGER_COMMAND):
-        #    self._file_manager()
+        elif command == 'ADD_TO_FAVOURITES':
+            categoryID = args['catID'][0]
+            launcherID = args['launID'][0]
+            romID      = args['romID'][0]
+            self._command_add_to_favourites(categoryID, launcherID, romID)
 
         else:
             gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
@@ -353,8 +356,7 @@ class Main:
     #
     def _fs_write_catfile(self):
         self._print_log('_fs_create_default_catfile() Saving categories.xml file')
-       
-        xbmc.executebuiltin( "ActivateWindow(busydialog)" )
+        xbmc.executebuiltin('ActivateWindow(busydialog)')
 
         # Original Angelscry method for generating the XML was to grow a string, like this
         # xml_content = 'test'
@@ -425,7 +427,7 @@ class Main:
             gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write categories.xml file. (IOError)')
 
         # --- We are not busy anymore ---
-        xbmc.executebuiltin( "Dialog.Close(busydialog)" )
+        xbmc.executebuiltin('Dialog.Close(busydialog)')
 
     #
     # Loads categories.xml from disk and fills dictionary self.categories
@@ -434,6 +436,7 @@ class Main:
         __debug_xml_parser = 0
         self.categories = {}
         self.launchers = {}
+        xbmc.executebuiltin('ActivateWindow(busydialog)')
 
         # --- Parse using cElementTree ---
         xbmc.log('Parsing {0}'.format(CATEGORIES_FILE_PATH))
@@ -490,6 +493,7 @@ class Main:
 
                 # Add launcher to categories dictionary
                 self.launchers[launcher['id']] = launcher
+        xbmc.executebuiltin('Dialog.Close(busydialog)')
 
     def _fs_escape_XML(self, str):
         return str.replace('&', '&amp;')
@@ -499,9 +503,10 @@ class Main:
     #
     def _fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
         self._print_log('_fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
-       
-        xbmc.executebuiltin( "ActivateWindow(busydialog)" )
 
+        # --- Notify we are busy doing things ---
+        xbmc.executebuiltin('ActivateWindow(busydialog)')
+       
         # Original Angelscry method for generating the XML was to grow a string, like this
         # xml_content = 'test'
         # xml_content += 'more test'
@@ -525,6 +530,9 @@ class Main:
             str_list.append('</launcher>\n')
 
             # Create list of ROMs
+            # TODO Size optimization: only write in the XML fields which are not ''. This
+            #      will save A LOT of disk space and reduce loading times (at a cost of
+            #      some writing time, but writing is much less frequent than reading).
             for romID in sorted(roms, key = lambda x : roms[x]["name"]):
                 rom = roms[romID]
                 # Data which is not string must be converted to string
@@ -562,7 +570,7 @@ class Main:
             gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (IOError)'.format(roms_xml_file))
 
         # --- We are not busy anymore ---
-        xbmc.executebuiltin( "Dialog.Close(busydialog)" )
+        xbmc.executebuiltin('Dialog.Close(busydialog)')
 
     #
     # Loads a launcher XML with the ROMs
@@ -574,6 +582,8 @@ class Main:
         # --- If file does not exist return empty dictionary ---
         if not os.path.isfile(roms_xml_file):
             return {}
+
+        xbmc.executebuiltin('ActivateWindow(busydialog)')
 
         # --- Parse using cElementTree ---
         xbmc.log('_fs_load_ROM_XML_file() Loading XML file {0}'.format(roms_xml_file))
@@ -599,8 +609,53 @@ class Main:
                         xml_bool = True if xml_text == 'True' else False
                         rom[xml_tag] = xml_bool
                 roms[rom['id']] = rom
+        xbmc.executebuiltin('Dialog.Close(busydialog)')
 
         return roms
+
+    #
+    # Write to disk categories.xml
+    #
+    def _fs_write_Favourites_XML_file(self, roms, roms_xml_file):
+        self._print_log('_fs_write_Favourites_XML_file() Saving XML file {0}'.format(roms_xml_file))
+        xbmc.executebuiltin('ActivateWindow(busydialog)')
+        try:
+            str_list = []
+            str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+            str_list.append('<advanced_emulator_launcher_Favourites version="1.0">\n')
+            for romID in sorted(roms, key = lambda x : roms[x]["name"]):
+                rom = roms[romID]
+                str_list.append("<rom>\n" +
+                                "  <id>"       + romID                + "</id>\n" +
+                                "  <name>"     + rom["name"]          + "</name>\n" +
+                                "  <filename>" + rom["filename"]      + "</filename>\n" +
+                                "  <gamesys>"  + rom["gamesys"]       + "</gamesys>\n" +
+                                "  <thumb>"    + rom["thumb"]         + "</thumb>\n" +
+                                "  <fanart>"   + rom["fanart"]        + "</fanart>\n" +
+                                "  <trailer>"  + rom["trailer"]       + "</trailer>\n" +
+                                "  <custom>"   + rom["custom"]        + "</custom>\n" +
+                                "  <genre>"    + rom["genre"]         + "</genre>\n" +
+                                "  <release>"  + rom["release"]       + "</release>\n" +
+                                "  <studio>"   + rom["studio"]        + "</studio>\n" +
+                                "  <plot>"     + rom["plot"]          + "</plot>\n" +
+                                "  <finished>" + str(rom["finished"]) + "</finished>\n" +
+                                "  <altapp>"   + rom["altapp"]        + "</altapp>\n" +
+                                "  <altarg>"   + rom["altarg"]        + "</altarg>\n" +
+                                "  <application>" + rom["application"] + "</application>\n" +
+                                "  <args>"        + rom["args"]        + "</args>\n" +
+                                "  <launcherID>"  + rom["launcherID"]  + "</launcherID>\n" +
+                                "</rom>\n")
+            str_list.append('</advanced_emulator_launcher_Favourites>\n')
+            full_string = ''.join(str_list)
+            full_string = self._fs_escape_XML(full_string)
+            file_obj = open(roms_xml_file, 'wt' )
+            file_obj.write(full_string)
+            file_obj.close()
+        except OSError:
+            gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (OSError)'.format(roms_xml_file))
+        except IOError:
+            gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (IOError)'.format(roms_xml_file))
+        xbmc.executebuiltin('Dialog.Close(busydialog)')
 
     #
     # Loads an XML file containing the favourite ROMs
@@ -614,6 +669,7 @@ class Main:
         if not os.path.isfile(roms_xml_file):
             return {}
 
+        xbmc.executebuiltin('ActivateWindow(busydialog)')
         # --- Parse using cElementTree ---
         xbmc.log('_fs_load_Favourites_XML_file() Loading XML file {0}'.format(roms_xml_file))
         xml_tree = ET.parse(roms_xml_file)
@@ -639,6 +695,7 @@ class Main:
                         xml_bool = True if xml_text == 'True' else False
                         rom[xml_tag] = xml_bool
                 roms[rom['id']] = rom
+        xbmc.executebuiltin('Dialog.Close(busydialog)')
 
         return roms
 
@@ -689,7 +746,7 @@ class Main:
     def _gui_remove_rom(self, launcherID, rom):
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno('Advanced Emulator Launcher', __language__( 30010 ) % self.launchers[launcherID]["roms"][rom]["name"])
-        if (ret):
+        if ret:
             self.launchers[launcherID]["roms"].pop(rom)
             self._save_launchers()
             if ( len(self.launchers[launcherID]["roms"]) == 0 ):
@@ -699,13 +756,14 @@ class Main:
 
     #
     # Former _edit_rom()
-    #
-    def _command_edit_rom(self, launcher, rom):
+    # Note that categoryID = launcherID = '0' if we are editing a ROM in Favourites
+    def _command_edit_rom(self, categoryID, launcherID, romID):
+        gui_kodi_dialog_OK('AEL', 'Editing ROM not implemented yet')
+        return
 
-        dialog = xbmcgui.Dialog()
         title = os.path.basename(self.launchers[launcher]["roms"][rom]["name"])
         finished_display = 'Status : Finished' if self.launchers[launcher]["roms"][rom]["finished"] == True else 'Status : Unfinished'
-
+        dialog = xbmcgui.Dialog()
         type = dialog.select('Select Action for %s' % title, 
                              ['Scrape Metadata, Thumbnail and Fanart', 'Modify Metadata',
                               'Change Thumbnail Image', 'Change Fanart Image',
@@ -2419,25 +2477,27 @@ class Main:
     #
     def _gui_render_launchers( self, categoryID ):
         for key in sorted(self.launchers, key= lambda x : self.launchers[x]["application"]):
-            self._print_log('_gui_render_launchers() Iterating {0}'.format(self.launchers[key]['name']))
             if self.launchers[key]["category"] == categoryID:
-                self._print_log('_gui_render_launchers() Showing launcher {0}'.format(self.launchers[key]['name']))
                 self._gui_render_launcher_row(self.launchers[key], key)
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
     #
     # Former  _add_rom
-    #
+    # Note that if we are rendering favourites, categoryID = launcherID = '0'.
     def _gui_render_rom_row( self, categoryID, launcherID, romID, rom):
         # --- Create listitem row ---
         icon = "DefaultProgram.png"
         # icon = "DefaultVideo.png"
         if rom['thumb']: listitem = xbmcgui.ListItem(rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
         else:            listitem = xbmcgui.ListItem(rom['name'], iconImage=icon)
-
+        # If ROM has no fanart then use launcher fanart
+        if launcherID == '0':
+            defined_fanart = rom["fanart"]
+        else:
+            defined_fanart = rom["fanart"] if rom["fanart"] != '' else self.launchers[launcherID]["fanart"]
         if rom['finished'] is not True: ICON_OVERLAY = 6
         else:                           ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", rom['fanart'])
+        listitem.setProperty("fanart_image", defined_fanart)
         listitem.setInfo("video", { "Title": rom['name'], "Label": 'test label', 
                                     "Plot" : rom['plot'], "Studio" : rom['studio'], 
                                     "Genre" : rom['genre'], "Premiered" : rom['release'], 
@@ -2449,13 +2509,18 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('Edit ROM', self._misc_url_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
-        commands.append(('Search Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER'), ))
-        commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAVOURITES', categoryID, launcherID, romID), )) 
+        if launcherID == '0':
+            commands.append(('Edit ROM in Favourites', self._misc_url_RunPlugin('EDIT_ROM', '0', '0', romID), ))
+            commands.append(('Search Favourites', self._misc_url_RunPlugin('SEARCH_LAUNCHER', '0', '0'), ))
+            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', '0', '0', romID), ))
+        else:
+            commands.append(('Edit ROM', self._misc_url_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
+            commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
+            commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAVOURITES', categoryID, launcherID, romID), )) 
+            commands.append(('Delete ROM', self._misc_url_RunPlugin('DELETE_ROM', categoryID, launcherID, romID), ))
         # Add ROM URL to Kodi Favourites (do not know how to do it yet) (maybe not will be used)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003" 
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(ADDON_ID), ))
-
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
@@ -2484,7 +2549,6 @@ class Main:
             #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
             #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
 
-
         if launcherID not in self.launchers:
             gui_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             return
@@ -2506,9 +2570,6 @@ class Main:
 
         # Display ROMs
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-            # If ROM has no fanart then use launcher fanart
-            if (roms[key]["fanart"] ==""): defined_fanart = selectedLauncher["fanart"]
-            else:                          defined_fanart = roms[key]["fanart"]
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key])
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
 
@@ -2533,11 +2594,52 @@ class Main:
 
         # Display Favourites
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-            # If ROM has no fanart then use launcher fanart
-            if (roms[key]["fanart"] ==""): defined_fanart = selectedLauncher["fanart"]
-            else:                          defined_fanart = roms[key]["fanart"]
-            self._gui_render_rom_row(0, 0, key, roms[key])
+            self._gui_render_rom_row('0', '0', key, roms[key])
         xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+
+    #
+    # Adds ROM to favourites
+    #
+    def _command_add_to_favourites(self, categoryID, launcherID, romID):
+        # Load ROMs in launcher
+        launcher = self.launchers[launcherID]
+        roms_xml_file = launcher["roms_xml_file"]
+        roms = self._fs_load_ROM_XML_file(roms_xml_file)
+        if not roms:
+            gui_kodi_dialog_OK('Advanced Emulator Launcher',
+                               'Empty roms launcher in _command_add_to_favourites()',
+                               'This is a bug, please report it.')
+
+        # Load favourites
+        roms_fav = self._fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+        
+        # Check if ROM already in favourites an warn user if so
+        if roms[romID]['id'] in roms_fav:
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher', 
+                               'ROM: {0}'.format(roms[romID]["name"]),
+                               'is already on AEL Favourites.', 'Overwrite it?')
+            if not ret: return
+        
+        # Confirm if rom should be added
+        dialog = xbmcgui.Dialog()
+        ret = dialog.yesno('Advanced Emulator Launcher', 
+                            'ROM: {0}'.format(roms[romID]["name"]),
+                            'Add this ROM to AEL Favourites?')
+        if not ret: return
+        
+        # Add ROM to favourites ROMs and save to disk
+        # If thumb is empty then use launcher thum.
+        # If fanart is empty then use launcher fanart.
+        roms_fav[romID] = roms[romID]
+        roms_fav[romID]['application'] = self.launchers[launcherID]['application']
+        roms_fav[romID]['args']        = self.launchers[launcherID]['args']
+        roms_fav[romID]['launcherID']  = self.launchers[launcherID]['id']
+        if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = self.launchers[launcherID]['thumb']
+        if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
+
+        # Save favourites
+        self._fs_write_Favourites_XML_file(roms_fav, FAVOURITES_FILE_PATH)
 
     #
     # ROM scanner. Called when user chooses "Add items" -> "Scan items"
@@ -2633,20 +2735,21 @@ class Main:
         # f_ext        File extension
         for f_path in files:
             filesCount = filesCount + 1
-            
-            # Get file name combinations.
+
+            # --- Get all file name combinations ---
             (root, ext)  = os.path.splitext(f_path)
             f_path_noext = root
             f_base       = os.path.basename(f_path)
             (root, ext)  = os.path.splitext(f_base)
             f_base_noext = root
             f_ext        = ext
-            self._print_log('*** Processing f_path       = "{0}"'.format(f_path))
-            self._print_log('               f_path_noext = "{0}"'.format(f_path_noext))
-            self._print_log('               f_base       = "{0}"'.format(f_base))
-            self._print_log('               f_base_noext = "{0}"'.format(f_base_noext))
-            self._print_log('               f_ext        = "{0}"'.format(f_ext))
-            
+            self._print_log('*** Processing File ***')
+            self._print_log('f_path       = "{0}"'.format(f_path))
+            self._print_log('f_path_noext = "{0}"'.format(f_path_noext))
+            self._print_log('f_base       = "{0}"'.format(f_base))
+            self._print_log('f_base_noext = "{0}"'.format(f_base_noext))
+            self._print_log('f_ext        = "{0}"'.format(f_ext))
+
             # ~~~ Update progress dialog ~~~
             file_text = 'File {0}'.format(f_base)
             pDialog.update(filesCount * 100 / len(files), file_text, metadata_scraper_text)
@@ -3197,9 +3300,6 @@ class Main:
             xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self._path, categoryID))
 
             return True
-
-    def _command_show_file_manager( self ):
-        xbmc.executebuiltin("ActivateWindow(filemanager)")
 
     def _find_roms( self, is_launcher ):
         dialog = xbmcgui.Dialog()
