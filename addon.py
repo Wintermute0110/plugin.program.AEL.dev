@@ -3020,19 +3020,20 @@ class Main:
                 xbmc_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes', 3000)
         self._save_launchers()
 
-    def _command_add_new_category ( self ) :
+    def _command_add_new_category(self):
         dialog = xbmcgui.Dialog()
         keyboard = xbmc.Keyboard("", 'New Category Name')
         keyboard.doModal()
         if not keyboard.isConfirmed():
             return False
+
         categoryID = misc_generate_random_SID()
         categorydata = {"id" : categoryID, "name" : keyboard.getText(), 
                         "thumb" : "", "fanart" : "", "genre" : "", "plot" : "", "finished" : False}
         self.categories[categoryID] = categorydata
-        self._save_launchers()
+        self._fs_write_catfile()
         xbmc.executebuiltin("Container.Refresh")
-        xbmc_notify('Advanced Emulator Launcher' , 'Category %s created' % categorydata["name"], 3000)
+        gui_kodi_notify('AEL' , 'Category {0} created'.format(categorydata["name"]), 3000)
 
         return True
 
