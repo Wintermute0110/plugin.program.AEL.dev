@@ -3,7 +3,7 @@
 
 <!--games scrapers-->
 
-<category label="Data and Infos">
+<category label="Metadata">
     <setting id="separator" type="lsep" label="30174"/>
     <setting label="30158" type="bool" id="recursive_scan" default="true" />
     <setting label="30166" type="enum" id="datas_method" lvalues="30148|30167|30168|30169" default="0"/>

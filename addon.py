@@ -29,7 +29,6 @@ import xml.etree.ElementTree as ET
 
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
-from xbmcaddon import Addon
 
 # --- Modules/packages in this plugin ---
 import resources.subprocess_hack
@@ -87,13 +86,6 @@ if not os.path.isdir(DEFAULT_NFO_DIR):    os.makedirs(DEFAULT_NFO_DIR)
 # Addon object (used to access settings)
 addon_obj = xbmcaddon.Addon( id="plugin.program.advanced.emulator.launcher" )
 
-# --- Locales parameters ---
-# addon_obj = xbmcaddon.Addon( id="plugin.program.advanced.emulator.launcher" )
-# __lang__ = addon_obj.getLocalizedString
-
-# def __language__(string):
-#    return __lang__(string).encode('utf-8', 'ignore')
-
 # --- Main code ---
 class Main:
     settings = {}
@@ -114,6 +106,16 @@ class Main:
         self._path = sys.argv[ 0 ]
         self._handle = int(sys.argv[ 1 ])
 
+        xbmcplugin.setContent(handle = self._handle, content = 'movies')
+
+        # Adds a sorting method for the media list.
+        if self._handle > 0:
+            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
+            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
+            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
+            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
+            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
+
         # --- WORKAROUND ---
         # When the addon is installed and the file categories.xml does not exist, just
         # create an empty one with a default launcher. Later on, when I am more familiar
@@ -130,14 +132,6 @@ class Main:
 
         # get users scrapers preference
         self._get_scrapers()
-
-        # Adds a sorting method for the media list.
-        if self._handle > 0:
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
     
         # ~~~~~ Process URL commands ~~~~~
         # If no parameters display categories. There are no parameters when the user first runs AEL.
@@ -2435,12 +2429,14 @@ class Main:
     def _gui_render_rom_row( self, categoryID, launcherID, romID, rom):
         # --- Create listitem row ---
         icon = "DefaultProgram.png"
+        # icon = "DefaultVideo.png"
         if rom['thumb']: listitem = xbmcgui.ListItem(rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
         else:            listitem = xbmcgui.ListItem(rom['name'], iconImage=icon)
+
         if rom['finished'] is not True: ICON_OVERLAY = 6
         else:                           ICON_OVERLAY = 7
         listitem.setProperty("fanart_image", rom['fanart'])
-        listitem.setInfo( "video", { "Title": rom['name'], "Label": 'test label', 
+        listitem.setInfo("video", { "Title": rom['name'], "Label": 'test label', 
                                     "Plot" : rom['plot'], "Studio" : rom['studio'], 
                                     "Genre" : rom['genre'], "Premiered" : rom['release'], 
                                     'Year' : rom['release'], "Writer" : rom['gamesys'], 
@@ -2462,6 +2458,18 @@ class Main:
     # Renders the roms listbox for a given launcher
     #
     def _gui_render_roms( self, categoryID, launcherID):
+
+        #xbmcplugin.setContent(handle = self._handle, content = 'movies')
+
+        ## Adds a sorting method for the media list.
+        #if self._handle > 0:
+            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
+            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
+            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
+            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
+            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
+
+
         if launcherID not in self.launchers:
             gui_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             return
@@ -2472,8 +2480,9 @@ class Main:
         # Check if XML file with ROMs exist
         if not os.path.isfile(roms_xml_file):
             gui_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.', 10000)
+            xbmc.executebuiltin("Container.Update")
             return
-            
+
         # Load ROMs
         roms = self._fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
@@ -3494,5 +3503,5 @@ def get_favourites_list():
     return favourites, fav_names
 
 # --- main ----------------------------------------------------------------------------------------
-if( __name__ == "__main__" ):
+if __name__ == "__main__":
     Main()

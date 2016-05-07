@@ -4,9 +4,11 @@
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="script.module.simplejson" version="2.0.9"/>
   </requires>
+
   <extension point="xbmc.python.pluginsource" library="addon.py">
-    <provides>executable</provides>
+    <provides>video executable</provides>
   </extension>
+
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <disclaimer>For Kodi Jarvis</disclaimer>
