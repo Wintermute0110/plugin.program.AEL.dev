@@ -134,9 +134,18 @@ class Main:
         self._get_scrapers()
     
         # ~~~~~ Process URL commands ~~~~~
-        # If no parameters display categories. There are no parameters when the user first runs AEL.
+        # Interestingly, if plugin is called as type executable then args is empty.
+        # However, if plugin is called as type video then Kodi adds the following
+        # even for the first call: 'content_type': ['video']
+        if 'content_type' in args:
+            self._content_type = 'video'
+        else:
+            self._content_type = 'program'
+
+        # If no com parameter display categories.
+        # There are no parameters when the user first runs AEL (ONLY if called as an executable!).
         # Display categories listbox (addon root directory)
-        if not args:
+        if 'com' not in args:
             self._print_log('Advanced Emulator Launcher root folder > Categories list')
             self._gui_render_categories()
             return
@@ -2442,6 +2451,8 @@ class Main:
                                     'Year' : rom['release'], "Writer" : rom['gamesys'], 
                                     "Trailer" : 'test trailer', "Director" : 'test director', 
                                     "overlay": ICON_OVERLAY } )
+        if self._content_type == 'video':
+            listitem.setProperty('IsPlayable', 'true')
 
         # --- Create context menu ---
         commands = []
@@ -2450,7 +2461,12 @@ class Main:
 
         # --- Add row ---
         # if finished != "true" or self.settings[ "hide_finished" ] == False:
-        url_str = self._misc_url_4('LAUNCH_ROM', categoryID, launcherID, romID)
+        # URLs must be different depending on the content type. If not, lot of WARNING: CreateLoader - unsupported protocol(plugin)
+        # in the log. See http://forum.kodi.tv/showthread.php?tid=187954
+        if self._content_type == 'video':
+            url_str = self._misc_url_4('LAUNCH_ROM', categoryID, launcherID, romID)
+        else:
+            url_str = self._misc_url_4('LAUNCH_ROM', categoryID, launcherID, romID)
         xbmcplugin.addDirectoryItem(handle=int(self._handle), url=url_str, listitem=listitem, isFolder=False)
 
     #
