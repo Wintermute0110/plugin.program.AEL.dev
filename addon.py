@@ -59,6 +59,9 @@ DEFAULT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, "thumbs") # Old deprecated 
 DEFAULT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, "fanarts") # Old deprecated definition
 DEFAULT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, "nfos") # Old deprecated definition
 
+# --- Some more constants ---
+ADDON_ID = "plugin.program.advanced.emulator.launcher"
+
 # --- Some debug stuff for development ---
 xbmc.log('---------- Called AEL addon.py ----------')
 # xbmc.log(sys.version)
@@ -82,8 +85,8 @@ if not os.path.isdir(DEFAULT_THUMB_DIR):  os.makedirs(DEFAULT_THUMB_DIR)
 if not os.path.isdir(DEFAULT_FANART_DIR): os.makedirs(DEFAULT_FANART_DIR)
 if not os.path.isdir(DEFAULT_NFO_DIR):    os.makedirs(DEFAULT_NFO_DIR)
 
-# Addon object (used to access settings)
-addon_obj = xbmcaddon.Addon( id="plugin.program.advanced.emulator.launcher" )
+# --- Addon object (used to access settings) ---
+addon_obj = xbmcaddon.Addon(id = ADDON_ID)
 
 # --- Main code ---
 class Main:
@@ -2356,16 +2359,17 @@ class Main:
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
         categoryID = category_dic['id']
-        commands.append(('Edit Category',       self._misc_url_2_RunPlugin('EDIT_CATEGORY', categoryID), ))
-        commands.append(('Create New Category', self._misc_url_1_RunPlugin('ADD_CATEGORY'), ))
-        commands.append(('Add New Launcher',    self._misc_url_2_RunPlugin('ADD_LAUNCHER', categoryID), ))
-        commands.append(('Search',              self._misc_url_1_RunPlugin('SEARCH_COMMAND'), ))
-        commands.append(('Manage sources',      self._misc_url_1_RunPlugin('FILE_MANAGER_COMMAND'), ))
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID), ))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        # Add Category to Kodi Favourites (do not know how to do it yet)
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003" 
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(ADDON_ID), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
         # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-        url_str = self._misc_url_2('SHOW_LAUNCHERS', key)
+        url_str = self._misc_url('SHOW_LAUNCHERS', key)
         xbmcplugin.addDirectoryItem( handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=True)
 
     # 
@@ -2388,7 +2392,6 @@ class Main:
         else:                             # Files launcher
             folder = True
             icon = "DefaultFolder.png"
-            commands.append(('Add Items', self._misc_url_3_RunPlugin('ADD_ROMS', launcher_dic['category'], key), ))
         if launcher_dic['thumb']:
             listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
         else:
@@ -2409,14 +2412,19 @@ class Main:
         # --- Create context menu ---
         launcherID = launcher_dic['id']
         categoryID = launcher_dic['category']
-        commands.append(('Edit Launcher',    self._misc_url_3_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
-        commands.append(('Add New Launcher', self._misc_url_2_RunPlugin('ADD_LAUNCHER', categoryID), ))
-        commands.append(('Search',           self._misc_url_1_RunPlugin('SEARCH_COMMAND'), ))
-        commands.append(('Manage sources',   self._misc_url_1_RunPlugin('FILE_MANAGER_COMMAND'), ))
+        commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
+        # ROMs launcher
+        if not launcher_dic['rompath'] == '':
+            commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', launcher_dic['category'], key), ))
+        commands.append(('Search Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER'), ))
+        # Add Launcher URL to Kodi Favourites (do not know how to do it yet)
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003" 
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(ADDON_ID), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
-        url_str = self._misc_url_3('SHOW_ROMS', launcher_dic['category'], key)
+        url_str = self._misc_url('SHOW_ROMS', launcher_dic['category'], key)
         xbmcplugin.addDirectoryItem(handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=folder)
 
     #
@@ -2455,7 +2463,13 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('Edit ROM', self._misc_url_4_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
+        commands.append(('Edit ROM', self._misc_url_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
+        commands.append(('Search Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER'), ))
+        commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAVOURITES', categoryID, launcherID, romID), )) 
+        # Add ROM URL to Kodi Favourites (do not know how to do it yet) (maybe not will be used)
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003" 
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(ADDON_ID), ))
+
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
@@ -2463,9 +2477,9 @@ class Main:
         # URLs must be different depending on the content type. If not, lot of WARNING: CreateLoader - unsupported protocol(plugin)
         # in the log. See http://forum.kodi.tv/showthread.php?tid=187954
         if self._content_type == 'video':
-            url_str = self._misc_url_4('LAUNCH_ROM', categoryID, launcherID, romID)
+            url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
         else:
-            url_str = self._misc_url_4('LAUNCH_ROM', categoryID, launcherID, romID)
+            url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
         xbmcplugin.addDirectoryItem(handle=int(self._handle), url=url_str, listitem=listitem, isFolder=False)
 
     #
@@ -3337,28 +3351,24 @@ class Main:
     # A set of functions to help making plugin URLs
     # NOTE probably this can be implemented in a more elegant way with optinal arguments...
     #
-    def _misc_url_4_RunPlugin(self, command, categoryID, launcherID, romID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
+    def _misc_url_RunPlugin(self, command, categoryID = None, launcherID = None, romID = None):
+        if romID is not None:
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
+        elif launcherID is not None:
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
+        elif categoryID is not None:
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
 
-    def _misc_url_3_RunPlugin(self, command, categoryID, launcherID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
-
-    def _misc_url_2_RunPlugin(self, command, categoryID):
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
-
-    def _misc_url_1_RunPlugin(self, command):
         return 'XBMC.RunPlugin({0}?com={1})'.format(self._path, command)
 
-    def _misc_url_4(self, command, categoryID, launcherID, romID):
-        return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self._path, command, categoryID, launcherID, romID)
+    def _misc_url(self, command, categoryID = None, launcherID = None, romID = None):
+        if romID is not None:
+            return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self._path, command, categoryID, launcherID, romID)
+        elif launcherID is not None:
+            return '{0}?com={1}&catID={2}&launID={3}'.format(self._path, command, categoryID, launcherID)
+        elif categoryID is not None:
+            return '{0}?com={1}&catID={2}'.format(self._path, command, categoryID)
 
-    def _misc_url_3(self, command, categoryID, launcherID):
-        return '{0}?com={1}&catID={2}&launID={3}'.format(self._path, command, categoryID, launcherID)
-
-    def _misc_url_2(self, command, categoryID):
-        return '{0}?com={1}&catID={2}'.format(self._path, command, categoryID)
-
-    def _misc_url_1(self, command):
         return '{0}?com={1}'.format(self._path, command)
 
 class MainGui( xbmcgui.WindowXMLDialog ):
