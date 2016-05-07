@@ -44,12 +44,6 @@ __url__     = "https://github.com/Wintermute0110/plugin.program.advanced.emulato
 __git_url__ = "https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher"
 __credits__ = "Leo212 CinPoU, JustSomeUser, Zerqent, Zosky, Atsumori"
 
-# --- Some debug stuff for development ---
-xbmc.log('---------- Called AEL addon.py ----------')
-# xbmc.log(sys.version)
-for i in range(len(sys.argv)):
-    xbmc.log('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
-
 # --- Addon paths definition ---
 # _FILE_PATH is a filename
 # _DIR is a directory (with trailing /)
@@ -65,17 +59,22 @@ DEFAULT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, "thumbs") # Old deprecated 
 DEFAULT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, "fanarts") # Old deprecated definition
 DEFAULT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, "nfos") # Old deprecated definition
 
-xbmc.log('PLUGIN_DATA_DIR      = "{0}"'.format(PLUGIN_DATA_DIR))
-xbmc.log('BASE_DIR             = "{0}"'.format(BASE_DIR))
-xbmc.log('HOME_DIR             = "{0}"'.format(HOME_DIR))
-xbmc.log('FAVOURITES_DIR       = "{0}"'.format(FAVOURITES_DIR))
-xbmc.log('ADDONS_DIR           = "{0}"'.format(ADDONS_DIR))
-xbmc.log('CURRENT_ADDON_DIR    = "{0}"'.format(CURRENT_ADDON_DIR))
-xbmc.log('ICON_IMG_FILE_PATH   = "{0}"'.format(ICON_IMG_FILE_PATH))
-xbmc.log('CATEGORIES_FILE_PATH = "{0}"'.format(CATEGORIES_FILE_PATH))
-xbmc.log('DEFAULT_THUMB_DIR    = "{0}"'.format(DEFAULT_THUMB_DIR))
-xbmc.log('DEFAULT_FANART_DIR   = "{0}"'.format(DEFAULT_FANART_DIR))
-xbmc.log('DEFAULT_NFO_DIR      = "{0}"'.format(DEFAULT_NFO_DIR))
+# --- Some debug stuff for development ---
+xbmc.log('---------- Called AEL addon.py ----------')
+# xbmc.log(sys.version)
+for i in range(len(sys.argv)):
+    xbmc.log('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
+# xbmc.log('PLUGIN_DATA_DIR      = "{0}"'.format(PLUGIN_DATA_DIR))
+# xbmc.log('BASE_DIR             = "{0}"'.format(BASE_DIR))
+# xbmc.log('HOME_DIR             = "{0}"'.format(HOME_DIR))
+# xbmc.log('FAVOURITES_DIR       = "{0}"'.format(FAVOURITES_DIR))
+# xbmc.log('ADDONS_DIR           = "{0}"'.format(ADDONS_DIR))
+# xbmc.log('CURRENT_ADDON_DIR    = "{0}"'.format(CURRENT_ADDON_DIR))
+# xbmc.log('ICON_IMG_FILE_PATH   = "{0}"'.format(ICON_IMG_FILE_PATH))
+# xbmc.log('CATEGORIES_FILE_PATH = "{0}"'.format(CATEGORIES_FILE_PATH))
+# xbmc.log('DEFAULT_THUMB_DIR    = "{0}"'.format(DEFAULT_THUMB_DIR))
+# xbmc.log('DEFAULT_FANART_DIR   = "{0}"'.format(DEFAULT_FANART_DIR))
+# xbmc.log('DEFAULT_NFO_DIR      = "{0}"'.format(DEFAULT_NFO_DIR))
 
 # --- Addon data paths creation ---
 if not os.path.isdir(PLUGIN_DATA_DIR):    os.makedirs(PLUGIN_DATA_DIR)
