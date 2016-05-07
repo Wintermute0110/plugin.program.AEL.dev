@@ -1507,84 +1507,101 @@ class Main:
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
-        title=os.path.basename(self.launchers[launcherID]["name"])
-        if (self.launchers[launcherID]["finished"] != "true"):
-            finished_display = __language__( 30339 )
+        title = os.path.basename(self.launchers[launcherID]["name"])
+        finished_display = 'Status : Finished' if self.launchers[launcherID]["finished"] == True else 'Status : Unfinished'
+
+        if self.launchers[launcherID]["rompath"] == "":
+            type = dialog.select('Select Action for %s' % title, 
+                                 ['Import Metadata, Thumbnail and Fanart', 'Modify Metadata',
+                                  'Change Thumbnail Image', 'Change Fanart Image', 
+                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
+                                  finished_display, 
+                                  'Advanced Modifications', 'Delete'])
         else:
-            finished_display = __language__( 30340 )
-        if ( self.launchers[launcherID]["rompath"] == "" ):
-            type = dialog.select(__language__( 30300 ) % title, [__language__( 30338 ),__language__( 30301 ),__language__( 30302 ),__language__( 30303 ),__language__( 30342 ) % self.categories[self.launchers[launcherID]["category"]]['name'],finished_display,__language__( 30323 ),__language__( 30304 )])
-        else:
-            type = dialog.select(__language__( 30300 ) % title, [__language__( 30338 ),__language__( 30301 ),__language__( 30302 ),__language__( 30303 ),__language__( 30342 ) % self.categories[self.launchers[launcherID]["category"]]['name'],finished_display,__language__( 30334 ),__language__( 30323 ),__language__( 30304 )])
+            type = dialog.select('Select Action for %s' % title, 
+                                 ['Import Metadata, Thumbnail and Fanart', 'Modify Metadata',
+                                  'Change Thumbnail Image', 'Change Fanart Image',
+                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
+                                  finished_display, 
+                                  'Manage Items List', 'Advanced Modifications', 'Delete'])
         type_nb = 0
 
         # Scrap item (infos and images)
-        if (type == type_nb ):
+        if type == type_nb:
             self._full_scrap_launcher(launcherID)
 
-        # Edition of the launcher infos
-        type_nb = type_nb+1
-        if (type == type_nb ):
+        # Edition of the launcher metadata
+        type_nb = type_nb + 1
+        if type == type_nb:
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select(__language__( 30319 ), [__language__( 30311 ) % self.settings[ "datas_scraper" ],__language__( 30306 ) % self.launchers[launcherID]["name"],__language__( 30307 ) % self.launchers[launcherID]["gamesys"],__language__( 30308 ) % self.launchers[launcherID]["release"],__language__( 30309 ) % self.launchers[launcherID]["studio"],__language__( 30310 ) % self.launchers[launcherID]["genre"],__language__( 30328 ) % self.launchers[launcherID]["plot"][0:20],__language__( 30333 ),__language__( 30316 )])
-            if (type2 == 0 ):
-                # Edition of the launcher name
+            type2 = dialog.select('Modify Launcher Metadata',
+                                  ['Import from %s' % self.settings[ "datas_scraper" ],
+                                   'Modify Title : %s' % self.launchers[launcherID]["name"],
+                                   'Modify Platform : %s' % self.launchers[launcherID]["gamesys"],
+                                   'Modify Release Date : %s' % self.launchers[launcherID]["release"],
+                                   'Modify Studio : %s' % self.launchers[launcherID]["studio"],
+                                   'Modify Genre : %s' % self.launchers[launcherID]["genre"],
+                                   'Modify Description : %s ...' % self.launchers[launcherID]["plot"][0:20],
+                                   'Import from .nfo file', 'Save to .nfo file'])
+            if type2 == 0:   # Edition of the launcher name
                 self._scrap_launcher(launcherID)
-            if (type2 == 1 ):
-                # Edition of the launcher name
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], __language__( 30037 ))
+            elif type2 == 1: # Edition of the launcher name
+                
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Edit title')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
+                if keyboard.isConfirmed():
                     title = keyboard.getText()
-                    if ( title == "" ):
+                    if title == "" :
                         title = self.launchers[launcherID]["name"]
                     self.launchers[launcherID]["name"] = title.rstrip()
                     self._save_launchers()
-            if (type2 == 2 ):
-                # Selection of the launcher game system
+            elif type2 == 2: # Selection of the launcher game system
+                
                 dialog = xbmcgui.Dialog()
                 platforms = _get_game_system_list()
-                gamesystem = dialog.select(__language__( 30077 ), platforms)
-                if (not gamesystem == -1 ):
+                gamesystem = dialog.select('Select the platform', platforms)
+                if not gamesystem == -1:
                     self.launchers[launcherID]["gamesys"] = platforms[gamesystem]
                     self._save_launchers()
-            if (type2 == 3 ):
+            elif type2 == 3:
                 # Edition of the launcher release date
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["release"], __language__( 30038 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]["release"], 'Edit release year')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
+                if keyboard.isConfirmed():
                     self.launchers[launcherID]["release"] = keyboard.getText()
                     self._save_launchers()
-            if (type2 == 4 ):
+            elif type2 == 4:
                 # Edition of the launcher studio name
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["studio"], __language__( 30039 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]["studio"], 'Edit studio')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
+                if keyboard.isConfirmed():
                     self.launchers[launcherID]["studio"] = keyboard.getText()
                     self._save_launchers()
-            if (type2 == 5 ):
+            elif type2 == 5:
                 # Edition of the launcher genre
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["genre"], __language__( 30040 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]["genre"], 'Edit genre')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
+                if keyboard.isConfirmed():
                     self.launchers[launcherID]["genre"] = keyboard.getText()
                     self._save_launchers()
-            if (type2 == 6 ):
+            elif type2 == 6:
                 # Import of the launcher plot
-                text_file = xbmcgui.Dialog().browse(1,__language__( 30080 ),"files",".txt|.dat", False, False, self.launchers[launcherID]["application"])
-                if ( os.path.isfile(text_file) == True ):
+                text_file = xbmcgui.Dialog().browse(1,
+                                                    'Select description file. (e.g txt|dat)', "files", ".txt|.dat", 
+                                                    False, False, self.launchers[launcherID]["application"])
+                if os.path.isfile(text_file) == True:
                     text_plot = open(text_file, 'r')
                     self.launchers[launcherID]["plot"] = text_plot.read()
                     text_plot.close()
                     self._save_launchers()
-            if (type2 == 7 ):
+            elif type2 == 7:
                 # Edition of the launcher name
                 self._import_launcher_nfo(launcherID)
-            if (type2 == 8 ):
+            elif type2 == 8:
                 # Edition of the launcher name
                 self._export_launcher_nfo(launcherID)
 
-        # Launcher Thumbnail menu option
+        # Launcher Thumbnail menu option (VERY SIMILAR TO THE CATEGORIES STUFF, HAVE A LOOK THERE)
         type_nb = type_nb+1
         if (type == type_nb ):
             dialog = xbmcgui.Dialog()
@@ -1687,7 +1704,7 @@ class Main:
 
         # Launcher's change category
         type_nb = type_nb+1
-        if (type == type_nb ):
+        if type == type_nb:
             current_category = self.launchers[launcherID]["category"]
             dialog = xbmcgui.Dialog()
             categories_id = []
@@ -1703,7 +1720,7 @@ class Main:
 
         # Launcher status
         type_nb = type_nb+1
-        if (type == type_nb ):
+        if type == type_nb:
             if (self.launchers[launcherID]["finished"] != "true"):
                 self.launchers[launcherID]["finished"] = "true"
             else:
@@ -1711,7 +1728,7 @@ class Main:
             self._save_launchers()
 
         # Launcher's Items List menu option
-        if ( self.launchers[launcherID]["rompath"] != "" ):
+        if self.launchers[launcherID]["rompath"] != "" :
             type_nb = type_nb+1
             if (type == type_nb ):
                 dialog = xbmcgui.Dialog()
@@ -1728,7 +1745,7 @@ class Main:
 
         # Launcher Advanced menu option
         type_nb = type_nb+1
-        if (type == type_nb ):
+        if type == type_nb:
             if self.launchers[launcherID]["minimize"] == "true":
                 minimize_str = __language__( 30204 )
             else:
@@ -1744,7 +1761,7 @@ class Main:
                     filter = ".bat|.exe|.cmd"
                 else:
                     filter = ""
-            if ( self.launchers[launcherID]["rompath"] != "" ):
+            if self.launchers[launcherID]["rompath"] != "":
                 if (sys.platform == 'win32'):
                     type2 = dialog.select(__language__( 30323 ), [__language__( 30327 ) % self.launchers[launcherID]["application"],__language__( 30315 ) % self.launchers[launcherID]["args"],__language__( 30324 ) % self.launchers[launcherID]["rompath"],__language__( 30317 ) % self.launchers[launcherID]["romext"],__language__( 30325 ) % self.launchers[launcherID]["thumbpath"], __language__( 30326 ) % self.launchers[launcherID]["fanartpath"], __language__( 30341 ) % self.launchers[launcherID]["trailerpath"], __language__( 30331 ) % self.launchers[launcherID]["custompath"],__language__( 30329 ) % minimize_str,__language__( 30330 ) % lnk_str])
                 else:
@@ -1757,20 +1774,20 @@ class Main:
 
             # Launcher application path menu option
             type2_nb = 0
-            if (type2 == type2_nb ):
+            if type2 == type2_nb:
                 app = xbmcgui.Dialog().browse(1,__language__( 30023 ),"files","", False, False, self.launchers[launcherID]["application"])
                 self.launchers[launcherID]["application"] = app
 
             # Edition of the launcher arguments
             type2_nb = type2_nb +1
-            if (type2 == type2_nb ):
+            if type2 == type2_nb:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["args"], __language__( 30052 ))
                 keyboard.doModal()
                 if (keyboard.isConfirmed()):
                     self.launchers[launcherID]["args"] = keyboard.getText()
                     self._save_launchers()
 
-            if ( self.launchers[launcherID]["rompath"] != "" ):
+            if self.launchers[launcherID]["rompath"] != "":
                 # Launcher roms path menu option
                 type2_nb = type2_nb + 1
                 if (type2 == type2_nb ):
@@ -1789,27 +1806,27 @@ class Main:
 
             # Launcher thumbnails path menu option
             type2_nb = type2_nb + 1
-            if (type2 == type2_nb ):
+            if type2 == type2_nb:
                 thumb_path = xbmcgui.Dialog().browse(0,__language__( 30059 ),"files","", False, False, self.launchers[launcherID]["thumbpath"])
                 self.launchers[launcherID]["thumbpath"] = thumb_path
             # Launcher fanarts path menu option
             type2_nb = type2_nb + 1
-            if (type2 == type2_nb ):
+            if type2 == type2_nb:
                 fanart_path = xbmcgui.Dialog().browse(0,__language__( 30060 ),"files","", False, False, self.launchers[launcherID]["fanartpath"])
                 self.launchers[launcherID]["fanartpath"] = fanart_path
             # Launcher trailer file menu option
             type2_nb = type2_nb + 1
-            if (type2 == type2_nb ):
+            if type2 == type2_nb:
                 fanart_path = xbmcgui.Dialog().browse(1,__language__( 30090 ),"files",".mp4|.mpg|.avi|.wmv|.mkv|.flv", False, False, self.launchers[launcherID]["trailerpath"])
                 self.launchers[launcherID]["trailerpath"] = fanart_path
             # Launcher custom path menu option
             type2_nb = type2_nb + 1
-            if (type2 == type2_nb ):
+            if type2 == type2_nb:
                 fanart_path = xbmcgui.Dialog().browse(0,__language__( 30057 ),"files","", False, False, self.launchers[launcherID]["custompath"])
                 self.launchers[launcherID]["custompath"] = fanart_path
             # Launcher minimize state menu option
             type2_nb = type2_nb + 1
-            if (type2 == type2_nb ):
+            if type2 == type2_nb:
                 dialog = xbmcgui.Dialog()
                 type3 = dialog.select(__language__( 30203 ), ["%s (%s)" % (__language__( 30205 ),__language__( 30201 )), "%s" % (__language__( 30204 ))])
                 if (type3 == 1 ):
@@ -1818,7 +1835,7 @@ class Main:
                     self.launchers[launcherID]["minimize"] = "false"
             self._save_launchers()
             # Launcher internal lnk option
-            if (sys.platform == 'win32'):
+            if sys.platform == 'win32':
                 type2_nb = type2_nb + 1
                 if (type2 == type2_nb ):
                     dialog = xbmcgui.Dialog()
@@ -1831,10 +1848,10 @@ class Main:
 
         # Remove Launcher menu option
         type_nb = type_nb+1
-        if (type == type_nb ):
+        if type == type_nb:
             self._remove_launcher(launcherID)
 
-        if (type == -1 ):
+        if type == -1:
             self._save_launchers()
 
         # Return to the launcher directory
