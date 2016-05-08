@@ -307,6 +307,72 @@ class Main:
             if (categoryID == SEARCH_COMMAND):
                 self._find_roms(False)
 
+    def _get_settings( self ):
+        # get the users preference settings
+        self.settings = {}
+        self.settings["datas_method"]          = addon_obj.getSetting( "datas_method" )
+        self.settings["thumbs_method"]         = addon_obj.getSetting( "thumbs_method" )
+        self.settings["fanarts_method"]        = addon_obj.getSetting( "fanarts_method" )
+        self.settings["scrap_info"]            = addon_obj.getSetting( "scrap_info" )
+        self.settings["scrap_thumbs"]          = addon_obj.getSetting( "scrap_thumbs" )
+        self.settings["scrap_fanarts"]         = addon_obj.getSetting( "scrap_fanarts" )
+        self.settings["select_fanarts"]        = addon_obj.getSetting( "select_fanarts" )
+        self.settings["overwrite_thumbs"]      = ( addon_obj.getSetting( "overwrite_thumbs" ) == "true" )
+        self.settings["overwrite_fanarts"]     = ( addon_obj.getSetting( "overwrite_fanarts" ) == "true" )
+        self.settings["clean_title"]           = ( addon_obj.getSetting( "clean_title" ) == "true" )
+        self.settings["ignore_bios"]           = ( addon_obj.getSetting( "ignore_bios" ) == "true" )
+        self.settings["ignore_title"]          = ( addon_obj.getSetting( "ignore_title" ) == "true" )
+        self.settings["title_formating"]       = ( addon_obj.getSetting( "title_formating" ) == "true" )
+        self.settings["datas_scraper"]         = addon_obj.getSetting( "datas_scraper" )
+        self.settings["thumbs_scraper"]        = addon_obj.getSetting( "thumbs_scraper" )
+        self.settings["fanarts_scraper"]       = addon_obj.getSetting( "fanarts_scraper" )
+        self.settings["game_region"]           = ['All','EU','JP','US'][int(addon_obj.getSetting('game_region'))]
+        self.settings["launcher_thumb_path"]   = addon_obj.getSetting( "launcher_thumb_path" )
+        self.settings["launcher_fanart_path"]  = addon_obj.getSetting( "launcher_fanart_path" )
+        self.settings["launcher_nfo_path"]     = addon_obj.getSetting( "launcher_nfo_path" )
+        self.settings["media_state"]           = addon_obj.getSetting( "media_state" )
+        self.settings["show_batch"]            = ( addon_obj.getSetting( "show_batch" ) == "true" )
+        self.settings["recursive_scan"]        = ( addon_obj.getSetting( "recursive_scan" ) == "true" )
+        self.settings["launcher_notification"] = ( addon_obj.getSetting( "launcher_notification" ) == "true" )
+        self.settings["lirc_state"]            = ( addon_obj.getSetting( "lirc_state" ) == "true" )
+        self.settings["hide_finished"]         = ( addon_obj.getSetting( "hide_finished" ) == "true" )
+        self.settings["snap_flyer"]            = addon_obj.getSetting( "snap_flyer" )
+        self.settings["start_tempo"]           = int(round(float(addon_obj.getSetting( "start_tempo" ))))
+        self.settings["auto_backup"]           = ( addon_obj.getSetting( "auto_backup" ) == "true" )
+        self.settings["nb_backup_files"]       = int(round(float(addon_obj.getSetting( "nb_backup_files" ))))
+        self.settings["show_log"]              = ( addon_obj.getSetting( "show_log" ) == "true" )
+        self.settings["hide_default_cat"]      = ( addon_obj.getSetting( "hide_default_cat" ) == "true" )
+        self.settings["open_default_cat"]      = ( addon_obj.getSetting( "open_default_cat" ) == "true" )
+        self.settings["display_game_region"]   = ['All', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
+        self.settings["thumb_image_size"] = \
+            ['','icon','small','medium','large','xlarge','xxlarge','huge'][int(addon_obj.getSetting('thumb_image_size'))]
+        self.settings["thumb_image_size_display" ] = \
+            ['All', 'Icon', 'Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge'][int(addon_obj.getSetting('thumb_image_size'))]
+        self.settings["fanart_image_size" ] = \
+            ['All', 'Icon', 'Small', 'Medium', 'Large', 'Xlarge', 'XXlarge', 'Huge'][int(addon_obj.getSetting('fanart_image_size'))]
+        self.settings["fanart_image_size_display" ] = \
+            ['All', 'Icon', 'Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge'][int(addon_obj.getSetting('fanart_image_size'))]
+
+        # Temporally activate log
+        self.settings["show_log"] = True
+
+    def _get_scrapers( self ):
+        # get the users gamedata scrapers preference
+        exec "import resources.scrapers.datas.%s.datas_scraper as _data_scraper" % ( self.settings[ "datas_scraper" ] )
+        self._get_games_list = _data_scraper._get_games_list
+        self._get_game_data = _data_scraper._get_game_data
+        self._get_first_game = _data_scraper._get_first_game
+
+        # get the users thumbs scrapers preference
+        exec "import resources.scrapers.thumbs.%s.thumbs_scraper as _thumbs_scraper" % ( self.settings[ "thumbs_scraper" ] )
+        self._get_thumbnails_list = _thumbs_scraper._get_thumbnails_list
+        self._get_thumbnail = _thumbs_scraper._get_thumbnail
+
+        # get the users fanarts scrapers preference
+        exec "import resources.scrapers.fanarts.%s.fanarts_scraper as _fanarts_scraper" % ( self.settings[ "fanarts_scraper" ] )
+        self._get_fanarts_list = _fanarts_scraper._get_fanarts_list
+        self._get_fanart = _fanarts_scraper._get_fanart
+
     #
     # Creates default categories data struct
     # CAREFUL deletes current categories!
@@ -958,6 +1024,47 @@ class Main:
             self._scrap_rom_algo(launcher, rom, keyboard.getText())
             self._scrap_thumb_rom_algo(launcher, rom, keyboard.getText())
             self._scrap_fanart_rom_algo(launcher, rom, keyboard.getText())
+            self._save_launchers()
+            xbmc.executebuiltin("Container.Update")
+
+    def _scrap_launcher_algo(self, launcherID, title):
+        # Scrapping launcher name info
+        results,display = self._get_games_list(title)
+        if display:
+            # Display corresponding game list found
+            dialog = xbmcgui.Dialog()
+            # Game selection
+            selectgame = dialog.select('Select a item from %s' % ( self.settings[ "datas_scraper" ] ), display)
+            if (not selectgame == -1):
+                if ( self.settings[ "ignore_title" ] ):
+                    self.launchers[launcherID]["name"] = title_format(self,self.launchers[launcherID]["name"])
+                else:
+                    self.launchers[launcherID]["name"] = title_format(self,results[selectgame]["title"])
+                gamedata = self._get_game_data(results[selectgame]["id"])
+                self.launchers[launcherID]["genre"] = gamedata["genre"]
+                self.launchers[launcherID]["release"] = gamedata["release"]
+                self.launchers[launcherID]["studio"] = gamedata["studio"]
+                self.launchers[launcherID]["plot"] = gamedata["plot"]
+        else:
+            xbmc_notify('Advanced Emulator Launcher', __language__( 30076 ),3000)
+
+    def _scrap_launcher(self, launcherID):
+        # Edition of the launcher name
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            self._scrap_launcher_algo(launcherID, keyboard.getText())
+            self._save_launchers()
+            xbmc.executebuiltin("Container.Update")
+
+    def _full_scrap_launcher(self, launcherID):
+        # Edition of the launcher name
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            self._scrap_launcher_algo(launcherID, keyboard.getText())
+            self._scrap_thumb_launcher_algo(launcherID, keyboard.getText())
+            self._scrap_fanart_launcher_algo(launcherID, keyboard.getText())
             self._save_launchers()
             xbmc.executebuiltin("Container.Update")
 
@@ -1664,76 +1771,6 @@ class Main:
         # Return to the launcher directory
         xbmc.executebuiltin("Container.Refresh")
 
-    def _scrap_launcher_algo(self, launcherID, title):
-        # Scrapping launcher name info
-        results,display = self._get_games_list(title)
-        if display:
-            # Display corresponding game list found
-            dialog = xbmcgui.Dialog()
-            # Game selection
-            selectgame = dialog.select('Select a item from %s' % ( self.settings[ "datas_scraper" ] ), display)
-            if (not selectgame == -1):
-                if ( self.settings[ "ignore_title" ] ):
-                    self.launchers[launcherID]["name"] = title_format(self,self.launchers[launcherID]["name"])
-                else:
-                    self.launchers[launcherID]["name"] = title_format(self,results[selectgame]["title"])
-                gamedata = self._get_game_data(results[selectgame]["id"])
-                self.launchers[launcherID]["genre"] = gamedata["genre"]
-                self.launchers[launcherID]["release"] = gamedata["release"]
-                self.launchers[launcherID]["studio"] = gamedata["studio"]
-                self.launchers[launcherID]["plot"] = gamedata["plot"]
-        else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30076 ),3000)
-
-    def _scrap_launcher(self, launcherID):
-        # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
-        keyboard.doModal()
-        if (keyboard.isConfirmed()):
-            self._scrap_launcher_algo(launcherID, keyboard.getText())
-            self._save_launchers()
-            xbmc.executebuiltin("Container.Update")
-
-    def _full_scrap_launcher(self, launcherID):
-        # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
-        keyboard.doModal()
-        if (keyboard.isConfirmed()):
-            self._scrap_launcher_algo(launcherID, keyboard.getText())
-            self._scrap_thumb_launcher_algo(launcherID, keyboard.getText())
-            self._scrap_fanart_launcher_algo(launcherID, keyboard.getText())
-            self._save_launchers()
-            xbmc.executebuiltin("Container.Update")
-
-    def _import_launcher_nfo(self, launcherID):
-        if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
-            nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
-        else:
-            if ( len(self.settings[ "launcher_nfo_path" ]) > 0 ):
-                nfo_file = os.path.join(self.settings[ "launcher_nfo_path" ],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
-            else:
-                nfo_file = xbmcgui.Dialog().browse(1,__language__( 30088 ),"files",".nfo", False, False)
-        if (os.path.isfile(nfo_file)):
-            f = open(nfo_file, 'r')
-            item_nfo = f.read().replace('\r','').replace('\n','')
-            item_title = re.findall( "<title>(.*?)</title>", item_nfo )
-            item_platform = re.findall( "<platform>(.*?)</platform>", item_nfo )
-            item_year = re.findall( "<year>(.*?)</year>", item_nfo )
-            item_publisher = re.findall( "<publisher>(.*?)</publisher>", item_nfo )
-            item_genre = re.findall( "<genre>(.*?)</genre>", item_nfo )
-            item_plot = re.findall( "<plot>(.*?)</plot>", item_nfo )
-            self.launchers[launcherID]["name"] = item_title[0].rstrip()
-            self.launchers[launcherID]["gamesys"] = item_platform[0]
-            self.launchers[launcherID]["release"] = item_year[0]
-            self.launchers[launcherID]["studio"] = item_publisher[0]
-            self.launchers[launcherID]["genre"] = item_genre[0]
-            self.launchers[launcherID]["plot"] = item_plot[0].replace('&quot;','"')
-            f.close()
-            self._save_launchers()
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30083 ) % os.path.basename(nfo_file),3000)
-        else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30082 ) % os.path.basename(nfo_file),3000)
-
     def _export_items_list_nfo(self, launcherID):
         for rom in self.launchers[launcherID]["roms"].iterkeys():
             self._export_rom_nfo(launcherID, rom)
@@ -1741,72 +1778,6 @@ class Main:
     def _import_items_list_nfo(self, launcherID):
         for rom in self.launchers[launcherID]["roms"].iterkeys():
             self._import_rom_nfo(launcherID, rom)
-
-    def _get_settings( self ):
-        # get the users preference settings
-        self.settings = {}
-        self.settings["datas_method"]          = addon_obj.getSetting( "datas_method" )
-        self.settings["thumbs_method"]         = addon_obj.getSetting( "thumbs_method" )
-        self.settings["fanarts_method"]        = addon_obj.getSetting( "fanarts_method" )
-        self.settings["scrap_info"]            = addon_obj.getSetting( "scrap_info" )
-        self.settings["scrap_thumbs"]          = addon_obj.getSetting( "scrap_thumbs" )
-        self.settings["scrap_fanarts"]         = addon_obj.getSetting( "scrap_fanarts" )
-        self.settings["select_fanarts"]        = addon_obj.getSetting( "select_fanarts" )
-        self.settings["overwrite_thumbs"]      = ( addon_obj.getSetting( "overwrite_thumbs" ) == "true" )
-        self.settings["overwrite_fanarts"]     = ( addon_obj.getSetting( "overwrite_fanarts" ) == "true" )
-        self.settings["clean_title"]           = ( addon_obj.getSetting( "clean_title" ) == "true" )
-        self.settings["ignore_bios"]           = ( addon_obj.getSetting( "ignore_bios" ) == "true" )
-        self.settings["ignore_title"]          = ( addon_obj.getSetting( "ignore_title" ) == "true" )
-        self.settings["title_formating"]       = ( addon_obj.getSetting( "title_formating" ) == "true" )
-        self.settings["datas_scraper"]         = addon_obj.getSetting( "datas_scraper" )
-        self.settings["thumbs_scraper"]        = addon_obj.getSetting( "thumbs_scraper" )
-        self.settings["fanarts_scraper"]       = addon_obj.getSetting( "fanarts_scraper" )
-        self.settings["game_region"]           = ['All','EU','JP','US'][int(addon_obj.getSetting('game_region'))]
-        self.settings["launcher_thumb_path"]   = addon_obj.getSetting( "launcher_thumb_path" )
-        self.settings["launcher_fanart_path"]  = addon_obj.getSetting( "launcher_fanart_path" )
-        self.settings["launcher_nfo_path"]     = addon_obj.getSetting( "launcher_nfo_path" )
-        self.settings["media_state"]           = addon_obj.getSetting( "media_state" )
-        self.settings["show_batch"]            = ( addon_obj.getSetting( "show_batch" ) == "true" )
-        self.settings["recursive_scan"]        = ( addon_obj.getSetting( "recursive_scan" ) == "true" )
-        self.settings["launcher_notification"] = ( addon_obj.getSetting( "launcher_notification" ) == "true" )
-        self.settings["lirc_state"]            = ( addon_obj.getSetting( "lirc_state" ) == "true" )
-        self.settings["hide_finished"]         = ( addon_obj.getSetting( "hide_finished" ) == "true" )
-        self.settings["snap_flyer"]            = addon_obj.getSetting( "snap_flyer" )
-        self.settings["start_tempo"]           = int(round(float(addon_obj.getSetting( "start_tempo" ))))
-        self.settings["auto_backup"]           = ( addon_obj.getSetting( "auto_backup" ) == "true" )
-        self.settings["nb_backup_files"]       = int(round(float(addon_obj.getSetting( "nb_backup_files" ))))
-        self.settings["show_log"]              = ( addon_obj.getSetting( "show_log" ) == "true" )
-        self.settings["hide_default_cat"]      = ( addon_obj.getSetting( "hide_default_cat" ) == "true" )
-        self.settings["open_default_cat"]      = ( addon_obj.getSetting( "open_default_cat" ) == "true" )
-        self.settings["display_game_region"]   = ['All', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
-        self.settings["thumb_image_size"] = \
-            ['','icon','small','medium','large','xlarge','xxlarge','huge'][int(addon_obj.getSetting('thumb_image_size'))]
-        self.settings["thumb_image_size_display" ] = \
-            ['All', 'Icon', 'Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge'][int(addon_obj.getSetting('thumb_image_size'))]
-        self.settings["fanart_image_size" ] = \
-            ['All', 'Icon', 'Small', 'Medium', 'Large', 'Xlarge', 'XXlarge', 'Huge'][int(addon_obj.getSetting('fanart_image_size'))]
-        self.settings["fanart_image_size_display" ] = \
-            ['All', 'Icon', 'Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge'][int(addon_obj.getSetting('fanart_image_size'))]
-
-        # Temporally activate log
-        self.settings["show_log"] = True
-
-    def _get_scrapers( self ):
-        # get the users gamedata scrapers preference
-        exec "import resources.scrapers.datas.%s.datas_scraper as _data_scraper" % ( self.settings[ "datas_scraper" ] )
-        self._get_games_list = _data_scraper._get_games_list
-        self._get_game_data = _data_scraper._get_game_data
-        self._get_first_game = _data_scraper._get_first_game
-
-        # get the users thumbs scrapers preference
-        exec "import resources.scrapers.thumbs.%s.thumbs_scraper as _thumbs_scraper" % ( self.settings[ "thumbs_scraper" ] )
-        self._get_thumbnails_list = _thumbs_scraper._get_thumbnails_list
-        self._get_thumbnail = _thumbs_scraper._get_thumbnail
-
-        # get the users fanarts scrapers preference
-        exec "import resources.scrapers.fanarts.%s.fanarts_scraper as _fanarts_scraper" % ( self.settings[ "fanarts_scraper" ] )
-        self._get_fanarts_list = _fanarts_scraper._get_fanarts_list
-        self._get_fanart = _fanarts_scraper._get_fanart
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.

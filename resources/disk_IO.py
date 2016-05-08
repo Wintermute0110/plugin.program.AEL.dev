@@ -507,3 +507,32 @@ def export_launcher_nfo(self, launcherID):
         usock.write(nfo_content)
         usock.close()
         xbmc_notify('Advanced Emulator Launcher', __language__( 30086 ) % os.path.basename(nfo_file),3000)
+
+    def _import_launcher_nfo(self, launcherID):
+        if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
+            nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
+        else:
+            if ( len(self.settings[ "launcher_nfo_path" ]) > 0 ):
+                nfo_file = os.path.join(self.settings[ "launcher_nfo_path" ],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
+            else:
+                nfo_file = xbmcgui.Dialog().browse(1,__language__( 30088 ),"files",".nfo", False, False)
+        if (os.path.isfile(nfo_file)):
+            f = open(nfo_file, 'r')
+            item_nfo = f.read().replace('\r','').replace('\n','')
+            item_title = re.findall( "<title>(.*?)</title>", item_nfo )
+            item_platform = re.findall( "<platform>(.*?)</platform>", item_nfo )
+            item_year = re.findall( "<year>(.*?)</year>", item_nfo )
+            item_publisher = re.findall( "<publisher>(.*?)</publisher>", item_nfo )
+            item_genre = re.findall( "<genre>(.*?)</genre>", item_nfo )
+            item_plot = re.findall( "<plot>(.*?)</plot>", item_nfo )
+            self.launchers[launcherID]["name"] = item_title[0].rstrip()
+            self.launchers[launcherID]["gamesys"] = item_platform[0]
+            self.launchers[launcherID]["release"] = item_year[0]
+            self.launchers[launcherID]["studio"] = item_publisher[0]
+            self.launchers[launcherID]["genre"] = item_genre[0]
+            self.launchers[launcherID]["plot"] = item_plot[0].replace('&quot;','"')
+            f.close()
+            self._save_launchers()
+            xbmc_notify('Advanced Emulator Launcher', __language__( 30083 ) % os.path.basename(nfo_file),3000)
+        else:
+            xbmc_notify('Advanced Emulator Launcher', __language__( 30082 ) % os.path.basename(nfo_file),3000)
