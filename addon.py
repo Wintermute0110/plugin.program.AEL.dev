@@ -219,93 +219,15 @@ class Main:
         elif command == 'ADD_TO_FAVOURITES':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
 
+        elif command == 'SEARCH_LAUNCHER':
+            # self._command_find_roms(args['catID'][0], args['launID'][0])
+            self._command_find_roms(0, 0)
         else:
             log_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
-            return
-        
-        return
 
-        # Process script parameters
-        param = param[1:]
-        command = param.split(COMMAND_ARGS_SEPARATOR)
-        command_part = command[0].split("/")
-        self._print_log('command = {0}'.format(command))
-        self._print_log('command_part = {0}'.format(command_part))
-
-
-        # check the action needed
-        if ( len(command_part) == 4 ):
-            category = command_part[0]
-            launcher = command_part[1]
-            rom = command_part[2]
-            action = command_part[3]
-
-            if (action == SEARCH_COMMAND):
-                self._find_roms(False)
-
-            elif (action == GET_INFO):
-                self._scrap_rom(launcher, rom)
-            elif (action == GET_THUMB):
-                self._scrap_thumb_rom(launcher, rom)
-            elif (action == GET_FANART):
-                self._scrap_fanart_rom(launcher, rom)
-
-        if ( len(command_part) == 3 ):
-            category = command_part[0]
-            launcher = command_part[1]
-            rom = command_part[2]
-
-            if (rom == SEARCH_COMMAND):
-                self._find_roms(False)
-
-            elif (rom == GET_INFO):
-                self._scrap_launcher(launcher)
-            elif (rom == GET_THUMB):
-                self._scrap_thumb_launcher(launcher)
-            elif (rom == GET_FANART):
-                self._scrap_fanart_launcher(launcher)
-
-        if ( len(command_part) == 2 ):
-            category = command_part[0]
-            launcher = command_part[1]
-
-            if (launcher == SEARCH_COMMAND):
-                self._find_roms(False)
-
-            elif (launcher == GET_INFO):
-                self._modify_category(category)
-                xbmc.executebuiltin("Container.Refresh")
-
-            elif (launcher == GET_THUMB):
-                self._scrap_thumb_category(category)
-
-            elif (launcher == GET_FANART):
-                self._scrap_fanart_category(category)
-            
-            # Search commands
-            elif (launcher == SEARCH_ITEM_COMMAND):
-                self._find_add_roms(category)
-            elif (launcher == SEARCH_DATE_COMMAND):
-                self._find_date_add_roms(category)
-            elif (launcher == SEARCH_PLATFORM_COMMAND):
-                self._find_platform_add_roms(category)
-            elif (launcher == SEARCH_STUDIO_COMMAND):
-                self._find_studio_add_roms(category)
-            elif (launcher == SEARCH_GENRE_COMMAND):
-                self._find_genre_add_roms(category)
-
-        # param is of the form "?md5_hash_str"
-        # User selected one category in the root folder. Display that category launchers
-        if len(command_part) == 1:
-            categoryID = command_part[0]
-            self._print_log('%s category folder > Launcher list' % categoryID)
-
-            if (categoryID == SCAN_NEW_ITEM_COMMAND):
-                self._find_roms(False)
-
-            if (categoryID == SEARCH_COMMAND):
-                self._find_roms(False)
-
+    #
+    # Get Addon Settings
+    #
     def _get_settings( self ):
         # get the users preference settings
         self.settings = {}
@@ -406,13 +328,13 @@ class Main:
         return empty_category
 
     def _scrap_thumb_rom_algo(self, launcher, rom, title):
-        xbmc_notify('Advanced Emulator Launcher', __language__( 30065 ) % (self.launchers[launcher]["roms"][rom]["name"],(self.settings[ "thumbs_scraper" ]).encode('utf-8','ignore')),300000)
+        log_kodi_notify('Advanced Emulator Launcher', __language__( 30065 ) % (self.launchers[launcher]["roms"][rom]["name"],(self.settings[ "thumbs_scraper" ]).encode('utf-8','ignore')),300000)
         xbmc.executebuiltin( "ActivateWindow(busydialog)" )
         covers = self._get_thumbnails_list(self.launchers[launcher]["roms"][rom]["gamesys"],title,self.settings["game_region"],self.settings[ "thumb_image_size" ])
         if covers:
             nb_images = len(covers)
             xbmc.executebuiltin( "Dialog.Close(busydialog)" )
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30066 ) % (nb_images,self.launchers[launcher]["roms"][rom]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30066 ) % (nb_images,self.launchers[launcher]["roms"][rom]["name"]),3000)
             covers.insert(0,(self.launchers[launcher]["roms"][rom]["thumb"],self.launchers[launcher]["roms"][rom]["thumb"],__language__( 30068 )))
             self.image_url = MyDialog(covers)
             if ( self.image_url ):
@@ -432,7 +354,7 @@ class Main:
                                     file_path = filename.replace("."+filename.split(".")[-1], img_ext)
                                 else:
                                     file_path = os.path.join(os.path.dirname(self.launchers[launcher]["thumbpath"]),os.path.basename(filename.replace("."+filename.split(".")[-1], img_ext)))
-                            xbmc_notify('Advanced Emulator Launcher', __language__( 30069 ),300000)
+                            log_kodi_notify('Advanced Emulator Launcher', __language__( 30069 ),300000)
                             try:
                                 download_img(img_url,file_path)
                                 req = urllib2.Request(img_url)
@@ -444,16 +366,16 @@ class Main:
                                     _update_cache(file_path)
                                 self.launchers[launcher]["roms"][rom]["thumb"] = file_path
                                 self._save_launchers()
-                                xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
                     else:
-                        xbmc_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
+                        log_kodi_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
         else:
             xbmc.executebuiltin( "Dialog.Close(busydialog)" )
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
 
     def _scrap_thumb_rom(self, launcher, rom):
         if ( self.launchers[launcher]["application"].lower().find('mame') > 0 ) or ( self.settings[ "thumbs_scraper" ] == 'arcadeHITS' ):
@@ -467,11 +389,11 @@ class Main:
         xbmc.executebuiltin("Container.Update")
 
     def _scrap_thumb_launcher_algo(self, launcherID, title):
-        xbmc_notify('Advanced Emulator Launcher', __language__( 30065 ) % (self.launchers[launcherID]["name"],(self.settings[ "thumbs_scraper" ]).encode('utf-8','ignore')),30000)
+        log_kodi_notify('Advanced Emulator Launcher', __language__( 30065 ) % (self.launchers[launcherID]["name"],(self.settings[ "thumbs_scraper" ]).encode('utf-8','ignore')),30000)
         covers = self._get_thumbnails_list(self.launchers[launcherID]["gamesys"],title,self.settings["game_region"],self.settings[ "thumb_image_size" ])
         if covers:
             nb_images = len(covers)
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30066 ) % (nb_images,self.launchers[launcherID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30066 ) % (nb_images,self.launchers[launcherID]["name"]),3000)
             covers.insert(0,(self.launchers[launcherID]["thumb"],self.launchers[launcherID]["thumb"],__language__( 30068 )))
             self.image_url = MyDialog(covers)
             if ( self.image_url ):
@@ -487,29 +409,29 @@ class Main:
                                 if (self.settings[ "launcher_thumb_path" ] == "" ):
                                     self.settings[ "launcher_thumb_path" ] = DEFAULT_THUMB_PATH
                                 file_path = os.path.join(self.settings[ "launcher_thumb_path" ],os.path.basename(self.launchers[launcherID]["application"])+'_thumb'+img_ext)
-                            xbmc_notify('Advanced Emulator Launcher', __language__( 30069 ),300000)
+                            log_kodi_notify('Advanced Emulator Launcher', __language__( 30069 ),300000)
                             try:
                                 download_img(img_url,file_path)
                                 if ( self.launchers[launcherID]["thumb"] != "" ):
                                     _update_cache(file_path)
                                 self.launchers[launcherID]["thumb"] = file_path
                                 self._save_launchers()
-                                xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.launchers[launcherID]["name"],3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.launchers[launcherID]["name"],3000)
                     else:
-                        xbmc_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcherID]["name"]),3000)
+                        log_kodi_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcherID]["name"]),3000)
         else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcherID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.launchers[launcherID]["name"]),3000)
 
     def _scrap_thumb_category_algo(self, categoryID, title):
-        xbmc_notify('Advanced Emulator Launcher', __language__( 30065 ) % (self.categories[categoryID]["name"],(self.settings[ "thumbs_scraper" ]).encode('utf-8','ignore')),300000)
+        log_kodi_notify('Advanced Emulator Launcher', __language__( 30065 ) % (self.categories[categoryID]["name"],(self.settings[ "thumbs_scraper" ]).encode('utf-8','ignore')),300000)
         covers = self._get_thumbnails_list("",title,"",self.settings[ "thumb_image_size" ])
         if covers:
             nb_images = len(covers)
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30066 ) % (nb_images,self.categories[categoryID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30066 ) % (nb_images,self.categories[categoryID]["name"]),3000)
             covers.insert(0,(self.categories[categoryID]["thumb"],self.categories[categoryID]["thumb"],__language__( 30068 )))
             self.image_url = MyDialog(covers)
             if ( self.image_url ):
@@ -520,22 +442,22 @@ class Main:
                         if ( img_ext != '' ):
                             filename = self.categories[categoryID]["name"]
                             file_path = os.path.join(DEFAULT_THUMB_PATH,os.path.basename(self.categories[categoryID]["name"])+'_thumb'+img_ext)
-                            xbmc_notify('Advanced Emulator Launcher', __language__( 30069 ),300000)
+                            log_kodi_notify('Advanced Emulator Launcher', __language__( 30069 ),300000)
                             try:
                                 download_img(img_url,file_path)
                                 if ( self.categories[categoryID]["thumb"] != "" ):
                                     _update_cache(file_path)
                                 self.categories[categoryID]["thumb"] = file_path
                                 self._save_launchers()
-                                xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.categories[categoryID]["name"],3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.categories[categoryID]["name"],3000)
                     else:
-                        xbmc_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.categories[categoryID]["name"]),3000)
+                        log_kodi_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.categories[categoryID]["name"]),3000)
         else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.categories[categoryID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.categories[categoryID]["name"]),3000)
 
     def _scrap_thumb_launcher(self, launcherID):
         keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
@@ -552,11 +474,11 @@ class Main:
         xbmc.executebuiltin("Container.Update")
 
     def _scrap_fanart_rom_algo(self, launcher, rom, title):
-        xbmc_notify('Advanced Emulator Launcher', __language__( 30071 ) % (self.launchers[launcher]["roms"][rom]["name"],self.settings[ "fanarts_scraper" ].encode('utf-8','ignore')),300000)
+        log_kodi_notify('Advanced Emulator Launcher', __language__( 30071 ) % (self.launchers[launcher]["roms"][rom]["name"],self.settings[ "fanarts_scraper" ].encode('utf-8','ignore')),300000)
         full_fanarts = self._get_fanarts_list(self.launchers[launcher]["roms"][rom]["gamesys"],title,self.settings[ "fanart_image_size" ])
         if full_fanarts:
             nb_images = len(full_fanarts)
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30072 ) % (nb_images,self.launchers[launcher]["roms"][rom]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30072 ) % (nb_images,self.launchers[launcher]["roms"][rom]["name"]),3000)
             full_fanarts.insert(0,(self.launchers[launcher]["roms"][rom]["fanart"],self.launchers[launcher]["roms"][rom]["fanart"],__language__( 30068 )))
             self.image_url = MyDialog(full_fanarts)
             if ( self.image_url ):
@@ -576,29 +498,29 @@ class Main:
                                     file_path = filename.replace("."+filename.split(".")[-1], img_ext)
                                 else:
                                     file_path = os.path.join(os.path.dirname(self.launchers[launcher]["fanartpath"]),os.path.basename(filename.replace("."+filename.split(".")[-1], img_ext)))
-                            xbmc_notify('Advanced Emulator Launcher', __language__( 30074 ),300000)
+                            log_kodi_notify('Advanced Emulator Launcher', __language__( 30074 ),300000)
                             try:
                                 download_img(img_url,file_path)
                                 if ( self.launchers[launcher]["roms"][rom]["fanart"] != "" ):
                                     _update_cache(file_path)
                                 self.launchers[launcher]["roms"][rom]["fanart"] = file_path
                                 self._save_launchers()
-                                xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
                     else:
-                        xbmc_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
+                        log_kodi_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
         else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcher]["roms"][rom]["name"]),3000)
 
     def _scrap_fanart_category_algo(self, categoryID, title):
-        xbmc_notify('Advanced Emulator Launcher', __language__( 30071 ) % (self.categories[categoryID]["name"],(self.settings[ "fanarts_scraper" ]).encode('utf-8','ignore')),300000)
+        log_kodi_notify('Advanced Emulator Launcher', __language__( 30071 ) % (self.categories[categoryID]["name"],(self.settings[ "fanarts_scraper" ]).encode('utf-8','ignore')),300000)
         covers = self._get_fanarts_list("",title,self.settings[ "fanart_image_size" ])
         if covers:
             nb_images = len(covers)
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30072 ) % (nb_images,self.categories[categoryID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30072 ) % (nb_images,self.categories[categoryID]["name"]),3000)
             covers.insert(0,(self.categories[categoryID]["fanart"],self.categories[categoryID]["fanart"],__language__( 30068 )))
             self.image_url = MyDialog(covers)
             if ( self.image_url ):
@@ -609,22 +531,22 @@ class Main:
                         if ( img_ext != '' ):
                             filename = self.categories[categoryID]["name"]
                             file_path = os.path.join(DEFAULT_FANART_PATH,os.path.basename(self.categories[categoryID]["name"])+'_fanart'+img_ext)
-                            xbmc_notify('Advanced Emulator Launcher', __language__( 30074 ),300000)
+                            log_kodi_notify('Advanced Emulator Launcher', __language__( 30074 ),300000)
                             try:
                                 download_img(img_url,file_path)
                                 if ( self.categories[categoryID]["fanart"] != "" ):
                                     _update_cache(file_path)
                                 self.categories[categoryID]["fanart"] = file_path
                                 self._save_launchers()
-                                xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.categories[categoryID]["name"],3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.categories[categoryID]["name"],3000)
                     else:
-                        xbmc_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.categories[categoryID]["name"]),3000)
+                        log_kodi_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.categories[categoryID]["name"]),3000)
         else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.categories[categoryID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.categories[categoryID]["name"]),3000)
 
     def _scrap_fanart_rom(self, launcher, rom):
         if ( self.launchers[launcher]["application"].lower().find('mame') > 0 ) or ( self.settings[ "fanarts_scraper" ] == 'arcadeHITS' ):
@@ -638,13 +560,13 @@ class Main:
         xbmc.executebuiltin("Container.Update")
 
     def _scrap_fanart_launcher_algo(self, launcherID, title):
-        xbmc_notify('Advanced Emulator Launcher', __language__( 30071 ) % (self.launchers[launcherID]["name"],(self.settings[ "fanarts_scraper" ]).encode('utf-8','ignore')),300000)
+        log_kodi_notify('Advanced Emulator Launcher', __language__( 30071 ) % (self.launchers[launcherID]["name"],(self.settings[ "fanarts_scraper" ]).encode('utf-8','ignore')),300000)
         xbmc.executebuiltin( "ActivateWindow(busydialog)" )
         covers = self._get_fanarts_list(self.launchers[launcherID]["gamesys"],title,self.settings[ "fanart_image_size" ])
         if covers:
             nb_images = len(covers)
             xbmc.executebuiltin( "Dialog.Close(busydialog)" )
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30072 ) % (nb_images,self.launchers[launcherID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30072 ) % (nb_images,self.launchers[launcherID]["name"]),3000)
             covers.insert(0,(self.launchers[launcherID]["fanart"],self.launchers[launcherID]["fanart"],__language__( 30068 )))
             self.image_url = MyDialog(covers)
             if ( self.image_url ):
@@ -660,23 +582,23 @@ class Main:
                                 if (self.settings[ "launcher_fanart_path" ] == "" ):
                                     self.settings[ "launcher_fanart_path" ] = DEFAULT_FANART_PATH
                                 file_path = os.path.join(self.settings[ "launcher_fanart_path" ],os.path.basename(self.launchers[launcherID]["application"])+'_fanart'+img_ext)
-                            xbmc_notify('Advanced Emulator Launcher', __language__( 30074 ),300000)
+                            log_kodi_notify('Advanced Emulator Launcher', __language__( 30074 ),300000)
                             try:
                                 download_img(img_url,file_path)
                                 if ( self.launchers[launcherID]["fanart"] != "" ):
                                     _update_cache(file_path)
                                 self.launchers[launcherID]["fanart"] = file_path
                                 self._save_launchers()
-                                xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher', __language__( 30081 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.launchers[launcherID]["name"],3000)
+                                log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.launchers[launcherID]["name"],3000)
                     else:
-                        xbmc_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcherID]["name"]),3000)
+                        log_kodi_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcherID]["name"]),3000)
         else:
             xbmc.executebuiltin( "Dialog.Close(busydialog)" )
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcherID]["name"]),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcherID]["name"]),3000)
 
     def _scrap_fanart_launcher(self, launcherID):
         keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
@@ -711,7 +633,7 @@ class Main:
                     self.launchers[launcher]["roms"][rom]["studio"] = gamedata["studio"]
                     self.launchers[launcher]["roms"][rom]["plot"] = gamedata["plot"]
             else:
-                xbmc_notify('Advanced Emulator Launcher', __language__( 30076 ),3000)
+                log_kodi_notify('Advanced Emulator Launcher', __language__( 30076 ),3000)
     
     def _scrap_rom(self, launcher, rom):
         # Edition of the rom name
@@ -745,7 +667,7 @@ class Main:
                 self.launchers[launcherID]["studio"] = gamedata["studio"]
                 self.launchers[launcherID]["plot"] = gamedata["plot"]
         else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30076 ),3000)
+            log_kodi_notify('Advanced Emulator Launcher', __language__( 30076 ),3000)
 
     def _scrap_launcher(self, launcherID):
         # Edition of the launcher name
@@ -1163,14 +1085,14 @@ class Main:
 
         if self.launchers[launcherID]["rompath"] == "":
             type = dialog.select('Select Action for %s' % title, 
-                                 ['Modify Metadata', 'Change Thumbnail Image', 'Change Fanart Image', 
+                                 ['Modify Metadata ...', 'Change Thumbnail Image ...', 'Change Fanart Image ...', 
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
-                                  finished_display, 'Advanced Modifications', 'Delete'])
+                                  finished_display, 'Advanced Modifications ...', 'Delete'])
         else:
             type = dialog.select('Select Action for %s' % title, 
-                                 ['Modify Metadata', 'Change Thumbnail Image', 'Change Fanart Image',
+                                 ['Modify Metadata ...', 'Change Thumbnail Image ...', 'Change Fanart Image ...',
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
-                                  finished_display, 'Manage Items List', 'Advanced Modifications', 'Delete'])
+                                  finished_display, 'Manage ROM List ...', 'Advanced Modifications ...', 'Delete'])
 
         # Edition of the launcher metadata
         type_nb = 0
@@ -1297,124 +1219,173 @@ class Main:
             log_kodi_dialog_OK('AEL Information', 
                                'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]["name"], finished_display))
 
-        # Launcher's Items List menu option
-        if self.launchers[launcherID]["rompath"] != "" :
+        # Launcher's Manage Items List menu option
+        # ONLY for ROM launchers, not for standalone launchers
+        if self.launchers[launcherID]["rompath"] != "":
             type_nb = type_nb + 1
-            if (type == type_nb ):
+            if type == type_nb:
                 dialog = xbmcgui.Dialog()
-                type2 = dialog.select(__language__( 30334 ), [__language__( 30335 ),__language__( 30336 ),__language__( 30318 ),])
+                type2 = dialog.select('Manage Items List', 
+                                      ['Import items data from .nfo files',
+                                       'Export items data to .nfo files', 'Clear Items List' ])
                 # Import Items list form .nfo files
-                if (type2 == 0 ):
-                    self._import_items_list_nfo(launcherID)
+                if type2 == 0:
+                    # Load ROMs, iterate and import NFO files
+                    roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+                    for rom in roms:
+                        fs_import_rom_nfo(launcherID, rom)
+
+                    # Write ROMs XML to disk
+                    
                 # Export Items list to .nfo files
-                if (type2 == 1 ):
-                    self._export_items_list_nfo(launcherID)
+                if type2 == 1:
+                    # Load ROMs, iterate and write NFO files
+                    roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+                    for rom in roms:
+                        fs_export_rom_nfo(launcherID, rom)
+
                 # Empty Launcher menu option
-                if (type2 == 2 ):
-                    self._empty_launcher(launcherID)
+                if type2 == 2:
+                    self._gui_empty_launcher(launcherID)
 
         # Launcher Advanced menu option
         type_nb = type_nb + 1
         if type == type_nb:
-            if self.launchers[launcherID]["minimize"] == "true":
-                minimize_str = __language__( 30204 )
+            lnk_str = 'ON' if self.launchers[launcherID]["lnk"] == True else 'OFF'
+            minimize_str = 'ON' if self.launchers[launcherID]["minimize"] == True else 'OFF'
+            filter_str = ".bat|.exe|.cmd" if sys.platform == "win32" else ''
+
+            if self.launchers[launcherID]["rompath"] != "" and sys.platform == 'win32':
+                type2 = dialog.select('Advanced Modifications', 
+                                        ['Change Application : %s' % self.launchers[launcherID]["application"],
+                                        'Modify Arguments : %s' % self.launchers[launcherID]["args"],
+                                        'Change Items Path : %s' % self.launchers[launcherID]["rompath"],
+                                        'Modify Items Extensions : %s' % self.launchers[launcherID]["romext"],
+                                        'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
+                                        'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
+                                        'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
+                                        'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
+                                        'Toggle Kodi into Windowed mode : %s' % minimize_str,
+                                        'Shortcuts (.lnk) support : %s' % lnk_str])
+            elif self.launchers[launcherID]["rompath"] != "" and not sys.platform == 'win32':
+                type2 = dialog.select('Advanced Modifications', 
+                                        ['Change Application : %s' % self.launchers[launcherID]["application"],
+                                        'Modify Arguments : %s' % self.launchers[launcherID]["args"],
+                                        'Change Items Path : %s' % self.launchers[launcherID]["rompath"],
+                                        'Modify Items Extensions : %s' % self.launchers[launcherID]["romext"],
+                                        'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
+                                        'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
+                                        'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
+                                        'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
+                                        'Toggle Kodi into Windowed mode : %s' % minimize_str])
+            elif self.launchers[launcherID]["rompath"] == "" and sys.platform == 'win32':
+                type2 = dialog.select('Advanced Modifications', 
+                                        ['Change Application : %s' % self.launchers[launcherID]["application"],
+                                        'Modify Arguments : %s' % self.launchers[launcherID]["args"],
+                                        'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
+                                        'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
+                                        'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
+                                        'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
+                                        'Toggle Kodi into Windowed mode : %s' % minimize_str,
+                                        'Shortcuts (.lnk) support : %s' % lnk_str])
             else:
-                minimize_str = __language__( 30205 )
-            if self.launchers[launcherID]["lnk"] == "true":
-                lnk_str = __language__( 30204 )
-            else:
-                lnk_str = __language__( 30205 )
-            if (os.environ.get( "OS", "xbox" ) == "xbox"):
-                filter = ".xbe|.cut"
-            else:
-                if (sys.platform == "win32"):
-                    filter = ".bat|.exe|.cmd"
-                else:
-                    filter = ""
-            if self.launchers[launcherID]["rompath"] != "":
-                if (sys.platform == 'win32'):
-                    type2 = dialog.select('Advanced Modifications', [__language__( 30327 ) % self.launchers[launcherID]["application"],__language__( 30315 ) % self.launchers[launcherID]["args"],__language__( 30324 ) % self.launchers[launcherID]["rompath"],__language__( 30317 ) % self.launchers[launcherID]["romext"],__language__( 30325 ) % self.launchers[launcherID]["thumbpath"], __language__( 30326 ) % self.launchers[launcherID]["fanartpath"], __language__( 30341 ) % self.launchers[launcherID]["trailerpath"], __language__( 30331 ) % self.launchers[launcherID]["custompath"],__language__( 30329 ) % minimize_str,__language__( 30330 ) % lnk_str])
-                else:
-                    type2 = dialog.select('Advanced Modifications', [__language__( 30327 ) % self.launchers[launcherID]["application"],__language__( 30315 ) % self.launchers[launcherID]["args"],__language__( 30324 ) % self.launchers[launcherID]["rompath"],__language__( 30317 ) % self.launchers[launcherID]["romext"],__language__( 30325 ) % self.launchers[launcherID]["thumbpath"], __language__( 30326 ) % self.launchers[launcherID]["fanartpath"], __language__( 30341 ) % self.launchers[launcherID]["trailerpath"], __language__( 30331 ) % self.launchers[launcherID]["custompath"],__language__( 30329 ) % minimize_str])
-            else:
-                if (sys.platform == 'win32'):
-                    type2 = dialog.select('Advanced Modifications', [__language__( 30327 ) % self.launchers[launcherID]["application"],__language__( 30315 ) % self.launchers[launcherID]["args"],__language__( 30325 ) % self.launchers[launcherID]["thumbpath"], __language__( 30326 ) % self.launchers[launcherID]["fanartpath"], __language__( 30341 ) % self.launchers[launcherID]["trailerpath"], __language__( 30331 ) % self.launchers[launcherID]["custompath"],__language__( 30329 ) % minimize_str,__language__( 30330 ) % lnk_str])
-                else:
-                    type2 = dialog.select('Advanced Modifications', [__language__( 30327 ) % self.launchers[launcherID]["application"],__language__( 30315 ) % self.launchers[launcherID]["args"],__language__( 30325 ) % self.launchers[launcherID]["thumbpath"], __language__( 30326 ) % self.launchers[launcherID]["fanartpath"], __language__( 30341 ) % self.launchers[launcherID]["trailerpath"], __language__( 30331 ) % self.launchers[launcherID]["custompath"],__language__( 30329 ) % minimize_str])
+                type2 = dialog.select('Advanced Modifications', 
+                                        ['Change Application : %s' % self.launchers[launcherID]["application"],
+                                        'Modify Arguments : %s' % self.launchers[launcherID]["args"],
+                                        'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
+                                        'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
+                                        'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
+                                        'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
+                                        'Toggle Kodi into Windowed mode : %s' % minimize_str])
 
             # Launcher application path menu option
             type2_nb = 0
             if type2 == type2_nb:
-                app = xbmcgui.Dialog().browse(1,__language__( 30023 ),"files","", False, False, self.launchers[launcherID]["application"])
+                app = xbmcgui.Dialog().browse(1, 'Select the launcher application',
+                                              "files","", False, False, self.launchers[launcherID]["application"])
                 self.launchers[launcherID]["application"] = app
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Edition of the launcher arguments
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["args"], __language__( 30052 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]["args"], 'Edit application arguments')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
+                if keyboard.isConfirmed():
                     self.launchers[launcherID]["args"] = keyboard.getText()
-                    self._save_launchers()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             if self.launchers[launcherID]["rompath"] != "":
                 # Launcher roms path menu option
                 type2_nb = type2_nb + 1
-                if (type2 == type2_nb ):
-                    rom_path = xbmcgui.Dialog().browse(0,__language__( 30058 ),"files", "", False, False, self.launchers[launcherID]["rompath"])
+                if type2 == type2_nb:
+                    rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', "files", "", 
+                                                       False, False, self.launchers[launcherID]["rompath"])
                     self.launchers[launcherID]["rompath"] = rom_path
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
                 # Edition of the launcher rom extensions (only for emulator launcher)
                 type2_nb = type2_nb +1
-                if (type2 == type2_nb ):
-                    if (not self.launchers[launcherID]["rompath"] == ""):
-                        keyboard = xbmc.Keyboard(self.launchers[launcherID]["romext"], __language__( 30054 ))
+                if type2 == type2_nb:
+                    if not self.launchers[launcherID]["rompath"] == "":
+                        keyboard = xbmc.Keyboard(self.launchers[launcherID]["romext"], 
+                                                 'Edit files extensions, use &quot;|&quot; as separator. (e.g lnk|cbr)')
                         keyboard.doModal()
-                        if (keyboard.isConfirmed()):
+                        if keyboard.isConfirmed():
                             self.launchers[launcherID]["romext"] = keyboard.getText()
-                            self._save_launchers()
+                            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Launcher thumbnails path menu option
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                thumb_path = xbmcgui.Dialog().browse(0,__language__( 30059 ),"files","", False, False, self.launchers[launcherID]["thumbpath"])
+                thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", 
+                                                     False, False, self.launchers[launcherID]["thumbpath"])
                 self.launchers[launcherID]["thumbpath"] = thumb_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
             # Launcher fanarts path menu option
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                fanart_path = xbmcgui.Dialog().browse(0,__language__( 30060 ),"files","", False, False, self.launchers[launcherID]["fanartpath"])
+                fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", 
+                                                      False, False, self.launchers[launcherID]["fanartpath"])
                 self.launchers[launcherID]["fanartpath"] = fanart_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
             # Launcher trailer file menu option
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                fanart_path = xbmcgui.Dialog().browse(1,'Select Trailer file',"files",".mp4|.mpg|.avi|.wmv|.mkv|.flv", False, False, self.launchers[launcherID]["trailerpath"])
+                fanart_path = xbmcgui.Dialog().browse(1, 'Select Trailer file', "files", 
+                                                      ".mp4|.mpg|.avi|.wmv|.mkv|.flv", False, False, 
+                                                      self.launchers[launcherID]["trailerpath"])
                 self.launchers[launcherID]["trailerpath"] = fanart_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
             # Launcher custom path menu option
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                fanart_path = xbmcgui.Dialog().browse(0,__language__( 30057 ),"files","", False, False, self.launchers[launcherID]["custompath"])
+                fanart_path = xbmcgui.Dialog().browse(0, 'Select Extra-fanarts path', "files", "", False, False, 
+                                                      self.launchers[launcherID]["custompath"])
                 self.launchers[launcherID]["custompath"] = fanart_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
             # Launcher minimize state menu option
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
                 dialog = xbmcgui.Dialog()
-                type3 = dialog.select(__language__( 30203 ), ["%s (%s)" % (__language__( 30205 ),__language__( 30201 )), "%s" % (__language__( 30204 ))])
-                if (type3 == 1 ):
-                    self.launchers[launcherID]["minimize"] = "true"
-                else:
-                    self.launchers[launcherID]["minimize"] = "false"
-            self._save_launchers()
+                type3 = dialog.select('Toggle Kodi Fullscreen', ["%s (%s)" % ('OFF', 'default'), "%s" % ('ON')])
+                self.launchers[launcherID]["minimize"] = True if type3 == 1 else False
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
             # Launcher internal lnk option
             if sys.platform == 'win32':
                 type2_nb = type2_nb + 1
-                if (type2 == type2_nb ):
+                if type2 == type2_nb:
                     dialog = xbmcgui.Dialog()
-                    type3 = dialog.select(__language__( 30206 ), ["%s (%s)" % (__language__( 30204 ),__language__( 30201 )), "%s (%s)" % (__language__( 30205 ),__language__( 30202 ))])
-                    if (type3 == 1 ):
-                        self.launchers[launcherID]["lnk"] = "false"
-                    else:
-                        self.launchers[launcherID]["lnk"] = "true"
-            self._save_launchers()
+                    type3 = dialog.select('Shortcuts (.lnk) support', 
+                                          ["%s (%s)" % ('ON','default'), 
+                                           "%s (%s)" % ('OFF','experienced users')])
+                    self.launchers[launcherID]["lnk"] = False if type3 == 1 else True
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # Remove Launcher menu option
         type_nb = type_nb + 1
@@ -1431,7 +1402,7 @@ class Main:
         
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
-            xbmc_notify('Advanced Launcher - Error', 'Target category not found.' , 3000)
+            log_kodi_notify('Advanced Launcher - Error', 'Target category not found.' , 3000)
             xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
 
             return False
@@ -1575,14 +1546,6 @@ class Main:
 
             return True
 
-    def _export_items_list_nfo(self, launcherID):
-        for rom in self.launchers[launcherID]["roms"].iterkeys():
-            self._export_rom_nfo(launcherID, rom)
-
-    def _import_items_list_nfo(self, launcherID):
-        for rom in self.launchers[launcherID]["roms"].iterkeys():
-            self._import_rom_nfo(launcherID, rom)
-
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     #
@@ -1685,7 +1648,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
-            xbmc_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
+            log_kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
 
         # Do stuff after execution
         self._run_after_execution(launcher)
@@ -1724,10 +1687,10 @@ class Main:
 
         # Check that app exists and ROM file exists
         if not os.path.exists(apppath):
-            xbmc_notify("AEL - ERROR", 'File %s not found.' % apppath, 10000)
+            log_kodi_notify("AEL - ERROR", 'File %s not found.' % apppath, 10000)
             return
         if os.path.exists(romfile):
-            xbmc_notify("AEL - ERROR", 'File %s not found.' % romfile, 10000)
+            log_kodi_notify("AEL - ERROR", 'File %s not found.' % romfile, 10000)
             return
 
         # ~~~~ Argument substitution ~~~~~
@@ -1776,7 +1739,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
-            xbmc_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
+            log_kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
 
         # Do stuff after application execution
         self._run_after_execution(launcher)
@@ -2223,9 +2186,9 @@ class Main:
                                         _update_cache(file_path)
                                     self.launchers[launcher]["roms"][rom]["thumb"] = file_path
                                     self._save_launchers()
-                                    xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
+                                    log_kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
                                 except OSError:
-                                    xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
+                                    log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
 
             if (type2 == 2 ):
                 # Link to a rom thumbnail image
@@ -2240,7 +2203,7 @@ class Main:
                             _update_cache(image)
                         self.launchers[launcher]["roms"][rom]["thumb"] = image
                         self._save_launchers()
-                        xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
+                        log_kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
 
         if (type == 3 ):
             dialog = xbmcgui.Dialog()
@@ -2275,9 +2238,9 @@ class Main:
                                         _update_cache(file_path)
                                     self.launchers[launcher]["roms"][rom]["fanart"] = file_path
                                     self._save_launchers()
-                                    xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
+                                    log_kodi_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
                                 except OSError:
-                                    xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
+                                    log_kodi_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.launchers[launcher]["roms"][rom]["name"],3000)
             if (type2 == 2 ):
                 # Link to a rom fanart image
                 if (self.launchers[launcher]["roms"][rom]["fanart"] == ""):
@@ -2291,7 +2254,7 @@ class Main:
                             _update_cache(image)
                         self.launchers[launcher]["roms"][rom]["fanart"] = image
                         self._save_launchers()
-                        xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
+                        log_kodi_notify('Advanced Emulator Launcher', 'Fanart has been updated', 3000)
 
         if (type == 4 ):
             if (self.launchers[launcher]["roms"][rom]["finished"] != "true"):
@@ -2302,7 +2265,7 @@ class Main:
 
         if (type == 5 ):
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Advanced Modifications', ['Change File : %s' % self.launchers[launcher]["roms"][rom]["filename"], __language__( 30347 ) % self.launchers[launcher]["roms"][rom]["altapp"], __language__( 30348 ) % self.launchers[launcher]["roms"][rom]["altarg"], __language__( 30341 ) % self.launchers[launcher]["roms"][rom]["trailer"], __language__( 30331 ) % self.launchers[launcher]["roms"][rom]["custom"]])
+            type2 = dialog.select('Advanced Modifications', ['Change File : %s' % self.launchers[launcher]["roms"][rom]["filename"], __language__( 30347 ) % self.launchers[launcher]["roms"][rom]["altapp"], __language__( 30348 ) % self.launchers[launcher]["roms"][rom]["altarg"], 'Change Trailer file : %s' % self.launchers[launcher]["roms"][rom]["trailer"], 'Change Extra-fanarts Path : %s' % self.launchers[launcher]["roms"][rom]["custom"]])
             if (type2 == 0 ):
                 # Selection of the item file
                 item_file = xbmcgui.Dialog().browse(1,__language__( 30017 ),"files","."+self.launchers[launcher]["romext"].replace("|","|."), False, False, self.launchers[launcher]["roms"][rom]["filename"])
@@ -2317,12 +2280,12 @@ class Main:
                         filter = ".bat|.exe|.cmd|.lnk"
                     else:
                         filter = ""
-                app = xbmcgui.Dialog().browse(1,__language__( 30023 ),"files",filter, False, False, self.launchers[launcher]["roms"][rom]["altapp"])
+                app = xbmcgui.Dialog().browse(1,'Select the launcher application',"files",filter, False, False, self.launchers[launcher]["roms"][rom]["altapp"])
                 self.launchers[launcher]["roms"][rom]["altapp"] = app
                 self._save_launchers()
             # Edition of the launcher arguments
             if (type2 == 2 ):
-                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["altarg"], __language__( 30052 ))
+                keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["altarg"], 'Edit application arguments')
                 keyboard.doModal()
                 if (keyboard.isConfirmed()):
                     self.launchers[launcher]["roms"][rom]["altarg"] = keyboard.getText()
@@ -2334,7 +2297,7 @@ class Main:
                 self._save_launchers()
             if (type2 == 4 ):
                 # Selection of the rom customs path
-                custom = xbmcgui.Dialog().browse(0,__language__( 30057 ),"files","", False, False, self.launchers[launcher]["roms"][rom]["custom"])
+                custom = xbmcgui.Dialog().browse(0,'Select Extra-fanarts path',"files","", False, False, self.launchers[launcher]["roms"][rom]["custom"])
                 self.launchers[launcher]["roms"][rom]["custom"] = custom
                 self._save_launchers()
 
@@ -2363,7 +2326,7 @@ class Main:
     # Note that actually this command is "Add/Update" ROMs.
     #
     def _roms_import_roms(self, launcherID):
-        self._print_log('_roms_import_roms() BEGIN')
+        log_debug('_roms_import_roms() BEGIN')
 
         dialog = xbmcgui.Dialog()
         pDialog = xbmcgui.DialogProgress()
@@ -2372,10 +2335,10 @@ class Main:
         launch_app          = selectedLauncher["application"]
         launch_path         = selectedLauncher["rompath"]
         launch_exts         = selectedLauncher["romext"]
-        self._print_log('Launcher "%s" selected' % selectedLauncher["name"]) 
-        self._print_log('launch_app  = {0}'.format(launch_app)) 
-        self._print_log('launch_path = {0}'.format(launch_path)) 
-        self._print_log('launch_exts = {0}'.format(launch_exts)) 
+        log_debug('Launcher "%s" selected' % selectedLauncher["name"]) 
+        log_debug('launch_app  = {0}'.format(launch_app)) 
+        log_debug('launch_path = {0}'.format(launch_path)) 
+        log_debug('launch_exts = {0}'.format(launch_exts)) 
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
@@ -2384,51 +2347,51 @@ class Main:
 
         # ~~~~~ Remove dead entries ~~~~~
         if len(roms) > 0:
-            self._print_log('Launcher list contain %s items' % len(roms))
-            self._print_log('Starting dead items scan')
+            log_debug('Launcher list contain %s items' % len(roms))
+            log_debug('Starting dead items scan')
             i = 0
             removedRoms = 0
             ret = pDialog.create('Advanced Emulator Launcher', 
                                  'Checking for dead entries',
                                  'Path: %s...' % (launch_path))
             for key in sorted(roms.iterkeys()):
-                self._print_log('Searching %s' % roms[key]["filename"] )
+                log_debug('Searching %s' % roms[key]["filename"] )
                 pDialog.update(i * 100 / len(roms))
                 i += 1
                 if (not os.path.isfile(roms[key]["filename"])):
-                    self._print_log('Not found')
-                    self._print_log('Delete %s item entry' % roms[key]["filename"] )
+                    log_debug('Not found')
+                    log_debug('Delete %s item entry' % roms[key]["filename"] )
                     del roms[key]
                     removedRoms += 1
                 else:
-                    self._print_log('Found')
+                    log_debug('Found')
 
             pDialog.close()
             if not (removedRoms == 0):
-                self._print_log('%s entries removed successfully' % removedRoms)
-                xbmc_notify('AEL', '%s entries removed successfully' % removedRoms, 3000)
+                log_info('%s entries removed successfully' % removedRoms)
+                log_kodi_notify('AEL', '%s entries removed successfully' % removedRoms, 3000)
             else:
-                self._print_log('No dead item entry')
+                log_info('No dead item entry')
         else:
-            self._print_log('Launcher is empty')
+            log_info('Launcher is empty')
 
         # ~~~ Scan for new files (*.*) and put them in a list ~~~
         log_kodi_notify('AEL', 'Scanning files...', 3000)
         xbmc.executebuiltin("ActivateWindow(busydialog)")
-        self._print_log('Scanning files in {0}'.format(launch_path))
+        log_info('Scanning files in {0}'.format(launch_path))
         files = []
         if self.settings[ "recursive_scan" ]:
-            self._print_log('Recursive scan activated')
+            log_info('Recursive scan activated')
             for root, dirs, filess in os.walk(launch_path):
                 for filename in fnmatch.filter(filess, '*.*'):
                     files.append(os.path.join(root, filename))
         else:
-            self._print_log('Recursive scan not activated')
+            log_info('Recursive scan not activated')
             filesname = os.listdir(launch_path)
             for filename in filesname:
                 files.append(os.path.join(launch_path, filename))
         xbmc.executebuiltin("Dialog.Close(busydialog)")
-        self._print_log('Found {0} files'.format(len(files)))
+        log_info('Found {0} files'.format(len(files)))
 
         # ~~~ String to inform the user of scrapers used ~~~
         if self.settings[ "datas_method" ] == "0":
@@ -2442,7 +2405,7 @@ class Main:
 
         # ~~~ Now go processing file by file ~~~
         ret = pDialog.create('AEL - Importing ROMs', 'Importing files from {0}'.format(launch_path))
-        self._print_log('======= Processing ROMs ======')
+        log_debug('======= Processing ROMs ======')
         romsCount = 0
         filesCount = 0
         # f_path       Full path
@@ -2460,12 +2423,12 @@ class Main:
             (root, ext)  = os.path.splitext(f_base)
             f_base_noext = root
             f_ext        = ext
-            self._print_log('*** Processing File ***')
-            self._print_log('f_path       = "{0}"'.format(f_path))
-            self._print_log('f_path_noext = "{0}"'.format(f_path_noext))
-            self._print_log('f_base       = "{0}"'.format(f_base))
-            self._print_log('f_base_noext = "{0}"'.format(f_base_noext))
-            self._print_log('f_ext        = "{0}"'.format(f_ext))
+            log_debug('*** Processing File ***')
+            log_debug('f_path       = "{0}"'.format(f_path))
+            log_debug('f_path_noext = "{0}"'.format(f_path_noext))
+            log_debug('f_base       = "{0}"'.format(f_base))
+            log_debug('f_base_noext = "{0}"'.format(f_base_noext))
+            log_debug('f_ext        = "{0}"'.format(f_ext))
 
             # ~~~ Update progress dialog ~~~
             file_text = 'File {0}'.format(f_base)
@@ -2478,7 +2441,7 @@ class Main:
             for ext in launch_exts.split("|"):
                 # Check if filename matchs extension
                 if f_ext == '.' + ext:
-                    self._print_log('Expected %s extension detected' % ext) 
+                    log_debug('Expected %s extension detected' % ext) 
                     processROM = True
             # If file does not match any of the ROM extensions skip it
             if not processROM:
@@ -2488,7 +2451,7 @@ class Main:
             repeatedROM = False
             for g in roms:
                 if roms[g]["filename"] == f_path:
-                    self._print_log('File already into launcher list') 
+                    log_debug('File already into launcher list') 
                     repeatedROM = True
             # If file already in ROM list skip it
             if repeatedROM:
@@ -2536,14 +2499,14 @@ class Main:
         
         # No metadata scrap
         if self.settings[ "datas_method" ] == "0":
-            self._print_log('Scraping disabled') 
+            log_debug('Scraping disabled') 
             romdata["name"] = self._text_ROM_title_format(f_base_noext)
         else:
             # Scrap metadata from NFO files
             found_NFO_file = False
             if self.settings[ "datas_method" ] == "1" or self.settings[ "datas_method" ] == "3":
                 nfo_file_path = os.path.join(f_path_noext, ".nfo")
-                self._print_log('Trying NFO file "{0}"...'.format(nfo_file_path))
+                log_debug('Trying NFO file "{0}"...'.format(nfo_file_path))
                 if os.path.isfile(nfo_file):
                     found_NFO_file = True
                     nfo_dic = _fs_load_NFO_file(nfo_file_path)
@@ -2556,18 +2519,18 @@ class Main:
                     romdata['plot']    = nfo_dic['plot']      # <plot>
                 else:
                     found_NFO_file = False
-                    self._print_log('Only update item name')
+                    log_debug('Only update item name')
                     romdata['name'] = _text_ROM_title_format(self, romname)
 
             # Scrap metadata from www database
             if self.settings[ "datas_method" ] == "2" or (self.settings[ "datas_method" ] == "3" and found_NFO_file == False):
                 romdata["name"] = clean_filename(romname)
                 if ( self.settings[ "scrap_info" ] == "1" ):
-                    self._print_log('Info automatic scraping') 
+                    log_debug('Info automatic scraping') 
                     results = self._get_first_game(romdata["name"],gamesys)
                     selectgame = 0
                 else:
-                    self._print_log('Info semi-automatic scraping') 
+                    log_debug('Info semi-automatic scraping') 
                     results,display = self._get_games_list(romdata["name"])
                     if display:
                         # Display corresponding game list found
@@ -2603,18 +2566,18 @@ class Main:
         # f_path, f_path_noext, f_base, f_base_noext, f_ext
         thumb_path   = selectedLauncher["thumbpath"]
         fanart_path  = selectedLauncher["fanartpath"]
-        self._print_log('Searching local tumb/fanart')
+        log_debug('Searching local tumb/fanart')
 
         if thumb_path == fanart_path:
-            self._print_log('Thumbs/Fanarts have the same path')
+            log_debug('Thumbs/Fanarts have the same path')
             tumb_path_noext   = os.path.join(thumb_path, f_base_noext + '_thumb')
             fanart_path_noext = os.path.join(fanart_path, f_base_noext + '_fanart')
         else:
-            self._print_log('Thumbs/Fanarts into different folders')
+            log_debug('Thumbs/Fanarts into different folders')
             tumb_path_noext   = os.path.join(thumb_path, f_base_noext)
             fanart_path_noext = os.path.join(fanart_path, f_base_noext)
-        self._print_log('tumb_path_noext   = "{0}"'.format(tumb_path_noext))
-        self._print_log('fanart_path_noext = "{0}"'.format(fanart_path_noext))
+        log_debug('tumb_path_noext   = "{0}"'.format(tumb_path_noext))
+        log_debug('fanart_path_noext = "{0}"'.format(fanart_path_noext))
 
         # Search for local artwork
         thumb = ''
@@ -2623,26 +2586,26 @@ class Main:
         # Thumbs first
         for ext2 in ext2s:
             test_img = tumb_path_noext + '.' + ext2
-            self._print_log('Testing Thumb  "{0}"'.format(test_img))
+            log_debug('Testing Thumb  "{0}"'.format(test_img))
             if os.path.isfile(test_img):
                 thumb = test_img
-                self._print_log('Found Thumb    "{0}"'.format(test_img))
+                log_debug('Found Thumb    "{0}"'.format(test_img))
                 break
 
         # Fanart second
         for ext2 in ext2s:
             test_img = fanart_path_noext + '.' + ext2
-            self._print_log('Testing Fanart "{0}"'.format(test_img))
+            log_debug('Testing Fanart "{0}"'.format(test_img))
             if os.path.isfile(test_img):
                 fanart = test_img
-                self._print_log('Found Fanart   "{0}"'.format(test_img))
+                log_debug('Found Fanart   "{0}"'.format(test_img))
                 break
 
         # Add to ROM dictionary
         romdata["thumb"]  = thumb
         romdata["fanart"] = fanart
-        self._print_log('Set Thumb  = "{0}"'.format(thumb))
-        self._print_log('Set Fanart = "{0}"'.format(fanart))
+        log_debug('Set Thumb  = "{0}"'.format(thumb))
+        log_debug('Set Fanart = "{0}"'.format(fanart))
 
         # Deactivate Thumb scraping
         if None:
@@ -2695,9 +2658,9 @@ class Main:
                                 download_img(img_url,thumb)
                                 shutil.copy2( thumb.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30604 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30604 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30605 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30605 ),3000)
                         else:
                             if ( not os.path.isfile(thumb) ) & ( os.path.isfile(cached_thumb) ):
                                 os.remove(cached_thumb)
@@ -2757,9 +2720,9 @@ class Main:
                                 download_img(img_url,fanart)
                                 shutil.copy2( fanart.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
                             except socket.timeout:
-                                xbmc_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30606 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30606 ),3000)
                             except exceptions.IOError:
-                                xbmc_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30607 ),3000)
+                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30607 ),3000)
                         else:
                             if ( not os.path.isfile(fanart) ) & ( os.path.isfile(cached_thumb) ):
                                 os.remove(cached_thumb)
@@ -2779,6 +2742,9 @@ class Main:
     # Manually add a new ROM instead of a recursive scan
     #
     def _roms_add_new_rom ( self , launcherID) :
+        log_kodi_dialog_OK('AEL', 'Not implemented yet')
+        return
+
         dialog = xbmcgui.Dialog()
         launcher = self.launchers[launcherID]
         app = launcher["application"]
@@ -2850,15 +2816,27 @@ class Main:
                 # add rom to the roms list (using name as index)
                 romid = _get_SID()
                 roms[romid] = romdata
-                xbmc_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes', 3000)
+                log_kodi_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes', 3000)
         self._save_launchers()
 
-    def _find_roms( self, is_launcher ):
-        dialog = xbmcgui.Dialog()
-        type = dialog.select(__language__( 30400 ), [__language__( 30401 ),__language__( 30402 ),__language__( 30403 ),__language__( 30404 ),__language__( 30405 )])
-        type_nb = 0
+    #
+    # Search ROMs in launcher
+    #
+    def _command_find_roms(self, categoryID, launcherID):
 
-        #Search by Title
+        # _command_find_roms( self, is_launcher ):
+        dialog = xbmcgui.Dialog()
+        type = dialog.select('Search items...', 
+                             ['[B]By Title[/B]',
+                              '[I]By Release Date[/I]',
+                              '[LIGHT]By Platform[/LIGHT]',
+                              '[COLOR yellow]By Studio[/COLOR]',
+                              '[COLOR green]By Genre[/COLOR]'])
+
+        log_kodi_dialog_OK('AEL', 'Not implemented yet')
+
+        # Search by Title
+        type_nb = 0
         if (type == type_nb ):
             keyboard = xbmc.Keyboard("", 'Enter the file title to search...')
             keyboard.doModal()
@@ -2869,7 +2847,7 @@ class Main:
                 else:
                     xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search, SEARCH_ITEM_COMMAND))
 
-        #Search by Release Date
+        # Search by Release Date
         type_nb = type_nb+1
         if (type == type_nb ):
             search = []
@@ -2882,7 +2860,7 @@ class Main:
                 else:
                     xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_DATE_COMMAND))
 
-        #Search by System Platform
+        # Search by System Platform
         type_nb = type_nb+1
         if (type == type_nb ):
             search = []
@@ -2895,7 +2873,7 @@ class Main:
                 else:
                     xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND))
 
-        #Search by Studio
+        # Search by Studio
         type_nb = type_nb+1
         if (type == type_nb ):
             search = []
@@ -2908,7 +2886,7 @@ class Main:
                 else:
                     xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_STUDIO_COMMAND))
 
-        #Search by Genre
+        # Search by Genre
         type_nb = type_nb+1
         if (type == type_nb ):
             search = []
@@ -2988,7 +2966,10 @@ class Main:
                                 rl[keyr]["launcherID"] = launcherID
         #print the list sorted
         for key in sorted(rl.iterkeys()):
-            self._add_rom(rl[key]["launcherID"], rl[key]["name"], rl[key]["filename"], rl[key]["gamesys"], rl[key]["thumb"], rl[key]["fanart"], rl[key]["trailer"], rl[key]["custom"], rl[key]["genre"], rl[key]["release"], rl[key]["studio"], rl[key]["plot"], rl[key]["finished"], rl[key]["altapp"], rl[key]["altarg"], len(rl), key, True, s_url)
+            self._add_rom(rl[key]["launcherID"], rl[key]["name"], rl[key]["filename"], rl[key]["gamesys"], 
+                          rl[key]["thumb"], rl[key]["fanart"], rl[key]["trailer"], rl[key]["custom"], 
+                          rl[key]["genre"], rl[key]["release"], rl[key]["studio"], rl[key]["plot"], 
+                          rl[key]["finished"], rl[key]["altapp"], rl[key]["altarg"], len(rl), key, True, s_url)
         xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
 
     #
