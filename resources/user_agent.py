@@ -39,3 +39,15 @@ def getUserAgent():
         elif option == False:
             token = ''
         return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os + '; ' + token + 'Trident/' + engine + ')'
+
+def download_img(img_url, file_path):
+    req = urllib2.Request(img_url)
+    req.add_unredirected_header('User-Agent', getUserAgent())
+    f = open(file_path,'wb')
+    f.write(urllib2.urlopen(req).read())
+    f.close()                                
+
+def download_page(url):
+    req = urllib2.Request(url)
+    req.add_unredirected_header('User-Agent', getUserAgent())
+    return urllib2.urlopen(req)
