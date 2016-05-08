@@ -11,6 +11,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# For xbmc.executebuiltin()
+import xbmc
+
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
 # import xml.etree.cElementTree as ET
@@ -18,12 +21,17 @@
 # ~~~ Using ElementTree seems to solve the problem
 import xml.etree.ElementTree as ET
 
+# Addon stuff
+from utils import *
+
+def fs_escape_XML(str):
+    return str.replace('&', '&amp;')
+
 #
 # Write to disk categories.xml
 #
-def _fs_write_catfile(self):
-    self._print_log('_fs_create_default_catfile() Saving categories.xml file')
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
+def fs_write_catfile(categories_file, categories, launchers):
+    log_verb('fs_write_catfile() Writing {0}'.format(categories_file))
 
     # Original Angelscry method for generating the XML was to grow a string, like this
     # xml_content = 'test'
@@ -37,8 +45,8 @@ def _fs_write_catfile(self):
         str_list.append('<advanced_emulator_launcher version="1.0">\n')
 
         # Create Categories XML list
-        for categoryID in sorted(self.categories, key = lambda x : self.categories[x]["name"]):
-            category = self.categories[categoryID]
+        for categoryID in sorted(categories, key = lambda x : categories[x]["name"]):
+            category = categories[categoryID]
             # Data which is not string must be converted to string
             str_list.append("<category>\n" +
                             "  <id>"          + categoryID                 + "</id>\n" +
@@ -50,8 +58,8 @@ def _fs_write_catfile(self):
                             "  <finished>"    + str(category["finished"])  + "</finished>\n" +
                             "</category>\n")
         # Write launchers
-        for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]["name"]):
-            launcher = self.launchers[launcherID]
+        for launcherID in sorted(launchers, key = lambda x : launchers[x]["name"]):
+            launcher = launchers[launcherID]
             # Data which is not string must be converted to string
             str_list.append("<launcher>\n" +
                             "  <id>"            + launcherID                + "</id>\n" +
@@ -82,37 +90,31 @@ def _fs_write_catfile(self):
 
         # Join string and escape XML characters
         full_string = ''.join(str_list)
-        full_string = self._fs_escape_XML(full_string)
+        full_string = fs_escape_XML(full_string)
 
         # Save categories.xml file
-        file_obj = open(CATEGORIES_FILE_PATH, 'wt' )
+        file_obj = open(categories_file, 'wt' )
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write categories.xml file. (OSError)')
+        log_kodi_notify('AEL Error', 'Cannot write categories.xml file. (OSError)')
     except IOError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write categories.xml file. (IOError)')
-
-    # --- We are not busy anymore ---
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
+        log_kodi_notify('AEL Error', 'Cannot write categories.xml file. (IOError)')
 
 #
 # Loads categories.xml from disk and fills dictionary self.categories
 #
-def _fs_load_catfile(self):
+def fs_load_catfile(categories_file):
     __debug_xml_parser = 0
-    self.categories = {}
-    self.launchers = {}
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
+    categories = {}
+    launchers = {}
 
     # --- Parse using cElementTree ---
-    xbmc.log('Parsing {0}'.format(CATEGORIES_FILE_PATH))
-
-    # If file = '' is not used then instead of reading a file CATEGORIES_FILE_PATH is considered a string!!!
-    xml_tree = ET.parse(CATEGORIES_FILE_PATH)
+    log_verb('fs_load_catfile() Loading {0}'.format(categories_file))
+    xml_tree = ET.parse(categories_file)
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
-        if __debug_xml_parser: xbmc.log('Root child {0}'.format(category_element.tag))
+        if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))
 
         if category_element.tag == 'category':
             # Default values
@@ -132,7 +134,7 @@ def _fs_load_catfile(self):
                     category[xml_tag] = xml_bool
 
             # Add category to categories dictionary
-            self.categories[category['id']] = category
+            categories[category['id']] = category
 
         elif category_element.tag == 'launcher':
             # Default values
@@ -159,16 +161,14 @@ def _fs_load_catfile(self):
                     launcher[xml_tag] = xml_bool
 
             # Add launcher to categories dictionary
-            self.launchers[launcher['id']] = launcher
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
+            launchers[launcher['id']] = launcher
 
-def _fs_escape_XML(self, str):
-    return str.replace('&', '&amp;')
+    return (categories, launchers)
 
 #
 # Write to disk categories.xml
 #
-def _fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
+def fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
     self._print_log('_fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
 
     # --- Notify we are busy doing things ---
@@ -242,7 +242,7 @@ def _fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
 #
 # Loads a launcher XML with the ROMs
 #
-def _fs_load_ROM_XML_file(self, roms_xml_file):
+def fs_load_ROM_XML_file(self, roms_xml_file):
     __debug_xml_parser = 0
     roms = {}
 
@@ -283,7 +283,7 @@ def _fs_load_ROM_XML_file(self, roms_xml_file):
 #
 # Write to disk categories.xml
 #
-def _fs_write_Favourites_XML_file(self, roms, roms_xml_file):
+def fs_write_Favourites_XML_file(self, roms, roms_xml_file):
     self._print_log('_fs_write_Favourites_XML_file() Saving XML file {0}'.format(roms_xml_file))
     xbmc.executebuiltin('ActivateWindow(busydialog)')
     try:
@@ -328,7 +328,7 @@ def _fs_write_Favourites_XML_file(self, roms, roms_xml_file):
 # Loads an XML file containing the favourite ROMs
 # It is basically the same as ROMs, but with some more fields to store launching application data.
 #
-def _fs_load_Favourites_XML_file(self, roms_xml_file):
+def fs_load_Favourites_XML_file(self, roms_xml_file):
     __debug_xml_parser = 0
     roms = {}
 
@@ -369,7 +369,7 @@ def _fs_load_Favourites_XML_file(self, roms_xml_file):
 #
 # Reads an NFO file with ROM information and places items in a dictionary.
 #
-def _fs_load_NFO_file(nfo_file):
+def fs_load_NFO_file(nfo_file):
     self._print_log('_fs_load_NFO_file() Loading "{0}"'.format(nfo_file))
     
     # Read file, put in a string and remove line endings
@@ -411,7 +411,7 @@ def _fs_load_NFO_file(nfo_file):
     return nfo_dic
 
 
-def _import_rom_nfo(self, launcher, rom):
+def import_rom_nfo(self, launcher, rom):
     # Edition of the rom name
     nfo_file=os.path.splitext(self.launchers[launcher]["roms"][rom]["filename"])[0]+".nfo"
     if (os.path.isfile(nfo_file)):
@@ -435,7 +435,7 @@ def _import_rom_nfo(self, launcher, rom):
     else:
         xbmc_notify('Advanced Emulator Launcher', __language__( 30082 ) % os.path.basename(nfo_file),3000)
 
-def _export_rom_nfo(self, launcher, rom):
+def export_rom_nfo(self, launcher, rom):
     nfo_file=os.path.splitext(self.launchers[launcher]["roms"][rom]["filename"].decode(get_encoding()))[0]+".nfo"
     if (os.path.isfile(nfo_file)):
         shutil.move( nfo_file, nfo_file+".tmp" )
@@ -470,7 +470,7 @@ def _export_rom_nfo(self, launcher, rom):
         usock.close()
         xbmc_notify('Advanced Emulator Launcher', __language__( 30086 ) % os.path.basename(nfo_file).encode('utf8','ignore'),3000)
 
-def _export_launcher_nfo(self, launcherID):
+def export_launcher_nfo(self, launcherID):
     if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
         nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
     else:

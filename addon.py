@@ -29,7 +29,7 @@ import resources.subprocess_hack
 from resources.user_agent import getUserAgent
 from resources.file_item import Thumbnails
 from resources.emulators import *
-from resources.file_IO import *
+from resources.disk_IO import *
 from resources.utils import *
 # from resources.net_IO import *
 
@@ -124,15 +124,15 @@ class Main:
         #
         # Create a default categories.xml file if does not exist yet (plugin just installed)
         if not os.path.isfile(CATEGORIES_FILE_PATH):
-            gui_kodi_dialog_OK('Advanced Emulator Launcher',
+            log_kodi_dialog_OK('Advanced Emulator Launcher',
                                'It looks it is the first time you run AEL!',
                                '',
                                'Creating default categories.xml')
             self._cat_create_default()
-            self._fs_write_catfile()
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # Load categories.xml and fill categories dictionary
-        self._fs_load_catfile()
+        (self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
 
         # get users scrapers preference
         self._get_scrapers()
@@ -150,7 +150,7 @@ class Main:
         # There are no parameters when the user first runs AEL (ONLY if called as an executable!).
         # Display categories listbox (addon root directory)
         if 'com' not in args:
-            self._print_log('Advanced Emulator Launcher root folder > Categories list')
+            log_debug('Advanced Emulator Launcher root folder > Categories list')
             self._gui_render_categories()
             return
 
@@ -164,7 +164,7 @@ class Main:
             self._command_edit_category(args['catID'][0])
 
         elif command == 'DELETE_CATEGORY':
-            gui_kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
+            log_kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
 
         elif command == 'SHOW_FAVOURITES':
             self._command_show_favourites()
@@ -180,7 +180,7 @@ class Main:
             self._command_edit_launcher(args['launID'][0])
 
         elif command == 'DELETE_LAUNCHER':
-            gui_kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
+            log_kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
             # if (rom == REMOVE_COMMAND):
             #    self._remove_launcher(launcher)
 
@@ -212,7 +212,7 @@ class Main:
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
 
         else:
-            gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
+            log_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
             return
         
         return
@@ -354,7 +354,7 @@ class Main:
                 gui_kodi_notify('AEL', 'Deleted ROM from Favourites')
                 # If Favourites is empty then go to root, if not refresh
                 if len(roms) == 0:
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self._path))
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
                     xbmc.executebuiltin('Container.Update({0})'.format(self._misc_url('SHOW_FAVOURITES')))
         else:
@@ -374,7 +374,7 @@ class Main:
                 gui_kodi_notify('AEL', 'Deleted ROM from launcher')
                 # If launcher is empty then go to root, if not refresh
                 if len(roms) == 0:
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self._path))
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
                     xbmc.executebuiltin('Container.Update({0})'.format(self._misc_url('SHOW_ROMS', categoryID, launcherID)))
 
@@ -382,7 +382,7 @@ class Main:
     # Former _edit_rom()
     # Note that categoryID = launcherID = '0' if we are editing a ROM in Favourites
     def _command_edit_rom(self, categoryID, launcherID, romID):
-        gui_kodi_dialog_OK('AEL', 'Editing ROM not implemented yet')
+        log_kodi_dialog_OK('AEL', 'Editing ROM not implemented yet')
         return
 
         title = os.path.basename(self.launchers[launcher]["roms"][rom]["name"])
@@ -985,14 +985,14 @@ class Main:
                 for launcherID in launcher_list:
                     self.launchers.pop(launcherID)
                 self.categories.pop(categoryID)
-                self._fs_write_catfile()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         else:
             ret = dialog.yesno('AEL',
                                'Category "%s" contains %s launchers.' % (self.categories[categoryID]["name"], len(launcher_list)),
                                'Are you sure you want to delete "%s" ?' % self.categories[categoryID]["name"])
             if ret:
                 self.categories.pop(categoryID)
-                self._fs_write_catfile()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         xbmc.executebuiltin("Container.Update")
 
     def _gui_edit_category_metadata(self, categoryID):
@@ -1011,9 +1011,9 @@ class Main:
                 if title == "":
                     title = self.categories[categoryID]["name"]
                 self.categories[categoryID]["name"] = title.rstrip()
-                self._fs_write_catfile()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                gui_kodi_dialog_OK('AEL Information', 
+                log_kodi_dialog_OK('AEL Information', 
                                    'Category name "{0}" not changed.'.format(self.categories[categoryID]["name"]))
         # Edition of the category genre
         elif type2 == 1:
@@ -1021,9 +1021,9 @@ class Main:
             keyboard.doModal()
             if keyboard.isConfirmed():
                 self.categories[categoryID]["genre"] = keyboard.getText()
-                self._fs_write_catfile()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                gui_kodi_dialog_OK('AEL Information', 
+                log_kodi_dialog_OK('AEL Information', 
                                    'Category genre "{0}" not changed.'.format(self.categories[categoryID]["genre"]))
         # Edition of the plot (description)
         elif type2 == 2:
@@ -1031,9 +1031,9 @@ class Main:
             keyboard.doModal()
             if keyboard.isConfirmed():
                 self.categories[categoryID]["description"] = keyboard.getText()
-                self._fs_write_catfile()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                gui_kodi_dialog_OK('AEL Information', 
+                log_kodi_dialog_OK('AEL Information', 
                                    'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
         # Import category description
         elif type2 == 3:
@@ -1042,9 +1042,9 @@ class Main:
                 text_plot = open(text_file, 'rt')
                 self.categories[categoryID]["description"] = text_plot.read()
                 text_plot.close()
-                self._fs_write_catfile()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                gui_kodi_dialog_OK('AEL Information', 
+                log_kodi_dialog_OK('AEL Information', 
                                    'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
 
     def _command_edit_category(self, categoryID):
@@ -1157,14 +1157,14 @@ class Main:
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.categories[categoryID]["finished"] = finished
-            self._fs_write_catfile()
-            gui_kodi_dialog_OK('AEL Information', 
-                               'Category Status is now {0}'.format(finished_display))
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            log_kodi_dialog_OK('AEL Information', 
+                               'Category "{0}" status is now {1}'.format(self.categories[categoryID]["name"], finished_display))
         elif type == 4:
             self._gui_remove_category(categoryID)
 
         elif type == -1:
-            self._fs_write_catfile()
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # Return to the category directory
         xbmc.executebuiltin("Container.Refresh")
@@ -1187,7 +1187,7 @@ class Main:
             if ( not self._empty_cat(category) ):
                 xbmc.executebuiltin("Container.Update")
             else:
-                xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self._path))
+                xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
@@ -1400,7 +1400,7 @@ class Main:
             if (not selected_cat == -1 ):
                 self.launchers[launcherID]["category"] = categories_id[selected_cat]
                 self._save_launchers()
-                xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self._path, categories_id[selected_cat]))
+                xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categories_id[selected_cat]))
 
         # Launcher status
         type_nb = type_nb+1
@@ -1737,7 +1737,7 @@ class Main:
     def _run_standalone_launcher(self, categoryID, launcherID):
         # Check launcher is OK
         if launcherID not in self.launchers:
-            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
+            log_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
             return
         launcher = self.launchers[launcherID]
 
@@ -1798,7 +1798,7 @@ class Main:
     def _run_rom(self, categoryID, launcherID, romID):
         # Check launcher is OK
         if launcherID not in self.launchers:
-            gui_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
+            log_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
             return
         launcher = self.launchers[launcherID]
         
@@ -1807,7 +1807,7 @@ class Main:
 
         # Check ROM is XML data just read
         if romID not in roms:
-            gui_kodi_dialog_OK('ERROR', 'romID not in roms_dic')
+            log_kodi_dialog_OK('ERROR', 'romID not in roms_dic')
             return
             
         # Launch ROM
@@ -2071,7 +2071,7 @@ class Main:
             #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
 
         if launcherID not in self.launchers:
-            gui_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
+            log_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             return
         # Load ROMs for this launcher and display them
         selectedLauncher = self.launchers[launcherID]
@@ -2127,7 +2127,7 @@ class Main:
         roms_xml_file = launcher["roms_xml_file"]
         roms = self._fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
-            gui_kodi_dialog_OK('Advanced Emulator Launcher',
+            log_kodi_dialog_OK('Advanced Emulator Launcher',
                                'Empty roms launcher in _command_add_to_favourites()',
                                'This is a bug, please report it.')
 
@@ -2668,7 +2668,7 @@ class Main:
         categorydata = {"id" : categoryID, "name" : keyboard.getText(), 
                         "thumb" : "", "fanart" : "", "genre" : "", "plot" : "", "finished" : False}
         self.categories[categoryID] = categorydata
-        self._fs_write_catfile()
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         xbmc.executebuiltin("Container.Refresh")
         gui_kodi_notify('AEL' , 'Category {0} created'.format(categorydata["name"]), 3000)
 
@@ -2679,7 +2679,7 @@ class Main:
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
             xbmc_notify('Advanced Launcher - Error', 'Target category not found.' , 3000)
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self._path))
+            xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
 
             return False
         
@@ -2746,8 +2746,8 @@ class Main:
                 "finished": False, "minimize" : False, 
                 "roms_xml_file" : '' }
             self.launchers[launcherID] = launcherdata
-            self._fs_write_catfile()
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self._path, categoryID))
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
 
             return True
 
@@ -2817,8 +2817,8 @@ class Main:
                 "finished": False, "minimize" : False, 
                 "roms_xml_file" : '' }
             self.launchers[launcherID] = launcherdata
-            self._fs_write_catfile()
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self._path, categoryID))
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
 
             return True
 
@@ -2834,9 +2834,9 @@ class Main:
             if (keyboard.isConfirmed()):
                 search = keyboard.getText()
                 if (is_launcher):
-                    return "%s?%s/%s" % (self._path, search, SEARCH_ITEM_COMMAND), search
+                    return "%s?%s/%s" % (self.base_url, search, SEARCH_ITEM_COMMAND), search
                 else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self._path, search, SEARCH_ITEM_COMMAND))
+                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search, SEARCH_ITEM_COMMAND))
 
         #Search by Release Date
         type_nb = type_nb+1
@@ -2847,9 +2847,9 @@ class Main:
             selected = dialog.select(__language__( 30406 ), search)
             if (not selected == -1 ):
                 if (is_launcher):
-                    return "%s?%s/%s" % (self._path, search[selected], SEARCH_DATE_COMMAND), search[selected]
+                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_DATE_COMMAND), search[selected]
                 else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self._path, search[selected], SEARCH_DATE_COMMAND))
+                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_DATE_COMMAND))
 
         #Search by System Platform
         type_nb = type_nb+1
@@ -2860,9 +2860,9 @@ class Main:
             selected = dialog.select(__language__( 30407 ), search)
             if (not selected == -1 ):
                 if (is_launcher):
-                    return "%s?%s/%s" % (self._path, search[selected], SEARCH_PLATFORM_COMMAND), search[selected]
+                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND), search[selected]
                 else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self._path, search[selected], SEARCH_PLATFORM_COMMAND))
+                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND))
 
         #Search by Studio
         type_nb = type_nb+1
@@ -2873,9 +2873,9 @@ class Main:
             selected = dialog.select(__language__( 30408 ), search)
             if (not selected == -1 ):
                 if (is_launcher):
-                    return "%s?%s/%s" % (self._path, search[selected], SEARCH_STUDIO_COMMAND), search[selected]
+                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_STUDIO_COMMAND), search[selected]
                 else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self._path, search[selected], SEARCH_STUDIO_COMMAND))
+                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_STUDIO_COMMAND))
 
         #Search by Genre
         type_nb = type_nb+1
@@ -2886,9 +2886,9 @@ class Main:
             selected = dialog.select(__language__( 30409 ), search)
             if (not selected == -1 ):
                 if (is_launcher):
-                    return "%s?%s/%s" % (self._path, search[selected], SEARCH_GENRE_COMMAND), search[selected]
+                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_GENRE_COMMAND), search[selected]
                 else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self._path, search[selected], SEARCH_GENRE_COMMAND))
+                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_GENRE_COMMAND))
 
     def _find_add_roms( self, search ):
         _find_category_roms( self, search, "name" )
@@ -2988,23 +2988,23 @@ class Main:
     #
     def _misc_url_RunPlugin(self, command, categoryID = None, launcherID = None, romID = None):
         if romID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self._path, command, categoryID, launcherID, romID)
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self.base_url, command, categoryID, launcherID, romID)
         elif launcherID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self._path, command, categoryID, launcherID)
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self.base_url, command, categoryID, launcherID)
         elif categoryID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self._path, command, categoryID)
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self.base_url, command, categoryID)
 
-        return 'XBMC.RunPlugin({0}?com={1})'.format(self._path, command)
+        return 'XBMC.RunPlugin({0}?com={1})'.format(self.base_url, command)
 
     def _misc_url(self, command, categoryID = None, launcherID = None, romID = None):
         if romID is not None:
-            return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self._path, command, categoryID, launcherID, romID)
+            return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self.base_url, command, categoryID, launcherID, romID)
         elif launcherID is not None:
-            return '{0}?com={1}&catID={2}&launID={3}'.format(self._path, command, categoryID, launcherID)
+            return '{0}?com={1}&catID={2}&launID={3}'.format(self.base_url, command, categoryID, launcherID)
         elif categoryID is not None:
-            return '{0}?com={1}&catID={2}'.format(self._path, command, categoryID)
+            return '{0}?com={1}&catID={2}'.format(self.base_url, command, categoryID)
 
-        return '{0}?com={1}'.format(self._path, command)
+        return '{0}?com={1}'.format(self.base_url, command)
 
 class MainGui( xbmcgui.WindowXMLDialog ):
     def __init__( self, *args, **kwargs ):
