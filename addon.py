@@ -727,21 +727,6 @@ class Main:
             self._save_launchers()
         xbmc.executebuiltin("Container.Update")
 
-    def _full_scrap_rom(self, launcher, rom):
-        # Edition of the rom name
-        title=os.path.basename(self.launchers[launcher]["roms"][rom]["filename"]).split(".")[0]
-        if ( self.launchers[launcher]["application"].lower().find('mame') > 0 ) or ( self.settings[ "datas_scraper" ] == 'arcadeHITS' ):
-            keyboard = xbmc.Keyboard(title, __language__( 30079 ))
-        else:
-            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], 'Enter the file title to search...')
-        keyboard.doModal()
-        if (keyboard.isConfirmed()):
-            self._scrap_rom_algo(launcher, rom, keyboard.getText())
-            self._scrap_thumb_rom_algo(launcher, rom, keyboard.getText())
-            self._scrap_fanart_rom_algo(launcher, rom, keyboard.getText())
-            self._save_launchers()
-            xbmc.executebuiltin("Container.Update")
-
     def _scrap_launcher_algo(self, launcherID, title):
         # Scrapping launcher name info
         results,display = self._get_games_list(title)
@@ -769,17 +754,6 @@ class Main:
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_launcher_algo(launcherID, keyboard.getText())
-            self._save_launchers()
-            xbmc.executebuiltin("Container.Update")
-
-    def _full_scrap_launcher(self, launcherID):
-        # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
-        keyboard.doModal()
-        if (keyboard.isConfirmed()):
-            self._scrap_launcher_algo(launcherID, keyboard.getText())
-            self._scrap_thumb_launcher_algo(launcherID, keyboard.getText())
-            self._scrap_fanart_launcher_algo(launcherID, keyboard.getText())
             self._save_launchers()
             xbmc.executebuiltin("Container.Update")
 
