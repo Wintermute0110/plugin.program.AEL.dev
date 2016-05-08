@@ -79,3 +79,63 @@ def log_kodi_notify_warn(title, text, time=5000):
 def log_kodi_notify_error(title, text, time=5000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, NOTIFICATION_ERROR, time)
+
+# --- Kodi image cache -------------------------------------------------------
+THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath("special://profile/" ), "Thumbnails")
+
+def get_encoding():
+    try:
+        return sys.getfilesystemencoding()
+    except UnicodeEncodeError, UnicodeDecodeError:
+        return "utf-8"
+
+def get_cached_thumb(path1, path2, SPLIT=False):
+    # get the locally cached thumb
+    filename = xbmc.getCacheThumbName( path1 )
+    if SPLIT:
+        thumb = os.path.join( filename[ 0 ], filename )
+    else:
+        thumb = filename
+    return os.path.join( path2, thumb )
+
+def get_cached_covers_thumb(strPath):
+    return get_cached_thumb(strPath, THUMBS_CACHE_PATH, True)
+
+def update_cache(file_path):
+    cached_thumb = get_cached_covers_thumb(file_path).replace("tbn" , os.path.splitext(file_path)[-1][1:4])
+    try:
+        shutil.copy2(file_path.decode(get_encoding(),'ignore'), cached_thumb.decode(get_encoding(), 'ignore'))
+    except OSError:
+        log_kodi_notify_warn('AEL warning', 'Cannot update cached image')
+    xbmc.executebuiltin("XBMC.ReloadSkin()")
+
+def text_clean_ROM_filename(title):
+    title = re.sub('\[.*?\]', '', title)
+    title = re.sub('\(.*?\)', '', title)
+    title = re.sub('\{.*?\}', '', title)
+    title = title.replace('_',' ')
+    title = title.replace('-',' ')
+    title = title.replace(':',' ')
+    title = title.replace('.',' ')
+    title = title.rstrip()
+    return title
+
+def text_ROM_base_filename(filename):
+    filename = re.sub('(\[.*?\]|\(.*?\)|\{.*?\})', '', filename)
+    filename = re.sub('(\.|-| |_)cd\d+$', '', filename)
+    return filename.rstrip()
+
+def kodi_toogle_fullscreen():
+    # Frodo & + compatible
+    xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
+
+#
+# Generates a random an unique MD5 hash and returns a string with the hash
+#
+def misc_generate_random_SID():
+    t1 = time.time()
+    t2 = t1 + random.getrandbits(32)
+    base = hashlib.md5( str(t1 + t2) )
+    sid = base.hexdigest()
+
+    return sid
