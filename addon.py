@@ -190,46 +190,31 @@ class Main:
             #    self._remove_launcher(launcher)
 
         elif command == 'SHOW_ROMS':
-            categoryID = args['catID'][0]
             launcherID = args['launID'][0]
-            self._print_log('SHOW_ROMS | categoryID = {0}'.format(categoryID))
-            self._print_log('SHOW_ROMS | launcherID = {0}'.format(launcherID))
-
             # User clicked on a launcher. For executable launchers run the executable.
             # For emulator launchers show roms.
             if self.launchers[launcherID]["rompath"] == '':
                 self._print_log('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
                 self._print_log('SHOW_ROMS | Calling _run_launcher()')
-                self._run_standalone_launcher(categoryID, launcherID)
+                self._run_standalone_launcher(args['catID'][0], args['launID'][0])
             else:
                 self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
-                self._gui_render_roms(categoryID, launcherID)
+                self._gui_render_roms(args['catID'][0], args['launID'][0])
 
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
 
         elif command == 'EDIT_ROM':
-            categoryID = args['catID'][0]
-            launcherID = args['launID'][0]
-            romID      = args['romID'][0]
-            self._command_edit_rom(categoryID, launcherID, romID)
+            self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
 
         elif command == 'DELETE_ROM':
-            gui_kodi_dialog_OK('ERROR', 'DELETE_ROM not implemented yet')
-            # if (action == REMOVE_COMMAND):
-            #    self._remove_rom(launcher, rom)
+             self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
 
         elif args['com'][0] == 'LAUNCH_ROM':
-            categoryID = args['catID'][0]
-            launcherID = args['launID'][0]
-            romID      = args['romID'][0]
-            self._run_rom(categoryID, launcherID, romID)
+            self._run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
 
         elif command == 'ADD_TO_FAVOURITES':
-            categoryID = args['catID'][0]
-            launcherID = args['launID'][0]
-            romID      = args['romID'][0]
-            self._command_add_to_favourites(categoryID, launcherID, romID)
+            self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
 
         else:
             gui_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
@@ -743,16 +728,51 @@ class Main:
 
         return nfo_dic
 
-    def _gui_remove_rom(self, launcherID, rom):
-        dialog = xbmcgui.Dialog()
-        ret = dialog.yesno('Advanced Emulator Launcher', __language__( 30010 ) % self.launchers[launcherID]["roms"][rom]["name"])
-        if ret:
-            self.launchers[launcherID]["roms"].pop(rom)
-            self._save_launchers()
-            if ( len(self.launchers[launcherID]["roms"]) == 0 ):
-                xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self._path))
-            else:
-                xbmc.executebuiltin("Container.Update")
+    #
+    # Deletes a ROM from a launcher.
+    # If categoryID = launcherID = '0' then delete from Favourites
+    #
+    def _command_remove_rom(self, categoryID, launcherID, romID):
+        if launcherID == '0':
+            # Load Favourite ROMs
+            roms = self._fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+            if not roms:
+                return
+
+            # Confirm deletion
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites', 
+                               'ROM: {0}'.format(roms[romID]['name']),
+                               'Are you sure you want to delete it from favourites?')
+            if ret:
+                roms.pop(romID)
+                self._fs_write_Favourites_XML_file(roms, FAVOURITES_FILE_PATH)
+                gui_kodi_notify('AEL', 'Deleted ROM from Favourites')
+                # If Favourites is empty then go to root, if not refresh
+                if len(roms) == 0:
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self._path))
+                else:
+                    xbmc.executebuiltin('Container.Update({0})'.format(self._misc_url('SHOW_FAVOURITES')))
+        else:
+            # Load ROMs
+            roms = self._fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+            if not roms:
+                return
+
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites',
+                               'Launcher: {0}'.format(self.launchers[launcherID]['name']),
+                               'ROM: {0}'.format(roms[romID]['name']),
+                               'Are you sure you want to delete it from launcher?')
+            if ret:
+                roms.pop(romID)
+                self._fs_write_ROM_XML_file(roms, launcherID, self.launchers[launcherID]['roms_xml_file'])
+                gui_kodi_notify('AEL', 'Deleted ROM from launcher')
+                # If launcher is empty then go to root, if not refresh
+                if len(roms) == 0:
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self._path))
+                else:
+                    xbmc.executebuiltin('Container.Update({0})'.format(self._misc_url('SHOW_ROMS', categoryID, launcherID)))
 
     #
     # Former _edit_rom()
@@ -2374,7 +2394,7 @@ class Main:
         listitem.setProperty("fanart_image", category_dic['fanart'])
         listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'], 
                                     "Plot" : category_dic['plot'], "overlay": ICON_OVERLAY } )
-        
+
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
