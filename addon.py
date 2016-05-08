@@ -68,21 +68,21 @@ def Settings:
     log_level = LOG_DEBUG
 
 # --- Some debug stuff for development ---
-xbmc.log('---------- Called AEL addon.py ----------')
-# xbmc.log(sys.version)
+log_debug('---------- Called AEL addon.py ----------')
+# log_debug(sys.version)
 for i in range(len(sys.argv)):
-    xbmc.log('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
-# xbmc.log('PLUGIN_DATA_DIR      = "{0}"'.format(PLUGIN_DATA_DIR))
-# xbmc.log('BASE_DIR             = "{0}"'.format(BASE_DIR))
-# xbmc.log('HOME_DIR             = "{0}"'.format(HOME_DIR))
-# xbmc.log('FAVOURITES_DIR       = "{0}"'.format(FAVOURITES_DIR))
-# xbmc.log('ADDONS_DIR           = "{0}"'.format(ADDONS_DIR))
-# xbmc.log('CURRENT_ADDON_DIR    = "{0}"'.format(CURRENT_ADDON_DIR))
-# xbmc.log('ICON_IMG_FILE_PATH   = "{0}"'.format(ICON_IMG_FILE_PATH))
-# xbmc.log('CATEGORIES_FILE_PATH = "{0}"'.format(CATEGORIES_FILE_PATH))
-# xbmc.log('DEFAULT_THUMB_DIR    = "{0}"'.format(DEFAULT_THUMB_DIR))
-# xbmc.log('DEFAULT_FANART_DIR   = "{0}"'.format(DEFAULT_FANART_DIR))
-# xbmc.log('DEFAULT_NFO_DIR      = "{0}"'.format(DEFAULT_NFO_DIR))
+    log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
+# log_debug('PLUGIN_DATA_DIR      = "{0}"'.format(PLUGIN_DATA_DIR))
+# log_debug('BASE_DIR             = "{0}"'.format(BASE_DIR))
+# log_debug('HOME_DIR             = "{0}"'.format(HOME_DIR))
+# log_debug('FAVOURITES_DIR       = "{0}"'.format(FAVOURITES_DIR))
+# log_debug('ADDONS_DIR           = "{0}"'.format(ADDONS_DIR))
+# log_debug('CURRENT_ADDON_DIR    = "{0}"'.format(CURRENT_ADDON_DIR))
+# log_debug('ICON_IMG_FILE_PATH   = "{0}"'.format(ICON_IMG_FILE_PATH))
+# log_debug('CATEGORIES_FILE_PATH = "{0}"'.format(CATEGORIES_FILE_PATH))
+# log_debug('DEFAULT_THUMB_DIR    = "{0}"'.format(DEFAULT_THUMB_DIR))
+# log_debug('DEFAULT_FANART_DIR   = "{0}"'.format(DEFAULT_FANART_DIR))
+# log_debug('DEFAULT_NFO_DIR      = "{0}"'.format(DEFAULT_NFO_DIR))
 
 # --- Addon data paths creation ---
 if not os.path.isdir(PLUGIN_DATA_DIR):    os.makedirs(PLUGIN_DATA_DIR)
@@ -107,24 +107,20 @@ class Main:
         self.base_url = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
         args = urlparse.parse_qs(sys.argv[2][1:])
-        xbmc.log('args = {0}'.format(args))
-
-        # store an handle pointer (Legacy deprecated code)
-        self._path = sys.argv[0]
-        self._handle = int(sys.argv[1])
+        log_debug('args = {0}'.format(args))
 
         #
         # Experiment to try to increase the number of views the addon supports
         #
-        # xbmcplugin.setContent(handle = self._handle, content = 'movies')
+        # xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
 
         # Adds a sorting method for the media list.
-        if self._handle > 0:
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
-            xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
+        if self.addon_handle > 0:
+            xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
+            xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
+            xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
+            xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
+            xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
 
         # --- WORKAROUND ---
         # When the addon is installed and the file categories.xml does not exist, just
@@ -1920,7 +1916,7 @@ class Main:
         # --- Add row ---
         # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
-        xbmcplugin.addDirectoryItem( handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=True)
+        xbmcplugin.addDirectoryItem( handle=int( self.addon_handle ), url=url_str, listitem=listitem, isFolder=True)
 
     def _gui_render_category_favourites(self):
         # --- Create listitem row ---
@@ -1942,7 +1938,7 @@ class Main:
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_FAVOURITES')
-        xbmcplugin.addDirectoryItem( handle=int(self._handle), url=url_str, listitem=listitem, isFolder=True)
+        xbmcplugin.addDirectoryItem( handle=int(self.addon_handle), url=url_str, listitem=listitem, isFolder=True)
 
     # 
     # Former _get_categories()
@@ -1955,7 +1951,7 @@ class Main:
             self._gui_render_category_row(self.categories[key], key)
         # AEL Favourites special category
         self._gui_render_category_favourites()
-        xbmcplugin.endOfDirectory( handle = int( self._handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory( handle = int( self.addon_handle ), succeeded=True, cacheToDisc=False )
 
     def _gui_render_launcher_row(self, launcher_dic, key):
         # --- Create listitem row ---
@@ -1999,7 +1995,7 @@ class Main:
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_ROMS', launcher_dic['category'], key)
-        xbmcplugin.addDirectoryItem(handle=int( self._handle ), url=url_str, listitem=listitem, isFolder=folder)
+        xbmcplugin.addDirectoryItem(handle=int( self.addon_handle ), url=url_str, listitem=listitem, isFolder=folder)
 
     #
     # Former  _get_launchers
@@ -2009,7 +2005,7 @@ class Main:
         for key in sorted(self.launchers, key= lambda x : self.launchers[x]["application"]):
             if self.launchers[key]["category"] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key], key)
-        xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
 
     #
     # Former  _add_rom
@@ -2061,7 +2057,7 @@ class Main:
             url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
         else:
             url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        xbmcplugin.addDirectoryItem(handle=int(self._handle), url=url_str, listitem=listitem, isFolder=False)
+        xbmcplugin.addDirectoryItem(handle=int(self.addon_handle), url=url_str, listitem=listitem, isFolder=False)
 
     #
     # Former  _get_roms
@@ -2069,15 +2065,15 @@ class Main:
     #
     def _gui_render_roms(self, categoryID, launcherID):
 
-        #xbmcplugin.setContent(handle = self._handle, content = 'movies')
+        #xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
 
         ## Adds a sorting method for the media list.
-        #if self._handle > 0:
-            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
-            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
-            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
-            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
-            #xbmcplugin.addSortMethod(handle=self._handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
+        #if self.addon_handle > 0:
+            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
+            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
+            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
+            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
+            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
 
         if launcherID not in self.launchers:
             gui_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
@@ -2101,7 +2097,7 @@ class Main:
         # Display ROMs
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key])
-        xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
 
     #
     # Renders the special category favourites, which is actually very similar to a ROM launcher
@@ -2125,7 +2121,7 @@ class Main:
         # Display Favourites
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
             self._gui_render_rom_row('0', '0', key, roms[key])
-        xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
 
     #
     # Adds ROM to favourites
@@ -2967,7 +2963,7 @@ class Main:
         #print the list sorted
         for key in sorted(rl.iterkeys()):
             self._add_rom(rl[key]["launcherID"], rl[key]["name"], rl[key]["filename"], rl[key]["gamesys"], rl[key]["thumb"], rl[key]["fanart"], rl[key]["trailer"], rl[key]["custom"], rl[key]["genre"], rl[key]["release"], rl[key]["studio"], rl[key]["plot"], rl[key]["finished"], rl[key]["altapp"], rl[key]["altarg"], len(rl), key, True, s_url)
-        xbmcplugin.endOfDirectory( handle=int( self._handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
 
     #
     # NOTE In Python, objects methods can be defined outside the class definition!
