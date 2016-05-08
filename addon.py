@@ -312,12 +312,12 @@ class Main:
     #
     def _cat_create_default(self):
         category = {}
-        category['name']     = 'Games'
-        category['thumb']    = ''
-        category['fanart']   = ''
-        category['genre']    = ''
-        category['plot']     = ''
-        category['finished'] = False
+        category['name']        = 'Emulators'
+        category['thumb']       = ''
+        category['fanart']      = ''
+        category['genre']       = ''
+        category['description'] = ''
+        category['finished']    = False
 
         # The key in the categories dictionary is an MD5 hash generate with current time plus some random number.
         # This will make it unique and different for every category created.
@@ -364,7 +364,7 @@ class Main:
                                 "  <thumb>"       + category["thumb"]          + "</thumb>\n"
                                 "  <fanart>"      + category["fanart"]         + "</fanart>\n" +
                                 "  <genre>"       + category["genre"]          + "</genre>\n" +
-                                "  <description>" + category["plot"]           + "</description>\n" +
+                                "  <description>" + category["description"]    + "</description>\n" +
                                 "  <finished>"    + str(category["finished"])  + "</finished>\n" +
                                 "</category>\n")
             # Write launchers
@@ -434,7 +434,7 @@ class Main:
 
             if category_element.tag == 'category':
                 # Default values
-                category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 'plot' : '', 'finished' : False}
+                category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 'description' : '', 'finished' : False}
 
                 # Parse child tags of category
                 for category_child in category_element:
@@ -1455,11 +1455,11 @@ class Main:
         type2 = dialog.select('Edit Category Metadata', 
                               ['Edit Title: "%s"' % self.categories[categoryID]["name"],
                                'Edit Genre: "%s"' % self.categories[categoryID]["genre"],
-                               'Edit Description: "%s"' % self.categories[categoryID]["plot"],
+                               'Edit Description: "%s"' % self.categories[categoryID]["description"],
                                'Import Description from file...' ])
         # Edition of the category name
         if type2 == 0:
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Edit title')
+            keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Edit Title')
             keyboard.doModal()
             if keyboard.isConfirmed():
                 title = keyboard.getText()
@@ -1472,7 +1472,7 @@ class Main:
                                    'Category name "{0}" not changed.'.format(self.categories[categoryID]["name"]))
         # Edition of the category genre
         elif type2 == 1:
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], 'Edit genre')
+            keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], 'Edit Genre')
             keyboard.doModal()
             if keyboard.isConfirmed():
                 self.categories[categoryID]["genre"] = keyboard.getText()
@@ -1480,37 +1480,35 @@ class Main:
             else:
                 gui_kodi_dialog_OK('AEL Information', 
                                    'Category genre "{0}" not changed.'.format(self.categories[categoryID]["genre"]))
-        # Edition of the plot
+        # Edition of the plot (description)
         elif type2 == 2:
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["plot"], 'Edit plot')
+            keyboard = xbmc.Keyboard(self.categories[categoryID]["description"], 'Edit Description')
             keyboard.doModal()
             if keyboard.isConfirmed():
-                self.categories[categoryID]["plot"] = keyboard.getText()
+                self.categories[categoryID]["description"] = keyboard.getText()
                 self._fs_write_catfile()
             else:
                 gui_kodi_dialog_OK('AEL Information', 
-                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["plot"]))
-
+                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
         # Import category description
         elif type2 == 3:
             text_file = xbmcgui.Dialog().browse(1, 'Select description file (txt|dat)', "files", ".txt|.dat", False, False)
             if os.path.isfile(text_file) == True:
                 text_plot = open(text_file, 'rt')
-                self.categories[categoryID]["plot"] = text_plot.read()
+                self.categories[categoryID]["description"] = text_plot.read()
                 text_plot.close()
                 self._fs_write_catfile()
             else:
                 gui_kodi_dialog_OK('AEL Information', 
-                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["plot"]))
+                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
 
     def _command_edit_category(self, categoryID):
-        
         # Shows a select box with the options to edit
         dialog = xbmcgui.Dialog()
         if self.categories[categoryID]["finished"] == True: finished_display = 'Status: Finished'
         else:                                               finished_display = 'Status: Unfinished'
         type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]["name"]), 
-                             ['Edit metadata', 'Edit Thumbnail image', 'Edit Fanart image', 
+                             ['Edit Title/Genre/Description', 'Edit Thumbnail image', 'Edit Fanart image', 
                               finished_display, 'Delete category'])
         # Edit metadata
         if type == 0:
@@ -2393,7 +2391,7 @@ class Main:
         else:                                 ICON_OVERLAY = 7
         listitem.setProperty("fanart_image", category_dic['fanart'])
         listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'], 
-                                    "Plot" : category_dic['plot'], "overlay": ICON_OVERLAY } )
+                                    "Plot" : category_dic['description'], "overlay": ICON_OVERLAY } )
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
