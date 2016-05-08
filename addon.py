@@ -26,12 +26,10 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- Modules/packages in this plugin ---
 import resources.subprocess_hack
-from resources.user_agent import getUserAgent
-from resources.file_item import Thumbnails
-from resources.emulators import *
 from resources.disk_IO import *
+from resources.net_IO import *
 from resources.utils import *
-# from resources.net_IO import *
+from resources.scrap import *
 
 # --- Plugin constants ---
 __plugin__  = "Advanced Emulator Launcher"
@@ -53,10 +51,14 @@ CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, 'plugin.progr
 ICON_IMG_FILE_PATH   = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
 CATEGORIES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
 FAVOURITES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
+# These three paths are to store artwork and NFO for Categories and Launchers
 DEFAULT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'thumbs')
 DEFAULT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'fanarts')
 DEFAULT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'nfos')
 ADDON_ID             = "plugin.program.advanced.emulator.launcher"
+KIND_CATEGORY        = 0
+KIND_LAUNCHER        = 1
+KIND_ROM             = 2
 
 # --- Initialise log system ---
 # Synchronise this with user's preferences in Kodi when loading Kodi settings
@@ -68,8 +70,12 @@ addon_obj = xbmcaddon.Addon(id = ADDON_ID)
 # --- Main code ---
 class Main:
     settings = {}
-    launchers = {}
     categories = {}
+    launchers = {}
+    roms = {}
+    scraper_metadata = None
+    scraper_thumb = None
+    scraper_fanart = None
 
     def __init__( self, *args, **kwargs ):
         # --- Fill in settings dictionary using addon_obj.getSetting() ---
@@ -134,9 +140,12 @@ class Main:
         # Load categories.xml and fill categories dictionary
         (self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
 
-        # get users scrapers preference
-        self._get_scrapers()
-    
+        # Get users scrapers preference
+        # self._get_scrapers()
+        self.scraper_metadata = get_scraper_metadata('NULL')
+        self.scraper_thumb    = get_scraper_thumb('NULL')
+        self.scraper_fanart   = get_scraper_fanart('NULL')
+
         # ~~~~~ Process URL commands ~~~~~
         # Interestingly, if plugin is called as type executable then args is empty.
         # However, if plugin is called as type video then Kodi adds the following
@@ -150,7 +159,7 @@ class Main:
         # There are no parameters when the user first runs AEL (ONLY if called as an executable!).
         # Display categories listbox (addon root directory)
         if 'com' not in args:
-            log_debug('Advanced Emulator Launcher root folder > Categories list')
+            log_debug('AEL Root Folder >> Categories list <<')
             self._gui_render_categories()
             return
 
@@ -189,11 +198,11 @@ class Main:
             # User clicked on a launcher. For executable launchers run the executable.
             # For emulator launchers show roms.
             if self.launchers[launcherID]["rompath"] == '':
-                self._print_log('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
-                self._print_log('SHOW_ROMS | Calling _run_launcher()')
+                log_debug('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
+                log_debug('SHOW_ROMS | Calling _run_launcher()')
                 self._run_standalone_launcher(args['catID'][0], args['launID'][0])
             else:
-                self._print_log('SHOW_ROMS | Calling _gui_render_roms()')
+                log_debug('SHOW_ROMS | Calling _gui_render_roms()')
                 self._gui_render_roms(args['catID'][0], args['launID'][0])
 
         elif command == 'ADD_ROMS':
@@ -671,7 +680,7 @@ class Main:
             title=os.path.basename(self.launchers[launcher]["roms"][rom]["filename"]).split(".")[0]
             keyboard = xbmc.Keyboard(title, __language__( 30079 ))
         else:
-            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], __language__( 30036 ))
+            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_thumb_rom_algo(launcher, rom, keyboard.getText())
@@ -749,14 +758,14 @@ class Main:
             xbmc_notify('Advanced Emulator Launcher', __language__( 30067 ) % (self.categories[categoryID]["name"]),3000)
 
     def _scrap_thumb_launcher(self, launcherID):
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], __language__( 30036 ))
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_thumb_launcher_algo(launcherID, keyboard.getText())
         xbmc.executebuiltin("Container.Update")
 
     def _scrap_thumb_category(self, categoryID):
-        keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], __language__( 30036 ))
+        keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_thumb_category_algo(categoryID, keyboard.getText())
@@ -842,7 +851,7 @@ class Main:
             title=os.path.basename(self.launchers[launcher]["roms"][rom]["filename"]).split(".")[0]
             keyboard = xbmc.Keyboard(title, __language__( 30079 ))
         else:
-            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], __language__( 30036 ))
+            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_fanart_rom_algo(launcher, rom, keyboard.getText())
@@ -890,14 +899,14 @@ class Main:
             xbmc_notify('Advanced Emulator Launcher', __language__( 30073 ) % (self.launchers[launcherID]["name"]),3000)
 
     def _scrap_fanart_launcher(self, launcherID):
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], __language__( 30036 ))
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_fanart_launcher_algo(launcherID, keyboard.getText())
         xbmc.executebuiltin("Container.Update")
 
     def _scrap_fanart_category(self, categoryID):
-        keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], __language__( 30036 ))
+        keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_fanart_category_algo(categoryID, keyboard.getText())
@@ -930,7 +939,7 @@ class Main:
         if ( self.launchers[launcher]["application"].lower().find('mame') > 0 ) or ( self.settings[ "datas_scraper" ] == 'arcadeHITS' ):
             keyboard = xbmc.Keyboard(title, __language__( 30079 ))
         else:
-            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], __language__( 30036 ))
+            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_rom_algo(launcher, rom, keyboard.getText())
@@ -943,7 +952,7 @@ class Main:
         if ( self.launchers[launcher]["application"].lower().find('mame') > 0 ) or ( self.settings[ "datas_scraper" ] == 'arcadeHITS' ):
             keyboard = xbmc.Keyboard(title, __language__( 30079 ))
         else:
-            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], __language__( 30036 ))
+            keyboard = xbmc.Keyboard(self.launchers[launcher]["roms"][rom]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_rom_algo(launcher, rom, keyboard.getText())
@@ -951,6 +960,205 @@ class Main:
             self._scrap_fanart_rom_algo(launcher, rom, keyboard.getText())
             self._save_launchers()
             xbmc.executebuiltin("Container.Update")
+
+    #
+    # Edit category/launcher/rom thumbnail.
+    #
+    # NOTE Interestingly, if thumb/fanart are linked from outside ~/.kodi, Kodi automatically reloads
+    #      the image cache. That is the case when a local image is selected.
+    #      However, if an image is imported and copied to ~/.kodi/userdata/etc., then Kodi image
+    #      cache is not updated any more!
+    #
+    def _gui_edit_thumbnail(self, object_kind, object_dic, artwork_path):
+        dialog = xbmcgui.Dialog()
+        # if self.settings[ "thumbs_scraper" ] == "Google":
+        #     thumb_diag = 'Import from %s : %s size' % ( self.settings[ "thumbs_scraper" ],
+        #                    self.settings[ "thumb_image_size_display" ].capitalize())
+        type2 = dialog.select('Change Thumbnail Image', 
+                                ['Select Local Image',
+                                 'Import Local Image (Copy and Rename)',
+                                 'Scrape Image from {0}'.format(self.scraper_thumb.get_fancy_name()) ])
+        # Link to an image
+        if type2 == 0:
+            imagepath = artwork_path if object_dic["thumb"] == "" else object_dic["thumb"]
+            image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', "files", ".jpg|.jpeg|.gif|.png", 
+                                            True, False, os.path.join(imagepath))
+            if not image or not os.path.isfile(image):
+                return
+
+            # Update object and save XML
+            if object_kind == KIND_CATEGORY:
+                log_debug('_gui_edit_thumbnail() Object is categoryID = {0}'.format(object_dic['id']))
+                self.categories[object_dic['id']]["thumb"] = image
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_LAUNCHER:
+                log_debug('_gui_edit_thumbnail() Object is launcherID = {0}'.format(object_dic['id']))
+                self.launchers[object_dic['id']]["thumb"] = image
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_ROM:
+                log_debug('_gui_edit_thumbnail() Object is romID = {0}'.format(object_dic['id']))
+                self.roms[object_dic['id']]["thumb"] = image
+                fs_write_ROM_XML_file()
+            log_kodi_notify('AEL', 'Thumb has been updated')
+            log_info('Selected Thumb image "{0}"'.format(image))
+
+            # --- Update Kodi image cache ---
+            # if object_dic["thumb"] != "":
+            #     update_kodi_image_cache(image)
+
+        # Import an image
+        elif type2 == 1:
+            imagepath = artwork_path if object_dic["thumb"] == "" else object_dic["thumb"]
+            image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', "files", ".jpg|.jpeg|.gif|.png",
+                                            True, False, os.path.join(imagepath))
+            if not image or not os.path.isfile(image):
+                return
+
+            img_ext = os.path.splitext(image)[-1][0:4]
+            log_debug('_gui_edit_thumbnail() image   = "{0}"'.format(image))
+            log_debug('_gui_edit_thumbnail() img_ext = "{0}"'.format(img_ext))
+            if img_ext == '':
+                log_kodi_notify_warn('AEL', 'Cannot determine image file extension')
+                return
+
+            object_name = object_dic['name']
+            file_basename = object_name
+            file_path = os.path.join(artwork_path, os.path.basename(object_name) + '_thumb' + img_ext)
+            log_debug('_gui_edit_thumbnail() object_name   = "{0}"'.format(object_name))
+            log_debug('_gui_edit_thumbnail() file_basename = "{0}"'.format(file_basename))
+            log_debug('_gui_edit_thumbnail() file_path     = "{0}"'.format(file_path))
+
+            # If user press ESC in the file browser dialog the the same file used as initial file is chosen.
+            # In that case do nothing and return.
+            if image == file_path:
+                return
+            try:
+                shutil.copy2(image.decode(get_encoding(), 'ignore') , file_path.decode(get_encoding(), 'ignore'))
+            except OSError:
+                log_kodi_notify_warn('AEL', 'OSError when copying image')
+
+            # Update object and save XML
+            if object_kind == KIND_CATEGORY:
+                log_debug('_gui_edit_thumbnail() Object is categoryID = {0}'.format(object_dic['id']))
+                self.categories[object_dic['id']]["thumb"] = file_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_LAUNCHER:
+                log_debug('_gui_edit_thumbnail() Object is launcherID = {0}'.format(object_dic['id']))
+                self.launchers[object_dic['id']]["thumb"] = file_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_ROM:
+                log_debug('_gui_edit_thumbnail() Object is romID = {0}'.format(object_dic['id']))
+                self.roms[object_dic['id']]["thumb"] = file_path
+                fs_write_ROM_XML_file()
+            log_kodi_notify('AEL', 'Thumb has been updated')
+            log_info('Copied Thumb image   "{0}"'.format(image))
+            log_info('Into                 "{0}"'.format(file_path))
+            log_info('Selected Thumb image "{0}"'.format(file_path))
+
+            # --- Update Kodi image cache ---
+            # Cases some problems at the moment...
+            # if object_dic["thumb"] != "":
+            #     update_kodi_image_cache(image)
+
+        # Scrape
+        elif type2 == 2:
+            log_kodi_dialog_OK('AEL', 'Thumb online scraping not implemented yet')
+            # self._scrap_thumb_category(categoryID)
+            return
+
+    def _gui_edit_fanart(self, object_kind, object_dic, artwork_path):
+        dialog = xbmcgui.Dialog()
+        type2 = dialog.select('Change Fanart Image', 
+                                ['Select Local Image',
+                                 'Import Local Image (Copy and Rename)',
+                                 'Scrape Image from {0}'.format(self.scraper_thumb.get_fancy_name()) ])
+        # Link to a fanart image
+        if type2 == 0:
+            imagepath = artwork_path if object_dic["fanart"] == "" else object_dic["fanart"]
+            image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', "files", ".jpg|.jpeg|.gif|.png", 
+                                            True, False, os.path.join(imagepath))
+            if not image or not os.path.isfile(image):
+                return
+
+            # Update object and save XML
+            if object_kind == KIND_CATEGORY:
+                log_debug('_gui_edit_fanart() Object is categoryID = {0}'.format(object_dic['id']))
+                self.categories[object_dic['id']]["fanart"] = image
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_LAUNCHER:
+                log_debug('_gui_edit_fanart() Object is launcherID = {0}'.format(object_dic['id']))
+                self.launchers[object_dic['id']]["fanart"] = image
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_ROM:
+                log_debug('_gui_edit_fanart() Object is romID = {0}'.format(object_dic['id']))
+                self.roms[object_dic['id']]["fanart"] = image
+                fs_write_ROM_XML_file()
+            log_kodi_notify('AEL', 'Thumb has been updated')
+            log_info('Selected Fanart image "{0}"'.format(image))
+
+            # --- Update Kodi image cache ---
+            # if object_dic["fanart"] != "":
+            #     update_kodi_image_cache(image)
+
+        # Import a fanart image
+        elif type2 == 1:
+            imagepath = artwork_path if object_dic["fanart"] == "" else object_dic["fanart"]
+            image = xbmcgui.Dialog().browse(2, 'Select fanart image', "files", ".jpg|.jpeg|.gif|.png",
+                                            True, False, os.path.join(imagepath))
+            if not image or not os.path.isfile(image):
+                return
+
+            img_ext = os.path.splitext(image)[-1][0:4]
+            log_debug('_gui_edit_fanart() image   = "{0}"'.format(image))
+            log_debug('_gui_edit_fanart() img_ext = "{0}"'.format(img_ext))
+            if img_ext == '':
+                log_kodi_notify_warn('AEL', 'Cannot determine image file extension')
+                return
+
+            object_name = object_dic['name']
+            file_basename = object_name
+            file_path = os.path.join(artwork_path, os.path.basename(object_name) + '_fanart' + img_ext)
+            log_debug('_gui_edit_fanart() object_name   = "{0}"'.format(object_name))
+            log_debug('_gui_edit_fanart() file_basename = "{0}"'.format(file_basename))
+            log_debug('_gui_edit_fanart() file_path     = "{0}"'.format(file_path))
+
+            # If user press ESC in the file browser dialog the the same file used as initial file is chosen.
+            # In that case do nothing and return.
+            if image == file_path:
+                return
+            try:
+                shutil.copy2(image.decode(get_encoding(), 'ignore') , file_path.decode(get_encoding(), 'ignore'))
+            except OSError:
+                log_kodi_notify_warn('AEL', 'OSError when copying image')
+
+            # Update object and save XML
+            if object_kind == KIND_CATEGORY:
+                log_debug('_gui_edit_fanart() Object is categoryID = {0}'.format(object_dic['id']))
+                self.categories[object_dic['id']]["fanart"] = file_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_LAUNCHER:
+                log_debug('_gui_edit_fanart() Object is launcherID = {0}'.format(object_dic['id']))
+                self.launchers[object_dic['id']]["fanart"] = file_path
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            elif object_kind == KIND_ROM:
+                log_debug('_gui_edit_fanart() Object is romID = {0}'.format(object_dic['id']))
+                self.roms[object_dic['id']]["fanart"] = file_path
+                fs_write_ROM_XML_file()
+            log_kodi_notify('AEL', 'Fanart has been updated')
+            log_info('Copied Fanart image   "{0}"'.format(image))
+            log_info('Into                  "{0}"'.format(file_path))
+            log_info('Selected Fanart image "{0}"'.format(file_path))
+
+            # --- Update Kodi image cache ---
+            # Cases some problems at the moment...
+            # if object_dic["fanart"] != "":
+            #     update_kodi_image_cache(image)
+
+        # Scrape
+        elif type2 == 2:
+            log_kodi_dialog_OK('AEL', 'Fanart Online scraping not implemented yet')
+            # self._scrap_fanart_category(categoryID)
+            return
 
     #
     # Add ROMS to launcher
@@ -1050,8 +1258,7 @@ class Main:
     def _command_edit_category(self, categoryID):
         # Shows a select box with the options to edit
         dialog = xbmcgui.Dialog()
-        if self.categories[categoryID]["finished"] == True: finished_display = 'Status: Finished'
-        else:                                               finished_display = 'Status: Unfinished'
+        finished_display = 'Status: Finished' if self.categories[categoryID]["finished"] == True else 'Status: Unfinished'
         type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]["name"]), 
                              ['Edit Title/Genre/Description', 'Edit Thumbnail image', 'Edit Fanart image', 
                               finished_display, 'Delete category'])
@@ -1061,95 +1268,11 @@ class Main:
 
         # Edit Thumbnail image
         elif type == 1:
-            dialog = xbmcgui.Dialog()
-            thumb_diag = 'Import Image from %s' % ( self.settings[ "thumbs_scraper" ] )
-            if self.settings[ "thumbs_scraper" ] == "Google":
-                thumb_diag = 'Import from %s : %s size' % ( self.settings[ "thumbs_scraper" ],
-                             self.settings[ "thumb_image_size_display" ].capitalize())
-            type2 = dialog.select('Change Thumbnail Image', 
-                                  [thumb_diag, 'Import Local Image (Copy and Rename)',
-                                   'Select Local Image (Link)'])
-            # Scrape thumb
-            if type2 == 0:
-                self._scrap_thumb_category(categoryID)
-            # Import a category thumbnail image
-            elif type2 == 1:
-                image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', 
-                                                "files", ".jpg|.jpeg|.gif|.png", True, False, DEFAULT_THUMB_PATH)
-                if not image or not os.path.isfile(image):
-                    return
-                img_ext = os.path.splitext(image)[-1][0:4]
-                if img_ext != '':
-                    filename = self.categories[categoryID]["name"]
-                    file_path = os.path.join(DEFAULT_THUMB_PATH, os.path.basename(self.categories[categoryID]["name"])+'_thumb'+img_ext)
-                    if image != file_path:
-                        try:
-                            shutil.copy2( image.decode(get_encoding(),'ignore') , file_path.decode(get_encoding(),'ignore') )
-                            if ( self.categories[categoryID]["thumb"] != "" ):
-                                _update_cache(file_path)
-                            self.categories[categoryID]["thumb"] = file_path
-                            self._save_launchers()
-                            xbmc_notify('AEL', 'Thumb has been updated', 3000)
-                        except OSError:
-                            xbmc_notify('AEL', 'Impossible to assign thumb for %s' % self.categories[categoryID]["name"], 3000)
-            # Link to a category thumbnail image
-            elif type2 == 2:
-                if self.categories[categoryID]["thumb"] == "":
-                    imagepath = DEFAULT_THUMB_PATH
-                else:
-                    imagepath = self.categories[categoryID]["thumb"]
-                image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', 
-                                                "files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(imagepath))
-                if image:
-                    if os.path.isfile(image):
-                        if self.categories[categoryID]["thumb"] != "":
-                            _update_cache(image)
-                        self.categories[categoryID]["thumb"] = image
-                        self._save_launchers()
-                        xbmc_notify('AEL', 'Thumb has been updated', 3000)
+            self._gui_edit_thumbnail(KIND_CATEGORY, self.categories[categoryID], DEFAULT_THUMB_DIR)
 
         # Launcher Fanart menu option
         elif type == 2:
-            dialog = xbmcgui.Dialog()
-            fanart_diag = 'Import Image from %s' % ( self.settings[ "fanarts_scraper" ] )
-            if ( self.settings[ "fanarts_scraper" ] == "Google" ):
-                fanart_diag = 'Import from %s : %s size' % ( self.settings[ "fanarts_scraper" ],self.settings[ "fanart_image_size_display" ].capitalize())
-            type2 = dialog.select('Change Fanart Image', [fanart_diag,'Import Local Image (Copy and Rename)','Select Local Image (Link)'])
-            if (type2 == 0 ):
-                self._scrap_fanart_category(categoryID)
-            if (type2 == 1 ):
-                # Import a Category fanart image
-                image = xbmcgui.Dialog().browse(2,'Select fanart image',"files",".jpg|.jpeg|.gif|.png", True, False, DEFAULT_FANART_PATH)
-                if (image):
-                    if (os.path.isfile(image)):
-                        img_ext = os.path.splitext(image)[-1][0:4]
-                        if ( img_ext != '' ):
-                            filename = self.categories[categoryID]["name"]
-                            file_path = os.path.join(DEFAULT_FANART_PATH,os.path.basename(self.categories[categoryID]["name"])+'_fanart'+img_ext)
-                            if ( image != file_path ):
-                                try:
-                                    shutil.copy2( image.decode(get_encoding(),'ignore') , file_path.decode(get_encoding(),'ignore') )
-                                    if ( self.categories[categoryID]["fanart"] != "" ):
-                                        _update_cache(file_path)
-                                    self.categories[categoryID]["fanart"] = file_path
-                                    self._save_launchers()
-                                    xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
-                                except OSError:
-                                    xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.categories[categoryID]["name"],3000)
-            if (type2 == 2 ):
-                # Link to a category fanart image
-                if (self.categories[categoryID]["fanart"] == ""):
-                    imagepath = DEFAULT_FANART_PATH
-                else:
-                    imagepath = self.categories[categoryID]["fanart"]
-                image = xbmcgui.Dialog().browse(2,'Select fanart image',"files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(imagepath))
-                if (image):
-                    if (os.path.isfile(image)):
-                        if ( self.categories[categoryID]["fanart"] != "" ):
-                            _update_cache(image)
-                        self.categories[categoryID]["fanart"] = image
-                        self._save_launchers()
-                        xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
+            self._gui_edit_fanart(KIND_CATEGORY, self.categories[categoryID], DEFAULT_FANART_DIR)
 
         # Category status
         elif type == 3:
@@ -1564,7 +1687,7 @@ class Main:
 
     def _scrap_launcher(self, launcherID):
         # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], __language__( 30036 ))
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_launcher_algo(launcherID, keyboard.getText())
@@ -1573,7 +1696,7 @@ class Main:
 
     def _full_scrap_launcher(self, launcherID):
         # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], __language__( 30036 ))
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the file title to search...')
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             self._scrap_launcher_algo(launcherID, keyboard.getText())
@@ -2829,7 +2952,7 @@ class Main:
 
         #Search by Title
         if (type == type_nb ):
-            keyboard = xbmc.Keyboard("", __language__( 30036 ))
+            keyboard = xbmc.Keyboard("", 'Enter the file title to search...')
             keyboard.doModal()
             if (keyboard.isConfirmed()):
                 search = keyboard.getText()
@@ -3050,7 +3173,7 @@ class MainGui( xbmcgui.WindowXMLDialog ):
         pass
 
 def MyDialog(img_list):
-    w = MainGui( "DialogSelect.xml", BASE_PATH, listing=img_list )
+    w = MainGui("DialogSelect.xml", BASE_PATH, listing = img_list)
     w.doModal()
     try:
         return w.selected_url
@@ -3058,63 +3181,6 @@ def MyDialog(img_list):
         print_exc()
         return False
     del w
-
-def get_encoding():
-    try:
-        return sys.getfilesystemencoding()
-    except (UnicodeEncodeError, UnicodeDecodeError):
-        return "utf-8"
-
-def update_cache(file_path):
-    cached_thumb = Thumbnails().get_cached_covers_thumb( file_path ).replace("tbn" , os.path.splitext(file_path)[-1][1:4])
-    try:
-        shutil.copy2( file_path.decode(get_encoding(),'ignore'), cached_thumb.decode(get_encoding(),'ignore') )
-    except OSError:
-        xbmc_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30608 ),3000)
-    xbmc.executebuiltin("XBMC.ReloadSkin()")
-
-def download_img(img_url,file_path):
-    req = urllib2.Request(img_url)
-    req.add_unredirected_header('User-Agent', getUserAgent())
-    f = open(file_path,'wb')
-    f.write(urllib2.urlopen(req).read())
-    f.close()                                
-
-def download_page(url):
-    req = urllib2.Request(url)
-    req.add_unredirected_header('User-Agent', getUserAgent())
-    return urllib2.urlopen(req)
-
-def clean_filename(title):
-    title = re.sub('\[.*?\]', '', title)
-    title = re.sub('\(.*?\)', '', title)
-    title = re.sub('\{.*?\}', '', title)
-    title = title.replace('_',' ')
-    title = title.replace('-',' ')
-    title = title.replace(':',' ')
-    title = title.replace('.',' ')
-    title = title.rstrip()
-    return title
-
-def base_filename(filename):
-    filename = re.sub('(\[.*?\]|\(.*?\)|\{.*?\})', '', filename)
-    filename = re.sub('(\.|-| |_)cd\d+$', '', filename)
-    return filename.rstrip()
-
-def toogle_fullscreen():
-    # Frodo & + compatible
-    xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
-
-#
-# Generates a random an unique MD5 hash and returns a string with the hash
-#
-def misc_generate_random_SID():
-    t1 = time.time()
-    t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5( str(t1 + t2) )
-    sid = base.hexdigest()
-
-    return sid
 
 def get_game_system_list():
     platforms = []
@@ -3144,7 +3210,9 @@ def get_favourites_list():
                 fav_icon = favourite.attributes[ 'thumb' ].nodeValue
             except:
                 fav_icon = "DefaultProgram.png"
-            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'), fav_icon.encode('utf8','ignore'), favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
+            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'), 
+                               fav_icon.encode('utf8','ignore'), 
+                               favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
             fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
     return favourites, fav_names
 

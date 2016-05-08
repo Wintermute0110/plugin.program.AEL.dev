@@ -110,24 +110,24 @@ def emudata_game_system_list():
 # --- Metadata scrapers -------------------------------------------------------
 class Scraper_Metadata:
     # Constructor of the class
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self.name = name
 
     # Abstract method, defined by convention only
-    def talk(self):
-        raise NotImplementedError("Subclass must implement abstract method")
+    def get_fancy_name(self):
+        raise NotImplementedError("Subclass must implement get_fancy_name() abstract method")
 
 class metadata_NULL(Scraper_Metadata):
-    def __init__(self, name):
-        self.name = name
+    def get_fancy_name(self):
+        return 'NULL Metadata scraper'
 
 class metadata_MAME(Scraper_Metadata):
-    def __init__(self, name):
-        self.name = name
+    def get_fancy_name(self):
+        return 'MAME Metadata offline scraper'
 
 class metadata_NoIntro(Scraper_Metadata):
-    def __init__(self, name):
-        self.name = name
+    def get_fancy_name(self):
+        return 'No-Intro Metadata offline scraper'
 
 # --- Thumb scrapers ----------------------------------------------------------
 class Scraper_Thumb:
@@ -136,12 +136,26 @@ class Scraper_Thumb:
         self.name = name
 
     # Abstract method, defined by convention only
-    def get_name(self):
-        raise NotImplementedError("Subclass must implement get_name() abstract method")
+    def get_fancy_name(self):
+        raise NotImplementedError("Subclass must implement get_fancy_name() abstract method")
 
 class thumb_NULL(Scraper_Thumb):
-    def get_name(self):
+    def get_fancy_name(self):
         return 'NULL Thumb scraper'
+
+# --- Fanart scrapers ----------------------------------------------------------
+class Scraper_Fanart:
+    # Constructor of the class
+    def __init__(self, name):
+        self.name = name
+
+    # Abstract method, defined by convention only
+    def get_fancy_name(self):
+        raise NotImplementedError("Subclass must implement get_fancy_name() abstract method")
+
+class fanart_NULL(Scraper_Fanart):
+    def get_fancy_name(self):
+        return 'NULL Fanart scraper'
 
 # --- Misc --------------------------------------------------------------------
 #
@@ -149,6 +163,7 @@ class thumb_NULL(Scraper_Thumb):
 #
 scrapers_metadata = [metadata_NULL('NULL'), metadata_MAME('MAME'), metadata_NoIntro('NoIntro')]
 scrapers_thumb    = [thumb_NULL('NULL')]
+scrapers_fanart   = [fanart_NULL('NULL')]
 
 #
 # Returns a Scraper_Metadata object based on scraper name
@@ -167,6 +182,16 @@ def get_scraper_thumb(scraper_name):
     scraper = scrapers_thumb[0]
 
     for obj in scrapers_thumb:
+        if obj.name == scraper_name:
+            scraper = obj
+            break
+    
+    return scraper
+
+def get_scraper_fanart(scraper_name):
+    scraper = scrapers_fanart[0]
+
+    for obj in scrapers_fanart:
         if obj.name == scraper_name:
             scraper = obj
             break

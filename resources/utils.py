@@ -11,6 +11,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+import sys, os, shutil
+
 # For xbmc.log(), xbmcgui.Dialog()
 import xbmc, xbmcgui
 
@@ -67,18 +69,18 @@ def log_kodi_notify(title, text, time=5000):
 
     # --- New way ---
     dialog = xbmcgui.Dialog()
-    dialog.notification(title, text, NOTIFICATION_INFO, time)
+    dialog.notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
 def log_kodi_notify_warn(title, text, time=5000):
     dialog = xbmcgui.Dialog()
-    dialog.notification(title, text, NOTIFICATION_WARNING, time)
+    dialog.notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 #
 # Do not use this much because it is the same icon as when Python fails, and that may confuse the user.
 #
 def log_kodi_notify_error(title, text, time=5000):
     dialog = xbmcgui.Dialog()
-    dialog.notification(title, text, NOTIFICATION_ERROR, time)
+    dialog.notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 # --- Kodi image cache -------------------------------------------------------
 THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath("special://profile/" ), "Thumbnails")
@@ -101,10 +103,10 @@ def get_cached_thumb(path1, path2, SPLIT=False):
 def get_cached_covers_thumb(strPath):
     return get_cached_thumb(strPath, THUMBS_CACHE_PATH, True)
 
-def update_cache(file_path):
+def update_kodi_image_cache(file_path):
     cached_thumb = get_cached_covers_thumb(file_path).replace("tbn" , os.path.splitext(file_path)[-1][1:4])
     try:
-        shutil.copy2(file_path.decode(get_encoding(),'ignore'), cached_thumb.decode(get_encoding(), 'ignore'))
+        shutil.copy2(file_path.decode(get_encoding(), 'ignore'), cached_thumb.decode(get_encoding(), 'ignore'))
     except OSError:
         log_kodi_notify_warn('AEL warning', 'Cannot update cached image')
     xbmc.executebuiltin("XBMC.ReloadSkin()")
