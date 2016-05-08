@@ -29,6 +29,9 @@ import resources.subprocess_hack
 from resources.user_agent import getUserAgent
 from resources.file_item import Thumbnails
 from resources.emulators import *
+from resources.file_IO import *
+from resources.utils import *
+# from resources.net_IO import *
 
 # --- Plugin constants ---
 __plugin__  = "Advanced Emulator Launcher"
@@ -53,42 +56,11 @@ FAVOURITES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
 DEFAULT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'thumbs')
 DEFAULT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'fanarts')
 DEFAULT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'nfos')
+ADDON_ID             = "plugin.program.advanced.emulator.launcher"
 
-# --- Some more constants ---
-ADDON_ID = "plugin.program.advanced.emulator.launcher"
-LOG_DEBUG = 0
-LOG_WARNING = 1
-LOG_INFO = 2
-LOG_VERB = 3
-LOG_DEBUG = 4
-
-# --- Settings ---
-def Settings:
-    # Synchronise this with user's preferences in Kodi when loading Kodi settings
-    log_level = LOG_DEBUG
-
-# --- Some debug stuff for development ---
-log_debug('---------- Called AEL addon.py ----------')
-# log_debug(sys.version)
-for i in range(len(sys.argv)):
-    log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
-# log_debug('PLUGIN_DATA_DIR      = "{0}"'.format(PLUGIN_DATA_DIR))
-# log_debug('BASE_DIR             = "{0}"'.format(BASE_DIR))
-# log_debug('HOME_DIR             = "{0}"'.format(HOME_DIR))
-# log_debug('FAVOURITES_DIR       = "{0}"'.format(FAVOURITES_DIR))
-# log_debug('ADDONS_DIR           = "{0}"'.format(ADDONS_DIR))
-# log_debug('CURRENT_ADDON_DIR    = "{0}"'.format(CURRENT_ADDON_DIR))
-# log_debug('ICON_IMG_FILE_PATH   = "{0}"'.format(ICON_IMG_FILE_PATH))
-# log_debug('CATEGORIES_FILE_PATH = "{0}"'.format(CATEGORIES_FILE_PATH))
-# log_debug('DEFAULT_THUMB_DIR    = "{0}"'.format(DEFAULT_THUMB_DIR))
-# log_debug('DEFAULT_FANART_DIR   = "{0}"'.format(DEFAULT_FANART_DIR))
-# log_debug('DEFAULT_NFO_DIR      = "{0}"'.format(DEFAULT_NFO_DIR))
-
-# --- Addon data paths creation ---
-if not os.path.isdir(PLUGIN_DATA_DIR):    os.makedirs(PLUGIN_DATA_DIR)
-if not os.path.isdir(DEFAULT_THUMB_DIR):  os.makedirs(DEFAULT_THUMB_DIR)
-if not os.path.isdir(DEFAULT_FANART_DIR): os.makedirs(DEFAULT_FANART_DIR)
-if not os.path.isdir(DEFAULT_NFO_DIR):    os.makedirs(DEFAULT_NFO_DIR)
+# --- Initialise log system ---
+# Synchronise this with user's preferences in Kodi when loading Kodi settings
+set_log_level(LOG_DEBUG)
 
 # --- Addon object (used to access settings) ---
 addon_obj = xbmcaddon.Addon(id = ADDON_ID)
@@ -100,8 +72,31 @@ class Main:
     categories = {}
 
     def __init__( self, *args, **kwargs ):
-        # Fill in settings dictionary using addon_obj.getSetting
+        # --- Fill in settings dictionary using addon_obj.getSetting() ---
         self._get_settings()
+
+        # --- Some debug stuff for development ---
+        log_debug('---------- Called AEL addon.py Main() constructor ----------')
+        # log_debug(sys.version)
+        for i in range(len(sys.argv)):
+            log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
+        # log_debug('PLUGIN_DATA_DIR      = "{0}"'.format(PLUGIN_DATA_DIR))
+        # log_debug('BASE_DIR             = "{0}"'.format(BASE_DIR))
+        # log_debug('HOME_DIR             = "{0}"'.format(HOME_DIR))
+        # log_debug('FAVOURITES_DIR       = "{0}"'.format(FAVOURITES_DIR))
+        # log_debug('ADDONS_DIR           = "{0}"'.format(ADDONS_DIR))
+        # log_debug('CURRENT_ADDON_DIR    = "{0}"'.format(CURRENT_ADDON_DIR))
+        # log_debug('ICON_IMG_FILE_PATH   = "{0}"'.format(ICON_IMG_FILE_PATH))
+        # log_debug('CATEGORIES_FILE_PATH = "{0}"'.format(CATEGORIES_FILE_PATH))
+        # log_debug('DEFAULT_THUMB_DIR    = "{0}"'.format(DEFAULT_THUMB_DIR))
+        # log_debug('DEFAULT_FANART_DIR   = "{0}"'.format(DEFAULT_FANART_DIR))
+        # log_debug('DEFAULT_NFO_DIR      = "{0}"'.format(DEFAULT_NFO_DIR))
+
+        # --- Addon data paths creation ---
+        if not os.path.isdir(PLUGIN_DATA_DIR):    os.makedirs(PLUGIN_DATA_DIR)
+        if not os.path.isdir(DEFAULT_THUMB_DIR):  os.makedirs(DEFAULT_THUMB_DIR)
+        if not os.path.isdir(DEFAULT_FANART_DIR): os.makedirs(DEFAULT_FANART_DIR)
+        if not os.path.isdir(DEFAULT_NFO_DIR):    os.makedirs(DEFAULT_NFO_DIR)
 
         # New Kodi URL code
         self.base_url = sys.argv[0]
@@ -3063,41 +3058,6 @@ def MyDialog(img_list):
         print_exc()
         return False
     del w
-
-# --- Logging functions -------------------------------------------------------
-def log_debug(str_text):
-    Settings.log_level >= LOG_DEBUG
-        xbmc.log("AEL DEBUG: " + str_text)
-
-def log_verb(str_text):
-    Settings.log_level >= LOG_VERB
-        xbmc.log("AEL VERB : " + str_text)
-
-def log_info(str_text):
-    Settings.log_level >= LOG_INFO
-        xbmc.log("AEL INFO : " + str_text)
-
-def log_warn(str_text):
-    Settings.log_level >= LOG_WARNING
-        xbmc.log("AEL WARN : " + str_text)
-
-def log_err(str_text):
-    Settings.log_level >= LOG_ERROR
-        xbmc.log("AEL ERROR: " + str_text)
-
-#
-# Displays a modal dialog with an OK button.
-# Dialog can have up to 3 rows of text.
-#
-def gui_kodi_dialog_OK(title, row1, row2='', row3=''):
-    dialog = xbmcgui.Dialog()
-    ok = dialog.ok(title, row1, row2, row3)
-
-#
-# Displays a small box in the low right corner
-#
-def gui_kodi_notify(title, text, time=5000):
-    xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
 
 def get_encoding():
     try:
