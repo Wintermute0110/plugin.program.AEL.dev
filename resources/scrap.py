@@ -1,4 +1,19 @@
-﻿# -*- coding: UTF-8 -*-
+#
+# Advanced Emulator Launcher scrapers
+#
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+#
+# We support online an offline scrapers.
+#
 
 def emudata_get_program_arguments( app ):
     # Based on the app. name, retrieve the default arguments for the app.
@@ -87,3 +102,73 @@ def emudata_game_system_list():
     ]
 
     return game_list
+
+#
+# Implement scrapers using polymorphism instead of using Angelscry exec('import ...') hack.
+#
+
+# --- Metadata scrapers -------------------------------------------------------
+class Scraper_Metadata:
+    # Constructor of the class
+    def __init__(self):
+        pass
+
+    # Abstract method, defined by convention only
+    def talk(self):
+        raise NotImplementedError("Subclass must implement abstract method")
+
+class metadata_NULL(Scraper_Metadata):
+    def __init__(self, name):
+        self.name = name
+
+class metadata_MAME(Scraper_Metadata):
+    def __init__(self, name):
+        self.name = name
+
+class metadata_NoIntro(Scraper_Metadata):
+    def __init__(self, name):
+        self.name = name
+
+# --- Thumb scrapers ----------------------------------------------------------
+class Scraper_Thumb:
+    # Constructor of the class
+    def __init__(self, name):
+        self.name = name
+
+    # Abstract method, defined by convention only
+    def get_name(self):
+        raise NotImplementedError("Subclass must implement get_name() abstract method")
+
+class thumb_NULL(Scraper_Thumb):
+    def get_name(self):
+        return 'NULL Thumb scraper'
+
+# --- Misc --------------------------------------------------------------------
+#
+# Instantiate scraper objects
+#
+scrapers_metadata = [metadata_NULL('NULL'), metadata_MAME('MAME'), metadata_NoIntro('NoIntro')]
+scrapers_thumb    = [thumb_NULL('NULL')]
+
+#
+# Returns a Scraper_Metadata object based on scraper name
+#
+def get_scraper_metadata(scraper_name):
+    scraper = scrapers_metadata[0]
+
+    for obj in scrapers_metadata:
+        if obj.name == scraper_name:
+            scraper = obj
+            break
+    
+    return scraper
+
+def get_scraper_thumb(scraper_name):
+    scraper = scrapers_thumb[0]
+
+    for obj in scrapers_thumb:
+        if obj.name == scraper_name:
+            scraper = obj
+            break
+    
+    return scraper
