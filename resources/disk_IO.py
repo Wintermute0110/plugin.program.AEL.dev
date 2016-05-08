@@ -125,7 +125,7 @@ def fs_load_catfile(categories_file):
                 # By default read strings
                 xml_text = category_child.text if category_child.text is not None else ''
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
                 category[xml_tag] = xml_text
 
                 # Now transform data depending on tag name
@@ -152,7 +152,7 @@ def fs_load_catfile(categories_file):
                 # By default read strings
                 xml_text = category_child.text if category_child.text is not None else ''
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
                 launcher[xml_tag] = xml_text
 
                 # Now transform data depending on tag name
@@ -168,12 +168,12 @@ def fs_load_catfile(categories_file):
 #
 # Write to disk categories.xml
 #
-def fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
-    self._print_log('_fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
+def fs_write_ROM_XML_file(roms, launcher, roms_xml_file):
+    log_info('fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
 
     # --- Notify we are busy doing things ---
     xbmc.executebuiltin('ActivateWindow(busydialog)')
-    
+
     # Original Angelscry method for generating the XML was to grow a string, like this
     # xml_content = 'test'
     # xml_content += 'more test'
@@ -188,12 +188,12 @@ def fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
         # Print some information in the XML so the user can now which launcher created it.
         # Note that this is ignored when reading the file.
         str_list.append('<launcher>\n')
-        str_list.append('  <id        >{0}</id>\n'.format(launcherID))
-        str_list.append('  <name      >{0}</name>\n'.format(self.launchers[launcherID]['name']))            
-        str_list.append('  <category  >{0}</category>\n'.format(self.launchers[launcherID]['category']))
-        str_list.append('  <rompath   >{0}</rompath>\n'.format(self.launchers[launcherID]['rompath']))
-        str_list.append('  <thumbpath >{0}</thumbpath>\n'.format(self.launchers[launcherID]['thumbpath']))
-        str_list.append('  <fanartpath>{0}</fanartpath>\n'.format(self.launchers[launcherID]['fanartpath']))
+        str_list.append('  <id        >{0}</id>\n'.format(launcher['id']))
+        str_list.append('  <name      >{0}</name>\n'.format(launcher[launcherID]['name']))            
+        str_list.append('  <category  >{0}</category>\n'.format(launcher[launcherID]['category']))
+        str_list.append('  <rompath   >{0}</rompath>\n'.format(launcher[launcherID]['rompath']))
+        str_list.append('  <thumbpath >{0}</thumbpath>\n'.format(launcher[launcherID]['thumbpath']))
+        str_list.append('  <fanartpath>{0}</fanartpath>\n'.format(launcher[launcherID]['fanartpath']))
         str_list.append('</launcher>\n')
 
         # Create list of ROMs
@@ -225,7 +225,7 @@ def fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
 
         # Join string and escape XML characters
         full_string = ''.join(str_list)
-        full_string = self._fs_escape_XML(full_string)
+        full_string = fs_escape_XML(full_string)
 
         # Save categories.xml file
         file_obj = open(roms_xml_file, 'wt' )
@@ -242,7 +242,7 @@ def fs_write_ROM_XML_file(self, roms, launcherID, roms_xml_file):
 #
 # Loads a launcher XML with the ROMs
 #
-def fs_load_ROM_XML_file(self, roms_xml_file):
+def fs_load_ROM_XML_file(roms_xml_file):
     __debug_xml_parser = 0
     roms = {}
 
@@ -250,14 +250,15 @@ def fs_load_ROM_XML_file(self, roms_xml_file):
     if not os.path.isfile(roms_xml_file):
         return {}
 
+    # --- Notify we are busy doing things ---
     xbmc.executebuiltin('ActivateWindow(busydialog)')
 
     # --- Parse using cElementTree ---
-    xbmc.log('_fs_load_ROM_XML_file() Loading XML file {0}'.format(roms_xml_file))
+    log_verb('fs_load_ROM_XML_file() Loading XML file {0}'.format(roms_xml_file))
     xml_tree = ET.parse(roms_xml_file)
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
-        if __debug_xml_parser: xbmc.log('Root child {0}'.format(root_element.tag))
+        if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
 
         if root_element.tag == 'rom':
             # Default values
@@ -268,7 +269,7 @@ def fs_load_ROM_XML_file(self, roms_xml_file):
                 # By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
                 xml_tag  = rom_child.tag
-                if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
                 rom[xml_tag] = xml_text
                 
                 # Now transform data depending on tag name
@@ -276,16 +277,17 @@ def fs_load_ROM_XML_file(self, roms_xml_file):
                     xml_bool = True if xml_text == 'True' else False
                     rom[xml_tag] = xml_bool
             roms[rom['id']] = rom
+            
+    # --- We are not busy anymore ---
     xbmc.executebuiltin('Dialog.Close(busydialog)')
 
     return roms
 
 #
-# Write to disk categories.xml
+# Write to disk favourites.xml
 #
-def fs_write_Favourites_XML_file(self, roms, roms_xml_file):
-    self._print_log('_fs_write_Favourites_XML_file() Saving XML file {0}'.format(roms_xml_file))
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
+def fs_write_Favourites_XML_file(roms, roms_xml_file):
+    log_info('_fs_write_Favourites_XML_file() Saving XML file {0}'.format(roms_xml_file))
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
@@ -314,7 +316,7 @@ def fs_write_Favourites_XML_file(self, roms, roms_xml_file):
                             "</rom>\n")
         str_list.append('</advanced_emulator_launcher_Favourites>\n')
         full_string = ''.join(str_list)
-        full_string = self._fs_escape_XML(full_string)
+        full_string = fs_escape_XML(full_string)
         file_obj = open(roms_xml_file, 'wt' )
         file_obj.write(full_string)
         file_obj.close()
@@ -322,13 +324,12 @@ def fs_write_Favourites_XML_file(self, roms, roms_xml_file):
         gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (OSError)'.format(roms_xml_file))
     except IOError:
         gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (IOError)'.format(roms_xml_file))
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
 
 #
 # Loads an XML file containing the favourite ROMs
 # It is basically the same as ROMs, but with some more fields to store launching application data.
 #
-def fs_load_Favourites_XML_file(self, roms_xml_file):
+def fs_load_Favourites_XML_file(roms_xml_file):
     __debug_xml_parser = 0
     roms = {}
 
@@ -336,13 +337,12 @@ def fs_load_Favourites_XML_file(self, roms_xml_file):
     if not os.path.isfile(roms_xml_file):
         return {}
 
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
     # --- Parse using cElementTree ---
-    xbmc.log('_fs_load_Favourites_XML_file() Loading XML file {0}'.format(roms_xml_file))
+    log_verb('_fs_load_Favourites_XML_file() Loading XML file {0}'.format(roms_xml_file))
     xml_tree = ET.parse(roms_xml_file)
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
-        if __debug_xml_parser: xbmc.log('Root child {0}'.format(root_element.tag))
+        if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
 
         if root_element.tag == 'rom':
             # Default values
@@ -354,7 +354,7 @@ def fs_load_Favourites_XML_file(self, roms_xml_file):
                 # By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
                 xml_tag  = rom_child.tag
-                if __debug_xml_parser: xbmc.log('{0} --> {1}'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
                 rom[xml_tag] = xml_text
                 
                 # Now transform data depending on tag name
@@ -362,7 +362,6 @@ def fs_load_Favourites_XML_file(self, roms_xml_file):
                     xml_bool = True if xml_text == 'True' else False
                     rom[xml_tag] = xml_bool
             roms[rom['id']] = rom
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
 
     return roms
 
@@ -508,7 +507,7 @@ def export_launcher_nfo(self, launcherID):
         usock.close()
         xbmc_notify('Advanced Emulator Launcher', __language__( 30086 ) % os.path.basename(nfo_file),3000)
 
-    def _import_launcher_nfo(self, launcherID):
+    def import_launcher_nfo(self, launcherID):
         if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
             nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
         else:

@@ -11,7 +11,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import sys, os, shutil
+import sys, os, shutil, time, random, hashlib
 
 # For xbmc.log(), xbmcgui.Dialog()
 import xbmc, xbmcgui
@@ -44,11 +44,11 @@ def log_info(str_text):
     if current_log_level >= LOG_INFO:
         xbmc.log("AEL INFO : " + str_text)
 
-def log_warn(str_text):
+def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
         xbmc.log("AEL WARN : " + str_text)
 
-def log_err(str_text):
+def log_error(str_text):
     if current_log_level >= LOG_ERROR:
         xbmc.log("AEL ERROR: " + str_text)
 
@@ -63,7 +63,7 @@ def log_kodi_dialog_OK(title, row1, row2='', row3=''):
 #
 # Displays a small box in the low right corner
 #
-def log_kodi_notify(title, text, time=5000):
+def log_kodi_notify(title, text, time = 5000):
     # --- Old way ---
     # xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
 
@@ -71,14 +71,14 @@ def log_kodi_notify(title, text, time=5000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
-def log_kodi_notify_warn(title, text, time=5000):
+def log_kodi_notify_warn(title, text, time = 5000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 #
 # Do not use this much because it is the same icon as when Python fails, and that may confuse the user.
 #
-def log_kodi_notify_error(title, text, time=5000):
+def log_kodi_notify_error(title, text, time = 5000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
@@ -141,3 +141,20 @@ def misc_generate_random_SID():
     sid = base.hexdigest()
 
     return sid
+
+def get_kodi_favourites_list():
+    favourites = []
+    fav_names = []
+    if os.path.isfile( FAVOURITES_PATH ):
+        fav_xml = parse( FAVOURITES_PATH )
+        fav_doc = fav_xml.documentElement.getElementsByTagName( 'favourite' )
+        for count, favourite in enumerate(fav_doc):
+            try:
+                fav_icon = favourite.attributes[ 'thumb' ].nodeValue
+            except:
+                fav_icon = "DefaultProgram.png"
+            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'), 
+                               fav_icon.encode('utf8','ignore'), 
+                               favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
+            fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
+    return favourites, fav_names

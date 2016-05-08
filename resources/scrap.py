@@ -86,26 +86,36 @@ def emudata_get_program_extensions( app ):
 
     return ""
 
+#
+# This dictionary hast the game system list as key, and the JSON file with
+# offline scraping information as value. File location is relative to
+# addon installation dir CURRENT_ADDON_DIR
+#
+offline_scrapers_dic = {
+    "MAME"             : 'resources/scrapers/MAME.json', 
+    "DOS"              : '',
+    "Game Boy"         : 'resources/scrapers/MAME.json',
+    "Game Boy Advance" : 'resources/scrapers/MAME.json',
+    "Game Boy Color"   : 'resources/scrapers/MAME.json',
+    "Nintendo 64"      : 'resources/scrapers/MAME.json',
+    "Nintendo DS"      : 'resources/scrapers/MAME.json',
+    "Sega CD"          : 'resources/scrapers/MAME.json',
+    "Sega Game Gear"   : 'resources/scrapers/MAME.json',
+    "Sega Genesis"     : 'resources/scrapers/MAME.json',
+    "Sega 32X"         : 'resources/scrapers/MAME.json'
+}
+
 def emudata_game_system_list():
-    game_list = [
-        "MAME", 
-        "DOS",
-        "Game Boy",
-        "Game Boy Advance",
-        "Game Boy Color",
-        "Nintendo 64",
-        "Nintendo DS",
-        "Sega CD",
-        "Sega Game Gear",
-        "Sega Genesis",
-        "Sega 32X",
-    ]
+    game_list = []
+    
+    for key in sorted(offline_scrapers_dic):
+        game_list.append(key)
 
     return game_list
 
-#
+###############################################################################
 # Implement scrapers using polymorphism instead of using Angelscry exec('import ...') hack.
-#
+###############################################################################
 
 # --- Metadata scrapers -------------------------------------------------------
 class Scraper_Metadata:

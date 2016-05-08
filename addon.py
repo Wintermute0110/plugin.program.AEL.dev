@@ -16,10 +16,9 @@
 #    main body.
 
 # --- Main imports ---
-import sys, os, fnmatch, time, datetime, math, random, shutil, string
-import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
+import sys, os, shutil, fnmatch, string
+import re, urllib, urllib2, urlparse, socket, exceptions
 from traceback import print_exc
-from operator import itemgetter
 
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
@@ -889,7 +888,7 @@ class Main:
                 log_debug('_gui_edit_fanart() Object is romID = {0}'.format(object_dic['id']))
                 self.roms[object_dic['id']]["fanart"] = image
                 fs_write_ROM_XML_file()
-            log_kodi_notify('AEL', 'Thumb has been updated')
+            log_kodi_notify('AEL', 'Fanart has been updated')
             log_info('Selected Fanart image "{0}"'.format(image))
 
             # --- Update Kodi image cache ---
@@ -1083,33 +1082,79 @@ class Main:
 
         categoryID = misc_generate_random_SID()
         categorydata = {"id" : categoryID, "name" : keyboard.getText(), 
-                        "thumb" : "", "fanart" : "", "genre" : "", "plot" : "", "finished" : False}
+                        "thumb" : "", "fanart" : "", "genre" : "", "description" : "", "finished" : False}
         self.categories[categoryID] = categorydata
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         xbmc.executebuiltin("Container.Refresh")
-        gui_kodi_notify('AEL' , 'Category {0} created'.format(categorydata["name"]), 3000)
+        log_kodi_notify('AEL' , 'Category {0} created'.format(categorydata["name"]), 3000)
 
         return True
 
+    #
+    # Removes ROMs for a given launcher. Note this function will never be called for standalone launchers.
+    #
     def _gui_empty_launcher(self, launcherID):
+        roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
+        num_roms = len(roms)
         dialog = xbmcgui.Dialog()
-        ret = dialog.yesno('Advanced Emulator Launcher', __language__( 30133 ) % self.launchers[launcherID]["name"])
-        if (ret):
-            self.launchers[launcherID]["roms"].clear()
-            self._save_launchers()
+        ret = dialog.yesno('Advanced Emulator Launcher', 
+                           'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
+                           'Are you sure you want to delete it?')
+        if ret:
+            # Just remove XML file and set roms_xml_file to ''
+            roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
+            if roms_xml_file == '' or rompath == '':
+                log_debug('Launcher is empty. No ROMs XML to remove')
+            else:
+                log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
+                try:
+                    os.remove(roms_xml_file)
+                except OSError:
+                    log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
+                    log_kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
+            self.launchers[launcherID]["roms_xml_file"] = ''
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             xbmc.executebuiltin("Container.Update")
 
+    #
+    # Removes a launcher. For ROMs launcher it also removes ROM XML. For standalone launcher there is no
+    # files to remove and no ROMs to check.
+    #
     def _gui_remove_launcher(self, launcherID):
-        dialog = xbmcgui.Dialog()
-        ret = dialog.yesno('Advanced Emulator Launcher', __language__( 30010 ) % self.launchers[launcherID]["name"])
-        if (ret):
-            category = self.launchers[launcherID]["category"]
-            self.launchers.pop(launcherID)
-            self._save_launchers()
-            if ( not self._empty_cat(category) ):
-                xbmc.executebuiltin("Container.Update")
+        rompath = self.launchers[launcherID]["rompath"]
+        # Standalone launcher
+        if rompath == '':
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher', 
+                            'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]["name"]),
+                            'Are you sure you want to delete it?')
+        # ROMs launcher
+        else:
+            roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+            num_roms = len(roms)
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher', 
+                            'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
+                            'Are you sure you want to delete it?')
+        if ret:
+            # Remove XML file and delete launcher object, only if launcher is not empty
+            roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
+            if roms_xml_file == '' or rompath == '':
+                log_debug('Launcher is empty or standalone. No ROMs XML to remove')
             else:
+                log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
+                try:
+                    os.remove(roms_xml_file)
+                except OSError:
+                    log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
+                    log_kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
+            categoryID = self.launchers[launcherID]["category"]
+            self.launchers.pop(launcherID)
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            if self._cat_is_empty(categoryID):
                 xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
+            else:
+                xbmc.executebuiltin("Container.Update")
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
@@ -1118,41 +1163,36 @@ class Main:
 
         if self.launchers[launcherID]["rompath"] == "":
             type = dialog.select('Select Action for %s' % title, 
-                                 ['Import Metadata, Thumbnail and Fanart', 'Modify Metadata',
-                                  'Change Thumbnail Image', 'Change Fanart Image', 
+                                 ['Modify Metadata', 'Change Thumbnail Image', 'Change Fanart Image', 
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
-                                  finished_display, 
-                                  'Advanced Modifications', 'Delete'])
+                                  finished_display, 'Advanced Modifications', 'Delete'])
         else:
             type = dialog.select('Select Action for %s' % title, 
-                                 ['Import Metadata, Thumbnail and Fanart', 'Modify Metadata',
-                                  'Change Thumbnail Image', 'Change Fanart Image',
+                                 ['Modify Metadata', 'Change Thumbnail Image', 'Change Fanart Image',
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
-                                  finished_display, 
-                                  'Manage Items List', 'Advanced Modifications', 'Delete'])
-        type_nb = 0
-
-        # Scrap item (infos and images)
-        if type == type_nb:
-            self._full_scrap_launcher(launcherID)
+                                  finished_display, 'Manage Items List', 'Advanced Modifications', 'Delete'])
 
         # Edition of the launcher metadata
-        type_nb = type_nb + 1
+        type_nb = 0
         if type == type_nb:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Modify Launcher Metadata',
-                                  ['Import from %s' % self.settings[ "datas_scraper" ],
-                                   'Modify Title : %s' % self.launchers[launcherID]["name"],
-                                   'Modify Platform : %s' % self.launchers[launcherID]["gamesys"],
-                                   'Modify Release Date : %s' % self.launchers[launcherID]["release"],
-                                   'Modify Studio : %s' % self.launchers[launcherID]["studio"],
-                                   'Modify Genre : %s' % self.launchers[launcherID]["genre"],
-                                   'Modify Description : %s ...' % self.launchers[launcherID]["plot"][0:20],
-                                   'Import from .nfo file', 'Save to .nfo file'])
-            if type2 == 0:   # Edition of the launcher name
-                self._scrap_launcher(launcherID)
-            elif type2 == 1: # Edition of the launcher name
-                
+                                  ['Scrape from {0}'.format(self.scraper_metadata.get_fancy_name()),
+                                   'Edit Title: %s' % self.launchers[launcherID]["name"],
+                                   'Edit Platform: %s' % self.launchers[launcherID]["gamesys"],
+                                   'Edit Release Date: %s' % self.launchers[launcherID]["release"],
+                                   'Edit Studio: %s' % self.launchers[launcherID]["studio"],
+                                   'Edit Genre: %s' % self.launchers[launcherID]["genre"],
+                                   'Edit Description: %s' % self.launchers[launcherID]["plot"][0:20],
+                                   'Import Description from TXT file ...',
+                                   'Import metadata from NFO file ...', 'Save metadata to NFO file'])
+            # Edition of the launcher name
+            if type2 == 0:
+                log_kodi_dialog_OK('AEL', 'Online scraping not supported yet. Sorry.')
+                return
+                # self._scrap_launcher_metadata(launcherID)
+            # Edition of the launcher name
+            elif type2 == 1:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Edit title')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -1160,156 +1200,78 @@ class Main:
                     if title == "" :
                         title = self.launchers[launcherID]["name"]
                     self.launchers[launcherID]["name"] = title.rstrip()
-                    self._save_launchers()
-            elif type2 == 2: # Selection of the launcher game system
-                
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            # Selection of the launcher game system
+            elif type2 == 2:
                 dialog = xbmcgui.Dialog()
-                platforms = _get_game_system_list()
+                platforms = emudata_game_system_list()
                 gamesystem = dialog.select('Select the platform', platforms)
                 if not gamesystem == -1:
                     self.launchers[launcherID]["gamesys"] = platforms[gamesystem]
-                    self._save_launchers()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            # Edition of the launcher release date (year)
             elif type2 == 3:
-                # Edition of the launcher release date
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["release"], 'Edit release year')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     self.launchers[launcherID]["release"] = keyboard.getText()
-                    self._save_launchers()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            # Edition of the launcher studio name
             elif type2 == 4:
-                # Edition of the launcher studio name
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["studio"], 'Edit studio')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     self.launchers[launcherID]["studio"] = keyboard.getText()
-                    self._save_launchers()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            # Edition of the launcher genre
             elif type2 == 5:
-                # Edition of the launcher genre
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["genre"], 'Edit genre')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     self.launchers[launcherID]["genre"] = keyboard.getText()
-                    self._save_launchers()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+            # Edit launcher description (plot)
             elif type2 == 6:
-                # Import of the launcher plot
-                text_file = xbmcgui.Dialog().browse(1,
-                                                    'Select description file. (e.g txt|dat)', "files", ".txt|.dat", 
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]["plot"], 'Edit descripion')
+                keyboard.doModal()
+                if keyboard.isConfirmed():
+                    self.launchers[launcherID]["plot"] = keyboard.getText()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+            # Import of the launcher descripion (plot)
+            elif type2 == 7:
+                text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", 
                                                     False, False, self.launchers[launcherID]["application"])
                 if os.path.isfile(text_file) == True:
                     text_plot = open(text_file, 'r')
-                    self.launchers[launcherID]["plot"] = text_plot.read()
+                    str = text_plot.read()
                     text_plot.close()
-                    self._save_launchers()
-            elif type2 == 7:
-                # Edition of the launcher name
-                self._import_launcher_nfo(launcherID)
+                    self.launchers[launcherID]["plot"] = str
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+            # Import launcher from NFO file
             elif type2 == 8:
-                # Edition of the launcher name
-                self._export_launcher_nfo(launcherID)
+                log_kodi_dialog_OK('AEL', 'Not implemented yet!')
+                # self._import_launcher_nfo(launcherID)
+                
+            # Export launcher to NFO file
+            elif type2 == 9:
+                log_kodi_dialog_OK('AEL', 'Not implemented yet!')
+                # self._export_launcher_nfo(launcherID)
 
-        # Launcher Thumbnail menu option (VERY SIMILAR TO THE CATEGORIES STUFF, HAVE A LOOK THERE)
-        type_nb = type_nb+1
-        if (type == type_nb ):
-            dialog = xbmcgui.Dialog()
-            thumb_diag = 'Import Image from %s' % ( self.settings[ "thumbs_scraper" ] )
-            if ( self.settings[ "thumbs_scraper" ] == "GameFAQs" ) | ( self.settings[ "thumbs_scraper" ] == "MobyGames" ):
-                thumb_diag = 'Import from %s : %s thumbs' % ( self.settings[ "thumbs_scraper" ],self.settings[ "display_game_region" ])
-            if ( self.settings[ "thumbs_scraper" ] == "Google" ):
-                thumb_diag = 'Import from %s : %s size' % ( self.settings[ "thumbs_scraper" ],self.settings[ "thumb_image_size_display" ])
-            type2 = dialog.select('Change Thumbnail Image', [thumb_diag,'Import Local Image (Copy and Rename)','Select Local Image (Link)'])
-            if (type2 == 0 ):
-                self._scrap_thumb_launcher(launcherID)
-            if (type2 == 1 ):
-                # Import a Launcher thumbnail image
-                image = xbmcgui.Dialog().browse(2,'Select thumbnail image',"files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(self.launchers[launcherID]["thumbpath"]))
-                if (image):
-                    if (os.path.isfile(image)):
-                        img_ext = os.path.splitext(image)[-1][0:4]
-                        if ( img_ext != '' ):
-                            filename = self.launchers[launcherID]["application"]
-                            if ( os.path.join(self.launchers[launcherID]["thumbpath"]) != "" ):
-                                file_path = os.path.join(self.launchers[launcherID]["thumbpath"],os.path.basename(self.launchers[launcherID]["application"])+'_thumb'+img_ext)
-                            else:
-                                if (self.settings[ "launcher_thumb_path" ] == "" ):
-                                    self.settings[ "launcher_thumb_path" ] = DEFAULT_THUMB_PATH
-                                file_path = os.path.join(self.settings[ "launcher_thumb_path" ],os.path.basename(self.launchers[launcherID]["application"])+'_thumb'+img_ext)
-                            if ( image != file_path ):
-                                try:
-                                    shutil.copy2( image.decode(get_encoding(),'ignore') , file_path.decode(get_encoding(),'ignore') )
-                                    if ( self.launchers[launcherID]["thumb"] != "" ):
-                                        _update_cache(file_path)
-                                    self.launchers[launcherID]["thumb"] = file_path
-                                    self._save_launchers()
-                                    xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
-                                except OSError:
-                                    xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign thumb for %s' % self.launchers[launcherID]["name"],3000)
-
-            if (type2 == 2 ):
-                # Link to a launcher thumbnail image
-                if (self.launchers[launcherID]["thumb"] == ""):
-                    imagepath = self.launchers[launcherID]["thumbpath"]
-                else:
-                    imagepath = self.launchers[launcherID]["thumb"]
-                image = xbmcgui.Dialog().browse(2,'Select thumbnail image',"files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(imagepath))
-                if (image):
-                    if (os.path.isfile(image)):
-                        if ( self.launchers[launcherID]["thumb"] != "" ):
-                            _update_cache(image)
-                        self.launchers[launcherID]["thumb"] = image
-                        self._save_launchers()
-                        xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
+        # Launcher Thumbnail menu option
+        type_nb = type_nb + 1
+        if type == type_nb:
+            self._gui_edit_thumbnail(KIND_LAUNCHER, self.launchers[launcherID], DEFAULT_THUMB_DIR)
 
         # Launcher Fanart menu option
         type_nb = type_nb+1
         if (type == type_nb ):
-            dialog = xbmcgui.Dialog()
-            fanart_diag = 'Import Image from %s' % ( self.settings[ "fanarts_scraper" ] )
-            if ( self.settings[ "fanarts_scraper" ] == "Google" ):
-                fanart_diag = 'Import from %s : %s size' % ( self.settings[ "fanarts_scraper" ],self.settings[ "fanart_image_size_display" ].capitalize())
-            type2 = dialog.select('Change Fanart Image', [fanart_diag,'Import Local Image (Copy and Rename)','Select Local Image (Link)'])
-            if (type2 == 0 ):
-                self._scrap_fanart_launcher(launcherID)
-            if (type2 == 1 ):
-                # Import a Launcher fanart image
-                image = xbmcgui.Dialog().browse(2,'Select fanart image',"files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(self.launchers[launcherID]["fanartpath"]))
-                if (image):
-                    if (os.path.isfile(image)):
-                        img_ext = os.path.splitext(image)[-1][0:4]
-                        if ( img_ext != '' ):
-                            filename = self.launchers[launcherID]["application"]
-                            if ( os.path.join(self.launchers[launcherID]["fanartpath"]) != "" ):
-                                file_path = os.path.join(self.launchers[launcherID]["fanartpath"],os.path.basename(self.launchers[launcherID]["application"])+'_fanart'+img_ext)
-                            else:
-                                if (self.settings[ "launcher_fanart_path" ] == "" ):
-                                    self.settings[ "launcher_fanart_path" ] = DEFAULT_FANART_PATH
-                                file_path = os.path.join(self.settings[ "launcher_fanart_path" ],os.path.basename(self.launchers[launcherID]["application"])+'_fanart'+img_ext)
-                            if ( image != file_path ):
-                                try:
-                                    shutil.copy2( image.decode(get_encoding(),'ignore') , file_path.decode(get_encoding(),'ignore') )
-                                    if ( self.launchers[launcherID]["fanart"] != "" ):
-                                        _update_cache(file_path)
-                                    self.launchers[launcherID]["fanart"] = file_path
-                                    self._save_launchers()
-                                    xbmc_notify('Advanced Emulator Launcher', 'Thumb has been updated',3000)
-                                except OSError:
-                                    xbmc_notify('Advanced Emulator Launcher', 'Impossible to assign fanart for %s' % self.launchers[launcherID]["name"],3000)
-            if (type2 == 2 ):
-                # Link to a launcher fanart image
-                if (self.launchers[launcherID]["fanart"] == ""):
-                    imagepath = self.launchers[launcherID]["fanartpath"]
-                else:
-                    imagepath = self.launchers[launcherID]["fanart"]
-                image = xbmcgui.Dialog().browse(2,'Select fanart image',"files",".jpg|.jpeg|.gif|.png", True, False, os.path.join(imagepath))
-                if (image):
-                    if (os.path.isfile(image)):
-                        if ( self.launchers[launcherID]["fanart"] != "" ):
-                            _update_cache(image)
-                        self.launchers[launcherID]["fanart"] = image
-                        self._save_launchers()
-                        xbmc_notify('Advanced Emulator Launcher', 'Fanart has been updated',3000)
+            self._gui_edit_fanart(KIND_LAUNCHER, self.launchers[launcherID], DEFAULT_FANART_DIR)
 
-        # Launcher's change category
-        type_nb = type_nb+1
+        # Change launcher's category
+        type_nb = type_nb + 1
         if type == type_nb:
             current_category = self.launchers[launcherID]["category"]
             dialog = xbmcgui.Dialog()
@@ -1319,23 +1281,25 @@ class Main:
                 categories_id.append(self.categories[key]['id'])
                 categories_name.append(self.categories[key]['name'])
             selected_cat = dialog.select('Select the category', categories_name)
-            if (not selected_cat == -1 ):
+            if not selected_cat == -1:
                 self.launchers[launcherID]["category"] = categories_id[selected_cat]
-                self._save_launchers()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categories_id[selected_cat]))
 
-        # Launcher status
-        type_nb = type_nb+1
+        # Launcher status (finished [bool])
+        type_nb = type_nb + 1
         if type == type_nb:
-            if (self.launchers[launcherID]["finished"] != "true"):
-                self.launchers[launcherID]["finished"] = "true"
-            else:
-                self.launchers[launcherID]["finished"] = "false"
-            self._save_launchers()
+            finished = self.launchers[launcherID]["finished"]
+            finished = False if finished else True
+            finished_display = 'Finished' if finished == True else 'Unfinished'
+            self.launchers[launcherID]["finished"] = finished
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            log_kodi_dialog_OK('AEL Information', 
+                               'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]["name"], finished_display))
 
         # Launcher's Items List menu option
         if self.launchers[launcherID]["rompath"] != "" :
-            type_nb = type_nb+1
+            type_nb = type_nb + 1
             if (type == type_nb ):
                 dialog = xbmcgui.Dialog()
                 type2 = dialog.select(__language__( 30334 ), [__language__( 30335 ),__language__( 30336 ),__language__( 30318 ),])
@@ -1350,7 +1314,7 @@ class Main:
                     self._empty_launcher(launcherID)
 
         # Launcher Advanced menu option
-        type_nb = type_nb+1
+        type_nb = type_nb + 1
         if type == type_nb:
             if self.launchers[launcherID]["minimize"] == "true":
                 minimize_str = __language__( 30204 )
@@ -1385,7 +1349,7 @@ class Main:
                 self.launchers[launcherID]["application"] = app
 
             # Edition of the launcher arguments
-            type2_nb = type2_nb +1
+            type2_nb = type2_nb + 1
             if type2 == type2_nb:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["args"], __language__( 30052 ))
                 keyboard.doModal()
@@ -1453,12 +1417,12 @@ class Main:
             self._save_launchers()
 
         # Remove Launcher menu option
-        type_nb = type_nb+1
+        type_nb = type_nb + 1
         if type == type_nb:
-            self._remove_launcher(launcherID)
+            self._gui_remove_launcher(launcherID)
 
         if type == -1:
-            self._save_launchers()
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # Return to the launcher directory
         xbmc.executebuiltin("Container.Refresh")
@@ -1638,7 +1602,7 @@ class Main:
             _toogle_fullscreen()
 
         if self.settings[ "launcher_notification" ]:
-            gui_kodi_notify('AEL', 'Launching {0}'.format(name_str), 5000)
+            log_kodi_notify('AEL', 'Launching {0}'.format(name_str), 5000)
 
         try:
             xbmc.enableNavSounds(False)                                 
@@ -1686,7 +1650,7 @@ class Main:
         application = launcher["application"]
         application_basename = os.path.basename(launcher["application"])
         if not os.path.exists(apppath):
-            gui_kodi_notify('AEL - ERROR', 
+            log_kodi_notify('AEL - ERROR', 
                             'File {0} not found.'.format(application_basename), 3000)
             return
         arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
@@ -2013,14 +1977,14 @@ class Main:
 
         # Check if XML file with ROMs exist
         if not os.path.isfile(roms_xml_file):
-            gui_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.', 10000)
+            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.', 10000)
             xbmc.executebuiltin("Container.Update")
             return
 
         # Load ROMs
-        roms = self._fs_load_ROM_XML_file(roms_xml_file)
+        roms = fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
-            gui_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
+            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
             return
 
         # Display ROMs
@@ -2042,9 +2006,9 @@ class Main:
     #
     def _command_show_favourites(self):
         # Load favourites
-        roms = self._fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+        roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
         if not roms:
-            gui_kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
+            log_kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
             return
 
         # Display Favourites
@@ -2115,7 +2079,7 @@ class Main:
             if ret:
                 roms.pop(romID)
                 self._fs_write_Favourites_XML_file(roms, FAVOURITES_FILE_PATH)
-                gui_kodi_notify('AEL', 'Deleted ROM from Favourites')
+                log_kodi_notify('AEL', 'Deleted ROM from Favourites')
                 # If Favourites is empty then go to root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
@@ -2135,7 +2099,7 @@ class Main:
             if ret:
                 roms.pop(romID)
                 self._fs_write_ROM_XML_file(roms, launcherID, self.launchers[launcherID]['roms_xml_file'])
-                gui_kodi_notify('AEL', 'Deleted ROM from launcher')
+                log_kodi_notify('AEL', 'Deleted ROM from launcher')
                 # If launcher is empty then go to root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
@@ -2449,7 +2413,7 @@ class Main:
             self._print_log('Launcher is empty')
 
         # ~~~ Scan for new files (*.*) and put them in a list ~~~
-        gui_kodi_notify('AEL', 'Scanning files...', 3000)
+        log_kodi_notify('AEL', 'Scanning files...', 3000)
         xbmc.executebuiltin("ActivateWindow(busydialog)")
         self._print_log('Scanning files in {0}'.format(launch_path))
         files = []
@@ -2541,7 +2505,7 @@ class Main:
         self._fs_write_ROM_XML_file(roms, launcherID, rom_xml_path)
 
         # ~~~ Notify user ~~~
-        gui_kodi_notify('Advanced Emulator Launcher', '%s files imported' % (romsCount), 3000)
+        log_kodi_notify('Advanced Emulator Launcher', '%s files imported' % (romsCount), 3000)
         xbmc.executebuiltin("XBMC.ReloadSkin()")
 
     def _roms_process_scanned_ROM(self, selectedLauncher, f_path, f_path_noext, f_base, f_base_noext, f_ext):
@@ -3125,40 +3089,6 @@ def MyDialog(img_list):
         print_exc()
         return False
     del w
-
-def get_game_system_list():
-    platforms = []
-    try:
-        rootDir = __settings__.getAddonInfo('path')
-        if rootDir[-1] == ';':rootDir = rootDir[0:-1]
-        resDir = os.path.join(rootDir, 'resources')
-        scrapDir = os.path.join(resDir, 'scrapers')
-        csvfile = open( os.path.join(scrapDir, 'gamesys'), "rb")
-        for line in csvfile.readlines():
-            result = line.replace('\n', '').replace('"', '').split(',')
-            platforms.append(result[0])
-        platforms.sort()
-        csvfile.close()
-        return platforms
-    except:
-        return platforms
-
-def get_favourites_list():
-    favourites = []
-    fav_names = []
-    if os.path.isfile( FAVOURITES_PATH ):
-        fav_xml = parse( FAVOURITES_PATH )
-        fav_doc = fav_xml.documentElement.getElementsByTagName( 'favourite' )
-        for count, favourite in enumerate(fav_doc):
-            try:
-                fav_icon = favourite.attributes[ 'thumb' ].nodeValue
-            except:
-                fav_icon = "DefaultProgram.png"
-            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'), 
-                               fav_icon.encode('utf8','ignore'), 
-                               favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
-            fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
-    return favourites, fav_names
 
 # --- main ----------------------------------------------------------------------------------------
 if __name__ == "__main__":
