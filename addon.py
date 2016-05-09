@@ -109,10 +109,16 @@ class Main:
         args = urlparse.parse_qs(sys.argv[2][1:])
         log_debug('args = {0}'.format(args))
 
-        #
-        # Experiment to try to increase the number of views the addon supports
-        #
-        # xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
+        # ~~~~~ Process URL commands ~~~~~
+        # Interestingly, if plugin is called as type executable then args is empty.
+        # However, if plugin is called as type video then Kodi adds the following
+        # even for the first call: 'content_type': ['video']
+        self._content_type = args['content_type'] if 'content_type' in args else None
+        log_debug('content_type = {}'.format(self._content_type))
+
+        # Experiment to try to increase the number of views the addon supports. I do not know why
+        # programs does not support all views movies do.
+        # xbmcplugin.setContent(handle=self.addon_handle, content = 'movies')
 
         # Adds a sorting method for the media list.
         if self.addon_handle > 0:
@@ -144,15 +150,6 @@ class Main:
         self.scraper_metadata = get_scraper_metadata('NULL')
         self.scraper_thumb    = get_scraper_thumb('NULL')
         self.scraper_fanart   = get_scraper_fanart('NULL')
-
-        # ~~~~~ Process URL commands ~~~~~
-        # Interestingly, if plugin is called as type executable then args is empty.
-        # However, if plugin is called as type video then Kodi adds the following
-        # even for the first call: 'content_type': ['video']
-        if 'content_type' in args:
-            self._content_type = 'video'
-        else:
-            self._content_type = 'program'
 
         # If no com parameter display categories.
         # There are no parameters when the user first runs AEL (ONLY if called as an executable!).
@@ -1761,9 +1758,9 @@ class Main:
         # --- Create listitem row ---
         icon = "DefaultFolder.png"        
         if category_dic['thumb'] != '':
-            listitem = xbmcgui.ListItem( category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
+            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
         else:
-            listitem = xbmcgui.ListItem( category_dic['name'], iconImage=icon )
+            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon )
         if category_dic['finished'] == False: ICON_OVERLAY = 6
         else:                                 ICON_OVERLAY = 7
         listitem.setProperty("fanart_image", category_dic['fanart'])
@@ -1879,12 +1876,24 @@ class Main:
     #
     # Former  _add_rom
     # Note that if we are rendering favourites, categoryID = launcherID = '0'.
-    def _gui_render_rom_row( self, categoryID, launcherID, romID, rom):
+    def _gui_render_rom_row( self, categoryID, launcherID, romID, rom, rom_is_in_favourites):
         # --- Create listitem row ---
         icon = "DefaultProgram.png"
         # icon = "DefaultVideo.png"
-        if rom['thumb']: listitem = xbmcgui.ListItem(rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
-        else:            listitem = xbmcgui.ListItem(rom['name'], iconImage=icon)
+
+        # If listing regular launcher and rom is in favourites, mark it
+        if rom_is_in_favourites:
+            rom_name = '[B]{0}[/B]'.format(rom['name'])
+            log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
+        else:
+            rom_name = rom['name']
+
+        # Add ROM to lisitem
+        if rom['thumb']: 
+            listitem = xbmcgui.ListItem(rom_name, iconImage=icon, thumbnailImage=rom['thumb'])
+        else:            
+            listitem = xbmcgui.ListItem(rom_name, iconImage=icon)
+
         # If ROM has no fanart then use launcher fanart
         if launcherID == '0':
             defined_fanart = rom["fanart"]
@@ -1899,8 +1908,19 @@ class Main:
                                     'Year' : rom['release'], "Writer" : rom['gamesys'], 
                                     "Trailer" : 'test trailer', "Director" : 'test director', 
                                     "overlay": ICON_OVERLAY } )
-        if self._content_type == 'video':
-            listitem.setProperty('IsPlayable', 'true')
+        
+        # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
+        # This appears to be a common area of confusion with many addon developers, isPlayable doesn't 
+        # really mean the item is a playable, it only means Kodi will wait for a call to 
+        # xbmcplugin.setResolvedUrl and when this is called it will play the item. If you are going 
+        # to play the item using xbmc.Player().play() then as far as Kodi is concerned it isn't playable.
+        #
+        # http://forum.kodi.tv/showthread.php?tid=173986&pid=1519987#pid1519987
+        # Otherwise the plugin is called back with an invalid handle (sys.arg[1]). It took me a lot of time 
+        # to figure this out...
+        # if self._content_type == 'video':
+        # listitem.setProperty('IsPlayable', 'false')
+        # log_debug('Item Row IsPlayable false')
 
         # --- Create context menu ---
         commands = []
@@ -1926,24 +1946,13 @@ class Main:
             url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
         else:
             url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=False)
+        xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url_str, listitem=listitem, isFolder=False)
 
     #
     # Former  _get_roms
     # Renders the roms listbox for a given launcher
     #
     def _gui_render_roms(self, categoryID, launcherID):
-
-        #xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
-
-        ## Adds a sorting method for the media list.
-        #if self.addon_handle > 0:
-            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
-            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
-            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
-            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
-            #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
-
         if launcherID not in self.launchers:
             log_warning('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             log_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
@@ -1965,9 +1974,12 @@ class Main:
             log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
             return
 
+        # Load favourites
+        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+
         # Display ROMs
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-            self._gui_render_rom_row(categoryID, launcherID, key, roms[key])
+            self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav)
         xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     #
@@ -1991,7 +2003,7 @@ class Main:
 
         # Display Favourites
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-            self._gui_render_rom_row('0', '0', key, roms[key])
+            self._gui_render_rom_row('0', '0', key, roms[key], False)
         xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     #
