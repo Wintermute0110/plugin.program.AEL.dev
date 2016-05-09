@@ -20,7 +20,7 @@
 # Load replacements for functions that depend on Kodi modules.
 # This enables running this module in standard Python for testing scrapers.
 try:
-  import kodi
+  import xbmc
 except:
   from standalone import *
 
@@ -142,14 +142,14 @@ def emudata_game_system_list():
 # Implement scrapers using polymorphism instead of using Angelscry 
 # exec('import ...') hack.
 #=#############################################################################
+class Scraper:
+    name = ''        # Short name to refer to object in code
+    fancy_name = ''  # Fancy name for GUI and logs
+
 # --- Metadata scrapers -------------------------------------------------------
-class Scraper_Metadata:
+class Scraper_Metadata(Scraper):
     # Offline XML data will be cached here (from disk)
     games = {}
-
-    # Abstract method, defined by convention only
-    def get_fancy_name(self):
-        raise NotImplementedError("Subclass must implement get_fancy_name() abstract method")
 
     # Load XML information for this scraper and keep it cached.
     def initialise_scraper(self, gamesys):
@@ -160,12 +160,14 @@ class Scraper_Metadata:
         raise NotImplementedError("Subclass must implement get_metadata() abstract method")
 
 class metadata_NULL(Scraper_Metadata):
-    def get_fancy_name(self):
-        return 'NULL Metadata scraper'
+    def __init__(self):
+        self.name = 'NULL'
+        self.fancy_name = 'NULL Metadata scraper'
 
 class metadata_MAME(Scraper_Metadata):
-    def get_fancy_name(self):
-        return 'MAME Metadata offline scraper'
+    def __init__(self):
+        self.name = 'MAME'
+        self.fancy_name = 'MAME Metadata offline scraper'
 
     def initialise_scraper(self):
         Scraper_Metadata.initialise_scraper(self, 'MAME')
@@ -189,8 +191,9 @@ class metadata_MAME(Scraper_Metadata):
 # Offline scraper using XML files for ROMs in No-Intro name format.
 #
 class metadata_NoIntro(Scraper_Metadata):
-    def get_fancy_name(self):
-        return 'No-Intro Metadata offline scraper'
+    def __init__(self):
+        self.name = 'No-Intro'
+        self.fancy_name = 'No-Intro Metadata offline scraper'
         
     # Search in-memory database and return metadata.  
     def get_metadata(self, rom_name):
@@ -213,24 +216,23 @@ class metadata_NoIntro(Scraper_Metadata):
         return None
 
 # --- Thumb scrapers ----------------------------------------------------------
-class Scraper_Thumb:
-    # Abstract method, defined by convention only
-    def get_fancy_name(self):
-        raise NotImplementedError("Subclass must implement get_fancy_name() abstract method")
+class Scraper_Thumb(Scraper):
+    pass
 
 class thumb_NULL(Scraper_Thumb):
-    def get_fancy_name(self):
-        return 'NULL Thumb scraper'
+    def __init__(self):
+        self.name = 'NULL'
+        self.fancy_name = 'NULL Thumb scraper'
+
 
 # --- Fanart scrapers ----------------------------------------------------------
-class Scraper_Fanart:
-    # Abstract method, defined by convention only
-    def get_fancy_name(self):
-        raise NotImplementedError("Subclass must implement get_fancy_name() abstract method")
+class Scraper_Fanart(Scraper):
+    pass
 
 class fanart_NULL(Scraper_Fanart):
-    def get_fancy_name(self):
-        return 'NULL Fanart scraper'
+    def __init__(self):
+        self.name = 'NULL'
+        self.fancy_name = 'NULL Fanart scraper'
 
 # --- Misc --------------------------------------------------------------------
 #

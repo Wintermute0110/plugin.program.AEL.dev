@@ -168,7 +168,7 @@ def fs_load_catfile(categories_file):
 #
 # Write to disk categories.xml
 #
-def fs_write_ROM_XML_file(roms, launcher, roms_xml_file):
+def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
     log_info('fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
 
     # --- Notify we are busy doing things ---
@@ -286,8 +286,8 @@ def fs_load_ROM_XML_file(roms_xml_file):
 #
 # Write to disk favourites.xml
 #
-def fs_write_Favourites_XML_file(roms, roms_xml_file):
-    log_info('_fs_write_Favourites_XML_file() Saving XML file {0}'.format(roms_xml_file))
+def fs_write_Favourites_XML_file(roms_xml_file, roms):
+    log_info('fs_write_Favourites_XML_file() Saving XML file {0}'.format(roms_xml_file))
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
@@ -338,7 +338,7 @@ def fs_load_Favourites_XML_file(roms_xml_file):
         return {}
 
     # --- Parse using cElementTree ---
-    log_verb('_fs_load_Favourites_XML_file() Loading XML file {0}'.format(roms_xml_file))
+    log_verb('fs_load_Favourites_XML_file() Loading XML file {0}'.format(roms_xml_file))
     xml_tree = ET.parse(roms_xml_file)
     xml_root = xml_tree.getroot()
     for root_element in xml_root:

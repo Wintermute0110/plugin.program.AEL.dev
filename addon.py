@@ -219,9 +219,17 @@ class Main:
         elif command == 'ADD_TO_FAVOURITES':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
 
+        #
+        # This command is issued when user clicks on "Search" on the context menu of a launcher
+        # in the launchers view, or context menu inside a launcher. User is asked to enter the
+        # search string and the field to search (name, category, etc.)
+        #
         elif command == 'SEARCH_LAUNCHER':
-            # self._command_find_roms(args['catID'][0], args['launID'][0])
-            self._command_find_roms(0, 0)
+            self._command_search_launcher(args['catID'][0], args['launID'][0])
+
+        elif command == 'EXEC_SEARCH_LAUNCHER':
+            self._command_execute_search_launcher(args['catID'][0], args['launID'][0], args['search_type'][0], args['search_string'][0])
+
         else:
             log_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
 
@@ -715,7 +723,7 @@ class Main:
             elif object_kind == KIND_ROM:
                 log_debug('_gui_edit_thumbnail() Object is romID = {0}'.format(object_dic['id']))
                 self.roms[object_dic['id']]["thumb"] = image
-                fs_write_ROM_XML_file()
+                fs_write_ROM_XML_file(rom_xml_file, roms, launcher)
             log_kodi_notify('AEL', 'Thumb has been updated')
             log_info('Selected Thumb image "{0}"'.format(image))
 
@@ -1016,7 +1024,7 @@ class Main:
     # Removes ROMs for a given launcher. Note this function will never be called for standalone launchers.
     #
     def _gui_empty_launcher(self, launcherID):
-        roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
+        roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
         num_roms = len(roms)
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno('Advanced Emulator Launcher', 
@@ -1603,6 +1611,11 @@ class Main:
         launcher = self.launchers[launcherID]
 
         # Kodi built-in???
+        # xbmc-fav- and xbmc-sea are Angelscry's hacks to implement launchers from favourites
+        # and launchers from searchers. For example, to run a launcher created from search
+        # results,
+        # app = "xbmc-sea-%s" % launcherid
+        # args = 'ActivateWindow(10001,"%s")' % launcher_query
         apppath = os.path.dirname(launcher["application"])
         if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or \
            "xbmc-fav-" in launcher["application"] or "xbmc-sea-" in launcher["application"]:
@@ -1664,7 +1677,7 @@ class Main:
         launcher = self.launchers[launcherID]
         
         # Load ROMs
-        roms = self._fs_load_ROM_XML_file(launcher['roms_xml_file'])
+        roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
 
         # Check ROM is XML data just read
         if romID not in roms:
@@ -1772,7 +1785,7 @@ class Main:
         # --- Add row ---
         # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
-        xbmcplugin.addDirectoryItem( handle=int( self.addon_handle ), url=url_str, listitem=listitem, isFolder=True)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     def _gui_render_category_favourites(self):
         # --- Create listitem row ---
@@ -1794,7 +1807,7 @@ class Main:
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_FAVOURITES')
-        xbmcplugin.addDirectoryItem( handle=int(self.addon_handle), url=url_str, listitem=listitem, isFolder=True)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     # 
     # Former _get_categories()
@@ -1807,7 +1820,7 @@ class Main:
             self._gui_render_category_row(self.categories[key], key)
         # AEL Favourites special category
         self._gui_render_category_favourites()
-        xbmcplugin.endOfDirectory( handle = int( self.addon_handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     def _gui_render_launcher_row(self, launcher_dic, key):
         # --- Create listitem row ---
@@ -1843,7 +1856,7 @@ class Main:
         # ROMs launcher
         if not launcher_dic['rompath'] == '':
             commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', launcher_dic['category'], key), ))
-        commands.append(('Search Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER'), ))
+        commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
         # Add Launcher URL to Kodi Favourites (do not know how to do it yet)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003" 
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(ADDON_ID), ))
@@ -1851,7 +1864,7 @@ class Main:
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_ROMS', launcher_dic['category'], key)
-        xbmcplugin.addDirectoryItem(handle=int( self.addon_handle ), url=url_str, listitem=listitem, isFolder=folder)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=folder)
 
     #
     # Former  _get_launchers
@@ -1861,7 +1874,7 @@ class Main:
         for key in sorted(self.launchers, key= lambda x : self.launchers[x]["application"]):
             if self.launchers[key]["category"] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key], key)
-        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     #
     # Former  _add_rom
@@ -1913,7 +1926,7 @@ class Main:
             url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
         else:
             url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        xbmcplugin.addDirectoryItem(handle=int(self.addon_handle), url=url_str, listitem=listitem, isFolder=False)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=False)
 
     #
     # Former  _get_roms
@@ -1932,8 +1945,10 @@ class Main:
             #xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
 
         if launcherID not in self.launchers:
+            log_warning('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             log_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             return
+
         # Load ROMs for this launcher and display them
         selectedLauncher = self.launchers[launcherID]
         roms_xml_file = selectedLauncher["roms_xml_file"]
@@ -1953,7 +1968,7 @@ class Main:
         # Display ROMs
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key])
-        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     #
     # Renders the special category favourites, which is actually very similar to a ROM launcher
@@ -1977,7 +1992,7 @@ class Main:
         # Display Favourites
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
             self._gui_render_rom_row('0', '0', key, roms[key])
-        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     #
     # Adds ROM to favourites
@@ -1986,30 +2001,40 @@ class Main:
         # Load ROMs in launcher
         launcher = self.launchers[launcherID]
         roms_xml_file = launcher["roms_xml_file"]
-        roms = self._fs_load_ROM_XML_file(roms_xml_file)
+        roms = fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
             log_kodi_dialog_OK('Advanced Emulator Launcher',
                                'Empty roms launcher in _command_add_to_favourites()',
                                'This is a bug, please report it.')
 
         # Load favourites
-        roms_fav = self._fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
         
+        # DEBUG
+        log_verb('Adding ROM to Favourites')
+        log_verb('romID {:}'.format(romID))
+        log_verb('name  {:}'.format(roms[romID]['name']))
+
         # Check if ROM already in favourites an warn user if so
-        if roms[romID]['id'] in roms_fav:
+        if romID in roms_fav:
+            log_verb('Already in favourites')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher', 
                                'ROM: {0}'.format(roms[romID]["name"]),
                                'is already on AEL Favourites.', 'Overwrite it?')
-            if not ret: return
-        
+            if not ret:
+                log_verb('User does not want to overwrite. Exiting.')
+                return
         # Confirm if rom should be added
-        dialog = xbmcgui.Dialog()
-        ret = dialog.yesno('Advanced Emulator Launcher', 
-                            'ROM: {0}'.format(roms[romID]["name"]),
-                            'Add this ROM to AEL Favourites?')
-        if not ret: return
-        
+        else:
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher', 
+                                'ROM: {0}'.format(roms[romID]["name"]),
+                                'Add this ROM to AEL Favourites?')
+            if not ret:
+                log_verb('User does not confirm addition. Exiting.')
+                return
+
         # Add ROM to favourites ROMs and save to disk
         # If thumb is empty then use launcher thum.
         # If fanart is empty then use launcher fanart.
@@ -2021,7 +2046,7 @@ class Main:
         if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
 
         # Save favourites
-        self._fs_write_Favourites_XML_file(roms_fav, FAVOURITES_FILE_PATH)
+        fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
 
     #
     # Deletes a ROM from a launcher.
@@ -2030,7 +2055,7 @@ class Main:
     def _command_remove_rom(self, categoryID, launcherID, romID):
         if launcherID == '0':
             # Load Favourite ROMs
-            roms = self._fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+            roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
             if not roms:
                 return
 
@@ -2041,7 +2066,7 @@ class Main:
                                'Are you sure you want to delete it from favourites?')
             if ret:
                 roms.pop(romID)
-                self._fs_write_Favourites_XML_file(roms, FAVOURITES_FILE_PATH)
+                fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
                 log_kodi_notify('AEL', 'Deleted ROM from Favourites')
                 # If Favourites is empty then go to root, if not refresh
                 if len(roms) == 0:
@@ -2050,7 +2075,7 @@ class Main:
                     xbmc.executebuiltin('Container.Update({0})'.format(self._misc_url('SHOW_FAVOURITES')))
         else:
             # Load ROMs
-            roms = self._fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+            roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
             if not roms:
                 return
 
@@ -2061,7 +2086,8 @@ class Main:
                                'Are you sure you want to delete it from launcher?')
             if ret:
                 roms.pop(romID)
-                self._fs_write_ROM_XML_file(roms, launcherID, self.launchers[launcherID]['roms_xml_file'])
+                launcher = self.launchers[launcherID]
+                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, launcher)
                 log_kodi_notify('AEL', 'Deleted ROM from launcher')
                 # If launcher is empty then go to root, if not refresh
                 if len(roms) == 0:
@@ -2343,7 +2369,7 @@ class Main:
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
         rom_xml_path = selectedLauncher["roms_xml_file"]
-        roms = self._fs_load_ROM_XML_file(rom_xml_path)
+        roms = fs_load_ROM_XML_file(rom_xml_path)
 
         # ~~~~~ Remove dead entries ~~~~~
         if len(roms) > 0:
@@ -2465,7 +2491,7 @@ class Main:
         pDialog.close()
 
         # ~~~ Save launchers ~~~
-        self._fs_write_ROM_XML_file(roms, launcherID, rom_xml_path)
+        fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
         log_kodi_notify('Advanced Emulator Launcher', '%s files imported' % (romsCount), 3000)
@@ -2738,6 +2764,7 @@ class Main:
 
         # Return romdata dictionary
         return romdata
+
     #
     # Manually add a new ROM instead of a recursive scan
     #
@@ -2816,161 +2843,162 @@ class Main:
                 # add rom to the roms list (using name as index)
                 romid = _get_SID()
                 roms[romid] = romdata
-                log_kodi_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes', 3000)
+                log_kodi_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes')
         self._save_launchers()
 
     #
     # Search ROMs in launcher
     #
-    def _command_find_roms(self, categoryID, launcherID):
+    def _command_search_launcher(self, categoryID, launcherID):
+        # Check that the launcher has items
+        if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
+            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
+            xbmc.executebuiltin("Container.Update")
+            return
+        roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
+        if not roms:
+            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
+            return
 
-        # _command_find_roms( self, is_launcher ):
+        # Ask user what category to search
         dialog = xbmcgui.Dialog()
         type = dialog.select('Search items...', 
                              ['[B]By Title[/B]',
                               '[I]By Release Date[/I]',
-                              '[LIGHT]By Platform[/LIGHT]',
                               '[COLOR yellow]By Studio[/COLOR]',
                               '[COLOR green]By Genre[/COLOR]'])
 
-        log_kodi_dialog_OK('AEL', 'Not implemented yet')
-
         # Search by Title
         type_nb = 0
-        if (type == type_nb ):
+        if type == type_nb:
             keyboard = xbmc.Keyboard("", 'Enter the file title to search...')
             keyboard.doModal()
-            if (keyboard.isConfirmed()):
-                search = keyboard.getText()
-                if (is_launcher):
-                    return "%s?%s/%s" % (self.base_url, search, SEARCH_ITEM_COMMAND), search
-                else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search, SEARCH_ITEM_COMMAND))
-
+            if keyboard.isConfirmed():
+                search_string = keyboard.getText()
+                # If we are displaying a category (showing its launchers) then search should not replace the window,
+                # so when the user presses back button (BACKSPACE in keyboard) returned to the launchers again.
+                # Pressing the back button is the same as chosing ".." in the listitem.
+                # In AL all searches were global, and user was returned to the addon root window always after pressing
+                # back (that's why AL replaces the current window with the search window). This make no sense in AEL 
+                # for launcher searches and may annoy the user.
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_TITLE', search_string)
+                # log_debug('URL = {0}'.format(url))
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
+                
+                # Using ActivateWindow with return address seems to have no effect. Note that dialogs
+                # are called with handle -1, and that seems to cause trouble. ActivateWindow does
+                # not honour the url_return.
+                # url_return = self._misc_url('SHOW_ROMS', categoryID, launcherID)
+                # url_return = self._misc_url('SHOW_LAUNCHERS', categoryID)
+                # log_debug('URL RETURN = {0}'.format(url_return))
+                # xbmc.executebuiltin("ActivateWindow(Programs,{0},{1})".format(url, url_return))
+                
+                # Does not work
+                # xbmc.executebuiltin("RunPlugin({0})".format(url))
+                
+                # Does not work
+                # xbmc.executebuiltin("RunAddon({0})".format(url))
+                
         # Search by Release Date
-        type_nb = type_nb+1
-        if (type == type_nb ):
-            search = []
-            search = _search_category(self,"release")
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_category(launcherID, "release", roms)
             dialog = xbmcgui.Dialog()
-            selected = dialog.select(__language__( 30406 ), search)
-            if (not selected == -1 ):
-                if (is_launcher):
-                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_DATE_COMMAND), search[selected]
-                else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_DATE_COMMAND))
+            selected_value = dialog.select('Select a Release date ...', searched_list)
+            if selected_value >= 0:
+                search_string = searched_list[selected_value]
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_RELEASE', search_string)
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
 
         # Search by System Platform
-        type_nb = type_nb+1
-        if (type == type_nb ):
-            search = []
-            search = _search_category(self,"gamesys")
-            dialog = xbmcgui.Dialog()
-            selected = dialog.select(__language__( 30407 ), search)
-            if (not selected == -1 ):
-                if (is_launcher):
-                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND), search[selected]
-                else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND))
+        # Note that search by platform does not make sense when searching a launcher because all items have
+        # the same platform! It only makes sense for global searches... which AEL does not.
+        # I keep this AL old code for reference, though.
+        # type_nb = type_nb + 1
+        # if type == type_nb:
+        #     search = []
+        #     search = _search_category(self, "gamesys")
+        #     dialog = xbmcgui.Dialog()
+        #     selected = dialog.select('Select a Platform...', search)
+        #     if not selected == -1:
+        #         xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND))
 
         # Search by Studio
-        type_nb = type_nb+1
-        if (type == type_nb ):
-            search = []
-            search = _search_category(self,"studio")
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_category(launcherID, "studio", roms)
             dialog = xbmcgui.Dialog()
-            selected = dialog.select(__language__( 30408 ), search)
-            if (not selected == -1 ):
-                if (is_launcher):
-                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_STUDIO_COMMAND), search[selected]
-                else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_STUDIO_COMMAND))
+            selected_value = dialog.select('Select a Studio ...', searched_list)
+            if selected_value >= 0:
+                search_string = searched_list[selected_value]
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_STUDIO', search_string)
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
 
         # Search by Genre
-        type_nb = type_nb+1
-        if (type == type_nb ):
-            search = []
-            search = _search_category(self,"genre")
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_category(launcherID, "genre", roms)
             dialog = xbmcgui.Dialog()
-            selected = dialog.select(__language__( 30409 ), search)
-            if (not selected == -1 ):
-                if (is_launcher):
-                    return "%s?%s/%s" % (self.base_url, search[selected], SEARCH_GENRE_COMMAND), search[selected]
-                else:
-                    xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_GENRE_COMMAND))
+            selected_value = dialog.select('Select a Genre ...', searched_list)
+            if selected_value >= 0:
+                search_string = searched_list[selected_value]
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_GENRE', search_string)
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
 
-    def _find_add_roms( self, search ):
-        _find_category_roms( self, search, "name" )
-
-    def _find_date_add_roms( self, search ):
-        _find_category_roms( self, search, "release" )
-
-    def _find_platform_add_roms( self, search ):
-        _find_category_roms( self, search, "gamesys" )
-
-    def _find_studio_add_roms( self, search ):
-        _find_category_roms( self, search, "studio" )
-
-    def _find_genre_add_roms( self, search ):
-        _find_category_roms( self, search, "genre" )
-
-    def _search_category(self, category):
+    def _search_launcher_category(self, launcherID, search_dic_field, roms):
+        # Maybe this can be optimized a bit to make the search faster...
         search = []
-        if (len(self.launchers) > 0):
-            for key in sorted(self.launchers.iterkeys()):
-                if (len(self.launchers[key]["roms"]) > 0) :
-                    for keyr in sorted(self.launchers[key]["roms"].iterkeys()):
-                        if ( self.launchers[key]["roms"][keyr][category] == "" ):
-                            search.append("[ %s ]" % __language__( 30410 ))
-                        else:
-                            search.append(self.launchers[key]["roms"][keyr][category])
+        for keyr in sorted(roms.iterkeys()):
+            if roms[keyr][search_dic_field] == "":
+                search.append("[ %s ]" % 'Not Set')
+            else:
+                search.append(roms[keyr][search_dic_field])
+        # Search will have a lot of repeated entries, so converting them to a set makes them unique
         search = list(set(search))
         search.sort()
+
         return search
 
-    def _find_category_roms(self, search, category ):
-        #sorted by name
-        if category == 'name' : 
-            s_cmd = SEARCH_ITEM_COMMAND
-        if category == 'release' :
-            s_cmd = SEARCH_DATE_COMMAND
-        if category == 'gamesys' :
-            s_cmd = SEARCH_PLATFORM_COMMAND
-        if category == 'studio' :
-            s_cmd = SEARCH_STUDIO_COMMAND
-        if category == 'genre' :
-            s_cmd = SEARCH_GENRE_COMMAND
-        s_url = 'plugin://plugin.program.advanced.launcher/?'+search+'/'+s_cmd
-        if (len(self.launchers) > 0):
-            rl = {}
-            for launcherID in sorted(self.launchers.iterkeys()):
-                selectedLauncher = self.launchers[launcherID]
-                roms = selectedLauncher["roms"]
-                notset = ("[ %s ]" % __language__( 30410 ))
-                text = search.lower()
-                empty = notset.lower()
-                if (len(roms) > 0) :
-                    #go through rom list and search for user input
-                    for keyr in sorted(roms.iterkeys()):
-                        rom = roms[keyr][category].lower()
-                        if (rom == "") and (text == empty):
-                            rl[keyr] = roms[keyr]
-                            rl[keyr]["launcherID"] = launcherID
-                        if category == 'name':
-                            if (not rom.find(text) == -1):
-                                rl[keyr] = roms[keyr]
-                                rl[keyr]["launcherID"] = launcherID
-                        else:
-                            if (rom == text):
-                                rl[keyr] = roms[keyr]
-                                rl[keyr]["launcherID"] = launcherID
-        #print the list sorted
+    def _command_execute_search_launcher(self, categoryID, launcherID, search_type, search_string):
+        if   search_type == 'SEARCH_TITLE'  : rom_search_field = 'name'
+        elif search_type == 'SEARCH_RELEASE': rom_search_field = 'release'
+        elif search_type == 'SEARCH_STUDIO' : rom_search_field = 'studio'
+        elif search_type == 'SEARCH_GENRE'  : rom_search_field = 'genre'
+
+        # Load ROMs
+        # Check that the launcher has items
+        if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
+            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
+            xbmc.executebuiltin("Container.Update")
+            return
+        roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
+        if not roms:
+            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
+            return
+
+        # Go through rom list and search for user input
+        rl = {}
+        notset = ("[ %s ]" % 'Not Set')
+        text = search_string.lower()
+        empty = notset.lower()
+        for keyr in roms:
+            rom = roms[keyr][rom_search_field].lower()
+            if rom == "" and text == empty:
+                rl[keyr] = roms[keyr]
+
+            if rom_search_field == 'name':
+                if not rom.find(text) == -1:
+                    rl[keyr] = roms[keyr]
+            else:
+                if rom == text:
+                    rl[keyr] = roms[keyr]
+
+        # Print the list sorted (if there is anything to print)
+        if not rl:
+            log_kodi_dialog_OK('Advaned Emulator Launcher', 'Search produced no results')
         for key in sorted(rl.iterkeys()):
-            self._add_rom(rl[key]["launcherID"], rl[key]["name"], rl[key]["filename"], rl[key]["gamesys"], 
-                          rl[key]["thumb"], rl[key]["fanart"], rl[key]["trailer"], rl[key]["custom"], 
-                          rl[key]["genre"], rl[key]["release"], rl[key]["studio"], rl[key]["plot"], 
-                          rl[key]["finished"], rl[key]["altapp"], rl[key]["altarg"], len(rl), key, True, s_url)
-        xbmcplugin.endOfDirectory( handle=int( self.addon_handle ), succeeded=True, cacheToDisc=False )
+            self._gui_render_rom_row(categoryID, launcherID, key, rl[key])
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False)
 
     #
     # NOTE In Python, objects methods can be defined outside the class definition!
@@ -3017,6 +3045,10 @@ class Main:
             return '{0}?com={1}&catID={2}'.format(self.base_url, command, categoryID)
 
         return '{0}?com={1}'.format(self.base_url, command)
+
+    def _misc_url_search(self, command, categoryID, launcherID, search_type, search_string):
+        return '{0}?com={1}&catID={2}&launID={3}&search_type={4}&search_string={5}'.format(
+            self.base_url, command, categoryID, launcherID, search_type, search_string)
 
 class MainGui( xbmcgui.WindowXMLDialog ):
     def __init__( self, *args, **kwargs ):
