@@ -36,7 +36,7 @@ class thumb_NULL(Scraper_Thumb):
         self.fancy_name = 'NULL Thumb scraper'
 
     def get_image_list(self, search_string, gamesys, region, imgsize):
-        pass
+        return []
 
 # -----------------------------------------------------------------------------
 # TheGamesDB thumb scraper

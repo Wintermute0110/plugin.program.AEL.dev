@@ -48,7 +48,7 @@ class Scraper_Metadata(Scraper):
     # game_url univocally determines how to get the game metadata. For online
     # scrapers it is an URL. For offline scrapers it is the No-Intro or MAME name.
     def get_game_data(self, game_url):
-          raise NotImplementedError("Subclass must implement get_metadata() abstract method")
+        raise NotImplementedError("Subclass must implement get_metadata() abstract method")
     
     # This is called in automatic scraping mode. Only one result is returned.
     # Argument gamesys is AEL official platform list, and it should be translated
@@ -64,6 +64,15 @@ class metadata_NULL(Scraper_Metadata):
     def __init__(self):
         self.name = 'NULL'
         self.fancy_name = 'NULL Metadata scraper'
+
+    def get_game_list(self, search_string):
+        return []
+
+    def get_game_data(self, game_url):
+        return []
+    
+    def get_game_data_first(self, search_string, gamesys):
+        return []
 
 # -----------------------------------------------------------------------------
 # Offline scraper using XML files for MAME ROMs.
@@ -90,6 +99,15 @@ class metadata_MAME(Scraper_Metadata):
             log_verb('Not found')
 
         return None
+
+    def get_game_list(self, search_string):
+        return []
+
+    def get_game_data(self, game_url):
+        return []
+    
+    def get_game_data_first(self, search_string, gamesys):
+        return []
 
 # -----------------------------------------------------------------------------
 # Offline scraper using XML files for ROMs in No-Intro name format.
@@ -118,6 +136,15 @@ class metadata_NoIntro(Scraper_Metadata):
             print(' year        = "{0}"'.format(self.games[key]['year']))
 
         return None
+
+    def get_game_list(self, search_string):
+        return []
+
+    def get_game_data(self, game_url):
+        return []
+    
+    def get_game_data_first(self, search_string, gamesys):
+        return []
 
 # -----------------------------------------------------------------------------
 # TheGamesDB online metadata scraper
