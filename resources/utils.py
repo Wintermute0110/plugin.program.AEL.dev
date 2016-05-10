@@ -14,7 +14,8 @@
 import sys, os, shutil, time, random, hashlib
 
 # For xbmc.log(), xbmcgui.Dialog()
-import xbmc, xbmcgui
+try: import xbmc, xbmcgui
+except: from standalone import *
 
 # --- Constants ---------------------------------------------------------------
 LOG_ERROR   = 0
@@ -83,8 +84,6 @@ def log_kodi_notify_error(title, text, time = 5000):
     dialog.notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 # --- Kodi image cache -------------------------------------------------------
-THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath("special://profile/" ), "Thumbnails")
-
 def get_encoding():
     try:
         return sys.getfilesystemencoding()
@@ -101,6 +100,8 @@ def get_cached_thumb(path1, path2, SPLIT=False):
     return os.path.join( path2, thumb )
 
 def get_cached_covers_thumb(strPath):
+    THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath("special://profile/" ), "Thumbnails")
+
     return get_cached_thumb(strPath, THUMBS_CACHE_PATH, True)
 
 def update_kodi_image_cache(file_path):

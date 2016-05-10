@@ -12,7 +12,8 @@
 # GNU General Public License for more details.
 
 # For xbmc.executebuiltin()
-import xbmc
+try: import xbmc
+except: from standalone import *
 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
@@ -409,6 +410,58 @@ def fs_load_NFO_file(nfo_file):
 
     return nfo_dic
 
+#
+# Loads ...
+#
+def fs_load_GameInfo_XML(xml_file):
+    __debug_xml_parser = 0
+    games = {}
+
+    # --- Parse using cElementTree ---
+    log_verb('fs_load_GameInfo_XML() Loading "{0}"'.format(xml_file))
+    xml_tree = ET.parse(xml_file)
+    xml_root = xml_tree.getroot()
+    for game_element in xml_root:
+        if __debug_xml_parser: 
+            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
+
+        if game_element.tag == 'game':
+            # Default values
+            game = {
+                'name'    : '', 'description'  : '', 'year'   : '',
+                'rating'  : '', 'manufacturer' : '', 'dev'    : '', 
+                'genre'   : '', 'score'        : '', 'player' : '', 
+                'story'   : '', 'enabled'      : '', 'crc'    : '', 
+                'cloneof' : '' }
+
+            # ROM name is an attribute of <game>
+            game['name'] = game_element.attrib['name']
+            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+
+            # Parse child tags of category
+            for game_child in game_element:
+                # By default read strings
+                xml_text = game_child.text if game_child.text is not None else ''
+                xml_tag  = game_child.tag
+
+                # Solve Unicode problems
+                # See http://stackoverflow.com/questions/3224268/python-unicode-encode-error
+                # See https://pythonhosted.org/kitchen/unicode-frustrations.html
+                # See http://stackoverflow.com/questions/2508847/convert-or-strip-out-illegal-unicode-characters
+                # print('Before type of xml_text is ' + str(type(xml_text)))
+                if type(xml_text) == unicode:
+                    xml_text = xml_text.encode('ascii', errors = 'replace')
+                # print('After type of xml_text is ' + str(type(xml_text)))
+
+                # Put data into memory
+                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                game[xml_tag] = xml_text
+
+            # Add game to games dictionary
+            key = game['name']
+            games[key] = game
+
+    return games
 
 def import_rom_nfo(self, launcher, rom):
     # Edition of the rom name
