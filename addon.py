@@ -75,7 +75,6 @@ class Main:
     def __init__(self, *args, **kwargs):
         # --- Fill in settings dictionary using addon_obj.getSetting() ---
         self._get_settings()
-        return
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
@@ -139,9 +138,7 @@ class Main:
         (self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
 
         # --- Load scrapers ---
-        self.scraper_metadata = get_scraper_metadata('NULL')
-        self.scraper_thumb    = get_scraper_thumb('NULL')
-        self.scraper_fanart   = get_scraper_fanart('NULL')
+        self._load_scrapers()
 
         # If no com parameter display categories. Display categories listbox (addon root directory)
         if 'com' not in args:
@@ -271,6 +268,25 @@ class Main:
         for key in sorted(self.settings):
             log_debug('{} --> {:10s} {:}'.format(key.rjust(21), str(self.settings[key]), type(self.settings[key])))
         log_debug('Settings dump END')
+
+
+    #
+    # Load scrapers based on the user settings.
+    # Pass settings to the scraper objects based on user preferences.
+    #
+    def _load_scrapers(self):
+        # Scraper objects are created and inserted into a list. This list order matches
+        # exactly the number returned by the settings. If scrapers are changed make sure the
+        # list in scrapers.py and in settings.xml have same values!
+        
+        
+        self.scraper_metadata = scrapers_metadata[self.settings["metadata_scraper"]]
+        self.scraper_thumb    = scrapers_thumb[self.settings["thumb_scraper"]]
+        self.scraper_fanart   = scrapers_fanart[self.settings["fanart_scraper"]]
+        log_verb('Loaded metadata scraper  {}'.format(self.scraper_metadata.name))
+        log_verb('Loaded thumb scraper     {}'.format(self.scraper_thumb.name))
+        log_verb('Loaded fanart scraper    {}'.format(self.scraper_fanart.name))
+
 
     # Creates default categories data struct
     # CAREFUL deletes current categories!

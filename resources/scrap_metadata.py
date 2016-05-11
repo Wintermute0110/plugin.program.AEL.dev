@@ -75,18 +75,17 @@ class metadata_NULL(Scraper_Metadata):
         return []
 
 # -----------------------------------------------------------------------------
-# Offline scraper using XML files for MAME ROMs.
+# Offline scraper using XML files for MAME and No-Intro ROMs.
 # -----------------------------------------------------------------------------
-class metadata_MAME(Scraper_Metadata):
+class metadata_Offline(Scraper_Metadata):
     def __init__(self):
-        self.name = 'MAME'
-        self.fancy_name = 'MAME Metadata offline scraper'
+        self.name = 'Offline scraper'
 
     def initialise_scraper(self):
         Scraper_Metadata.initialise_scraper(self, 'MAME')
 
     # In MAME machines, the rom_name is exactly the key of the dictionary.
-    def get_metadata(self, rom_name):
+    def get_metadata_MAME(self, rom_name):
         __debug_get_metadata = 0
         log_verb('Searching for "{0}" in game name'.format(rom_name))
 
@@ -100,25 +99,8 @@ class metadata_MAME(Scraper_Metadata):
 
         return None
 
-    def get_game_list(self, search_string):
-        return []
-
-    def get_game_data(self, game_url):
-        return []
-    
-    def get_game_data_first(self, search_string, gamesys):
-        return []
-
-# -----------------------------------------------------------------------------
-# Offline scraper using XML files for ROMs in No-Intro name format.
-# -----------------------------------------------------------------------------
-class metadata_NoIntro(Scraper_Metadata):
-    def __init__(self):
-        self.name = 'No-Intro'
-        self.fancy_name = 'No-Intro Metadata offline scraper'
-        
     # Search in-memory database and return metadata.  
-    def get_metadata(self, rom_name):
+    def get_metadata_NoIntro(self, rom_name):
         __debug_get_metadata = 0
         log_verb('Searching for "{0}" in game name'.format(rom_name))
 

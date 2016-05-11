@@ -43,42 +43,6 @@ from scrap_thumb import *
 from scrap_fanart import *
 
 # Instantiate scraper objects. This list must match the one in Kodi settings.
-scrapers_metadata = [ metadata_NULL(), metadata_MAME(), metadata_NoIntro(), 
-                      metadata_TheGamesDB(), metadata_GameFAQs(), metadata_arcadeHITS() ]
-scrapers_thumb    = [ thumb_NULL(), 
-                      thumb_TheGamesDB(), thumb_GameFAQs(), thumb_arcadeHITS(), 
-                      thumb_Google() ]
-scrapers_fanart   = [ fanart_NULL(), 
-                      fanart_TheGamesDB(), fanart_GameFAQs(), fanart_arcadeHITS(),
-                      fanart_Google() ]
-
-# Returns a Scraper_Metadata object based on scraper name
-def get_scraper_metadata(scraper_name):
-    scraper = scrapers_metadata[0]
-
-    for obj in scrapers_metadata:
-        if obj.name == scraper_name:
-            scraper = obj
-            break
-    
-    return scraper
-
-def get_scraper_thumb(scraper_name):
-    scraper = scrapers_thumb[0]
-
-    for obj in scrapers_thumb:
-        if obj.name == scraper_name:
-            scraper = obj
-            break
-    
-    return scraper
-
-def get_scraper_fanart(scraper_name):
-    scraper = scrapers_fanart[0]
-
-    for obj in scrapers_fanart:
-        if obj.name == scraper_name:
-            scraper = obj
-            break
-    
-    return scraper
+scrapers_metadata = [ metadata_NULL(), metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs(), metadata_arcadeHITS() ]
+scrapers_thumb    = [ thumb_NULL(), thumb_TheGamesDB(), thumb_GameFAQs(), thumb_arcadeHITS(), thumb_Google() ]
+scrapers_fanart   = [ fanart_NULL(), fanart_TheGamesDB(), fanart_GameFAQs(), fanart_arcadeHITS(), fanart_Google() ]
