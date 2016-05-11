@@ -63,28 +63,29 @@ def fs_write_catfile(categories_file, categories, launchers):
             launcher = launchers[launcherID]
             # Data which is not string must be converted to string
             str_list.append("<launcher>\n" +
-                            "  <id>"            + launcherID                + "</id>\n" +
-                            "  <name>"          + launcher["name"]          + "</name>\n" +
-                            "  <category>"      + launcher["category"]      + "</category>\n" +
-                            "  <application>"   + launcher["application"]   + "</application>\n"
-                            "  <args>"          + launcher["args"]          + "</args>\n" +
-                            "  <rompath>"       + launcher["rompath"]       + "</rompath>\n" +
-                            "  <thumbpath>"     + launcher["thumbpath"]     + "</thumbpath>\n" +
-                            "  <fanartpath>"    + launcher["fanartpath"]    + "</fanartpath>\n" +
-                            "  <custompath>"    + launcher["custompath"]    + "</custompath>\n" +
-                            "  <trailerpath>"   + launcher["trailerpath"]   + "</trailerpath>\n" +
-                            "  <romext>"        + launcher["romext"]        + "</romext>\n" +
-                            "  <gamesys>"       + launcher["gamesys"]       + "</gamesys>\n" +
-                            "  <thumb>"         + launcher["thumb"]         + "</thumb>\n" +
-                            "  <fanart>"        + launcher["fanart"]        + "</fanart>\n" +
-                            "  <genre>"         + launcher["genre"]         + "</genre>\n" +
-                            "  <release>"       + launcher["release"]       + "</release>\n" +
-                            "  <studio>"        + launcher["studio"]        + "</studio>\n" +
-                            "  <plot>"          + launcher["plot"]          + "</plot>\n" +
-                            "  <lnk>"           + str(launcher["lnk"])      + "</lnk>\n" +
-                            "  <finished>"      + str(launcher["finished"]) + "</finished>\n" +
-                            "  <minimize>"      + str(launcher["minimize"]) + "</minimize>\n" +
-                            "  <roms_xml_file>" + launcher["roms_xml_file"] + "</roms_xml_file>\n" +
+                            "  <id>"               + launcherID                   + "</id>\n" +
+                            "  <name>"             + launcher["name"]             + "</name>\n" +
+                            "  <category>"         + launcher["category"]         + "</category>\n" +
+                            "  <application>"      + launcher["application"]      + "</application>\n"
+                            "  <args>"             + launcher["args"]             + "</args>\n" +
+                            "  <rompath>"          + launcher["rompath"]          + "</rompath>\n" +
+                            "  <thumbpath>"        + launcher["thumbpath"]        + "</thumbpath>\n" +
+                            "  <fanartpath>"       + launcher["fanartpath"]       + "</fanartpath>\n" +
+                            "  <custompath>"       + launcher["custompath"]       + "</custompath>\n" +
+                            "  <trailerpath>"      + launcher["trailerpath"]      + "</trailerpath>\n" +
+                            "  <romext>"           + launcher["romext"]           + "</romext>\n" +
+                            "  <gamesys>"          + launcher["gamesys"]          + "</gamesys>\n" +
+                            "  <thumb>"            + launcher["thumb"]            + "</thumb>\n" +
+                            "  <fanart>"           + launcher["fanart"]           + "</fanart>\n" +
+                            "  <genre>"            + launcher["genre"]            + "</genre>\n" +
+                            "  <release>"          + launcher["release"]          + "</release>\n" +
+                            "  <studio>"           + launcher["studio"]           + "</studio>\n" +
+                            "  <plot>"             + launcher["plot"]             + "</plot>\n" +
+                            "  <lnk>"              + str(launcher["lnk"])         + "</lnk>\n" +
+                            "  <finished>"         + str(launcher["finished"])    + "</finished>\n" +
+                            "  <minimize>"         + str(launcher["minimize"])    + "</minimize>\n" +
+                            "  <roms_xml_file>"    + launcher["roms_xml_file"]    + "</roms_xml_file>\n" +
+                            "  <nointro_xml_file>" + launcher["nointro_xml_file"] + "</nointro_xml_file>\n" +
                             "</launcher>\n")
         # End of file
         str_list.append('</advanced_emulator_launcher>\n')
@@ -146,7 +147,7 @@ def fs_load_catfile(categories_file):
                 "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : '',
                 "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "",
                 "plot" : "",  "lnk" : False, "finished": False, "minimize" : False,
-                "roms_xml_file" : '' }
+                "roms_xml_file" : '', 'nointro_xml_file' : '' }
 
             # Parse child tags of category
             for category_child in category_element:
@@ -205,21 +206,22 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
             rom = roms[romID]
             # Data which is not string must be converted to string
             str_list.append("<rom>\n" +
-                            "  <id>"       + romID                + "</id>\n" +
-                            "  <name>"     + rom["name"]          + "</name>\n" +
-                            "  <filename>" + rom["filename"]      + "</filename>\n" +
-                            "  <gamesys>"  + rom["gamesys"]       + "</gamesys>\n" +
-                            "  <thumb>"    + rom["thumb"]         + "</thumb>\n" +
-                            "  <fanart>"   + rom["fanart"]        + "</fanart>\n" +
-                            "  <trailer>"  + rom["trailer"]       + "</trailer>\n" +
-                            "  <custom>"   + rom["custom"]        + "</custom>\n" +
-                            "  <genre>"    + rom["genre"]         + "</genre>\n" +
-                            "  <release>"  + rom["release"]       + "</release>\n" +
-                            "  <studio>"   + rom["studio"]        + "</studio>\n" +
-                            "  <plot>"     + rom["plot"]          + "</plot>\n" +
-                            "  <altapp>"   + rom["altapp"]        + "</altapp>\n" +
-                            "  <altarg>"   + rom["altarg"]        + "</altarg>\n" +
-                            "  <finished>" + str(rom["finished"]) + "</finished>\n" +
+                            "  <id>"             + romID                 + "</id>\n" +
+                            "  <name>"           + rom["name"]           + "</name>\n" +
+                            "  <filename>"       + rom["filename"]       + "</filename>\n" +
+                            "  <gamesys>"        + rom["gamesys"]        + "</gamesys>\n" +
+                            "  <thumb>"          + rom["thumb"]          + "</thumb>\n" +
+                            "  <fanart>"         + rom["fanart"]         + "</fanart>\n" +
+                            "  <trailer>"        + rom["trailer"]        + "</trailer>\n" +
+                            "  <custom>"         + rom["custom"]         + "</custom>\n" +
+                            "  <genre>"          + rom["genre"]          + "</genre>\n" +
+                            "  <release>"        + rom["release"]        + "</release>\n" +
+                            "  <studio>"         + rom["studio"]         + "</studio>\n" +
+                            "  <plot>"           + rom["plot"]           + "</plot>\n" +
+                            "  <altapp>"         + rom["altapp"]         + "</altapp>\n" +
+                            "  <altarg>"         + rom["altarg"]         + "</altarg>\n" +
+                            "  <finished>"       + str(rom["finished"])  + "</finished>\n" +
+                            "  <nointro_status>" + rom["nointro_status"] + "</nointro_status>\n" +
                             "</rom>\n")
         # End of file
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
@@ -263,9 +265,11 @@ def fs_load_ROM_XML_file(roms_xml_file):
 
         if root_element.tag == 'rom':
             # Default values
+            # Everything is a tring except: finished [bool]
+            # nointro_status must be ['Have', 'Miss', 'Unknown', 'None']
             rom = {'id' : '', 'name' : '', "filename" : '', "gamesys" : '', "thumb" : '', "fanart" : '',
                     "trailer" : '', "custom" : '', "genre" : '', "release" : '', "studio" : '',
-                    "plot" : '', "finished" : False, "altapp" : '', "altarg" : '' }
+                    "plot" : '', "altapp" : '', "altarg" : '', "finished" : False, 'nointro_status' : 'None' }
             for rom_child in root_element:
                 # By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
@@ -277,6 +281,9 @@ def fs_load_ROM_XML_file(roms_xml_file):
                 if xml_tag == 'finished':
                     xml_bool = True if xml_text == 'True' else False
                     rom[xml_tag] = xml_bool
+                elif xml_tag == 'nointro_status':
+                    xml_string = xml_text if xml_text in ['Have', 'Miss', 'Unknown', 'None'] else 'None'
+                    rom[xml_tag] = xml_string
             roms[rom['id']] = rom
             
     # --- We are not busy anymore ---
