@@ -363,3 +363,7 @@ class metadata_arcadeHITS(Scraper_Metadata):
             return results
         except:
             return results
+
+# -----------------------------------------------------------------------------
+# MobyGames http://www.mobygames.com
+# -----------------------------------------------------------------------------
