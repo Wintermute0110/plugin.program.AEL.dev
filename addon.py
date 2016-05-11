@@ -75,6 +75,7 @@ class Main:
     def __init__(self, *args, **kwargs):
         # --- Fill in settings dictionary using addon_obj.getSetting() ---
         self._get_settings()
+        return
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
@@ -226,54 +227,50 @@ class Main:
     # Get Addon Settings
     #
     def _get_settings( self ):
-        # get the users preference settings
+        # Get the users preference settings
         self.settings = {}
-        self.settings["datas_method"]          = addon_obj.getSetting( "datas_method" )
-        self.settings["thumbs_method"]         = addon_obj.getSetting( "thumbs_method" )
-        self.settings["fanarts_method"]        = addon_obj.getSetting( "fanarts_method" )
-        self.settings["scrap_info"]            = addon_obj.getSetting( "scrap_info" )
-        self.settings["scrap_thumbs"]          = addon_obj.getSetting( "scrap_thumbs" )
-        self.settings["scrap_fanarts"]         = addon_obj.getSetting( "scrap_fanarts" )
-        self.settings["select_fanarts"]        = addon_obj.getSetting( "select_fanarts" )
-        self.settings["overwrite_thumbs"]      = ( addon_obj.getSetting( "overwrite_thumbs" ) == "true" )
-        self.settings["overwrite_fanarts"]     = ( addon_obj.getSetting( "overwrite_fanarts" ) == "true" )
-        self.settings["clean_title"]           = ( addon_obj.getSetting( "clean_title" ) == "true" )
-        self.settings["ignore_bios"]           = ( addon_obj.getSetting( "ignore_bios" ) == "true" )
-        self.settings["ignore_title"]          = ( addon_obj.getSetting( "ignore_title" ) == "true" )
-        self.settings["title_formating"]       = ( addon_obj.getSetting( "title_formating" ) == "true" )
-        self.settings["datas_scraper"]         = addon_obj.getSetting( "datas_scraper" )
-        self.settings["thumbs_scraper"]        = addon_obj.getSetting( "thumbs_scraper" )
-        self.settings["fanarts_scraper"]       = addon_obj.getSetting( "fanarts_scraper" )
-        self.settings["game_region"]           = ['All','EU','JP','US'][int(addon_obj.getSetting('game_region'))]
-        self.settings["launcher_thumb_path"]   = addon_obj.getSetting( "launcher_thumb_path" )
-        self.settings["launcher_fanart_path"]  = addon_obj.getSetting( "launcher_fanart_path" )
-        self.settings["launcher_nfo_path"]     = addon_obj.getSetting( "launcher_nfo_path" )
-        self.settings["media_state"]           = addon_obj.getSetting( "media_state" )
-        self.settings["show_batch"]            = ( addon_obj.getSetting( "show_batch" ) == "true" )
-        self.settings["recursive_scan"]        = ( addon_obj.getSetting( "recursive_scan" ) == "true" )
-        self.settings["launcher_notification"] = ( addon_obj.getSetting( "launcher_notification" ) == "true" )
-        self.settings["lirc_state"]            = ( addon_obj.getSetting( "lirc_state" ) == "true" )
-        self.settings["hide_finished"]         = ( addon_obj.getSetting( "hide_finished" ) == "true" )
-        self.settings["snap_flyer"]            = addon_obj.getSetting( "snap_flyer" )
-        self.settings["start_tempo"]           = int(round(float(addon_obj.getSetting( "start_tempo" ))))
-        self.settings["auto_backup"]           = ( addon_obj.getSetting( "auto_backup" ) == "true" )
-        self.settings["nb_backup_files"]       = int(round(float(addon_obj.getSetting( "nb_backup_files" ))))
-        self.settings["show_log"]              = ( addon_obj.getSetting( "show_log" ) == "true" )
-        self.settings["hide_default_cat"]      = ( addon_obj.getSetting( "hide_default_cat" ) == "true" )
-        self.settings["open_default_cat"]      = ( addon_obj.getSetting( "open_default_cat" ) == "true" )
-        self.settings["display_game_region"]   = ['All', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
+        
+        # Scanner settings
+        self.settings["scan_recursive"]         = True if addon_obj.getSetting("scan_recursive") == "true" else False
+        self.settings["scan_ignore_title"]      = True if addon_obj.getSetting("scan_ignore_title") == "true" else False
+        self.settings["scan_clean_tags"]        = True if addon_obj.getSetting("scan_clean_tags") == "true" else False
+        self.settings["scan_title_formatting"]  = True if addon_obj.getSetting("scan_title_formatting") == "true" else False
+        self.settings["scan_ignore_bios"]       = True if addon_obj.getSetting("scan_ignore_bios") == "true" else False
+        
+        self.settings["scan_metadata_policy"]   = int(addon_obj.getSetting("scan_metadata_policy"))
+        self.settings["scan_thumb_policy"]      = int(addon_obj.getSetting("scan_thumb_policy"))
+        self.settings["scan_fanart_policy"]     = int(addon_obj.getSetting("scan_fanart_policy"))
+        self.settings["metadata_scraper"]       = int(addon_obj.getSetting("metadata_scraper"))
+        self.settings["thumb_scraper"]          = int(addon_obj.getSetting("thumb_scraper"))
+        self.settings["fanart_scraper"]         = int(addon_obj.getSetting("fanart_scraper"))
+        self.settings["thumb_mode"]             = int(addon_obj.getSetting("thumb_mode"))
+        self.settings["fanart_mode"]            = int(addon_obj.getSetting("fanart_mode"))
 
-        self.settings["thumb_image_size"] = \
-            ['','icon','small','medium','large','xlarge','xxlarge','huge'][int(addon_obj.getSetting('thumb_image_size'))]
-        self.settings["thumb_image_size_display" ] = \
-            ['All', 'Icon', 'Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge'][int(addon_obj.getSetting('thumb_image_size'))]
-        self.settings["fanart_image_size" ] = \
-            ['All', 'Icon', 'Small', 'Medium', 'Large', 'Xlarge', 'XXlarge', 'Huge'][int(addon_obj.getSetting('fanart_image_size'))]
-        self.settings["fanart_image_size_display" ] = \
-            ['All', 'Icon', 'Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge'][int(addon_obj.getSetting('fanart_image_size'))]
+        self.settings["scraper_region"]         = int(addon_obj.getSetting("scraper_region"))
+        self.settings["scraper_thumb_size"]     = int(addon_obj.getSetting("scraper_thumb_size"))
+        self.settings["scraper_fanart_size"]    = int(addon_obj.getSetting("scraper_fanart_size"))
+        self.settings["scraper_image_type"]     = int(addon_obj.getSetting("scraper_image_type"))
+        self.settings["scraper_fanart_order"]   = int(addon_obj.getSetting("scraper_fanart_order"))
+        
+        self.settings["hide_finished"]          = True if addon_obj.getSetting("hide_finished") == "true" else False
+        self.settings["launcher_notification"]  = True if addon_obj.getSetting("launcher_notification") == "true" else False
+        self.settings["launcher_thumb_path"]    = addon_obj.getSetting("launcher_thumb_path")
+        self.settings["launcher_fanart_path"]   = addon_obj.getSetting("launcher_fanart_path")
+        self.settings["launcher_nfo_path"]      = addon_obj.getSetting("launcher_nfo_path")
+        
+        self.settings["media_state"]            = int(addon_obj.getSetting("media_state"))
+        self.settings["lirc_state"]             = True if addon_obj.getSetting("lirc_state") == "true" else False
+        self.settings["start_tempo"]            = int(round(float(addon_obj.getSetting("start_tempo"))))
+        self.settings["log_level"]              = int(addon_obj.getSetting("log_level"))
+        self.settings["show_batch_window"]      = True if addon_obj.getSetting("show_batch_window") == "true" else False
+        
+        # self.settings["game_region"]          = ['World', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
 
-        # Temporally activate log
-        self.settings["show_log"] = True
+        # --- Dump settings for DEBUG ---
+        log_debug('Settings dump BEGIN')
+        for key in sorted(self.settings):
+            log_debug('{} --> {:10s} {:}'.format(key.rjust(21), str(self.settings[key]), type(self.settings[key])))
+        log_debug('Settings dump END')
 
     # Creates default categories data struct
     # CAREFUL deletes current categories!
@@ -3001,6 +2998,9 @@ class Main:
 # -------------------------------------------------------------------------------------------------
 # Custom class dialog for an image selection window
 # -------------------------------------------------------------------------------------------------
+# NOTE Found another example of a custom listitem dialog in the Favourites script
+#      ~/.kodi/addons/script.favourites
+#
 # Release - Image Resource selection script (NOTE is a script, not an addon!)
 # See http://forum.kodi.tv/showthread.php?tid=239558
 # See https://github.com/ronie/script.image.resource.select/blob/master/default.py

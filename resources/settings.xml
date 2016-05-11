@@ -3,7 +3,7 @@
 <!-- It seems that the lvalues must be numerical IDs. If I put text strings it does not work -->
 <category label="ROM scanner">
     <!-- <setting id="separator" type="lsep" label="Scan settings"/> -->
-    <setting label="Recursive scan" type="bool" id="recursive_scan" default="true" />
+    <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
     
     <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
     <setting label="Ignore Scraped Titles (use filenames)" type="bool" id="scan_ignore_title" default="true"/>
@@ -14,17 +14,17 @@
 
 <category label="ROM scrapping">
     <setting label="Metadata import policy" type="enum" id="scan_metadata_policy"  default="0" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
-    <setting label="Thumb import policy" type="enum" id="scan_metadata_policy" default="0" values="None|Local Images|Local Images + Scrapers|Scrapers" />
-    <setting label="Fanart import policy" type="enum" id="scan_metadata_policy" default="0" values="None|Local Images|Local Images + Scrapers|Scrapers" />
+    <setting label="Thumb import policy" type="enum" id="scan_thumb_policy" default="0" values="None|Local Images|Local Images + Scrapers|Scrapers" />
+    <setting label="Fanart import policy" type="enum" id="scan_fanart_policy" default="0" values="None|Local Images|Local Images + Scrapers|Scrapers" />
     <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="NULL|Offline scraper|TheGamesDB|GameFAQs|arcadeHITS"/>
-    <setting label="Thumb scraper" type="enum" id="metadata_scraper" default="0" values="NULL||TheGamesDB|GameFAQs|arcadeHITS|Google"/>
-    <setting label="Fanart scraper" type="enum" id="metadata_scraper" default="0" values="NULL||TheGamesDB|GameFAQs|arcadeHITS|Google"/>
-    <setting label="Thumb import mode" type="enum" id="thum_mode" default="0" values="Semi-automatic|Automatic"/>
+    <setting label="Thumb scraper" type="enum" id="thumb_scraper" default="0" values="NULL||TheGamesDB|GameFAQs|arcadeHITS|Google"/>
+    <setting label="Fanart scraper" type="enum" id="fanart_scraper" default="0" values="NULL||TheGamesDB|GameFAQs|arcadeHITS|Google"/>
+    <setting label="Thumb import mode" type="enum" id="thumb_mode" default="0" values="Semi-automatic|Automatic"/>
     <setting label="Fanart import mode" type="enum" id="fanart_mode" default="0" values="Semi-automatic|Automatic"/>
 </category>
 
 <category label="Scrapers">
-    <setting label="Region" type="enum" id="scraper_region" default="0" values="All|Europe|Japan|America"/>
+    <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
     <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
     <setting label="Fanart Images Size" type="enum" id="scraper_fanart_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
     <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
@@ -44,9 +44,9 @@
 
 <category label="Advanced">
     <setting id="separator" type="lsep" label="Launcher options"/>
-    <setting label="Action on Kodi playing media" type="enum" id="media_state" values="Stop|Pause|Let Play" default="0" />
+    <setting label="Action on Kodi playing media" type="enum" id="media_state" default="0" values="Stop|Pause|Let Play" />
     <setting label="Disable LIRC (Linux)" type="bool" id="lirc_state" default="true" />
-    <setting label="Delay (ms)" type="slider" id="start_tempo" default="1000" range="0,100,15000" option="int"/>
+    <setting label="Delay (ms)" type="slider" id="start_tempo" default="500" range="0,100,15000" option="int"/>
 
     <setting id="separator" type="lsep" label="Debug options"/>
     <setting label="Log level" type="enum" id="log_level" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" default="0" />
