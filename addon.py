@@ -1627,7 +1627,17 @@ class Main:
             rom_name = '{0} [COLOR violet][Fav][/COLOR]'.format(rom['name']) # Does not work in Confluence
             # log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
         else:
-            rom_name = rom['name']
+            try:
+                if rom['nointro_status'] == 'Have':
+                    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom['name'])
+                elif rom['nointro_status'] == 'Miss':
+                    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom['name'])
+                elif rom['nointro_status'] == 'Unknown':
+                    rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom['name'])
+                else:
+                    rom_name = rom['name']
+            except:
+                rom_name = rom['name']
 
         # Add ROM to lisitem
         if rom['thumb']: 
@@ -1737,6 +1747,12 @@ class Main:
     # 
     # What if user changes the favourites Thumb/Fanart??? Where do we store them???
     # What about the NFO files of favourite ROMs???
+    #
+    # PROBLEM If user rescan ROMs then same ROMs will have different ID. An option to "relink"
+    #         the favourites with their original ROMs must be provided, provided that the launcher
+    #         is the same.
+    # IMPROVEMENT Maybe it could be interesting to be able to export the list of favourites
+    #             to HTML or something like that.
     #
     def _command_show_favourites(self):
         # Load favourites
@@ -2074,7 +2090,7 @@ class Main:
         xbmc.executebuiltin("ActivateWindow(busydialog)")
         log_info('Scanning files in {0}'.format(launch_path))
         files = []
-        if self.settings[ "recursive_scan" ]:
+        if self.settings["scan_recursive"]:
             log_info('Recursive scan activated')
             for root, dirs, filess in os.walk(launch_path):
                 for filename in fnmatch.filter(filess, '*.*'):
@@ -2086,16 +2102,6 @@ class Main:
                 files.append(os.path.join(launch_path, filename))
         xbmc.executebuiltin("Dialog.Close(busydialog)")
         log_info('Found {0} files'.format(len(files)))
-
-        # ~~~ String to inform the user of scrapers used ~~~
-        if self.settings[ "datas_method" ] == "0":
-            metadata_scraper_text = 'Metadata scraper: None'
-        elif self.settings[ "datas_method" ] == "1":
-            metadata_scraper_text = 'Metadata scraper: NFO files'
-        elif self.settings[ "datas_method" ] == "2":
-            metadata_scraper_text = 'Metadata scraper: {0}'.format(self.settings[ "datas_scraper" ].encode('utf-8', 'ignore'))
-        elif self.settings[ "datas_method" ] == "3":
-            metadata_scraper_text = 'Metadata scraper: NFO files or {0}'.format(self.settings[ "datas_scraper" ].encode('utf-8','ignore'))
 
         # ~~~ Now go processing file by file ~~~
         ret = pDialog.create('AEL - Importing ROMs', 'Importing files from {0}'.format(launch_path))
@@ -2126,6 +2132,7 @@ class Main:
 
             # ~~~ Update progress dialog ~~~
             file_text = 'File {0}'.format(f_base)
+            metadata_scraper_text = self.scraper_metadata.name
             pDialog.update(filesCount * 100 / len(files), file_text, metadata_scraper_text)
 
             # ~~~ Find ROM file ~~~
@@ -2158,12 +2165,61 @@ class Main:
             romsCount = romsCount + 1
         pDialog.close()
 
+        if len(roms) == 0:
+            log_kodi_dialog_OK('AEL', 'No ROMs found! Make sure launcher directory and file extensions are correct.')
+            xbmc.executebuiltin('Container.Update()')
+            return
+
+        # --- If we have a No-Intro XML then audit roms ---
+        if selectedLauncher['nointro_xml_file'] != '':
+            log_info('Auditing ROMs using No-Intro DAT {}'.format(selectedLauncher['nointro_xml_file']))
+            
+            # Load DAT
+            roms_nointro = fs_load_NoIntro_XML_file(selectedLauncher['nointro_xml_file'])
+            
+            # Put ROM names in a set. Set is the fastes Python container for searching 
+            # elements (implements hashed search).
+            roms_nointro_set = set(roms_nointro.keys())
+            roms_set = set()
+            for romID in roms:
+                roms_set.add(roms[romID]['name'])
+            
+            # Traverse ROMs and check they are in the DAT
+            num_have = num_miss = num_unknown = 0
+            for romID in roms:
+                if roms[romID]['name'] in roms_nointro_set:
+                    roms[romID]['nointro_status'] = 'Have'
+                    num_have += 1
+                else:
+                    roms[romID]['nointro_status'] = 'Unknown'
+                    num_unknown += 1
+
+            # Now add missing ROMs. Traverse the nointro set and add the ROM if it's not there.
+            for nointro_rom in roms_nointro_set:
+                if nointro_rom not in roms_set:
+                    # Add new "fake" missing ROM. This ROM cannot be launched!
+                    rom = {'id' : '', 'name' : '', "filename" : '', "gamesys" : '', "thumb" : '', "fanart" : '',
+                           "trailer" : '', "custom" : '', "genre" : '', "release" : '', "studio" : '',
+                           "plot" : '', "altapp" : '', "altarg" : '', "finished" : False, 'nointro_status' : 'None' }
+                    romID = misc_generate_random_SID()
+                    rom['id'] = romID
+                    rom['name'] = nointro_rom
+                    rom['nointro_status'] = 'Miss'
+                    roms[romID] = rom
+                    num_miss += 1
+
+            log_info('Have    {:6d}'.format(num_have))
+            log_info('Miss    {:6d}'.format(num_miss))
+            log_info('Unknown {:6d}'.format(num_unknown))
+
         # ~~~ Save launchers ~~~
         fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
         log_kodi_notify('Advanced Emulator Launcher', '%s files imported' % (romsCount))
-        xbmc.executebuiltin("XBMC.ReloadSkin()")
+        
+        # xbmc.executebuiltin("XBMC.ReloadSkin()")
+        xbmc.executebuiltin('Container.Update()')
 
     def _roms_process_scanned_ROM(self, selectedLauncher, f_path, f_path_noext, f_base, f_base_noext, f_ext):
         # Grab info
@@ -2183,18 +2239,20 @@ class Main:
         romdata["release"]  = ''
         romdata["studio"]   = ''
         romdata["plot"]     = ''
-        romdata["finished"] = False
         romdata["altapp"]   = ''
         romdata["altarg"]   = ''
+        romdata["finished"] = False
+        romdata['nointro_status'] = 'None'
 
         # ~~~~~ Scrape game metadata information ~~~~~
         # From now force NFO files scraper
-        self.settings[ "datas_method" ] == "1"
+        self.settings[ "datas_method" ] = "0"
         
         # No metadata scrap
         if self.settings[ "datas_method" ] == "0":
-            log_debug('Scraping disabled') 
-            romdata["name"] = self._text_ROM_title_format(f_base_noext)
+            log_debug('Scraping disabled')
+            # romdata["name"] = self._text_ROM_title_format(f_base_noext)
+            romdata["name"] = f_base_noext
         else:
             # Scrap metadata from NFO files
             found_NFO_file = False
@@ -2436,7 +2494,7 @@ class Main:
     #
     # Manually add a new ROM instead of a recursive scan
     #
-    def _roms_add_new_rom ( self , launcherID) :
+    def _roms_add_new_rom (self, launcherID):
         log_kodi_dialog_OK('AEL', 'Not implemented yet')
         return
 

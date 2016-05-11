@@ -191,11 +191,11 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         # Note that this is ignored when reading the file.
         str_list.append('<launcher>\n')
         str_list.append('  <id        >{0}</id>\n'.format(launcher['id']))
-        str_list.append('  <name      >{0}</name>\n'.format(launcher[launcherID]['name']))            
-        str_list.append('  <category  >{0}</category>\n'.format(launcher[launcherID]['category']))
-        str_list.append('  <rompath   >{0}</rompath>\n'.format(launcher[launcherID]['rompath']))
-        str_list.append('  <thumbpath >{0}</thumbpath>\n'.format(launcher[launcherID]['thumbpath']))
-        str_list.append('  <fanartpath>{0}</fanartpath>\n'.format(launcher[launcherID]['fanartpath']))
+        str_list.append('  <name      >{0}</name>\n'.format(launcher['name']))            
+        str_list.append('  <category  >{0}</category>\n'.format(launcher['category']))
+        str_list.append('  <rompath   >{0}</rompath>\n'.format(launcher['rompath']))
+        str_list.append('  <thumbpath >{0}</thumbpath>\n'.format(launcher['thumbpath']))
+        str_list.append('  <fanartpath>{0}</fanartpath>\n'.format(launcher['fanartpath']))
         str_list.append('</launcher>\n')
 
         # Create list of ROMs
