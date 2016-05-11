@@ -60,35 +60,6 @@ class fanart_TheGamesDB(Scraper_Fanart):
           return full_fanarts
 
 # -----------------------------------------------------------------------------
-# Google
-# ----------------------------------------------------------------------------- 
-class fanart_Google(Scraper_Fanart):
-    def __init__(self):
-        self.name = 'Google'
-        self.fancy_name = 'Google Fanart scraper'
-
-    def get_image_list(self, search_string, gamesys, region, imgsize):
-      qdict = {'q':search,'imgsz':imgsize}
-      query = urllib.urlencode(qdict)
-      base_url = ('http://ajax.googleapis.com/ajax/services/search/images?v=1.0&start=%s&rsz=8&%s')
-      covers = []
-      results = []
-      try:
-          for start in (0,8,16,24):
-              url = base_url % (start,query)
-              search_results = urllib.urlopen(url)
-              json = simplejson.loads(search_results.read())
-              search_results.close()
-              results += json['responseData']['results']
-          for index, images in enumerate(results):
-              thumbnail = os.path.join(CACHE_PATH,str(index) + str(time.time()) + '.jpg')
-              h = urllib.urlretrieve(images['tbUrl'],thumbnail)
-              covers.append((images['url'],thumbnail,"Image "+str(index+1)))
-          return covers
-      except:
-          return covers
-        
-# -----------------------------------------------------------------------------
 # GameFAQs
 # ----------------------------------------------------------------------------- 
 class fanart_GameFAQs(Scraper_Fanart):
@@ -145,6 +116,35 @@ class fanart_arcadeHITS(Scraper_Fanart):
           results = re.findall('<img src=(.*?).png', page)
           for index, line in enumerate(results):
               covers.append(['http://www.arcadehits.net/'+line+'.png','http://www.arcadehits.net/'+line+'.png','Image '+str(index+1)])
+          return covers
+      except:
+          return covers
+
+# -----------------------------------------------------------------------------
+# Google
+# ----------------------------------------------------------------------------- 
+class fanart_Google(Scraper_Fanart):
+    def __init__(self):
+        self.name = 'Google'
+        self.fancy_name = 'Google Fanart scraper'
+
+    def get_image_list(self, search_string, gamesys, region, imgsize):
+      qdict = {'q':search,'imgsz':imgsize}
+      query = urllib.urlencode(qdict)
+      base_url = ('http://ajax.googleapis.com/ajax/services/search/images?v=1.0&start=%s&rsz=8&%s')
+      covers = []
+      results = []
+      try:
+          for start in (0,8,16,24):
+              url = base_url % (start,query)
+              search_results = urllib.urlopen(url)
+              json = simplejson.loads(search_results.read())
+              search_results.close()
+              results += json['responseData']['results']
+          for index, images in enumerate(results):
+              thumbnail = os.path.join(CACHE_PATH,str(index) + str(time.time()) + '.jpg')
+              h = urllib.urlretrieve(images['tbUrl'],thumbnail)
+              covers.append((images['url'],thumbnail,"Image "+str(index+1)))
           return covers
       except:
           return covers
