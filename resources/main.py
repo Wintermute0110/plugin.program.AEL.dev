@@ -23,11 +23,11 @@ import re, urllib, urllib2, urlparse, socket, exceptions
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- Modules/packages in this plugin ---
-import resources.subprocess_hack
-from resources.disk_IO import *
-from resources.net_IO import *
-from resources.utils import *
-from resources.scrap import *
+import subprocess_hack
+from disk_IO import *
+from net_IO import *
+from utils import *
+from scrap import *
 
 # --- Addon object (used to access settings) ---
 addon_obj      = xbmcaddon.Addon()
@@ -74,7 +74,10 @@ class Main:
     scraper_thumb    = None
     scraper_fanart   = None
 
-    def __init__(self, *args, **kwargs):
+    #
+    # This is the plugin entry point.
+    #
+    def run_plugin(self):
         # --- Fill in settings dictionary using addon_obj.getSetting() ---
         self._get_settings()
 
@@ -1257,7 +1260,7 @@ class Main:
             category_name = self.categories[categoryID]['name']
             clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
             clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
-            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + 
+            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + \
                                  '_' + launcherID[0:8] + '.xml'
             roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file_base)
             self._print_log('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
@@ -2165,10 +2168,10 @@ class Main:
 
         # --- If we have a No-Intro XML then audit roms ---
         if selectedLauncher['nointro_xml_file'] != '':
-            nointro_xml_file = selectedLauncher['nointro_xml_file'])
-            log_info('Auditing ROMs using No-Intro DAT {}'.format(nointro_xml_file)
-            
-            # Load DAT
+            nointro_xml_file = selectedLauncher['nointro_xml_file']
+            log_info('Auditing ROMs using No-Intro DAT {}'.format(nointro_xml_file))
+
+            # Load No-Intro DAT
             roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
             
             # Put ROM names in a set. Set is the fastes Python container for searching 
@@ -2328,7 +2331,7 @@ class Main:
             file_text = 'ROM {}'.format(F.base)
             scraper_text = 'Scraping Thumb with {}'.format(self.scraper_thumb.name)
             pDialog.update(num_files_checked * 100 / len(files), file_text, scraper_text)
-            log_verb('Scraping Thumb with {}'.format(self.scraper_thumb.name)
+            log_verb('Scraping Thumb with {}'.format(self.scraper_thumb.name))
 
             # Online scrape (image scrapers are always online)
             search_string = romdata["name"]
@@ -2878,25 +2881,3 @@ def gui_show_image_select(img_list):
     del w    
     
     return selected_url
-
-# -------------------------------------------------------------------------------------------------
-# Hacks
-# -------------------------------------------------------------------------------------------------
-# --- Test the image selector class ---
-# if __name__ == "__main__":
-#     covers = []
-#     covers.append(['http://www.captainwilliams.co.uk/sega/32x/images/32xsolo.jpg',
-#                    'http://www.captainwilliams.co.uk/sega/32x/images/32xsolo.jpg',
-#                    'Sega 32 X'])
-#     image_url = gui_show_image_select(covers)
-
-# -------------------------------------------------------------------------------------------------
-# main()
-# -------------------------------------------------------------------------------------------------
-# Put the main bulk of the code in files inside /resources/, which is a package directory. 
-# This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
-# loading time is faster compared to PY files.
-#
-# See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-if __name__ == "__main__":
-    Main()
