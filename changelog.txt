@@ -1,0 +1,3 @@
+[B]Advanced Emulator Launcher | version 0.9.0 | 13 May 2016[/B]
+
+* Initial release.
