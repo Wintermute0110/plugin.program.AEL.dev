@@ -16,15 +16,16 @@
 import resources.main
 
 # -------------------------------------------------------------------------------------------------
-# Hacks
+# Hacks and tests
 # -------------------------------------------------------------------------------------------------
 # --- Test the image selector class ---
 # if __name__ == "__main__":
+#     plugin = resources.main.Main()
 #     covers = []
 #     covers.append(['http://www.captainwilliams.co.uk/sega/32x/images/32xsolo.jpg',
 #                    'http://www.captainwilliams.co.uk/sega/32x/images/32xsolo.jpg',
 #                    'Sega 32 X'])
-#     image_url = main.gui_show_image_select(covers)
+#     image_url = plugin.gui_show_image_select(covers)
 
 # -------------------------------------------------------------------------------------------------
 # main()

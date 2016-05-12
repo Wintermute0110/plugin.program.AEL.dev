@@ -1886,7 +1886,7 @@ class Main:
         if type == 0:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Modify Item Infos', 
-                                  ['Scrap from %s' % self.settings[ "datas_scraper" ],
+                                  ['Scrap from {}'.format(self.scraper_metadata.fancy_name),
                                    'Import metadata from NFO file',
                                    'Edit Title : %s' % roms[romID]["name"],
                                    'Edit Release Date : %s' % roms[romID]["release"],
@@ -2044,9 +2044,9 @@ class Main:
         launcher_path    = selectedLauncher["rompath"]
         launcher_exts    = selectedLauncher["romext"]
         log_debug('Launcher "%s" selected' % selectedLauncher["name"]) 
-        log_debug('launch_app  = {}'.format(launch_app)) 
-        log_debug('launch_path = {}'.format(launch_path)) 
-        log_debug('launch_exts = {}'.format(launch_exts)) 
+        log_debug('launcher_app  = {}'.format(launcher_app)) 
+        log_debug('launcher_path = {}'.format(launcher_path)) 
+        log_debug('launcher_exts = {}'.format(launcher_exts)) 
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
@@ -2083,23 +2083,24 @@ class Main:
         # ~~~ Scan for new files (*.*) and put them in a list ~~~
         log_kodi_notify('AEL', 'Scanning files...')
         xbmc.executebuiltin("ActivateWindow(busydialog)")
-        log_info('Scanning files in {0}'.format(launch_path))
+        log_info('Scanning files in {0}'.format(launcher_path))
         files = []
         if self.settings["scan_recursive"]:
             log_info('Recursive scan activated')
-            for root, dirs, filess in os.walk(launch_path):
+            for root, dirs, filess in os.walk(launcher_path):
                 for filename in fnmatch.filter(filess, '*.*'):
                     files.append(os.path.join(root, filename))
         else:
             log_info('Recursive scan not activated')
-            filesname = os.listdir(launch_path)
+            filesname = os.listdir(launcher_path)
             for filename in filesname:
-                files.append(os.path.join(launch_path, filename))
+                files.append(os.path.join(launcher_path, filename))
         xbmc.executebuiltin("Dialog.Close(busydialog)")
-        log_info('Found {} files'.format(len(files)))
+        num_files = len(files)
+        log_info('Found {} files'.format(num_files))
 
         # ~~~ Now go processing file by file ~~~
-        pDialog.create('AEL - Scanning ROMs', 'Scanning {}'.format(launch_path))
+        pDialog.create('AEL - Scanning ROMs', 'Scanning {}'.format(launcher_path))
         log_debug('========== Processing ROMs ==========')
         num_new_roms = 0
         num_files_checked = 0
@@ -2110,23 +2111,23 @@ class Main:
             F = misc_split_path(f_path)
             log_debug('*** Processing File ***')
             log_debug('F.path       = "{0}"'.format(F.path))
-            log_debug('F.path_noext = "{0}"'.format(F.path_noext))
-            log_debug('F.base       = "{0}"'.format(F.base))
-            log_debug('F.base_noext = "{0}"'.format(F.base_noext))
-            log_debug('F.ext        = "{0}"'.format(F.ext))
+            # log_debug('F.path_noext = "{0}"'.format(F.path_noext))
+            # log_debug('F.base       = "{0}"'.format(F.base))
+            # log_debug('F.base_noext = "{0}"'.format(F.base_noext))
+            # log_debug('F.ext        = "{0}"'.format(F.ext))
 
             # ~~~ Update progress dialog ~~~
             file_text = 'File {}'.format(F.base)
             activity_text = 'Checking if it is a ROM...'
-            pDialog.update(num_files_checked * 100 / len(files), file_text, activity_text)
+            pDialog.update(num_files_checked * 100 / num_files, file_text, activity_text)
 
             # ~~~ Find ROM file ~~~
             # The recursive scan has scanned all file. Check if this file matches some of the extensions
             # for ROMs. If not, skip this file and go for next one in the list.
             processROM = False
-            for ext in launch_exts.split("|"):
+            for ext in launcher_exts.split("|"):
                 # Check if filename matchs extension
-                if f_ext == '.' + ext:
+                if F.ext == '.' + ext:
                     log_debug('Expected %s extension detected' % ext) 
                     processROM = True
             # If file does not match any of the ROM extensions skip it
@@ -2144,7 +2145,7 @@ class Main:
                 continue
             
             # ~~~~~ Process new ROM and add to the list ~~~~~
-            (romdata, pDialog) = self._roms_process_scanned_ROM(selectedLauncher, F, num_files_checked, pDialog)
+            (romdata, pDialog) = self._roms_process_scanned_ROM(selectedLauncher, F, num_files_checked, num_files, pDialog)
             romID = romdata["id"]
             roms[romID] = romdata
             num_new_roms = num_new_roms + 1
@@ -2156,7 +2157,7 @@ class Main:
                 log_info('ROM scanning stopped')
                 return
         pDialog.close()
-        log_info('ROM scanner finished'.format(num_have))
+        log_info('***** ROM scanner finished. Report ******')
         log_info('Removed dead ROMs {:6d}'.format(num_removed_roms))
         log_info('Files checked     {:6d}'.format(num_files_checked))
         log_info('New added ROMs    {:6d}'.format(num_new_roms))
@@ -2212,12 +2213,12 @@ class Main:
         fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
-        log_kodi_notify('Advanced Emulator Launcher', '%s files imported' % (romsCount))
-        
+        log_kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
+
         # xbmc.executebuiltin("XBMC.ReloadSkin()")
         xbmc.executebuiltin('Container.Update()')
 
-    def _roms_process_scanned_ROM(self, selectedLauncher, F, num_files_checked, pDialog):
+    def _roms_process_scanned_ROM(self, selectedLauncher, F, num_files_checked, num_files, pDialog):
         # Create new rom dictionary
         launcher_gamesys = selectedLauncher["gamesys"]
         romdata = fs_new_rom()
@@ -2229,7 +2230,7 @@ class Main:
         # Update progress dialog
         file_text = 'ROM {}'.format(F.base)
         scraper_text = 'Scraping metadata with {}'.format(self.scraper_metadata.name)
-        pDialog.update(num_files_checked * 100 / len(files), file_text, scraper_text)
+        pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
 
         # From now force NFO files scraper
         self.settings[ "datas_method" ] = "0"
@@ -2238,7 +2239,7 @@ class Main:
         if self.settings[ "datas_method" ] == "0":
             log_debug('Metadata scraping disabled')
             # romdata["name"] = self._text_ROM_title_format(f_base_noext)
-            romdata["name"] = f_base_noext
+            romdata["name"] = F.base_noext
         else:
             # Scrap metadata from NFO files
             found_NFO_file = False
@@ -2305,15 +2306,16 @@ class Main:
         # Otherwise, thumb/fanart name is same as ROM, but different extension.
         # If no local artwork is found them names are empty strings ''
         img_exts = ['png', 'jpg', 'gif', 'jpeg', 'bmp', 'PNG', 'JPG', 'GIF', 'JPEG', 'BMP']
-        (tumb_path_noext, fanart_path_noext) = misc_get_artwork_names(selectedLauncher, F)
-        thumb  = misc_look_for_image(tumb_path_noext, img_exts)
+        thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, F)
+        fanart_path_noext = misc_get_fanart_path_noext(selectedLauncher, F)
+        thumb  = misc_look_for_image(thumb_path_noext, img_exts)
         fanart = misc_look_for_image(fanart_path_noext, img_exts)
         romdata['thumb']  = thumb
         romdata['fanart'] = fanart
-        log_debug('tumb_path_noext   = "{}"'.format(tumb_path_noext))
+        log_debug('thumb_path_noext  = "{}"'.format(thumb_path_noext))
         log_debug('fanart_path_noext = "{}"'.format(fanart_path_noext))
-        log_debug('Set Thumb         = "{}"'.format(thumb))
-        log_debug('Set Fanart        = "{}"'.format(fanart))
+        log_verb('Set Thumb  "{}"'.format(thumb))
+        log_verb('Set Fanart "{}"'.format(fanart))
 
         # ~~~ Thumb scraping policy ~~~
         # Make sure thumb scraping works like a charm.
@@ -2321,16 +2323,26 @@ class Main:
         # settings.xml -> id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers"
         scan_thumb_policy = self.settings["scan_thumb_policy"]
         scrap_image = False
-        if   scan_thumb_policy == 0: scrap_image = False
-        elif scan_thumb_policy == 1: scrap_image = True if romdata['thumb'] == '' else False
-        elif scan_thumb_policy == 2: scrap_image = True
+        if scan_thumb_policy == 0: 
+            scrap_image = False
+            log_verb('Scraper policy: Local Images only | Scraper OFF')
+        elif scan_thumb_policy == 1:
+            if romdata['thumb'] == '':
+                log_verb('Scraper policy: thumb not found | Scraper ON')
+                scrap_image = True
+            else:
+                log_verb('Scraper policy: thumb found | Scraper OFF')
+                scrap_image = False
+        elif scan_thumb_policy == 2: 
+            scrap_image = True
+            log_verb('Scraper policy: Scraper will overwrite local images | Scrapper ON')
 
         # Scraper overrides local image if local image exists
         if scrap_image:
             # Updated progress dialog
             file_text = 'ROM {}'.format(F.base)
             scraper_text = 'Scraping Thumb with {}'.format(self.scraper_thumb.name)
-            pDialog.update(num_files_checked * 100 / len(files), file_text, scraper_text)
+            pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
             log_verb('Scraping Thumb with {}'.format(self.scraper_thumb.name))
 
             # Online scrape (image scrapers are always online)
@@ -2340,50 +2352,66 @@ class Main:
             imgsize       = self.settings["scraper_thumb_size"]
             image_list    = self.scraper_thumb.get_image_list(search_string, gamesys, region, imgsize)
             if image_list:
-                img_url = ''
-                # Semi-automatic scraping (user choses an image from a list)
+                log_verb('Scraper returned {} games'.format(len(image_list)))
+                # --- Semi-automatic scraping (user choses an image from a list) ---
                 if self.settings['thumb_mode'] == 0:
                     # Close progress dialog before opening image chosing dialog
                     pDialog.close()
-                    # Returns a list of tuples(a, b, c)
-                    image_url = MyDialog(image_list)
+                    
+                    # If there is a local image add show it to the user
+                    if os.path.isfile(thumb):
+                       image_list.insert(0, (thumb, thumb, 'Current local thumb image')) 
+
+                    # Returns a list of tuples(URL, URL, name)
+                    image_url = gui_show_image_select(image_list)
+                    log_debug('Thumb dialog returned image_url "{}"'.format(image_url))
+                    if image_url == '': image_url = image_list[0][0]
+
                     # Reopen progress dialog
                     pDialog.create('AEL - Scanning ROMs')
-                    pDialog.update(num_files_checked * 100 / len(files), file_text, scraper_text)
-                    if not image_url:
-                        # If error just pick first image
-                        img_url = image_list[0][0]
-                # Automatic scraping
+                    pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
+                # --- Automatic scraping ---
                 else:
                     # Pick first image in automatic mode
-                    img_url = image_list[0][0]
+                    image_url = image_list[0][0]
 
                 # Resolve selected image URL (not used with current scrapers)
                 # Returned values are URLs already
-                # img_url = self._get_thumbnail(self.image_url)
+                # image_url = self._get_thumbnail(self.image_url)
 
-                # ~~~ Download scraped image ~~~
-                # Get Tumbnail name with no extension, then get URL image extension 
-                # and make full thumb path. If extension cannot be determined
-                # from URL defaul to '.jpg'
-                tumb_path_noext = misc_get_artwork_names(selectedLauncher, F)
-                img_ext = text_get_image_URL_extension(img_url)
-                tumb_path = tumb_path_noext + '.' + img_ext
-                
-                # ~~~ Download image ~~~
-                log_debug('Downloading thumb "{}"'.format(img_url))
-                log_debug('Into local file   "{}"'.format(tumb_path))
-                try:
-                    download_img(img_url, tumb_path)
-                except socket.timeout:
-                    log_kodi_notify('AEL - Error', 'Cannot download thumb image (Timeout)')
-                    
-                # ~~~ Update Kodi cache with downloaded image ~~~
-                # Only if local image is in the Kodi cache, function takes care of that.
-                kodi_update_image_cache(tumb_path)    
+                # If user chose the local image don't download anything
+                if image_url[0:4] == 'http':
+                    # ~~~ Download scraped image ~~~
+                    # Get Tumbnail name with no extension, then get URL image extension 
+                    # and make full thumb path. If extension cannot be determined
+                    # from URL defaul to '.jpg'
+                    thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, F)
+                    img_ext = text_get_image_URL_extension(image_url) # Include front dot -> .jpg
+                    thumb_path = thumb_path_noext + img_ext
+
+                    # ~~~ Download image ~~~
+                    log_debug('thumb_path_noext "{}"'.format(thumb_path_noext))
+                    log_debug('img_ext          "{}"'.format(img_ext))
+                    log_verb('Downloading URL  "{}"'.format(image_url))
+                    log_verb('Into local file  "{}"'.format(thumb_path))
+                    try:
+                        download_img(image_url, thumb_path)
+                    except socket.timeout:
+                        log_kodi_notify('AEL - Error', 'Cannot download thumb image (Timeout)')
+
+                    # ~~~ Update Kodi cache with downloaded image ~~~
+                    # Only if local image is in the Kodi cache, function takes care of that.
+                    kodi_update_image_cache(thumb_path)
+                    thumb = thumb_path
+                else:
+                    log_debug('User chose local image "{}"'.format(image_url))
+                    thumb = image_url
             else:
-                # Scraper found no images online. Use the local image if found.
-                romdata["thumb"] = thumb
+                log_debug('Thumb scraper returned an empty list')
+
+            # Assing thumb
+            romdata["thumb"] = thumb
+            log_verb('Scraper assigned thumb "{}"'.format(thumb))
 
         # Deactivate Fanart scraping until thumb scraping is working OK
         if None:

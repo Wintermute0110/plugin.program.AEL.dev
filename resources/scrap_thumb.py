@@ -15,6 +15,7 @@ import sys, urllib, urllib2, re
 
 from scrap import *
 from scrap_info import *
+from utils import *
 
 # --- Thumb scrapers ----------------------------------------------------------
 # All thumb scrapers are online scrapers. If user has a local image then he
@@ -45,7 +46,7 @@ class thumb_NULL(Scraper_Thumb):
 # TheGamesDB thumb scraper
 # ----------------------------------------------------------------------------- 
 class thumb_TheGamesDB(Scraper_Thumb):
-    __debug_scraper = 1
+    __debug_scraper = 0
     user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31';
 
     def __init__(self):
@@ -96,7 +97,8 @@ class thumb_TheGamesDB(Scraper_Thumb):
             if game["title"].lower().find(search_string.lower()) != -1:
                 game["order"] += 1
             game_list.append(game)
-            log_debug('get_game_page_url() Found game {:>6s}  "{}"'.format(game["id"], game["title"]))
+            if self.__debug_scraper:
+                log_debug('get_game_page_url() Found game {:>6s} order {} "{}"'.format(game["id"], game["order"], game["title"]))
         game_list.sort(key = lambda result: result["order"], reverse = True)
 
         if len(game_list) > 0:
@@ -106,6 +108,8 @@ class thumb_TheGamesDB(Scraper_Thumb):
         return results_ret
 
     def get_image_list(self, search_string, gamesys, region, imgsize):
+        log_debug('get_image_list() search_string = "{}"'.format(search_string))
+        log_debug('get_image_list() gamesys       = "{}"'.format(gamesys))
         covers = []
         game_id_url = self.get_game_page_url(search_string, gamesys)
         if game_id_url:

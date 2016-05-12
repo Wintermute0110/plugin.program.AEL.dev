@@ -154,7 +154,7 @@ class FileName:
     pass
 
 def misc_split_path(f_path):
-    F = FileNames()
+    F = FileName()
 
     F.path       = f_path
     (root, ext)  = os.path.splitext(F.path)
@@ -169,30 +169,48 @@ def misc_split_path(f_path):
 #
 # Get thumb/fanart filenames
 # Given
-def misc_get_artwork_names(launcher, F):
-    thumb_path  = selectedLauncher["thumbpath"]
-    fanart_path = selectedLauncher["fanartpath"]
-    if thumb_path == fanart_path:
-        log_debug('Thumbs/Fanarts have the same path')
-        tumb_path_noext   = os.path.join(thumb_path, f_base_noext + '_thumb')
-        fanart_path_noext = os.path.join(fanart_path, f_base_noext + '_fanart')
-    else:
-        log_debug('Thumbs/Fanarts into different folders')
-        tumb_path_noext   = os.path.join(thumb_path, f_base_noext)
-        fanart_path_noext = os.path.join(fanart_path, f_base_noext)
+def misc_get_thumb_path_noext(launcher, F):
+    thumb_path  = launcher["thumbpath"]
+    fanart_path = launcher["fanartpath"]
+    # log_debug('misc_get_thumb_path_noext()  thumb_path {}'.format(thumb_path))
+    # log_debug('misc_get_thumb_path_noext() fanart_path {}'.format(fanart_path))
 
-    return (thumb_path, fanart_path)
+    if thumb_path == fanart_path:
+        # log_debug('misc_get_thumb_path_noext() Thumbs/Fanarts have the same path')
+        tumb_path_noext = os.path.join(thumb_path, F.base_noext + '_thumb')
+    else:
+        # log_debug('misc_get_thumb_path_noext() Thumbs/Fanarts into different folders')
+        tumb_path_noext = os.path.join(thumb_path, F.base_noext)
+    # log_debug('misc_get_thumb_path_noext() tumb_path_noext {}'.format(tumb_path_noext))
+
+    return tumb_path_noext
+
+def misc_get_fanart_path_noext(launcher, F):
+    thumb_path  = launcher["thumbpath"]
+    fanart_path = launcher["fanartpath"]
+    # log_debug('misc_get_fanart_path_noext()  thumb_path {}'.format(thumb_path))
+    # log_debug('misc_get_fanart_path_noext() fanart_path {}'.format(fanart_path))
+
+    if thumb_path == fanart_path:
+        log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts have the same path')
+        fanart_path_noext = os.path.join(fanart_path, F.base_noext + '_fanart')
+    else:
+        log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts into different folders')
+        fanart_path_noext = os.path.join(fanart_path, F.base_noext)
+    # log_debug('misc_get_fanart_path_noext() fanart_path_noext {}'.format(fanart_path_noext))
+
+    return fanart_path_noext
 
 def misc_look_for_image(image_path_noext, img_exts):
     image_name = ''
-
+    log_debug('Testing image prefix {}'.format(image_path_noext))
     for ext in img_exts:
         test_img = image_path_noext + '.' + ext
-        log_debug('Testing image "{}"'.format(test_img))
+        # log_debug('Testing image "{}"'.format(test_img))
         if os.path.isfile(test_img):
             # Optimization Stop loop as soon as an image is found
             image_name = test_img
-            log_debug('Found image   "{0}"'.format(test_img))
+            log_debug('Found image "{0}"'.format(test_img))
             break
 
     return image_name
@@ -215,13 +233,15 @@ def misc_look_for_image(image_path_noext, img_exts):
 #
 # Gets where in Kodi image cache an image is located. 
 #
-def kodi_get_cached_covers_thumb(image_path):
+def kodi_get_cached_image(image_path):
     THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
 
-    # Get the Kodi cached image
-    filename = xbmc.getCacheThumbName(image_path)
+    # --- Get the Kodi cached image ---
+    # This function return the cache file base name
+    base_name = xbmc.getCacheThumbName(image_path)
+    cache_file_path = os.path.join(THUMBS_CACHE_PATH, base_name[0], base_name)
 
-    return filename
+    return cache_file_path
 
 #
 # Updates Kodi image cache for the image provided with the image itself.
@@ -230,19 +250,28 @@ def kodi_get_cached_covers_thumb(image_path):
 # Needles to say, only update image cache if image already was on the cache.
 def kodi_update_image_cache(img_path):
     # What if image is not cached?
-    cached_thumb = kodi_get_cached_covers_thumb(img_path)
-    log_debug('Update image cache img_path = {}'.format(img_path))
-    log_debug('               cached_thumb = {}'.format(cached_thumb))
+    cached_thumb = kodi_get_cached_image(img_path)
+    log_debug('kodi_update_image_cache()     img_path = {}'.format(img_path))
+    log_debug('kodi_update_image_cache() cached_thumb = {}'.format(cached_thumb))
 
-    # Old Kodi version stored images in the cache with extension TBN. Now, it seems
-    # images are stored with same extension as the original image.
-    # If cached image has tbn extension then change it to extension of the original image.
+    # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
+    # However, images in the cache have the original extension. Replace TBN extension
+    # with that of the original image.
     F_cached = misc_split_path(cached_thumb)
     if F_cached.ext == '.tbn':
         F_img = misc_split_path(img_path)
         cached_thumb = cached_thumb.replace('.tbn', F_img.ext)
+        log_debug('kodi_update_image_cache() New cached_thumb name {}'.format(cached_thumb))
+
+    # Check if file exists in the cache
+    # xbmc.getCacheThumbName() seems to return a cache filename even if the local file does not exist!
+    if not os.path.isfile(cached_thumb):
+        log_debug('kodi_update_image_cache() Cached image not found. Doing nothing')
+        return
 
     # --- Copy local image into Kodi image cache ---
+    log_debug('kodi_update_image_cache() copying {}'.format(img_path))
+    log_debug('kodi_update_image_cache() into    {}'.format(cached_thumb))
     decoded_img_path     = img_path.decode(text_get_encoding(), 'ignore')
     decoded_cached_thumb = cached_thumb.decode(text_get_encoding(), 'ignore')
     try:

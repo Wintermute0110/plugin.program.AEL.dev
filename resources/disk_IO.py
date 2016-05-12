@@ -274,9 +274,11 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (OSError)'.format(roms_xml_file))
+        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {} file. (OSError)'.format(roms_xml_file))
+        log_error('fs_write_ROM_XML_file() (OSerror) Cannot write file "{}"'.format(roms_xml_file))
     except IOError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file. (IOError)'.format(roms_xml_file))
+        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {} file. (IOError)'.format(roms_xml_file))
+        log_error('fs_write_ROM_XML_file() (IOError) Cannot write file "{}"'.format(roms_xml_file))
 
     # --- We are not busy anymore ---
     xbmc.executebuiltin('Dialog.Close(busydialog)')
