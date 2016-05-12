@@ -167,7 +167,6 @@ class Main:
             self._gui_render_launchers(args['catID'][0])
 
         elif command == 'ADD_LAUNCHER':
-            # elif self._cat_empty_cat(categoryID):
             self._command_add_new_launcher(args['catID'][0])
 
         elif command == 'EDIT_LAUNCHER':
@@ -175,13 +174,11 @@ class Main:
 
         elif command == 'DELETE_LAUNCHER':
             log_kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
-            # if (rom == REMOVE_COMMAND):
-            #    self._remove_launcher(launcher)
 
+        # User clicked on a launcher. For standalone launchers run the executable.
+        # For emulator launchers show roms.
         elif command == 'SHOW_ROMS':
             launcherID = args['launID'][0]
-            # User clicked on a launcher. For executable launchers run the executable.
-            # For emulator launchers show roms.
             if self.launchers[launcherID]["rompath"] == '':
                 log_debug('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
                 log_debug('SHOW_ROMS | Calling _run_launcher()')
@@ -280,8 +277,6 @@ class Main:
         # Scraper objects are created and inserted into a list. This list order matches
         # exactly the number returned by the settings. If scrapers are changed make sure the
         # list in scrapers.py and in settings.xml have same values!
-        
-        
         self.scraper_metadata = scrapers_metadata[self.settings["metadata_scraper"]]
         self.scraper_thumb    = scrapers_thumb[self.settings["thumb_scraper"]]
         self.scraper_fanart   = scrapers_fanart[self.settings["fanart_scraper"]]
@@ -289,20 +284,14 @@ class Main:
         log_verb('Loaded thumb scraper     {}'.format(self.scraper_thumb.name))
         log_verb('Loaded fanart scraper    {}'.format(self.scraper_fanart.name))
 
-
     # Creates default categories data struct
     # CAREFUL deletes current categories!
     # From _load_launchers
     # Else create the default category
     # self.categories["default"] = {"id":"default", "name":"Default", "thumb":"", "fanart":"", "genre":"", "plot":"", "finished":"false"}
     def _cat_create_default(self):
-        category = {}
+        category = fs_new_category()
         category['name']        = 'Emulators'
-        category['thumb']       = ''
-        category['fanart']      = ''
-        category['genre']       = ''
-        category['description'] = ''
-        category['finished']    = False
 
         # The key in the categories dictionary is an MD5 hash generate with current time plus some random number.
         # This will make it unique and different for every category created.
@@ -716,15 +705,14 @@ class Main:
         if not keyboard.isConfirmed():
             return False
 
+        category = fs_new_category()
         categoryID = misc_generate_random_SID()
-        categorydata = {"id" : categoryID, "name" : keyboard.getText(), 
-                        "thumb" : "", "fanart" : "", "genre" : "", "description" : "", "finished" : False}
-        self.categories[categoryID] = categorydata
+        category["id"]   = categoryID, 
+        category["name"] = keyboard.getText()
+        self.categories[categoryID] = category
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        log_kodi_notify('AEL', 'Category {0} created'.format(category["name"]))
         xbmc.executebuiltin("Container.Refresh")
-        log_kodi_notify('AEL' , 'Category {0} created'.format(categorydata["name"]), 3000)
-
-        return True
 
     #
     # Removes ROMs for a given launcher. Note this function will never be called for standalone launchers.
@@ -1145,7 +1133,6 @@ class Main:
         xbmc.executebuiltin("Container.Refresh")
 
     def _command_add_new_launcher(self, categoryID):
-        
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
             log_kodi_notify('Advanced Launcher - Error', 'Target category not found.' , 3000)
@@ -1205,22 +1192,21 @@ class Main:
             else:                       launcher_lnk = False
             # add launcher to the launchers dictionary (using name as index)
             launcherID = misc_generate_random_SID()
-            launcherdata = {
-                "id" : launcherID,
-                "name" : title, "category" : categoryID, "application" : app,  "args" : args, 
-                "rompath" : "", "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
-                "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : launcher_gamesys, 
-                "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "", 
-                "plot" : "",  "lnk" : launcher_lnk, 
-                "finished": False, "minimize" : False, 
-                "roms_xml_file" : '', 'nointro_xml_file' : '' }
+            launcherdata = fs_new_launcher()
+            launcherdata['id']          = launcherID
+            launcherdata['name']        = title
+            launcherdata['category']    = categoryID
+            launcherdata['application'] = app
+            launcherdata['args']        = args
+            launcherdata['thumbpath']   = thumb_path
+            launcherdata['fanartpath']  = fanart_path
+            launcherdata['gamesys']     = launcher_gamesys
+            launcherdata['lnk']         = launcher_lnk
             self.launchers[launcherID] = launcherdata
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
 
-            return True
-
-        # 'Files launcher (e.g. game emulator)'
+        # 'Files launcher (game emulator)'
         elif type == 1:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
             if not app: return False
@@ -1263,28 +1249,37 @@ class Main:
             if not gamesystem == -1:    launcher_gamesys = platforms[gamesystem]
             else:                       launcher_gamesys = ""
             launcher_lnk = True if sys.platform == "win32" else False
+            
+            # Choose launcher ROM XML filename. There may be launchers with
+            # same name in different categories, or even launcher with the
+            # same name in the same category.
             launcherID = misc_generate_random_SID()
             category_name = self.categories[categoryID]['name']
             clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
             clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
-            roms_xml_file = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:8] + '.xml'
-            roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file)
-            self._print_log('Chosen roms_xml_file      = "{0}"'.format(roms_xml_file))
-            self._print_log('Chosen roms_xml_file_path = "{0}"'.format(roms_xml_file_path))
-            launcherdata = {
-                "id" : launcherID,
-                "name" : title, "category" : categoryID, "application" : app,  "args" : args, 
-                "rompath" : files_path, "thumbpath" : thumb_path, "fanartpath" : fanart_path, 
-                "custompath" : "", "trailerpath" : "", "romext" : ext, "gamesys" : launcher_gamesys, 
-                "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "", 
-                "plot" : "",  "lnk" : launcher_lnk, 
-                "finished": False, "minimize" : False, 
-                "roms_xml_file" : '' }
+            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + 
+                                 '_' + launcherID[0:8] + '.xml'
+            roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file_base)
+            self._print_log('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
+            self._print_log('Chosen roms_xml_file_path  "{0}"'.format(roms_xml_file_path))
+
+            # Create new launchers and save cateogories.xml
+            launcherdata = fs_new_launcher()
+            launcherdata['id']            = launcherID
+            launcherdata['name']          = title
+            launcherdata['category']      = categoryID
+            launcherdata['application']   = app
+            launcherdata['args']          = args
+            launcherdata['rompath']       = files_path
+            launcherdata['thumbpath']     = thumb_path
+            launcherdata['fanartpath']    = fanart_path
+            launcherdata['romext']        = ext
+            launcherdata['gamesys']       = launcher_gamesys
+            launcherdata['lnk']           = launcher_lnk
+            launcherdata['roms_xml_file'] = roms_xml_file_path
             self.launchers[launcherID] = launcherdata
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
-
-            return True
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
@@ -2042,13 +2037,13 @@ class Main:
         pDialog = xbmcgui.DialogProgress()
         # Get game system, thumbnails and fanarts paths from launcher
         selectedLauncher = self.launchers[launcherID]
-        launch_app          = selectedLauncher["application"]
-        launch_path         = selectedLauncher["rompath"]
-        launch_exts         = selectedLauncher["romext"]
+        launcher_app     = selectedLauncher["application"]
+        launcher_path    = selectedLauncher["rompath"]
+        launcher_exts    = selectedLauncher["romext"]
         log_debug('Launcher "%s" selected' % selectedLauncher["name"]) 
-        log_debug('launch_app  = {0}'.format(launch_app)) 
-        log_debug('launch_path = {0}'.format(launch_path)) 
-        log_debug('launch_exts = {0}'.format(launch_exts)) 
+        log_debug('launch_app  = {}'.format(launch_app)) 
+        log_debug('launch_path = {}'.format(launch_path)) 
+        log_debug('launch_exts = {}'.format(launch_exts)) 
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
@@ -2056,30 +2051,27 @@ class Main:
         roms = fs_load_ROM_XML_file(rom_xml_path)
 
         # ~~~~~ Remove dead entries ~~~~~
+        num_removed_roms = 0
+        log_debug('Launcher list contain %s items' % len(roms))
         if len(roms) > 0:
-            log_debug('Launcher list contain %s items' % len(roms))
             log_debug('Starting dead items scan')
             i = 0
-            removedRoms = 0
             ret = pDialog.create('Advanced Emulator Launcher', 
                                  'Checking for dead entries',
-                                 'Path: %s...' % (launch_path))
+                                 'Path: %s...' % (launcher_path))
             for key in sorted(roms.iterkeys()):
                 log_debug('Searching %s' % roms[key]["filename"] )
                 pDialog.update(i * 100 / len(roms))
                 i += 1
-                if (not os.path.isfile(roms[key]["filename"])):
+                if not os.path.isfile(roms[key]["filename"]):
                     log_debug('Not found')
                     log_debug('Delete %s item entry' % roms[key]["filename"] )
                     del roms[key]
-                    removedRoms += 1
-                else:
-                    log_debug('Found')
-
+                    num_removed_roms += 1
             pDialog.close()
-            if not (removedRoms == 0):
-                log_info('%s entries removed successfully' % removedRoms)
-                log_kodi_notify('AEL', '%s entries removed successfully' % removedRoms)
+            if num_removed_roms > 0:
+                log_kodi_notify('AEL', '%s dead ROMs removed successfully' % num_removed_roms)
+                log_info('%s dead ROMs removed successfully' % num_removed_roms)
             else:
                 log_info('No dead item entry')
         else:
@@ -2101,39 +2093,29 @@ class Main:
             for filename in filesname:
                 files.append(os.path.join(launch_path, filename))
         xbmc.executebuiltin("Dialog.Close(busydialog)")
-        log_info('Found {0} files'.format(len(files)))
+        log_info('Found {} files'.format(len(files)))
 
         # ~~~ Now go processing file by file ~~~
-        ret = pDialog.create('AEL - Importing ROMs', 'Importing files from {0}'.format(launch_path))
-        log_debug('======= Processing ROMs ======')
-        romsCount = 0
-        filesCount = 0
-        # f_path       Full path
-        # f_path_noext Full path with no extension
-        # f_base       File name with no path
-        # f_base_noext File name with no path and no extension
-        # f_ext        File extension
+        pDialog.create('AEL - Scanning ROMs', 'Scanning {}'.format(launch_path))
+        log_debug('========== Processing ROMs ==========')
+        num_new_roms = 0
+        num_files_checked = 0
         for f_path in files:
-            filesCount = filesCount + 1
+            num_files_checked = num_files_checked + 1
 
             # --- Get all file name combinations ---
-            (root, ext)  = os.path.splitext(f_path)
-            f_path_noext = root
-            f_base       = os.path.basename(f_path)
-            (root, ext)  = os.path.splitext(f_base)
-            f_base_noext = root
-            f_ext        = ext
+            F = misc_split_path(f_path)
             log_debug('*** Processing File ***')
-            log_debug('f_path       = "{0}"'.format(f_path))
-            log_debug('f_path_noext = "{0}"'.format(f_path_noext))
-            log_debug('f_base       = "{0}"'.format(f_base))
-            log_debug('f_base_noext = "{0}"'.format(f_base_noext))
-            log_debug('f_ext        = "{0}"'.format(f_ext))
+            log_debug('F.path       = "{0}"'.format(F.path))
+            log_debug('F.path_noext = "{0}"'.format(F.path_noext))
+            log_debug('F.base       = "{0}"'.format(F.base))
+            log_debug('F.base_noext = "{0}"'.format(F.base_noext))
+            log_debug('F.ext        = "{0}"'.format(F.ext))
 
             # ~~~ Update progress dialog ~~~
-            file_text = 'File {0}'.format(f_base)
-            metadata_scraper_text = self.scraper_metadata.name
-            pDialog.update(filesCount * 100 / len(files), file_text, metadata_scraper_text)
+            file_text = 'File {}'.format(F.base)
+            activity_text = 'Checking if it is a ROM...'
+            pDialog.update(num_files_checked * 100 / len(files), file_text, activity_text)
 
             # ~~~ Find ROM file ~~~
             # The recursive scan has scanned all file. Check if this file matches some of the extensions
@@ -2159,11 +2141,22 @@ class Main:
                 continue
             
             # ~~~~~ Process new ROM and add to the list ~~~~~
-            romdata = self._roms_process_scanned_ROM(selectedLauncher, f_path, f_path_noext, f_base, f_base_noext, f_ext)
+            (romdata, pDialog) = self._roms_process_scanned_ROM(selectedLauncher, F, num_files_checked, pDialog)
             romID = romdata["id"]
             roms[romID] = romdata
-            romsCount = romsCount + 1
+            num_new_roms = num_new_roms + 1
+            
+            # ~~~ Check if user pressed the cancel button ~~~
+            if pDialog.iscanceled():
+                log_kodi_dialog_OK('AEL', 'Stopping ROM scanning. No changes have been made.')
+                log_info('User pressed Cancel button when scanning ROMs')
+                log_info('ROM scanning stopped')
+                return
         pDialog.close()
+        log_info('ROM scanner finished'.format(num_have))
+        log_info('Removed dead ROMs {:6d}'.format(num_removed_roms))
+        log_info('Files checked     {:6d}'.format(num_files_checked))
+        log_info('New added ROMs    {:6d}'.format(num_new_roms))
 
         if len(roms) == 0:
             log_kodi_dialog_OK('AEL', 'No ROMs found! Make sure launcher directory and file extensions are correct.')
@@ -2172,10 +2165,11 @@ class Main:
 
         # --- If we have a No-Intro XML then audit roms ---
         if selectedLauncher['nointro_xml_file'] != '':
-            log_info('Auditing ROMs using No-Intro DAT {}'.format(selectedLauncher['nointro_xml_file']))
+            nointro_xml_file = selectedLauncher['nointro_xml_file'])
+            log_info('Auditing ROMs using No-Intro DAT {}'.format(nointro_xml_file)
             
             # Load DAT
-            roms_nointro = fs_load_NoIntro_XML_file(selectedLauncher['nointro_xml_file'])
+            roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
             
             # Put ROM names in a set. Set is the fastes Python container for searching 
             # elements (implements hashed search).
@@ -2198,9 +2192,7 @@ class Main:
             for nointro_rom in roms_nointro_set:
                 if nointro_rom not in roms_set:
                     # Add new "fake" missing ROM. This ROM cannot be launched!
-                    rom = {'id' : '', 'name' : '', "filename" : '', "gamesys" : '', "thumb" : '', "fanart" : '',
-                           "trailer" : '', "custom" : '', "genre" : '', "release" : '', "studio" : '',
-                           "plot" : '', "altapp" : '', "altarg" : '', "finished" : False, 'nointro_status' : 'None' }
+                    rom = fs_new_rom()
                     romID = misc_generate_random_SID()
                     rom['id'] = romID
                     rom['name'] = nointro_rom
@@ -2208,11 +2200,12 @@ class Main:
                     roms[romID] = rom
                     num_miss += 1
 
-            log_info('Have    {:6d}'.format(num_have))
-            log_info('Miss    {:6d}'.format(num_miss))
-            log_info('Unknown {:6d}'.format(num_unknown))
+            # Report
+            log_info('Have ROMs    {:6d}'.format(num_have))
+            log_info('Miss ROMs    {:6d}'.format(num_miss))
+            log_info('Unknown ROMs {:6d}'.format(num_unknown))
 
-        # ~~~ Save launchers ~~~
+        # ~~~ Save ROMs XML file ~~~
         fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
@@ -2221,36 +2214,26 @@ class Main:
         # xbmc.executebuiltin("XBMC.ReloadSkin()")
         xbmc.executebuiltin('Container.Update()')
 
-    def _roms_process_scanned_ROM(self, selectedLauncher, f_path, f_path_noext, f_base, f_base_noext, f_ext):
-        # Grab info
-        launch_gamesys = selectedLauncher["gamesys"]
-
-        # Prepare rom object data
-        romdata = {}
-        romdata["id"]       = misc_generate_random_SID()
-        romdata["name"]     = ''
-        romdata["filename"] = f_path
-        romdata["gamesys"]  = launch_gamesys
-        romdata["thumb"]    = ''
-        romdata["fanart"]   = ''
-        romdata["trailer"]  = ''
-        romdata["custom"]   = ''
-        romdata["genre"]    = ''
-        romdata["release"]  = ''
-        romdata["studio"]   = ''
-        romdata["plot"]     = ''
-        romdata["altapp"]   = ''
-        romdata["altarg"]   = ''
-        romdata["finished"] = False
-        romdata['nointro_status'] = 'None'
+    def _roms_process_scanned_ROM(self, selectedLauncher, F, num_files_checked, pDialog):
+        # Create new rom dictionary
+        launcher_gamesys = selectedLauncher["gamesys"]
+        romdata = fs_new_rom()
+        romdata['id']       = misc_generate_random_SID()
+        romdata['filename'] = F.path
+        romdata['gamesys']  = launcher_gamesys
 
         # ~~~~~ Scrape game metadata information ~~~~~
+        # Update progress dialog
+        file_text = 'ROM {}'.format(F.base)
+        scraper_text = 'Scraping metadata with {}'.format(self.scraper_metadata.name)
+        pDialog.update(num_files_checked * 100 / len(files), file_text, scraper_text)
+
         # From now force NFO files scraper
         self.settings[ "datas_method" ] = "0"
         
         # No metadata scrap
         if self.settings[ "datas_method" ] == "0":
-            log_debug('Scraping disabled')
+            log_debug('Metadata scraping disabled')
             # romdata["name"] = self._text_ROM_title_format(f_base_noext)
             romdata["name"] = f_base_noext
         else:
@@ -2312,120 +2295,94 @@ class Main:
                     romdata["name"] = title_format(self,romname)
                     progress_display = romname + ": " + 'not found'
 
-        # ~~~~~ Search if thumbnails and fanarts already exist ~~~~~
-        # If thumbs/fanart have the same path, then have names like _thumb, _fanart
+        # ~~~~~ Search for local fanart artwork ~~~~~
+        # If thumbs/fanart have the same path, then assign names 
+        # (f_base_noext)_thumb, 
+        # (f_base_noext)_fanart
         # Otherwise, thumb/fanart name is same as ROM, but different extension.
-        # f_path, f_path_noext, f_base, f_base_noext, f_ext
-        thumb_path   = selectedLauncher["thumbpath"]
-        fanart_path  = selectedLauncher["fanartpath"]
-        log_debug('Searching local tumb/fanart')
+        # If no local artwork is found them names are empty strings ''
+        img_exts = ['png', 'jpg', 'gif', 'jpeg', 'bmp', 'PNG', 'JPG', 'GIF', 'JPEG', 'BMP']
+        (tumb_path_noext, fanart_path_noext) = misc_get_artwork_names(selectedLauncher, F)
+        thumb  = misc_look_for_image(tumb_path_noext, img_exts)
+        fanart = misc_look_for_image(fanart_path_noext, img_exts)
+        romdata['thumb']  = thumb
+        romdata['fanart'] = fanart
+        log_debug('tumb_path_noext   = "{}"'.format(tumb_path_noext))
+        log_debug('fanart_path_noext = "{}"'.format(fanart_path_noext))
+        log_debug('Set Thumb         = "{}"'.format(thumb))
+        log_debug('Set Fanart        = "{}"'.format(fanart))
 
-        if thumb_path == fanart_path:
-            log_debug('Thumbs/Fanarts have the same path')
-            tumb_path_noext   = os.path.join(thumb_path, f_base_noext + '_thumb')
-            fanart_path_noext = os.path.join(fanart_path, f_base_noext + '_fanart')
-        else:
-            log_debug('Thumbs/Fanarts into different folders')
-            tumb_path_noext   = os.path.join(thumb_path, f_base_noext)
-            fanart_path_noext = os.path.join(fanart_path, f_base_noext)
-        log_debug('tumb_path_noext   = "{0}"'.format(tumb_path_noext))
-        log_debug('fanart_path_noext = "{0}"'.format(fanart_path_noext))
+        # ~~~ Thumb scraping policy ~~~
+        # Make sure thumb scraping works like a charm.
+        # Then, update fanart scraping.
+        # settings.xml -> id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers"
+        scan_thumb_policy = self.settings["scan_thumb_policy"]
+        scrap_image = False
+        if   scan_thumb_policy == 0: scrap_image = False
+        elif scan_thumb_policy == 1: scrap_image = True if romdata['thumb'] == '' else False
+        elif scan_thumb_policy == 2: scrap_image = True
 
-        # Search for local artwork
-        thumb = ''
-        fanart = ''
-        ext2s = ['png', 'jpg', 'gif', 'jpeg', 'bmp', 'PNG', 'JPG', 'GIF', 'JPEG', 'BMP']
-        # Thumbs first
-        for ext2 in ext2s:
-            test_img = tumb_path_noext + '.' + ext2
-            log_debug('Testing Thumb  "{0}"'.format(test_img))
-            if os.path.isfile(test_img):
-                thumb = test_img
-                log_debug('Found Thumb    "{0}"'.format(test_img))
-                break
+        # Scraper overrides local image if local image exists
+        if scrap_image:
+            # Updated progress dialog
+            file_text = 'ROM {}'.format(F.base)
+            scraper_text = 'Scraping Thumb with {}'.format(self.scraper_thumb.name)
+            pDialog.update(num_files_checked * 100 / len(files), file_text, scraper_text)
+            log_verb('Scraping Thumb with {}'.format(self.scraper_thumb.name)
 
-        # Fanart second
-        for ext2 in ext2s:
-            test_img = fanart_path_noext + '.' + ext2
-            log_debug('Testing Fanart "{0}"'.format(test_img))
-            if os.path.isfile(test_img):
-                fanart = test_img
-                log_debug('Found Fanart   "{0}"'.format(test_img))
-                break
-
-        # Add to ROM dictionary
-        romdata["thumb"]  = thumb
-        romdata["fanart"] = fanart
-        log_debug('Set Thumb  = "{0}"'.format(thumb))
-        log_debug('Set Fanart = "{0}"'.format(fanart))
-
-        # Deactivate Thumb scraping
-        if None:
-            if self.settings[ "thumbs_method" ] == "2":
-                # If overwrite is activated or thumb file not exist
-                if self.settings[ "overwrite_thumbs"] or thumb == "":
-                    pDialog.update(filesCount * 100 / len(files), 
-                                'Importing %s thumb from %s' % (f.replace("."+f.split(".")[-1],""), 
-                                self.settings[ "thumbs_scraper" ].encode('utf-8','ignore')))
-                    img_url=""
-                    if (thumb_path == fanart_path):
-                        if (thumb_path == path):
-                            thumb = fullname.replace("."+f.split(".")[-1], '_thumb.jpg')
-                        else:
-                            thumb = os.path.join(thumb_path, f.replace("."+f.split(".")[-1], '_thumb.jpg'))
-                    else:
-                        if (thumb_path == path):
-                            thumb = fullname.replace("."+f.split(".")[-1], '.jpg')
-                        else:
-                            thumb = os.path.join(thumb_path, f.replace("."+f.split(".")[-1], '.jpg'))
-                    if app.lower().find('mame') > 0 or self.settings[ "thumbs_scraper" ] == 'arcadeHITS':
-                        covers = self._get_thumbnails_list(romdata["gamesys"], 
-                                                        title,
-                                                        self.settings[ "game_region" ],
-                                                        self.settings[ "thumb_image_size" ])
-                    else:
-                        covers = self._get_thumbnails_list(romdata["gamesys"], 
-                                                        romdata["name"],
-                                                        self.settings[ "game_region" ],
-                                                        self.settings[ "thumb_image_size" ])
-                    if covers:
-                        if ( self.settings[ "scrap_thumbs" ] == "1" ):
-                            if ( self.settings[ "snap_flyer" ] == "1" ) and ( self.settings[ "thumbs_scraper" ] == 'arcadeHITS' ):
-                                img_url = self._get_thumbnail(covers[-1][0])
-                            else:
-                                img_url = self._get_thumbnail(covers[0][0])
-                        else:
-                            nb_images = len(covers)
-                            pDialog.close()
-                            self.image_url = MyDialog(covers)
-                            if ( self.image_url ):
-                                img_url = self._get_thumbnail(self.image_url)
-                                ret = pDialog.create('Advanced Emulator Launcher', __language__( 30014 ) % (path))
-                                pDialog.update(filesCount * 100 / len(files), 
-                                            __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),
-                                            self.settings[ "datas_scraper" ].encode('utf-8','ignore')))
-                        cached_thumb = Thumbnails().get_cached_covers_thumb( thumb ).replace("tbn" , "jpg")
-                        if ( img_url !='' ):
-                            try:
-                                download_img(img_url,thumb)
-                                shutil.copy2( thumb.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
-                            except socket.timeout:
-                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30604 ),3000)
-                            except exceptions.IOError:
-                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30605 ),3000)
-                        else:
-                            if ( not os.path.isfile(thumb) ) & ( os.path.isfile(cached_thumb) ):
-                                os.remove(cached_thumb)
-                romdata["thumb"] = thumb
-            else:
-                if self.settings[ "thumbs_method" ] == "0":
-                    romdata["thumb"] = ""
+            # Online scrape (image scrapers are always online)
+            search_string = romdata["name"]
+            gamesys       = romdata["gamesys"]
+            region        = self.settings["scraper_region"]
+            imgsize       = self.settings["scraper_thumb_size"]
+            image_list    = self.scraper_thumb.get_image_list(search_string, gamesys, region, imgsize)
+            if image_list:
+                img_url = ''
+                # Semi-automatic scraping (user choses an image from a list)
+                if self.settings['thumb_mode'] == 0:
+                    # Close progress dialog before opening image chosing dialog
+                    pDialog.close()
+                    # Returns a list of tuples(a, b, c)
+                    image_url = MyDialog(image_list)
+                    # Reopen progress dialog
+                    pDialog.create('AEL - Scanning ROMs')
+                    pDialog.update(num_files_checked * 100 / len(files), file_text, scraper_text)
+                    if not image_url:
+                        # If error just pick first image
+                        img_url = image_list[0][0]
+                # Automatic scraping
                 else:
-                    pDialog.update(filesCount * 100 / len(files), 
-                                'Importing %s thumb from %s' % (f.replace("."+f.split(".")[-1],""), __language__( 30172 )))
-                    romdata["thumb"] = thumb
+                    # Pick first image in automatic mode
+                    img_url = image_list[0][0]
 
-        # Deactivate Fanart scraping
+                # Resolve selected image URL (not used with current scrapers)
+                # Returned values are URLs already
+                # img_url = self._get_thumbnail(self.image_url)
+
+                # ~~~ Download scraped image ~~~
+                # Get Tumbnail name with no extension, then get URL image extension 
+                # and make full thumb path. If extension cannot be determined
+                # from URL defaul to '.jpg'
+                tumb_path_noext = misc_get_artwork_names(selectedLauncher, F)
+                img_ext = text_get_image_URL_extension(img_url)
+                tumb_path = tumb_path_noext + '.' + img_ext
+                
+                # ~~~ Download image ~~~
+                log_debug('Downloading thumb "{}"'.format(img_url))
+                log_debug('Into local file   "{}"'.format(tumb_path))
+                try:
+                    download_img(img_url, tumb_path)
+                except socket.timeout:
+                    log_kodi_notify('AEL - Error', 'Cannot download thumb image (Timeout)')
+                    
+                # ~~~ Update Kodi cache with downloaded image ~~~
+                # Only if local image is in the Kodi cache, function takes care of that.
+                kodi_update_image_cache(tumb_path)    
+            else:
+                # Scraper found no images online. Use the local image if found.
+                romdata["thumb"] = thumb
+
+        # Deactivate Fanart scraping until thumb scraping is working OK
         if None:
             if ( self.settings[ "fanarts_method" ] == "2" ):
                 # If overwrite activated or fanart file not exist
@@ -2489,7 +2446,7 @@ class Main:
                     romdata["fanart"] = fanart
 
         # Return romdata dictionary
-        return romdata
+        return (romdata, pDialog)
 
     #
     # Manually add a new ROM instead of a recursive scan
@@ -2724,7 +2681,7 @@ class Main:
             log_kodi_dialog_OK('Advaned Emulator Launcher', 'Search produced no results')
         for key in sorted(rl.iterkeys()):
             self._gui_render_rom_row(categoryID, launcherID, key, rl[key])
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
     # NOTE In Python, objects methods can be defined outside the class definition!
@@ -2936,5 +2893,10 @@ def gui_show_image_select(img_list):
 # -------------------------------------------------------------------------------------------------
 # main()
 # -------------------------------------------------------------------------------------------------
+# Put the main bulk of the code in files inside /resources/, which is a package directory. 
+# This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
+# loading time is faster compared to PY files.
+#
+# See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
 if __name__ == "__main__":
     Main()

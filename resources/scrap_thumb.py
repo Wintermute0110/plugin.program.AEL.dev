@@ -11,7 +11,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+import sys, urllib, urllib2, re
+
 from scrap import *
+from scrap_info import *
 
 # --- Thumb scrapers ----------------------------------------------------------
 # All thumb scrapers are online scrapers. If user has a local image then he
@@ -42,27 +45,108 @@ class thumb_NULL(Scraper_Thumb):
 # TheGamesDB thumb scraper
 # ----------------------------------------------------------------------------- 
 class thumb_TheGamesDB(Scraper_Thumb):
+    __debug_scraper = 1
+    user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31';
+
     def __init__(self):
         self.name = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Thumb scraper'
 
+    def get_game_page_url(self, search_string, gamesys):
+        results_ret = []
+        platform = AEL_gamesys_to_TheGamesDB(gamesys)
+        if self.__debug_scraper:
+            log_debug('get_game_page_url() AEL gamesys          "{}"'.format(gamesys))
+            log_debug('get_game_page_url() TheGamesDB platform  "{}"'.format(platform))
+
+        # --- This returns an XML file ---
+        # <Data>
+        #   <Game>
+        #     <id>26095</id>
+        #     <GameTitle>Super Mario World: Brutal Mario</GameTitle>
+        #     <ReleaseDate>01/01/2005</ReleaseDate>
+        #     <Platform>Super Nintendo (SNES)</Platform>
+        #   </Game>
+        # </Data>
+        req = urllib2.Request('http://thegamesdb.net/api/GetGamesList.php?' + 
+                              'name=' + urllib.quote_plus(search_string) + 
+                              '&platform=' + urllib.quote_plus(platform) )
+        req.add_unredirected_header('User-Agent', self.user_agent)
+        log_debug('get_game_page_url() Reading URL "{}"'.format(req.get_full_url()))
+        try:
+            f = urllib2.urlopen(req)
+            page_data = f.read().replace('\n', '')
+            f.close()
+        except: # Catches all exceptions
+            e = sys.exc_info()[0]
+            log_debug('Exception {}'.format(e))
+        log_debug('get_game_page_url() Read {} bytes'.format(len(page_data)))
+
+        # --- Parse list of games ---
+        games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle><ReleaseDate>(.*?)</ReleaseDate><Platform>(.*?)</Platform></Game>", page_data)
+        game_list = []
+        for item in games:
+            game = {}
+            game["id"]    = item[0]
+            game["title"] = item[1]
+            game["order"] = 1
+            # Increase search score based on our own search
+            if game["title"].lower() == search_string.lower():
+                game["order"] += 1
+            if game["title"].lower().find(search_string.lower()) != -1:
+                game["order"] += 1
+            game_list.append(game)
+            log_debug('get_game_page_url() Found game {:>6s}  "{}"'.format(game["id"], game["title"]))
+        game_list.sort(key = lambda result: result["order"], reverse = True)
+
+        if len(game_list) > 0:
+            log_debug('get_game_page_url() Selected game "{}"'.format(game_list[0]["title"]))
+            results_ret.append('http://thegamesdb.net/api/GetGame.php?id='+game_list[0]["id"])
+
+        return results_ret
+
     def get_image_list(self, search_string, gamesys, region, imgsize):
-      covers = []
-      game_id_url = _get_game_page_url(system,search)
-      try:
-          req = urllib2.Request(game_id_url)
-          req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-          f = urllib2.urlopen(req)
-          page = f.read().replace('\n', '')
-          boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page)
-          for indexa, boxart in enumerate(boxarts):
-              covers.append(("http://thegamesdb.net/banners/"+boxarts[indexa][1],"http://thegamesdb.net/banners/"+boxarts[indexa][1],"Cover "+str(indexa+1)))
-          banners = re.findall('<banner (.*?)">(.*?)</banner>', page)
-          for indexb, banner in enumerate(banners):
-              covers.append(("http://thegamesdb.net/banners/"+banners[indexb][1],"http://thegamesdb.net/banners/"+banners[indexb][1],"Banner "+str(indexb+1)))
-          return covers
-      except:
-          return covers
+        covers = []
+        game_id_url = self.get_game_page_url(search_string, gamesys)
+        if game_id_url:
+            log_debug('get_image_list() game_id_url = {}'.format(game_id_url))
+            game_url = game_id_url[0]
+            
+            # Get URL of first game in returned list
+            req = urllib2.Request(game_url)
+            req.add_unredirected_header('User-Agent', self.user_agent)
+            log_debug('get_image_list() Reading URL "{}"'.format(game_url))
+            try:
+                f = urllib2.urlopen(req)
+                page_data = f.read().replace('\n', '')
+                f.close()
+            except: # Catches all exceptions
+                e = sys.exc_info()[0]
+                log_debug('Exception {}'.format(e))
+            log_debug('get_image_list() Read {} bytes'.format(len(page_data)))
+            
+            # --- Parse game thumb information ---
+            # The XML returned has many tags. See an example here:
+            # SNES Super Castlevania IV --> http://thegamesdb.net/api/GetGame.php?id=1308
+            # Read front boxes
+            boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page_data)
+            for index, boxart in enumerate(boxarts):
+                # print(index, boxart)
+                log_debug('get_image_list() Adding boxfront #{:>2s} {}'.format(str(index + 1), boxart[1]))
+                covers.append(("http://thegamesdb.net/banners/" + boxart[1],
+                               "http://thegamesdb.net/banners/" + boxart[1],
+                               "Cover " + str(index + 1)))
+            # Read banners
+            banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
+            for index, banner in enumerate(banners):
+                log_debug('get_image_list() Adding banner   #{:>2s} {}'.format(str(index + 1), banner[1]))
+                covers.append(("http://thegamesdb.net/banners/" + banner[1], 
+                               "http://thegamesdb.net/banners/" + banner[1],
+                               "Banner " + str(index + 1)))
+        else:
+            log_debug('Nothing thumb found')
+
+        return covers
 
 # -----------------------------------------------------------------------------
 # GameFAQs thumb scraper

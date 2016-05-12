@@ -19,9 +19,10 @@
 
 # Load replacements for functions that depend on Kodi modules.
 # This enables running this module in standard Python for testing scrapers.
-try: import xbmc
-except: from standalone import *
-from disk_IO import *
+try:
+    import xbmc
+except:
+    from standalone import *
 
 #------------------------------------------------------------------------------
 # Implement scrapers using polymorphism instead of using Angelscry 

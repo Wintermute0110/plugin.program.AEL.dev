@@ -19,13 +19,10 @@
 
 # Load replacements for functions that depend on Kodi modules.
 # This enables running this module in standard Python for testing scrapers.
-try: import xbmc
-except: from standalone import *
-from disk_IO import *
-
-# Python standard library
-import xml.etree.ElementTree as ET 
-import re
+try: 
+    import xbmc
+except:
+    from standalone import *
 
 # -----------------------------------------------------------------------------
 # Miscellaneous emulator and gamesys (platforms) supported.
@@ -73,6 +70,7 @@ def emudata_get_program_extensions( app ):
 offline_scrapers_dic = {
     'MAME'             : 'scraper_data/MAME.xml', 
     'Sega 32X'         : 'scraper_data/Sega 32x.xml',
+    'Sega Genesis'     : '',
     'Nintendo SNES'    : 'scraper_data/Super Nintendo Entertainment System.xml'
 }
 
@@ -87,6 +85,17 @@ def emudata_game_system_list():
 # -----------------------------------------------------------------------------
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -----------------------------------------------------------------------------
-AEL_gamesys_to_TheGamesDB = {
-    'test' : 'test GamesDB'
+AEL_gamesys_to_TheGamesDB_dic = {
+    'MAME'          : 'Arcade',
+    'Sega Genesis'  : 'Sega Mega Drive',
+    'Nintendo SNES' : 'Super Nintendo (SNES)'
 }
+
+def AEL_gamesys_to_TheGamesDB(AEL_gamesys):
+    TheGamesDB_gamesys = ''
+    try:
+        TheGamesDB_gamesys = AEL_gamesys_to_TheGamesDB_dic[AEL_gamesys]
+    except:
+        TheGamesDB_gamesys = ''
+        
+    return TheGamesDB_gamesys

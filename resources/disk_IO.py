@@ -28,6 +28,52 @@ from utils import *
 def fs_escape_XML(str):
     return str.replace('&', '&amp;')
 
+# -----------------------------------------------------------------------------
+# Official data model used in the plugin
+# -----------------------------------------------------------------------------
+# These three functions create a new data structure for the given object
+# and (very importantly) fill the correct default values). These must match
+# what is written/read from/to the XML files.
+#
+# Tag name in the XML is the same as in the data dictionary.
+def fs_new_category():
+    category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 
+                'description' : '', 'finished' : False}
+
+    return category
+
+def fs_new_launcher():
+    launcher = {'id' : '', 'name' : '', 'category' : '', 'application' : '', 'args' : '',
+                'rompath' : '', 'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '', 
+                'romext' : '', 'gamesys' : '', 'thumb' : '', 'fanart' : '', 
+                'genre' : '', 'release' : '', 'studio' : '', 'plot' : '',  
+                'lnk' : False, 'finished': False, 'minimize' : False,
+                'roms_xml_file' : '', 'nointro_xml_file' : '' }
+
+    return launcher
+
+def fs_new_rom():
+    rom = {'id' : '', 'name' : '', 'filename' : '', 'gamesys' : '', 
+           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
+           'genre' : '', 'release' : '', 'studio' : '', 'plot' : '', 
+           'altapp' : '', 'altarg' : '', 
+           'finished' : False, 'nointro_status' : 'None' }
+
+    return rom
+
+def fs_new_favourite_rom():
+    rom = {'id' : '', 'name' : '', 'filename' : '', 'gamesys' : '', 
+           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
+           'genre' : '', 'release' : '', 'studio' : '', 'plot' : '', 
+           'altapp' : '', 'altarg' : '',
+           'finished' : False, 'nointro_status' : 'None',
+           'application' : '',  'args' : '', 'launcherID' : '' }
+
+    return rom
+
+# -----------------------------------------------------------------------------
+# Disk IO functions
+# -----------------------------------------------------------------------------
 #
 # Write to disk categories.xml
 #
@@ -120,7 +166,7 @@ def fs_load_catfile(categories_file):
 
         if category_element.tag == 'category':
             # Default values
-            category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 'description' : '', 'finished' : False}
+            category = fs_new_category()
 
             # Parse child tags of category
             for category_child in category_element:
@@ -140,14 +186,7 @@ def fs_load_catfile(categories_file):
 
         elif category_element.tag == 'launcher':
             # Default values
-            launcher = {
-                "id" : '',
-                "name" : '', "category" : '', "application" : '',  "args" : '',
-                "rompath" : "", "thumbpath" : '', "fanartpath" : '',
-                "custompath" : "", "trailerpath" : "", "romext" : "", "gamesys" : '',
-                "thumb" : "", "fanart" : "", "genre" : "", "release" : "", "studio" : "",
-                "plot" : "",  "lnk" : False, "finished": False, "minimize" : False,
-                "roms_xml_file" : '', 'nointro_xml_file' : '' }
+            launcher = fs_new_launcher()
 
             # Parse child tags of category
             for category_child in category_element:
@@ -190,12 +229,12 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         # Print some information in the XML so the user can now which launcher created it.
         # Note that this is ignored when reading the file.
         str_list.append('<launcher>\n')
-        str_list.append('  <id        >{0}</id>\n'.format(launcher['id']))
-        str_list.append('  <name      >{0}</name>\n'.format(launcher['name']))            
-        str_list.append('  <category  >{0}</category>\n'.format(launcher['category']))
-        str_list.append('  <rompath   >{0}</rompath>\n'.format(launcher['rompath']))
-        str_list.append('  <thumbpath >{0}</thumbpath>\n'.format(launcher['thumbpath']))
-        str_list.append('  <fanartpath>{0}</fanartpath>\n'.format(launcher['fanartpath']))
+        str_list.append('  <id        >{}</id>\n'.format(launcher['id']))
+        str_list.append('  <name      >{}</name>\n'.format(launcher['name']))            
+        str_list.append('  <category  >{}</category>\n'.format(launcher['category']))
+        str_list.append('  <rompath   >{}</rompath>\n'.format(launcher['rompath']))
+        str_list.append('  <thumbpath >{}</thumbpath>\n'.format(launcher['thumbpath']))
+        str_list.append('  <fanartpath>{}</fanartpath>\n'.format(launcher['fanartpath']))
         str_list.append('</launcher>\n')
 
         # Create list of ROMs
@@ -267,9 +306,7 @@ def fs_load_ROM_XML_file(roms_xml_file):
             # Default values
             # Everything is a tring except: finished [bool]
             # nointro_status must be ['Have', 'Miss', 'Unknown', 'None']
-            rom = {'id' : '', 'name' : '', "filename" : '', "gamesys" : '', "thumb" : '', "fanart" : '',
-                    "trailer" : '', "custom" : '', "genre" : '', "release" : '', "studio" : '',
-                    "plot" : '', "altapp" : '', "altarg" : '', "finished" : False, 'nointro_status' : 'None' }
+            rom = fs_new_rom()
             for rom_child in root_element:
                 # By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
@@ -354,10 +391,7 @@ def fs_load_Favourites_XML_file(roms_xml_file):
 
         if root_element.tag == 'rom':
             # Default values
-            rom = {'id' : '', 'name' : '', 'filename' : '', 'gamesys' : '', 'thumb' : '', 'fanart' : '',
-                    'trailer' : '', 'custom' : '', 'genre' : '', 'release' : '', 'studio' : '',
-                    'plot' : '', 'finished' : False, 'altapp' : '', 'altarg' : '', 
-                    'application' : '',  'args' : '', 'launcherID' : '' }
+            rom = fs_new_favourite_rom()
             for rom_child in root_element:
                 # By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
@@ -438,7 +472,7 @@ def fs_load_NFO_file(nfo_file):
     return nfo_dic
 
 #
-# Loads ...
+# Loads offline scraper information XML file.
 #
 def fs_load_GameInfo_XML(xml_file):
     __debug_xml_parser = 0
@@ -587,31 +621,31 @@ def export_launcher_nfo(self, launcherID):
         usock.close()
         xbmc_notify('Advanced Emulator Launcher', __language__( 30086 ) % os.path.basename(nfo_file),3000)
 
-    def import_launcher_nfo(self, launcherID):
-        if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
-            nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
+def import_launcher_nfo(self, launcherID):
+    if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
+        nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
+    else:
+        if ( len(self.settings[ "launcher_nfo_path" ]) > 0 ):
+            nfo_file = os.path.join(self.settings[ "launcher_nfo_path" ],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
         else:
-            if ( len(self.settings[ "launcher_nfo_path" ]) > 0 ):
-                nfo_file = os.path.join(self.settings[ "launcher_nfo_path" ],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
-            else:
-                nfo_file = xbmcgui.Dialog().browse(1,__language__( 30088 ),"files",".nfo", False, False)
-        if (os.path.isfile(nfo_file)):
-            f = open(nfo_file, 'r')
-            item_nfo = f.read().replace('\r','').replace('\n','')
-            item_title = re.findall( "<title>(.*?)</title>", item_nfo )
-            item_platform = re.findall( "<platform>(.*?)</platform>", item_nfo )
-            item_year = re.findall( "<year>(.*?)</year>", item_nfo )
-            item_publisher = re.findall( "<publisher>(.*?)</publisher>", item_nfo )
-            item_genre = re.findall( "<genre>(.*?)</genre>", item_nfo )
-            item_plot = re.findall( "<plot>(.*?)</plot>", item_nfo )
-            self.launchers[launcherID]["name"] = item_title[0].rstrip()
-            self.launchers[launcherID]["gamesys"] = item_platform[0]
-            self.launchers[launcherID]["release"] = item_year[0]
-            self.launchers[launcherID]["studio"] = item_publisher[0]
-            self.launchers[launcherID]["genre"] = item_genre[0]
-            self.launchers[launcherID]["plot"] = item_plot[0].replace('&quot;','"')
-            f.close()
-            self._save_launchers()
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30083 ) % os.path.basename(nfo_file),3000)
-        else:
-            xbmc_notify('Advanced Emulator Launcher', __language__( 30082 ) % os.path.basename(nfo_file),3000)
+            nfo_file = xbmcgui.Dialog().browse(1,__language__( 30088 ),"files",".nfo", False, False)
+    if (os.path.isfile(nfo_file)):
+        f = open(nfo_file, 'r')
+        item_nfo = f.read().replace('\r','').replace('\n','')
+        item_title = re.findall( "<title>(.*?)</title>", item_nfo )
+        item_platform = re.findall( "<platform>(.*?)</platform>", item_nfo )
+        item_year = re.findall( "<year>(.*?)</year>", item_nfo )
+        item_publisher = re.findall( "<publisher>(.*?)</publisher>", item_nfo )
+        item_genre = re.findall( "<genre>(.*?)</genre>", item_nfo )
+        item_plot = re.findall( "<plot>(.*?)</plot>", item_nfo )
+        self.launchers[launcherID]["name"] = item_title[0].rstrip()
+        self.launchers[launcherID]["gamesys"] = item_platform[0]
+        self.launchers[launcherID]["release"] = item_year[0]
+        self.launchers[launcherID]["studio"] = item_publisher[0]
+        self.launchers[launcherID]["genre"] = item_genre[0]
+        self.launchers[launcherID]["plot"] = item_plot[0].replace('&quot;','"')
+        f.close()
+        self._save_launchers()
+        xbmc_notify('Advanced Emulator Launcher', __language__( 30083 ) % os.path.basename(nfo_file),3000)
+    else:
+        xbmc_notify('Advanced Emulator Launcher', __language__( 30082 ) % os.path.basename(nfo_file),3000)
