@@ -1732,10 +1732,13 @@ class Main:
         # Load favourites
         roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
 
-        # Display ROMs
+        # --- Display ROMs ---
+        # Optimization Currently roms_fav is a dictionary, which is very fast when testing for element existence
+        #              because it is hashed. However, set() is the fastest. If user has a lot of favourites
+        #              there could be a small performance gain.
         for key in sorted(roms, key= lambda x : roms[x]["filename"]):
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav)
-        xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False)
 
     #
     # Renders the special category favourites, which is actually very similar to a ROM launcher
