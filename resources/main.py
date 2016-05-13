@@ -272,11 +272,10 @@ class Main:
         # self.settings["game_region"]          = ['World', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
 
         # --- Dump settings for DEBUG ---
-        log_debug('Settings dump BEGIN')
-        for key in sorted(self.settings):
-            log_debug('{} --> {:10s} {:}'.format(key.rjust(21), str(self.settings[key]), type(self.settings[key])))
-        log_debug('Settings dump END')
-
+        # log_debug('Settings dump BEGIN')
+        # for key in sorted(self.settings):
+        #     log_debug('{} --> {:10s} {:}'.format(key.rjust(21), str(self.settings[key]), type(self.settings[key])))
+        # log_debug('Settings dump END')
 
     #
     # Load scrapers based on the user settings.
@@ -1656,7 +1655,10 @@ class Main:
         
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
         # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
-        platform = self.launchers[launcherID]['platform']
+        if launcherID == '0':
+            platform = rom['platform']
+        else:
+            platform = self.launchers[launcherID]['platform']
         listitem.setInfo("video", {"Title"   : rom_name,       "Label"     : 'test label', 
                                    "Plot"    : rom['plot'],    "Studio"    : rom['studio'], 
                                    "Genre"   : rom['genre'],   "Premiered" : rom['release'], 
@@ -1879,30 +1881,43 @@ class Main:
     # Former _edit_rom()
     # Note that categoryID = launcherID = '0' if we are editing a ROM in Favourites
     def _command_edit_rom(self, categoryID, launcherID, romID):
-        # Load ROMs
-        rom_xml_path = self.launchers[launcherID]["roms_xml_file"]
-        roms = fs_load_ROM_XML_file(rom_xml_path)
+        # --- Load ROMs ---
+        if launcherID == '0':
+            roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+        else:
+            rom_xml_path = self.launchers[launcherID]["roms_xml_file"]
+            roms = fs_load_ROM_XML_file(rom_xml_path)
     
-        #
+        # --- Show a dialog with ROM editing options ---
         title = roms[romID]["name"]
         finished_display = 'Status: Finished' if roms[romID]["finished"] == True else 'Status: Unfinished'
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Select Action for %s' % title, 
-                             ['Edit Metadata ...',
-                              'Change Thumbnail Image ...', 'Change Fanart Image...',
-                              finished_display,
-                              'Advanced Modifications ...', 'Delete ROM'])
-        # Edit ROM metadata
+        if launcherID == '0':
+            type = dialog.select('Edit Favourite ROM %s' % title, 
+                                ['Edit Metadata...',
+                                'Change Thumbnail Image...', 'Change Fanart Image...',
+                                finished_display,
+                                'Advanced Modifications...', 
+                                'Check favourite parent launcher/ROM', 'Choose another favourite parent ROM...'])
+        else:
+            type = dialog.select('Edit ROM %s' % title, 
+                                ['Edit Metadata...',
+                                'Change Thumbnail Image...', 'Change Fanart Image...',
+                                finished_display,
+                                'Advanced Modifications...'])
+
+        # --- Edit ROM metadata ---
         if type == 0:
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Modify Item Infos', 
+            type2 = dialog.select('Modify ROM metadata', 
                                   ['Scrap from {}'.format(self.scraper_metadata.fancy_name),
                                    'Import metadata from NFO file',
-                                   'Edit Title : %s' % roms[romID]["name"],
-                                   'Edit Release Date : %s' % roms[romID]["release"],
-                                   'Edit Studio : %s' % roms[romID]["studio"],
-                                   'Edit Genre : %s' % roms[romID]["genre"],
-                                   'Edit Description : %s ...' % roms[romID]["plot"][0:20],
+                                   'Edit Title: %s' % roms[romID]["name"],
+                                   'Edit Release Date: %s' % roms[romID]["release"],
+                                   'Edit Studio: %s' % roms[romID]["studio"],
+                                   'Edit Genre: %s' % roms[romID]["genre"],
+                                   'Edit Description: %s' % roms[romID]["plot"][0:20],
+                                   'Load Description from file ...',
                                    'Save metadata to NFO file'])
             # Scrap rom Infos
             if type2 == 0:
@@ -1970,7 +1985,7 @@ class Main:
                                'ROM "{}" status is now {}'.format(roms[romID]["name"], finished_display))
 
         # Advanced Modifications
-        if type == 4:
+        elif type == 4:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Advanced Modifications', 
                                   ['Change File : %s' % roms[romID]["filename"], 
@@ -2018,12 +2033,31 @@ class Main:
                 roms[romID]["custom"] = custom
                 fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
 
-        # Delete ROM
-        elif type == 5:
-            self._command_remove_rom(categoryID, launcherID, romID)
+        # Check if parent launcher/ROM exist
+        #
+        # ONLY IN FAVOURITE ROM EDITING
+        elif type == 5:            
+            # Load ROMs of parent launcher
+            
+            # Check if parent ROM exist
+            
+            # Inform the user
+            kodi_dialog_OK('AEL', 'Implement me!')
+            
+        # Link this favourite ROM to a new parent ROM
+        #
+        # ONLY IN FAVOURITE ROM EDITING
+        elif type == 6:            
+            # First, tell the user if the current parent exist or not
+            
+            # If user says yes, then first must select the launcher
+            
+            # Then, select the new ROM in that launcher
+            kodi_dialog_OK('AEL', 'Implement me!')
 
-        # Return to the launcher directory
-        xbmc.executebuiltin("Container.Refresh")
+
+        # It seems that updating the container does more harm than good... specially when having many ROMs
+        # xbmc.executebuiltin("Container.Refresh")
 
     #
     # Add ROMS to launcher
