@@ -7,7 +7,7 @@
 import sys
 
 # Import scrapers
-from scrap import *
+from resources.scrap import *
 
 # --- main --------------------------------------------------------------------
 # Print name of all scrapers
@@ -18,12 +18,23 @@ for scraper in scrapers_thumb:
 print('')
 
 # --- Test TheGamesDB scraper -------------------------------------------------
-thegamesDB = scrapers_thumb[1]
-print('Testing thumb scraper {}'.format(thegamesDB.name))
 
 
-# --- Way of calling the scraper:
-# --- image_list = thegamesDB.get_image_list(search_string, gamesys, region, imgsize)
-#
-image_list = thegamesDB.get_image_list('Super Mario World', 'Nintendo SNES', 'World', 'All')
-# image_list = thegamesDB.get_image_list('Castlevania', 'Nintendo SNES', 'World', 'All')
+
+
+print('\n--- Online TheGamesDB -------------------------------------------------')
+GamesDB = thumb_TheGamesDB()
+
+# results = GamesDB.get_games_search('Castlevania', 'Nintendo SNES')
+# results = GamesDB.get_games_search('Metroid', 'Nintendo SNES')
+# results = GamesDB.get_games_search('Zelda', 'Nintendo SNES')
+# results = GamesDB.get_games_search('Super Mario World', 'Nintendo SNES')
+results = GamesDB.get_games_search('street fighter', 'Nintendo SNES', '')
+
+
+if results:
+    print('Found {} games'.format(len(results)))
+    metadata = GamesDB.get_game_image_list(results[0])
+    print(metadata)
+else:
+    print('No results found.')
