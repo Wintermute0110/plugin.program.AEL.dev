@@ -16,9 +16,10 @@
     <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy"  default="0" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
     <setting label="Thumb scan policy" type="enum" id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     <setting label="Fanart scan policy" type="enum" id="scan_fanart_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
-    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="NULL|Offline scraper|TheGamesDB|GameFAQs|arcadeHITS"/>
-    <setting label="Thumb scraper" type="enum" id="thumb_scraper" default="0" values="NULL||TheGamesDB|GameFAQs|arcadeHITS|Google"/>
-    <setting label="Fanart scraper" type="enum" id="fanart_scraper" default="0" values="NULL||TheGamesDB|GameFAQs|arcadeHITS|Google"/>
+    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="NULL|Offline scraper|TheGamesDB|GameFAQs"/>
+    <setting label="Thumb scraper" type="enum" id="thumb_scraper" default="0" values="NULL||TheGamesDB|GameFAQs"/>
+    <setting label="Fanart scraper" type="enum" id="fanart_scraper" default="0" values="NULL||TheGamesDB|GameFAQs"/>
+    <setting label="Metadata scrapping mode" type="enum" id="metadata_mode" default="0" values="Semi-automatic|Automatic"/>
     <setting label="Thumb scrapping mode" type="enum" id="thumb_mode" default="0" values="Semi-automatic|Automatic"/>
     <setting label="Fanart scrapping mode" type="enum" id="fanart_mode" default="0" values="Semi-automatic|Automatic"/>
 </category>
