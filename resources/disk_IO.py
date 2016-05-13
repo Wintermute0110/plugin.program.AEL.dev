@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
 #
 # Advanced Emulator Launcher filesystem I/O functions
 #
 
+# Copyright (c) 2016 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -11,10 +15,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# For xbmc.executebuiltin()
-try: import xbmc
-except: from standalone import *
-
+# AEL packages
+try:
+    from utils_kodi import *
+except:
+    from utils_kodi_standalone import *
+ 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
 # import xml.etree.cElementTree as ET
@@ -43,17 +49,17 @@ def fs_new_category():
     return category
 
 def fs_new_launcher():
-    launcher = {'id' : '', 'name' : '', 'category' : '', 'application' : '', 'args' : '',
-                'rompath' : '', 'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '', 
-                'romext' : '', 'gamesys' : '', 'thumb' : '', 'fanart' : '', 
-                'genre' : '', 'release' : '', 'studio' : '', 'plot' : '',  
+    launcher = {'id' : '', 'name' : '', 'category' : '', 'platform' : '', 
+                'application' : '', 'args' : '', 'rompath' : '', 'romext' : '', 
+                'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '', 
+                'thumb' : '', 'fanart' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : '',  
                 'lnk' : False, 'finished': False, 'minimize' : False,
                 'roms_xml_file' : '', 'nointro_xml_file' : '' }
 
     return launcher
 
 def fs_new_rom():
-    rom = {'id' : '', 'name' : '', 'filename' : '', 'gamesys' : '', 
+    rom = {'id' : '', 'name' : '', 'filename' : '',
            'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
            'genre' : '', 'release' : '', 'studio' : '', 'plot' : '', 
            'altapp' : '', 'altarg' : '', 
@@ -62,12 +68,13 @@ def fs_new_rom():
     return rom
 
 def fs_new_favourite_rom():
-    rom = {'id' : '', 'name' : '', 'filename' : '', 'gamesys' : '', 
+    rom = {'id' : '', 'name' : '', 'filename' : '',
            'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
            'genre' : '', 'release' : '', 'studio' : '', 'plot' : '', 
            'altapp' : '', 'altarg' : '',
            'finished' : False, 'nointro_status' : 'None',
-           'application' : '',  'args' : '', 'launcherID' : '' }
+           'launcherID' : '', 'platform' : '', 
+           'application' : '', 'args' : '', 'rompath' : '', 'romext' : '' }
 
     return rom
 
@@ -112,15 +119,15 @@ def fs_write_catfile(categories_file, categories, launchers):
                             "  <id>"               + launcherID                   + "</id>\n" +
                             "  <name>"             + launcher["name"]             + "</name>\n" +
                             "  <category>"         + launcher["category"]         + "</category>\n" +
+                            "  <platform>"         + launcher["platform"]         + "</platform>\n" +
                             "  <application>"      + launcher["application"]      + "</application>\n"
                             "  <args>"             + launcher["args"]             + "</args>\n" +
                             "  <rompath>"          + launcher["rompath"]          + "</rompath>\n" +
+                            "  <romext>"           + launcher["romext"]           + "</romext>\n" +
                             "  <thumbpath>"        + launcher["thumbpath"]        + "</thumbpath>\n" +
                             "  <fanartpath>"       + launcher["fanartpath"]       + "</fanartpath>\n" +
                             "  <custompath>"       + launcher["custompath"]       + "</custompath>\n" +
                             "  <trailerpath>"      + launcher["trailerpath"]      + "</trailerpath>\n" +
-                            "  <romext>"           + launcher["romext"]           + "</romext>\n" +
-                            "  <gamesys>"          + launcher["gamesys"]          + "</gamesys>\n" +
                             "  <thumb>"            + launcher["thumb"]            + "</thumb>\n" +
                             "  <fanart>"           + launcher["fanart"]           + "</fanart>\n" +
                             "  <genre>"            + launcher["genre"]            + "</genre>\n" +
@@ -207,13 +214,13 @@ def fs_load_catfile(categories_file):
     return (categories, launchers)
 
 #
-# Write to disk categories.xml
+# Write to disk launcher ROMs XML database.
 #
 def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
     log_info('fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
 
     # --- Notify we are busy doing things ---
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
+    kodi_busidialog_ON()
 
     # Original Angelscry method for generating the XML was to grow a string, like this
     # xml_content = 'test'
@@ -232,36 +239,35 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         str_list.append('  <id        >{}</id>\n'.format(launcher['id']))
         str_list.append('  <name      >{}</name>\n'.format(launcher['name']))            
         str_list.append('  <category  >{}</category>\n'.format(launcher['category']))
+        str_list.append('  <platform  >{}</platform>\n'.format(launcher['platform']))
         str_list.append('  <rompath   >{}</rompath>\n'.format(launcher['rompath']))
         str_list.append('  <thumbpath >{}</thumbpath>\n'.format(launcher['thumbpath']))
         str_list.append('  <fanartpath>{}</fanartpath>\n'.format(launcher['fanartpath']))
         str_list.append('</launcher>\n')
 
         # Create list of ROMs
-        # TODO Size optimization: only write in the XML fields which are not ''. This
-        #      will save A LOT of disk space and reduce loading times (at a cost of
-        #      some writing time, but writing is much less frequent than reading).
+        # Size optimization: only write in the XML fields which are not ''. This
+        # will save A LOT of disk space and reduce loading times (at a cost of
+        # some writing time, but writing is much less frequent than reading).
         for romID in sorted(roms, key = lambda x : roms[x]["name"]):
             rom = roms[romID]
             # Data which is not string must be converted to string
-            str_list.append("<rom>\n" +
-                            "  <id>"             + romID                 + "</id>\n" +
-                            "  <name>"           + rom["name"]           + "</name>\n" +
-                            "  <filename>"       + rom["filename"]       + "</filename>\n" +
-                            "  <gamesys>"        + rom["gamesys"]        + "</gamesys>\n" +
-                            "  <thumb>"          + rom["thumb"]          + "</thumb>\n" +
-                            "  <fanart>"         + rom["fanart"]         + "</fanart>\n" +
-                            "  <trailer>"        + rom["trailer"]        + "</trailer>\n" +
-                            "  <custom>"         + rom["custom"]         + "</custom>\n" +
-                            "  <genre>"          + rom["genre"]          + "</genre>\n" +
-                            "  <release>"        + rom["release"]        + "</release>\n" +
-                            "  <studio>"         + rom["studio"]         + "</studio>\n" +
-                            "  <plot>"           + rom["plot"]           + "</plot>\n" +
-                            "  <altapp>"         + rom["altapp"]         + "</altapp>\n" +
-                            "  <altarg>"         + rom["altarg"]         + "</altarg>\n" +
-                            "  <finished>"       + str(rom["finished"])  + "</finished>\n" +
-                            "  <nointro_status>" + rom["nointro_status"] + "</nointro_status>\n" +
-                            "</rom>\n")
+            str_list.append("<rom>\n" + "  <id>" + romID + "</id>\n")
+            if rom["name"]:     str_list.append("  <name>"     + rom["name"]          + "</name>\n")
+            if rom["filename"]: str_list.append("  <filename>" + rom["filename"]      + "</filename>\n")
+            if rom["thumb"]:    str_list.append("  <thumb>"    + rom["thumb"]         + "</thumb>\n")
+            if rom["fanart"]:   str_list.append("  <fanart>"   + rom["fanart"]        + "</fanart>\n")
+            if rom["trailer"]:  str_list.append("  <trailer>"  + rom["trailer"]       + "</trailer>\n")
+            if rom["custom"]:   str_list.append("  <custom>"   + rom["custom"]        + "</custom>\n")
+            if rom["genre"]:    str_list.append("  <genre>"    + rom["genre"]         + "</genre>\n")
+            if rom["release"]:  str_list.append("  <release>"  + rom["release"]       + "</release>\n")
+            if rom["studio"]:   str_list.append("  <studio>"   + rom["studio"]        + "</studio>\n")
+            if rom["plot"]:     str_list.append("  <plot>"     + rom["plot"]          + "</plot>\n")
+            if rom["altapp"]:   str_list.append("  <altapp>"   + rom["altapp"]        + "</altapp>\n")
+            if rom["altarg"]:   str_list.append("  <altarg>"   + rom["altarg"]        + "</altarg>\n")
+            str_list.append(                    "  <finished>" + str(rom["finished"]) + "</finished>\n")
+            if rom["name"]:     str_list.append("  <nointro_status>" + rom["nointro_status"] + "</nointro_status>\n")
+            str_list.append("</rom>\n")
         # End of file
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
@@ -281,7 +287,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         log_error('fs_write_ROM_XML_file() (IOError) Cannot write file "{}"'.format(roms_xml_file))
 
     # --- We are not busy anymore ---
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
+    kodi_busidialog_OFF()
 
 #
 # Loads a launcher XML with the ROMs
@@ -295,7 +301,7 @@ def fs_load_ROM_XML_file(roms_xml_file):
         return {}
 
     # --- Notify we are busy doing things ---
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
+    kodi_busidialog_ON()
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_ROM_XML_file() Loading XML file {0}'.format(roms_xml_file))
@@ -326,7 +332,7 @@ def fs_load_ROM_XML_file(roms_xml_file):
             roms[rom['id']] = rom
             
     # --- We are not busy anymore ---
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
+    kodi_busidialog_OFF()
 
     return roms
 
@@ -342,24 +348,27 @@ def fs_write_Favourites_XML_file(roms_xml_file, roms):
         for romID in sorted(roms, key = lambda x : roms[x]["name"]):
             rom = roms[romID]
             str_list.append("<rom>\n" +
-                            "  <id>"       + romID                + "</id>\n" +
-                            "  <name>"     + rom["name"]          + "</name>\n" +
-                            "  <filename>" + rom["filename"]      + "</filename>\n" +
-                            "  <gamesys>"  + rom["gamesys"]       + "</gamesys>\n" +
-                            "  <thumb>"    + rom["thumb"]         + "</thumb>\n" +
-                            "  <fanart>"   + rom["fanart"]        + "</fanart>\n" +
-                            "  <trailer>"  + rom["trailer"]       + "</trailer>\n" +
-                            "  <custom>"   + rom["custom"]        + "</custom>\n" +
-                            "  <genre>"    + rom["genre"]         + "</genre>\n" +
-                            "  <release>"  + rom["release"]       + "</release>\n" +
-                            "  <studio>"   + rom["studio"]        + "</studio>\n" +
-                            "  <plot>"     + rom["plot"]          + "</plot>\n" +
-                            "  <finished>" + str(rom["finished"]) + "</finished>\n" +
-                            "  <altapp>"   + rom["altapp"]        + "</altapp>\n" +
-                            "  <altarg>"   + rom["altarg"]        + "</altarg>\n" +
-                            "  <application>" + rom["application"] + "</application>\n" +
-                            "  <args>"        + rom["args"]        + "</args>\n" +
-                            "  <launcherID>"  + rom["launcherID"]  + "</launcherID>\n" +
+                            "  <id>"             + romID                 + "</id>\n" +
+                            "  <name>"           + rom["name"]           + "</name>\n" +
+                            "  <filename>"       + rom["filename"]       + "</filename>\n" +
+                            "  <thumb>"          + rom["thumb"]          + "</thumb>\n" +
+                            "  <fanart>"         + rom["fanart"]         + "</fanart>\n" +
+                            "  <trailer>"        + rom["trailer"]        + "</trailer>\n" +
+                            "  <custom>"         + rom["custom"]         + "</custom>\n" +
+                            "  <genre>"          + rom["genre"]          + "</genre>\n" +
+                            "  <release>"        + rom["release"]        + "</release>\n" +
+                            "  <studio>"         + rom["studio"]         + "</studio>\n" +
+                            "  <plot>"           + rom["plot"]           + "</plot>\n" +
+                            "  <altapp>"         + rom["altapp"]         + "</altapp>\n" +
+                            "  <altarg>"         + rom["altarg"]         + "</altarg>\n" +
+                            "  <finished>"       + str(rom["finished"])  + "</finished>\n" +
+                            "  <nointro_status>" + rom["nointro_status"] + "</nointro_status>\n" +
+                            "  <launcherID>"     + rom["launcherID"]     + "</launcherID>\n" +
+                            "  <platform>"       + rom["platform"]       + "</platform>\n" +
+                            "  <application>"    + rom["application"]    + "</application>\n" +
+                            "  <args>"           + rom["args"]           + "</args>\n" +
+                            "  <rompath>"        + rom["rompath"]        + "</rompath>\n" +
+                            "  <romext>"         + rom["romext"]         + "</romext>\n" +
                             "</rom>\n")
         str_list.append('</advanced_emulator_launcher_Favourites>\n')
         full_string = ''.join(str_list)
@@ -479,6 +488,11 @@ def fs_load_NFO_file(nfo_file):
 def fs_load_GameInfo_XML(xml_file):
     __debug_xml_parser = 0
     games = {}
+
+    # --- Check that file exists ---
+    if not os.path.isfile(xml_file):
+        log_error("Cannot load file '{}'".format(xml_file))
+        return games
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_GameInfo_XML() Loading "{0}"'.format(xml_file))
