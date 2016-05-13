@@ -138,7 +138,7 @@ class Main:
         #
         # Create a default categories.xml file if does not exist yet (plugin just installed)
         if not os.path.isfile(CATEGORIES_FILE_PATH):
-            log_kodi_dialog_OK('Advanced Emulator Launcher',
+            kodi_dialog_OK('Advanced Emulator Launcher',
                                'It looks it is the first time you run AEL!',
                                'Creating a default categories.xml')
             self._cat_create_default()
@@ -166,7 +166,7 @@ class Main:
             self._command_edit_category(args['catID'][0])
 
         elif command == 'DELETE_CATEGORY':
-            log_kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
+            kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
 
         elif command == 'SHOW_FAVOURITES':
             self._command_show_favourites()
@@ -181,7 +181,7 @@ class Main:
             self._command_edit_launcher(args['launID'][0])
 
         elif command == 'DELETE_LAUNCHER':
-            log_kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
+            kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
 
         # User clicked on a launcher. For standalone launchers run the executable.
         # For emulator launchers show roms.
@@ -225,7 +225,7 @@ class Main:
                                                   args['search_type'][0], args['search_string'][0])
 
         else:
-            log_kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
+            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
 
     #
     # Get Addon Settings
@@ -343,7 +343,7 @@ class Main:
         xbmc.executebuiltin("Dialog.Close(busydialog)")
 
         if not covers:
-            log_kodi_dialog_OK('Advanced Emulator Launcher', 'No thumb found for %s' % (objects[objectID]["name"]))
+            kodi_dialog_OK('Advanced Emulator Launcher', 'No thumb found for %s' % (objects[objectID]["name"]))
             return
 
         # Show a Window with the current image and the found images so the
@@ -636,7 +636,7 @@ class Main:
                 self.categories[categoryID]["name"] = title.rstrip()
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                log_kodi_dialog_OK('AEL Information', 
+                kodi_dialog_OK('AEL Information', 
                                    'Category name "{0}" not changed.'.format(self.categories[categoryID]["name"]))
         # Edition of the category genre
         elif type2 == 1:
@@ -646,7 +646,7 @@ class Main:
                 self.categories[categoryID]["genre"] = keyboard.getText()
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                log_kodi_dialog_OK('AEL Information', 
+                kodi_dialog_OK('AEL Information', 
                                    'Category genre "{0}" not changed.'.format(self.categories[categoryID]["genre"]))
         # Edition of the plot (description)
         elif type2 == 2:
@@ -656,7 +656,7 @@ class Main:
                 self.categories[categoryID]["description"] = keyboard.getText()
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                log_kodi_dialog_OK('AEL Information', 
+                kodi_dialog_OK('AEL Information', 
                                    'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
         # Import category description
         elif type2 == 3:
@@ -667,7 +667,7 @@ class Main:
                 text_plot.close()
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                log_kodi_dialog_OK('AEL Information', 
+                kodi_dialog_OK('AEL Information', 
                                    'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
 
     def _command_edit_category(self, categoryID):
@@ -696,7 +696,7 @@ class Main:
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.categories[categoryID]["finished"] = finished
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            log_kodi_dialog_OK('AEL Information', 
+            kodi_dialog_OK('AEL Information', 
                                'Category "{0}" status is now {1}'.format(self.categories[categoryID]["name"], finished_display))
         elif type == 4:
             self._gui_remove_category(categoryID)
@@ -821,7 +821,7 @@ class Main:
                                    'Import metadata from NFO file ...', 'Save metadata to NFO file'])
             # Edition of the launcher name
             if type2 == 0:
-                log_kodi_dialog_OK('AEL', 'Online scraping not supported yet. Sorry.')
+                kodi_dialog_OK('AEL', 'Online scraping not supported yet. Sorry.')
                 return
                 # self._scrap_launcher_metadata(launcherID)
             # Edition of the launcher name
@@ -885,12 +885,12 @@ class Main:
 
             # Import launcher from NFO file
             elif type2 == 8:
-                log_kodi_dialog_OK('AEL', 'Not implemented yet!')
+                kodi_dialog_OK('AEL', 'Not implemented yet!')
                 # self._import_launcher_nfo(launcherID)
                 
             # Export launcher to NFO file
             elif type2 == 9:
-                log_kodi_dialog_OK('AEL', 'Not implemented yet!')
+                kodi_dialog_OK('AEL', 'Not implemented yet!')
                 # self._export_launcher_nfo(launcherID)
 
         # Launcher Thumbnail menu option
@@ -927,7 +927,7 @@ class Main:
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.launchers[launcherID]["finished"] = finished
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            log_kodi_dialog_OK('AEL Information', 
+            kodi_dialog_OK('AEL Information', 
                                'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]["name"], finished_display))
 
         # Launcher's Manage ROMs menu option
@@ -958,7 +958,7 @@ class Main:
                         if ret:
                             self.launchers[launcherID]["nointro_xml_file"] = ''
                             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                            log_kodi_dialog_OK('AEL', 'Rescan your ROMs to remove No-Intro tags.')
+                            kodi_dialog_OK('AEL', 'Rescan your ROMs to remove No-Intro tags.')
                     else:
                         # Browse for No-Intro file
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
@@ -966,7 +966,7 @@ class Main:
                         if os.path.isfile(dat_file) == True:
                             self.launchers[launcherID]["nointro_xml_file"] = dat_file
                             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                            log_kodi_dialog_OK('AEL', 'DAT file successfully added. Rescan your ROMs to audit them.')
+                            kodi_dialog_OK('AEL', 'DAT file successfully added. Rescan your ROMs to audit them.')
 
                 # Import Items list form NFO files
                 elif type2 == 1:
@@ -1342,7 +1342,7 @@ class Main:
     def _run_standalone_launcher(self, categoryID, launcherID):
         # Check launcher is OK
         if launcherID not in self.launchers:
-            log_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
+            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
             return
         launcher = self.launchers[launcherID]
 
@@ -1408,7 +1408,7 @@ class Main:
     def _run_rom(self, categoryID, launcherID, romID):
         # Check launcher is OK
         if launcherID not in self.launchers:
-            log_kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
+            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
             return
         launcher = self.launchers[launcherID]
         
@@ -1417,7 +1417,7 @@ class Main:
 
         # Check ROM is XML data just read
         if romID not in roms:
-            log_kodi_dialog_OK('ERROR', 'romID not in roms_dic')
+            kodi_dialog_OK('ERROR', 'romID not in roms_dic')
             return
             
         # Launch ROM
@@ -1622,14 +1622,10 @@ class Main:
 
         # If listing regular launcher and rom is in favourites, mark it
         if rom_is_in_favourites:
-            # rom_name = '[B]{0}[/B]'.format(rom['name']) # Does not work in Confluence
-            # rom_name = '[I]{0}[/I]'.format(rom['name']) # Does not work in Confluence
-            # rom_name = '[COLOR red]{0}[/COLOR]'.format(rom['name']) # Does not work in Confluence
-            # rom_name = '[COLOR violet]{0}[/COLOR]'.format(rom['name']) # Does not work in Confluence
-            
             # --- Workaround so the alphabetical order is not lost ---
-            rom_name = '{0} [COLOR violet][Fav][/COLOR]'.format(rom['name']) # Does not work in Confluence
-            # log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
+            rom_name = '{} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
+            # rom_name = '[COLOR violet]{} [Fav][/COLOR]'.format(rom['name'])
+            log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
         else:
             try:
                 if rom['nointro_status'] == 'Have':
@@ -1690,7 +1686,7 @@ class Main:
         else:
             commands.append(('Edit ROM', self._misc_url_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
             commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
-            commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAVOURITES', categoryID, launcherID, romID), )) 
+            commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV', categoryID, launcherID, romID), )) 
             commands.append(('Delete ROM', self._misc_url_RunPlugin('DELETE_ROM', categoryID, launcherID, romID), ))
         # Add ROM URL to Kodi Favourites (do not know how to do it yet) (maybe not will be used)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003" 
@@ -1714,7 +1710,7 @@ class Main:
     def _gui_render_roms(self, categoryID, launcherID):
         if launcherID not in self.launchers:
             log_warning('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
-            log_kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
+            kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             return
 
         # Load ROMs for this launcher and display them
@@ -1780,7 +1776,7 @@ class Main:
         roms_xml_file = launcher["roms_xml_file"]
         roms = fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
-            log_kodi_dialog_OK('Advanced Emulator Launcher',
+            kodi_dialog_OK('Advanced Emulator Launcher',
                                'Empty roms launcher in _command_add_to_favourites()',
                                'This is a bug, please report it.')
 
@@ -1789,8 +1785,8 @@ class Main:
         
         # DEBUG
         log_verb('Adding ROM to Favourites')
-        log_verb('romID {:}'.format(romID))
-        log_verb('name  {:}'.format(roms[romID]['name']))
+        log_verb('romID {}'.format(romID))
+        log_verb('name  {}'.format(roms[romID]['name']))
 
         # Check if ROM already in favourites an warn user if so
         if romID in roms_fav:
@@ -1816,9 +1812,13 @@ class Main:
         # If thumb is empty then use launcher thum.
         # If fanart is empty then use launcher fanart.
         roms_fav[romID] = roms[romID]
+        roms_fav[romID]['launcherID']  = self.launchers[launcherID]['id']
+        roms_fav[romID]['platform']    = self.launchers[launcherID]['platform']
         roms_fav[romID]['application'] = self.launchers[launcherID]['application']
         roms_fav[romID]['args']        = self.launchers[launcherID]['args']
-        roms_fav[romID]['launcherID']  = self.launchers[launcherID]['id']
+        roms_fav[romID]['rompath']     = self.launchers[launcherID]['rompath']
+        roms_fav[romID]['romext']      = self.launchers[launcherID]['romext']
+        # Use launcher images if ROM has not images
         if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = self.launchers[launcherID]['thumb']
         if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
 
@@ -1963,7 +1963,7 @@ class Main:
             finished_display = 'Finished' if finished == True else 'Unfinished'
             roms[romID]["finished"] = finished
             fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
-            log_kodi_dialog_OK('AEL Information', 
+            kodi_dialog_OK('AEL Information', 
                                'ROM "{}" status is now {}'.format(roms[romID]["name"], finished_display))
 
         # Advanced Modifications
@@ -2161,7 +2161,7 @@ class Main:
 
             # ~~~ Check if user pressed the cancel button ~~~
             if pDialog.iscanceled() or dialog_canceled:
-                log_kodi_dialog_OK('AEL', 'Stopping ROM scanning. No changes have been made.')
+                kodi_dialog_OK('AEL', 'Stopping ROM scanning. No changes have been made.')
                 log_info('User pressed Cancel button when scanning ROMs')
                 log_info('ROM scanning stopped')
                 return
@@ -2172,7 +2172,7 @@ class Main:
         log_info('New added ROMs    {:6d}'.format(num_new_roms))
 
         if len(roms) == 0:
-            log_kodi_dialog_OK('AEL', 'No ROMs found! Make sure launcher directory and file extensions are correct.')
+            kodi_dialog_OK('AEL', 'No ROMs found! Make sure launcher directory and file extensions are correct.')
             xbmc.executebuiltin('Container.Update()')
             return
 
@@ -2525,7 +2525,7 @@ class Main:
     # Manually add a new ROM instead of a recursive scan
     #
     def _roms_add_new_rom (self, launcherID):
-        log_kodi_dialog_OK('AEL', 'Not implemented yet')
+        kodi_dialog_OK('AEL', 'Not implemented yet')
         return
 
         dialog = xbmcgui.Dialog()
@@ -2751,7 +2751,7 @@ class Main:
 
         # Print the list sorted (if there is anything to print)
         if not rl:
-            log_kodi_dialog_OK('Advaned Emulator Launcher', 'Search produced no results')
+            kodi_dialog_OK('Advaned Emulator Launcher', 'Search produced no results')
         for key in sorted(rl.iterkeys()):
             self._gui_render_rom_row(categoryID, launcherID, key, rl[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)

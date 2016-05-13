@@ -108,7 +108,6 @@ def text_unescape_HTML(s):
     s = s.replace("&gt;", ">")
     s = s.replace("&amp;", "&")
     s = s.replace("&#039;", "'")
-    s = s.replace('<br />', ' ')
     s = s.replace('&quot;', '"')
     s = s.replace('&nbsp;', ' ')
     s = s.replace('&#x26;', '&')
