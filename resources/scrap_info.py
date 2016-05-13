@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
 #
 # Advanced Emulator Launcher scraping engine
 #
 
+# Copyright (c) 2016 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -62,19 +66,20 @@ def emudata_get_program_extensions( app ):
 
     return ""
 
-#
+# -----------------------------------------------------------------------------
 # This dictionary has the AEL "official" game system list as key, and the XML file 
 # with offline scraping information as value. File location is relative to
 # this file location, CURRENT_ADDON_DIR/resources/.
-#
+# -----------------------------------------------------------------------------
 offline_scrapers_dic = {
     'MAME'             : 'scraper_data/MAME.xml', 
     'Sega 32X'         : 'scraper_data/Sega 32x.xml',
     'Sega Genesis'     : '',
-    'Nintendo SNES'    : 'scraper_data/Super Nintendo Entertainment System.xml'
+    'Nintendo SNES'    : 'scraper_data/Super Nintendo Entertainment System.xml',
+    'Unknown'          : ''
 }
 
-def emudata_game_system_list():
+def emudata_platform_list():
     game_list = []
     
     for key in sorted(offline_scrapers_dic):
@@ -85,17 +90,33 @@ def emudata_game_system_list():
 # -----------------------------------------------------------------------------
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -----------------------------------------------------------------------------
-AEL_gamesys_to_TheGamesDB_dic = {
+platform_AEL_to_TheGamesDB_dic = {
     'MAME'          : 'Arcade',
     'Sega Genesis'  : 'Sega Mega Drive',
     'Nintendo SNES' : 'Super Nintendo (SNES)'
 }
 
-def AEL_gamesys_to_TheGamesDB(AEL_gamesys):
-    TheGamesDB_gamesys = ''
+platform_AEL_to_GameFAQs_dic = {
+    'MAME'          : '2',
+    'Sega Genesis'  : '54',
+    'Nintendo SNES' : '63'
+}
+
+def AEL_platform_to_TheGamesDB(platform_AEL):
+    platform_TheGamesDB = ''
     try:
-        TheGamesDB_gamesys = AEL_gamesys_to_TheGamesDB_dic[AEL_gamesys]
+        platform_TheGamesDB = platform_AEL_to_TheGamesDB_dic[platform_AEL]
     except:
-        TheGamesDB_gamesys = ''
+        platform_TheGamesDB = ''
         
-    return TheGamesDB_gamesys
+    return platform_TheGamesDB
+
+def AEL_platform_to_GameFAQs(AEL_gamesys):
+    platform_GameFAQs = ''
+    try:
+        platform_GameFAQs = platform_AEL_to_GameFAQs_dic[AEL_gamesys]
+    except:
+        # Platform '0' means all platforms
+        platform_GameFAQs = '0'
+        
+    return platform_GameFAQs

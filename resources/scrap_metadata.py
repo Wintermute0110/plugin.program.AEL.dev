@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
 #
 # Advanced Emulator Launcher scraping engine
 #
 
+# Copyright (c) 2016 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -18,44 +22,12 @@
 # -----------------------------------------------------------------------------
 
 from scrap import *
-
-# -----------------------------------------------------------------------------
-# Metadata scrapers base class
-# -----------------------------------------------------------------------------
-# All scrapers (offline or online) must implement the abstract methods.
-# Metadata scrapers are for ROMs and standalone launchers (games)
-# Metadata for machines (consoles, computers) should be different, I guess...
-class Scraper_Metadata(Scraper):
-    # Offline XML data will be cached here (from disk)
-    games = {}
-
-    # Load XML information for this scraper and keep it cached in memory.
-    # For offline scrapers.
-    def initialise_scraper(self, gamesys):
-        xml_file = offline_scrapers_dic[gamesys]
-        self.games = fs_load_GameInfo_XML(xml_file)
-
-    # This function is called when the user wants to search a whole list of
-    # games. It returns gamesys information.
-    #
-    # Returns:
-    #   results = [game, game, ... ]
-    #   display = [string, string, ... ]
-    def get_game_list(self, search_string):
-        raise NotImplementedError("Subclass must implement get_metadata() abstract method")
-
-    # This is called after get_games_list() to get metadata of a particular ROM.
-    # game_url univocally determines how to get the game metadata. For online
-    # scrapers it is an URL. For offline scrapers it is the No-Intro or MAME name.
-    def get_game_data(self, game_url):
-        raise NotImplementedError("Subclass must implement get_metadata() abstract method")
-    
-    # This is called in automatic scraping mode. Only one result is returned.
-    # Argument gamesys is AEL official platform list, and it should be translated
-    # to how the site names the system. 
-    # Note that some scrapers (MAME) only support one gamesys.
-    def get_game_data_first(self, search_string, gamesys):
-        raise NotImplementedError("Subclass must implement get_metadata() abstract method")
+from scrap_common import *
+from disk_IO import *
+try:
+    import utils_kodi
+except:
+    import utils_kodi_standalone
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing
@@ -65,272 +37,199 @@ class metadata_NULL(Scraper_Metadata):
         self.name = 'NULL'
         self.fancy_name = 'NULL Metadata scraper'
 
-    def get_game_list(self, search_string):
-        return []
-
-    def get_game_data(self, game_url):
-        return []
+    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+        return {}
     
-    def get_game_data_first(self, search_string, gamesys):
-        return []
+    def get_game_metadata(self, game):
+        return {}
 
 # -----------------------------------------------------------------------------
 # Offline scraper using XML files for MAME and No-Intro ROMs.
 # -----------------------------------------------------------------------------
 class metadata_Offline(Scraper_Metadata):
     def __init__(self):
-        self.name = 'Offline scraper'
+        self.name = 'Offline'
+        self.fancy_name = 'Offline Metadata scraper'
 
-    def initialise_scraper(self):
-        Scraper_Metadata.initialise_scraper(self, 'MAME')
+    # Offline XML data will be cached here (from disk)
+    games = {}
+    cached_games_name = ''
+    cached_platform = ''
 
-    # In MAME machines, the rom_name is exactly the key of the dictionary.
-    def get_metadata_MAME(self, rom_name):
-        __debug_get_metadata = 0
-        log_verb('Searching for "{0}" in game name'.format(rom_name))
+    # Load XML information for this scraper and keep it cached in memory.
+    # For offline scrapers.
+    def initialise_scraper(self, platform):
+        # What if platform is not in the official list dictionary? Then load
+        # nothing and behave like the NULL scraper.
+        try:
+            xml_file = offline_scrapers_dic[platform]
+        except:
+            games = {}
+            cached_games_name = cached_platform = ''
+            return
 
-        if rom_name in self.games:
-            print(' name         = "{0}"'.format(self.games[rom_name]['name']))
-            print(' description  = "{0}"'.format(self.games[rom_name]['description']))
-            print(' year         = "{0}"'.format(self.games[rom_name]['year']))
-            print(' manufacturer = "{0}"'.format(self.games[rom_name]['manufacturer']))
+        # Check if we have data already cached in object memory for this platform
+        if self.cached_platform == platform:
+            return
+
+        # Load XML database and keep it in memory for subsequent calls
+        self.games = fs_load_GameInfo_XML(xml_file)
+        if not self.games:
+            games = {}
+            cached_games_name = cached_platform = ''
+            return
+        self.cached_games_name = xml_file
+        self.cached_platform == platform
+
+    # List of games found
+    # game = { 'id' : str, 'title' : str, 'display_name' : str, ...}
+    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+        results = []
+
+        # If not cached XML data found (maybe offline scraper does not exist
+        # for this platform or cannot be loaded) return.
+        self.initialise_scraper(platform)
+        if not self.games:
+            return results
+
+        # Search games. Differentitate between MAME and No-Intro scrapers.
+        if platform == 'MAME':
+            log_verb('Searching for "{0}" in game name'.format(rom_base_noext))
+
+            if rom_base_noext in self.games:
+                print(' name         = "{0}"'.format(self.games[rom_base_noext]['name']))
+                print(' description  = "{0}"'.format(self.games[rom_base_noext]['description']))
+                print(' year         = "{0}"'.format(self.games[rom_base_noext]['year']))
+                print(' manufacturer = "{0}"'.format(self.games[rom_base_noext]['manufacturer']))
+            else:
+                log_verb('Not found')
         else:
-            log_verb('Not found')
+            log_verb('Searching for "{0}" in game name'.format(rom_base_noext))
+            regexp = '.*{0}.*'.format(rom_base_noext.lower())
+            p = re.compile(regexp)
+            log_debug('Search regexp "{0}"'.format(regexp))
+            for key in self.games:
+              # Make search case insensitive.
+              name_str = self.games[key]['name'].lower()
+              log_debug('Test string "{0}"'.format(name_str))
+              match = p.match(name_str)
+              if match:
+                print(' name        = "{0}"'.format(self.games[key]['name']))
+                print(' description = "{0}"'.format(self.games[key]['description']))
+                print(' year        = "{0}"'.format(self.games[key]['year']))
 
-        return None
+        return results
 
-    # Search in-memory database and return metadata.  
-    def get_metadata_NoIntro(self, rom_name):
-        __debug_get_metadata = 0
-        log_verb('Searching for "{0}" in game name'.format(rom_name))
+    # game is dictionary returned by the metadata_Offline.get_game_search()
+    def get_game_metadata(self, game):
+        gamedata = {'title' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : ''}
 
-        regexp = '.*{0}.*'.format(rom_name.lower())
-        p = re.compile(regexp)
-        log_debug('Search regexp "{0}"'.format(regexp))
-        for key in self.games:
-          # Make search case insensitive.
-          name_str = self.games[key]['name'].lower()
-          if __debug_get_metadata: log_debug('Test string "{0}"'.format(name_str))
-          match = p.match(name_str)
-          if match:
-            print(' name        = "{0}"'.format(self.games[key]['name']))
-            print(' description = "{0}"'.format(self.games[key]['description']))
-            print(' year        = "{0}"'.format(self.games[key]['year']))
-
-        return None
-
-    def get_game_list(self, search_string):
-        return []
-
-    def get_game_data(self, game_url):
-        return []
-    
-    def get_game_data_first(self, search_string, gamesys):
-        return []
+        return {}
 
 # -----------------------------------------------------------------------------
 # TheGamesDB online metadata scraper
 # -----------------------------------------------------------------------------
-class metadata_TheGamesDB(Scraper_Metadata):
+class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
     def __init__(self):
         self.name = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Metadata scraper'
 
-    def get_game_list(self, search_string):
-        results = []
-        display = []
-        try:
-            req = urllib2.Request('http://thegamesdb.net/api/GetGamesList.php?name='+urllib.quote_plus(search))
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            f = urllib2.urlopen(req)
-            page = f.read().replace("\n", "")
-            games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle>(.*?)<Platform>(.*?)</Platform></Game>", page)
-            for item in games:
-                game = {}
-                game["id"] = "http://thegamesdb.net/api/GetGame.php?id="+item[0]
-                game["title"] = item[1]
-                game["gamesys"] = item[3]
-                game["order"] = 1
-                if ( game["title"].lower() == search.lower() ):
-                    game["order"] += 1
-                if ( game["title"].lower().find(search.lower()) != -1 ):
-                    game["order"] += 1
-                results.append(game)
-                print game
-            results.sort(key=lambda result: result["order"], reverse=True)
-            for result in results:
-                display.append(result["title"]+" / "+result["gamesys"])
-            return results,display
-        except:
-            return results,display
+    # Call common code in parent class
+    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+        return Scraper_TheGamesDB.get_games_search(self, search_string, platform, rom_base_noext)
 
-    def get_game_data(self, game_url):
-        gamedata = {}
-        gamedata["genre"] = ""
-        gamedata["release"] = ""
-        gamedata["studio"] = ""
-        gamedata["plot"] = ""
-        try:
-            req = urllib2.Request(game_url)
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            f = urllib2.urlopen(req)
-            page = f.read().replace('\n', '')
-            game_genre = ' / '.join(re.findall('<genre>(.*?)</genre>', page))
-            if game_genre:
-                gamedata["genre"] = unescape(game_genre)
-            game_release = ''.join(re.findall('<ReleaseDate>(.*?)</ReleaseDate>', page))
-            if game_release:
-                gamedata["release"] = unescape(game_release[-4:])
-            game_studio = ''.join(re.findall('<Developer>(.*?)</Developer>', page))
-            if game_studio:
-                gamedata["studio"] = unescape(game_studio)
-            game_plot = ''.join(re.findall('<Overview>(.*?)</Overview>', page))
-            if game_plot:
-                gamedata["plot"] = unescape(game_plot)
-            return gamedata
-        except:
-            return gamedata
-    
-    def get_game_data_first(self, search_string, gamesys):
-        platform = _system_conversion(gamesys)
-        results = []
-        try:
-            req = urllib2.Request('http://thegamesdb.net/api/GetGamesList.php?name='+urllib.quote_plus(search)+'&platform='+urllib.quote_plus(platform))
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            f = urllib2.urlopen(req)
-            page = f.read().replace("\n", "")
-            if (platform == "Sega Genesis" ) :
-                req = urllib2.Request('http://thegamesdb.net/api/GetGamesList.php?name='+urllib.quote_plus(search)+'&platform='+urllib.quote_plus('Sega Mega Drive'))
-                req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-                f2 = urllib2.urlopen(req)
-                page = page + f2.read().replace("\n", "")
-            games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle>(.*?)<Platform>(.*?)</Platform></Game>", page)
-            for item in games:
-                game = {}
-                game["id"] = "http://thegamesdb.net/api/GetGame.php?id="+item[0]
-                game["title"] = item[1]
-                game["gamesys"] = item[3]
-                game["order"] = 1
-                if ( game["title"].lower() == search.lower() ):
-                    game["order"] += 1
-                if ( game["title"].lower().find(search.lower()) != -1 ):
-                    game["order"] += 1
-                results.append(game)
-            results.sort(key=lambda result: result["order"], reverse=True)
-            return results
-        except:
-            return results
+    # game is dictionary returned by the Scraper_TheGamesDB.get_game_search()
+    def get_game_metadata(self, game):
+        gamedata = {'title' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : ''}
+
+        # --- TheGamesDB returns an XML file with GetGame.php?id ---
+        game_id = game['id']
+        log_debug('get_game_search() Game ID "{}"'.format(game_id))
+        req = urllib2.Request('http://thegamesdb.net/api/GetGame.php?id=' + game_id)
+        req.add_unredirected_header('User-Agent', USER_AGENT)
+        page_data = net_get_URL_text(req)
+
+        # --- Parse game page data ---
+        game_title = ''.join(re.findall('<GameTitle>(.*?)</GameTitle>', page_data))
+        gamedata['title'] = text_unescape_HTML(game_title) if game_title else ''
+
+        game_genre = ' / '.join(re.findall('<genre>(.*?)</genre>', page_data))
+        gamedata['genre'] = text_unescape_HTML(game_genre) if game_genre else ''
+
+        game_release = ''.join(re.findall('<ReleaseDate>(.*?)</ReleaseDate>', page_data))
+        gamedata['release'] = text_unescape_HTML(game_release[-4:]) if game_release else ''
+            
+        game_studio = ''.join(re.findall('<Developer>(.*?)</Developer>', page_data))
+        gamedata['studio'] = text_unescape_HTML(game_studio) if game_studio else ''
+            
+        game_plot = ''.join(re.findall('<Overview>(.*?)</Overview>', page_data))
+        gamedata['plot'] = text_unescape_HTML(game_plot) if game_plot else ''
+
+        return gamedata
 
 # -----------------------------------------------------------------------------
 # GameFAQs online metadata scraper
 # -----------------------------------------------------------------------------
-class metadata_GameFAQs(Scraper_Metadata):
+class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
     def __init__(self):
         self.name = 'GameFAQs'
         self.fancy_name = 'GameFAQs Metadata scraper'
+
+    # Call common code in parent class
+    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+        return Scraper_GameFAQs.get_games_search(self, search_string, platform, rom_base_noext)
+
+    def get_game_metadata(self, game):
+        gamedata = {'title' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : ''}
         
-    def get_game_list(self, search_string):
-        display=[]
-        results=[]
-        try:
-            req = urllib2.Request('http://www.gamefaqs.com/search/index.html?platform=0&game='+search.replace(' ','+')+'')
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            f = urllib2.urlopen(req)
-            gets = {}
-            gets = re.findall('<td class="rtitle">(.*?)<a href="(.*?)"(.*?)class="sevent_(.*?)">(.*?)</a></td>', f.read().replace('\r\n', ''))
-            for get in gets:
-                game = {}
-                gamesystem = get[1].split('/')
-                game["id"] = 'http://www.gamefaqs.com'+get[1]
-                game["title"] = unescape(get[4])
-                game["gamesys"] = gamesystem[1].capitalize()
-                results.append(game)
-                display.append(game["title"]+" / "+game["gamesys"])
-            return results,display
-        except:
-            return results,display
+        # Get game page
+        game_id = game['id']
+        log_debug('get_game_search() Game ID "{}"'.format(game_id))
+        req = urllib2.Request('http://www.gamefaqs.com' + game_id)
+        req.add_unredirected_header('User-Agent', USER_AGENT)
+        page_data = net_get_URL_text(req)
 
-    def get_game_data(self, game_url):
-        print game_url
-        gamedata = {}
-        gamedata["genre"] = ""
-        gamedata["release"] = ""
-        gamedata["studio"] = ""
-        gamedata["plot"] = ""
-        try:
-            req = urllib2.Request(game_url)
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            f = urllib2.urlopen(req)
-            page = f.read().replace('\r\n', '')
-            game_genre = re.findall('<li class="crumb top-crumb"><a href="/(.*?)">(.*?)</a></li><li class="crumb"><a href="/(.*?)/list-(.*?)">(.*?)</a></li>', page)
-            if game_genre:
-                gamedata["genre"] = game_genre[0][4]
-            game_release = re.findall('Release: <a href="(.*?)">(.*?) &raquo;</a>', page)
-            if game_release:
-                gamedata["release"] = game_release[0][1][-4:]
-            game_studio = re.findall('<li><a href="/features/company/(.*?)">(.*?)</a>', page)
-            if game_studio:
-                p = re.compile(r'<.*?>')
-                gamedata["studio"] = p.sub('', game_studio[0][1])
-            game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page)
-            if game_plot:
-                gamedata["plot"] = unescape(game_plot[0])
-            return gamedata
-        except:
-            return gamedata
+        # Process metadata
+        gamedata['title'] = game['title']
 
-    def get_game_data_first(self, search_string, gamesys):
-        platform = _system_conversion(gamesys)
-        results = []
-        try:
-            req = urllib2.Request('http://www.gamefaqs.com/search/index.html?platform='+platform+'&game='+search.replace(' ','+')+'')
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            f = urllib2.urlopen(req)
-            gets = {}
-            gets = re.findall('<td class="rtitle">(.*?)<a href="(.*?)"(.*?)class="sevent_(.*?)">(.*?)</a></td>', f.read().replace('\r\n', ''))
-            for get in gets:
-                game = {}
-                game["id"] = 'http://www.gamefaqs.com'+get[1]
-                game["title"] = unescape(get[4])
-                game["gamesys"] = gamesys
-                results.append(game)
-            return results
-        except:
-            return results
+        # <ol class="crumbs">
+        # <li class="crumb top-crumb"><a href="/snes">Super Nintendo</a></li>
+        # <li class="crumb"><a href="/snes/category/54-action">Action</a></li>
+        # <li class="crumb"><a href="/snes/category/57-action-fighting">Fighting</a></li>
+        # <li class="crumb"><a href="/snes/category/86-action-fighting-2d">2D</a></li>
+        # </ol>
+        game_genre = re.findall('<ol class="crumbs"><li class="crumb top-crumb"><a href="(.*?)">(.*?)</a></li><li class="crumb"><a href="(.*?)">(.*?)</a></li>', page_data)
+        if game_genre:
+            gamedata["genre"] = game_genre[0][3]
+
+        # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 »</a></li>
+        game_release = re.findall('<li><b>Release:</b> <a href="(.*?)">(.*?) &raquo;</a></li>', page_data)
+        if game_release:
+            gamedata["release"] = game_release[0][1][-4:]
+
+        # <li><a href="/company/2324-capcom">Capcom</a></li>
+        game_studio = re.findall('<li><a href="/company/(.*?)">(.*?)</a>', page_data)
+        if game_studio:
+            p = re.compile(r'<.*?>')
+            gamedata["studio"] = p.sub('', game_studio[0][1])
+            
+        game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page_data)
+        if game_plot:
+            gamedata["plot"] = text_unescape_HTML(game_plot[0])
+            
+        return gamedata
 
 # -----------------------------------------------------------------------------
 # arcadeHITS
-# Site in French!
+# Site in French. Valid for MAME.
 # -----------------------------------------------------------------------------
 class metadata_arcadeHITS(Scraper_Metadata):
     def __init__(self):
         self.name = 'arcadeHITS'
         self.fancy_name = 'arcadeHITS Metadata scraper'
 
-    def get_game_list(self, search_string):
-        results = []
-        display = []
-        try:
-            f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+search)
-            page = f.read().replace('\r\n', '').replace('\n', '')
-            game = {}
-            romname = ''.join(re.findall('<h4>(.*?)</h4>', page))
-            game["title"] = unescape(romname)
-            game["id"] = search
-            game["gamesys"] = 'Arcade'
-            if game["title"]:
-                results.append(game)
-                display.append(romname+" / "+game["gamesys"])
-            return results,display
-        except:
-            return results,display
-
     def get_game_data(self, game_url):
-        gamedata = {}
-        gamedata["genre"] = ""
-        gamedata["release"] = ""
-        gamedata["studio"] = ""
-        gamedata["plot"] = ""
+        gamedata = {'title' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : ''}
         f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+game_id)
         page = f.read().replace('\r\n', '').replace('\n', '').replace('\r', '').replace('          ', '')
         game_genre = re.findall('<span class=mini>Genre: </span></td><td align=left>&nbsp;&nbsp;<strong>(.*?)>(.*?)</a>', page)
@@ -347,22 +246,8 @@ class metadata_arcadeHITS(Scraper_Metadata):
         game_plot = re.findall('<br><br>(.*?)<br><br>',page)
         if game_plot:
             gamedata["plot"] = unescape(game_plot[0])
+
         return gamedata
-    
-    def get_game_data_first(self, search_string, gamesys):
-        results = []
-        try:
-            f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+search)
-            page = f.read().replace('\r\n', '').replace('\n', '')
-            game = {}
-            romname = ''.join(re.findall('<h4>(.*?)</h4>', page))
-            game["title"] = unescape(romname)
-            game["id"] = search
-            game["gamesys"] = 'Arcade'
-            results.append(game)
-            return results
-        except:
-            return results
 
 # -----------------------------------------------------------------------------
 # MobyGames http://www.mobygames.com

@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
 #
 # Advanced Emulator Launcher scraping engine
 #
 
+# Copyright (c) 2016 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -12,15 +16,6 @@
 # GNU General Public License for more details.
 
 from scrap import *
-
-# --- Fanart scrapers ----------------------------------------------------------
-# All fanart scrapers are online scrapers. If user has a local image then he
-# can setup manually using other parts of the GUI.
-#
-# NOTE Look in scrap-thumb.py for more comments and documentation.
-class Scraper_Fanart(Scraper):
-    def get_image_list(self, search_string, gamesys, region, imgsize):
-        raise NotImplementedError("Subclass must implement get_thumbnail_list() abstract method") 
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing, but it's very fast :)
