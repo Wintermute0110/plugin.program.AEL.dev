@@ -21,6 +21,11 @@
 
 import sys, os, shutil, time, random, hashlib, urlparse
 
+try:
+    from utils_kodi import *
+except:
+    from utils_kodi_standalone import *
+
 # -----------------------------------------------------------------------------
 # Miscellaneous stuff
 # -----------------------------------------------------------------------------
@@ -30,21 +35,53 @@ def text_get_encoding():
     except UnicodeEncodeError, UnicodeDecodeError:
         return "utf-8"
 
-def text_clean_ROM_filename(title):
+# This function is used to clean the ROM name to be used as search string for the scrapper
+#
+# Cleans ROM tags: [BIOS], (Europe), (Rev A), ...
+# Substitutes some characters by spaces
+#
+def text_clean_ROM_name_for_scrapping(title):
     title = re.sub('\[.*?\]', '', title)
     title = re.sub('\(.*?\)', '', title)
     title = re.sub('\{.*?\}', '', title)
+    
     title = title.replace('_',' ')
     title = title.replace('-',' ')
     title = title.replace(':',' ')
     title = title.replace('.',' ')
     title = title.rstrip()
+    
     return title
 
+#
+#
+#
 def text_ROM_base_filename(filename):
     filename = re.sub('(\[.*?\]|\(.*?\)|\{.*?\})', '', filename)
     filename = re.sub('(\.|-| |_)cd\d+$', '', filename)
+
     return filename.rstrip()
+
+#
+# Format ROM file name when scraping is disabled
+#
+def text_ROM_title_format(title, clean_tags, format_title):
+    if clean_tags:
+        title = re.sub('\[.*?\]', '', title)
+        title = re.sub('\(.*?\)', '', title)
+        title = re.sub('\{.*?\}', '', title)
+    new_title = title.rstrip()
+    
+    if format_title:
+        if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
+        if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
+        if (title.startswith("An ")): new_title = title.replace("An ","", 1)+", An"
+    else:
+        if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The", 1))
+        if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
+        if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
+
+    return new_title
 
 #
 # Get extension of URL. Returns '' if not found.

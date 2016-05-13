@@ -236,14 +236,14 @@ class Main:
         
         # Scanner settings
         self.settings["scan_recursive"]         = True if addon_obj.getSetting("scan_recursive") == "true" else False
+        self.settings["scan_metadata_policy"]   = int(addon_obj.getSetting("scan_metadata_policy"))
+        self.settings["scan_thumb_policy"]      = int(addon_obj.getSetting("scan_thumb_policy"))
+        self.settings["scan_fanart_policy"]     = int(addon_obj.getSetting("scan_fanart_policy"))
         self.settings["scan_ignore_title"]      = True if addon_obj.getSetting("scan_ignore_title") == "true" else False
         self.settings["scan_clean_tags"]        = True if addon_obj.getSetting("scan_clean_tags") == "true" else False
         self.settings["scan_title_formatting"]  = True if addon_obj.getSetting("scan_title_formatting") == "true" else False
         self.settings["scan_ignore_bios"]       = True if addon_obj.getSetting("scan_ignore_bios") == "true" else False
         
-        self.settings["scan_metadata_policy"]   = int(addon_obj.getSetting("scan_metadata_policy"))
-        self.settings["scan_thumb_policy"]      = int(addon_obj.getSetting("scan_thumb_policy"))
-        self.settings["scan_fanart_policy"]     = int(addon_obj.getSetting("scan_fanart_policy"))
         self.settings["metadata_scraper"]       = int(addon_obj.getSetting("metadata_scraper"))
         self.settings["thumb_scraper"]          = int(addon_obj.getSetting("thumb_scraper"))
         self.settings["fanart_scraper"]         = int(addon_obj.getSetting("fanart_scraper"))
@@ -331,7 +331,7 @@ class Main:
             return
         
 
-        log_kodi_notify('Advanced Emulator Launcher', 
+        kodi_notify('Advanced Emulator Launcher', 
                         'Importing ROM %s thumb from %s' % (objects[objectID]["name"], 
                                                            (self.settings[ "thumbs_scraper" ]).encode('utf-8', 'ignore')), 300000)
 
@@ -350,7 +350,7 @@ class Main:
         # user can chose. It is like a Dialog.select but intead of text
         # there is an image on each row of the select control.
         nb_images = len(covers)
-        log_kodi_notify('Advanced Emulator Launcher', '%s thumbs for %s' % (nb_images, objects[objectID]["name"]))
+        kodi_notify('Advanced Emulator Launcher', '%s thumbs for %s' % (nb_images, objects[objectID]["name"]))
         covers.insert(0, (objects[objectID]["thumb"], objects[objectID]["thumb"], 'Current image'))
         self.image_url = gui_show_image_select(covers)
 
@@ -364,7 +364,7 @@ class Main:
         # Note that new AEL scrapers do not need this.
         img_url = self._get_thumbnail(self.image_url)
         if img_url == '':
-            log_kodi_notify('Advanced Emulator Launcher', 'No thumb found for %s' % (objects[objectID]["name"]))
+            kodi_notify('Advanced Emulator Launcher', 'No thumb found for %s' % (objects[objectID]["name"]))
             return
 
         # Get image extenstion
@@ -384,7 +384,7 @@ class Main:
                 file_path = filename.replace("."+filename.split(".")[-1], img_ext)
             else:
                 file_path = os.path.join(os.path.dirname(self.launchers[launcher]["thumbpath"]),os.path.basename(filename.replace("."+filename.split(".")[-1], img_ext)))
-        log_kodi_notify('Advanced Emulator Launcher', 'Downloading thumb...', 300000)
+        kodi_notify('Advanced Emulator Launcher', 'Downloading thumb...', 300000)
 
         # Download selected image
         try:
@@ -401,11 +401,11 @@ class Main:
 
             objects[objectID]["thumb"] = file_path
             self._save_launchers()
-            log_kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated')
+            kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated')
         except socket.timeout:
-            log_kodi_notify('Advanced Emulator Launcher', 'Cannot download image (Timeout)')
+            kodi_notify('Advanced Emulator Launcher', 'Cannot download image (Timeout)')
         except exceptions.IOError:
-            log_kodi_notify('Advanced Emulator Launcher', 'Filesystem error (IOError)')
+            kodi_notify('Advanced Emulator Launcher', 'Filesystem error (IOError)')
         
         
         
@@ -444,7 +444,7 @@ class Main:
                     roms[romID]["studio"] = gamedata["studio"]
                     roms[romID]["plot"] = gamedata["plot"]
             else:
-                log_kodi_notify('Advanced Emulator Launcher', 'No data found')
+                kodi_notify('Advanced Emulator Launcher', 'No data found')
 
             self._save_launchers()
         xbmc.executebuiltin("Container.Update")
@@ -481,7 +481,7 @@ class Main:
                     self.launchers[launcherID]["studio"]  = gamedata["studio"]
                     self.launchers[launcherID]["plot"]    = gamedata["plot"]
             else:
-                log_kodi_notify('Advanced Emulator Launcher', 'No data found')
+                kodi_notify('Advanced Emulator Launcher', 'No data found')
 
             # Save XML data to disk
             self._save_launchers()
@@ -524,7 +524,7 @@ class Main:
                 log_debug('_gui_edit_thumbnail() Object is romID = {0}'.format(object_dic['id']))
                 self.roms[object_dic['id']]["thumb"] = image
                 fs_write_ROM_XML_file(rom_xml_file, roms, launcher)
-            log_kodi_notify('AEL', 'Thumb has been updated')
+            kodi_notify('AEL', 'Thumb has been updated')
             log_info('Selected Thumb image "{0}"'.format(image))
 
             # --- Update Kodi image cache ---
@@ -543,7 +543,7 @@ class Main:
             log_debug('_gui_edit_thumbnail() image   = "{0}"'.format(image))
             log_debug('_gui_edit_thumbnail() img_ext = "{0}"'.format(img_ext))
             if img_ext == '':
-                log_kodi_notify_warn('AEL', 'Cannot determine image file extension')
+                kodi_notify_warn('AEL', 'Cannot determine image file extension')
                 return
 
             object_name = object_dic['name']
@@ -560,7 +560,7 @@ class Main:
             try:
                 shutil.copy2(image.decode(get_encoding(), 'ignore') , file_path.decode(get_encoding(), 'ignore'))
             except OSError:
-                log_kodi_notify_warn('AEL', 'OSError when copying image')
+                kodi_notify_warn('AEL', 'OSError when copying image')
 
             # Update object and save XML
             if object_kind == KIND_CATEGORY:
@@ -575,7 +575,7 @@ class Main:
                 log_debug('_gui_edit_thumbnail() Object is romID = {0}'.format(object_dic['id']))
                 self.roms[object_dic['id']]["thumb"] = file_path
                 fs_write_ROM_XML_file()
-            log_kodi_notify('AEL', 'Thumb has been updated')
+            kodi_notify('AEL', 'Thumb has been updated')
             log_info('Copied Thumb image   "{0}"'.format(image))
             log_info('Into                 "{0}"'.format(file_path))
             log_info('Selected Thumb image "{0}"'.format(file_path))
@@ -720,7 +720,7 @@ class Main:
         category["name"] = keyboard.getText()
         self.categories[categoryID] = category
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        log_kodi_notify('AEL', 'Category {0} created'.format(category["name"]))
+        kodi_notify('AEL', 'Category {0} created'.format(category["name"]))
         xbmc.executebuiltin("Container.Refresh")
 
     #
@@ -744,7 +744,7 @@ class Main:
                     os.remove(roms_xml_file)
                 except OSError:
                     log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
-                    log_kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
+                    kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
             self.launchers[launcherID]["roms_xml_file"] = ''
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             xbmc.executebuiltin("Container.Update")
@@ -780,7 +780,7 @@ class Main:
                     os.remove(roms_xml_file)
                 except OSError:
                     log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
-                    log_kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
+                    kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
             categoryID = self.launchers[launcherID]["category"]
             self.launchers.pop(launcherID)
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
@@ -1144,7 +1144,7 @@ class Main:
     def _command_add_new_launcher(self, categoryID):
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
-            log_kodi_notify('Advanced Launcher - Error', 'Target category not found.' , 3000)
+            kodi_notify('Advanced Launcher - Error', 'Target category not found.' , 3000)
             xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
 
             return False
@@ -1309,7 +1309,7 @@ class Main:
             _toogle_fullscreen()
 
         if self.settings[ "launcher_notification" ]:
-            log_kodi_notify('AEL', 'Launching {0}'.format(name_str), 5000)
+            kodi_notify('AEL', 'Launching {0}'.format(name_str), 5000)
 
         try:
             xbmc.enableNavSounds(False)                                 
@@ -1362,7 +1362,7 @@ class Main:
         application = launcher["application"]
         application_basename = os.path.basename(launcher["application"])
         if not os.path.exists(apppath):
-            log_kodi_notify('AEL - ERROR', 
+            kodi_notify('AEL - ERROR', 
                             'File {0} not found.'.format(application_basename), 3000)
             return
         arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
@@ -1397,7 +1397,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
-            log_kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
+            kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
 
         # Do stuff after execution
         self._run_after_execution(launcher)
@@ -1436,10 +1436,10 @@ class Main:
 
         # Check that app exists and ROM file exists
         if not os.path.exists(apppath):
-            log_kodi_notify("AEL - ERROR", 'File %s not found.' % apppath, 10000)
+            kodi_notify("AEL - ERROR", 'File %s not found.' % apppath, 10000)
             return
         if os.path.exists(romfile):
-            log_kodi_notify("AEL - ERROR", 'File %s not found.' % romfile, 10000)
+            kodi_notify("AEL - ERROR", 'File %s not found.' % romfile, 10000)
             return
 
         # ~~~~ Argument substitution ~~~~~
@@ -1488,7 +1488,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
-            log_kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
+            kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
 
         # Do stuff after application execution
         self._run_after_execution(launcher)
@@ -1643,7 +1643,7 @@ class Main:
             except:
                 rom_name = rom['name']
 
-        # Add ROM to lisitem
+        # --- Add ROM to lisitem ---
         if rom['thumb']: 
             listitem = xbmcgui.ListItem(rom['name'], rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
         else:            
@@ -1660,12 +1660,13 @@ class Main:
         
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
         # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
-        listitem.setInfo("video", { "Title"   : rom_name,    "Label"     : 'test label', 
-                                    "Plot"    : rom['plot'],    "Studio"    : rom['studio'], 
-                                    "Genre"   : rom['genre'],   "Premiered" : rom['release'], 
-                                    'Year'    : rom['release'], "Writer"    : rom['platform'], 
-                                    "Trailer" : 'test trailer', "Director"  : 'test director', 
-                                    "overlay" : ICON_OVERLAY } )
+        platform = self.launchers[launcherID]['platform']
+        listitem.setInfo("video", {"Title"   : rom_name,       "Label"     : 'test label', 
+                                   "Plot"    : rom['plot'],    "Studio"    : rom['studio'], 
+                                   "Genre"   : rom['genre'],   "Premiered" : rom['release'], 
+                                   "Year"    : rom['release'], "Writer"    : platform, 
+                                   "Trailer" : 'test trailer', "Director"  : 'test director', 
+                                   "overlay" : ICON_OVERLAY } )
 
         # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
         # This appears to be a common area of confusion with many addon developers, isPlayable doesn't 
@@ -1722,14 +1723,14 @@ class Main:
 
         # Check if XML file with ROMs exist
         if not os.path.isfile(roms_xml_file):
-            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.', 10000)
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.', 10000)
             xbmc.executebuiltin("Container.Update")
             return
 
         # Load ROMs
         roms = fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
-            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
             return
 
         # Load favourites
@@ -1762,7 +1763,7 @@ class Main:
         # Load favourites
         roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
         if not roms:
-            log_kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
+            kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
             return
 
         # Display Favourites
@@ -1843,7 +1844,7 @@ class Main:
             if ret:
                 roms.pop(romID)
                 fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
-                log_kodi_notify('AEL', 'Deleted ROM from Favourites')
+                kodi_notify('AEL', 'Deleted ROM from Favourites')
                 # If Favourites is empty then go to root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
@@ -1864,7 +1865,7 @@ class Main:
                 roms.pop(romID)
                 launcher = self.launchers[launcherID]
                 fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, launcher)
-                log_kodi_notify('AEL', 'Deleted ROM from launcher')
+                kodi_notify('AEL', 'Deleted ROM from launcher')
                 # If launcher is empty then go to root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
@@ -2079,7 +2080,7 @@ class Main:
                     num_removed_roms += 1
             pDialog.close()
             if num_removed_roms > 0:
-                log_kodi_notify('AEL', '%s dead ROMs removed successfully' % num_removed_roms)
+                kodi_notify('AEL', '%s dead ROMs removed successfully' % num_removed_roms)
                 log_info('%s dead ROMs removed successfully' % num_removed_roms)
             else:
                 log_info('No dead item entry')
@@ -2087,7 +2088,7 @@ class Main:
             log_info('Launcher is empty')
 
         # ~~~ Scan for new files (*.*) and put them in a list ~~~
-        log_kodi_notify('AEL', 'Scanning files...')
+        kodi_notify('AEL', 'Scanning files...')
         xbmc.executebuiltin("ActivateWindow(busydialog)")
         log_info('Scanning files in {0}'.format(launcher_path))
         files = []
@@ -2221,7 +2222,7 @@ class Main:
         fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
-        log_kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
+        kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
 
         # xbmc.executebuiltin("XBMC.ReloadSkin()")
         xbmc.executebuiltin('Container.Update()')
@@ -2230,7 +2231,7 @@ class Main:
         dialog_canceled = False
 
         # Create new rom dictionary
-        launcher_platform = selectedLauncher["platform"]
+        platform = selectedLauncher["platform"]
         romdata = fs_new_rom()
         romdata['id']       = misc_generate_random_SID()
         romdata['filename'] = F.path
@@ -2244,11 +2245,11 @@ class Main:
         # scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
         scan_metadata_policy = self.settings['scan_metadata_policy']
         if scan_metadata_policy == 0:
-            log_verb('Metadata policy: Do nothing')
-            
             # --- Clean ROM name ---
-            # romdata["name"] = self._text_ROM_title_format(f_base_noext)
-            romdata["name"] = F.base_noext
+            log_verb('Metadata policy: Do nothing. Only cleaning ROM name.')
+            scan_clean_tags       = self.settings['scan_clean_tags']
+            scan_title_formatting = self.settings['scan_title_formatting']
+            romdata['name'] = text_ROM_title_format(F.base_noext, scan_clean_tags, scan_title_formatting)
         else:
             # Scrap metadata from NFO files
             found_NFO_file = False
@@ -2266,7 +2267,7 @@ class Main:
                 log_error('Invalid scan_metadata_policy value = {}'.format(scan_metadata_policy))
 
             if do_NFO_file_metadata:
-                nfo_file_path = os.path.join(F.path_noext, ".nfo")
+                nfo_file_path = F.path_noext + ".nfo"
                 log_debug('Trying NFO file "{}"'.format(nfo_file_path))
                 if os.path.isfile(nfo_file_path):
                     found_NFO_file = True
@@ -2280,8 +2281,10 @@ class Main:
                     romdata['plot']    = nfo_dic['plot']      # <plot>
                 else:
                     found_NFO_file = False
-                    log_debug('Only update item name')
-                    romdata['name'] = _text_ROM_title_format(self, romname)
+                    log_debug('NFO file not found. Metadata is only the ROM name')
+                    scan_clean_tags       = self.settings['scan_clean_tags']
+                    scan_title_formatting = self.settings['scan_title_formatting']
+                    romdata['name'] = text_ROM_title_format(F.base_noext, scan_clean_tags, scan_title_formatting)
 
             # Scrap metadata. Note that scraper may be offline or online
             do_metadata_scrapping = False
@@ -2293,8 +2296,8 @@ class Main:
 
             if do_metadata_scrapping:
                 # Do a search and get a list of games found
-                romdata["name"] = clean_filename(romname)
-                results = self.scraper_metadata.get_game_search(romdata['name'], romdata['platform'])
+                rom_name_scrapping = text_clean_ROM_name_for_scrapping(F.base_noext)
+                results = self.scraper_metadata.get_game_search(rom_name_scrapping, platform, F.base_noext)
                 if results:                
                     # id="metadata_mode" values="Semi-automatic|Automatic"
                     if self.settings['metadata_mode'] == 0:
@@ -2435,7 +2438,7 @@ class Main:
                     try:
                         download_img(image_url, thumb_path)
                     except socket.timeout:
-                        log_kodi_notify('AEL - Error', 'Cannot download thumb image (Timeout)')
+                        kodi_notify('AEL - Error', 'Cannot download thumb image (Timeout)')
 
                     # ~~~ Update Kodi cache with downloaded image ~~~
                     # Only if local image is in the Kodi cache, function takes care of that.
@@ -2499,9 +2502,9 @@ class Main:
                                 download_img(img_url,fanart)
                                 shutil.copy2( fanart.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
                             except socket.timeout:
-                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30606 ),3000)
+                                kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30606 ),3000)
                             except exceptions.IOError:
-                                log_kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30607 ),3000)
+                                kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30607 ),3000)
                         else:
                             if ( not os.path.isfile(fanart) ) & ( os.path.isfile(cached_thumb) ):
                                 os.remove(cached_thumb)
@@ -2596,7 +2599,7 @@ class Main:
                 # add rom to the roms list (using name as index)
                 romid = _get_SID()
                 roms[romid] = romdata
-                log_kodi_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes')
+                kodi_notify('AEL', 'Edit Launcher' + " " + 'Re-Enter this directory to see the changes')
         self._save_launchers()
 
     #
@@ -2605,12 +2608,12 @@ class Main:
     def _command_search_launcher(self, categoryID, launcherID):
         # Check that the launcher has items
         if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
-            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
             xbmc.executebuiltin("Container.Update")
             return
         roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
         if not roms:
-            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
             return
 
         # Ask user what category to search
@@ -2721,12 +2724,12 @@ class Main:
         # Load ROMs
         # Check that the launcher has items
         if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
-            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
             xbmc.executebuiltin("Container.Update")
             return
         roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
         if not roms:
-            log_kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
             return
 
         # Go through rom list and search for user input
@@ -2752,28 +2755,6 @@ class Main:
         for key in sorted(rl.iterkeys()):
             self._gui_render_rom_row(categoryID, launcherID, key, rl[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-
-    #
-    # NOTE In Python, objects methods can be defined outside the class definition!
-    #      See https://docs.python.org/2/tutorial/classes.html#random-remarks
-    #
-    def _text_ROM_title_format(self, title):
-        if self.settings[ "clean_title" ]:
-            title = re.sub('\[.*?\]', '', title)
-            title = re.sub('\(.*?\)', '', title)
-            title = re.sub('\{.*?\}', '', title)
-        new_title = title.rstrip()
-        
-        if self.settings[ "title_formating" ]:
-            if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
-            if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
-            if (title.startswith("An ")): new_title = title.replace("An ","", 1)+", An"
-        else:
-            if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The", 1))
-            if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
-            if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
-
-        return new_title
 
     #
     # A set of functions to help making plugin URLs

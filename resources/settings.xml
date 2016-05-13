@@ -4,6 +4,9 @@
 <category label="ROM scanner">
     <!-- <setting id="separator" type="lsep" label="Scan settings"/> -->
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
+    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy"  default="0" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
+    <setting label="Thumb scan policy" type="enum" id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
+    <setting label="Fanart scan policy" type="enum" id="scan_fanart_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     
     <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
     <setting label="Ignore Scraped Titles (use filenames)" type="bool" id="scan_ignore_title" default="true"/>
@@ -13,12 +16,12 @@
 </category>
 
 <category label="ROM scrapping">
-    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy"  default="0" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
-    <setting label="Thumb scan policy" type="enum" id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
-    <setting label="Fanart scan policy" type="enum" id="scan_fanart_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
+    <setting id="separator" type="lsep" label="Scrapers"/>
     <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="NULL|Offline scraper|TheGamesDB|GameFAQs"/>
     <setting label="Thumb scraper" type="enum" id="thumb_scraper" default="0" values="NULL||TheGamesDB|GameFAQs"/>
     <setting label="Fanart scraper" type="enum" id="fanart_scraper" default="0" values="NULL||TheGamesDB|GameFAQs"/>
+
+    <setting id="separator" type="lsep" label="Scrapping mode"/>
     <setting label="Metadata scrapping mode" type="enum" id="metadata_mode" default="0" values="Semi-automatic|Automatic"/>
     <setting label="Thumb scrapping mode" type="enum" id="thumb_mode" default="0" values="Semi-automatic|Automatic"/>
     <setting label="Fanart scrapping mode" type="enum" id="fanart_mode" default="0" values="Semi-automatic|Automatic"/>
