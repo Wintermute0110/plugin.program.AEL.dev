@@ -1,7 +1,11 @@
-﻿#
+﻿# -*- coding: utf-8 -*-
+#
 # Advanced Emulator Launcher main script file
 #
 
+# Copyright (c) 2016 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -27,6 +31,7 @@ import subprocess_hack
 from disk_IO import *
 from net_IO import *
 from utils import *
+from utils_kodi import *
 from scrap import *
 
 # --- Addon object (used to access settings) ---
@@ -242,6 +247,7 @@ class Main:
         self.settings["metadata_scraper"]       = int(addon_obj.getSetting("metadata_scraper"))
         self.settings["thumb_scraper"]          = int(addon_obj.getSetting("thumb_scraper"))
         self.settings["fanart_scraper"]         = int(addon_obj.getSetting("fanart_scraper"))
+        self.settings["metadata_mode"]          = int(addon_obj.getSetting("metadata_mode"))
         self.settings["thumb_mode"]             = int(addon_obj.getSetting("thumb_mode"))
         self.settings["fanart_mode"]            = int(addon_obj.getSetting("fanart_mode"))
 
@@ -333,7 +339,7 @@ class Main:
         xbmc.executebuiltin("ActivateWindow(busydialog)")
         region   = self.settings["game_region"]
         img_size = self.settings[ "thumb_image_size" ]
-        covers   = self.scraper_thumb.get_image_list(search_str, objects[objectID]["gamesys"], region, img_size)
+        covers   = self.scraper_thumb.get_image_list(search_str, objects[objectID]["platform"], region, img_size)
         xbmc.executebuiltin("Dialog.Close(busydialog)")
 
         if not covers:
@@ -806,7 +812,7 @@ class Main:
             type2 = dialog.select('Modify Launcher Metadata',
                                   ['Scrape from {0}'.format(self.scraper_metadata.get_fancy_name()),
                                    'Edit Title: %s' % self.launchers[launcherID]["name"],
-                                   'Edit Platform: %s' % self.launchers[launcherID]["gamesys"],
+                                   'Edit Platform: %s' % self.launchers[launcherID]["platform"],
                                    'Edit Release Date: %s' % self.launchers[launcherID]["release"],
                                    'Edit Studio: %s' % self.launchers[launcherID]["studio"],
                                    'Edit Genre: %s' % self.launchers[launcherID]["genre"],
@@ -831,10 +837,10 @@ class Main:
             # Selection of the launcher game system
             elif type2 == 2:
                 dialog = xbmcgui.Dialog()
-                platforms = emudata_game_system_list()
-                gamesystem = dialog.select('Select the platform', platforms)
-                if not gamesystem == -1:
-                    self.launchers[launcherID]["gamesys"] = platforms[gamesystem]
+                platforms = emudata_platform_list()
+                sel_platform = dialog.select('Select the platform', platforms)
+                if not sel_platform == -1:
+                    self.launchers[launcherID]["platform"] = platforms[sel_platform]
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             # Edition of the launcher release date (year)
             elif type2 == 3:
@@ -1173,8 +1179,8 @@ class Main:
 
             # Selection of the launcher game system
             dialog = xbmcgui.Dialog()
-            platforms = emudata_game_system_list()
-            gamesystem = dialog.select('Select the platform', platforms)
+            platforms = emudata_platform_list()
+            sel_platform = dialog.select('Select the platform', platforms)
 
             # Selection of the thumbnails and fanarts path
             if self.settings[ "launcher_thumb_path" ] == "":
@@ -1189,8 +1195,8 @@ class Main:
             # --- Create launcher object data, add to dictionary and write XML file ---
             if not thumb_path:  thumb_path = ""
             if not fanart_path: fanart_path = ""
-            if not gamesystem == -1:    launcher_gamesys = platforms[gamesystem]
-            else:                       launcher_gamesys = ""
+            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
+            else:                       launcher_platform = "Unknown"
             if sys.platform == "win32": launcher_lnk = True
             else:                       launcher_lnk = False
             # add launcher to the launchers dictionary (using name as index)
@@ -1203,7 +1209,7 @@ class Main:
             launcherdata['args']        = args
             launcherdata['thumbpath']   = thumb_path
             launcherdata['fanartpath']  = fanart_path
-            launcherdata['gamesys']     = launcher_gamesys
+            launcherdata['platform']     = launcher_platform
             launcherdata['lnk']         = launcher_lnk
             self.launchers[launcherID] = launcherdata
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
@@ -1239,8 +1245,8 @@ class Main:
 
             # Selection of the launcher game system
             dialog = xbmcgui.Dialog()
-            platforms = emudata_game_system_list()
-            gamesystem = dialog.select('Select the platform', platforms)
+            platforms = emudata_platform_list()
+            sel_platform = dialog.select('Select the platform', platforms)
 
             # Selection of the thumbnails and fanarts path
             thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False, files_path)
@@ -1249,8 +1255,8 @@ class Main:
             # --- Create launcher object data, add to dictionary and write XML file ---
             thumb_path  = "" if not thumb_path else thumb_path
             fanart_path = "" if not fanart_path else fanart_path
-            if not gamesystem == -1:    launcher_gamesys = platforms[gamesystem]
-            else:                       launcher_gamesys = ""
+            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
+            else:                       launcher_platform = "Unknown"
             launcher_lnk = True if sys.platform == "win32" else False
             
             # Choose launcher ROM XML filename. There may be launchers with
@@ -1277,7 +1283,7 @@ class Main:
             launcherdata['thumbpath']     = thumb_path
             launcherdata['fanartpath']    = fanart_path
             launcherdata['romext']        = ext
-            launcherdata['gamesys']       = launcher_gamesys
+            launcherdata['platform']       = launcher_platform
             launcherdata['lnk']           = launcher_lnk
             launcherdata['roms_xml_file'] = roms_xml_file_path
             self.launchers[launcherID] = launcherdata
@@ -1573,7 +1579,7 @@ class Main:
         listitem.setInfo( "video", {"Title": launcher_dic['name'], "Label": os.path.basename(launcher_dic['rompath']),
                                     "Plot" : launcher_dic['plot'], "Studio" : launcher_dic['studio'],
                                     "Genre" : launcher_dic['genre'], "Premiered" : launcher_dic['release'],
-                                    "Year" : launcher_dic['release'], "Writer" : launcher_dic['gamesys'],
+                                    "Year" : launcher_dic['release'], "Writer" : launcher_dic['platform'],
                                     "Trailer" : os.path.join(launcher_dic['trailerpath']),
                                     "Director" : os.path.join(launcher_dic['custompath']), 
                                     "overlay": ICON_OVERLAY } )
@@ -1657,7 +1663,7 @@ class Main:
         listitem.setInfo("video", { "Title"   : rom_name,    "Label"     : 'test label', 
                                     "Plot"    : rom['plot'],    "Studio"    : rom['studio'], 
                                     "Genre"   : rom['genre'],   "Premiered" : rom['release'], 
-                                    'Year'    : rom['release'], "Writer"    : rom['gamesys'], 
+                                    'Year'    : rom['release'], "Writer"    : rom['platform'], 
                                     "Trailer" : 'test trailer', "Director"  : 'test director', 
                                     "overlay" : ICON_OVERLAY } )
 
@@ -2145,13 +2151,15 @@ class Main:
                 continue
             
             # ~~~~~ Process new ROM and add to the list ~~~~~
-            (romdata, pDialog) = self._roms_process_scanned_ROM(selectedLauncher, F, num_files_checked, num_files, pDialog)
+            (romdata, pDialog, dialog_canceled) = \
+                self._roms_process_scanned_ROM(selectedLauncher, 
+                                               F, num_files_checked, num_files, pDialog)
             romID = romdata["id"]
             roms[romID] = romdata
             num_new_roms = num_new_roms + 1
-            
+
             # ~~~ Check if user pressed the cancel button ~~~
-            if pDialog.iscanceled():
+            if pDialog.iscanceled() or dialog_canceled:
                 log_kodi_dialog_OK('AEL', 'Stopping ROM scanning. No changes have been made.')
                 log_info('User pressed Cancel button when scanning ROMs')
                 log_info('ROM scanning stopped')
@@ -2167,7 +2175,7 @@ class Main:
             xbmc.executebuiltin('Container.Update()')
             return
 
-        # --- If we have a No-Intro XML then audit roms ---
+        # --- If we have a No-Intro XML then audit roms -------------------------------------------
         if selectedLauncher['nointro_xml_file'] != '':
             nointro_xml_file = selectedLauncher['nointro_xml_file']
             log_info('Auditing ROMs using No-Intro DAT {}'.format(nointro_xml_file))
@@ -2219,39 +2227,53 @@ class Main:
         xbmc.executebuiltin('Container.Update()')
 
     def _roms_process_scanned_ROM(self, selectedLauncher, F, num_files_checked, num_files, pDialog):
+        dialog_canceled = False
+
         # Create new rom dictionary
-        launcher_gamesys = selectedLauncher["gamesys"]
+        launcher_platform = selectedLauncher["platform"]
         romdata = fs_new_rom()
         romdata['id']       = misc_generate_random_SID()
         romdata['filename'] = F.path
-        romdata['gamesys']  = launcher_gamesys
 
-        # ~~~~~ Scrape game metadata information ~~~~~
+        # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Update progress dialog
         file_text = 'ROM {}'.format(F.base)
         scraper_text = 'Scraping metadata with {}'.format(self.scraper_metadata.name)
         pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
 
-        # From now force NFO files scraper
-        self.settings[ "datas_method" ] = "0"
-        
-        # No metadata scrap
-        if self.settings[ "datas_method" ] == "0":
-            log_debug('Metadata scraping disabled')
+        # scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
+        scan_metadata_policy = self.settings['scan_metadata_policy']
+        if scan_metadata_policy == 0:
+            log_verb('Metadata policy: Do nothing')
+            
+            # --- Clean ROM name ---
             # romdata["name"] = self._text_ROM_title_format(f_base_noext)
             romdata["name"] = F.base_noext
         else:
             # Scrap metadata from NFO files
             found_NFO_file = False
-            if self.settings[ "datas_method" ] == "1" or self.settings[ "datas_method" ] == "3":
-                nfo_file_path = os.path.join(f_path_noext, ".nfo")
-                log_debug('Trying NFO file "{0}"...'.format(nfo_file_path))
-                if os.path.isfile(nfo_file):
+            do_NFO_file_metadata = False
+            if scan_metadata_policy == 1:
+                log_verb('Metadata policy: Read NFO file only | Scraper OFF')
+                do_NFO_file_metadata = True
+            elif scan_metadata_policy == 2:
+                log_verb('Metadata policy: Read NFO file ON | if not NFO then Scraper ON')
+                do_NFO_file_metadata = True
+            elif scan_metadata_policy == 3:
+                log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
+                do_NFO_file_metadata = False
+            else:
+                log_error('Invalid scan_metadata_policy value = {}'.format(scan_metadata_policy))
+
+            if do_NFO_file_metadata:
+                nfo_file_path = os.path.join(F.path_noext, ".nfo")
+                log_debug('Trying NFO file "{}"'.format(nfo_file_path))
+                if os.path.isfile(nfo_file_path):
                     found_NFO_file = True
                     nfo_dic = _fs_load_NFO_file(nfo_file_path)
                     romdata['name']    = nfo_dic['title']     # <title>
                     # <platform> is chosen by AEL, not read from NFO files
-                    # romdata['gamesys'] = nfo_dic['platform']  # <platform>
+                    # romdata['platform'] = nfo_dic['platform']  # <platform>
                     romdata['release'] = nfo_dic['year']      # <year>
                     romdata['studio']  = nfo_dic['publisher'] # <publisher>
                     romdata['genre']   = nfo_dic['genre']     # <genre>
@@ -2261,45 +2283,61 @@ class Main:
                     log_debug('Only update item name')
                     romdata['name'] = _text_ROM_title_format(self, romname)
 
-            # Scrap metadata from www database
-            if self.settings[ "datas_method" ] == "2" or (self.settings[ "datas_method" ] == "3" and found_NFO_file == False):
+            # Scrap metadata. Note that scraper may be offline or online
+            do_metadata_scrapping = False
+            if scan_metadata_policy == 3:
+                do_metadata_scrapping = True
+            elif scan_metadata_policy == 3 and not found_NFO_file:
+                log_verb('Metadata policy: NFO file not found | Scraper ON')
+                do_metadata_scrapping = True
+
+            if do_metadata_scrapping:
+                # Do a search and get a list of games found
                 romdata["name"] = clean_filename(romname)
-                if ( self.settings[ "scrap_info" ] == "1" ):
-                    log_debug('Info automatic scraping') 
-                    results = self._get_first_game(romdata["name"],gamesys)
-                    selectgame = 0
-                else:
-                    log_debug('Info semi-automatic scraping') 
-                    results,display = self._get_games_list(romdata["name"])
-                    if display:
-                        # Display corresponding game list found
+                results = self.scraper_metadata.get_game_search(romdata['name'], romdata['platform'])
+                if results:                
+                    # id="metadata_mode" values="Semi-automatic|Automatic"
+                    if self.settings['metadata_mode'] == 0:
+                        log_debug('Metadata semi-automatic scraping')
+                        # Close progress dialog (and check it was not canceled)
+                        if pDialog.iscanceled(): dialog_canceled = True
+                        pDialog.close()
+
+                        # Display corresponding game list found so user choses
                         dialog = xbmcgui.Dialog()
-                        # Game selection
-                        selectgame = dialog.select('Select a item from %s' % ( self.settings[ "datas_scraper" ] ), display)
-                        if (selectgame == -1):
-                            results = []
-                if results:
-                    foundname = results[selectgame]["title"]
-                    if (foundname != ""):
-                        if ( self.settings[ "ignore_title" ] ):
-                            romdata["name"] = title_format(self,romname)
-                        else:
-                            romdata["name"] = title_format(self,foundname)
+                        rom_name_list = []
+                        for game in results:
+                            rom_name_list.append(game['display_name'])
+                        selectgame = dialog.select('Select ROM name', rom_name_list)
+                        if selectgame == -1: selectgame = 0
 
-                        # Game other game data
-                        gamedata = self._get_game_data(results[selectgame]["id"])
-                        romdata["genre"] = gamedata["genre"]
-                        romdata["release"] = gamedata["release"]
-                        romdata["studio"] = gamedata["studio"]
-                        romdata["plot"] = gamedata["plot"]
-                        progress_display = romdata["name"] + " (" + romdata["release"] + ")"
+                        # Open progress dialog again
+                        pDialog.create('AEL - Scanning ROMs')
+                        pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
+                    elif self.settings['metadata_mode'] == 1:
+                        log_debug('Metadata automatic scraping') 
+                        selectgame = 0
                     else:
-                        progress_display = romname + ": " + 'not found'
-                else:
-                    romdata["name"] = title_format(self,romname)
-                    progress_display = romname + ": " + 'not found'
+                        log_error('Invalid metadata_mode {}'.format(self.settings['metadata_mode'])) 
+                        selectgame = 0
 
-        # ~~~~~ Search for local fanart artwork ~~~~~
+                    # --- Grab metadata for selected game ---
+                    gamedata = self.scraper_metadata.get_game_metadata(results[selectgame]['id'])
+
+                    if self.settings['scan_ignore_title']:
+                        romdata["name"] = title_format(self, romname)
+                    else:
+                        romdata["name"] = title_format(self, foundname)
+                    
+                    romdata["genre"] = gamedata["genre"]
+                    romdata["release"] = gamedata["release"]
+                    romdata["studio"] = gamedata["studio"]
+                    romdata["plot"] = gamedata["plot"]
+                else:
+                    log_verb('Metadata scraper found nothing')
+                    romdata["name"] = title_format(self, romname)
+
+        # ~~~~~ Search for local fanart artwork ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # If thumbs/fanart have the same path, then assign names 
         # (f_base_noext)_thumb, 
         # (f_base_noext)_fanart
@@ -2317,7 +2355,7 @@ class Main:
         log_verb('Set Thumb  "{}"'.format(thumb))
         log_verb('Set Fanart "{}"'.format(fanart))
 
-        # ~~~ Thumb scraping policy ~~~
+        # ~~~ Thumb scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Make sure thumb scraping works like a charm.
         # Then, update fanart scraping.
         # settings.xml -> id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers"
@@ -2325,17 +2363,17 @@ class Main:
         scrap_image = False
         if scan_thumb_policy == 0: 
             scrap_image = False
-            log_verb('Scraper policy: Local Images only | Scraper OFF')
+            log_verb('Thumb policy: Local Images only | Scraper OFF')
         elif scan_thumb_policy == 1:
             if romdata['thumb'] == '':
-                log_verb('Scraper policy: thumb not found | Scraper ON')
+                log_verb('Thumb policy: thumb not found | Scraper ON')
                 scrap_image = True
             else:
-                log_verb('Scraper policy: thumb found | Scraper OFF')
+                log_verb('Thumb policy: thumb found | Scraper OFF')
                 scrap_image = False
         elif scan_thumb_policy == 2: 
             scrap_image = True
-            log_verb('Scraper policy: Scraper will overwrite local images | Scrapper ON')
+            log_verb('Thumb policy: Scraper will overwrite local images | Scraper ON')
 
         # Scraper overrides local image if local image exists
         if scrap_image:
@@ -2347,15 +2385,15 @@ class Main:
 
             # Online scrape (image scrapers are always online)
             search_string = romdata["name"]
-            gamesys       = romdata["gamesys"]
             region        = self.settings["scraper_region"]
             imgsize       = self.settings["scraper_thumb_size"]
-            image_list    = self.scraper_thumb.get_image_list(search_string, gamesys, region, imgsize)
+            image_list    = self.scraper_thumb.get_image_list(search_string, launcher_platform, region, imgsize)
             if image_list:
                 log_verb('Scraper returned {} games'.format(len(image_list)))
                 # --- Semi-automatic scraping (user choses an image from a list) ---
                 if self.settings['thumb_mode'] == 0:
                     # Close progress dialog before opening image chosing dialog
+                    if pDialog.iscanceled(): dialog_canceled = True
                     pDialog.close()
                     
                     # If there is a local image add show it to the user
@@ -2413,7 +2451,8 @@ class Main:
             romdata["thumb"] = thumb
             log_verb('Scraper assigned thumb "{}"'.format(thumb))
 
-        # Deactivate Fanart scraping until thumb scraping is working OK
+        # ~~~ Fanart scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Disable until thumb scrapping works well. Then copy/paste/adapt.
         if None:
             if ( self.settings[ "fanarts_method" ] == "2" ):
                 # If overwrite activated or fanart file not exist
@@ -2433,9 +2472,9 @@ class Main:
                         else:
                             fanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.jpg'))
                     if ( app.lower().find('mame') > 0 ) or ( self.settings[ "fanarts_scraper" ] == 'arcadeHITS' ):
-                        covers = self._get_fanarts_list(romdata["gamesys"],title,self.settings[ "fanart_image_size" ])
+                        covers = self._get_fanarts_list(romdata["platform"],title,self.settings[ "fanart_image_size" ])
                     else:
-                        covers = self._get_fanarts_list(romdata["gamesys"],romdata["name"],self.settings[ "fanart_image_size" ])
+                        covers = self._get_fanarts_list(romdata["platform"],romdata["name"],self.settings[ "fanart_image_size" ])
                     if covers:
                         if ( self.settings[ "scrap_fanarts" ] == "1" ):
                             if ( self.settings[ "select_fanarts" ] == "0" ):
@@ -2477,7 +2516,7 @@ class Main:
                     romdata["fanart"] = fanart
 
         # Return romdata dictionary
-        return (romdata, pDialog)
+        return (romdata, pDialog, dialog_canceled)
 
     #
     # Manually add a new ROM instead of a recursive scan
@@ -2551,7 +2590,7 @@ class Main:
                             else:
                                 if (os.path.isfile(os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.'+ext2)))):
                                     romfanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.'+ext2))
-                romdata = {"name" : romname, "filename" : romfile, "gamesys" : launcher["gamesys"], "thumb" : romthumb, 
+                romdata = {"name" : romname, "filename" : romfile, "platform" : launcher["platform"], "thumb" : romthumb, 
                            "fanart" : romfanart, "custom" : launcher["custompath"], "trailer" : "", "genre" : "",
                            "release" : "", "studio" : "", "plot" : "", "finished" : "false", "altapp" : "", "altarg" : "" }
                 # add rom to the roms list (using name as index)
@@ -2631,7 +2670,7 @@ class Main:
         # type_nb = type_nb + 1
         # if type == type_nb:
         #     search = []
-        #     search = _search_category(self, "gamesys")
+        #     search = _search_category(self, "platform")
         #     dialog = xbmcgui.Dialog()
         #     selected = dialog.select('Select a Platform...', search)
         #     if not selected == -1:
