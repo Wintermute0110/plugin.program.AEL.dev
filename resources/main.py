@@ -214,6 +214,9 @@ class Main:
             kodi_dialog_OK('AEL', 'Implement me!')
             # self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
 
+        elif command == 'CHECK_FAV':
+            self._command_check_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
+
         # This command is issued when user clicks on "Search" on the context menu of a launcher
         # in the launchers view, or context menu inside a launcher. User is asked to enter the
         # search string and the field to search (name, category, etc.)
@@ -1619,24 +1622,34 @@ class Main:
         icon = "DefaultProgram.png"
         # icon = "DefaultVideo.png"
 
-        # If listing regular launcher and rom is in favourites, mark it
-        if rom_is_in_favourites:
-            # --- Workaround so the alphabetical order is not lost ---
-            rom_name = '{} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
-            # rom_name = '[COLOR violet]{} [Fav][/COLOR]'.format(rom['name'])
-            log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
+        # If we are rendering favourites mark fav_status
+        if launcherID == '0':
+            if rom['fav_status'] == 'OK':
+                rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom['name'])
+            elif rom['fav_status'] == 'Unlinked':
+                rom_name = '{} [COLOR yellow][Unlinked][/COLOR]'.format(rom['name'])
+            elif rom['fav_status'] == 'Broken':
+                rom_name = '{} [COLOR red][Broken][/COLOR]'.format(rom['name'])
+            else:
+                rom_name = rom['name']
+        # We are rendering ROMs in a normal launcher
         else:
-            try:
+            # If listing regular launcher and rom is in favourites, mark it
+            if rom_is_in_favourites:
+                # --- Workaround so the alphabetical order is not lost ---
+                # rom_name = '[COLOR violet]{} [Fav][/COLOR]'.format(rom['name'])
+                rom_name = '{} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
+                log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
+            else:
+                # Mark No-Intro status
                 if rom['nointro_status'] == 'Have':
-                    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom['name'])
+                    rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom['name'])
                 elif rom['nointro_status'] == 'Miss':
-                    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom['name'])
+                    rom_name = '{} [COLOR red][Miss][/COLOR]'.format(rom['name'])
                 elif rom['nointro_status'] == 'Unknown':
-                    rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom['name'])
+                    rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom['name'])
                 else:
                     rom_name = rom['name']
-            except:
-                rom_name = rom['name']
 
         # --- Add ROM to lisitem ---
         if rom['thumb']: 
@@ -1682,6 +1695,7 @@ class Main:
         # --- Create context menu ---
         commands = []
         if launcherID == '0':
+            commands.append(('Check Favourite ROMs', self._misc_url_RunPlugin('CHECK_FAV', '0', '0', romID), ))
             commands.append(('Edit ROM in Favourites', self._misc_url_RunPlugin('EDIT_ROM', '0', '0', romID), ))
             commands.append(('Search Favourites', self._misc_url_RunPlugin('SEARCH_LAUNCHER', '0', '0'), ))
             commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', '0', '0', romID), ))
@@ -1823,12 +1837,22 @@ class Main:
         roms_fav[romID]['args']        = self.launchers[launcherID]['args']
         roms_fav[romID]['rompath']     = self.launchers[launcherID]['rompath']
         roms_fav[romID]['romext']      = self.launchers[launcherID]['romext']
-        # Use launcher images if ROM has not images
+        roms_fav[romID]['fav_status']  = 'OK'
         if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = self.launchers[launcherID]['thumb']
         if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
-
-        # Save favourites
         fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
+
+
+    #
+    # Check ROMs in favourites and set fav_status field.
+    #
+    def _command_check_favourites(self, categoryID, launcherID, romID):
+        # Load ROMs of parent launcher
+        
+        # Check if parent ROM exist
+        
+        # Inform the user
+        kodi_dialog_OK('AEL', 'Implement check Favourites!')
 
     #
     # Deletes a ROM from a launcher.
@@ -1898,7 +1922,7 @@ class Main:
                                 'Change Thumbnail Image...', 'Change Fanart Image...',
                                 finished_display,
                                 'Advanced Modifications...', 
-                                'Check favourite parent launcher/ROM', 'Choose another favourite parent ROM...'])
+                                'Choose another favourite parent ROM...'])
         else:
             type = dialog.select('Edit ROM %s' % title, 
                                 ['Edit Metadata...',
@@ -2033,27 +2057,16 @@ class Main:
                 roms[romID]["custom"] = custom
                 fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
 
-        # Check if parent launcher/ROM exist
-        #
-        # ONLY IN FAVOURITE ROM EDITING
-        elif type == 5:            
-            # Load ROMs of parent launcher
-            
-            # Check if parent ROM exist
-            
-            # Inform the user
-            kodi_dialog_OK('AEL', 'Implement me!')
-            
         # Link this favourite ROM to a new parent ROM
         #
         # ONLY IN FAVOURITE ROM EDITING
-        elif type == 6:            
+        elif type == 5:            
             # First, tell the user if the current parent exist or not
             
             # If user says yes, then first must select the launcher
             
             # Then, select the new ROM in that launcher
-            kodi_dialog_OK('AEL', 'Implement me!')
+            kodi_dialog_OK('AEL', 'Implement relink Favourite!')
 
 
         # It seems that updating the container does more harm than good... specially when having many ROMs
