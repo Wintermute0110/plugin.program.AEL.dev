@@ -58,6 +58,7 @@ def fs_new_launcher():
 
     return launcher
 
+# nointro_status = ['Have', 'Miss', 'Unknown', 'None'] default 'None'
 def fs_new_rom():
     rom = {'id' : '', 'name' : '', 'filename' : '',
            'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
@@ -67,6 +68,10 @@ def fs_new_rom():
 
     return rom
 
+# fav_status = ['OK', 'Unlinked', 'Broken'] default 'OK'
+# 'OK'       filename exists and launcher exists and ROM id exists
+# 'Unlinked' filename exists but launcher or ROM id does not
+# 'Broken'   filename does not exist. ROM is unplayable
 def fs_new_favourite_rom():
     rom = {'id' : '', 'name' : '', 'filename' : '',
            'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
@@ -74,7 +79,8 @@ def fs_new_favourite_rom():
            'altapp' : '', 'altarg' : '',
            'finished' : False, 'nointro_status' : 'None',
            'launcherID' : '', 'platform' : '', 
-           'application' : '', 'args' : '', 'rompath' : '', 'romext' : '' }
+           'application' : '', 'args' : '', 'rompath' : '', 'romext' : '',
+           'fav_status' : 'OK' }
 
     return rom
 
@@ -414,10 +420,12 @@ def fs_load_Favourites_XML_file(roms_xml_file):
                 if xml_tag == 'finished':
                     xml_bool = True if xml_text == 'True' else False
                     rom[xml_tag] = xml_bool
+                elif xml_tag == 'fav_status':
+                    xml_string = xml_text if xml_text in ['OK', 'Unlinked', 'Broken'] else 'OK'
+                    rom[xml_tag] = xml_string
             roms[rom['id']] = rom
 
     return roms
-
     
 def fs_load_NoIntro_XML_file(roms_xml_file):
     nointro_roms = {}
