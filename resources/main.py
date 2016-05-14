@@ -1634,22 +1634,25 @@ class Main:
                 rom_name = rom['name']
         # We are rendering ROMs in a normal launcher
         else:
+            # Mark No-Intro status
+            if rom['nointro_status'] == 'Have':
+                rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom['name'])
+            elif rom['nointro_status'] == 'Miss':
+                rom_name = '{} [COLOR red][Miss][/COLOR]'.format(rom['name'])
+            elif rom['nointro_status'] == 'Unknown':
+                rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom['name'])
+            else:
+                rom_name = rom['name']
+
             # If listing regular launcher and rom is in favourites, mark it
             if rom_is_in_favourites:
-                # --- Workaround so the alphabetical order is not lost ---
-                # rom_name = '[COLOR violet]{} [Fav][/COLOR]'.format(rom['name'])
-                rom_name = '{} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
                 log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
-            else:
-                # Mark No-Intro status
-                if rom['nointro_status'] == 'Have':
-                    rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom['name'])
-                elif rom['nointro_status'] == 'Miss':
-                    rom_name = '{} [COLOR red][Miss][/COLOR]'.format(rom['name'])
-                elif rom['nointro_status'] == 'Unknown':
-                    rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom['name'])
-                else:
-                    rom_name = rom['name']
+
+                # --- Workaround so the alphabetical order is not lost ---
+                # NOTE Missing ROMs must never be in favourites... However, mark them to help catching bugs.
+                # rom_name = '[COLOR violet]{} [Fav][/COLOR]'.format(rom['name'])
+                # rom_name = '{} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
+                rom_name += ' [COLOR violet][Fav][/COLOR]'
 
         # --- Add ROM to lisitem ---
         if rom['thumb']: 
@@ -1668,6 +1671,8 @@ class Main:
         
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
         # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
+        # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
+        # instead of changing the whole row colour.
         if launcherID == '0':
             platform = rom['platform']
         else:
@@ -1851,13 +1856,21 @@ class Main:
         # Load Favourite ROMs
         roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
         
+        # Reset fav_status filed for all favourites
+        log_debug('_command_check_favourites() STEP 0')
+        for rom_fav_ID in roms_fav:
+            roms_fav[rom_fav_ID]['fav_status'] = 'OK'
+        
         # STEP 1: Find missing launchers
+        log_debug('_command_check_favourites() STEP 1')
         for rom_fav_ID in roms_fav:
             if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
+                log_info('Fav ROM "{}" unlinked because launcherID not in launchers'.format(roms_fav[rom_fav_ID]['name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
 
         # STEP 2: Find missing ROM ID
         # Get a list of launchers Favourite ROMs belong
+        log_debug('_command_check_favourites() STEP 2')
         launchers_fav = set()
         for rom_fav_ID in roms_fav: launchers_fav.add(roms_fav[rom_fav_ID]['launcherID'])
 
@@ -1874,19 +1887,22 @@ class Main:
                 if roms_fav[rom_fav_ID]['launcherID'] == launcher_id:
                     # Check if ROM ID exists
                     if roms_fav[rom_fav_ID]['id'] not in roms:
+                        log_info('Fav ROM "{}" unlinked because romID not in launcher ROMs'.format(roms_fav[rom_fav_ID]['name']))
                         roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
 
         # STEP 3: Check if file exists. Even if the ROM ID is not there because user 
         # deleted ROM or launcher, the file may still be there.
+        log_debug('_command_check_favourites() STEP 3')
         for rom_fav_ID in roms_fav:
             if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
+                log_info('Fav ROM "{}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
 
         # Save favourite ROMs
         fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
 
         # Update container to show changes in Favourites flags. If not, user has to exit Favourites and enter again.
-        xbmc.executebuiltin('Container.Update()')
+        xbmc.executebuiltin('Container.Update')
 
     #
     # Deletes a ROM from a launcher.
