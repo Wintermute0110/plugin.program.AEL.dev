@@ -375,6 +375,7 @@ def fs_write_Favourites_XML_file(roms_xml_file, roms):
                             "  <args>"           + rom["args"]           + "</args>\n" +
                             "  <rompath>"        + rom["rompath"]        + "</rompath>\n" +
                             "  <romext>"         + rom["romext"]         + "</romext>\n" +
+                            "  <fav_status>"     + rom["fav_status"]     + "</fav_status>\n" +
                             "</rom>\n")
         str_list.append('</advanced_emulator_launcher_Favourites>\n')
         full_string = ''.join(str_list)
