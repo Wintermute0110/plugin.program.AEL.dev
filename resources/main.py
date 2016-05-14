@@ -1845,14 +1845,48 @@ class Main:
 
     #
     # Check ROMs in favourites and set fav_status field.
+    # Note that categoryID = launcherID = '0'
     #
     def _command_check_favourites(self, categoryID, launcherID, romID):
-        # Load ROMs of parent launcher
+        # Load Favourite ROMs
+        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
         
-        # Check if parent ROM exist
-        
-        # Inform the user
-        kodi_dialog_OK('AEL', 'Implement check Favourites!')
+        # STEP 1: Find missing launchers
+        for rom_fav_ID in roms_fav:
+            if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
+                roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
+
+        # STEP 2: Find missing ROM ID
+        # Get a list of launchers Favourite ROMs belong
+        launchers_fav = set()
+        for rom_fav_ID in roms_fav: launchers_fav.add(roms_fav[rom_fav_ID]['launcherID'])
+
+        # Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs that belong to 
+        # that launcher.
+        for launcher_id in launchers_fav:
+            # Load launcher ROMs
+            rom_xml_path = self.launchers[launcher_id]["roms_xml_file"]
+            roms = fs_load_ROM_XML_file(rom_xml_path)
+
+            # Traverse all favourites and check them if belong to this launcher.
+            # This should be efficient because traversing favourites is cheap but loading ROMs is expensive.
+            for rom_fav_ID in roms_fav:
+                if roms_fav[rom_fav_ID]['launcherID'] == launcher_id:
+                    # Check if ROM ID exists
+                    if roms_fav[rom_fav_ID]['id'] not in roms:
+                        roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
+
+        # STEP 3: Check if file exists. Even if the ROM ID is not there because user 
+        # deleted ROM or launcher, the file may still be there.
+        for rom_fav_ID in roms_fav:
+            if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
+                roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
+
+        # Save favourite ROMs
+        fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
+
+        # Update container to show changes in Favourites flags. If not, user has to exit Favourites and enter again.
+        xbmc.executebuiltin('Container.Update()')
 
     #
     # Deletes a ROM from a launcher.
@@ -1878,7 +1912,7 @@ class Main:
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
-                    xbmc.executebuiltin('Container.Update({0})'.format(self._misc_url('SHOW_FAVOURITES')))
+                    xbmc.executebuiltin('Container.Update()')
         else:
             # Load ROMs
             roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
@@ -1899,7 +1933,7 @@ class Main:
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
-                    xbmc.executebuiltin('Container.Update({0})'.format(self._misc_url('SHOW_ROMS', categoryID, launcherID)))
+                    xbmc.executebuiltin('Container.Update()')
 
     #
     # Former _edit_rom()

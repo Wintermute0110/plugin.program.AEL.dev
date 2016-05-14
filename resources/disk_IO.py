@@ -70,7 +70,8 @@ def fs_new_rom():
 
 # fav_status = ['OK', 'Unlinked', 'Broken'] default 'OK'
 # 'OK'       filename exists and launcher exists and ROM id exists
-# 'Unlinked' filename exists but launcher or ROM id does not
+# 'Unlinked' filename exists but launcher or ROM ID in launcher does not
+#            Note that if the launcher does not exists implies ROM ID does not exist
 # 'Broken'   filename does not exist. ROM is unplayable
 def fs_new_favourite_rom():
     rom = {'id' : '', 'name' : '', 'filename' : '',
