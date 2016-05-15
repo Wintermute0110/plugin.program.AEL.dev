@@ -40,7 +40,7 @@ def emudata_get_program_arguments( app ):
         'mupen64plus' : '--nogui --noask --noosd --fullscreen "%rom%"',
         'nestopia'    : '"%rom%"',
         'xbmc'        : 'PlayMedia(%rom%)',
-        'retroarch'   : '-L /path/to/core "%rom%"',
+        'retroarch'   : '-L /path/to/core -f "%rom%"',
         'yabause'     : '-a -f -i "%rom%"',
     }
     for application, arguments in applications.iteritems():

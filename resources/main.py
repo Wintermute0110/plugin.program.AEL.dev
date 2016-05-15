@@ -812,12 +812,12 @@ class Main:
         if self.launchers[launcherID]["rompath"] == "":
             type = dialog.select('Select Action for %s' % title, 
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...', 
-                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
+                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["categoryID"]]['name'],
                                   finished_display, 'Advanced Modifications..', 'Delete'])
         else:
             type = dialog.select('Select Action for %s' % title, 
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
-                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
+                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["categoryID"]]['name'],
                                   finished_display, 'Manage ROM List...', 'Advanced Modifications...', 'Delete'])
 
         # Edition of the launcher metadata
@@ -825,7 +825,7 @@ class Main:
         if type == type_nb:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Modify Launcher Metadata',
-                                  ['Scrape from {0}'.format(self.scraper_metadata.get_fancy_name()),
+                                  ['Scrape from {0}'.format(self.scraper_metadata.fancy_name),
                                    'Edit Title: %s' % self.launchers[launcherID]["name"],
                                    'Edit Platform: %s' % self.launchers[launcherID]["platform"],
                                    'Edit Release Date: %s' % self.launchers[launcherID]["release"],
@@ -1281,8 +1281,8 @@ class Main:
             category_name = self.categories[categoryID]['name']
             clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
             clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
-            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + \
-                                 '_' + launcherID[0:8] + '.xml'
+            clean_launch_title = clean_launch_title.replace(' ', '_')
+            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:5] + '.xml'
             roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file_base)
             log_info('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
             log_info('Chosen roms_xml_file_path  "{0}"'.format(roms_xml_file_path))
