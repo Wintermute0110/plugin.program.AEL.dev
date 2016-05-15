@@ -236,7 +236,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
     log_info('fs_write_ROM_XML_file() Saving XML file {0}'.format(roms_xml_file))
 
     # --- Notify we are busy doing things ---
-    kodi_busidialog_ON()
+    kodi_busydialog_ON()
 
     # Original Angelscry method for generating the XML was to grow a string, like this
     # xml_content = 'test'
@@ -254,7 +254,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         str_list.append('<launcher>\n')
         str_list.append('  <id        >{}</id>\n'.format(launcher['id']))
         str_list.append('  <name      >{}</name>\n'.format(launcher['name']))            
-        str_list.append('  <category  >{}</category>\n'.format(launcher['category']))
+        str_list.append('  <categoryID>{}</categoryID>\n'.format(launcher['categoryID']))
         str_list.append('  <platform  >{}</platform>\n'.format(launcher['platform']))
         str_list.append('  <rompath   >{}</rompath>\n'.format(launcher['rompath']))
         str_list.append('  <thumbpath >{}</thumbpath>\n'.format(launcher['thumbpath']))
@@ -303,7 +303,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         log_error('fs_write_ROM_XML_file() (IOError) Cannot write file "{}"'.format(roms_xml_file))
 
     # --- We are not busy anymore ---
-    kodi_busidialog_OFF()
+    kodi_busydialog_OFF()
 
 #
 # Loads a launcher XML with the ROMs
@@ -317,7 +317,7 @@ def fs_load_ROM_XML_file(roms_xml_file):
         return {}
 
     # --- Notify we are busy doing things ---
-    kodi_busidialog_ON()
+    kodi_busydialog_ON()
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_ROM_XML_file() Loading XML file {0}'.format(roms_xml_file))
@@ -348,7 +348,7 @@ def fs_load_ROM_XML_file(roms_xml_file):
             roms[rom['id']] = rom
             
     # --- We are not busy anymore ---
-    kodi_busidialog_OFF()
+    kodi_busydialog_OFF()
 
     return roms
 
