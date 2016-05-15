@@ -1576,7 +1576,7 @@ class Main:
         self._gui_render_category_favourites()
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
-    def _gui_render_launcher_row(self, launcher_dic, key):
+    def _gui_render_launcher_row(self, launcher_dic):
         # --- Create listitem row ---
         commands = []
         if launcher_dic['rompath'] == '': # Executable launcher
@@ -1589,27 +1589,25 @@ class Main:
             listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
         else:
             listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon )
-        if launcher_dic['finished'] != True:
-            ICON_OVERLAY = 6
-        else:
-            ICON_OVERLAY = 7
+        if launcher_dic['finished'] != True: ICON_OVERLAY = 6
+        else:                                ICON_OVERLAY = 7
         listitem.setProperty("fanart_image", launcher_dic['fanart'])
-        listitem.setInfo( "video", {"Title": launcher_dic['name'], "Label": os.path.basename(launcher_dic['rompath']),
-                                    "Plot" : launcher_dic['plot'], "Studio" : launcher_dic['studio'],
-                                    "Genre" : launcher_dic['genre'], "Premiered" : launcher_dic['release'],
-                                    "Year" : launcher_dic['release'], "Writer" : launcher_dic['platform'],
-                                    "Trailer" : os.path.join(launcher_dic['trailerpath']),
-                                    "Director" : os.path.join(launcher_dic['custompath']), 
-                                    "overlay": ICON_OVERLAY } )
+        listitem.setInfo("video", {"Title"    : launcher_dic['name'],    "Label"     : os.path.basename(launcher_dic['rompath']),
+                                   "Plot"     : launcher_dic['plot'],    "Studio"    : launcher_dic['studio'],
+                                   "Genre"    : launcher_dic['genre'],   "Premiered" : launcher_dic['release'],
+                                   "Year"     : launcher_dic['release'], "Writer"    : launcher_dic['platform'],
+                                   "Trailer"  : os.path.join(launcher_dic['trailerpath']),
+                                   "Director" : os.path.join(launcher_dic['custompath']), 
+                                   "overlay"  : ICON_OVERLAY } )
 
         # --- Create context menu ---
         launcherID = launcher_dic['id']
-        categoryID = launcher_dic['category']
+        categoryID = launcher_dic['categoryID']
         commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
         commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
         # ROMs launcher
         if not launcher_dic['rompath'] == '':
-            commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', launcher_dic['category'], key), ))
+            commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID), ))
         commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
         # Add Launcher URL to Kodi Favourites (do not know how to do it yet)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003" 
@@ -1617,7 +1615,7 @@ class Main:
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
-        url_str = self._misc_url('SHOW_ROMS', launcher_dic['category'], key)
+        url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=folder)
 
     #
@@ -1628,7 +1626,7 @@ class Main:
         # If the category has no launchers then render nothing.
         launcher_IDs = []
         for launcher_id in self.launchers:
-            if self.launchers[key]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
+            if self.launchers[launcher_id]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
         if not launcher_IDs:
             category_name = self.categories[categoryID]['name']
             kodi_notify('Advanced Emulator Launcher', 'Category {} has no launchers. Add launchers first'.format(category_name))
@@ -1646,7 +1644,7 @@ class Main:
         # Render launcher rows of this category
         for key in sorted(self.launchers, key = lambda x : self.launchers[x]["application"]):
             if self.launchers[key]["categoryID"] == categoryID:
-                self._gui_render_launcher_row(self.launchers[key], key)
+                self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     #
