@@ -825,12 +825,12 @@ class Main:
         finished_display = 'Status : Finished' if self.launchers[launcherID]["finished"] == True else 'Status : Unfinished'
 
         if self.launchers[launcherID]["rompath"] == "":
-            type = dialog.select('Select Action for %s' % title, 
+            type = dialog.select('Select Action for launcher %s' % title, 
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...', 
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["categoryID"]]['name'],
                                   finished_display, 'Advanced Modifications..', 'Delete'])
         else:
-            type = dialog.select('Select Action for %s' % title, 
+            type = dialog.select('Select Action for launcher %s' % title, 
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["categoryID"]]['name'],
                                   finished_display, 'Manage ROM List...', 'Advanced Modifications...', 'Delete'])
