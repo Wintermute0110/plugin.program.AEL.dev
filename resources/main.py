@@ -1626,7 +1626,8 @@ class Main:
         for launcher_id in self.launchers:
             if self.launchers[key]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
         if not launcher_IDs:
-            kodi_notify('Advanced Emulator Launcher', 'Category has no launchers. Add launchers first')
+            category_name = self.categories[categoryID]['name']
+            kodi_notify('Advanced Emulator Launcher', 'Category {} has no launchers. Add launchers first'.format(category_name))
             # NOTE If we return at this point Kodi produces and error: 
             # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
             # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
