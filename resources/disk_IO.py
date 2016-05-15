@@ -49,7 +49,7 @@ def fs_new_category():
     return category
 
 def fs_new_launcher():
-    launcher = {'id' : '', 'name' : '', 'category' : '', 'platform' : '', 
+    launcher = {'id' : '', 'name' : '', 'categoryID' : '', 'platform' : '', 
                 'application' : '', 'args' : '', 'rompath' : '', 'romext' : '', 
                 'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '', 
                 'thumb' : '', 'fanart' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : '',  

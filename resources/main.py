@@ -89,12 +89,12 @@ class Main:
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
         # log_debug(sys.version)
+        # log_debug('__addon_name__ {}'.format(__addon_name__))
         log_debug('__addon_id__   {}'.format(__addon_id__))
-        log_debug('__addon_name__ {}'.format(__addon_name__))
         log_debug('__version__    {}'.format(__version__))
-        log_debug('__author__     {}'.format(__author__))
+        # log_debug('__author__     {}'.format(__author__))
         log_debug('__profile__    {}'.format(__profile__))
-        log_debug('__type__       {}'.format(__type__))
+        # log_debug('__type__       {}'.format(__type__))
         for i in range(len(sys.argv)):
             log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
         # log_debug('CATEGORIES_FILE_PATH = "{}"'.format(CATEGORIES_FILE_PATH))
@@ -116,8 +116,8 @@ class Main:
         # Interestingly, if plugin is called as type executable then args is empty.
         # However, if plugin is called as type video then Kodi adds the following
         # even for the first call: 'content_type': ['video']
-        self._content_type = args['content_type'] if 'content_type' in args else None
-        log_debug('content_type = {}'.format(self._content_type))
+        self.content_type = args['content_type'] if 'content_type' in args else None
+        log_debug('content_type = {}'.format(self.content_type))
 
         # Experiment to try to increase the number of views the addon supports. I do not know why
         # programs does not support all views movies do.
@@ -139,8 +139,8 @@ class Main:
         # Create a default categories.xml file if does not exist yet (plugin just installed)
         if not os.path.isfile(CATEGORIES_FILE_PATH):
             kodi_dialog_OK('Advanced Emulator Launcher',
-                               'It looks it is the first time you run AEL!',
-                               'Creating a default categories.xml')
+                           'It looks it is the first time you run Advanced Emulator Launcher! ' +
+                           'A default categories.xml has been created. You can now customise it to your needs.')
             self._cat_create_default()
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
@@ -598,29 +598,40 @@ class Main:
     # Also removes all launchers in this category!
     #
     def _gui_remove_category(self, categoryID):
-        dialog = xbmcgui.Dialog()
-        launcher_list = []
+        launcherID_list = []
+        category_name = self.categories[categoryID]["name"]
         for launcherID in sorted(self.launchers.iterkeys()):
-            if self.launchers[launcherID]['category'] == categoryID:
-                launcher_list.append(launcherID)
-        if len(launcher_list) > 0:
-            ret = dialog.yesno('AEL', 
-                               'Category "%s" contains %s launchers.' % (self.categories[categoryID]["name"], len(launcher_list)),
-                               'Deleting "%s" will also delete related launchers.' % self.categories[categoryID]["name"],
-                               'Are you sure you want to delete "%s" ?' % self.categories[categoryID]["name"])
+            if self.launchers[launcherID]['categoryID'] == categoryID:
+                launcherID_list.append(launcherID)
+
+        dialog = xbmcgui.Dialog()
+        if len(launcherID_list) > 0:
+            ret = dialog.yesno('Advanced Emulator Launcher', 
+                               'Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
+                               'Deleting it will also delete related launchers. ' +
+                               'Are you sure you want to delete "{}"?'.format(category_name) )
             if ret:
-                for launcherID in launcher_list:
+                log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
+                # Delete launchers and ROM XML associated with them
+                for launcherID in launcherID_list:
+                    log_info('Deleting linked launcher "{}" id {}'.format(self.launchers[launcherID]['name'], launcherID))
+                    roms_xml_file = self.launchers[launcherID]['roms_xml_file']
+                    if os.path.isfile(roms_xml_file):
+                        log_info('Deleting ROM XML "{}"'.format(roms_xml_file))
+                        os.remove(roms_xml_file)
                     self.launchers.pop(launcherID)
+                # Delete category and save remaining categories/launchers
                 self.categories.pop(categoryID)
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         else:
-            ret = dialog.yesno('AEL',
-                               'Category "%s" contains %s launchers.' % (self.categories[categoryID]["name"], len(launcher_list)),
-                               'Are you sure you want to delete "%s" ?' % self.categories[categoryID]["name"])
+            ret = dialog.yesno('Advanced Emulator Launcher',
+                               'Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
+                               'Are you sure you want to delete "{}"?'.format(category_name) )
             if ret:
+                log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
+                log_info('Category has no launchers, so no launchers to delete.')
                 self.categories.pop(categoryID)
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        xbmc.executebuiltin("Container.Update")
 
     def _gui_edit_category_metadata(self, categoryID):
         dialog = xbmcgui.Dialog()
@@ -641,7 +652,7 @@ class Main:
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
                 kodi_dialog_OK('AEL Information', 
-                                   'Category name "{0}" not changed.'.format(self.categories[categoryID]["name"]))
+                               'Category name "{0}" not changed.'.format(self.categories[categoryID]["name"]))
         # Edition of the category genre
         elif type2 == 1:
             keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], 'Edit Genre')
@@ -651,7 +662,7 @@ class Main:
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
                 kodi_dialog_OK('AEL Information', 
-                                   'Category genre "{0}" not changed.'.format(self.categories[categoryID]["genre"]))
+                               'Category genre "{0}" not changed.'.format(self.categories[categoryID]["genre"]))
         # Edition of the plot (description)
         elif type2 == 2:
             keyboard = xbmc.Keyboard(self.categories[categoryID]["description"], 'Edit Description')
@@ -661,7 +672,7 @@ class Main:
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
                 kodi_dialog_OK('AEL Information', 
-                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
+                               'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
         # Import category description
         elif type2 == 3:
             text_file = xbmcgui.Dialog().browse(1, 'Select description file (txt|dat)', "files", ".txt|.dat", False, False)
@@ -672,15 +683,15 @@ class Main:
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
                 kodi_dialog_OK('AEL Information', 
-                                   'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
+                               'Category plot "{0}" not changed.'.format(self.categories[categoryID]["description"]))
 
     def _command_edit_category(self, categoryID):
         # Shows a select box with the options to edit
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]["finished"] == True else 'Status: Unfinished'
         type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]["name"]), 
-                             ['Edit Title/Genre/Description', 'Edit Thumbnail image', 'Edit Fanart image', 
-                              finished_display, 'Delete category'])
+                             ['Edit Title/Genre/Description', 'Edit Thumbnail Image', 'Edit Fanart Image', 
+                              finished_display, 'Delete Category'])
         # Edit metadata
         if type == 0:
             self._gui_edit_category_metadata(categoryID)
@@ -708,7 +719,7 @@ class Main:
         elif type == -1:
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
-        # Return to the category directory
+        # Update container contents
         xbmc.executebuiltin("Container.Refresh")
 
     def _command_add_new_category(self):
