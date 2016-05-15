@@ -413,7 +413,7 @@ class Main:
         
         
         
-        xbmc.executebuiltin("Container.Update")
+        xbmc.executebuiltin("Container.Refresh")
         
     # ---------------------------------------------------------------------------------------------
     # Metadata scrapers
@@ -451,7 +451,7 @@ class Main:
                 kodi_notify('Advanced Emulator Launcher', 'No data found')
 
             self._save_launchers()
-        xbmc.executebuiltin("Container.Update")
+        xbmc.executebuiltin("Container.Refresh")
 
     #
     # Scrap standalone launcher (typically a game) metadata
@@ -489,7 +489,7 @@ class Main:
 
             # Save XML data to disk
             self._save_launchers()
-        xbmc.executebuiltin("Container.Update")
+        xbmc.executebuiltin("Container.Refresh")
 
     #
     # Edit category/launcher/rom thumbnail/fanart.
@@ -759,15 +759,24 @@ class Main:
     def _gui_empty_launcher(self, launcherID):
         roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
         num_roms = len(roms)
+        
+        # If launcher is empty (no ROMs) do nothing
+        if num_roms == 0:
+            kodi_dialog_OK('Advanced Emulator Launcher', 
+                           'Launcher is empty. Nothing to do.')
+            return
+
+        # Confirm user wants to delete ROMs
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno('Advanced Emulator Launcher', 
-                           'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
+                           "Launcher '{}' has {} ROMs".format(self.launchers[launcherID]["name"], num_roms),
                            'Are you sure you want to delete it?')
         if ret:
-            # Just remove XML file and set roms_xml_file to ''
+            # Just remove XML file. Keep the value of roms_xml_file to be reused when user add more ROMs.
+            # Note that if the file is not found fs_load_ROM_XML_file() will return an empty dictionary.
             roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
-            if roms_xml_file == '' or rompath == '':
-                log_debug('Launcher is empty. No ROMs XML to remove')
+            if roms_xml_file == '':
+                log_debug('Launcher roms_xml_file = "". No ROMs XML to remove')
             else:
                 log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
                 try:
@@ -775,9 +784,8 @@ class Main:
                 except OSError:
                     log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
                     kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
-            self.launchers[launcherID]["roms_xml_file"] = ''
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            xbmc.executebuiltin("Container.Update")
+            xbmc.executebuiltin("Container.Refresh")
 
     #
     # Removes a launcher. For ROMs launcher it also removes ROM XML. For standalone launcher there is no
@@ -811,13 +819,13 @@ class Main:
                 except OSError:
                     log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
                     kodi_notify_warning('AEL', 'OSError exception deleting ROMs XML')
-            categoryID = self.launchers[launcherID]["category"]
+            categoryID = self.launchers[launcherID]["categoryID"]
             self.launchers.pop(launcherID)
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             if self._cat_is_empty(categoryID):
                 xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
             else:
-                xbmc.executebuiltin("Container.Update")
+                xbmc.executebuiltin("Container.Refresh")
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
@@ -1805,7 +1813,7 @@ class Main:
         # Check if XML file with ROMs exist
         if not os.path.isfile(roms_xml_file):
             kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.')
-            xbmc.executebuiltin("Container.Update")
+            xbmc.executebuiltin("Container.Refresh")
             return
 
         # Load ROMs
@@ -1966,7 +1974,7 @@ class Main:
         fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
 
         # Update container to show changes in Favourites flags. If not, user has to exit Favourites and enter again.
-        xbmc.executebuiltin('Container.Update')
+        xbmc.executebuiltin('Container.Refresh')
 
     #
     # Deletes a ROM from a launcher.
@@ -1992,7 +2000,7 @@ class Main:
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
-                    xbmc.executebuiltin('Container.Update')
+                    xbmc.executebuiltin('Container.Refresh')
         else:
             # Load ROMs
             roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
@@ -2013,7 +2021,7 @@ class Main:
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
-                    xbmc.executebuiltin('Container.Update')
+                    xbmc.executebuiltin('Container.Refresh')
 
     #
     # Former _edit_rom()
@@ -2383,7 +2391,7 @@ class Main:
 
         if len(roms) == 0:
             kodi_dialog_OK('AEL', 'No ROMs found! Make sure launcher directory and file extensions are correct.')
-            xbmc.executebuiltin('Container.Update()')
+            xbmc.executebuiltin('Container.Refresh')
             return
 
         # --- If we have a No-Intro XML then audit roms -------------------------------------------
@@ -2434,8 +2442,8 @@ class Main:
         # ~~~ Notify user ~~~
         kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
 
-        # xbmc.executebuiltin("XBMC.ReloadSkin()")
-        xbmc.executebuiltin('Container.Update()')
+        # xbmc.executebuiltin("XBMC.ReloadSkin")
+        xbmc.executebuiltin('Container.Refresh')
 
     def _roms_process_scanned_ROM(self, selectedLauncher, F, num_files_checked, num_files, pDialog):
         dialog_canceled = False
@@ -2759,7 +2767,7 @@ class Main:
         # Check that the launcher has items
         if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
             kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
-            xbmc.executebuiltin("Container.Update")
+            xbmc.executebuiltin("Container.Refresh")
             return
         roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
         if not roms:
@@ -2875,7 +2883,7 @@ class Main:
         # Check that the launcher has items
         if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
             kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
-            xbmc.executebuiltin("Container.Update")
+            xbmc.executebuiltin("Container.Refresh")
             return
         roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
         if not roms:
