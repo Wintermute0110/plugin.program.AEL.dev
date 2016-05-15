@@ -1235,7 +1235,7 @@ class Main:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
             if not app: return False
             
-            files_path = xbmcgui.Dialog().browse(0, 'Select Files path', "files", "")
+            files_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', "files", "")
             if not files_path: return False
 
             extensions = emudata_get_program_extensions(os.path.basename(app))
@@ -1244,8 +1244,8 @@ class Main:
             if not extkey.isConfirmed(): return False
             ext = extkey.getText()
 
-            argument = emudata_get_program_arguments(os.path.basename(app))
-            argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
+            default_arguments = emudata_get_program_arguments(os.path.basename(app))
+            argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
             argkeyboard.doModal()
             if not argkeyboard.isConfirmed(): return False
             args = argkeyboard.getText()
@@ -1264,8 +1264,8 @@ class Main:
             sel_platform = dialog.select('Select the platform', platforms)
 
             # Selection of the thumbnails and fanarts path
-            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False, files_path)
-            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False, files_path)
+            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnail path', "files", "", False, False, files_path)
+            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanart path', "files", "", False, False, files_path)
 
             # --- Create launcher object data, add to dictionary and write XML file ---
             thumb_path  = "" if not thumb_path else thumb_path
@@ -1284,26 +1284,30 @@ class Main:
             roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + \
                                  '_' + launcherID[0:8] + '.xml'
             roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file_base)
-            self._print_log('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
-            self._print_log('Chosen roms_xml_file_path  "{0}"'.format(roms_xml_file_path))
+            log_info('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
+            log_info('Chosen roms_xml_file_path  "{0}"'.format(roms_xml_file_path))
 
             # Create new launchers and save cateogories.xml
             launcherdata = fs_new_launcher()
             launcherdata['id']            = launcherID
             launcherdata['name']          = title
-            launcherdata['category']      = categoryID
+            launcherdata['categoryID']    = categoryID
             launcherdata['application']   = app
             launcherdata['args']          = args
             launcherdata['rompath']       = files_path
             launcherdata['thumbpath']     = thumb_path
             launcherdata['fanartpath']    = fanart_path
             launcherdata['romext']        = ext
-            launcherdata['platform']       = launcher_platform
+            launcherdata['platform']      = launcher_platform
             launcherdata['lnk']           = launcher_lnk
             launcherdata['roms_xml_file'] = roms_xml_file_path
             self.launchers[launcherID] = launcherdata
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
+            
+            # This causes trouble...
+            # xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
+            # Just update container contents
+            xbmc.executebuiltin("Container.Refresh")
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.

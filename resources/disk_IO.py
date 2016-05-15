@@ -125,7 +125,7 @@ def fs_write_catfile(categories_file, categories, launchers):
             str_list.append("<launcher>\n" +
                             "  <id>"               + launcherID                   + "</id>\n" +
                             "  <name>"             + launcher["name"]             + "</name>\n" +
-                            "  <category>"         + launcher["category"]         + "</category>\n" +
+                            "  <categoryID>"       + launcher["categoryID"]       + "</categoryID>\n" +
                             "  <platform>"         + launcher["platform"]         + "</platform>\n" +
                             "  <application>"      + launcher["application"]      + "</application>\n"
                             "  <args>"             + launcher["args"]             + "</args>\n" +
