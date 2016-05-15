@@ -1564,9 +1564,8 @@ class Main:
     # Former _get_categories()
     # Renders the categories (addon root window)
     #
-    def _gui_render_categories( self ):
-        # For every category, add it to the listbox
-        # Order alphabetically by name
+    def _gui_render_categories(self):
+        # For every category, add it to the listbox. Order alphabetically by name
         for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
             self._gui_render_category_row(self.categories[key], key)
         # AEL Favourites special category
@@ -1621,9 +1620,18 @@ class Main:
     # Former  _get_launchers
     # Renders the launcher for a given category
     #
-    def _gui_render_launchers( self, categoryID ):
-        for key in sorted(self.launchers, key= lambda x : self.launchers[x]["application"]):
-            if self.launchers[key]["category"] == categoryID:
+    def _gui_render_launchers(self, categoryID):
+        # If the category has no launchers then render nothing.
+        launcher_IDs = []
+        for launcher_id in self.launchers:
+            if self.launchers[key]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
+        if not launcher_IDs:
+            kodi_notify('Advanced Emulator Launcher', 'Category has no launchers. Add launchers first')
+            return
+
+        # Render launcher rows of this category
+        for key in sorted(self.launchers, key = lambda x : self.launchers[x]["application"]):
+            if self.launchers[key]["categoryID"] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key], key)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
@@ -1753,14 +1761,14 @@ class Main:
 
         # Check if XML file with ROMs exist
         if not os.path.isfile(roms_xml_file):
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.', 10000)
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.')
             xbmc.executebuiltin("Container.Update")
             return
 
         # Load ROMs
         roms = fs_load_ROM_XML_file(roms_xml_file)
         if not roms:
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.', 10000)
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.')
             return
 
         # Load favourites
