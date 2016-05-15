@@ -579,9 +579,9 @@ def import_rom_nfo(self, launcher, rom):
         if len(item_genre) > 0 : self.launchers[launcher]["roms"][rom]["genre"] = item_genre[0]
         if len(item_plot) > 0 : self.launchers[launcher]["roms"][rom]["plot"] = item_plot[0].replace('&quot;','"')
         self._save_launchers()
-        xbmc_notify('Advanced Emulator Launcher', '%s imported' % os.path.basename(nfo_file),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s imported' % os.path.basename(nfo_file))
     else:
-        xbmc_notify('Advanced Emulator Launcher', '%s not found' % os.path.basename(nfo_file),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s not found' % os.path.basename(nfo_file))
 
 def export_rom_nfo(self, launcher, rom):
     nfo_file=os.path.splitext(self.launchers[launcher]["roms"][rom]["filename"].decode(get_encoding()))[0]+".nfo"
@@ -610,13 +610,13 @@ def export_rom_nfo(self, launcher, rom):
         source.close()
         destination.close()
         os.remove(nfo_file+".tmp")
-        xbmc_notify('Advanced Emulator Launcher', '%s updated' % os.path.basename(nfo_file).encode('utf8','ignore'),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s updated' % os.path.basename(nfo_file).encode('utf8','ignore'))
     else:
         nfo_content = "<game>\n\t<title>"+self.launchers[launcher]["roms"][rom]["name"]+"</title>\n\t<platform>"+self.launchers[launcher]["roms"][rom]["gamesys"]+"</platform>\n\t<year>"+self.launchers[launcher]["roms"][rom]["release"]+"</year>\n\t<publisher>"+self.launchers[launcher]["roms"][rom]["studio"]+"</publisher>\n\t<genre>"+self.launchers[launcher]["roms"][rom]["genre"]+"</genre>\n\t<plot>"+self.launchers[launcher]["roms"][rom]["plot"]+"</plot>\n</game>\n"
         usock = open( nfo_file, 'w' )
         usock.write(nfo_content)
         usock.close()
-        xbmc_notify('Advanced Emulator Launcher', '%s created' % os.path.basename(nfo_file).encode('utf8','ignore'),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s created' % os.path.basename(nfo_file).encode('utf8','ignore'))
 
 def export_launcher_nfo(self, launcherID):
     if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
@@ -648,13 +648,13 @@ def export_launcher_nfo(self, launcherID):
         source.close()
         destination.close()
         os.remove(nfo_file+".tmp")
-        xbmc_notify('Advanced Emulator Launcher', '%s updated' % os.path.basename(nfo_file),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s updated' % os.path.basename(nfo_file))
     else:
         nfo_content = "<launcher>\n\t<title>"+self.launchers[launcherID]["name"]+"</title>\n\t<platform>"+self.launchers[launcherID]["gamesys"]+"</platform>\n\t<year>"+self.launchers[launcherID]["release"]+"</year>\n\t<publisher>"+self.launchers[launcherID]["studio"]+"</publisher>\n\t<genre>"+self.launchers[launcherID]["genre"]+"</genre>\n\t<plot>"+self.launchers[launcherID]["plot"]+"</plot>\n</launcher>\n"
         usock = open( nfo_file, 'w' )
         usock.write(nfo_content)
         usock.close()
-        xbmc_notify('Advanced Emulator Launcher', '%s created' % os.path.basename(nfo_file),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s created' % os.path.basename(nfo_file))
 
 def import_launcher_nfo(self, launcherID):
     if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
@@ -681,6 +681,6 @@ def import_launcher_nfo(self, launcherID):
         self.launchers[launcherID]["plot"] = item_plot[0].replace('&quot;','"')
         f.close()
         self._save_launchers()
-        xbmc_notify('Advanced Emulator Launcher', '%s imported' % os.path.basename(nfo_file),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s imported' % os.path.basename(nfo_file))
     else:
-        xbmc_notify('Advanced Emulator Launcher', '%s not found' % os.path.basename(nfo_file),3000)
+        xbmc_notify('Advanced Emulator Launcher', '%s not found' % os.path.basename(nfo_file))
