@@ -823,9 +823,11 @@ class Main:
             self.launchers.pop(launcherID)
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             if self._cat_is_empty(categoryID):
-                xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
+                log_error('_gui_remove_launcher() Launcher category empty. Replacing Window')
+                xbmc.executebuiltin('ReplaceWindow(Programs,%s)'.format(self.base_url))
             else:
-                xbmc.executebuiltin("Container.Refresh")
+                log_error('_gui_remove_launcher() Launcher category not empty. Container.Refresh()')
+                xbmc.executebuiltin('Container.Refresh')
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
@@ -1041,6 +1043,9 @@ class Main:
                 # Empty Launcher menu option
                 elif type2 == 3:
                     self._gui_empty_launcher(launcherID)
+                    # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
+                    # Container.Refresh at the end of this function and calling the plugin twice.
+                    return
 
         # Launcher Advanced menu option
         type_nb = type_nb + 1
@@ -1188,20 +1193,23 @@ class Main:
         type_nb = type_nb + 1
         if type == type_nb:
             self._gui_remove_launcher(launcherID)
+            # _gui_remove_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
+            # Container.Refresh at the end of this function and calling the plugin twice.
+            return
 
         if type == -1:
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # Return to the launcher directory
-        xbmc.executebuiltin("Container.Refresh")
+        xbmc.executebuiltin('Container.Refresh')
 
     def _command_add_new_launcher(self, categoryID):
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
-            kodi_notify('Advanced Launcher - Error', 'Target category not found.' , 3000)
+            kodi_notify('Advanced Emulator Launcher - Error', 'Target category not found.')
             xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
 
-            return False
+            return
         
         # Show "Create New Launcher" dialog
         dialog = xbmcgui.Dialog()
