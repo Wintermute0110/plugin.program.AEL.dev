@@ -1044,48 +1044,48 @@ class Main:
             # --- ROMS launcher -------------------------------------------------------------------
             if self.launchers[launcherID]["rompath"] != "" and sys.platform == 'win32':
                 type2 = dialog.select('Advanced Modifications', 
-                                      ['Change Application : %s' % self.launchers[launcherID]["application"],
-                                       'Modify Arguments : %s' % self.launchers[launcherID]["args"],
-                                       'Change Items Path : %s' % self.launchers[launcherID]["rompath"],
-                                       'Modify Items Extensions : %s' % self.launchers[launcherID]["romext"],
-                                       'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
-                                       'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
-                                       'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
-                                       'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
-                                       'Toggle Kodi into Windowed mode : %s' % minimize_str,
-                                       'Shortcuts (.lnk) support : %s' % lnk_str])
+                                      ['Change Application: %s' % self.launchers[launcherID]["application"],
+                                       'Modify Arguments: %s' % self.launchers[launcherID]["args"],
+                                       'Change Items Path: %s' % self.launchers[launcherID]["rompath"],
+                                       'Modify Items Extensions: %s' % self.launchers[launcherID]["romext"],
+                                       'Change Thumbs Path: %s' % self.launchers[launcherID]["thumbpath"],
+                                       'Change Fanarts Path: %s' % self.launchers[launcherID]["fanartpath"],
+                                       'Change Trailer file: %s' % self.launchers[launcherID]["trailerpath"],
+                                       'Change Extra-fanarts Path: %s' % self.launchers[launcherID]["custompath"],
+                                       'Toggle Kodi into Windowed mode: %s' % minimize_str,
+                                       'Shortcuts (.lnk) support: %s' % lnk_str])
             elif self.launchers[launcherID]["rompath"] != "" and not sys.platform == 'win32':
                 type2 = dialog.select('Advanced Modifications', 
-                                      ['Change Application : %s' % self.launchers[launcherID]["application"],
-                                       'Modify Arguments : %s' % self.launchers[launcherID]["args"],
-                                       'Change Items Path : %s' % self.launchers[launcherID]["rompath"],
-                                       'Modify Items Extensions : %s' % self.launchers[launcherID]["romext"],
-                                       'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
-                                       'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
-                                       'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
-                                       'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
-                                       'Toggle Kodi into Windowed mode : %s' % minimize_str])
+                                      ['Change Application: %s' % self.launchers[launcherID]["application"],
+                                       'Modify Arguments: %s' % self.launchers[launcherID]["args"],
+                                       'Change Items Path: %s' % self.launchers[launcherID]["rompath"],
+                                       'Modify Items Extensions: %s' % self.launchers[launcherID]["romext"],
+                                       'Change Thumbs Path: %s' % self.launchers[launcherID]["thumbpath"],
+                                       'Change Fanarts Path: %s' % self.launchers[launcherID]["fanartpath"],
+                                       'Change Trailer file: %s' % self.launchers[launcherID]["trailerpath"],
+                                       'Change Extra-fanarts Path: %s' % self.launchers[launcherID]["custompath"],
+                                       'Toggle Kodi into Windowed mode: %s' % minimize_str])
 
             # --- Standalone launcher -------------------------------------------------------------
             elif self.launchers[launcherID]["rompath"] == "" and sys.platform == 'win32':
                 type2 = dialog.select('Advanced Modifications', 
-                                      ['Change Application : %s' % self.launchers[launcherID]["application"],
-                                       'Modify Arguments : %s' % self.launchers[launcherID]["args"],
-                                       'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
-                                       'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
-                                       'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
-                                       'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
-                                       'Toggle Kodi into Windowed mode : %s' % minimize_str,
-                                       'Shortcuts (.lnk) support : %s' % lnk_str])
+                                      ['Change Application: %s' % self.launchers[launcherID]["application"],
+                                       'Modify Arguments: %s' % self.launchers[launcherID]["args"],
+                                       'Change Thumbs Path: %s' % self.launchers[launcherID]["thumbpath"],
+                                       'Change Fanarts Path: %s' % self.launchers[launcherID]["fanartpath"],
+                                       'Change Trailer file: %s' % self.launchers[launcherID]["trailerpath"],
+                                       'Change Extra-fanarts Path: %s' % self.launchers[launcherID]["custompath"],
+                                       'Toggle Kodi into Windowed mode: %s' % minimize_str,
+                                       'Shortcuts (.lnk) support: %s' % lnk_str])
             else:
                 type2 = dialog.select('Advanced Modifications', 
-                                      ['Change Application : %s' % self.launchers[launcherID]["application"],
-                                       'Modify Arguments : %s' % self.launchers[launcherID]["args"],
-                                       'Change Thumbs Path : %s' % self.launchers[launcherID]["thumbpath"],
-                                       'Change Fanarts Path : %s' % self.launchers[launcherID]["fanartpath"],
-                                       'Change Trailer file : %s' % self.launchers[launcherID]["trailerpath"],
-                                       'Change Extra-fanarts Path : %s' % self.launchers[launcherID]["custompath"],
-                                       'Toggle Kodi into Windowed mode : %s' % minimize_str])
+                                      ['Change Application: %s' % self.launchers[launcherID]["application"],
+                                       'Modify Arguments: %s' % self.launchers[launcherID]["args"],
+                                       'Change Thumbs Path: %s' % self.launchers[launcherID]["thumbpath"],
+                                       'Change Fanarts Path: %s' % self.launchers[launcherID]["fanartpath"],
+                                       'Change Trailer file: %s' % self.launchers[launcherID]["trailerpath"],
+                                       'Change Extra-fanarts Path: %s' % self.launchers[launcherID]["custompath"],
+                                       'Toggle Kodi into Windowed mode: %s' % minimize_str])
 
             # Launcher application path menu option
             type2_nb = 0
