@@ -2666,67 +2666,7 @@ class Main:
 
         # ~~~ Fanart scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Disable until thumb scrapping works well. Then copy/paste/adapt.
-        if None:
-            if ( self.settings[ "fanarts_method" ] == "2" ):
-                # If overwrite activated or fanart file not exist
-                if ( self.settings[ "overwrite_fanarts"] ) or ( fanart == "" ):
-                    pDialog.update(filesCount * 100 / len(files), 
-                                __language__( 30071 ) % (f.replace("."+f.split(".")[-1],""),
-                                self.settings[ "fanarts_scraper" ].encode('utf-8','ignore')))
-                    img_url=""
-                    if (fanart_path == thumb_path):
-                        if (fanart_path == path):
-                            fanart = fullname.replace("."+f.split(".")[-1], '_fanart.jpg')
-                        else:
-                            fanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '_fanart.jpg'))
-                    else:
-                        if (fanart_path == path):
-                            fanart = fullname.replace("."+f.split(".")[-1], '.jpg')
-                        else:
-                            fanart = os.path.join(fanart_path, f.replace("."+f.split(".")[-1], '.jpg'))
-                    if ( app.lower().find('mame') > 0 ) or ( self.settings[ "fanarts_scraper" ] == 'arcadeHITS' ):
-                        covers = self._get_fanarts_list(romdata["platform"],title,self.settings[ "fanart_image_size" ])
-                    else:
-                        covers = self._get_fanarts_list(romdata["platform"],romdata["name"],self.settings[ "fanart_image_size" ])
-                    if covers:
-                        if ( self.settings[ "scrap_fanarts" ] == "1" ):
-                            if ( self.settings[ "select_fanarts" ] == "0" ):
-                                img_url = self._get_fanart(covers[0][0])
-                            if ( self.settings[ "select_fanarts" ] == "1" ):
-                                img_url = self._get_fanart(covers[int(round(len(covers)/2))-1][0])
-                            if ( self.settings[ "select_fanarts" ] == "2" ):
-                                img_url = self._get_fanart(covers[len(covers)-1][0])
-                        else:
-                            nb_images = len(covers)
-                            pDialog.close()
-                            self.image_url = MyDialog(covers)
-                            if ( self.image_url ):
-                                img_url = self._get_fanart(self.image_url)
-                                ret = pDialog.create('Advanced Emulator Launcher', __language__( 30014 ) % (path))
-                                pDialog.update(filesCount * 100 / len(files), 
-                                            __language__( 30061 ) % (f.replace("."+f.split(".")[-1],""),
-                                            self.settings[ "datas_scraper" ].encode('utf-8','ignore')))
-                        cached_thumb = Thumbnails().get_cached_covers_thumb( fanart ).replace("tbn" , "jpg")
-                        if ( img_url !='' ):
-                            try:
-                                download_img(img_url,fanart)
-                                shutil.copy2( fanart.decode(get_encoding(),'ignore') , cached_thumb.decode(get_encoding(),'ignore') )
-                            except socket.timeout:
-                                kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30606 ),3000)
-                            except exceptions.IOError:
-                                kodi_notify('Advanced Emulator Launcher'+" - "+__language__( 30612 ), __language__( 30607 ),3000)
-                        else:
-                            if ( not os.path.isfile(fanart) ) & ( os.path.isfile(cached_thumb) ):
-                                os.remove(cached_thumb)
-                romdata["fanart"] = fanart
-            else:
-                if self.settings[ "fanarts_method" ] == "0":
-                    romdata["fanart"] = ""
-                else:
-                    pDialog.update(filesCount * 100 / len(files), 
-                                __language__( 30071 ) % (f.replace("."+f.split(".")[-1],""),
-                                __language__( 30172 )))
-                    romdata["fanart"] = fanart
+
 
         # Return romdata dictionary
         return (romdata, pDialog, dialog_canceled)
