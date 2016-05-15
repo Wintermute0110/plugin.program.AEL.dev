@@ -2684,10 +2684,10 @@ class Main:
         ext = launcher["romext"]
         roms = launcher["roms"]
         rompath = launcher["rompath"]
-        romfile = dialog.browse(1, __language__( 30017 ),"files", "."+ext.replace("|","|."), False, False, rompath)
+        romfile = dialog.browse(1, 'Select the file',"files", "."+ext.replace("|","|."), False, False, rompath)
         if romfile:
             title=os.path.basename(romfile)
-            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), __language__( 30018 ))
+            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the file')
             keyboard.doModal()
             if (keyboard.isConfirmed()):
                 title = keyboard.getText()
