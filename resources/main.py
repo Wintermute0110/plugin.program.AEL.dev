@@ -152,8 +152,8 @@ class Main:
 
         # If no com parameter display categories. Display categories listbox (addon root directory)
         if 'com' not in args:
-            log_debug('AEL Root Folder >> Categories list <<')
             self._gui_render_categories()
+            log_debug('AEL exiting after rendering Categories (addon root)')
             return
 
         # There is a command to process
@@ -229,6 +229,8 @@ class Main:
 
         else:
             kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
+        
+        log_debug('AEL exiting.')
 
     #
     # Get Addon Settings
@@ -798,14 +800,14 @@ class Main:
 
         if self.launchers[launcherID]["rompath"] == "":
             type = dialog.select('Select Action for %s' % title, 
-                                 ['Modify Metadata ...', 'Change Thumbnail Image ...', 'Change Fanart Image ...', 
+                                 ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...', 
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
-                                  finished_display, 'Advanced Modifications ...', 'Delete'])
+                                  finished_display, 'Advanced Modifications..', 'Delete'])
         else:
             type = dialog.select('Select Action for %s' % title, 
-                                 ['Modify Metadata ...', 'Change Thumbnail Image ...', 'Change Fanart Image ...',
+                                 ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
                                   'Change Category: %s' % self.categories[self.launchers[launcherID]["category"]]['name'],
-                                  finished_display, 'Manage ROM List ...', 'Advanced Modifications ...', 'Delete'])
+                                  finished_display, 'Manage ROM List...', 'Advanced Modifications...', 'Delete'])
 
         # Edition of the launcher metadata
         type_nb = 0
@@ -1928,7 +1930,7 @@ class Main:
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
-                    xbmc.executebuiltin('Container.Update()')
+                    xbmc.executebuiltin('Container.Update')
         else:
             # Load ROMs
             roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
@@ -1949,7 +1951,7 @@ class Main:
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
                 else:
-                    xbmc.executebuiltin('Container.Update()')
+                    xbmc.executebuiltin('Container.Update')
 
     #
     # Former _edit_rom()
@@ -2108,18 +2110,64 @@ class Main:
                 fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
 
         # Link this favourite ROM to a new parent ROM
-        #
         # ONLY IN FAVOURITE ROM EDITING
-        elif type == 5:            
-            # First, tell the user if the current parent exist or not
-            
-            # If user says yes, then first must select the launcher
-            
-            # Then, select the new ROM in that launcher
-            kodi_dialog_OK('AEL', 'Implement relink Favourite!')
-
+        elif type == 5:
+            # STEP 1: select new launcher.
+            launcher_IDs = []
+            launcher_names = []
+            for launcherID in self.launchers: 
+                launcher_IDs.append(launcherID)
+                launcher_names.append(self.launchers[launcherID]['name'])
+            # Order alphabetically both lists
+            sorted_idx = [i[0] for i in sorted(enumerate(launcher_names), key=lambda x:x[1])]
+            launcher_IDs   = [launcher_IDs[i] for i in sorted_idx]
+            launcher_names = [launcher_names[i] for i in sorted_idx]
+            dialog = xbmcgui.Dialog()
+            selected_launcher = dialog.select('New launcher for {}'.format(roms[romID]['name']), launcher_names)
+            if not selected_launcher == -1:
+                # STEP 2: select ROMs in that launcher.
+                launcher_id = launcher_IDs[selected_launcher]
+                rom_xml_path = self.launchers[launcher_id]["roms_xml_file"]
+                launcher_roms = fs_load_ROM_XML_file(rom_xml_path)
+                if not launcher_roms: return
+                roms_IDs = []
+                roms_names = []
+                for rom_id in launcher_roms:
+                    # ROMs with nointro_status = 'Miss' are invalid! Do not add to the list
+                    if launcher_roms[rom_id]['nointro_status'] == 'Miss': continue
+                    roms_IDs.append(rom_id)
+                    roms_names.append(launcher_roms[rom_id]['name'])
+                sorted_idx = [i[0] for i in sorted(enumerate(roms_names), key=lambda x:x[1])]
+                roms_IDs   = [roms_IDs[i] for i in sorted_idx]
+                roms_names = [roms_names[i] for i in sorted_idx]
+                selected_rom = dialog.select('New ROM for {}'.format(roms[romID]['name']), roms_names)
+                # Do the relinking and save favourites.
+                if not selected_rom == -1:
+                    launcher_rom_id = roms_IDs[selected_rom]
+                    current_rom = launcher_roms[launcher_rom_id]
+                    # Check that the selected ROM ID is not already in Favourites
+                    if launcher_rom_id in roms:
+                        kodi_dialog_OK('AEL', 'Selected ROM already in Favourites. Exiting.')
+                        return
+                    # Delete current Favourite
+                    roms.pop(romID)
+                    # Copy parent ROM data files into favourite.
+                    # Overwrite everything in Favourite ROM
+                    roms[launcher_rom_id] = current_rom
+                    roms[launcher_rom_id]['launcherID']  = self.launchers[launcher_id]['id']
+                    roms[launcher_rom_id]['platform']    = self.launchers[launcher_id]['platform']
+                    roms[launcher_rom_id]['application'] = self.launchers[launcher_id]['application']
+                    roms[launcher_rom_id]['args']        = self.launchers[launcher_id]['args']
+                    roms[launcher_rom_id]['rompath']     = self.launchers[launcher_id]['rompath']
+                    roms[launcher_rom_id]['romext']      = self.launchers[launcher_id]['romext']
+                    roms[launcher_rom_id]['fav_status']  = 'OK'
+                    if roms[launcher_rom_id]['thumb']  == '': roms[launcher_rom_id]['thumb']  = self.launchers[launcher_id]['thumb']
+                    if roms[launcher_rom_id]['fanart'] == '': roms[launcher_rom_id]['fanart'] = self.launchers[launcher_id]['fanart']
+                    # Save favourites
+                    fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
 
         # It seems that updating the container does more harm than good... specially when having many ROMs
+        # By the way, what is the difference between Container.Refresh() and Container.Update()
         # xbmc.executebuiltin("Container.Refresh")
 
     #
