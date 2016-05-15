@@ -1627,6 +1627,15 @@ class Main:
             if self.launchers[key]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
         if not launcher_IDs:
             kodi_notify('Advanced Emulator Launcher', 'Category has no launchers. Add launchers first')
+            # NOTE If we return at this point Kodi produces and error: 
+            # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
+            # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
+            # How to avoid that? Rendering the categories again? If I call _gui_render_categories() it does not work well, categories
+            # are displayed in wrong alphabetical order and if go back is pressed the categories are rendered again (instead of 
+            # exiting the addon).
+            # What about replacewindow? I also get the error, still not clear why...
+            # self._gui_render_categories()
+            # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))            
             return
 
         # Render launcher rows of this category
