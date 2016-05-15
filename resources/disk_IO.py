@@ -159,9 +159,11 @@ def fs_write_catfile(categories_file, categories, launchers):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        log_kodi_notify('AEL Error', 'Cannot write categories.xml file. (OSError)')
+        log_error('Cannot write categories.xml file (OSError)')
+        kodi_notify_warn('AEL Error', 'Cannot write categories.xml file (OSError).')
     except IOError:
-        log_kodi_notify('AEL Error', 'Cannot write categories.xml file. (IOError)')
+        log_error('Cannot write categories.xml file (IOError)')
+        kodi_notify_warn('AEL Error', 'Cannot write categories.xml file (IOError).')
 
 #
 # Loads categories.xml from disk and fills dictionary self.categories
@@ -173,7 +175,14 @@ def fs_load_catfile(categories_file):
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_catfile() Loading {0}'.format(categories_file))
-    xml_tree = ET.parse(categories_file)
+    # If there are issues in the XML file ET.parse will fail
+    try:
+        xml_tree = ET.parse(categories_file)
+    except:
+        log_error('Error parsing XML categories.xml')
+        kodi_dialog_OK('Advanced Emulator Launcher',
+                       'Error reading categories.xml. Maybe XML file is corrupt or contains invalid characters.')
+        return (categories, launchers)
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))

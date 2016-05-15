@@ -73,6 +73,12 @@ def kodi_dialog_OK(title, row1, row2='', row3=''):
     dialog = xbmcgui.Dialog()
     dialog.ok(title, row1, row2, row3)
 
+def kodi_dialog_yesno(title, row1, row2='', row3=''):
+    dialog = xbmcgui.Dialog()
+    ret = dialog.yesno(title, row1, row2, row3)
+
+    return ret
+
 #
 # Displays a small box in the low right corner
 #
@@ -95,10 +101,10 @@ def kodi_notify_error(title, text, time = 5000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
-def kodi_busidialog_ON():
+def kodi_busydialog_ON():
     xbmc.executebuiltin('ActivateWindow(busydialog)')
 
-def kodi_busidialog_OFF():
+def kodi_busydialog_OFF():
     xbmc.executebuiltin('Dialog.Close(busydialog)')
 
 # -----------------------------------------------------------------------------

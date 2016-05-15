@@ -116,6 +116,15 @@ def text_unescape_HTML(s):
     return s
 
 #
+# If max_length == -1 do nothing (no length limit).
+#
+def text_limit_string_length(string, max_length):
+  if max_length > 5 and len(string) > max_length:
+    string = string[0:max_length-3] + '...'
+
+  return string
+
+#
 # Generates a random an unique MD5 hash and returns a string with the hash
 #
 def misc_generate_random_SID():
