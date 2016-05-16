@@ -119,7 +119,7 @@ def fs_write_catfile(categories_file, categories, launchers):
             # Data which is not string must be converted to string
             str_list.append("<launcher>\n" +
                             "  <id>"               + launcherID                   + "</id>\n" +
-                            "  <name>"             + launcher["name"]             + "</name>\n" +
+                            "  <name>"             + text_escape_XML(launcher["name"])             + "</name>\n" +
                             "  <categoryID>"       + launcher["categoryID"]       + "</categoryID>\n" +
                             "  <platform>"         + launcher["platform"]         + "</platform>\n" +
                             "  <application>"      + launcher["application"]      + "</application>\n"
@@ -147,7 +147,7 @@ def fs_write_catfile(categories_file, categories, launchers):
 
         # Join string and escape XML characters
         full_string = ''.join(str_list)
-        full_string = fs_escape_XML(full_string)
+        # full_string = text_escape_XML(full_string)
 
         # Save categories.xml file
         file_obj = open(categories_file, 'wt' )
@@ -248,7 +248,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         # Note that this is ignored when reading the file.
         str_list.append('<launcher>\n')
         str_list.append('  <id        >{}</id>\n'.format(launcher['id']))
-        str_list.append('  <name      >{}</name>\n'.format(launcher['name']))            
+        str_list.append('  <name      >{}</name>\n'.format(text_escape_XML(launcher['name'])))            
         str_list.append('  <categoryID>{}</categoryID>\n'.format(launcher['categoryID']))
         str_list.append('  <platform  >{}</platform>\n'.format(launcher['platform']))
         str_list.append('  <rompath   >{}</rompath>\n'.format(launcher['rompath']))
@@ -264,7 +264,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
             rom = roms[romID]
             # Data which is not string must be converted to string
             str_list.append("<rom>\n" + "  <id>" + romID + "</id>\n")
-            if rom["name"]:     str_list.append("  <name>"     + rom["name"]          + "</name>\n")
+            if rom["name"]:     str_list.append("  <name>"     + text_escape_XML(rom["name"])          + "</name>\n")
             if rom["filename"]: str_list.append("  <filename>" + rom["filename"]      + "</filename>\n")
             if rom["thumb"]:    str_list.append("  <thumb>"    + rom["thumb"]         + "</thumb>\n")
             if rom["fanart"]:   str_list.append("  <fanart>"   + rom["fanart"]        + "</fanart>\n")
@@ -284,7 +284,6 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
 
         # Join string and escape XML characters
         full_string = ''.join(str_list)
-        full_string = fs_escape_XML(full_string)
 
         # Save categories.xml file
         file_obj = open(roms_xml_file, 'wt' )
@@ -316,7 +315,11 @@ def fs_load_ROM_XML_file(roms_xml_file):
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_ROM_XML_file() Loading XML file {0}'.format(roms_xml_file))
-    xml_tree = ET.parse(roms_xml_file)
+    # If XML has errors (invalid characters, etc.) this will rais exception 'err'
+    try:
+        xml_tree = ET.parse(roms_xml_file)
+    except:
+        return {}
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
@@ -384,7 +387,7 @@ def fs_write_Favourites_XML_file(roms_xml_file, roms):
                             "</rom>\n")
         str_list.append('</advanced_emulator_launcher_Favourites>\n')
         full_string = ''.join(str_list)
-        full_string = fs_escape_XML(full_string)
+        # full_string = text_escape_XML(full_string)
         file_obj = open(roms_xml_file, 'wt' )
         file_obj.write(full_string)
         file_obj.close()
