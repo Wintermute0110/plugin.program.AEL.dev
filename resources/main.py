@@ -43,14 +43,14 @@ __author__     = addon_obj.getAddonInfo('author')
 __profile__    = addon_obj.getAddonInfo('profile')
 __type__       = addon_obj.getAddonInfo('type')
 
-# --- Addon paths and constants definition ---
+# --- Addon paths and constant definition ---
 # _FILE_PATH is a filename | _DIR is a directory (with trailing /)
-PLUGIN_DATA_DIR      = xbmc.translatePath(os.path.join('special://profile/addon_data', 'plugin.program.advanced.emulator.launcher'))
+PLUGIN_DATA_DIR      = xbmc.translatePath(os.path.join('special://profile/addon_data', __addon_id__))
 BASE_DIR             = xbmc.translatePath(os.path.join('special://', 'profile'))
 HOME_DIR             = xbmc.translatePath(os.path.join('special://', 'home'))
 KODI_FAV_FILE_PATH   = xbmc.translatePath( 'special://profile/favourites.xml' )
 ADDONS_DIR           = xbmc.translatePath(os.path.join(HOME_DIR, 'addons'))
-CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, 'plugin.program.advanced.emulator.launcher'))
+CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__))
 ICON_IMG_FILE_PATH   = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
 CATEGORIES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
 FAVOURITES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
@@ -63,11 +63,6 @@ KIND_LAUNCHER        = 1
 KIND_ROM             = 2
 IMAGE_THUMB          = 100
 IMAGE_FANART         = 200
-
-# --- Initialise log system ---
-# Synchronise this with user's preferences in Kodi when loading Kodi settings.
-# Anyway, default to this level if settings are not loaded for some reason.
-set_log_level(LOG_DEBUG)
 
 # --- Main code ---
 class Main:
@@ -83,8 +78,14 @@ class Main:
     # This is the plugin entry point.
     #
     def run_plugin(self):
+        # --- Initialise log system ---
+        # DEBUG log level for development. Place it before setting loading so settings can be
+        # dumped during debugging.
+        set_log_level(LOG_DEBUG)
+
         # --- Fill in settings dictionary using addon_obj.getSetting() ---
         self._get_settings()
+        # set_log_level(self.settings['log_level'])
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
@@ -106,19 +107,21 @@ class Main:
         if not os.path.isdir(DEFAULT_FANART_DIR): os.makedirs(DEFAULT_FANART_DIR)
         if not os.path.isdir(DEFAULT_NFO_DIR):    os.makedirs(DEFAULT_NFO_DIR)
 
-        # New Kodi URL code
+        # ~~~~~ Process URL ~~~~~
         self.base_url = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
         args = urlparse.parse_qs(sys.argv[2][1:])
         log_debug('args = {0}'.format(args))
-
-        # ~~~~~ Process URL commands ~~~~~
         # Interestingly, if plugin is called as type executable then args is empty.
         # However, if plugin is called as type video then Kodi adds the following
         # even for the first call: 'content_type': ['video']
         self.content_type = args['content_type'] if 'content_type' in args else None
         log_debug('content_type = {}'.format(self.content_type))
 
+        # --- Set content type and sorting methods ---
+        # NOTE This code should be move to _gui_* functions which generate
+        #      list. Do not place it here because not all commands of the module
+        #      need it!
         # Experiment to try to increase the number of views the addon supports. I do not know why
         # programs does not support all views movies do.
         # xbmcplugin.setContent(handle=self.addon_handle, content = 'movies')
@@ -131,7 +134,7 @@ class Main:
             xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_GENRE)
             xbmcplugin.addSortMethod(handle=self.addon_handle, sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
 
-        # --- WORKAROUND ---
+        # --- Addon first-time initialisation ---
         # When the addon is installed and the file categories.xml does not exist, just
         # create an empty one with a default launcher. Later on, when I am more familiar
         # with the addon add a welcome wizard or something similar.
@@ -144,7 +147,7 @@ class Main:
             self._cat_create_default()
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
-        # Load categories.xml and fill categories and launchers dictionaries.
+        # --- Load categories.xml and fill categories and launchers dictionaries ---
         (self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
 
         # --- Load scrapers ---
@@ -230,7 +233,7 @@ class Main:
         else:
             kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
         
-        log_debug('AEL exiting.')
+        log_debug('Advanced Emulator Launcher exiting.')
 
     #
     # Get Addon Settings
@@ -274,6 +277,7 @@ class Main:
         self.settings["log_level"]              = int(addon_obj.getSetting("log_level"))
         self.settings["show_batch_window"]      = True if addon_obj.getSetting("show_batch_window") == "true" else False
         
+        # --- Example of how to transform a number into string ---
         # self.settings["game_region"]          = ['World', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
 
         # --- Dump settings for DEBUG ---
@@ -296,6 +300,9 @@ class Main:
         log_verb('Loaded metadata scraper  {}'.format(self.scraper_metadata.name))
         log_verb('Loaded thumb scraper     {}'.format(self.scraper_thumb.name))
         log_verb('Loaded fanart scraper    {}'.format(self.scraper_fanart.name))
+
+        # Initialise metadata scraper plugin installation dir, for offline scrapers
+        self.scraper_metadata.set_plugin_inst_dir(CURRENT_ADDON_DIR)
 
     # Creates default categories data struct
     # CAREFUL deletes current categories!
@@ -941,13 +948,14 @@ class Main:
 
             # Import launcher metadata from NFO file
             elif type2 == 8:
-                kodi_dialog_OK('AEL', 'Not implemented yet!')
-                # self._import_launcher_nfo(launcherID)
-                
+                info_str = fs_import_launcher_nfo(self.settings, self.launchers, launcherID)
+                kodi_notify('Advanced Emulator Launcher', info_str)
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
             # Export launcher metadata to NFO file
             elif type2 == 9:
-                kodi_dialog_OK('AEL', 'Not implemented yet!')
-                # self._export_launcher_nfo(launcherID)
+                info_str = fs_export_launcher_nfo(self.settings, self.launchers[launcherID])
+                kodi_notify('Advanced Emulator Launcher', info_str)
 
         # Launcher Thumbnail menu option
         type_nb = type_nb + 1
@@ -1641,8 +1649,8 @@ class Main:
         listitem.setProperty("fanart_image", launcher_dic['fanart'])
         listitem.setInfo("video", {"Title"    : launcher_dic['name'],    "Label"     : os.path.basename(launcher_dic['rompath']),
                                    "Plot"     : launcher_dic['plot'],    "Studio"    : launcher_dic['studio'],
-                                   "Genre"    : launcher_dic['genre'],   "Premiered" : launcher_dic['release'],
-                                   "Year"     : launcher_dic['release'], "Writer"    : launcher_dic['platform'],
+                                   "Genre"    : launcher_dic['genre'],   "Premiered" : launcher_dic['year'],
+                                   "Year"     : launcher_dic['year'],    "Writer"    : launcher_dic['platform'],
                                    "Trailer"  : os.path.join(launcher_dic['trailerpath']),
                                    "Director" : os.path.join(launcher_dic['custompath']), 
                                    "overlay"  : ICON_OVERLAY } )
@@ -1759,8 +1767,8 @@ class Main:
             platform = self.launchers[launcherID]['platform']
         listitem.setInfo("video", {"Title"   : rom_name,       "Label"     : 'test label', 
                                    "Plot"    : rom['plot'],    "Studio"    : rom['studio'], 
-                                   "Genre"   : rom['genre'],   "Premiered" : rom['release'], 
-                                   "Year"    : rom['release'], "Writer"    : platform, 
+                                   "Genre"   : rom['genre'],   "Premiered" : rom['year'], 
+                                   "Year"    : rom['year'],    "Writer"    : platform, 
                                    "Trailer" : 'test trailer', "Director"  : 'test director', 
                                    "overlay" : ICON_OVERLAY } )
 
@@ -2067,17 +2075,21 @@ class Main:
                                   ['Scrap from {}'.format(self.scraper_metadata.fancy_name),
                                    'Import metadata from NFO file',
                                    'Edit Title: %s' % roms[romID]["name"],
-                                   'Edit Release Date: %s' % roms[romID]["release"],
+                                   'Edit Release Year: %s' % roms[romID]["year"],
                                    'Edit Studio: %s' % roms[romID]["studio"],
                                    'Edit Genre: %s' % roms[romID]["genre"],
                                    'Edit Description: %s' % roms[romID]["plot"][0:20],
                                    'Load Description from file ...',
                                    'Save metadata to NFO file'])
-            # Scrap rom Infos
+            # Scrap rom metadata
             if type2 == 0:
                 self._gui_scrap_rom_metadata(launcherID, romID)
+            # Import ROM metadata from NFO file
             elif type2 == 1:
-                self._import_rom_nfo(launcher, rom)
+            fs_import_ROM_NFO(launcher, roms, romID):
+                info_str = fs_import_launcher_nfo(self.launchers[launcherID], roms, romID)
+                kodi_notify('Advanced Emulator Launcher', info_str)
+                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
             # Edition of the rom title
             elif type2 == 2:
                 keyboard = xbmc.Keyboard(roms[romID]["name"], 'Edit title')
@@ -2088,12 +2100,12 @@ class Main:
                         title = roms[romID]["name"]
                     roms[romID]["name"] = title.rstrip()
                     fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
-            # Edition of the rom release date
+            # Edition of the rom release year
             elif type2 == 3:
-                keyboard = xbmc.Keyboard(roms[romID]["release"], 'Edit release year')
+                keyboard = xbmc.Keyboard(roms[romID]["year"], 'Edit release year')
                 keyboard.doModal()
                 if (keyboard.isConfirmed()):
-                    roms[romID]["release"] = keyboard.getText()
+                    roms[romID]["year"] = keyboard.getText()
                     fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
             # Edition of the rom studio name
             elif type2 == 4:
@@ -2118,8 +2130,10 @@ class Main:
                     text_plot.close()
                     roms[romID]["plot"] = string_plot.replace('&quot;','"')
                     fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
+            # Export ROM metadata to NFO file
             elif type2 == 7:
-                self._export_rom_nfo(launcher,rom)
+                info_str = fs_export_ROM_NFO(self.launchers[launcherID], roms[romID])
+                kodi_notify('Advanced Emulator Launcher', info_str)
 
         # Edit thumb and fanart
         elif type == 1:
@@ -2267,7 +2281,7 @@ class Main:
     # Note that actually this command is "Add/Update" ROMs.
     #
     def _roms_import_roms(self, launcherID):
-        log_debug('_roms_import_roms() BEGIN')
+        log_debug('_roms_import_roms() ***** BEGIN *****')
 
         dialog = xbmcgui.Dialog()
         pDialog = xbmcgui.DialogProgress()
@@ -2440,17 +2454,18 @@ class Main:
                     num_miss += 1
 
             # Report
-            log_info('Have ROMs    {:6d}'.format(num_have))
-            log_info('Miss ROMs    {:6d}'.format(num_miss))
-            log_info('Unknown ROMs {:6d}'.format(num_unknown))
+            log_info('***** No-Intro audit finished. Report ******')
+            log_info('No-Intro Have ROMs    {:6d}'.format(num_have))
+            log_info('No-Intro Miss ROMs    {:6d}'.format(num_miss))
+            log_info('No-Intro Unknown ROMs {:6d}'.format(num_unknown))
 
         # ~~~ Save ROMs XML file ~~~
         fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
         kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
+        log_debug('_roms_import_roms() ***** END *****')
 
-        # xbmc.executebuiltin("XBMC.ReloadSkin")
         xbmc.executebuiltin('Container.Refresh')
 
     def _roms_process_scanned_ROM(self, selectedLauncher, F, num_files_checked, num_files, pDialog):
@@ -2469,12 +2484,12 @@ class Main:
         pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
 
         # scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
-        scan_metadata_policy = self.settings['scan_metadata_policy']
+        scan_metadata_policy  = self.settings['scan_metadata_policy']
+        scan_clean_tags       = self.settings['scan_clean_tags']
+        scan_title_formatting = self.settings['scan_title_formatting']
+        scan_ignore_title     = self.settings['scan_ignore_title']
         if scan_metadata_policy == 0:
-            # --- Clean ROM name ---
-            log_verb('Metadata policy: Do nothing. Only cleaning ROM name.')
-            scan_clean_tags       = self.settings['scan_clean_tags']
-            scan_title_formatting = self.settings['scan_title_formatting']
+            log_verb('Metadata policy: No NFO reading, no scraper. Only cleaning ROM name.')
             romdata['name'] = text_ROM_title_format(F.base_noext, scan_clean_tags, scan_title_formatting)
         else:
             # Scrap metadata from NFO files
@@ -2496,25 +2511,24 @@ class Main:
                 nfo_file_path = F.path_noext + ".nfo"
                 log_debug('Trying NFO file "{}"'.format(nfo_file_path))
                 if os.path.isfile(nfo_file_path):
+                    log_debug('NFO file found. Reading it')
                     found_NFO_file = True
-                    nfo_dic = _fs_load_NFO_file(nfo_file_path)
+                    nfo_dic = fs_load_NFO_file_scanner(nfo_file_path)
+                    # NOTE <platform> is chosen by AEL, never read from NFO files
                     romdata['name']    = nfo_dic['title']     # <title>
-                    # <platform> is chosen by AEL, not read from NFO files
-                    # romdata['platform'] = nfo_dic['platform']  # <platform>
-                    romdata['release'] = nfo_dic['year']      # <year>
-                    romdata['studio']  = nfo_dic['publisher'] # <publisher>
                     romdata['genre']   = nfo_dic['genre']     # <genre>
+                    romdata['year']    = nfo_dic['year']      # <year>
+                    romdata['studio']  = nfo_dic['publisher'] # <publisher>
                     romdata['plot']    = nfo_dic['plot']      # <plot>
                 else:
                     found_NFO_file = False
-                    log_debug('NFO file not found. Metadata is only the ROM name')
-                    scan_clean_tags       = self.settings['scan_clean_tags']
-                    scan_title_formatting = self.settings['scan_title_formatting']
+                    log_debug('NFO file not found. Only cleaning ROM name.')
                     romdata['name'] = text_ROM_title_format(F.base_noext, scan_clean_tags, scan_title_formatting)
 
             # Scrap metadata. Note that scraper may be offline or online
             do_metadata_scrapping = False
             if scan_metadata_policy == 3:
+                log_verb('Metadata policy: Forced scraper ON')
                 do_metadata_scrapping = True
             elif scan_metadata_policy == 3 and not found_NFO_file:
                 log_verb('Metadata policy: NFO file not found | Scraper ON')
@@ -2523,8 +2537,8 @@ class Main:
             if do_metadata_scrapping:
                 # Do a search and get a list of games found
                 rom_name_scrapping = text_clean_ROM_name_for_scrapping(F.base_noext)
-                results = self.scraper_metadata.get_game_search(rom_name_scrapping, platform, F.base_noext)
-                if results:                
+                results = self.scraper_metadata.get_game_search(rom_name_scrapping, F.base_noext, platform)
+                if results:
                     # id="metadata_mode" values="Semi-automatic|Automatic"
                     if self.settings['metadata_mode'] == 0:
                         log_debug('Metadata semi-automatic scraping')
@@ -2544,27 +2558,29 @@ class Main:
                         pDialog.create('AEL - Scanning ROMs')
                         pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
                     elif self.settings['metadata_mode'] == 1:
-                        log_debug('Metadata automatic scraping') 
+                        log_debug('Metadata automatic scraping. Selecting first result.') 
                         selectgame = 0
                     else:
                         log_error('Invalid metadata_mode {}'.format(self.settings['metadata_mode'])) 
                         selectgame = 0
 
                     # --- Grab metadata for selected game ---
-                    gamedata = self.scraper_metadata.get_game_metadata(results[selectgame]['id'])
+                    gamedata = self.scraper_metadata.get_game_metadata(results[selectgame])
 
-                    if self.settings['scan_ignore_title']:
-                        romdata["name"] = title_format(self, romname)
+                    # --- Put metadata into ROM dictionary ---
+                    if scan_ignore_title:
+                        # Ignore scraped title
+                        romdata['name'] = text_ROM_title_format(F.base_noext, scan_clean_tags, scan_title_formatting)
                     else:
-                        romdata["name"] = title_format(self, foundname)
-                    
-                    romdata["genre"] = gamedata["genre"]
-                    romdata["release"] = gamedata["release"]
-                    romdata["studio"] = gamedata["studio"]
-                    romdata["plot"] = gamedata["plot"]
+                        # Use scraped title                    
+                        romdata['name'] = gamedata['title']
+                    romdata['genre']  = gamedata['genre']
+                    romdata['year']   = gamedata['year']
+                    romdata['studio'] = gamedata['studio']
+                    romdata['plot']   = gamedata['plot']
                 else:
-                    log_verb('Metadata scraper found nothing')
-                    romdata["name"] = title_format(self, romname)
+                    log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
+                    romdata['name'] = text_ROM_title_format(F.base_noext, scan_clean_tags, scan_title_formatting)
 
         # ~~~~~ Search for local fanart artwork ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # If thumbs/fanart have the same path, then assign names 
@@ -2785,10 +2801,10 @@ class Main:
         # Ask user what category to search
         dialog = xbmcgui.Dialog()
         type = dialog.select('Search items...', 
-                             ['[B]By Title[/B]',
-                              '[I]By Release Date[/I]',
-                              '[COLOR yellow]By Studio[/COLOR]',
-                              '[COLOR green]By Genre[/COLOR]'])
+                             ['By Title',
+                              'By Release Year',
+                              'By Studio',
+                              'By Genre'])
 
         # Search by Title
         type_nb = 0
