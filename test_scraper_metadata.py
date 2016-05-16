@@ -9,81 +9,92 @@ import sys
 
 # Import scrapers
 from resources.scrap import *
+from resources.utils import *
 
-def print_metadata(metadata):
-    print('Title    "{}"'.format(metadata['title']))
-    print('Genre    "{}"'.format(metadata['genre']))
-    print('Release  "{}"'.format(metadata['release']))
-    print('Studio   "{}"'.format(metadata['studio']))
-    print('Plot     "{}"'.format(metadata['plot']))
+TEST_OFFLINE    = True
+TEST_THEGAMESDB = False
+TEST_GAMEFAQS   = False
+
+# --- print scraped results -----------------------------------------------------------------------
+def print_games_search(results, scraperObj):
+    id_length = 60
+    name_length = 70
+    genre_length = 20
+    studio_length = 20
+    plot_length = 40
+    print('*** Found {} games ***'.format(len(results)))
+    for game in results:
+        display_name = text_limit_string(game['display_name'], name_length)
+        id           = text_limit_string(game['id'], id_length)
+        print("'{}' '{}'".format(display_name.ljust(name_length), id.ljust(id_length)))
     
-# --- main --------------------------------------------------------------------
+    # --- Get metadata of first game ---
+    if results:
+        metadata = scraperObj.get_game_metadata(results[0])
+
+        title  = text_limit_string(metadata['title'], name_length)
+        genre  = text_limit_string(metadata['genre'], genre_length)
+        year   =                   metadata['year']
+        studio = text_limit_string(metadata['studio'], studio_length)
+        plot   = text_limit_string(metadata['plot'], plot_length)
+        print('*** Displaying metadata for {} ***'.format(title))
+        print("'{}' '{}' '{}' '{}' '{}'".format(title.ljust(name_length), genre.ljust(genre_length), 
+                                                year.ljust(4), studio.ljust(studio_length), plot.ljust(plot_length)))
+
+# --- main ----------------------------------------------------------------------------------------
 # Print name of all scrapers
 print('Short name        Fancy Name')
 print('----------------  ---------------------------------')
 for scraper in scrapers_metadata:
     print('{:10s}  {:}'.format(scraper.name.rjust(16), scraper.fancy_name))
 
-print('\n--- Offline scraper ---------------------------------------------------')
-offline = metadata_Offline()
 
-# First time a platform is used XML database is loaded and cached for subsequent
-# calls until object is destroyed or platform is changed.
-results = offline.get_games_search('', 'Sega 32X', 'Sonic')
-# offline.get_games_search('', 'Sega 32X', 'doom')
+if TEST_OFFLINE:
+    print('\n--- Offline scraper -----------------------------------------------')
+    Offline = metadata_Offline()
+    Offline.set_plugin_inst_dir('/home/mendi/.kodi/addons/plugin.program.advanced.emulator.launcher/')
 
-# Another system can be loaded to replace the current one at any time
-# offline.get_games_search('mario', 'Nintendo SNES')
-# offline.get_games_search('castle', 'Nintendo SNES')
+    # First time a platform is used XML database is loaded and cached for subsequent
+    # calls until object is destroyed or platform is changed.
+    results = Offline.get_games_search('super mario world', '', 'Nintendo SNES')
+    # results = Offline.get_games_search('castle', '', 'Nintendo SNES')
 
-# Test MAME offline scraper
-# offline.get_games_search('dino', 'MAME')
-# offline.get_games_search('aliens', 'MAME')
-# offline.get_games_search('spang', 'MAME')
-# offline.get_games_search('tokia', 'MAME')
-# offline.get_games_search('asdfg', 'MAME')
+    # Test MAME offline scraper
+    # results = Offline.get_games_search('dino', 'dino', 'MAME')
+    # results = Offline.get_games_search('aliens', 'MAME', 'aliens')
+    # results = Offline.get_games_search('spang', 'MAME')
+    # results = Offline.get_games_search('tokia', 'MAME')
+    # results = Offline.get_games_search('asdfg', 'MAME')
 
-if results:
-    print('Found {} games'.format(len(results)))
-    metadata = offline.get_game_metadata(results[0])
-    print_metadata(metadata)
-else:
-    print('No results found.')
+    # --- Print list of fames found ---
+    print_games_search(results, Offline)
 
-print('\n--- Online TheGamesDB -------------------------------------------------')
-# It seems that TheGamesDB does and OR search with all keywords introduced.
-# It will show results even if the game title contains just one of thekeywords.
-GamesDB = metadata_TheGamesDB()
 
-# results = GamesDB.get_games_search('Castlevania', 'Nintendo SNES')
-# results = GamesDB.get_games_search('Metroid', 'Nintendo SNES')
-# results = GamesDB.get_games_search('Zelda', 'Nintendo SNES')
-# results = GamesDB.get_games_search('Super Mario World', 'Nintendo SNES')
-results = GamesDB.get_games_search('street fighter', 'Nintendo SNES', '')
+if TEST_THEGAMESDB:
+    print('\n--- Online TheGamesDB ---------------------------------------------')
+    # It seems that TheGamesDB does and OR search with all keywords introduced.
+    # It will show results even if the game title contains just one of thekeywords.
+    GamesDB = metadata_TheGamesDB()
 
-if results:
-    print('Found {} games'.format(len(results)))
-    metadata = GamesDB.get_game_metadata(results[0])
-    print_metadata(metadata)
-else:
-    print('No results found.')
+    # results = GamesDB.get_games_search('Castlevania', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('Metroid', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('Zelda', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('Super Mario World', 'Nintendo SNES')
+    results = GamesDB.get_games_search('super street fighter', '', 'Nintendo SNES')
 
-print('\n--- Online GameFAQs ---------------------------------------------------')
-GameFAQs = metadata_GameFAQs()
+    # --- Print list of fames found ---
+    print_games_search(results, GamesDB)
 
-# results = GameFAQs.get_games_search('Castlevania', 'Nintendo SNES')
-# results = GameFAQs.get_games_search('Metroid', 'Nintendo SNES')
-# results = GameFAQs.get_games_search('Zelda', 'Nintendo SNES')
-# results = GameFAQs.get_games_search('Super Mario World', 'Nintendo SNES')
-results = GameFAQs.get_games_search('super street fighter', 'Nintendo SNES')
 
-if results:
-    print('Found {} games'.format(len(results)))
-    metadata = GameFAQs.get_game_metadata(results[0])
-    print_metadata(metadata)
-else:
-    print('No results found.')
+if TEST_GAMEFAQS:
+    print('\n--- Online GameFAQs -----------------------------------------------')
+    GameFAQs = metadata_GameFAQs()
 
-# --- Online arcadeHITS ------------------------------------------------------
+    # results = GameFAQs.get_games_search('Castlevania', 'Nintendo SNES')
+    # results = GameFAQs.get_games_search('Metroid', 'Nintendo SNES')
+    # results = GameFAQs.get_games_search('Zelda', 'Nintendo SNES')
+    # results = GameFAQs.get_games_search('Super Mario World', 'Nintendo SNES')
+    results = GameFAQs.get_games_search('super street fighter', '', 'Nintendo SNES')
 
-# --- Online MobyGames ------------------------------------------------------
+    # --- Print list of fames found ---
+    print_games_search(results, GameFAQs)

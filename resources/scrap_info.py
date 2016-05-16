@@ -16,19 +16,6 @@
 # GNU General Public License for more details.
 
 # -----------------------------------------------------------------------------
-# We support online an offline scrapers.
-# Note that this module does not depend on Kodi stuff at all, and can be
-# called externally from console Python scripts for testing of the scrapers.
-# -----------------------------------------------------------------------------
-
-# Load replacements for functions that depend on Kodi modules.
-# This enables running this module in standard Python for testing scrapers.
-try: 
-    import xbmc
-except:
-    from standalone import *
-
-# -----------------------------------------------------------------------------
 # Miscellaneous emulator and gamesys (platforms) supported.
 # -----------------------------------------------------------------------------
 def emudata_get_program_arguments( app ):
@@ -72,10 +59,10 @@ def emudata_get_program_extensions( app ):
 # this file location, CURRENT_ADDON_DIR/resources/.
 # -----------------------------------------------------------------------------
 offline_scrapers_dic = {
-    'MAME'             : 'scraper_data/MAME.xml', 
-    'Sega 32X'         : 'scraper_data/Sega 32x.xml',
+    'MAME'             : 'scrap_offline_data/MAME.xml', 
+    'Sega 32X'         : 'scrap_offline_data/Sega 32x.xml',
     'Sega Genesis'     : '',
-    'Nintendo SNES'    : 'scraper_data/Super Nintendo Entertainment System.xml',
+    'Nintendo SNES'    : 'scrap_offline_data/Super Nintendo Entertainment System.xml',
     'Unknown'          : ''
 }
 

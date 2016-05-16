@@ -45,12 +45,11 @@ class Scraper:
     #   game = { 'id' : str,             String that allows to calculate the game URL, 
     #                                    or the URL itself
     #            'display_name' : str,
-    #            'title' : str,          [Optional]
     #             ... }
     #
     #   game dictionary may have more fields depending on the scraper (which are 
     #   not used outside that scraper)
-    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+    def get_games_search(self, search_string, rom_base_noext, platform):
         raise NotImplementedError("Subclass must implement get_games_search() abstract method")
 
 # -----------------------------------------------------------------------------
@@ -59,16 +58,21 @@ class Scraper:
 # Metadata scrapers are for ROMs and standalone launchers (games)
 # Metadata for machines (consoles, computers) should be different, I guess...
 class Scraper_Metadata(Scraper):
+    # Offline scrapers need to know plugin installation directory.
+    # For offline scrapers just pass.
+    def set_plugin_inst_dir(self, plugin_dir):
+        raise NotImplementedError("Subclass must implement set_plugin_inst_dir() abstract method")
+
     # This is called after get_games_search() to get metadata of a particular ROM.
     # game is a dictionary from the dictionary list returned by get_game_search()
     # get_game_search() is usually common code for the online scrapers.
     #
     # Mandatory fields returned:
-    #   gamedata = {'title' : '', 
-    #               'genre' : '', 
-    #               'release' : '', 
+    #   gamedata = {'title'  : '', 
+    #               'genre'  : '', 
+    #               'year'   : '', 
     #               'studio' : '', 
-    #               'plot' : ''
+    #               'plot'   : ''
     #              }
     def get_game_metadata(self, game):
         raise NotImplementedError("Subclass must implement get_game_metadata() abstract method")

@@ -53,11 +53,7 @@ class Scraper_TheGamesDB():
         games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle><ReleaseDate>(.*?)</ReleaseDate><Platform>(.*?)</Platform></Game>", page_data)
         game_list = []
         for item in games:
-            game = {}
-            game["id"]           = item[0]
-            game["title"]        = item[1]
-            game["display_name"] = item[1]
-            game["order"]        = 1
+            game = {'id' : item[0], 'display_name' : item[1], 'order' : 1}
             # Increase search score based on our own search
             title = item[1]
             if title.lower() == search_string.lower():          game["order"] += 1
