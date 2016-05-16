@@ -4,7 +4,7 @@
 #
 
 # Copyright (c) 2016 Wintermute0110 <wintermute0110@gmail.com>
-# Portions (c) 2010-2015 Angelscry
+# Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,26 +16,58 @@
 # GNU General Public License for more details.
 
 #
-# Utility functions which does not depend on Kodi modules
+# Utility functions which does not depend on Kodi modules (except log_* functions)
 #
-
 import sys, os, shutil, time, random, hashlib, urlparse
-
 try:
     from utils_kodi import *
 except:
     from utils_kodi_standalone import *
 
-# -----------------------------------------------------------------------------
-# Miscellaneous stuff
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+# Strings and text
+# -------------------------------------------------------------------------------------------------
 def text_get_encoding():
     try:
         return sys.getfilesystemencoding()
     except UnicodeEncodeError, UnicodeDecodeError:
         return "utf-8"
 
-# This function is used to clean the ROM name to be used as search string for the scrapper
+#
+# If max_length == -1 do nothing (no length limit).
+#
+def text_limit_string(string, max_length):
+  if max_length > 5 and len(string) > max_length:
+    string = string[0:max_length-3] + '...'
+
+  return string
+
+#
+# See http://stackoverflow.com/questions/1091945/what-characters-do-i-need-to-escape-in-xml-documents
+#
+def text_escape_XML(str):
+    str_A = str.replace('"', '&quot;').replace("'", '&apos;').replace('&', '&amp;')
+
+    return str_A.replace('<', '&lt;').replace('>', '&gt;')
+
+def text_unescape_HTML(s):
+    s = s.replace('<br />',' ')
+    s = s.replace("&lt;", "<")
+    s = s.replace("&gt;", ">")
+    s = s.replace("&amp;", "&")
+    s = s.replace("&#039;", "'")
+    s = s.replace('&quot;', '"')
+    s = s.replace('&nbsp;', ' ')
+    s = s.replace('&#x26;', '&')
+    s = s.replace('&#x27;', "'")
+
+    return s
+
+# -------------------------------------------------------------------------------------------------
+# ROM name cleaning and formatting
+# -------------------------------------------------------------------------------------------------
+#
+# This function is used to clean the ROM name to be used as search string for the scraper
 #
 # Cleans ROM tags: [BIOS], (Europe), (Rev A), ...
 # Substitutes some characters by spaces
@@ -83,6 +115,9 @@ def text_ROM_title_format(title, clean_tags, format_title):
 
     return new_title
 
+# -------------------------------------------------------------------------------------------------
+# URLs
+# -------------------------------------------------------------------------------------------------
 #
 # Get extension of URL. Returns '' if not found.
 #
@@ -102,39 +137,9 @@ def text_get_image_URL_extension(url):
 
     return ret
 
-def text_unescape_HTML(s):
-    s = s.replace('<br />',' ')
-    s = s.replace("&lt;", "<")
-    s = s.replace("&gt;", ">")
-    s = s.replace("&amp;", "&")
-    s = s.replace("&#039;", "'")
-    s = s.replace('&quot;', '"')
-    s = s.replace('&nbsp;', ' ')
-    s = s.replace('&#x26;', '&')
-    s = s.replace('&#x27;', "'")
-
-    return s
-
-#
-# If max_length == -1 do nothing (no length limit).
-#
-def text_limit_string_length(string, max_length):
-  if max_length > 5 and len(string) > max_length:
-    string = string[0:max_length-3] + '...'
-
-  return string
-
-#
-# Generates a random an unique MD5 hash and returns a string with the hash
-#
-def misc_generate_random_SID():
-    t1 = time.time()
-    t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5( str(t1 + t2) )
-    sid = base.hexdigest()
-
-    return sid
-
+# -------------------------------------------------------------------------------------------------
+# Filenames
+# -------------------------------------------------------------------------------------------------
 #
 # Full decomposes a file name path or directory into its constituents
 # In theory this is indepedent of the operating system.
@@ -209,3 +214,17 @@ def misc_look_for_image(image_path_noext, img_exts):
             break
 
     return image_name
+
+# -------------------------------------------------------------------------------------------------
+# Misc stuff
+# -------------------------------------------------------------------------------------------------
+#
+# Generates a random an unique MD5 hash and returns a string with the hash
+#
+def misc_generate_random_SID():
+    t1 = time.time()
+    t2 = t1 + random.getrandbits(32)
+    base = hashlib.md5( str(t1 + t2) )
+    sid = base.hexdigest()
+
+    return sid
