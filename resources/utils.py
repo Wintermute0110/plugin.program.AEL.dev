@@ -18,7 +18,7 @@
 #
 # Utility functions which does not depend on Kodi modules (except log_* functions)
 #
-import sys, os, shutil, time, random, hashlib, urlparse
+import sys, os, shutil, time, random, hashlib, urlparse, re
 try:
     from utils_kodi import *
 except:

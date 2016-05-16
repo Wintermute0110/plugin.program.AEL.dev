@@ -98,6 +98,8 @@ class Main:
         # log_debug('__type__       {}'.format(__type__))
         for i in range(len(sys.argv)):
             log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
+        # log_debug('PLUGIN_DATA_DIR      = "{}"'.format(PLUGIN_DATA_DIR))
+        # log_debug('CURRENT_ADDON_DIR    = "{}"'.format(CURRENT_ADDON_DIR))
         # log_debug('CATEGORIES_FILE_PATH = "{}"'.format(CATEGORIES_FILE_PATH))
         # log_debug('FAVOURITES_FILE_PATH = "{}"'.format(FAVOURITES_FILE_PATH))
 
@@ -2086,7 +2088,7 @@ class Main:
                 self._gui_scrap_rom_metadata(launcherID, romID)
             # Import ROM metadata from NFO file
             elif type2 == 1:
-            fs_import_ROM_NFO(launcher, roms, romID):
+                fs_import_ROM_NFO(launcher, roms, romID)
                 info_str = fs_import_launcher_nfo(self.launchers[launcherID], roms, romID)
                 kodi_notify('Advanced Emulator Launcher', info_str)
                 fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
@@ -2290,10 +2292,11 @@ class Main:
         launcher_app     = selectedLauncher["application"]
         launcher_path    = selectedLauncher["rompath"]
         launcher_exts    = selectedLauncher["romext"]
-        log_debug('Launcher "%s" selected' % selectedLauncher["name"]) 
+        log_debug('Launcher "{}" selected'.format(selectedLauncher["name"])) 
         log_debug('launcher_app  = {}'.format(launcher_app)) 
         log_debug('launcher_path = {}'.format(launcher_path)) 
-        log_debug('launcher_exts = {}'.format(launcher_exts)) 
+        log_debug('launcher_exts = {}'.format(launcher_exts))
+        log_debug('platform      = {}'.format(selectedLauncher["platform"]))
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
@@ -2323,9 +2326,9 @@ class Main:
                 kodi_notify('AEL', '%s dead ROMs removed successfully' % num_removed_roms)
                 log_info('%s dead ROMs removed successfully' % num_removed_roms)
             else:
-                log_info('No dead item entry')
+                log_info('No dead ROMs found.')
         else:
-            log_info('Launcher is empty')
+            log_info('Launcher is empty. No dead ROM check.')
 
         # ~~~ Scan for new files (*.*) and put them in a list ~~~
         kodi_notify('AEL', 'Scanning files...')
@@ -2357,15 +2360,15 @@ class Main:
             # --- Get all file name combinations ---
             F = misc_split_path(f_path)
             log_debug('*** Processing File ***')
-            log_debug('F.path       = "{0}"'.format(F.path))
-            # log_debug('F.path_noext = "{0}"'.format(F.path_noext))
-            # log_debug('F.base       = "{0}"'.format(F.base))
-            # log_debug('F.base_noext = "{0}"'.format(F.base_noext))
-            # log_debug('F.ext        = "{0}"'.format(F.ext))
+            log_debug('F.path       "{0}"'.format(F.path))
+            # log_debug('F.path_noext "{0}"'.format(F.path_noext))
+            # log_debug('F.base       "{0}"'.format(F.base))
+            # log_debug('F.base_noext "{0}"'.format(F.base_noext))
+            # log_debug('F.ext        "{0}"'.format(F.ext))
 
             # ~~~ Update progress dialog ~~~
             file_text = 'File {}'.format(F.base)
-            activity_text = 'Checking if it is a ROM...'
+            activity_text = 'Checking if has ROM extension...'
             pDialog.update(num_files_checked * 100 / num_files, file_text, activity_text)
 
             # ~~~ Find ROM file ~~~
@@ -2375,7 +2378,7 @@ class Main:
             for ext in launcher_exts.split("|"):
                 # Check if filename matchs extension
                 if F.ext == '.' + ext:
-                    log_debug('Expected %s extension detected' % ext) 
+                    log_debug("Expected '%s' extension detected" % ext) 
                     processROM = True
             # If file does not match any of the ROM extensions skip it
             if not processROM:
@@ -2393,14 +2396,14 @@ class Main:
             
             # ~~~~~ Process new ROM and add to the list ~~~~~
             (romdata, pDialog, dialog_canceled) = \
-                self._roms_process_scanned_ROM(selectedLauncher, 
-                                               F, num_files_checked, num_files, pDialog)
+                self._roms_process_scanned_ROM(selectedLauncher, F, num_files_checked, num_files, pDialog)
             romID = romdata["id"]
             roms[romID] = romdata
             num_new_roms = num_new_roms + 1
 
             # ~~~ Check if user pressed the cancel button ~~~
             if pDialog.iscanceled() or dialog_canceled:
+                pDialog.close()
                 kodi_dialog_OK('AEL', 'Stopping ROM scanning. No changes have been made.')
                 log_info('User pressed Cancel button when scanning ROMs')
                 log_info('ROM scanning stopped')
@@ -2415,6 +2418,10 @@ class Main:
             kodi_dialog_OK('AEL', 'No ROMs found! Make sure launcher directory and file extensions are correct.')
             xbmc.executebuiltin('Container.Refresh')
             return
+
+        if len(num_new_roms) == 0:
+            kodi_dialog_OK('AEL', 'Launcher has {} ROMs and no new ROMs have been added.')
+            xbmc.executebuiltin('Container.Refresh')
 
         # --- If we have a No-Intro XML then audit roms -------------------------------------------
         if selectedLauncher['nointro_xml_file'] != '':
@@ -2458,6 +2465,8 @@ class Main:
             log_info('No-Intro Have ROMs    {:6d}'.format(num_have))
             log_info('No-Intro Miss ROMs    {:6d}'.format(num_miss))
             log_info('No-Intro Unknown ROMs {:6d}'.format(num_unknown))
+        else:
+            log_info('No No-Intro DAT configured. No auditing ROMs.')
 
         # ~~~ Save ROMs XML file ~~~
         fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
@@ -2530,14 +2539,15 @@ class Main:
             if scan_metadata_policy == 3:
                 log_verb('Metadata policy: Forced scraper ON')
                 do_metadata_scrapping = True
-            elif scan_metadata_policy == 3 and not found_NFO_file:
+            elif scan_metadata_policy == 2 and not found_NFO_file:
                 log_verb('Metadata policy: NFO file not found | Scraper ON')
                 do_metadata_scrapping = True
 
             if do_metadata_scrapping:
                 # Do a search and get a list of games found
                 rom_name_scrapping = text_clean_ROM_name_for_scrapping(F.base_noext)
-                results = self.scraper_metadata.get_game_search(rom_name_scrapping, F.base_noext, platform)
+                results = self.scraper_metadata.get_games_search(rom_name_scrapping, F.base_noext, platform)
+                log_debug('Scraper found {} result/s'.format(len(results)))
                 if results:
                     # id="metadata_mode" values="Semi-automatic|Automatic"
                     if self.settings['metadata_mode'] == 0:
@@ -2551,7 +2561,7 @@ class Main:
                         rom_name_list = []
                         for game in results:
                             rom_name_list.append(game['display_name'])
-                        selectgame = dialog.select('Select ROM name', rom_name_list)
+                        selectgame = dialog.select('Select game for ROM {}'.format(romdata['name']), rom_name_list)
                         if selectgame == -1: selectgame = 0
 
                         # Open progress dialog again
@@ -2571,9 +2581,11 @@ class Main:
                     if scan_ignore_title:
                         # Ignore scraped title
                         romdata['name'] = text_ROM_title_format(F.base_noext, scan_clean_tags, scan_title_formatting)
+                        log_debug("User wants to ignore scraper name. Setting name to '{}'".format(romdata['name']))
                     else:
-                        # Use scraped title                    
+                        # Use scraped title
                         romdata['name'] = gamedata['title']
+                        log_debug("User wants scrapped name. Setting name to '{}'".format(romdata['name']))
                     romdata['genre']  = gamedata['genre']
                     romdata['year']   = gamedata['year']
                     romdata['studio'] = gamedata['studio']
@@ -2595,10 +2607,10 @@ class Main:
         fanart = misc_look_for_image(fanart_path_noext, img_exts)
         romdata['thumb']  = thumb
         romdata['fanart'] = fanart
-        log_debug('thumb_path_noext  = "{}"'.format(thumb_path_noext))
-        log_debug('fanart_path_noext = "{}"'.format(fanart_path_noext))
-        log_verb('Set Thumb  "{}"'.format(thumb))
-        log_verb('Set Fanart "{}"'.format(fanart))
+        # log_debug('thumb_path_noext  = "{}"'.format(thumb_path_noext))
+        # log_debug('fanart_path_noext = "{}"'.format(fanart_path_noext))
+        log_verb('Local images set Thumb  "{}"'.format(thumb))
+        log_verb('Local images set Fanart "{}"'.format(fanart))
 
         # ~~~ Thumb scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Make sure thumb scraping works like a charm.
