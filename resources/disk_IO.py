@@ -15,12 +15,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# AEL packages
-try:
-    from utils_kodi import *
-except:
-    from utils_kodi_standalone import *
- 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
 # import xml.etree.cElementTree as ET
@@ -28,12 +22,13 @@ except:
 # ~~~ Using ElementTree seems to solve the problem
 import xml.etree.ElementTree as ET
 
-# Addon stuff
+# --- AEL packages ---
 from utils import *
-
-def fs_escape_XML(str):
-    return str.replace('&', '&amp;')
-
+try:
+    from utils_kodi import *
+except:
+    from utils_kodi_standalone import *
+ 
 # -----------------------------------------------------------------------------
 # Official data model used in the plugin
 # -----------------------------------------------------------------------------
@@ -52,7 +47,7 @@ def fs_new_launcher():
     launcher = {'id' : '', 'name' : '', 'categoryID' : '', 'platform' : '', 
                 'application' : '', 'args' : '', 'rompath' : '', 'romext' : '', 
                 'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '', 
-                'thumb' : '', 'fanart' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : '',  
+                'thumb' : '', 'fanart' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',  
                 'lnk' : False, 'finished': False, 'minimize' : False,
                 'roms_xml_file' : '', 'nointro_xml_file' : '' }
 
@@ -62,7 +57,7 @@ def fs_new_launcher():
 def fs_new_rom():
     rom = {'id' : '', 'name' : '', 'filename' : '',
            'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
-           'genre' : '', 'release' : '', 'studio' : '', 'plot' : '', 
+           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '', 
            'altapp' : '', 'altarg' : '', 
            'finished' : False, 'nointro_status' : 'None' }
 
@@ -76,7 +71,7 @@ def fs_new_rom():
 def fs_new_favourite_rom():
     rom = {'id' : '', 'name' : '', 'filename' : '',
            'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
-           'genre' : '', 'release' : '', 'studio' : '', 'plot' : '', 
+           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '', 
            'altapp' : '', 'altarg' : '',
            'finished' : False, 'nointro_status' : 'None',
            'launcherID' : '', 'platform' : '', 
@@ -138,7 +133,7 @@ def fs_write_catfile(categories_file, categories, launchers):
                             "  <thumb>"            + launcher["thumb"]            + "</thumb>\n" +
                             "  <fanart>"           + launcher["fanart"]           + "</fanart>\n" +
                             "  <genre>"            + launcher["genre"]            + "</genre>\n" +
-                            "  <release>"          + launcher["release"]          + "</release>\n" +
+                            "  <year>"             + launcher["year"]             + "</year>\n" +
                             "  <studio>"           + launcher["studio"]           + "</studio>\n" +
                             "  <plot>"             + launcher["plot"]             + "</plot>\n" +
                             "  <lnk>"              + str(launcher["lnk"])         + "</lnk>\n" +
@@ -276,7 +271,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
             if rom["trailer"]:  str_list.append("  <trailer>"  + rom["trailer"]       + "</trailer>\n")
             if rom["custom"]:   str_list.append("  <custom>"   + rom["custom"]        + "</custom>\n")
             if rom["genre"]:    str_list.append("  <genre>"    + rom["genre"]         + "</genre>\n")
-            if rom["release"]:  str_list.append("  <release>"  + rom["release"]       + "</release>\n")
+            if rom["year"]:     str_list.append("  <year>"     + rom["year"]          + "</year>\n")
             if rom["studio"]:   str_list.append("  <studio>"   + rom["studio"]        + "</studio>\n")
             if rom["plot"]:     str_list.append("  <plot>"     + rom["plot"]          + "</plot>\n")
             if rom["altapp"]:   str_list.append("  <altapp>"   + rom["altapp"]        + "</altapp>\n")
@@ -372,7 +367,7 @@ def fs_write_Favourites_XML_file(roms_xml_file, roms):
                             "  <trailer>"        + rom["trailer"]        + "</trailer>\n" +
                             "  <custom>"         + rom["custom"]         + "</custom>\n" +
                             "  <genre>"          + rom["genre"]          + "</genre>\n" +
-                            "  <release>"        + rom["release"]        + "</release>\n" +
+                            "  <year>"           + rom["year"]           + "</year>\n" +
                             "  <studio>"         + rom["studio"]         + "</studio>\n" +
                             "  <plot>"           + rom["plot"]           + "</plot>\n" +
                             "  <altapp>"         + rom["altapp"]         + "</altapp>\n" +
@@ -458,50 +453,6 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
     return nointro_roms
 
 #
-# Reads an NFO file with ROM information and places items in a dictionary.
-#
-def fs_load_NFO_file(nfo_file):
-    self._print_log('_fs_load_NFO_file() Loading "{0}"'.format(nfo_file))
-    
-    # Read file, put in a string and remove line endings
-    ff = open(nfo_file, 'rt')
-    nfo_str = ff.read().replace('\r', '').replace('\n', '')
-    ff.close()
-
-    # Fill default values
-    nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '', 'genre' : '', 'plot' : ''}
-
-    # Search for items
-    item_title     = re.findall( "<title>(.*?)</title>", nfo_str )
-    item_platform  = re.findall( "<platform>(.*?)</platform>", nfo_str )
-    item_year      = re.findall( "<year>(.*?)</year>", nfo_str )
-    item_publisher = re.findall( "<publisher>(.*?)</publisher>", nfo_str )
-    item_genre     = re.findall( "<genre>(.*?)</genre>", nfo_str )
-    item_plot      = re.findall( "<plot>(.*?)</plot>", nfo_str )
-
-    if len(item_title) > 0:     nfo_dic['title']     = item_title[0]
-    if len(item_title) > 0:     nfo_dic['platform']  = item_platform[0]
-    if len(item_year) > 0:      nfo_dic['year']      = item_year[0]
-    if len(item_publisher) > 0: nfo_dic['publisher'] = item_publisher[0]
-    if len(item_genre) > 0:     nfo_dic['genre']     = item_genre[0]
-    # Should end of lines deeconded from the XML file???
-    # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
-    if len(item_plot) > 0:
-        plot_str = item_plot[0]
-        plot_str.replace('&quot;', '"')
-        nfo_dic['plot'] = plot_str
-
-    # DEBUG
-    self._print_log(' title     : "{0}"'.format(nfo_dic['title']))
-    self._print_log(' platform  : "{0}"'.format(nfo_dic['platform']))
-    self._print_log(' year      : "{0}"'.format(nfo_dic['year']))
-    self._print_log(' publisher : "{0}"'.format(nfo_dic['publisher']))
-    self._print_log(' genre     : "{0}"'.format(nfo_dic['genre']))
-    self._print_log(' plot      : "{0}"'.format(nfo_dic['plot']))
-
-    return nfo_dic
-
-#
 # Loads offline scraper information XML file.
 #
 def fs_load_GameInfo_XML(xml_file):
@@ -523,12 +474,11 @@ def fs_load_GameInfo_XML(xml_file):
 
         if game_element.tag == 'game':
             # Default values
-            game = {
-                'name'    : '', 'description'  : '', 'year'   : '',
-                'rating'  : '', 'manufacturer' : '', 'dev'    : '', 
-                'genre'   : '', 'score'        : '', 'player' : '', 
-                'story'   : '', 'enabled'      : '', 'crc'    : '', 
-                'cloneof' : '' }
+            game = {'name'    : '', 'description'  : '', 'year'   : '',
+                    'rating'  : '', 'manufacturer' : '', 'dev'    : '', 
+                    'genre'   : '', 'score'        : '', 'player' : '', 
+                    'story'   : '', 'enabled'      : '', 'crc'    : '', 
+                    'cloneof' : '' }
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
@@ -559,128 +509,281 @@ def fs_load_GameInfo_XML(xml_file):
 
     return games
 
-def import_rom_nfo(self, launcher, rom):
-    # Edition of the rom name
-    nfo_file=os.path.splitext(self.launchers[launcher]["roms"][rom]["filename"])[0]+".nfo"
-    if (os.path.isfile(nfo_file)):
-        f = open(nfo_file, 'r')
-        item_nfo = f.read().replace('\r','').replace('\n','')
-        f.close()
-        item_title = re.findall( "<title>(.*?)</title>", item_nfo )
-        item_platform = re.findall( "<platform>(.*?)</platform>", item_nfo )
-        item_year = re.findall( "<year>(.*?)</year>", item_nfo )
-        item_publisher = re.findall( "<publisher>(.*?)</publisher>", item_nfo )
-        item_genre = re.findall( "<genre>(.*?)</genre>", item_nfo )
-        item_plot = re.findall( "<plot>(.*?)</plot>", item_nfo )
-        if len(item_title) > 0 : self.launchers[launcher]["roms"][rom]["name"] = item_title[0].rstrip()
-        self.launchers[launcher]["roms"][rom]["gamesys"] = self.launchers[launcher]["gamesys"]
-        if len(item_year) > 0 :  self.launchers[launcher]["roms"][rom]["release"] = item_year[0]
-        if len(item_publisher) > 0 : self.launchers[launcher]["roms"][rom]["studio"] = item_publisher[0]
-        if len(item_genre) > 0 : self.launchers[launcher]["roms"][rom]["genre"] = item_genre[0]
-        if len(item_plot) > 0 : self.launchers[launcher]["roms"][rom]["plot"] = item_plot[0].replace('&quot;','"')
-        self._save_launchers()
-        xbmc_notify('Advanced Emulator Launcher', '%s imported' % os.path.basename(nfo_file))
-    else:
-        xbmc_notify('Advanced Emulator Launcher', '%s not found' % os.path.basename(nfo_file))
+# -------------------------------------------------------------------------------------------------
+# NFO files
+# -------------------------------------------------------------------------------------------------
+#
+# Returns:
+# user_info_str  Information string that can be used for notifications in interactive mode (for example, 
+#                when "Edit ROM", or for logging (export all ROMs NFO files)
+#
+def fs_export_ROM_NFO(launcher, rom):
+    F = misc_split_path(rom['filename'])
+    nfo_file_path  = F.path_noext + '.nfo'
+    temp_file_path = F.path_noext + '.tmp'
+    log_debug('fs_export_ROM_NFO() Loading "{}"'.format(nfo_file_path))
 
-def export_rom_nfo(self, launcher, rom):
-    nfo_file=os.path.splitext(self.launchers[launcher]["roms"][rom]["filename"].decode(get_encoding()))[0]+".nfo"
-    if (os.path.isfile(nfo_file)):
-        shutil.move( nfo_file, nfo_file+".tmp" )
-        destination= open( nfo_file, "w" )
-        source= open( nfo_file+".tmp", "r" )
-        first_genre=0
+    # NFO file exists. Update it.
+    user_info_str = ''
+    if os.path.isfile(nfo_file_path):
+        log_debug('fs_export_ROM_NFO() NFO file exists. Updating it.')
+        temp_file_path = F.path_noext + '.tmp'
+        log_debug("fs_export_ROM_NFO() temp_file_path = '{}'".format(temp_file_path))
+
+        shutil.move(nfo_file_path, temp_file_path)
+        destination = open(nfo_file_path, 'wt')
+        source      = open(temp_file_path, 'rt')
+        first_genre = 0
         for line in source:
-            item_title = re.findall( "<title>(.*?)</title>", line )
-            item_platform = re.findall( "<platform>(.*?)</platform>", line )
-            item_year = re.findall( "<year>(.*?)</year>", line )
-            item_publisher = re.findall( "<publisher>(.*?)</publisher>", line )
-            item_genre = re.findall( "<genre>(.*?)</genre>", line )
-            item_plot = re.findall( "<plot>(.*?)</plot>", line )
-            if len(item_title) > 0 : line = "\t<title>"+self.launchers[launcher]["roms"][rom]["name"]+"</title>\n"
-            if len(item_platform) > 0 : line = "\t<platform>"+self.launchers[launcher]["roms"][rom]["gamesys"]+"</platform>\n"
-            if len(item_year) > 0 : line = "\t<year>"+self.launchers[launcher]["roms"][rom]["release"]+"</year>\n"
-            if len(item_publisher) > 0 : line = "\t<publisher>"+self.launchers[launcher]["roms"][rom]["studio"]+"</publisher>\n"
-            if len(item_genre) > 0 :
-                if first_genre == 0 :
-                    line = "\t<genre>"+self.launchers[launcher]["roms"][rom]["genre"]+"</genre>\n"
+            item_title     = re.findall("<title>(.*?)</title>", line)
+            item_platform  = re.findall("<platform>(.*?)</platform>", line)
+            item_year      = re.findall("<year>(.*?)</year>", line)
+            item_publisher = re.findall("<publisher>(.*?)</publisher>", line)
+            item_genre     = re.findall("<genre>(.*?)</genre>", line)
+            item_plot      = re.findall("<plot>(.*?)</plot>", line)
+            if len(item_title) > 0:     line = "  <title>"     + rom['name']     + "</title>\n"
+            if len(item_platform) > 0:  line = "  <platform>"  + rom['platform'] + "</platform>\n"
+            if len(item_year) > 0:      line = "  <year>"      + rom['year']     + "</year>\n"
+            if len(item_publisher) > 0: line = "  <publisher>" + rom['studio']   + "</publisher>\n"
+            if len(item_genre) > 0:
+                if first_genre == 0:
+                    line = "  <genre>" + rom['genre'] + "</genre>\n"
                     first_genre = 1
-            if len(item_plot) > 0 : line = "\t<plot>"+self.launchers[launcher]["roms"][rom]["plot"]+"</plot>\n"
-            destination.write( line )
+            if len(item_plot) > 0 :     line = "  <plot>"      + rom['plot']     + "</plot>\n"
+            # Writing line by line is EXTREMELY SLOW!!!
+            destination.write(line)
         source.close()
         destination.close()
-        os.remove(nfo_file+".tmp")
-        xbmc_notify('Advanced Emulator Launcher', '%s updated' % os.path.basename(nfo_file).encode('utf8','ignore'))
+        os.remove(temp_file_path)
+        user_info_str = 'Updated {}'.format(nfo_file_path)
+        log_debug("fs_export_ROM_NFO() Updated '{}'".format(temp_file_path))
+    # NFO file does not exist. Create a new one.
     else:
-        nfo_content = "<game>\n\t<title>"+self.launchers[launcher]["roms"][rom]["name"]+"</title>\n\t<platform>"+self.launchers[launcher]["roms"][rom]["gamesys"]+"</platform>\n\t<year>"+self.launchers[launcher]["roms"][rom]["release"]+"</year>\n\t<publisher>"+self.launchers[launcher]["roms"][rom]["studio"]+"</publisher>\n\t<genre>"+self.launchers[launcher]["roms"][rom]["genre"]+"</genre>\n\t<plot>"+self.launchers[launcher]["roms"][rom]["plot"]+"</plot>\n</game>\n"
-        usock = open( nfo_file, 'w' )
-        usock.write(nfo_content)
+        log_debug('fs_export_ROM_NFO() NFO file DOES NOT exist. Creating new one.')
+        nfo_content = []
+        nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        nfo_content.append('<game>\n')
+        nfo_content.append('  <title>'     + rom['name']     + '</title>\n')
+        nfo_content.append('  <platform>'  + rom['platform'] + '</platform>\n')
+        nfo_content.append('  <year>'      + rom['year']     + '</year>\n')
+        nfo_content.append('  <publisher>' + rom['studio']   + '</publisher>\n')
+        nfo_content.append('  <genre>'     + rom['genre']    + '</genre>\n')
+        nfo_content.append('  <plot>'      + rom['plot']     + '</plot>\n')
+        nfo_content.append('</game>\n')
+        full_string = ''.join(nfo_content)
+        usock = open(nfo_file_path, 'wt')
+        usock.write(full_string)
         usock.close()
-        xbmc_notify('Advanced Emulator Launcher', '%s created' % os.path.basename(nfo_file).encode('utf8','ignore'))
+        user_info_str = 'Created {}'.format(nfo_file_path)
+        log_debug("fs_export_ROM_NFO() Created '{}'".format(temp_file_path))
 
-def export_launcher_nfo(self, launcherID):
-    if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
-        nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
+    return user_info_str
+
+#
+# Reads an NFO file with ROM information.
+# Modifies roms dictionary even outside this function. See comments in fs_import_launcher_NFO()
+# This file is called by the gui when user is editing a ROM interactively.
+#
+def fs_import_ROM_NFO(launcher, roms, romID):
+    F = misc_split_path(roms[romID]['filename'])
+    nfo_file_path = F.path_noext + '.nfo'
+    log_debug('fs_export_ROM_NFO() Loading "{}"'.format(nfo_file_path))
+    
+    # --- Import data ---
+    user_info_str = ''
+    if os.path.isfile(nfo_file_path):
+        # Read file, put in a string and remove line endings
+        file = open(nfo_file_path, 'rt')
+        nfo_str = file.read().replace('\r', '').replace('\n', '')
+        file.close()
+
+        # Search for items
+        item_title     = re.findall("<title>(.*?)</title>", nfo_str)
+        item_platform  = re.findall("<platform>(.*?)</platform>", nfo_str)
+        item_year      = re.findall("<year>(.*?)</year>", nfo_str)
+        item_publisher = re.findall("<publisher>(.*?)</publisher>", nfo_str)
+        item_genre     = re.findall("<genre>(.*?)</genre>", nfo_str)
+        item_plot      = re.findall("<plot>(.*?)</plot>", nfo_str)
+
+        if len(item_title) > 0:     roms[romID]['title']     = item_title[0]
+        if len(item_title) > 0:     roms[romID]['platform']  = item_platform[0]
+        if len(item_year) > 0:      roms[romID]['year']      = item_year[0]
+        if len(item_publisher) > 0: roms[romID]['publisher'] = item_publisher[0]
+        if len(item_genre) > 0:     roms[romID]['genre']     = item_genre[0]
+        # Should end of lines deeconded from the XML file?
+        # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
+        if len(item_plot) > 0:
+            plot_str = item_plot[0]
+            plot_str.replace('&quot;', '"')
+            nfo_dic['plot'] = plot_str
+
+        # --- DEBUG ---
+        # log_debug(' title     : "{0}"'.format(nfo_dic['title']))
+        # log_debug(' platform  : "{0}"'.format(nfo_dic['platform']))
+        # log_debug(' year      : "{0}"'.format(nfo_dic['year']))
+        # log_debug(' publisher : "{0}"'.format(nfo_dic['publisher']))
+        # log_debug(' genre     : "{0}"'.format(nfo_dic['genre']))
+        # log_debug(' plot      : "{0}"'.format(nfo_dic['plot']))
+        user_info_str = "Imported {}".format(nfo_file_path)
+        log_debug("fs_import_ROM_NFO() Imported '{}'".format(nfo_file_path))
     else:
-        if ( len(self.settings[ "launcher_nfo_path" ]) > 0 ):
-            nfo_file = os.path.join(self.settings[ "launcher_nfo_path" ],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
-        else:
-            nfo_path = xbmcgui.Dialog().browse(0, 'Select directory where save .nfo file',"files",".nfo", False, False)
-            nfo_file = os.path.join(nfo_path,os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
-    if (os.path.isfile(nfo_file)):
-        shutil.move( nfo_file, nfo_file+".tmp" )
-        destination= open( nfo_file, "w" )
-        source= open( nfo_file+".tmp", "r" )
+        user_info_str = "NFO file not found {}".format(nfo_file_path)
+        log_debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
+
+    return user_info_str
+
+#
+# This file is called by the ROM scanner to read a ROM info file automatically.
+# NFO file existence is checked before calling this function, so NFO file must always exist.
+#
+def fs_load_NFO_file_scanner(nfo_file_path):
+    nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '', 
+               'genre' : '', 'plot' : '' }
+
+    # Read file, put in a string and remove line endings
+    file = open(nfo_file_path, 'rt')
+    nfo_str = file.read().replace('\r', '').replace('\n', '')
+    file.close()
+
+    # Search for items
+    item_title     = re.findall("<title>(.*?)</title>", nfo_str)
+    item_platform  = re.findall("<platform>(.*?)</platform>", nfo_str)
+    item_year      = re.findall("<year>(.*?)</year>", nfo_str)
+    item_publisher = re.findall("<publisher>(.*?)</publisher>", nfo_str)
+    item_genre     = re.findall("<genre>(.*?)</genre>", nfo_str)
+    item_plot      = re.findall("<plot>(.*?)</plot>", nfo_str)
+
+    if len(item_title) > 0:     roms[romID]['title']     = item_title[0]
+    if len(item_title) > 0:     roms[romID]['platform']  = item_platform[0]
+    if len(item_year) > 0:      roms[romID]['year']      = item_year[0]
+    if len(item_publisher) > 0: roms[romID]['publisher'] = item_publisher[0]
+    if len(item_genre) > 0:     roms[romID]['genre']     = item_genre[0]
+    # Should end of lines deeconded from the XML file?
+    # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
+    if len(item_plot) > 0:
+        plot_str = item_plot[0]
+        plot_str.replace('&quot;', '"')
+        nfo_dic['plot'] = plot_str
+
+    return nfo_dic
+
+#
+# Standalone launchers:
+#   NFO files are stored in self.settings["launcher_thumb_path"] if not empty.
+#   If empty, it defaults to DEFAULT_NFO_DIR = os.path.join(PLUGIN_DATA_DIR, 'nfos')
+# ROM launchers:
+#   Same as standalone launchers.
+#
+def fs_export_launcher_NFO(settings, launcher):
+    # --- Get NFO file name ---
+    log_debug('fs_export_launcher_NFO() Exporting launcher NFO file.')
+    nfo_file_path, temp_file_path = fs_get_launcher_NFO_names(settings, launcher)
+
+    # If NFO file does not exists then create them. If it exists, then update contents.
+    user_info_str = ''
+    if os.path.isfile(nfo_file_path):
+        log_debug('fs_export_launcher_NFO() NFO file exists. Updating it.')
+        log_debug("fs_export_launcher_NFO() temp_file_path = '{}'".format(temp_file_path))
+        shutil.move(nfo_file_path, temp_file_path)
+        destination = open(nfo_file_path, 'wt')
+        source      = open(temp_file_path, 'rt')
         for line in source:
-            item_title = re.findall( "<title>(.*?)</title>", line )
-            item_platform = re.findall( "<platform>(.*?)</platform>", line )
-            item_year = re.findall( "<year>(.*?)</year>", line )
-            item_publisher = re.findall( "<publisher>(.*?)</publisher>", line )
-            item_genre = re.findall( "<genre>(.*?)</genre>", line )
-            item_plot = re.findall( "<plot>(.*?)</plot>", line )
-            if len(item_title) > 0 : line = "\t<title>"+self.launchers[launcherID]["name"]+"</title>\n"
-            if len(item_platform) > 0 : line = "\t<platform>"+self.launchers[launcherID]["gamesys"]+"</platform>\n"
-            if len(item_year) > 0 : line = "\t<year>"+self.launchers[launcherID]["release"]+"</year>\n"
-            if len(item_publisher) > 0 : line = "\t<publisher>"+self.launchers[launcherID]["studio"]+"</publisher>\n"
-            if len(item_genre) > 0 : line = "\t<genre>"+self.launchers[launcherID]["genre"]+"</genre>\n"
-            if len(item_plot) > 0 : line = "\t<plot>"+self.launchers[launcherID]["plot"]+"</plot>\n"
-            destination.write( line )
+            item_title     = re.findall("<title>(.*?)</title>", line)
+            item_platform  = re.findall("<platform>(.*?)</platform>", line)
+            item_year      = re.findall("<year>(.*?)</year>", line)
+            item_publisher = re.findall("<publisher>(.*?)</publisher>", line)
+            item_genre     = re.findall("<genre>(.*?)</genre>", line)
+            item_plot      = re.findall("<plot>(.*?)</plot>", line)
+            if len(item_title) > 0:     line = "  <title>"     + launcher["name"]     + "</title>\n"
+            if len(item_platform) > 0:  line = "  <platform>"  + launcher["platform"] + "</platform>\n"
+            if len(item_year) > 0:      line = "  <year>"      + launcher["year"]     + "</year>\n"
+            if len(item_publisher) > 0: line = "  <publisher>" + launcher["studio"]   + "</publisher>\n"
+            if len(item_genre) > 0:     line = "  <genre>"     + launcher["genre"]    + "</genre>\n"
+            if len(item_plot) > 0:      line = "  <plot>"      + launcher["plot"]     + "</plot>\n"
+            destination.write(line)
         source.close()
         destination.close()
-        os.remove(nfo_file+".tmp")
-        xbmc_notify('Advanced Emulator Launcher', '%s updated' % os.path.basename(nfo_file))
+        os.remove(temp_file_path)
+        user_info_str = 'Updated %s'.format(os.path.basename(nfo_file_path))
+        log_debug("fs_export_launcher_NFO() Updated '{}'".format(nfo_file_path))
     else:
-        nfo_content = "<launcher>\n\t<title>"+self.launchers[launcherID]["name"]+"</title>\n\t<platform>"+self.launchers[launcherID]["gamesys"]+"</platform>\n\t<year>"+self.launchers[launcherID]["release"]+"</year>\n\t<publisher>"+self.launchers[launcherID]["studio"]+"</publisher>\n\t<genre>"+self.launchers[launcherID]["genre"]+"</genre>\n\t<plot>"+self.launchers[launcherID]["plot"]+"</plot>\n</launcher>\n"
-        usock = open( nfo_file, 'w' )
-        usock.write(nfo_content)
+        log_debug('fs_export_launcher_NFO() NFO file DOES NOT exist. Creating new one.')
+        nfo_content = []
+        nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        nfo_content.append('<launcher>\n')
+        nfo_content.append('  <title>'     + self.launchers[launcherID]["name"]     + '</title>\n')
+        nfo_content.append('  <platform>'  + self.launchers[launcherID]["platform"] + '</platform>\n')
+        nfo_content.append('  <year>'      + self.launchers[launcherID]["year"]     + '</year>\n')
+        nfo_content.append('  <publisher>' + self.launchers[launcherID]["studio"]   + '</publisher>\n')
+        nfo_content.append('  <genre>'     + self.launchers[launcherID]["genre"]    + '</genre>\n')
+        nfo_content.append('  <plot>'      + self.launchers[launcherID]["plot"]     + '</plot>\n')
+        nfo_content.append('</launcher>\n')
+        full_string = ''.join(nfo_content)
+        usock = open(nfo_file_path, 'wt')
+        usock.write(full_string)
         usock.close()
-        xbmc_notify('Advanced Emulator Launcher', '%s created' % os.path.basename(nfo_file))
+        user_info_str = 'Created %s'.format(os.path.basename(nfo_file_path))
+        log_debug("fs_export_launcher_NFO() Created '{}'".format(nfo_file_path))
 
-def import_launcher_nfo(self, launcherID):
-    if ( len(self.launchers[launcherID]["rompath"]) > 0 ):
-        nfo_file = os.path.join(self.launchers[launcherID]["rompath"],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
-    else:
-        if ( len(self.settings[ "launcher_nfo_path" ]) > 0 ):
-            nfo_file = os.path.join(self.settings[ "launcher_nfo_path" ],os.path.basename(os.path.splitext(self.launchers[launcherID]["application"])[0]+".nfo"))
-        else:
-            nfo_file = xbmcgui.Dialog().browse(1, 'Select the .nfo file to import',"files",".nfo", False, False)
-    if (os.path.isfile(nfo_file)):
-        f = open(nfo_file, 'r')
+    return user_info_str
+
+#
+# Python data model: lists and dictionaries are mutable. It means the can be changed if passed as
+# parameters of functions. However, items can not be replaced by new objects!
+# Notably, numbers, strings and tuples are immutable. Dictionaries and lists are mutable.
+#
+# See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
+# See https://docs.python.org/2/reference/datamodel.html
+#
+# Function asumes that the NFO file already exists.
+#
+def fs_import_launcher_NFO(settings, launchers, launcherID):
+    # --- Get NFO file name ---
+    log_debug('fs_import_launcher_NFO() Importing launcher NFO file.')
+    nfo_file_path, _ = fs_get_launcher_NFO_names(settings, self.launchers[launcherID])
+
+    # --- Import data ---
+    user_info_str = ''
+    if os.path.isfile(nfo_file_path):
+        # Read NFO file data
+        f = open(nfo_file_path, 'r')
         item_nfo = f.read().replace('\r','').replace('\n','')
-        item_title = re.findall( "<title>(.*?)</title>", item_nfo )
-        item_platform = re.findall( "<platform>(.*?)</platform>", item_nfo )
-        item_year = re.findall( "<year>(.*?)</year>", item_nfo )
-        item_publisher = re.findall( "<publisher>(.*?)</publisher>", item_nfo )
-        item_genre = re.findall( "<genre>(.*?)</genre>", item_nfo )
-        item_plot = re.findall( "<plot>(.*?)</plot>", item_nfo )
-        self.launchers[launcherID]["name"] = item_title[0].rstrip()
-        self.launchers[launcherID]["gamesys"] = item_platform[0]
-        self.launchers[launcherID]["release"] = item_year[0]
-        self.launchers[launcherID]["studio"] = item_publisher[0]
-        self.launchers[launcherID]["genre"] = item_genre[0]
-        self.launchers[launcherID]["plot"] = item_plot[0].replace('&quot;','"')
         f.close()
-        self._save_launchers()
-        xbmc_notify('Advanced Emulator Launcher', '%s imported' % os.path.basename(nfo_file))
+        
+        # Find data
+        item_title     = re.findall("<title>(.*?)</title>", item_nfo)
+        item_platform  = re.findall("<platform>(.*?)</platform>", item_nfo)
+        item_year      = re.findall("<year>(.*?)</year>", item_nfo)
+        item_publisher = re.findall("<publisher>(.*?)</publisher>", item_nfo)
+        item_genre     = re.findall("<genre>(.*?)</genre>", item_nfo)
+        item_plot      = re.findall("<plot>(.*?)</plot>", item_nfo)
+
+        # Careful about object mutability! This should modify the dictionary
+        # passed as argument outside this function.
+        launchers[launcherID]["name"]     = item_title[0].rstrip()
+        launchers[launcherID]["platform"] = item_platform[0]
+        launchers[launcherID]["year"]     = item_year[0]
+        launchers[launcherID]["studio"]   = item_publisher[0]
+        launchers[launcherID]["genre"]    = item_genre[0]
+        launchers[launcherID]["plot"]     = item_plot[0].replace('&quot;','"')
+        user_info_str = "Imported {}".format(nfo_file_path)
+        log_debug("fs_import_launcher_NFO() Imported '{}'".format(nfo_file_path))
     else:
-        xbmc_notify('Advanced Emulator Launcher', '%s not found' % os.path.basename(nfo_file))
+        user_info_str = "NFO file not found {}".format(nfo_file_path)
+        log_debug("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_file_path))
+
+    return user_info_str
+
+def fs_get_launcher_NFO_names(settings, launcher):
+    launcher_name = launcher['name']
+    if len(settings['launcher_nfo_path']) > 0:
+        nfo_dir = settings['launcher_nfo_path']
+        log_debug("fs_get_launcher_NFO_names() Using default launcher_nfo_path = '{}'".format(nfo_dir))
+        nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
+    else:
+        nfo_dir = settings['launcher_nfo_path']
+        log_debug("fs_get_launcher_NFO_names() User set launcher_nfo_path = '{}'".format(nfo_dir))
+        nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
+    log_debug("fs_get_launcher_NFO_names() Using nfo_file_path = '{}'".format(nfo_file_path))
+
+    return nfo_file_path, temp_file_path
