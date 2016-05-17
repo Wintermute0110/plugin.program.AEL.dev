@@ -5,17 +5,22 @@
 #
 
 # Python standard library
-import sys
+import sys, os
 
 # Import scrapers
-from resources.scrap import *
-from resources.utils import *
+if __name__ == "__main__" and __package__ is None:
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from scrap import *
+from utils import *
 
+# --- Scrapers to test ----------------------------------------------------------------------------
 TEST_OFFLINE    = True
 TEST_THEGAMESDB = False
 TEST_GAMEFAQS   = False
 
 # --- print scraped results -----------------------------------------------------------------------
+# PUT functions to print things returned by Scraper object (which are common to all scrapers)
+# into util.py, to be resused by all scraper tests.
 def print_games_search(results, scraperObj):
     id_length = 60
     name_length = 70
