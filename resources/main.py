@@ -452,10 +452,10 @@ class Main:
                     else:
                         roms[romID]["name"] = title_format(self,results[selectgame]["title"])
                     gamedata = self._get_game_data(results[selectgame]["id"])
-                    roms[romID]["genre"] = gamedata["genre"]
-                    roms[romID]["release"] = gamedata["release"]
+                    roms[romID]["genre"]  = gamedata["genre"]
+                    roms[romID]["year"]   = gamedata["year"]
                     roms[romID]["studio"] = gamedata["studio"]
-                    roms[romID]["plot"] = gamedata["plot"]
+                    roms[romID]["plot"]   = gamedata["plot"]
             else:
                 kodi_notify('Advanced Emulator Launcher', 'No data found')
 
@@ -489,10 +489,10 @@ class Main:
 
                     # User made a decision. Get full metadata
                     gamedata = self._get_game_data(results[selectgame]["id"])
-                    self.launchers[launcherID]["genre"]   = gamedata["genre"]
-                    self.launchers[launcherID]["release"] = gamedata["release"]
-                    self.launchers[launcherID]["studio"]  = gamedata["studio"]
-                    self.launchers[launcherID]["plot"]    = gamedata["plot"]
+                    self.launchers[launcherID]["genre"]  = gamedata["genre"]
+                    self.launchers[launcherID]["year"]   = gamedata["year"]
+                    self.launchers[launcherID]["studio"] = gamedata["studio"]
+                    self.launchers[launcherID]["plot"]   = gamedata["plot"]
             else:
                 kodi_notify('Advanced Emulator Launcher', 'No data found')
 
@@ -643,7 +643,7 @@ class Main:
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
     def _gui_edit_category_metadata(self, categoryID):
-        desc_str = text_limit_string_length(self.categories[categoryID]["description"], 35)
+        desc_str = text_limit_string(self.categories[categoryID]["description"], 35)
         dialog = xbmcgui.Dialog()
         type2 = dialog.select('Edit Category Metadata', 
                               ["Edit Title: '%s'".format(self.categories[categoryID]["name"]),
@@ -705,7 +705,7 @@ class Main:
                 self.categories[categoryID]["description"] = file_data
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                desc_str = text_limit_string_length(self.categories[categoryID]["description"], 35)
+                desc_str = text_limit_string(self.categories[categoryID]["description"], 35)
                 kodi_dialog_OK('Advanced Emulator Launcher - Information', 
                                "Category description '{}' not changed".format(desc_str))
 
@@ -858,12 +858,12 @@ class Main:
         type_nb = 0
         if type == type_nb:
             dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string_length(self.launchers[launcherID]["plot"], 35)
+            desc_str = text_limit_string(self.launchers[launcherID]["plot"], 35)
             type2 = dialog.select('Modify Launcher Metadata',
                                   ['Scrape from {0}'.format(self.scraper_metadata.fancy_name),
                                    "Edit Title: '{}'".format(self.launchers[launcherID]["name"]),
                                    "Edit Platform: {}".format(self.launchers[launcherID]["platform"]),
-                                   "Edit Release Date: '{}'".format(self.launchers[launcherID]["release"]),
+                                   "Edit Release Year: '{}'".format(self.launchers[launcherID]["year"]),
                                    "Edit Studio: '{}'".format(self.launchers[launcherID]["studio"]),
                                    "Edit Genre: '{}'".format(self.launchers[launcherID]["genre"]),
                                    "Edit Description: '{}'".format(desc_str),
@@ -894,10 +894,10 @@ class Main:
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             # Edition of the launcher release date (year)
             elif type2 == 3:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["release"], 'Edit release year')
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]["year"], 'Edit release year')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
-                    self.launchers[launcherID]["release"] = keyboard.getText()
+                    self.launchers[launcherID]["year"] = keyboard.getText()
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             # Edition of the launcher studio name
             elif type2 == 4:
@@ -944,7 +944,7 @@ class Main:
                     self.launchers[launcherID]["plot"] = file_data
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 else:
-                    desc_str = text_limit_string_length(self.launchers[launcherID]["plot"], 35)
+                    desc_str = text_limit_string(self.launchers[launcherID]["plot"], 35)
                     kodi_dialog_OK('Advanced Emulator Launcher - Information', 
                                    "Launcher plot '{}' not changed".format(desc_str))
 
@@ -2419,8 +2419,8 @@ class Main:
             xbmc.executebuiltin('Container.Refresh')
             return
 
-        if len(num_new_roms) == 0:
-            kodi_dialog_OK('AEL', 'Launcher has {} ROMs and no new ROMs have been added.')
+        if num_new_roms == 0:
+            kodi_dialog_OK('AEL', 'Launcher has {} ROMs and no new ROMs have been added.'.format(len(roms)))
             xbmc.executebuiltin('Container.Refresh')
 
         # --- If we have a No-Intro XML then audit roms -------------------------------------------
@@ -2852,12 +2852,12 @@ class Main:
         # Search by Release Date
         type_nb = type_nb + 1
         if type == type_nb:
-            searched_list = self._search_launcher_category(launcherID, "release", roms)
+            searched_list = self._search_launcher_category(launcherID, "year", roms)
             dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Release date ...', searched_list)
+            selected_value = dialog.select('Select a Release year ...', searched_list)
             if selected_value >= 0:
                 search_string = searched_list[selected_value]
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_RELEASE', search_string)
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_YEAR', search_string)
                 xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
 
         # Search by System Platform
@@ -2911,7 +2911,7 @@ class Main:
 
     def _command_execute_search_launcher(self, categoryID, launcherID, search_type, search_string):
         if   search_type == 'SEARCH_TITLE'  : rom_search_field = 'name'
-        elif search_type == 'SEARCH_RELEASE': rom_search_field = 'release'
+        elif search_type == 'SEARCH_YEAR'   : rom_search_field = 'year'
         elif search_type == 'SEARCH_STUDIO' : rom_search_field = 'studio'
         elif search_type == 'SEARCH_GENRE'  : rom_search_field = 'genre'
 
