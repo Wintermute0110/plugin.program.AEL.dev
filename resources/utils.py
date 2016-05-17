@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#
 # Advanced Emulator Launcher miscellaneous functions
 #
 
