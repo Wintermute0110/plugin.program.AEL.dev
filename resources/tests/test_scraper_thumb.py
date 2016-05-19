@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 # Test AEL thumb scraper
 #
@@ -13,36 +14,39 @@ from scrap import *
 from utils import *
 
 # --- Scrapers to test ----------------------------------------------------------------------------
-TEST_OFFLINE    = True
 TEST_THEGAMESDB = False
-TEST_GAMEFAQS   = False
+TEST_GAMEFAQS   = True
 
 # --- main ----------------------------------------------------------------------------------------
-# Print name of all scrapers
-print('Short name  Fancy Name')
-print('----------  ---------------------------------')
+# --- Print name of all scrapers ---
+print('Short name        Fancy Name')
+print('----------------  ---------------------------------')
 for scraper in scrapers_thumb:
-    print('{:10s}  {:}'.format(scraper.name.rjust(10), scraper.fancy_name))
-print('')
+    print('{:10s}  {:}'.format(scraper.name.rjust(16), scraper.fancy_name))
 
 # --- Test TheGamesDB scraper -------------------------------------------------
+if TEST_THEGAMESDB:
+    print('\n--- Online TheGamesDB ---------------------------------------------')
+    GamesDB = thumb_TheGamesDB()
 
+    results = GamesDB.get_games_search('Castlevania', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('Metroid', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('Zelda', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('Super Mario World', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('street fighter', 'Nintendo SNES', '')
 
+    # --- Print list of fames found ---
+    print_games_search(results)
+    print_game_image_list(results, GamesDB)
 
+# --- Test GameFAQs scraper ---------------------------------------------------
+if TEST_GAMEFAQS:
+    print('\n--- Online GameFAQs -----------------------------------------------')
+    GameFAQs = thumb_GameFAQs()
 
-print('\n--- Online TheGamesDB -------------------------------------------------')
-GamesDB = thumb_TheGamesDB()
+    results = GameFAQs.get_games_search('Castlevania', 'Nintendo SNES')
+    # results = GameFAQs.get_games_search('Metroid', 'Nintendo SNES')
 
-# results = GamesDB.get_games_search('Castlevania', 'Nintendo SNES')
-# results = GamesDB.get_games_search('Metroid', 'Nintendo SNES')
-# results = GamesDB.get_games_search('Zelda', 'Nintendo SNES')
-# results = GamesDB.get_games_search('Super Mario World', 'Nintendo SNES')
-results = GamesDB.get_games_search('street fighter', 'Nintendo SNES', '')
-
-
-if results:
-    print('Found {} games'.format(len(results)))
-    metadata = GamesDB.get_game_image_list(results[0])
-    print(metadata)
-else:
-    print('No results found.')
+    # --- Print list of fames found ---
+    print_games_search(results)
+    print_game_image_list(results, GameFAQs)
