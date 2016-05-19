@@ -19,14 +19,13 @@ import sys, urllib, urllib2, re
 
 from scrap import *
 from scrap_info import *
-# from utils import *
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing, but it's very fast :)
 # ----------------------------------------------------------------------------- 
 class thumb_NULL(Scraper_Thumb):
     def __init__(self):
-        self.name = 'NULL'
+        self.name       = 'NULL'
         self.fancy_name = 'NULL Thumb scraper'
 
     def get_image_list(self, game):
@@ -37,7 +36,7 @@ class thumb_NULL(Scraper_Thumb):
 # ----------------------------------------------------------------------------- 
 class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
     def __init__(self):
-        self.name = 'TheGamesDB'
+        self.name       = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Thumb scraper'
 
     # Call common code in parent class
@@ -46,7 +45,7 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
 
     def get_game_image_list(self, game):
         images = []
-        
+
         # Download game page XML data
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game["id"]
         log_debug('get_game_image_list() game_id_url = {}'.format(game_id_url))
@@ -62,29 +61,29 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         for index, boxart in enumerate(boxarts):
             # print(index, boxart)
             log_debug('get_game_image_list() Adding boxfront #{:>2s} {}'.format(str(index + 1), boxart[1]))
-            images.append(("http://thegamesdb.net/banners/" + boxart[1],
-                           "http://thegamesdb.net/banners/" + boxart[1],
-                           "Cover " + str(index + 1)))
+            images.append(("Cover " + str(index + 1), "http://thegamesdb.net/banners/" + boxart[1]))
         # Read banners
         banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
         for index, banner in enumerate(banners):
             log_debug('get_game_image_list() Adding banner   #{:>2s} {}'.format(str(index + 1), banner[1]))
-            images.append(("http://thegamesdb.net/banners/" + banner[1], 
-                           "http://thegamesdb.net/banners/" + banner[1],
-                           "Banner " + str(index + 1)))
+            images.append(("Banner " + str(index + 1), "http://thegamesdb.net/banners/" + banner[1]))
 
         return images
 
 # -----------------------------------------------------------------------------
 # GameFAQs thumb scraper
 # ----------------------------------------------------------------------------- 
-class thumb_GameFAQs(Scraper_Thumb):
+class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
     def __init__(self):
-        self.name = 'GameFAQs'
+        self.name       = 'GameFAQs'
         self.fancy_name = 'GameFAQs Thumb scraper'
 
-    # Checks this... I think Google image search API is deprecated.
-    def get_image_list(self, search_string, gamesys, region, imgsize):
+    # Call common code in parent class
+    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+        return Scraper_GameFAQs.get_games_search(self, search_string, platform, rom_base_noext)
+
+    # def get_image_list(self, search_string, gamesys, region, imgsize):
+    def get_game_image_list(self, game):
       covers = []
       results = []
       try:
@@ -93,11 +92,11 @@ class thumb_GameFAQs(Scraper_Thumb):
           req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
           game_page = urllib2.urlopen(req)
           results = re.findall('<div class="img boxshot"><a href="(.*?)"><img class="img100" src="(.*?)" alt="(.*?)" /></a>', game_page.read().replace('\r\n', ''))
-          if (region == "All" ):
+          if region == "All":
               return results
           else:
               for result in results:
-                  if '('+region+')' in result[2]:
+                  if '(' + region + ')' in result[2]:
                       covers.append(result)
               return covers
       except:
@@ -123,7 +122,7 @@ class thumb_GameFAQs(Scraper_Thumb):
 # ----------------------------------------------------------------------------- 
 class thumb_arcadeHITS(Scraper_Thumb):
     def __init__(self):
-        self.name = 'arcadeHITS'
+        self.name       = 'arcadeHITS'
         self.fancy_name = 'arcadeHITS Thumb scraper'
 
     # Checks this... I think Google image search API is deprecated.
@@ -152,7 +151,7 @@ class thumb_arcadeHITS(Scraper_Thumb):
 # ----------------------------------------------------------------------------- 
 class thumb_Google(Scraper_Thumb):
     def __init__(self):
-        self.name = 'Google'
+        self.name       = 'Google'
         self.fancy_name = 'Google Thumb scraper'
 
     # Checks this... I think Google image search API is deprecated.
@@ -163,7 +162,7 @@ class thumb_Google(Scraper_Thumb):
       covers = []
       results = []
       try:
-          for start in (0,8,16,24):
+          for start in (0, 8, 16, 24):
               url = base_url % (start,query)
               search_results = urllib.urlopen(url)
               json = simplejson.loads(search_results.read())
