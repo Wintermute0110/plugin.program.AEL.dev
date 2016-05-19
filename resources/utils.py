@@ -41,13 +41,45 @@ def text_limit_string(string, max_length):
 
   return string
 
+# Some XML encoding of special characters:
+#   {'\n': '&#10;', '\r': '&#13;', '\t':'&#9;'}
 #
 # See http://stackoverflow.com/questions/1091945/what-characters-do-i-need-to-escape-in-xml-documents
+# See https://wiki.python.org/moin/EscapingXml
+# See https://github.com/python/cpython/blob/master/Lib/xml/sax/saxutils.py
+# See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
 #
-def text_escape_XML(str):
-    str_A = str.replace('"', '&quot;').replace("'", '&apos;').replace('&', '&amp;')
+def text_escape_XML(data_str):
+    # Ampersand MUST BE replaced FIRST
+    data_str = data_str.replace('&', '&amp;')
+    data_str = data_str.replace('>', '&gt;')
+    data_str = data_str.replace('<', '&lt;')
 
-    return str_A.replace('<', '&lt;').replace('>', '&gt;')
+    data_str = data_str.replace("'", '&apos;')
+    data_str = data_str.replace('"', '&quot;')
+    
+    # --- Unprintable characters ---
+    data_str = data_str.replace('\n', '&#10;')
+    data_str = data_str.replace('\r', '&#13;')
+    data_str = data_str.replace('\t', '&#9;')
+
+    return data_str
+
+def text_unescape_XML(data_str):
+    data_str = data_str.replace('&quot;', '"')
+    data_str = data_str.replace('&apos;', "'")
+
+    data_str = data_str.replace('&lt;', '<')
+    data_str = data_str.replace('&gt;', '>')
+    # Ampersand MUST BE replaced LAST
+    data_str = data_str.replace('&amp;', '&')
+    
+    # --- Unprintable characters ---
+    data_str = data_str.replace('&#10;', '\n')
+    data_str = data_str.replace('&#13;', '\r')
+    data_str = data_str.replace('&#9;', '\t')
+    
+    return data_str
 
 def text_unescape_HTML(s):
     s = s.replace('<br />',' ')
@@ -227,3 +259,56 @@ def misc_generate_random_SID():
     sid = base.hexdigest()
 
     return sid
+
+# -------------------------------------------------------------------------------------------------
+# Utilities to test scrapers
+# -------------------------------------------------------------------------------------------------
+ID_LENGTH     = 60
+NAME_LENGTH   = 60
+GENRE_LENGTH  = 20
+YEAR_LENGTH   = 4
+STUDIO_LENGTH = 20
+PLOT_LENGTH   = 70
+URL_LENGTH    = 80
+
+# PUT functions to print things returned by Scraper object (which are common to all scrapers)
+# into util.py, to be resused by all scraper tests.
+def print_games_search(results):
+    print('\nFound {} game/s'.format(len(results)))
+    print("{} {}".format('Display name'.ljust(NAME_LENGTH), 'Id'.ljust(ID_LENGTH)))
+    print("{} {}".format('-'*NAME_LENGTH, '-'*ID_LENGTH))
+    for game in results:
+        display_name = text_limit_string(game['display_name'], NAME_LENGTH)
+        id           = text_limit_string(game['id'], ID_LENGTH)
+        print("{} {}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH)))
+    print('')
+
+def print_game_metadata(results, scraperObj):
+    # --- Get metadata of first game ---
+    if results:
+        metadata = scraperObj.get_game_metadata(results[0])
+
+        title  = text_limit_string(metadata['title'], NAME_LENGTH)
+        genre  = text_limit_string(metadata['genre'], GENRE_LENGTH)
+        year   = metadata['year']
+        studio = text_limit_string(metadata['studio'], STUDIO_LENGTH)
+        plot   = text_limit_string(metadata['plot'], PLOT_LENGTH)
+        print('\nDisplaying metadata for title "{}"'.format(title))
+        print("{} {} {} {} {}".format('Title'.ljust(NAME_LENGTH), 'Genre'.ljust(GENRE_LENGTH), 
+                                      'Year'.ljust(YEAR_LENGTH), 'Studio'.ljust(STUDIO_LENGTH), 'Plot'.ljust(PLOT_LENGTH)))
+        print("{} {} {} {} {}".format('-'*NAME_LENGTH, '-'*GENRE_LENGTH, '-'*YEAR_LENGTH, 
+                                      '-'*STUDIO_LENGTH, '-'*PLOT_LENGTH))
+        print("{} {} {} {} {}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), year.ljust(YEAR_LENGTH), 
+                                      studio.ljust(STUDIO_LENGTH), plot.ljust(PLOT_LENGTH)))
+
+def print_game_image_list(results, scraperObj):
+    # --- Get image list of first game ---
+    if results:
+        image_list = scraperObj.get_game_image_list(results[0])
+        print('\nFound {} image/s'.format(len(image_list)))
+        print("{} {}".format('Display name'.ljust(NAME_LENGTH), 'URL'.ljust(URL_LENGTH)))
+        print("{} {}".format('-'*NAME_LENGTH, '-'*URL_LENGTH))
+        for image in image_list:
+            display_name  = text_limit_string(image[0], NAME_LENGTH)
+            url           = text_limit_string(image[1], URL_LENGTH)
+            print("{} {}".format(display_name.ljust(NAME_LENGTH), url.ljust(URL_LENGTH)))
