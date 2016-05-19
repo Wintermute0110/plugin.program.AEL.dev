@@ -68,12 +68,8 @@ class Scraper_Metadata(Scraper):
     # get_game_search() is usually common code for the online scrapers.
     #
     # Mandatory fields returned:
-    #   gamedata = {'title'  : '', 
-    #               'genre'  : '', 
-    #               'year'   : '', 
-    #               'studio' : '', 
-    #               'plot'   : ''
-    #              }
+    #   gamedata = {'title'  : '', 'genre'  : '', 'year'   : '', 
+    #               'studio' : '', 'plot'   : '' }
     def get_game_metadata(self, game):
         raise NotImplementedError("Subclass must implement get_game_metadata() abstract method")
 
@@ -88,10 +84,9 @@ class Scraper_Thumb(Scraper):
     #
     # Returns:
     #   images = [image, image, ... ]
-    #   image = {'URL' : str,         # URL to download image
-    #            'id' : str,          # Same URL
-    #            'name' : str         # Name of the image (e.g., 'Boxfront 1')
-    #           }
+    #   image = {'name' : str         # Name of the image (e.g., 'Boxfront 1')
+    #            'URL'  : str}        # URL to download image
+    #
     def get_game_image_list(self, game):
         raise NotImplementedError("Subclass must implement get_game_image_list() abstract method") 
 
@@ -99,7 +94,6 @@ class Scraper_Thumb(Scraper):
 # All fanart scrapers are online scrapers. If user has a local image then he
 # can setup manually using other parts of the GUI.
 class Scraper_Fanart(Scraper):
-    # See class Scraper_Thumb
     def get_game_image_list(self, game):
         raise NotImplementedError("Subclass must implement get_game_image_list() abstract method") 
 
