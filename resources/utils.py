@@ -94,6 +94,11 @@ def text_unescape_HTML(s):
 
     return s
 
+def text_dump_str_to_file(full_string, filename):
+    file_obj = open(filename, 'wt')
+    file_obj.write(full_string)
+    file_obj.close()
+
 # -------------------------------------------------------------------------------------------------
 # ROM name cleaning and formatting
 # -------------------------------------------------------------------------------------------------
