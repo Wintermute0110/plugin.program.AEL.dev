@@ -44,19 +44,18 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         return Scraper_TheGamesDB.get_games_search(self, search_string, platform, rom_base_noext)
 
     def get_game_image_list(self, game):
-        images = []
-
-        # Download game page XML data
-        game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game["id"]
+        # --- Download game page XML data ---
+        game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
         log_debug('get_game_image_list() game_id_url = {}'.format(game_id_url))
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
 
         # --- Parse game thumb information ---
-        # The XML returned has many tags. See an example here:
+        # The XML returned by GetGame.php has many tags. See an example here:
         # SNES Super Castlevania IV --> http://thegamesdb.net/api/GetGame.php?id=1308
         # Read front boxes
+        images = []
         boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page_data)
         for index, boxart in enumerate(boxarts):
             # print(index, boxart)
@@ -82,39 +81,58 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
     def get_games_search(self, search_string, platform, rom_base_noext = ''):
         return Scraper_GameFAQs.get_games_search(self, search_string, platform, rom_base_noext)
 
-    # def get_image_list(self, search_string, gamesys, region, imgsize):
-    def get_game_image_list(self, game):
-      covers = []
-      results = []
-      try:
-          game_id_url = _get_game_page_url(system,search)
-          req = urllib2.Request('http://www.gamefaqs.com'+game_id_url)
-          req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-          game_page = urllib2.urlopen(req)
-          results = re.findall('<div class="img boxshot"><a href="(.*?)"><img class="img100" src="(.*?)" alt="(.*?)" /></a>', game_page.read().replace('\r\n', ''))
-          if region == "All":
-              return results
-          else:
-              for result in results:
-                  if '(' + region + ')' in result[2]:
-                      covers.append(result)
-              return covers
-      except:
-          return covers
+    def get_game_image_list(self, game):    
+        # --- Download game page XML data ---
+        game_id_url = 'http://www.gamefaqs.com' + game['id'] + '/images'
+        log_debug('get_game_image_list() game_id_url = {}'.format(game_id_url))
+        req = urllib2.Request(game_id_url)
+        req.add_unredirected_header('User-Agent', USER_AGENT)
+        page_data = net_get_URL_text(req)
+    
+        # --- Parse game thumb information ---
+        # The previous URL shows a page with thumbnails for several regions.
+        # Each region has a separate game with the full size artwork.
+        #
+        # <div class="img boxshot">
+        # <a href="/snes/588741-super-metroid/images/14598">
+        # <img class="img100 imgboxart" src="http://img.gamefaqs.net/box/3/2/1/51321_thumb.jpg" alt="Super Metroid (JP)" />
+        # </a>
+        # <div class="region">JP 03/19/94</div>
+        # </div>
+        img_pages = []
+        results = re.findall('<div class="img boxshot"><a href="(.+?)"><img class="img100 imgboxart" src="(.+?)" alt="(.+?)" /></a>', page_data)
+        # print(results)
 
-    # It seems that GameFAQs need URL translation... Have to investigate this
-    def get_thumbnail(image_url):
+        # Choose one full size artwork page based on game region
+        for index, boxart in enumerate(results):
+            str_index = str(index + 1)
+            log_debug('get_game_image_list() Artwork page #{:>2s} {}'.format(str_index, boxart[1]))
+            img_pages.append( (boxart[0], boxart[1], boxart[2]) )
+
+        # For now just pick the first one
         images = []
-        try:
-            req = urllib2.Request('http://www.gamefaqs.com' + image_url)
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            search_page = urllib2.urlopen(req)
-            for line in search_page.readlines():
-                if 'Game Box Shot' in line:
-                    images = re.findall('g"><a href="(.*?)"><img class="full_boxshot" src="(.*?)"', line)
-                    return images[0][0]
-        except:
-            return ""
+        if not img_pages: return images
+        img_page = img_pages[0]
+
+        # --- Go to full size page and get thumb ---
+        image_url = 'http://www.gamefaqs.com' + img_page[0]
+        log_debug('get_game_image_list() image_url = {}'.format(image_url))
+        req = urllib2.Request(image_url)
+        req.add_unredirected_header('User-Agent', USER_AGENT)
+        page_data = net_get_URL_text(req)
+        # text_dump_str_to_file(page_data, 'page_data.txt')
+
+        # <a href="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg">
+        # <img class="full_boxshot" src="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg" alt="Super Metroid Box Front" />
+        # </a>
+        results = re.findall('<img class="full_boxshot" src="(.+?)" alt="(.+?)" /></a>', page_data)
+        # print(results)
+        for index, boxart in enumerate(results):
+            str_index = str(index + 1)
+            log_debug('get_game_image_list() Adding thumb #{:>2s} {}'.format(str_index, boxart[0]))
+            images.append( (boxart[1], boxart[0]) )
+
+        return images
 
 # -----------------------------------------------------------------------------
 # arcadeHITS

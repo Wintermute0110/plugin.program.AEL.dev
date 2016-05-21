@@ -84,8 +84,9 @@ class Scraper_Thumb(Scraper):
     #
     # Returns:
     #   images = [image, image, ... ]
-    #   image = {'name' : str         # Name of the image (e.g., 'Boxfront 1')
-    #            'URL'  : str}        # URL to download image
+    #   image = {'name' : str         Name of the image (e.g., 'Boxfront 1')
+    #            'URL'  : str}        URL to download image
+    #            'id'  : str}         
     #
     def get_game_image_list(self, game):
         raise NotImplementedError("Subclass must implement get_game_image_list() abstract method") 

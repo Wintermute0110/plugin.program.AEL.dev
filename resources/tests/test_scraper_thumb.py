@@ -14,8 +14,8 @@ from scrap import *
 from utils import *
 
 # --- Scrapers to test ----------------------------------------------------------------------------
-TEST_THEGAMESDB = False
-TEST_GAMEFAQS   = True
+TEST_THEGAMESDB = True
+TEST_GAMEFAQS   = False
 
 # --- main ----------------------------------------------------------------------------------------
 # --- Print name of all scrapers ---
@@ -26,11 +26,11 @@ for scraper in scrapers_thumb:
 
 # --- Test TheGamesDB scraper -------------------------------------------------
 if TEST_THEGAMESDB:
-    print('\n--- Online TheGamesDB ---------------------------------------------')
+    print('\n*** Online TheGamesDB *********************************************')
     GamesDB = thumb_TheGamesDB()
 
-    results = GamesDB.get_games_search('Castlevania', 'Nintendo SNES')
-    # results = GamesDB.get_games_search('Metroid', 'Nintendo SNES')
+    # results = GamesDB.get_games_search('Castlevania', 'Nintendo SNES')
+    results = GamesDB.get_games_search('metroid', 'Nintendo SNES')
     # results = GamesDB.get_games_search('Zelda', 'Nintendo SNES')
     # results = GamesDB.get_games_search('Super Mario World', 'Nintendo SNES')
     # results = GamesDB.get_games_search('street fighter', 'Nintendo SNES', '')
@@ -41,7 +41,7 @@ if TEST_THEGAMESDB:
 
 # --- Test GameFAQs scraper ---------------------------------------------------
 if TEST_GAMEFAQS:
-    print('\n--- Online GameFAQs -----------------------------------------------')
+    print('\n*** Online GameFAQs *********************************************')
     GameFAQs = thumb_GameFAQs()
 
     results = GameFAQs.get_games_search('Castlevania', 'Nintendo SNES')
