@@ -48,7 +48,7 @@ __type__       = addon_obj.getAddonInfo('type')
 PLUGIN_DATA_DIR      = xbmc.translatePath(os.path.join('special://profile/addon_data', __addon_id__))
 BASE_DIR             = xbmc.translatePath(os.path.join('special://', 'profile'))
 HOME_DIR             = xbmc.translatePath(os.path.join('special://', 'home'))
-KODI_FAV_FILE_PATH   = xbmc.translatePath( 'special://profile/favourites.xml' )
+KODI_FAV_FILE_PATH   = xbmc.translatePath('special://profile/favourites.xml')
 ADDONS_DIR           = xbmc.translatePath(os.path.join(HOME_DIR, 'addons'))
 CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__))
 ICON_IMG_FILE_PATH   = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
@@ -166,28 +166,20 @@ class Main:
         command = args['com'][0]
         if command == 'ADD_CATEGORY':
             self._command_add_new_category()
-
         elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
-
         elif command == 'DELETE_CATEGORY':
             kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
-
         elif command == 'SHOW_FAVOURITES':
             self._command_show_favourites()
-
         elif command == 'SHOW_LAUNCHERS':
             self._gui_render_launchers(args['catID'][0])
-
         elif command == 'ADD_LAUNCHER':
             self._command_add_new_launcher(args['catID'][0])
-
         elif command == 'EDIT_LAUNCHER':
             self._command_edit_launcher(args['launID'][0])
-
         elif command == 'DELETE_LAUNCHER':
             kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
-
         # User clicked on a launcher. For standalone launchers run the executable.
         # For emulator launchers show roms.
         elif command == 'SHOW_ROMS':
@@ -199,42 +191,31 @@ class Main:
             else:
                 log_debug('SHOW_ROMS | Calling _gui_render_roms()')
                 self._gui_render_roms(args['catID'][0], args['launID'][0])
-
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
-
+        # Edit ROM from launcher or Favourites
         elif command == 'EDIT_ROM':
             self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-
+        # Delete ROM for launcher or Favourites
         elif command == 'DELETE_ROM':
              self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-
         elif args['com'][0] == 'LAUNCH_ROM':
             self._run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-
         elif command == 'ADD_TO_FAV':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
-
-        elif command == 'DELETE_FROM_FAV':
-            kodi_dialog_OK('AEL', 'Implement me!')
-            # self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
-
         elif command == 'CHECK_FAV':
             self._command_check_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
-
         # This command is issued when user clicks on "Search" on the context menu of a launcher
         # in the launchers view, or context menu inside a launcher. User is asked to enter the
         # search string and the field to search (name, category, etc.)
         elif command == 'SEARCH_LAUNCHER':
             self._command_search_launcher(args['catID'][0], args['launID'][0])
-
         elif command == 'EXEC_SEARCH_LAUNCHER':
             self._command_execute_search_launcher(args['catID'][0], args['launID'][0], 
                                                   args['search_type'][0], args['search_string'][0])
-
         else:
-            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )            
-        
+            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )
+
         log_debug('Advanced Emulator Launcher exiting.')
 
     #
@@ -244,7 +225,7 @@ class Main:
         # Get the users preference settings
         self.settings = {}
         
-        # Scanner settings
+        # --- Scanner settings ---
         self.settings["scan_recursive"]         = True if addon_obj.getSetting("scan_recursive") == "true" else False
         self.settings["scan_metadata_policy"]   = int(addon_obj.getSetting("scan_metadata_policy"))
         self.settings["scan_thumb_policy"]      = int(addon_obj.getSetting("scan_thumb_policy"))
@@ -312,11 +293,10 @@ class Main:
     # Else create the default category
     # self.categories["default"] = {"id":"default", "name":"Default", "thumb":"", "fanart":"", "genre":"", "plot":"", "finished":"false"}
     def _cat_create_default(self):
-        category = fs_new_category()
-        category['name']        = 'Emulators'
-
         # The key in the categories dictionary is an MD5 hash generate with current time plus some random number.
         # This will make it unique and different for every category created.
+        category = fs_new_category()
+        category['name'] = 'Emulators'
         category_key = misc_generate_random_SID()
         category['id'] = category_key
         self.categories = {}
@@ -328,7 +308,7 @@ class Main:
     def _cat_is_empty(self, categoryID):
         empty_category = True
         for cat in self.launchers.iterkeys():
-            if self.launchers[cat]['category'] == categoryID:
+            if self.launchers[cat]['categoryID'] == categoryID:
                 empty_category = False
 
         return empty_category
@@ -345,7 +325,7 @@ class Main:
         
 
         kodi_notify('Advanced Emulator Launcher', 
-                        'Importing ROM %s thumb from %s' % (objects[objectID]["name"], 
+                    'Importing ROM %s thumb from %s' % (objects[objectID]["name"], 
                                                            (self.settings[ "thumbs_scraper" ]).encode('utf-8', 'ignore')), 300000)
 
         # Call scraper and get a list of images
@@ -460,7 +440,7 @@ class Main:
                 kodi_notify('Advanced Emulator Launcher', 'No data found')
 
             self._save_launchers()
-        xbmc.executebuiltin("Container.Refresh")
+        xbmc.executebuiltin('Container.Refresh')
 
     #
     # Scrap standalone launcher (typically a game) metadata
@@ -498,7 +478,7 @@ class Main:
 
             # Save XML data to disk
             self._save_launchers()
-        xbmc.executebuiltin("Container.Refresh")
+        xbmc.executebuiltin('Container.Refresh')
 
     #
     # Edit category/launcher/rom thumbnail/fanart.
@@ -1937,7 +1917,6 @@ class Main:
         if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
         fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
 
-
     #
     # Check ROMs in favourites and set fav_status field.
     # Note that categoryID = launcherID = '0'
@@ -2016,7 +1995,7 @@ class Main:
                 kodi_notify('AEL', 'Deleted ROM from Favourites')
                 # If Favourites is empty then go to root, if not refresh
                 if len(roms) == 0:
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
                 else:
                     xbmc.executebuiltin('Container.Refresh')
         else:
@@ -2037,7 +2016,7 @@ class Main:
                 kodi_notify('AEL', 'Deleted ROM from launcher')
                 # If launcher is empty then go to root, if not refresh
                 if len(roms) == 0:
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
                 else:
                     xbmc.executebuiltin('Container.Refresh')
 
