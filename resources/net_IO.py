@@ -28,14 +28,17 @@ except:
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31';
 
 # ---  -----------------------------------------------------------------
-def get_random_UserAgent():
+def net_get_random_UserAgent():
     platform = random.choice(['Macintosh', 'Windows', 'X11'])
     if platform == 'Macintosh':
         os  = random.choice(['68K', 'PPC'])
     elif platform == 'Windows':
-        os  = random.choice(['Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1', 'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2', 'Win95', 'Win98', 'Win 9x 4.90', 'WindowsCE'])
+        os  = random.choice(['Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1', 
+                             'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2', 
+                             'Win95', 'Win98', 'Win 9x 4.90', 'WindowsCE'])
     elif platform == 'X11':
         os  = random.choice(['Linux i686', 'Linux x86_64'])
+
     browser = random.choice(['chrome', 'firefox', 'ie'])
     if browser == 'chrome':
         webkit = str(random.randint(500, 599))
@@ -54,7 +57,8 @@ def get_random_UserAgent():
         else:
             day = str(day)
         gecko = year + month + day
-        version = random.choice(['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10.0', '11.0', '12.0', '13.0', '14.0', '15.0'])
+        version = random.choice(['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', 
+                                 '9.0', '10.0', '11.0', '12.0', '13.0', '14.0', '15.0'])
         return 'Mozilla/5.0 (' + os + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
     elif browser == 'ie':
         version = str(random.randint(1, 10)) + '.0'
@@ -66,19 +70,19 @@ def get_random_UserAgent():
             token = ''
         return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os + '; ' + token + 'Trident/' + engine + ')'
 
-def download_img(img_url, file_path):
+# def net_download_page(url):
+#     req = urllib2.Request(url)
+#     req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
+#    
+#     return urllib2.urlopen(req)
+
+def net_download_img(img_url, file_path):
     req = urllib2.Request(img_url)
-    req.add_unredirected_header('User-Agent', getUserAgent())
+    req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
 
     f = open(file_path, 'wb')
     f.write(urllib2.urlopen(req).read())
     f.close()                                
-
-def download_page(url):
-    req = urllib2.Request(url)
-    req.add_unredirected_header('User-Agent', getUserAgent())
-    
-    return urllib2.urlopen(req)
 
 def net_get_URL_text(req):
     log_debug('net_get_URL_text() Reading URL "{}"'.format(req.get_full_url()))
@@ -98,4 +102,3 @@ def net_get_URL_text(req):
     log_debug('net_get_URL_text() Read {} bytes'.format(len(page_data)))
 
     return page_data
-   

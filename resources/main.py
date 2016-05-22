@@ -288,6 +288,11 @@ class Main:
         # Initialise metadata scraper plugin installation dir, for offline scrapers
         self.scraper_metadata.set_addon_dir(CURRENT_ADDON_DIR)
 
+        # Initialise options of the thumb scraper
+        region  = self.settings['scraper_region']
+        imgsize = self.settings['scraper_thumb_size']
+        self.scraper_thumb.set_thumb_options(region, imgsize)
+
     # Creates default categories data struct
     # CAREFUL deletes current categories!
     # From _load_launchers
@@ -666,7 +671,7 @@ class Main:
             if not image_file or not os.path.isfile(image_file): return
 
             # Update object and save XML
-            log_debug('_gui_edit_category_image() Object is {} with ID = {0}'.format('Category', objectID))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
             objects_dic[objectID][image_key] = image_file
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
@@ -2591,7 +2596,7 @@ class Main:
         dialog_canceled = False
 
         # Create new rom dictionary
-        platform = selectedLauncher["platform"]
+        platform = selectedLauncher['platform']
         romdata = fs_new_rom()
         romdata['id']       = misc_generate_random_SID()
         romdata['filename'] = F.path
@@ -2654,10 +2659,10 @@ class Main:
                 do_metadata_scrapping = True
 
             if do_metadata_scrapping:
-                # Do a search and get a list of games found
+                # Do a search and get a list of games
                 rom_name_scrapping = text_clean_ROM_name_for_scrapping(F.base_noext)
                 results = self.scraper_metadata.get_games_search(rom_name_scrapping, F.base_noext, platform)
-                log_debug('Scraper found {} result/s'.format(len(results)))
+                log_debug('Metadata scraper found {} result/s'.format(len(results)))
                 if results:
                     # id="metadata_mode" values="Semi-automatic|Automatic"
                     if self.settings['metadata_mode'] == 0:
@@ -2744,79 +2749,106 @@ class Main:
 
         # Scraper overrides local image if local image exists
         if scrap_image:
-            # Updated progress dialog
+            # --- Updated progress dialog ---
             file_text = 'ROM {}'.format(F.base)
-            scraper_text = 'Scraping Thumb with {}'.format(self.scraper_thumb.name)
+            scraper_text = 'Scraping Thumb with {}. Searching for matching games...'.format(self.scraper_thumb.name)
             pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
             log_verb('Scraping Thumb with {}'.format(self.scraper_thumb.name))
 
-            # Online scrape (image scrapers are always online)
-            search_string = romdata['name']
-            region        = self.settings['scraper_region']
-            imgsize       = self.settings['scraper_thumb_size']
-            image_list    = self.scraper_thumb.get_image_list(search_string, launcher_platform, region, imgsize)
-            if image_list:
-                log_verb('Scraper returned {} games'.format(len(image_list)))
-                # --- Semi-automatic scraping (user choses an image from a list) ---
+            # --- Do a search and get a list of games ---
+            rom_name_scrapping = text_clean_ROM_name_for_scrapping(F.base_noext)
+            results = self.scraper_thumb.get_games_search(rom_name_scrapping, F.base_noext, platform)
+            log_debug('Thumb scraper found {} result/s'.format(len(results)))
+            if results:
+                # settings.xml: id="thumb_mode" values="Semi-automatic|Automatic"
                 if self.settings['thumb_mode'] == 0:
-                    # Close progress dialog before opening image chosing dialog
+                    log_debug('Thumb semi-automatic scraping')
+                    # Close progress dialog (and check it was not canceled)
                     if pDialog.iscanceled(): dialog_canceled = True
                     pDialog.close()
 
-                    # If there is a local image add show it to the user
-                    if os.path.isfile(thumb):
-                       image_list.insert(0, ('Current local image', thumb)) 
+                    # Display corresponding game list found so user choses
+                    dialog = xbmcgui.Dialog()
+                    rom_name_list = []
+                    for game in results:
+                        rom_name_list.append(game['display_name'])
+                    selectgame = dialog.select('Select game for ROM {}'.format(romdata['name']), rom_name_list)
+                    if selectgame == -1: selectgame = 0
 
-                    # Returns a list of tuples(display_name, URL)
-                    image_url = gui_show_image_select(image_list)
-                    log_debug('Thumb dialog returned image_url "{}"'.format(image_url))
-                    if image_url == '': image_url = image_list[0][0]
-
-                    # Reopen progress dialog
+                    # Open progress dialog again
+                    scraper_text = 'Scraping Thumb with {}. Game selected. Getting list of images...'.format(self.scraper_thumb.name)
                     pDialog.create('AEL - Scanning ROMs')
                     pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
-                # --- Automatic scraping ---
+                elif self.settings['thumb_mode'] == 1:
+                    log_debug('Metadata automatic scraping. Selecting first result.') 
+                    selectgame = 0
                 else:
-                    # Pick first image in automatic mode
-                    image_url = image_list[0][0]
+                    log_error('Invalid thumb_mode {}'.format(self.settings['thumb_mode'])) 
+                    selectgame = 0
 
-                # If user chose the local image don't download anything
-                # User chose same image as it was
-                if self.image_url == objects[objectID]["thumb"]:
-                    return
+                # --- Grab list of images for the selected game ---
+                image_list = self.scraper_thumb.get_game_image_list(results[selectgame])
+                if image_list:
+                    log_verb('Scraper returned {} games'.format(len(image_list)))
+                    # --- Semi-automatic scraping (user choses an image from a list) ---
+                    if self.settings['thumb_mode'] == 0:
+                        # Close progress dialog before opening image chosing dialog
+                        if pDialog.iscanceled(): dialog_canceled = True
+                        pDialog.close()
 
-                if image_url[0:4] == 'http':
-                    # ~~~ Download scraped image ~~~
-                    # Get Tumbnail name with no extension, then get URL image extension 
-                    # and make full thumb path. If extension cannot be determined
-                    # from URL defaul to '.jpg'
-                    thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, F)
-                    img_ext = text_get_image_URL_extension(image_url) # Include front dot -> .jpg
-                    thumb_path = thumb_path_noext + img_ext
+                        # If there is a local image add show it to the user
+                        if os.path.isfile(thumb):
+                            image_list.insert(0, {'name' : 'Current local image', 'URL' : thumb} ) 
 
-                    # ~~~ Download image ~~~
-                    log_debug('thumb_path_noext "{}"'.format(thumb_path_noext))
-                    log_debug('img_ext          "{}"'.format(img_ext))
-                    log_verb('Downloading URL  "{}"'.format(image_url))
-                    log_verb('Into local file  "{}"'.format(thumb_path))
-                    try:
-                        download_img(image_url, thumb_path)
-                    except socket.timeout:
-                        kodi_notify_warn('Advanced Emulator Launcher', 'Cannot download thumb image (Timeout)')
+                        # Returns a list of tuples(display_name, URL)
+                        image_url = gui_show_image_select(image_list)
+                        log_debug('Thumb dialog returned image_url "{}"'.format(image_url))
+                        if image_url == '': image_url = image_list[0][0]
 
-                    # ~~~ Update Kodi cache with downloaded image ~~~
-                    # Only if local image is in the Kodi cache, function takes care of that.
-                    kodi_update_image_cache(thumb_path)
-                    thumb = thumb_path
+                        # Reopen progress dialog
+                        scraper_text = 'Scraping Thumb with {}. Downloading image...'.format(self.scraper_thumb.name)
+                        pDialog.create('AEL - Scanning ROMs')
+                        pDialog.update(num_files_checked * 100 / num_files, file_text, scraper_text)
+                    # --- Automatic scraping ---
+                    else:
+                        # Pick first image in automatic mode
+                        image_url = image_list[0]['URL']
+
+                    # If user chose the local image don't download anything
+                    if image_url != thumb:
+                        # ~~~ Download scraped image ~~~
+                        # Get Tumbnail name with no extension, then get URL image extension 
+                        # and make full thumb path. If extension cannot be determined
+                        # from URL defaul to '.jpg'
+                        thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, F)
+                        img_ext = text_get_image_URL_extension(image_url) # Include front dot -> .jpg
+                        thumb_path = thumb_path_noext + img_ext
+
+                        # ~~~ Download image ~~~
+                        log_debug('thumb_path_noext "{}"'.format(thumb_path_noext))
+                        log_debug('img_ext          "{}"'.format(img_ext))
+                        log_verb('Downloading URL  "{}"'.format(image_url))
+                        log_verb('Into local file  "{}"'.format(thumb_path))
+                        try:
+                            net_download_img(image_url, thumb_path)
+                        except socket.timeout:
+                            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot download thumb image (Timeout)')
+
+                        # ~~~ Update Kodi cache with downloaded image ~~~
+                        # Recache only if local image is in the Kodi cache, this function takes care of that.
+                        kodi_update_image_cache(thumb_path)
+                        thumb = thumb_path
+                    else:
+                        log_debug('Thumb scraper: user chose local image "{}"'.format(image_url))
+                        thumb = image_url
                 else:
-                    log_debug('User chose local image "{}"'.format(image_url))
-                    thumb = image_url
+                    log_debug('Thumb scraper get_game_image_list() returned no images.')
+
+                # --- Assign thumb ---
+                romdata["thumb"] = thumb
+                log_verb('Thumb scraper assigned thumb "{}"'.format(thumb))
             else:
-                log_debug('Thumb scraper returned an empty list')
-
-            # Assing thumb
-            romdata["thumb"] = thumb
-            log_verb('Scraper assigned thumb "{}"'.format(thumb))
+                log_debug('Thumb scraper did not found any game.')
 
         # ~~~ Fanart scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Disable until thumb scrapping works well. Then copy/paste/adapt.
@@ -3113,6 +3145,9 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
         self.container.controlLeft(self.container)  # Disables movement left-right in image listbox
         self.container.controlRight(self.container)
 
+        # NOTE The mysterious control 7 is new in Kodi Krypton!
+        # See http://forum.kodi.tv/showthread.php?tid=250936&pid=2246458#pid2246458
+        #
         # self.cancel = self.getControl(7) # Produces an error "RuntimeError: Non-Existent Control 7"
         # self.cancel.setLabel('Ajo')
 
@@ -3129,7 +3164,9 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
         # self.container.addItem(listitem)
         listitems = []
         for index, item in enumerate(self.listing):
-            listitem = xbmcgui.ListItem(label=item[2], label2=item[1], iconImage='DefaultAddonImages.png', thumbnailImage=item[0])
+            name_str = item['name']
+            URL_str = item['URL']
+            listitem = xbmcgui.ListItem(label=name_str, label2=URL_str, iconImage='DefaultAddonImages.png', thumbnailImage=URL_str)
             listitems.append(listitem)
         self.container.addItems(listitems)
         self.setFocus(self.container)

@@ -28,7 +28,10 @@ class thumb_NULL(Scraper_Thumb):
         self.name       = 'NULL'
         self.fancy_name = 'NULL Thumb scraper'
 
-    def get_image_list(self, game):
+    def set_thumb_options(self, region, imgsize):
+        pass
+
+    def get_image_list(self, game, platform):
         return []
 
 # -----------------------------------------------------------------------------
@@ -38,6 +41,9 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
     def __init__(self):
         self.name       = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Thumb scraper'
+
+    def set_thumb_options(self, region, imgsize):
+        pass
 
     # Call common code in parent class
     def get_games_search(self, search_string, platform, rom_base_noext = ''):
@@ -60,12 +66,12 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         for index, boxart in enumerate(boxarts):
             # print(index, boxart)
             log_debug('get_game_image_list() Adding boxfront #{:>2s} {}'.format(str(index + 1), boxart[1]))
-            images.append(("Cover " + str(index + 1), "http://thegamesdb.net/banners/" + boxart[1]))
+            images.append( {'name': "Cover " + str(index + 1), 'URL' : "http://thegamesdb.net/banners/" + boxart[1]} )
         # Read banners
         banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
         for index, banner in enumerate(banners):
             log_debug('get_game_image_list() Adding banner   #{:>2s} {}'.format(str(index + 1), banner[1]))
-            images.append(("Banner " + str(index + 1), "http://thegamesdb.net/banners/" + banner[1]))
+            images.append( {'name' : "Banner " + str(index + 1), 'URL' : "http://thegamesdb.net/banners/" + banner[1]} )
 
         return images
 
@@ -76,6 +82,9 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
     def __init__(self):
         self.name       = 'GameFAQs'
         self.fancy_name = 'GameFAQs Thumb scraper'
+
+    def set_thumb_options(self, region, imgsize):
+        pass
 
     # Call common code in parent class
     def get_games_search(self, search_string, platform, rom_base_noext = ''):
@@ -143,6 +152,9 @@ class thumb_arcadeHITS(Scraper_Thumb):
         self.name       = 'arcadeHITS'
         self.fancy_name = 'arcadeHITS Thumb scraper'
 
+    def set_thumb_options(self, region, imgsize):
+        pass
+
     # Checks this... I think Google image search API is deprecated.
     def get_image_list(self, search_string, gamesys, region, imgsize):
         covers = []
@@ -171,6 +183,9 @@ class thumb_Google(Scraper_Thumb):
     def __init__(self):
         self.name       = 'Google'
         self.fancy_name = 'Google Thumb scraper'
+
+    def set_thumb_options(self, region, imgsize):
+        pass
 
     # Checks this... I think Google image search API is deprecated.
     def get_image_list(self, search_string, gamesys, region, imgsize):

@@ -77,6 +77,10 @@ class Scraper_Metadata(Scraper):
 # All thumb scrapers are online scrapers. If user has a local image then he
 # can setup manually using other parts of the GUI.
 class Scraper_Thumb(Scraper):
+    # If scraper needs additional configuration then call this function.
+    def set_thumb_options(self, region, imgsize):
+        raise NotImplementedError("Subclass must implement set_thumb_options() abstract method")
+
     # This function is called when the user wants to search a whole list of
     # thumbs. Note that gamesys is AEL official system name, and must be
     # translated to the scraper system name, which may be different.
@@ -88,7 +92,7 @@ class Scraper_Thumb(Scraper):
     #            'URL'  : str}        URL to download image
     #
     def get_game_image_list(self, game):
-        raise NotImplementedError("Subclass must implement get_game_image_list() abstract method") 
+        raise NotImplementedError("Subclass must implement get_game_image_list() abstract method")
 
 # --- Fanart scrapers ----------------------------------------------------------
 # All fanart scrapers are online scrapers. If user has a local image then he
