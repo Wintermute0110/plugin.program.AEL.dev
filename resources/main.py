@@ -228,13 +228,13 @@ class Main:
         
         # --- Scanner settings ---
         self.settings["scan_recursive"]         = True if addon_obj.getSetting("scan_recursive") == "true" else False
+        self.settings["scan_ignore_bios"]       = True if addon_obj.getSetting("scan_ignore_bios") == "true" else False
         self.settings["scan_metadata_policy"]   = int(addon_obj.getSetting("scan_metadata_policy"))
         self.settings["scan_thumb_policy"]      = int(addon_obj.getSetting("scan_thumb_policy"))
         self.settings["scan_fanart_policy"]     = int(addon_obj.getSetting("scan_fanart_policy"))
         self.settings["scan_ignore_title"]      = True if addon_obj.getSetting("scan_ignore_title") == "true" else False
         self.settings["scan_clean_tags"]        = True if addon_obj.getSetting("scan_clean_tags") == "true" else False
         self.settings["scan_title_formatting"]  = True if addon_obj.getSetting("scan_title_formatting") == "true" else False
-        self.settings["scan_ignore_bios"]       = True if addon_obj.getSetting("scan_ignore_bios") == "true" else False
         
         self.settings["metadata_scraper"]       = int(addon_obj.getSetting("metadata_scraper"))
         self.settings["thumb_scraper"]          = int(addon_obj.getSetting("thumb_scraper"))
