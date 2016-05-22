@@ -37,7 +37,7 @@ class metadata_NULL(Scraper_Metadata):
         self.name = 'NULL'
         self.fancy_name = 'NULL Metadata scraper'
 
-    def set_plugin_inst_dir(self, plugin_dir):
+    def set_addon_dir(self, plugin_dir):
         pass
 
     def get_games_search(self, search_string, rom_base_noext, platform):
@@ -54,16 +54,15 @@ class metadata_Offline(Scraper_Metadata):
         self.name = 'Offline'
         self.fancy_name = 'Offline Metadata scraper'
 
-    def set_plugin_inst_dir(self, plugin_dir):
-        self.plugin_dir = os.path.join(plugin_dir, 'resources')
-        log_debug('metadata_Offline::set_plugin_inst_dir() plugin_dir      = {}'.format(plugin_dir))
-        log_debug('metadata_Offline::set_plugin_inst_dir() self.plugin_dir = {}'.format(self.plugin_dir))
+    def set_addon_dir(self, plugin_dir):
+        self.addon_dir = plugin_dir
+        log_debug('metadata_Offline::set_addon_dir() self.addon_dir = {}'.format(self.addon_dir))
         
     # Offline XML data will be cached here (from disk)
     games = {}
     cached_xml_path = ''
     cached_platform = ''
-    plugin_dir = ''
+    addon_dir = ''
 
     # Load XML information for this scraper and keep it cached in memory.
     # For offline scrapers.
@@ -86,8 +85,8 @@ class metadata_Offline(Scraper_Metadata):
             return
 
         # Load XML database and keep it in memory for subsequent calls
-        xml_path = os.path.join(self.plugin_dir, xml_file)
-        log_debug('metadata_Offline::initialise_scraper() Loading {}'.format(xml_path))
+        xml_path = os.path.join(self.addon_dir, xml_file)
+        log_debug('metadata_Offline::initialise_scraper() Loading XML {}'.format(xml_path))
         self.games = fs_load_GameInfo_XML(xml_path)
         if not self.games:
             self.games = {}
@@ -184,7 +183,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
         self.name = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Metadata scraper'
 
-    def set_plugin_inst_dir(self, plugin_dir):
+    def set_addon_dir(self, plugin_dir):
         pass
 
     # Call common code in parent class
@@ -229,7 +228,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         self.name = 'GameFAQs'
         self.fancy_name = 'GameFAQs Metadata scraper'
 
-    def set_plugin_inst_dir(self, plugin_dir):
+    def set_addon_dir(self, plugin_dir):
         pass
 
     # Call common code in parent class
@@ -286,7 +285,7 @@ class metadata_arcadeHITS(Scraper_Metadata):
         self.name = 'arcadeHITS'
         self.fancy_name = 'arcadeHITS Metadata scraper'
 
-    def set_plugin_inst_dir(self, plugin_dir):
+    def set_addon_dir(self, plugin_dir):
         pass
 
     def get_game_data(self, game_url):

@@ -60,8 +60,8 @@ class Scraper:
 class Scraper_Metadata(Scraper):
     # Offline scrapers need to know plugin installation directory.
     # For offline scrapers just pass.
-    def set_plugin_inst_dir(self, plugin_dir):
-        raise NotImplementedError("Subclass must implement set_plugin_inst_dir() abstract method")
+    def set_addon_dir(self, plugin_dir):
+        raise NotImplementedError("Subclass must implement set_addon_dir() abstract method")
 
     # This is called after get_games_search() to get metadata of a particular ROM.
     # game is a dictionary from the dictionary list returned by get_game_search()

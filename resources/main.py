@@ -286,7 +286,7 @@ class Main:
         log_verb('Loaded fanart scraper    {}'.format(self.scraper_fanart.name))
 
         # Initialise metadata scraper plugin installation dir, for offline scrapers
-        self.scraper_metadata.set_plugin_inst_dir(CURRENT_ADDON_DIR)
+        self.scraper_metadata.set_addon_dir(CURRENT_ADDON_DIR)
 
     # Creates default categories data struct
     # CAREFUL deletes current categories!

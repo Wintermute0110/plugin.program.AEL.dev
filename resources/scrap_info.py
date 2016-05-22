@@ -59,10 +59,10 @@ def emudata_get_program_extensions( app ):
 # this file location, CURRENT_ADDON_DIR/resources/.
 # -----------------------------------------------------------------------------
 offline_scrapers_dic = {
-    'MAME'             : 'scrap_offline_data/MAME.xml', 
-    'Sega 32X'         : 'scrap_offline_data/Sega 32x.xml',
+    'MAME'             : 'resources/data/GameDB/MAME.xml', 
+    'Sega 32X'         : 'resources/data/GameDB/Sega 32x.xml',
     'Sega Genesis'     : '',
-    'Nintendo SNES'    : 'scrap_offline_data/Super Nintendo Entertainment System.xml',
+    'Nintendo SNES'    : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
     'Unknown'          : ''
 }
 
