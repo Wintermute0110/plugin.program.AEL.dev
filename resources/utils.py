@@ -182,6 +182,7 @@ def text_get_image_URL_extension(url):
 # Returns a FileName object:
 #   F.path        Full path
 #   F.path_noext  Full path with no extension
+#   F.dirname     Directory name of file. Does not end in '/'
 #   F.base        File name with no path
 #   F.base_noext  File name with no path and no extension
 #   F.ext         File extension
@@ -195,6 +196,7 @@ def misc_split_path(f_path):
     F.path       = f_path
     (root, ext)  = os.path.splitext(F.path)
     F.path_noext = root
+    F.dirname    = os.path.dirname(f_path)
     F.base       = os.path.basename(F.path)
     (root, ext)  = os.path.splitext(F.base)
     F.base_noext = root
