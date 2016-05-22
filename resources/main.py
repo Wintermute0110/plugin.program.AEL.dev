@@ -317,31 +317,51 @@ class Main:
     # -------------------------------------------------------------------------
     # Image semiautomatic scrapers
     # User is presented with a list of scrapped images and chooses the best one.
+    # Code here is similar to parts of _roms_process_scanned_ROM()
     # -------------------------------------------------------------------------
-    def _gui_scrap_image_semiautomatic(self, object_kind, objects, objectID, artwork_path):
-        keyboard = xbmc.Keyboard(objects[objectID]["name"], 'Enter the file title to search...')
-        keyboard.doModal()
-        if not keyboard.isConfirmed():
-            return
+    def _gui_scrap_image_semiautomatic(self, image_kind, objects_kind, objects_dic, objectID, launcherID):
+        # --- Configure function depending of image kind ---
+        scraper_obj = self.scraper_fanart
         
+        # --- Ask user to edit the image search string ---
+        keyboard = xbmc.Keyboard(objects_dic[objectID]["name"], 'Enter the string to search for...')
+        keyboard.doModal()
+        if not keyboard.isConfirmed(): return
 
+        # --- Call scraper and get a list of images ---
+        object_name = objects_dic[objectID]["name"]
+        scraper_name = scraper_obj.fancy_name
         kodi_notify('Advanced Emulator Launcher', 
-                    'Importing ROM %s thumb from %s' % (objects[objectID]["name"], 
-                                                           (self.settings[ "thumbs_scraper" ]).encode('utf-8', 'ignore')), 300000)
+                    'Importing ROM {} thumb with {}'.format(object_name, scraper_name))
+        kodi_busydialog_ON()
+        search_string = keyboard.getText()
+        region        = self.settings["game_region"]
+        img_size      = self.settings["thumb_image_size"]
+        image_list    = scraper_obj.get_image_list(search_string, launcher_platform, region, imgsize)
+        kodi_busydialog_OFF()
 
-        # Call scraper and get a list of images
-        xbmc.executebuiltin("ActivateWindow(busydialog)")
-        region   = self.settings["game_region"]
-        img_size = self.settings[ "thumb_image_size" ]
-        covers   = self.scraper_thumb.get_image_list(search_str, objects[objectID]["platform"], region, img_size)
-        xbmc.executebuiltin("Dialog.Close(busydialog)")
+        if image_list:
+            # --- Semi-automatic scraping (user choses an image from a list) ---
+            # If there is a local image add show it to the user
+            if os.path.isfile(thumb):
+                image_list.insert(0, ('Current local image', thumb)) 
 
-        if not covers:
-            kodi_dialog_OK('Advanced Emulator Launcher', 'No thumb found for %s' % (objects[objectID]["name"]))
-            return
+            # image_list is a list of tuples (display_name, URL)
+            image_url = gui_show_image_select(image_list)
+            log_debug('Thumb dialog returned image_url "{}"'.format(image_url))
+            if image_url == '': image_url = image_list[0][0]
+
+        else:
+            log_debug('Thumb scraper returned an empty list')
+            kodi_dialog_OK('Advanced Emulator Launcher', 'No thumb found for {}'.format(objects_dic[objectID]["name"]))
+
+
+
+
+
 
         # Show a Window with the current image and the found images so the
-        # user can chose. It is like a Dialog.select but intead of text
+        # user can choose. It is like a Dialog.select() but intead of text
         # there is an image on each row of the select control.
         nb_images = len(covers)
         kodi_notify('Advanced Emulator Launcher', '%s thumbs for %s' % (nb_images, objects[objectID]["name"]))
@@ -378,9 +398,9 @@ class Main:
                 file_path = filename.replace("."+filename.split(".")[-1], img_ext)
             else:
                 file_path = os.path.join(os.path.dirname(self.launchers[launcher]["thumbpath"]),os.path.basename(filename.replace("."+filename.split(".")[-1], img_ext)))
-        kodi_notify('Advanced Emulator Launcher', 'Downloading thumb...', 300000)
 
         # Download selected image
+        kodi_notify('Advanced Emulator Launcher', 'Downloading thumb...', 300000)
         try:
             download_img(img_url, file_path)
             
@@ -485,104 +505,119 @@ class Main:
     # Edit launcher/rom thumbnail/fanart. Note that categories have another function because
     # image scraping is not allowed for categores.
     #
-    # NOTE Interestingly, if thumb/fanart are linked from outside ~/.kodi, Kodi automatically reloads
-    #      the image cache. That is the case when a local image is selected.
-    #      However, if an image is imported and copied to ~/.kodi/userdata/etc., then Kodi image
-    #      cache is not updated any more!
+    # NOTE When editing ROMs optinal parameter launcherID is required.
     #
-    def _gui_edit_image(self, image_kind, objects_kind, objects, objectID):
-        dialog = xbmcgui.Dialog()
+    def _gui_edit_image(self, image_kind, objects_kind, objects_dic, objectID, launcherID=''):
+        # Check for errors
+        if image_kind != IMAGE_THUMB and image_kind != IMAGE_FANART:
+            log_error('_gui_edit_image() Unknown image_kind = {}'.format(image_kind))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
+            return
+        if objects_kind != KIND_LAUNCHER and objects_kind != KIND_ROM:
+            log_error('_gui_edit_image() Unknown objects_kind = {}'.format(objects_kind))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown objects_kind = {}'.format(objects_kind))
+            return
+        
+        # Customise function depending of object to edit
+        if image_kind == IMAGE_THUMB:
+            image_key   = 'thumb'
+            image_name  = 'Thumb'
+            if objects_kind == KIND_LAUNCHER:
+                object_name = 'Launcher'
+                artwork_path = objects_dic[objectID]['thumbpath']
+            elif objects_kind == KIND_ROM:
+                object_name = 'ROM'
+                # thumbpath/fanartpath are in the launcher data structure
+                artwork_path = self.launchers[launcherID]['thumbpath']
+        elif image_kind == IMAGE_FANART:
+            image_key   = 'fanart'
+            image_name  = 'Fanart'
+            if objects_kind == KIND_LAUNCHER:
+                object_name = 'Launcher'
+                artwork_path = objects_dic[objectID]['fanartpath']
+            elif objects_kind == KIND_ROM:
+                object_name = 'ROM'
+                artwork_path = self.launchers[launcherID]['fanartpath']
+        log_debug('_gui_edit_image() Editing {} {}'.format(object_name, image_name))        
 
-        # Semiautomatic image scrapping
+        # Show image editing options
+        dialog = xbmcgui.Dialog()
         type2 = dialog.select('Change Thumbnail Image', 
-                                ['Select Local Image',
-                                 'Import Local Image (Copy and Rename)',
-                                 'Scrape Image from {0}'.format(self.scraper_thumb.fancy_name) ])
+                             ['Select Local Image',
+                              'Import Local Image (Copy and Rename)',
+                              'Scrape Image from {}'.format(self.scraper_thumb.fancy_name) ])
         # Link to an image
         if type2 == 0:
-            imagepath = artwork_path if object_dic["thumb"] == "" else object_dic["thumb"]
-            image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', "files", ".jpg|.jpeg|.gif|.png", 
-                                            True, False, os.path.join(imagepath))
-            if not image or not os.path.isfile(image):
-                return
+            image_dir = artwork_path if objects_dic[objectID][image_key] == '' else objects_dic[objectID][image_key]
+            log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
+                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return
 
-            # Update object and save XML
-            if object_kind == KIND_CATEGORY:
-                log_debug('_gui_edit_thumbnail() Object is categoryID = {0}'.format(object_dic['id']))
-                self.categories[object_dic['id']]["thumb"] = image
+            # --- Update object and save XML ---
+            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(object_name, objectID))
+            if objects_kind == KIND_LAUNCHER:
+                self.launchers[objectID][image_key] = image_file
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            elif object_kind == KIND_LAUNCHER:
-                log_debug('_gui_edit_thumbnail() Object is launcherID = {0}'.format(object_dic['id']))
-                self.launchers[object_dic['id']]["thumb"] = image
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            elif object_kind == KIND_ROM:
-                log_debug('_gui_edit_thumbnail() Object is romID = {0}'.format(object_dic['id']))
-                self.roms[object_dic['id']]["thumb"] = image
-                fs_write_ROM_XML_file(rom_xml_file, roms, launcher)
-            kodi_notify('AEL', 'Thumb has been updated')
-            log_info('Selected Thumb image "{0}"'.format(image))
+            elif objects_kind == KIND_ROM:
+                objects_dic[objectID][image_key] = image_file
+                launcher = self.launchers[launcherID]
+                roms_xml_file = launcher['roms_xml_file']
+                fs_write_ROM_XML_file(roms_xml_file, objects_dic, launcher)
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_info('Selected {} "{}"'.format(image_name, image_file))
 
             # --- Update Kodi image cache ---
-            # if object_dic["thumb"] != "":
-            #     update_kodi_image_cache(image)
+            kodi_update_image_cache(image_file)
 
         # Import an image
         elif type2 == 1:
-            imagepath = artwork_path if object_dic["thumb"] == "" else object_dic["thumb"]
-            image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', "files", ".jpg|.jpeg|.gif|.png",
-                                            True, False, os.path.join(imagepath))
-            if not image or not os.path.isfile(image):
-                return
+            image_dir = artwork_path if objects_dic[objectID][image_key] == '' else objects_dic[objectID][image_key]
+            log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
+                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return
 
-            img_ext = os.path.splitext(image)[-1][0:4]
-            log_debug('_gui_edit_thumbnail() image   = "{0}"'.format(image))
-            log_debug('_gui_edit_thumbnail() img_ext = "{0}"'.format(img_ext))
-            if img_ext == '':
-                kodi_notify_warn('AEL', 'Cannot determine image file extension')
-                return
+            # Determine image extension and dest filename
+            F = misc_split_path(image_file)
+            dest_basename = objects_dic[objectID]['name']
+            dest_path = os.path.join(artwork_path, dest_basename + '_' + image_key + F.ext)
+            log_debug('_gui_edit_image() image_file    = "{0}"'.format(image_file))
+            log_debug('_gui_edit_image() img_ext       = "{0}"'.format(F.ext))
+            log_debug('_gui_edit_image() dest_basename = "{0}"'.format(dest_basename))
+            log_debug('_gui_edit_image() dest_path     = "{0}"'.format(dest_path))
 
-            object_name = object_dic['name']
-            file_basename = object_name
-            file_path = os.path.join(artwork_path, os.path.basename(object_name) + '_thumb' + img_ext)
-            log_debug('_gui_edit_thumbnail() object_name   = "{0}"'.format(object_name))
-            log_debug('_gui_edit_thumbnail() file_basename = "{0}"'.format(file_basename))
-            log_debug('_gui_edit_thumbnail() file_path     = "{0}"'.format(file_path))
-
-            # If user press ESC in the file browser dialog the the same file used as initial file is chosen.
-            # In that case do nothing and return.
-            if image == file_path:
+            # Copy image file
+            if image_file == dest_path: 
+                log_info('image_file and dest_path are the same. Returning')
                 return
             try:
-                shutil.copy2(image.decode(get_encoding(), 'ignore') , file_path.decode(get_encoding(), 'ignore'))
+                fs_encoding = get_fs_encoding()
+                shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
             except OSError:
-                kodi_notify_warn('AEL', 'OSError when copying image')
+                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
 
-            # Update object and save XML
-            if object_kind == KIND_CATEGORY:
-                log_debug('_gui_edit_thumbnail() Object is categoryID = {0}'.format(object_dic['id']))
-                self.categories[object_dic['id']]["thumb"] = file_path
+            # --- Update object and save XML ---
+            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(object_name, objectID))
+            if objects_kind == KIND_LAUNCHER:
+                self.launchers[objectID][image_key] = dest_path
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            elif object_kind == KIND_LAUNCHER:
-                log_debug('_gui_edit_thumbnail() Object is launcherID = {0}'.format(object_dic['id']))
-                self.launchers[object_dic['id']]["thumb"] = file_path
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            elif object_kind == KIND_ROM:
-                log_debug('_gui_edit_thumbnail() Object is romID = {0}'.format(object_dic['id']))
-                self.roms[object_dic['id']]["thumb"] = file_path
-                fs_write_ROM_XML_file()
-            kodi_notify('AEL', 'Thumb has been updated')
-            log_info('Copied Thumb image   "{0}"'.format(image))
-            log_info('Into                 "{0}"'.format(file_path))
-            log_info('Selected Thumb image "{0}"'.format(file_path))
+            elif objects_kind == KIND_ROM:
+                objects_dic[objectID][image_key] = dest_path
+                launcher = self.launchers[launcherID]
+                roms_xml_file = launcher['roms_xml_file']
+                fs_write_ROM_XML_file(roms_xml_file, objects_dic, launcher)
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_info('Copied image "{}"'.format(image_file))
+            log_info('Into         "{}"'.format(dest_path))
+            log_info('Selected {} "{}"'.format(image_name, dest_path))
 
             # --- Update Kodi image cache ---
-            # Cases some problems at the moment...
-            # if object_dic["thumb"] != "":
-            #     update_kodi_image_cache(image)
+            kodi_update_image_cache(dest_path)
 
-        # Manual scrape a list of images
+        # Manual scrape and choose from a list of images
         elif type2 == 2:
-            self._scrap_thumb_rom(object_kind, objects, objectID, artwork_path)
+            self._scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
 
     #
     # Edit category thumb/fanart.
@@ -609,15 +644,15 @@ class Main:
             else:                                           artwork_path = self.settings['launcher_fanart_path']
         else:
             log_error('_gui_edit_category_image() Unknown image_kind = {}'.format(image_kind))
-            kodi_notify_warn('AEL', 'Unknown image_kind = {}'.format(image_kind))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
             return
         log_debug('_gui_edit_category_image() Editing {}'.format(image_name))
 
         # Show image editing options
         dialog = xbmcgui.Dialog()
         type2 = dialog.select('Change Thumbnail Image', 
-                              ['Select Local Image', 'Import Local Image (Copy and Rename)'])
-
+                             ['Select Local Image', 
+                              'Import Local Image (Copy and Rename)'])
         # Link to an image
         if type2 == 0:
             if objects_dic[objectID][image_key] != '':
@@ -626,15 +661,15 @@ class Main:
             else:
                 image_dir = ''
             log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name), 
-                                                 "files", ".jpg|.jpeg|.gif|.png", True, False, image_dir)
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
+                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
             if not image_file or not os.path.isfile(image_file): return
 
             # Update object and save XML
-            log_debug('_gui_edit_category_image() categoryID = {}'.format(objectID))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {0}'.format('Category', objectID))
             objects_dic[objectID][image_key] = image_file
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_notify('AEL', '{} has been updated'.format(image_name))
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
             log_info('Selected {} "{}"'.format(image_name, image_file))
 
             # --- Update Kodi image cache ---
@@ -654,11 +689,10 @@ class Main:
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
-            img_ext = F.ext
             dest_basename = objects_dic[objectID]['name']
-            dest_path = os.path.join(artwork_path, dest_basename + '_' + image_key + img_ext)
+            dest_path = os.path.join(artwork_path, dest_basename + '_' + image_key + F.ext)
             log_debug('_gui_edit_category_image() image_file    = "{0}"'.format(image_file))
-            log_debug('_gui_edit_category_image() img_ext       = "{0}"'.format(img_ext))
+            log_debug('_gui_edit_category_image() img_ext       = "{0}"'.format(F.ext))
             log_debug('_gui_edit_category_image() dest_basename = "{0}"'.format(dest_basename))
             log_debug('_gui_edit_category_image() dest_path     = "{0}"'.format(dest_path))
 
@@ -670,13 +704,13 @@ class Main:
                 fs_encoding = get_fs_encoding()
                 shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
             except OSError:
-                kodi_notify_warn('AEL', 'OSError when copying image')
+                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
 
             # Update object and save XML
-            log_debug('_gui_edit_category_image() categoryID = {}'.format(objectID))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {0}'.format('Category', objectID))
             objects_dic[objectID][image_key] = dest_path
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_notify('AEL', '{} has been updated'.format(image_name))
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
             log_info('Copied image "{}"'.format(image_file))
             log_info('Into         "{}"'.format(dest_path))
             log_info('Selected {} "{}"'.format(image_name, dest_path))
@@ -827,8 +861,8 @@ class Main:
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.categories[categoryID]["finished"] = finished
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_dialog_OK('AEL Information', 
-                               'Category "{0}" status is now {1}'.format(self.categories[categoryID]["name"], finished_display))
+            kodi_dialog_OK('Advanced Emulator Launcher', 
+                           'Category "{0}" status is now {1}'.format(self.categories[categoryID]["name"], finished_display))
         elif type == 4:
             self._gui_remove_category(categoryID)
 
@@ -851,7 +885,7 @@ class Main:
         category["name"] = keyboard.getText()
         self.categories[categoryID] = category
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_notify('AEL', 'Category {0} created'.format(category["name"]))
+        kodi_notify('Advanced Emulator Launcher', 'Category {0} created'.format(category["name"]))
         xbmc.executebuiltin("Container.Refresh")
 
     #
@@ -884,7 +918,7 @@ class Main:
                     os.remove(roms_xml_file)
                 except OSError:
                     log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
-                    kodi_notify_warn('AEL', 'OSError exception deleting ROMs XML')
+                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             xbmc.executebuiltin("Container.Refresh")
 
@@ -919,7 +953,7 @@ class Main:
                     os.remove(roms_xml_file)
                 except OSError:
                     log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
-                    kodi_notify_warn('AEL', 'OSError exception deleting ROMs XML')
+                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
             categoryID = self.launchers[launcherID]["categoryID"]
             self.launchers.pop(launcherID)
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
@@ -934,16 +968,16 @@ class Main:
         dialog = xbmcgui.Dialog()
         title = os.path.basename(self.launchers[launcherID]["name"])
         finished_display = 'Status : Finished' if self.launchers[launcherID]["finished"] == True else 'Status : Unfinished'
-
+        category_name = self.categories[self.launchers[launcherID]["categoryID"]]['name']
         if self.launchers[launcherID]["rompath"] == "":
             type = dialog.select('Select Action for launcher %s' % title, 
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...', 
-                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["categoryID"]]['name'],
+                                  'Change Category: {}'.format(category_name),
                                   finished_display, 'Advanced Modifications..', 'Delete'])
         else:
             type = dialog.select('Select Action for launcher %s' % title, 
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
-                                  'Change Category: %s' % self.categories[self.launchers[launcherID]["categoryID"]]['name'],
+                                  'Change Category: {}'.format(category_name),
                                   finished_display, 'Manage ROM List...', 'Advanced Modifications...', 'Delete'])
 
         # Edition of the launcher metadata
@@ -964,7 +998,7 @@ class Main:
                                    'Save metadata to NFO file'])
             # Scrape metadata
             if type2 == 0:
-                kodi_dialog_OK('AEL', 'Online scraping not supported yet. Sorry.')
+                kodi_dialog_OK('Advanced Emulator Launcher', 'Online scraping not supported yet. Sorry.')
                 return
                 # self._scrap_launcher_metadata(launcherID)
             # Import launcher metadata from NFO file
@@ -1039,13 +1073,13 @@ class Main:
 
         # Launcher Thumbnail menu option
         type_nb = type_nb + 1
-        if type == type_nb:
-            self._gui_edit_thumbnail(KIND_LAUNCHER, self.launchers[launcherID], DEFAULT_THUMB_DIR)
+        if type == type_nb:            
+            self._gui_edit_image(IMAGE_THUMB, KIND_LAUNCHER, self.launchers, launcherID)
 
         # Launcher Fanart menu option
         type_nb = type_nb + 1
         if type == type_nb:
-            self._gui_edit_fanart(KIND_LAUNCHER, self.launchers[launcherID], DEFAULT_FANART_DIR)
+            self._gui_edit_image(IMAGE_FANART, KIND_LAUNCHER, self.launchers, launcherID)
 
         # Change launcher's category
         type_nb = type_nb + 1
@@ -1071,8 +1105,8 @@ class Main:
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.launchers[launcherID]["finished"] = finished
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_dialog_OK('AEL Information', 
-                               'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]["name"], finished_display))
+            kodi_dialog_OK('Advanced Emulator Launcher', 
+                           'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]["name"], finished_display))
 
         # Launcher's Manage ROMs menu option
         # ONLY for ROM launchers, not for standalone launchers
@@ -1098,11 +1132,11 @@ class Main:
                 if type2 == 0:
                     if hasNoIntro_file:
                         dialog = xbmcgui.Dialog()
-                        ret = dialog.yesno('AEL', 'Delete No-Intro DAT file?')
+                        ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
                         if ret:
                             self.launchers[launcherID]["nointro_xml_file"] = ''
                             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                            kodi_dialog_OK('AEL', 'Rescan your ROMs to remove No-Intro tags.')
+                            kodi_dialog_OK('Advanced Emulator Launcher', 'Rescan your ROMs to remove No-Intro tags.')
                     else:
                         # Browse for No-Intro file
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
@@ -1110,7 +1144,7 @@ class Main:
                         if os.path.isfile(dat_file) == True:
                             self.launchers[launcherID]["nointro_xml_file"] = dat_file
                             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                            kodi_dialog_OK('AEL', 'DAT file successfully added. Rescan your ROMs to audit them.')
+                            kodi_dialog_OK('Advanced Emulator Launcher', 'DAT file successfully added. Rescan your ROMs to audit them.')
 
                 # Import Items list form NFO files
                 elif type2 == 1:
@@ -1330,18 +1364,18 @@ class Main:
             sel_platform = dialog.select('Select the platform', platforms)
 
             # Selection of the thumbnails and fanarts path
-            if self.settings[ "launcher_thumb_path" ] == "":
+            if self.settings['launcher_thumb_path'] == '':
                 thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False)
             else:
-                thumb_path = self.settings[ "launcher_thumb_path" ]
-            if self.settings[ "launcher_fanart_path" ] == "":
+                thumb_path = self.settings['launcher_thumb_path']
+            if self.settings['launcher_fanart_path'] == '':
                 fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False)
             else:
-                fanart_path = self.settings[ "launcher_fanart_path" ]
+                fanart_path = self.settings['launcher_fanart_path']
 
             # --- Create launcher object data, add to dictionary and write XML file ---
-            if not thumb_path:  thumb_path = ""
-            if not fanart_path: fanart_path = ""
+            if not thumb_path:  thumb_path = ''
+            if not fanart_path: fanart_path = ''
             if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
             else:                       launcher_platform = "Unknown"
             if sys.platform == "win32": launcher_lnk = True
@@ -1351,14 +1385,14 @@ class Main:
             launcherdata = fs_new_launcher()
             launcherdata['id']          = launcherID
             launcherdata['name']        = title
-            launcherdata['category']    = categoryID
+            launcherdata['categoryID']  = categoryID
             launcherdata['application'] = app
             launcherdata['args']        = args
             launcherdata['thumbpath']   = thumb_path
             launcherdata['fanartpath']  = fanart_path
-            launcherdata['platform']     = launcher_platform
+            launcherdata['platform']    = launcher_platform
             launcherdata['lnk']         = launcher_lnk
-            self.launchers[launcherID] = launcherdata
+            self.launchers[launcherID]  = launcherdata
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
 
@@ -1462,7 +1496,7 @@ class Main:
             _toogle_fullscreen()
 
         if self.settings[ "launcher_notification" ]:
-            kodi_notify('AEL', 'Launching {0}'.format(name_str), 5000)
+            kodi_notify('Advanced Emulator Launcher', 'Launching {0}'.format(name_str), 5000)
 
         try:
             xbmc.enableNavSounds(False)                                 
@@ -1515,8 +1549,8 @@ class Main:
         application = launcher["application"]
         application_basename = os.path.basename(launcher["application"])
         if not os.path.exists(apppath):
-            kodi_notify('AEL - ERROR', 
-                            'File {0} not found.'.format(application_basename), 3000)
+            kodi_notify_warn('Advanced Emulator Launcher', 
+                             'File {0} not found.'.format(application_basename))
             return
         arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
         self._print_log('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
@@ -1550,7 +1584,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
-            kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
+            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
 
         # Do stuff after execution
         self._run_after_execution(launcher)
@@ -1589,10 +1623,10 @@ class Main:
 
         # Check that app exists and ROM file exists
         if not os.path.exists(apppath):
-            kodi_notify("AEL - ERROR", 'File %s not found.' % apppath, 10000)
+            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % apppath, 10000)
             return
         if os.path.exists(romfile):
-            kodi_notify("AEL - ERROR", 'File %s not found.' % romfile, 10000)
+            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % romfile, 10000)
             return
 
         # ~~~~ Argument substitution ~~~~~
@@ -1641,7 +1675,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
-            kodi_notify('AEL - ERROR', 'Cannot determine the running platform', 10000)
+            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform', 10000)
 
         # Do stuff after application execution
         self._run_after_execution(launcher)
@@ -1898,13 +1932,13 @@ class Main:
     #
     def _gui_render_roms(self, categoryID, launcherID):
         if launcherID not in self.launchers:
-            log_warning('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
-            kodi_dialog_OK('AEL ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
+            log_error('_gui_render_roms() Launcher hash not found.')
+            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
             return
 
         # Load ROMs for this launcher and display them
         selectedLauncher = self.launchers[launcherID]
-        roms_xml_file = selectedLauncher["roms_xml_file"]
+        roms_xml_file = selectedLauncher['roms_xml_file']
 
         # Check if XML file with ROMs exist
         if not os.path.isfile(roms_xml_file):
@@ -2090,7 +2124,7 @@ class Main:
             if ret:
                 roms.pop(romID)
                 fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
-                kodi_notify('AEL', 'Deleted ROM from Favourites')
+                kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from Favourites')
                 # If Favourites is empty then go to root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
@@ -2111,7 +2145,7 @@ class Main:
                 roms.pop(romID)
                 launcher = self.launchers[launcherID]
                 fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, launcher)
-                kodi_notify('AEL', 'Deleted ROM from launcher')
+                kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from launcher')
                 # If launcher is empty then go to root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
@@ -2214,10 +2248,10 @@ class Main:
 
         # Edit thumb and fanart
         elif type == 1:
-            self._gui_edit_thumbnail(KIND_ROM, roms, romID, self.launchers[launcherID]['thumbpath'])
+            self._gui_edit_image(IMAGE_THUMB, KIND_ROM, roms, romID)
 
         elif type == 2:
-            self._gui_edit_fanart(KIND_ROM, roms, self.launchers[launcherID]['fanartpath'])
+            self._gui_edit_image(IMAGE_FANART, KIND_ROM, roms, romID)
 
         # Edit status
         elif type == 3:
@@ -2226,8 +2260,8 @@ class Main:
             finished_display = 'Finished' if finished == True else 'Unfinished'
             roms[romID]["finished"] = finished
             fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
-            kodi_dialog_OK('AEL Information', 
-                               'ROM "{}" status is now {}'.format(roms[romID]["name"], finished_display))
+            kodi_dialog_OK('Advanced Emulator Launcher Information', 
+                           'ROM "{}" status is now {}'.format(roms[romID]["name"], finished_display))
 
         # Advanced Modifications
         elif type == 4:
@@ -2316,7 +2350,7 @@ class Main:
                     current_rom = launcher_roms[launcher_rom_id]
                     # Check that the selected ROM ID is not already in Favourites
                     if launcher_rom_id in roms:
-                        kodi_dialog_OK('AEL', 'Selected ROM already in Favourites. Exiting.')
+                        kodi_dialog_OK('Advanced Emulator Launcher', 'Selected ROM already in Favourites. Exiting.')
                         return
                     # Delete current Favourite
                     roms.pop(romID)
@@ -2398,7 +2432,7 @@ class Main:
                     num_removed_roms += 1
             pDialog.close()
             if num_removed_roms > 0:
-                kodi_notify('AEL', '%s dead ROMs removed successfully' % num_removed_roms)
+                kodi_notify('Advanced Emulator Launcher', '%s dead ROMs removed successfully' % num_removed_roms)
                 log_info('%s dead ROMs removed successfully' % num_removed_roms)
             else:
                 log_info('No dead ROMs found.')
@@ -2406,7 +2440,7 @@ class Main:
             log_info('Launcher is empty. No dead ROM check.')
 
         # ~~~ Scan for new files (*.*) and put them in a list ~~~
-        kodi_notify('AEL', 'Scanning files...')
+        kodi_notify('Advanced Emulator Launcher', 'Scanning files...')
         xbmc.executebuiltin("ActivateWindow(busydialog)")
         log_info('Scanning files in {0}'.format(launcher_path))
         files = []
@@ -2479,7 +2513,7 @@ class Main:
             # ~~~ Check if user pressed the cancel button ~~~
             if pDialog.iscanceled() or dialog_canceled:
                 pDialog.close()
-                kodi_dialog_OK('AEL', 'Stopping ROM scanning. No changes have been made.')
+                kodi_dialog_OK('Advanced Emulator Launcher', 'Stopping ROM scanning. No changes have been made.')
                 log_info('User pressed Cancel button when scanning ROMs')
                 log_info('ROM scanning stopped')
                 return
@@ -2490,12 +2524,14 @@ class Main:
         log_info('New added ROMs    {:6d}'.format(num_new_roms))
 
         if len(roms) == 0:
-            kodi_dialog_OK('AEL', 'No ROMs found! Make sure launcher directory and file extensions are correct.')
+            kodi_dialog_OK('Advanced Emulator Launcher', 
+                           'No ROMs found! Make sure launcher directory and file extensions are correct.')
             xbmc.executebuiltin('Container.Refresh')
             return
 
         if num_new_roms == 0:
-            kodi_dialog_OK('AEL', 'Launcher has {} ROMs and no new ROMs have been added.'.format(len(roms)))
+            kodi_dialog_OK('Advanced Emulator Launcher', 
+                           'Launcher has {} ROMs and no new ROMs have been added.'.format(len(roms)))
             xbmc.executebuiltin('Container.Refresh')
 
         # --- If we have a No-Intro XML then audit roms -------------------------------------------
@@ -2716,9 +2752,9 @@ class Main:
             log_verb('Scraping Thumb with {}'.format(self.scraper_thumb.name))
 
             # Online scrape (image scrapers are always online)
-            search_string = romdata["name"]
-            region        = self.settings["scraper_region"]
-            imgsize       = self.settings["scraper_thumb_size"]
+            search_string = romdata['name']
+            region        = self.settings['scraper_region']
+            imgsize       = self.settings['scraper_thumb_size']
             image_list    = self.scraper_thumb.get_image_list(search_string, launcher_platform, region, imgsize)
             if image_list:
                 log_verb('Scraper returned {} games'.format(len(image_list)))
@@ -2727,12 +2763,12 @@ class Main:
                     # Close progress dialog before opening image chosing dialog
                     if pDialog.iscanceled(): dialog_canceled = True
                     pDialog.close()
-                    
+
                     # If there is a local image add show it to the user
                     if os.path.isfile(thumb):
-                       image_list.insert(0, (thumb, thumb, 'Current local thumb image')) 
+                       image_list.insert(0, ('Current local image', thumb)) 
 
-                    # Returns a list of tuples(URL, URL, name)
+                    # Returns a list of tuples(display_name, URL)
                     image_url = gui_show_image_select(image_list)
                     log_debug('Thumb dialog returned image_url "{}"'.format(image_url))
                     if image_url == '': image_url = image_list[0][0]
@@ -2745,11 +2781,11 @@ class Main:
                     # Pick first image in automatic mode
                     image_url = image_list[0][0]
 
-                # Resolve selected image URL (not used with current scrapers)
-                # Returned values are URLs already
-                # image_url = self._get_thumbnail(self.image_url)
-
                 # If user chose the local image don't download anything
+                # User chose same image as it was
+                if self.image_url == objects[objectID]["thumb"]:
+                    return
+
                 if image_url[0:4] == 'http':
                     # ~~~ Download scraped image ~~~
                     # Get Tumbnail name with no extension, then get URL image extension 
@@ -2767,7 +2803,7 @@ class Main:
                     try:
                         download_img(image_url, thumb_path)
                     except socket.timeout:
-                        kodi_notify('AEL - Error', 'Cannot download thumb image (Timeout)')
+                        kodi_notify_warn('Advanced Emulator Launcher', 'Cannot download thumb image (Timeout)')
 
                     # ~~~ Update Kodi cache with downloaded image ~~~
                     # Only if local image is in the Kodi cache, function takes care of that.
@@ -2794,7 +2830,7 @@ class Main:
     # Manually add a new ROM instead of a recursive scan
     #
     def _roms_add_new_rom (self, launcherID):
-        kodi_dialog_OK('AEL', 'Not implemented yet')
+        kodi_dialog_OK('Advanced Emulator Launcher', 'Not implemented yet')
         return
 
         dialog = xbmcgui.Dialog()
