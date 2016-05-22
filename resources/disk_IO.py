@@ -84,7 +84,7 @@ def fs_new_favourite_rom():
     return rom
 
 # -----------------------------------------------------------------------------
-# Utilities to write/read correct XML files
+# Filesystem very low-level utilities
 # -----------------------------------------------------------------------------
 #
 # Writes a XML text tag line, indented 2 spaces (root sub-child)
@@ -94,6 +94,15 @@ def XML_text(tag_name, tag_text):
     line = '  <{}>{}</{}>\n'.format(tag_name, tag_text, tag_name)
     
     return line
+
+#
+# See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
+#
+def get_fs_encoding():
+    try:
+        return sys.getfilesystemencoding()
+    except UnicodeEncodeError, UnicodeDecodeError:
+        return "utf-8"
 
 # -----------------------------------------------------------------------------
 # Disk IO functions

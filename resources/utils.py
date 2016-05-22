@@ -26,12 +26,6 @@ except:
 # -------------------------------------------------------------------------------------------------
 # Strings and text
 # -------------------------------------------------------------------------------------------------
-def text_get_encoding():
-    try:
-        return sys.getfilesystemencoding()
-    except UnicodeEncodeError, UnicodeDecodeError:
-        return "utf-8"
-
 #
 # If max_length == -1 do nothing (no length limit).
 #
