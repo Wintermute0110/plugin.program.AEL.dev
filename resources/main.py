@@ -795,7 +795,7 @@ class Main:
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]["finished"] == True else 'Status: Unfinished'
         type = dialog.select('Select action for category {}'.format(self.categories[categoryID]["name"]), 
-                             ['Edit Title/Genre/Description', 'Edit Thumbnail Image', 'Edit Fanart Image', 
+                             ['Edit Title/Genre/Description...', 'Edit Thumbnail Image...', 'Edit Fanart Image...', 
                               finished_display, 'Delete Category'])
         # Edit metadata
         if type == 0:
