@@ -586,10 +586,10 @@ class Main:
     #
     # Edit category thumb/fanart.
     #
-    # NOTE Interestingly, if thumb/fanart are linked from outside ~/.kodi, Kodi automatically reloads
-    #      the image cache. That is the case when a local image is selected.
-    #      However, if an image is imported and copied to ~/.kodi/userdata/etc., then Kodi image
-    #      cache is not updated any more!
+    # NOTE Interestingly, in Kodi Jarvis it seems image cache should never be updated for thumbs.
+    #      For fanarts, if the image is linked outside ~/.kodi it is not necessary to update the cache.
+    #      However, if the image is copied and linke inside ~/.kodi then the cache must be updated!
+    #      To cope with this, Kodi image cache is updated always for fanarts.
     #
     def _gui_edit_category_image(self, image_kind, categoryID):
         # Make this function as generic as possible to share code with launcher/rom thumb/fanart editing.
@@ -598,11 +598,15 @@ class Main:
             objectID = categoryID
             image_key = 'thumb'
             image_name = 'Thumb'
+            if self.settings['launcher_thumb_path'] == '': artwork_path = DEFAULT_THUMB_DIR
+            else:                                          artwork_path = self.settings['launcher_thumb_path']
         elif image_kind == IMAGE_FANART:
             objects_dic = self.categories
             objectID = categoryID
             image_key = 'fanart'
             image_name = 'Fanart'
+            if self.settings['launcher_fanart_path'] == '': artwork_path = DEFAULT_FANART_DIR
+            else:                                           artwork_path = self.settings['launcher_fanart_path']
         else:
             log_error('_gui_edit_category_image() Unknown image_kind = {}'.format(image_kind))
             kodi_notify_warn('AEL', 'Unknown image_kind = {}'.format(image_kind))
@@ -622,64 +626,65 @@ class Main:
             else:
                 image_dir = ''
             log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
-            image = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name), 
-                                            "files", ".jpg|.jpeg|.gif|.png", True, False, image_dir)
-            if not image or not os.path.isfile(image):
-                return
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name), 
+                                                 "files", ".jpg|.jpeg|.gif|.png", True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return
 
             # Update object and save XML
             log_debug('_gui_edit_category_image() categoryID = {}'.format(objectID))
-            objects_dic[objectID][image_key] = image
+            objects_dic[objectID][image_key] = image_file
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('AEL', '{} has been updated'.format(image_name))
-            log_info('Selected {} image "{}"'.format(image_name, image))
+            log_info('Selected {} "{}"'.format(image_name, image_file))
 
-            # It looks it is not necessary to update Kodi image cache if selected image is outside ~/.kodi
+            # --- Update Kodi image cache ---
+            if image_kind == IMAGE_FANART:
+                kodi_update_image_cache(image_file)
 
         # Import an image
         elif type2 == 1:
-            imagepath = artwork_path if object_dic["thumb"] == "" else object_dic["thumb"]
-            image = xbmcgui.Dialog().browse(2, 'Select thumbnail image', "files", ".jpg|.jpeg|.gif|.png",
-                                            True, False, os.path.join(imagepath))
-            if not image or not os.path.isfile(image):
-                return
+            if objects_dic[objectID][image_key] != '':
+                F = misc_split_path(objects_dic[objectID][image_key])
+                image_dir = F.dirname
+            else:
+                image_dir = ''
+            log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name), 
+                                                 "files", ".jpg|.jpeg|.gif|.png", True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return
 
-            img_ext = os.path.splitext(image)[-1][0:4]
-            log_debug('_gui_edit_category_image() image   = "{0}"'.format(image))
-            log_debug('_gui_edit_category_image() img_ext = "{0}"'.format(img_ext))
-            if img_ext == '':
-                kodi_notify_warn('AEL', 'Cannot determine image file extension')
-                return
+            # Determine image extension and dest filename
+            F = misc_split_path(image_file)
+            img_ext = F.ext
+            dest_basename = objects_dic[objectID]['name']
+            dest_path = os.path.join(artwork_path, dest_basename + '_' + image_key + img_ext)
+            log_debug('_gui_edit_category_image() image_file    = "{0}"'.format(image_file))
+            log_debug('_gui_edit_category_image() img_ext       = "{0}"'.format(img_ext))
+            log_debug('_gui_edit_category_image() dest_basename = "{0}"'.format(dest_basename))
+            log_debug('_gui_edit_category_image() dest_path     = "{0}"'.format(dest_path))
 
-            object_name = object_dic['name']
-            file_basename = object_name
-            file_path = os.path.join(artwork_path, os.path.basename(object_name) + '_thumb' + img_ext)
-            log_debug('_gui_edit_category_image() object_name   = "{0}"'.format(object_name))
-            log_debug('_gui_edit_category_image() file_basename = "{0}"'.format(file_basename))
-            log_debug('_gui_edit_category_image() file_path     = "{0}"'.format(file_path))
-
-            # If user press ESC in the file browser dialog the the same file used as initial file is chosen.
-            # In that case do nothing and return.
-            if image == file_path:
+            # Copy image file
+            if image_file == dest_path: 
+                log_info('image_file and dest_path are the same. Returning')
                 return
             try:
-                shutil.copy2(image.decode(get_encoding(), 'ignore') , file_path.decode(get_encoding(), 'ignore'))
+                fs_encoding = get_fs_encoding()
+                shutil.copy2(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
             except OSError:
                 kodi_notify_warn('AEL', 'OSError when copying image')
 
             # Update object and save XML
-            log_debug('_gui_edit_category_image() Object is categoryID = {0}'.format(object_dic['id']))
-            self.categories[object_dic['id']]["thumb"] = file_path
+            log_debug('_gui_edit_category_image() categoryID = {}'.format(objectID))
+            objects_dic[objectID][image_key] = dest_path
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_notify('AEL', 'Thumb has been updated')
-            log_info('Copied Thumb image   "{0}"'.format(image))
-            log_info('Into                 "{0}"'.format(file_path))
-            log_info('Selected Thumb image "{0}"'.format(file_path))
+            kodi_notify('AEL', '{} has been updated'.format(image_name))
+            log_info('Copied image "{}"'.format(image_file))
+            log_info('Into         "{}"'.format(dest_path))
+            log_info('Selected {} "{}"'.format(image_name, dest_path))
 
             # --- Update Kodi image cache ---
-            # Cases some problems at the moment...
-            # if object_dic["thumb"] != "":
-            #     update_kodi_image_cache(image)
+            if image_kind == IMAGE_FANART:
+                kodi_update_image_cache(dest_path)
 
     #
     # Removes a category.
