@@ -792,7 +792,7 @@ class Main:
         elif type2 == 3:
             text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
             if os.path.isfile(text_file):
-                file_data = _gui_import_TXT_file(text_file)
+                file_data = self._gui_import_TXT_file(text_file)
                 if file_data != '':
                     self.categories[categoryID]["description"] = file_data
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
@@ -1024,7 +1024,7 @@ class Main:
             elif type2 == 8:
                 text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
                 if os.path.isfile(text_file) == True:
-                    file_data = _gui_import_TXT_file(text_file)
+                    file_data = self._gui_import_TXT_file(text_file)
                     if file_data != '':
                         self.launchers[launcherID]["plot"] = file_data
                         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
