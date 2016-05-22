@@ -2526,13 +2526,11 @@ class Main:
         if len(roms) == 0:
             kodi_dialog_OK('Advanced Emulator Launcher', 
                            'No ROMs found! Make sure launcher directory and file extensions are correct.')
-            xbmc.executebuiltin('Container.Refresh')
             return
 
         if num_new_roms == 0:
             kodi_dialog_OK('Advanced Emulator Launcher', 
                            'Launcher has {} ROMs and no new ROMs have been added.'.format(len(roms)))
-            xbmc.executebuiltin('Container.Refresh')
 
         # --- If we have a No-Intro XML then audit roms -------------------------------------------
         if selectedLauncher['nointro_xml_file'] != '':
@@ -2586,7 +2584,8 @@ class Main:
         kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
         log_debug('_roms_import_roms() ***** END *****')
 
-        xbmc.executebuiltin('Container.Refresh')
+        # --- Seems this is not needed ---
+        # xbmc.executebuiltin('Container.Refresh')
 
     def _roms_process_scanned_ROM(self, selectedLauncher, F, num_files_checked, num_files, pDialog):
         dialog_canceled = False
