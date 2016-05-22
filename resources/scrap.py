@@ -86,7 +86,6 @@ class Scraper_Thumb(Scraper):
     #   images = [image, image, ... ]
     #   image = {'name' : str         Name of the image (e.g., 'Boxfront 1')
     #            'URL'  : str}        URL to download image
-    #            'id'  : str}         
     #
     def get_game_image_list(self, game):
         raise NotImplementedError("Subclass must implement get_game_image_list() abstract method") 
@@ -109,6 +108,6 @@ from scrap_fanart import *
 # This is the official list of supported scrapers. This list MUST match the
 # settings configuration in settings.xml or bad things will happen.
 #
-scrapers_metadata = [ metadata_NULL(), metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs() ]
-scrapers_thumb    = [ thumb_NULL(), thumb_TheGamesDB(), thumb_GameFAQs() ]
-scrapers_fanart   = [ fanart_NULL(), fanart_TheGamesDB(), fanart_GameFAQs() ]
+scrapers_metadata = [ metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs() ]
+scrapers_thumb    = [ thumb_TheGamesDB(), thumb_GameFAQs() ]
+scrapers_fanart   = [ fanart_TheGamesDB(), fanart_GameFAQs() ]

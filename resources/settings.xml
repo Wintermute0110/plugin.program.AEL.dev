@@ -1,10 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-<!-- It seems that the lvalues must be numerical IDs. If I put text strings it does not work -->
 <category label="ROM scanner">
     <!-- <setting id="separator" type="lsep" label="Scan settings"/> -->
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
-    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy"  default="0" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
+    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy"  default="2" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
     <setting label="Thumb scan policy" type="enum" id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     <setting label="Fanart scan policy" type="enum" id="scan_fanart_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     
@@ -14,19 +13,17 @@
     <setting label="Article ('The', 'A') at the end" type="bool" id="scan_title_formatting" default="true"/>
     <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="false"/>
 </category>
-
 <category label="ROM scrapping">
     <setting id="separator" type="lsep" label="Scrapers"/>
-    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="NULL|Offline scraper|TheGamesDB|GameFAQs"/>
-    <setting label="Thumb scraper" type="enum" id="thumb_scraper" default="0" values="NULL||TheGamesDB|GameFAQs"/>
-    <setting label="Fanart scraper" type="enum" id="fanart_scraper" default="0" values="NULL||TheGamesDB|GameFAQs"/>
+    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="Offline scraper|TheGamesDB|GameFAQs"/>
+    <setting label="Thumb scraper" type="enum" id="thumb_scraper" default="0" values="TheGamesDB|GameFAQs"/>
+    <setting label="Fanart scraper" type="enum" id="fanart_scraper" default="0" values="TheGamesDB|GameFAQs"/>
 
     <setting id="separator" type="lsep" label="Scrapping mode"/>
     <setting label="Metadata scrapping mode" type="enum" id="metadata_mode" default="0" values="Semi-automatic|Automatic"/>
     <setting label="Thumb scrapping mode" type="enum" id="thumb_mode" default="0" values="Semi-automatic|Automatic"/>
     <setting label="Fanart scrapping mode" type="enum" id="fanart_mode" default="0" values="Semi-automatic|Automatic"/>
 </category>
-
 <category label="Scrapers">
     <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
     <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
@@ -34,7 +31,6 @@
     <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
     <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="0" values="First|Half|Last"/>
 </category>
-
 <category label="Misc">
     <setting id="separator" type="lsep" label="Display options"/>
     <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="hide_finished" default="false" />
@@ -45,7 +41,6 @@
     <setting label="For Fanarts images" type="folder" id="launcher_fanart_path" default="" source=""/>
     <setting label="For NFO files" type="folder" id="launcher_nfo_path" default="" source="" />
 </category>
-
 <category label="Advanced">
     <setting id="separator" type="lsep" label="Launcher options"/>
     <setting label="Action on Kodi playing media" type="enum" id="media_state" default="0" values="Stop|Pause|Let Play" />
@@ -53,8 +48,7 @@
     <setting label="Delay (ms)" type="slider" id="start_tempo" default="500" range="0,100,15000" option="int"/>
 
     <setting id="separator" type="lsep" label="Debug options"/>
-    <setting label="Log level" type="enum" id="log_level" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" default="0" />
+    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
     <setting label="Show batch command window" type="bool" id="show_batch_window" default="false"/>
 </category>
-
 </settings>
