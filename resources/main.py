@@ -20,7 +20,7 @@
 #    main body.
 
 # --- Main imports ---
-import sys, os, shutil, fnmatch, string
+import sys, os, shutil, fnmatch, string, time
 import re, urllib, urllib2, urlparse, socket, exceptions
 
 # --- Kodi stuff ---
@@ -586,25 +586,24 @@ class Main:
     #
     # Edit category thumb/fanart.
     #
-    # NOTE Interestingly, in Kodi Jarvis it seems image cache should never be updated for thumbs.
-    #      For fanarts, if the image is linked outside ~/.kodi it is not necessary to update the cache.
-    #      However, if the image is copied and linke inside ~/.kodi then the cache must be updated!
-    #      To cope with this, Kodi image cache is updated always for fanarts.
-    #
+    # NOTE For some reason option 'Import Local Image (Copy and Rename)' does not work. I have checked
+    #      the copied filename is OK but Kodi refuses to display the image...
+    #      Even more suprisingly, if later 'Select Local Image' is used and the file copied before to categories 
+    #      artwork path is chosen then it works!
     def _gui_edit_category_image(self, image_kind, categoryID):
         # Make this function as generic as possible to share code with launcher/rom thumb/fanart editing.
         if image_kind == IMAGE_THUMB:
             objects_dic = self.categories
-            objectID = categoryID
-            image_key = 'thumb'
-            image_name = 'Thumb'
+            objectID    = categoryID
+            image_key   = 'thumb'
+            image_name  = 'Thumb'
             if self.settings['launcher_thumb_path'] == '': artwork_path = DEFAULT_THUMB_DIR
             else:                                          artwork_path = self.settings['launcher_thumb_path']
         elif image_kind == IMAGE_FANART:
             objects_dic = self.categories
-            objectID = categoryID
-            image_key = 'fanart'
-            image_name = 'Fanart'
+            objectID    = categoryID
+            image_key   = 'fanart'
+            image_name  = 'Fanart'
             if self.settings['launcher_fanart_path'] == '': artwork_path = DEFAULT_FANART_DIR
             else:                                           artwork_path = self.settings['launcher_fanart_path']
         else:
@@ -638,8 +637,7 @@ class Main:
             log_info('Selected {} "{}"'.format(image_name, image_file))
 
             # --- Update Kodi image cache ---
-            if image_kind == IMAGE_FANART:
-                kodi_update_image_cache(image_file)
+            kodi_update_image_cache(image_file)
 
         # Import an image
         elif type2 == 1:
@@ -669,7 +667,7 @@ class Main:
                 return
             try:
                 fs_encoding = get_fs_encoding()
-                shutil.copy2(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
+                shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
             except OSError:
                 kodi_notify_warn('AEL', 'OSError when copying image')
 
@@ -683,8 +681,7 @@ class Main:
             log_info('Selected {} "{}"'.format(image_name, dest_path))
 
             # --- Update Kodi image cache ---
-            if image_kind == IMAGE_FANART:
-                kodi_update_image_cache(dest_path)
+            kodi_update_image_cache(dest_path)
 
     #
     # Removes a category.
@@ -1663,6 +1660,7 @@ class Main:
         if category_dic['finished'] == False: ICON_OVERLAY = 6
         else:                                 ICON_OVERLAY = 7
         listitem.setProperty("fanart_image", category_dic['fanart'])
+        # log_debug('_gui_render_category_row() Category {} fanart "{}"'.format(category_dic['name'], category_dic['fanart']))
         listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'], 
                                     "Plot" : category_dic['description'], "overlay": ICON_OVERLAY } )
 
