@@ -623,12 +623,12 @@ class Main:
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
     def _gui_edit_category_metadata(self, categoryID):
-        desc_str = text_limit_string(self.categories[categoryID]["description"], 35)
+        desc_str = text_limit_string(self.categories[categoryID]["description"], 40)
         dialog = xbmcgui.Dialog()
         type2 = dialog.select('Edit Category Metadata', 
-                              ["Edit Title: '%s'".format(self.categories[categoryID]["name"]),
-                               "Edit Genre: '%s'".format(self.categories[categoryID]["genre"]),
-                               "Edit Description: '%s'".format(desc_str),
+                              ["Edit Title: '{}'".format(self.categories[categoryID]["name"]),
+                               "Edit Genre: '{}'".format(self.categories[categoryID]["genre"]),
+                               "Edit Description: '{}'".format(desc_str),
                                'Import Description from file...' ])
         # Edition of the category name
         if type2 == 0:
@@ -693,7 +693,7 @@ class Main:
         # Shows a select box with the options to edit
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]["finished"] == True else 'Status: Unfinished'
-        type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]["name"]), 
+        type = dialog.select('Select action for category {}'.format(self.categories[categoryID]["name"]), 
                              ['Edit Title/Genre/Description', 'Edit Thumbnail Image', 'Edit Fanart Image', 
                               finished_display, 'Delete Category'])
         # Edit metadata
