@@ -63,6 +63,7 @@ KIND_LAUNCHER        = 1
 KIND_ROM             = 2
 IMAGE_THUMB          = 100
 IMAGE_FANART         = 200
+DESCRIPTION_MAXSIZE  = 40
 
 # --- Main code ---
 class Main:
@@ -723,8 +724,31 @@ class Main:
                 self.categories.pop(categoryID)
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
+    #
+    # Reads a text file with category/launcher description. Checks file size to avoid importing binary files!
+    #
+    def _gui_import_TXT_file(text_file):
+        # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
+        log_debug('_gui_import_TXT_file() Importing plot from "{}"'.format(text_file))
+        statinfo = os.stat(text_file)
+        file_size = statinfo.st_size
+        log_debug('_gui_import_TXT_file() File size is {}'.format(file_size))
+        if file_size > 16384:
+            ret = kodi_dialog_yesno('Advanced Emulator Launcher',
+                                    'File "{}" has {} bytes and it is very big.'.format(text_file, file_size) + 
+                                    'Are you sure this is the correct file?')
+            if not ret: return ''
+
+        # Import file
+        log_debug('_gui_import_TXT_file() Importing description from "{}"'.format(text_file))
+        text_plot = open(text_file, 'rt')
+        file_data = text_plot.read()
+        text_plot.close()
+
+        return file_data
+
     def _gui_edit_category_metadata(self, categoryID):
-        desc_str = text_limit_string(self.categories[categoryID]["description"], 40)
+        desc_str = text_limit_string(self.categories[categoryID]["description"], DESCRIPTION_MAXSIZE)
         dialog = xbmcgui.Dialog()
         type2 = dialog.select('Edit Category Metadata', 
                               ["Edit Title: '{}'".format(self.categories[categoryID]["name"]),
@@ -768,25 +792,12 @@ class Main:
         elif type2 == 3:
             text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
             if os.path.isfile(text_file):
-                log_debug('_command_edit_category() Import category description from "{}"'.format(text_file))
-                statinfo = os.stat(text_file)
-                file_size = statinfo.st_size
-                log_debug('_command_edit_category() File size is {}'.format(file_size))
-                # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
-                if file_size > 16384:
-                    ret = kodi_dialog_yesno('Advanced Emulator Launcher',
-                                            'File "{}" has {} bytes and it is very big.'.format(text_file, file_size) + 
-                                            'Are you sure this is the correct file?')
-                    if not ret: return
-                # Import file
-                log_debug('_command_edit_category() Importing description from "{}"'.format(text_file))
-                text_plot = open(text_file, 'rt')
-                file_data = text_plot.read()
-                text_plot.close()
-                self.categories[categoryID]["description"] = file_data
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                file_data = _gui_import_TXT_file(text_file)
+                if file_data != '':
+                    self.categories[categoryID]["description"] = file_data
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             else:
-                desc_str = text_limit_string(self.categories[categoryID]["description"], 35)
+                desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
                 kodi_dialog_OK('Advanced Emulator Launcher - Information', 
                                "Category description '{}' not changed".format(desc_str))
 
@@ -939,24 +950,30 @@ class Main:
         type_nb = 0
         if type == type_nb:
             dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string(self.launchers[launcherID]["plot"], 35)
+            desc_str = text_limit_string(self.launchers[launcherID]["plot"], DESCRIPTION_MAXSIZE)
             type2 = dialog.select('Modify Launcher Metadata',
-                                  ['Scrape from {0}'.format(self.scraper_metadata.fancy_name),
+                                  ['Scrape from {}'.format(self.scraper_metadata.fancy_name),
+                                   'Import metadata from NFO file...',
                                    "Edit Title: '{}'".format(self.launchers[launcherID]["name"]),
                                    "Edit Platform: {}".format(self.launchers[launcherID]["platform"]),
                                    "Edit Release Year: '{}'".format(self.launchers[launcherID]["year"]),
                                    "Edit Studio: '{}'".format(self.launchers[launcherID]["studio"]),
                                    "Edit Genre: '{}'".format(self.launchers[launcherID]["genre"]),
                                    "Edit Description: '{}'".format(desc_str),
-                                   'Import Description from TXT file...',
-                                   'Import metadata from NFO file...', 'Save metadata to NFO file'])
-            # Edition of the launcher name
+                                   'Import Description from file...',
+                                   'Save metadata to NFO file'])
+            # Scrape metadata
             if type2 == 0:
                 kodi_dialog_OK('AEL', 'Online scraping not supported yet. Sorry.')
                 return
                 # self._scrap_launcher_metadata(launcherID)
-            # Edition of the launcher name
+            # Import launcher metadata from NFO file
             elif type2 == 1:
+                info_str = fs_import_launcher_nfo(self.settings, self.launchers, launcherID)
+                kodi_notify('Advanced Emulator Launcher', info_str)
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            # Edition of the launcher name
+            elif type2 == 2:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Edit title')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -966,7 +983,7 @@ class Main:
                     self.launchers[launcherID]["name"] = title.rstrip()
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             # Selection of the launcher game system
-            elif type2 == 2:
+            elif type2 == 3:
                 dialog = xbmcgui.Dialog()
                 platforms = emudata_platform_list()
                 sel_platform = dialog.select('Select the platform', platforms)
@@ -974,21 +991,21 @@ class Main:
                     self.launchers[launcherID]["platform"] = platforms[sel_platform]
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             # Edition of the launcher release date (year)
-            elif type2 == 3:
+            elif type2 == 4:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["year"], 'Edit release year')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     self.launchers[launcherID]["year"] = keyboard.getText()
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             # Edition of the launcher studio name
-            elif type2 == 4:
+            elif type2 == 5:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["studio"], 'Edit studio')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     self.launchers[launcherID]["studio"] = keyboard.getText()
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             # Edition of the launcher genre
-            elif type2 == 5:
+            elif type2 == 6:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["genre"], 'Edit genre')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -996,7 +1013,7 @@ class Main:
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Edit launcher description (plot)
-            elif type2 == 6:
+            elif type2 == 7:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["plot"], 'Edit descripion')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -1004,37 +1021,17 @@ class Main:
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Import of the launcher descripion (plot)
-            elif type2 == 7:
+            elif type2 == 8:
                 text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
                 if os.path.isfile(text_file) == True:
-                    log_debug('_command_edit_launcher() Import launcher plot from "{}"'.format(text_file))
-                    statinfo = os.stat(text_file)
-                    file_size = statinfo.st_size
-                    log_debug('_command_edit_launcher() File size is {}'.format(file_size))
-                    # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
-                    if file_size > 16384:
-                        ret = kodi_dialog_yesno('Advanced Emulator Launcher',
-                                                'File "{}" has {} bytes and it is very big.'.format(text_file, file_size) + 
-                                                'Are you sure this is the correct file?')
-                        if not ret: return
-                    # Import file
-                    log_debug('_command_edit_launcher() Importing description from "{}"'.format(text_file))
-                    text_plot = open(text_file, 'rt')
-                    file_data = text_plot.read()
-                    text_plot.close()
-                    self.launchers[launcherID]["plot"] = file_data
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                    file_data = _gui_import_TXT_file(text_file)
+                    if file_data != '':
+                        self.launchers[launcherID]["plot"] = file_data
+                        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 else:
-                    desc_str = text_limit_string(self.launchers[launcherID]["plot"], 35)
+                    desc_str = text_limit_string(self.launchers[launcherID]["plot"], DESCRIPTION_MAXSIZE)
                     kodi_dialog_OK('Advanced Emulator Launcher - Information', 
                                    "Launcher plot '{}' not changed".format(desc_str))
-
-            # Import launcher metadata from NFO file
-            elif type2 == 8:
-                info_str = fs_import_launcher_nfo(self.settings, self.launchers, launcherID)
-                kodi_notify('Advanced Emulator Launcher', info_str)
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-
             # Export launcher metadata to NFO file
             elif type2 == 9:
                 info_str = fs_export_launcher_nfo(self.settings, self.launchers[launcherID])
@@ -1299,25 +1296,22 @@ class Main:
         if categoryID not in self.categories:
             kodi_notify('Advanced Emulator Launcher - Error', 'Target category not found.')
             xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
-
             return
         
         # Show "Create New Launcher" dialog
         dialog = xbmcgui.Dialog()
         type = dialog.select('Create New Launcher', 
                              ['Standalone launcher (normal executable)', 'Files launcher (game emulator)'])
-        xbmc.log('_command_add_new_launcher() type = {0}'.format(type))
-
-        if os.environ.get( "OS", "xbox" ) == "xbox": filter = ".xbe|.cut"
-        elif sys.platform == "win32":                filter = ".bat|.exe|.cmd|.lnk"
-        else:                                        filter = ""
+        log_info('_command_add_new_launcher() New launcher type = {}'.format(type))
+        if sys.platform == 'win32': filter = '.bat|.exe|.cmd|.lnk'
+        else:                       filter = ''
 
         # 'Standalone launcher (normal executable)'
         if type == 0:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
             if not app: return False
 
-            argument = ""
+            argument = ''
             argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
             argkeyboard.doModal()
             args = argkeyboard.getText()
@@ -1441,7 +1435,9 @@ class Main:
             launcherdata['roms_xml_file'] = roms_xml_file_path
             self.launchers[launcherID] = launcherdata
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            
+            kodi_notify('Advanced Emulator Launcher', 
+                        'ROM launcher {} created.'.format(title))
+
             # This causes trouble...
             # xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
             # Just update container contents
@@ -2139,29 +2135,27 @@ class Main:
         dialog = xbmcgui.Dialog()
         if launcherID == '0':
             type = dialog.select('Edit Favourite ROM %s' % title, 
-                                ['Edit Metadata...',
-                                'Change Thumbnail Image...', 'Change Fanart Image...',
-                                finished_display,
-                                'Advanced Modifications...', 
+                                ['Edit Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
+                                finished_display, 'Advanced Modifications...', 
                                 'Choose another favourite parent ROM...'])
         else:
             type = dialog.select('Edit ROM %s' % title, 
                                 ['Edit Metadata...',
                                 'Change Thumbnail Image...', 'Change Fanart Image...',
-                                finished_display,
-                                'Advanced Modifications...'])
+                                finished_display, 'Advanced Modifications...'])
 
         # --- Edit ROM metadata ---
         if type == 0:
             dialog = xbmcgui.Dialog()
+            desc_str = text_limit_string(roms[romID]["plot"], 40)
             type2 = dialog.select('Modify ROM metadata', 
-                                  ['Scrap from {}'.format(self.scraper_metadata.fancy_name),
-                                   'Import metadata from NFO file',
-                                   'Edit Title: %s' % roms[romID]["name"],
-                                   'Edit Release Year: %s' % roms[romID]["year"],
-                                   'Edit Studio: %s' % roms[romID]["studio"],
-                                   'Edit Genre: %s' % roms[romID]["genre"],
-                                   'Edit Description: %s' % roms[romID]["plot"][0:20],
+                                  ['Scrape from {}'.format(self.scraper_metadata.fancy_name),
+                                   'Import metadata from NFO file...',
+                                   "Edit Title: '{}'".format(roms[romID]["name"]),
+                                   "Edit Release Year: '{}'".format(roms[romID]["year"]),
+                                   "Edit Studio: '{}'".format(roms[romID]["studio"]),
+                                   "Edit Genre: '{}'".format(roms[romID]["genre"]),
+                                   "Edit Description: '{}'".format(desc_str),
                                    'Load Description from file ...',
                                    'Save metadata to NFO file'])
             # Scrap rom metadata
@@ -2206,7 +2200,7 @@ class Main:
                     fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
             # Import of the rom game plot
             elif type2 == 6:
-                text_file = xbmcgui.Dialog().browse(1, 'Select description file. (e.g txt|dat)', "files", ".txt|.dat", False, False)
+                text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
                 if os.path.isfile(text_file):
                     text_plot = open(text_file)
                     string_plot = text_plot.read()
