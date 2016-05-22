@@ -18,11 +18,12 @@
 #
 # Utility functions which DEPEND on Kodi modules
 #
-
 import sys, os, shutil, time, random, hashlib, urlparse
-
-# For xbmc.log(), xbmcgui.Dialog()
 import xbmc, xbmcgui
+
+# Addon custom modules/packages
+import utils
+import disk_IO
 
 # --- Constants ---------------------------------------------------------------
 LOG_ERROR   = 0
@@ -143,17 +144,17 @@ def kodi_get_cached_image(image_path):
 def kodi_update_image_cache(img_path):
     # What if image is not cached?
     cached_thumb = kodi_get_cached_image(img_path)
-    log_debug('kodi_update_image_cache()     img_path = {}'.format(img_path))
-    log_debug('kodi_update_image_cache() cached_thumb = {}'.format(cached_thumb))
+    log_debug('kodi_update_image_cache()     img_path {}'.format(img_path))
+    log_debug('kodi_update_image_cache() cached_thumb {}'.format(cached_thumb))
 
     # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
     # However, images in the cache have the original extension. Replace TBN extension
     # with that of the original image.
-    F_cached = misc_split_path(cached_thumb)
+    F_cached = utils.misc_split_path(cached_thumb)
     if F_cached.ext == '.tbn':
-        F_img = misc_split_path(img_path)
+        F_img = utils.misc_split_path(img_path)
         cached_thumb = cached_thumb.replace('.tbn', F_img.ext)
-        log_debug('kodi_update_image_cache() New cached_thumb name {}'.format(cached_thumb))
+        log_debug('kodi_update_image_cache() New cached_thumb {}'.format(cached_thumb))
 
     # Check if file exists in the cache
     # xbmc.getCacheThumbName() seems to return a cache filename even if the local file does not exist!
@@ -164,8 +165,9 @@ def kodi_update_image_cache(img_path):
     # --- Copy local image into Kodi image cache ---
     log_debug('kodi_update_image_cache() copying {}'.format(img_path))
     log_debug('kodi_update_image_cache() into    {}'.format(cached_thumb))
-    decoded_img_path     = img_path.decode(text_get_encoding(), 'ignore')
-    decoded_cached_thumb = cached_thumb.decode(text_get_encoding(), 'ignore')
+    fs_encoding = disk_IO.get_fs_encoding()
+    decoded_img_path     = img_path.decode(fs_encoding, 'ignore')
+    decoded_cached_thumb = cached_thumb.decode(fs_encoding, 'ignore')
     try:
         shutil.copy2(decoded_img_path, decoded_cached_thumb)
     except OSError:
