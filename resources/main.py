@@ -2323,7 +2323,7 @@ class Main:
                 continue
             
             # ~~~~~ Process new ROM and add to the list ~~~~~
-            romdata     = self._roms_process_scanned_ROM(selectedLauncher, ROM)
+            romdata     = self._roms_process_scanned_ROM(launcherID, ROM)
             romID       = romdata['id']
             roms[romID] = romdata
             num_new_roms += 1
@@ -2383,7 +2383,7 @@ class Main:
     # DAT file.
     # Dictionaries are mutable, so roms can be changed because passed by assigment.
     #
-    def self._roms_update_NoIntro_status(roms, nointro_xml_file):
+    def _roms_update_NoIntro_status(roms, nointro_xml_file):
         # Load No-Intro DAT
         roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
         
@@ -2421,7 +2421,8 @@ class Main:
         
     def _roms_process_scanned_ROM(self, launcherID, ROM):
         # --- Create new rom dictionary ---
-        platform = selectedLauncher['platform']
+        launcher = self.launchers[launcherID]
+        platform = launcher['platform']
         romdata  = fs_new_rom()
         romdata['id']       = misc_generate_random_SID()
         romdata['filename'] = ROM.path
@@ -2539,8 +2540,8 @@ class Main:
         #   (f_base_noext)_fanart
         # Otherwise, thumb/fanart name is same as ROM, but different extension.
         # If no local artwork is found them names are empty strings ''
-        thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, ROM)
-        fanart_path_noext = misc_get_fanart_path_noext(selectedLauncher, ROM)
+        thumb_path_noext  = misc_get_thumb_path_noext(launcher, ROM)
+        fanart_path_noext = misc_get_fanart_path_noext(launcher, ROM)
         # log_debug('thumb_path_noext  = "{}"'.format(thumb_path_noext))
         # log_debug('fanart_path_noext = "{}"'.format(fanart_path_noext))
         
@@ -2594,7 +2595,7 @@ class Main:
     # Returns a valid filename of the downloaded scrapped image, filename of local image 
     # or empty string if scraper finds nothing or download failed.
     #
-    def _roms_scrap_image(image_kind, image_name, local_image, launcherID, ROM):
+    def _roms_scrap_image(self, image_kind, image_name, local_image, launcherID, ROM):
         # By default always use local image in case scraper fails
         ret_imagepath = local_image
 
@@ -2644,7 +2645,7 @@ class Main:
             rom_name_list = []
             for game in results:
                 rom_name_list.append(game['display_name'])
-            selectgame = dialog.select('Select game for ROM {}'.format(romdata['name']), rom_name_list)
+            selectgame = dialog.select('Select game for ROM {}'.format(ROM.base_noext), rom_name_list)
             if selectgame < 0: selectgame = 0
 
             # Open progress dialog again
@@ -2671,9 +2672,9 @@ class Main:
             if self.pDialog.iscanceled(): self.pDialog_canceled = True
             self.pDialog.close()
 
-            # If there is a local image add show it to the user
-            if os.path.isfile(thumb):
-                image_list.insert(0, {'name' : 'Current local image', 'URL' : thumb} ) 
+            # If there is a local image add it to the list and show it to the user
+            if os.path.isfile(local_image):
+                image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image} ) 
 
             # Returns a list of tuples(display_name, URL)
             image_url = gui_show_image_select(image_list)
@@ -2941,7 +2942,7 @@ class Main:
         rompath     = launcher['rompath']
         
         # --- Load ROMs for this launcher ---
-        roms_xml_file = selectedLauncher["roms_xml_file"]
+        roms_xml_file = launcher['roms_xml_file']
         roms = fs_load_ROM_XML_file(roms_xml_file)
         if not roms: return
 
@@ -2950,7 +2951,7 @@ class Main:
         extensions = "." + romext.replace('|', '|.')
         romfile = dialog.browse(1, 'Select the ROM file', 'files', extensions, False, False, rompath)
         if not romfile: return
-        
+
         # --- Format title ---
         scan_clean_tags       = self.settings['scan_clean_tags']
         scan_title_formatting = self.settings['scan_title_formatting']
