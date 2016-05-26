@@ -34,42 +34,42 @@ except:
 # -----------------------------------------------------------------------------
 class metadata_NULL(Scraper_Metadata):
     def __init__(self):
-        self.name = 'NULL'
+        self.name       = 'NULL'
         self.fancy_name = 'NULL Metadata scraper'
 
     def set_addon_dir(self, plugin_dir):
         pass
 
-    def get_games_search(self, search_string, rom_base_noext, platform):
+    def get_search(self, search_string, rom_base_noext, platform):
         return {}
     
-    def get_game_metadata(self, game):
+    def get_metadata(self, game):
         return {}
 
 # -----------------------------------------------------------------------------
 # Offline scraper using XML files for MAME and No-Intro ROMs.
 # -----------------------------------------------------------------------------
 class metadata_Offline(Scraper_Metadata):
-    def __init__(self):
-        self.name = 'Offline'
-        self.fancy_name = 'Offline Metadata scraper'
-
-    def set_addon_dir(self, plugin_dir):
-        self.addon_dir = plugin_dir
-        log_debug('metadata_Offline::set_addon_dir() self.addon_dir = {}'.format(self.addon_dir))
-        
     # Offline XML data will be cached here (from disk)
     games = {}
     cached_xml_path = ''
     cached_platform = ''
     addon_dir = ''
 
+    def __init__(self):
+        self.name       = 'Offline'
+        self.fancy_name = 'Offline Metadata scraper'
+
+    def set_addon_dir(self, plugin_dir):
+        self.addon_dir = plugin_dir
+        log_debug('metadata_Offline::set_addon_dir() self.addon_dir = {}'.format(self.addon_dir))
+        
     # Load XML information for this scraper and keep it cached in memory.
     # For offline scrapers.
     def initialise_scraper(self, platform):
         # Check if we have data already cached in object memory for this platform
         if self.cached_platform == platform:
-            log_debug('metadata_Offline::initialise_scraper() platform = {} is cached in object.'.format(platform))
+            log_debug('metadata_Offline::initialise_scraper platform = {} is cached in object.'.format(platform))
             return
     
         # What if platform is not in the official list dictionary? Then load
@@ -77,8 +77,8 @@ class metadata_Offline(Scraper_Metadata):
         try:
             xml_file = offline_scrapers_dic[platform]
         except:
-            log_debug('metadata_Offline::initialise_scraper() Platform {} not found'.format(platform))
-            log_debug('metadata_Offline::initialise_scraper() Defaulting to Unknown')
+            log_debug('metadata_Offline::initialise_scraper Platform {} not found'.format(platform))
+            log_debug('metadata_Offline::initialise_scraper Defaulting to Unknown')
             self.games = {}
             self.cached_xml_path = ''
             self.cached_platform = 'Unknown'
@@ -86,7 +86,7 @@ class metadata_Offline(Scraper_Metadata):
 
         # Load XML database and keep it in memory for subsequent calls
         xml_path = os.path.join(self.addon_dir, xml_file)
-        log_debug('metadata_Offline::initialise_scraper() Loading XML {}'.format(xml_path))
+        log_debug('metadata_Offline::initialise_scraper Loading XML {}'.format(xml_path))
         self.games = fs_load_GameInfo_XML(xml_path)
         if not self.games:
             self.games = {}
@@ -95,12 +95,12 @@ class metadata_Offline(Scraper_Metadata):
             return
         self.cached_xml_path = xml_path
         self.cached_platform = platform
-        log_debug('metadata_Offline::initialise_scraper() cached_xml_path = {}'.format(self.cached_xml_path))
-        log_debug('metadata_Offline::initialise_scraper() cached_platform = {}'.format(self.cached_platform))
+        log_debug('metadata_Offline::initialise_scraper cached_xml_path = {}'.format(self.cached_xml_path))
+        log_debug('metadata_Offline::initialise_scraper cached_platform = {}'.format(self.cached_platform))
 
     # List of games found
-    def get_games_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_Offline::get_games_search() Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
+    def get_search(self, search_string, rom_base_noext, platform):
+        log_verb("metadata_Offline::get_search Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
         results_ret = []
 
         # If not cached XML data found (maybe offline scraper does not exist
@@ -111,7 +111,7 @@ class metadata_Offline(Scraper_Metadata):
 
         # Search MAME games
         if platform == 'MAME':
-            log_verb("metadata_Offline::get_games_search() Mode MAME searching for '{}'".format(rom_base_noext))
+            log_verb("metadata_Offline::get_search Mode MAME searching for '{}'".format(rom_base_noext))
             
             # --- MAME rom_base_noext is exactly the rom name ---
             if rom_base_noext.lower() in self.games:
@@ -123,7 +123,7 @@ class metadata_Offline(Scraper_Metadata):
 
         # Search No-Intro games
         else:
-            log_verb("metadata_Offline::set_plugin_inst_dir() Mode No-Intro searching for '{}'".format(search_string))
+            log_verb("metadata_Offline::get_search Mode No-Intro searching for '{}'".format(search_string))
             search_string_lower = search_string.lower()
             regexp = '.*{}.*'.format(search_string_lower)
             p = re.compile(regexp)
@@ -147,12 +147,12 @@ class metadata_Offline(Scraper_Metadata):
         return results_ret
 
     # game is dictionary returned by the metadata_Offline.get_game_search()
-    def get_game_metadata(self, game):
+    def get_metadata(self, game):
         gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
 
         if self.cached_platform == 'MAME':
             key = game['id']
-            log_verb("metadata_Offline::get_game_metadata() Mode MAME id = '{0}'".format(key))
+            log_verb("metadata_Offline::get_metadata Mode MAME id = '{0}'".format(key))
             gamedata['title'] = self.games[key]['description']
             # gamedata['genre'] = self.games[key]['category']
             gamedata['year'] = self.games[key]['year']
@@ -161,12 +161,12 @@ class metadata_Offline(Scraper_Metadata):
         
         # Unknown platform. Behave like NULL scraper
         elif self.cached_platform == 'Unknown':
-            log_verb("metadata_Offline::get_game_metadata() Mode Unknown. Doing nothing.")
+            log_verb("metadata_Offline::get_metadata Mode Unknown. Doing nothing.")
 
         # No-Intro scraper
         else:
             key = game['id']
-            log_verb("metadata_Offline::get_game_metadata() Mode No-Intro id = '{0}'".format(key))
+            log_verb("metadata_Offline::get_metadata Mode No-Intro id = '{0}'".format(key))
             gamedata['title']  = self.games[key]['description']
             gamedata['genre']  = self.games[key]['genre']
             gamedata['year']   = self.games[key]['year']
@@ -180,24 +180,24 @@ class metadata_Offline(Scraper_Metadata):
 # -----------------------------------------------------------------------------
 class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
     def __init__(self):
-        self.name = 'TheGamesDB'
+        self.name       = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Metadata scraper'
 
     def set_addon_dir(self, plugin_dir):
         pass
 
     # Call common code in parent class
-    def get_games_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_TheGamesDB::get_games_search() Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
-        return Scraper_TheGamesDB.get_games_search(self, search_string, platform, rom_base_noext)
+    def get_search(self, search_string, rom_base_noext, platform):
+        log_verb("metadata_TheGamesDB::get_search Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
+        return Scraper_TheGamesDB.get_search(self, search_string, platform, rom_base_noext)
 
     # game is dictionary returned by the Scraper_TheGamesDB.get_game_search()
-    def get_game_metadata(self, game):
+    def get_metadata(self, game):
         gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
 
         # --- TheGamesDB returns an XML file with GetGame.php?id ---
         game_id = game['id']
-        log_debug('get_game_search() Game ID "{}"'.format(game_id))
+        log_debug('metadata_TheGamesDB::get_metadata Game ID "{}"'.format(game_id))
         req = urllib2.Request('http://thegamesdb.net/api/GetGame.php?id=' + game_id)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -225,23 +225,23 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 # -----------------------------------------------------------------------------
 class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
     def __init__(self):
-        self.name = 'GameFAQs'
+        self.name       = 'GameFAQs'
         self.fancy_name = 'GameFAQs Metadata scraper'
 
     def set_addon_dir(self, plugin_dir):
         pass
 
     # Call common code in parent class
-    def get_games_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_GameFAQs::get_games_search() Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
-        return Scraper_GameFAQs.get_games_search(self, search_string, platform, rom_base_noext)
+    def get_search(self, search_string, rom_base_noext, platform):
+        log_verb("metadata_GameFAQs::get_search Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
+        return Scraper_GameFAQs.get_search(self, search_string, platform, rom_base_noext)
 
-    def get_game_metadata(self, game):
+    def get_metadata(self, game):
         gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
         
         # Get game page
         game_id = game['id']
-        log_debug('metadata_GameFAQs::get_game_search() Game ID "{}"'.format(game_id))
+        log_debug('metadata_GameFAQs::get_metadata Game ID "{}"'.format(game_id))
         req = urllib2.Request('http://www.gamefaqs.com' + game_id)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -282,13 +282,16 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
 # -----------------------------------------------------------------------------
 class metadata_arcadeHITS(Scraper_Metadata):
     def __init__(self):
-        self.name = 'arcadeHITS'
+        self.name       = 'arcadeHITS'
         self.fancy_name = 'arcadeHITS Metadata scraper'
 
     def set_addon_dir(self, plugin_dir):
         pass
 
-    def get_game_data(self, game_url):
+    def get_search(self, search_string, rom_base_noext, platform):
+        pass
+
+    def get_metadata(self, game_url):
         gamedata = {'title' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : ''}
         f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+game_id)
         page = f.read().replace('\r\n', '').replace('\n', '').replace('\r', '').replace('          ', '')
@@ -311,4 +314,8 @@ class metadata_arcadeHITS(Scraper_Metadata):
 
 # -----------------------------------------------------------------------------
 # MobyGames http://www.mobygames.com
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Giantbomb
 # -----------------------------------------------------------------------------

@@ -22,16 +22,20 @@ from scrap_info import *
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing, but it's very fast :)
+# Use as base for new scrapers
 # ----------------------------------------------------------------------------- 
 class thumb_NULL(Scraper_Thumb):
     def __init__(self):
         self.name       = 'NULL'
         self.fancy_name = 'NULL Thumb scraper'
 
-    def set_thumb_options(self, region, imgsize):
+    def set_options(self, region, imgsize):
         pass
 
-    def get_image_list(self, game, platform):
+    def get_search(self, search_string, rom_base_noext, platform):
+        return []
+
+    def get_images(self, game):
         return []
 
 # -----------------------------------------------------------------------------
@@ -42,35 +46,38 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         self.name       = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Thumb scraper'
 
-    def set_thumb_options(self, region, imgsize):
+    def set_options(self, region, imgsize):
         pass
 
     # Call common code in parent class
-    def get_games_search(self, search_string, platform, rom_base_noext = ''):
-        return Scraper_TheGamesDB.get_games_search(self, search_string, platform, rom_base_noext)
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
 
-    def get_game_image_list(self, game):
+    def get_images(self, game):
         # --- Download game page XML data ---
+        # Maybe this is candidate for common code...
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
-        log_debug('get_game_image_list() game_id_url = {}'.format(game_id_url))
+        log_debug('thumb_TheGamesDB::get_images game_id_url = {}'.format(game_id_url))
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
 
-        # --- Parse game thumb information ---
+        # --- Parse game thumb information and make list of images ---
         # The XML returned by GetGame.php has many tags. See an example here:
         # SNES Super Castlevania IV --> http://thegamesdb.net/api/GetGame.php?id=1308
         # Read front boxes
         images = []
+        # Read front boxart
         boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page_data)
         for index, boxart in enumerate(boxarts):
             # print(index, boxart)
-            log_debug('get_game_image_list() Adding boxfront #{:>2s} {}'.format(str(index + 1), boxart[1]))
+            log_debug('thumb_TheGamesDB::get_images Adding boxfront #{:>2s} {}'.format(str(index + 1), boxart[1]))
             images.append( {'name': "Cover " + str(index + 1), 'URL' : "http://thegamesdb.net/banners/" + boxart[1]} )
+
         # Read banners
         banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
         for index, banner in enumerate(banners):
-            log_debug('get_game_image_list() Adding banner   #{:>2s} {}'.format(str(index + 1), banner[1]))
+            log_debug('thumb_TheGamesDB::get_images Adding banner   #{:>2s} {}'.format(str(index + 1), banner[1]))
             images.append( {'name' : "Banner " + str(index + 1), 'URL' : "http://thegamesdb.net/banners/" + banner[1]} )
 
         return images
@@ -83,17 +90,18 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         self.name       = 'GameFAQs'
         self.fancy_name = 'GameFAQs Thumb scraper'
 
-    def set_thumb_options(self, region, imgsize):
+    def set_options(self, region, imgsize):
         pass
 
     # Call common code in parent class
-    def get_games_search(self, search_string, platform, rom_base_noext = ''):
-        return Scraper_GameFAQs.get_games_search(self, search_string, platform, rom_base_noext)
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
 
-    def get_game_image_list(self, game):    
-        # --- Download game page XML data ---
+    def get_images(self, game):
+        # --- Download game page data ---
+        # Maybe this is candidate for common code...        
         game_id_url = 'http://www.gamefaqs.com' + game['id'] + '/images'
-        log_debug('get_game_image_list() game_id_url = {}'.format(game_id_url))
+        log_debug('thumb_GameFAQs::get_images game_id_url = {}'.format(game_id_url))
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -115,7 +123,7 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         # Choose one full size artwork page based on game region
         for index, boxart in enumerate(results):
             str_index = str(index + 1)
-            log_debug('get_game_image_list() Artwork page #{:>2s} {}'.format(str_index, boxart[1]))
+            log_debug('thumb_GameFAQs::get_images Artwork page #{:>2s} {}'.format(str_index, boxart[1]))
             img_pages.append( (boxart[0], boxart[1], boxart[2]) )
 
         # For now just pick the first one
@@ -125,7 +133,7 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
 
         # --- Go to full size page and get thumb ---
         image_url = 'http://www.gamefaqs.com' + img_page[0]
-        log_debug('get_game_image_list() image_url = {}'.format(image_url))
+        log_debug('thumb_GameFAQs::get_images image_url = {}'.format(image_url))
         req = urllib2.Request(image_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -138,7 +146,7 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         # print(results)
         for index, boxart in enumerate(results):
             str_index = str(index + 1)
-            log_debug('get_game_image_list() Adding thumb #{:>2s} {}'.format(str_index, boxart[0]))
+            log_debug('thumb_GameFAQs::get_images Adding thumb #{:>2s} {}'.format(str_index, boxart[0]))
             images.append( (boxart[1], boxart[0]) )
 
         return images
@@ -152,11 +160,14 @@ class thumb_arcadeHITS(Scraper_Thumb):
         self.name       = 'arcadeHITS'
         self.fancy_name = 'arcadeHITS Thumb scraper'
 
-    def set_thumb_options(self, region, imgsize):
+    def set_options(self, region, imgsize):
         pass
 
+    def get_search(self, search_string, rom_base_noext, platform):
+        return []
+
     # Checks this... I think Google image search API is deprecated.
-    def get_image_list(self, search_string, gamesys, region, imgsize):
+    def get_images(self, game):
         covers = []
         results = []
         try:
@@ -184,11 +195,14 @@ class thumb_Google(Scraper_Thumb):
         self.name       = 'Google'
         self.fancy_name = 'Google Thumb scraper'
 
-    def set_thumb_options(self, region, imgsize):
+    def set_options(self, region, imgsize):
         pass
 
+    def get_search(self, search_string, rom_base_noext, platform):
+        return []
+
     # Checks this... I think Google image search API is deprecated.
-    def get_image_list(self, search_string, gamesys, region, imgsize):
+    def get_images(self, game):
       qdict = {'q':search,'imgsz':imgsize}
       query = urllib.urlencode(qdict)
       base_url = ('http://ajax.googleapis.com/ajax/services/search/images?v=1.0&start=%s&rsz=8&%s')

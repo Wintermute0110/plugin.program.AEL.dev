@@ -22,76 +22,93 @@ from scrap import *
 # ----------------------------------------------------------------------------- 
 class fanart_NULL(Scraper_Fanart):
     def __init__(self):
-        self.name = 'NULL'
+        self.name       = 'NULL'
         self.fancy_name = 'NULL Fanart scraper'
 
-    def get_image_list(self, search_string, gamesys, region, imgsize):
+    def set_options(self, region, imgsize):
         pass
+
+    def get_search(self, search_string, rom_base_noext, platform):
+        return []
+
+    def get_images(self, game):
+        return []
 
 # -----------------------------------------------------------------------------
 # TheGamesDB
 # ----------------------------------------------------------------------------- 
-class fanart_TheGamesDB(Scraper_Fanart):
+class fanart_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
     def __init__(self):
-        self.name = 'TheGamesDB'
+        self.name       = 'TheGamesDB'
         self.fancy_name = 'TheGamesDB Fanart scraper'
 
-    def get_image_list(self, search_string, gamesys, region, imgsize):
-      full_fanarts = []
-      game_id_url = _get_game_page_url(system,search)
-      try:
-          req = urllib2.Request(game_id_url)
-          req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-          f = urllib2.urlopen(req)
-          page = f.read().replace('\n', '')
-          fanarts = re.findall('<original (.*?)">fanart/(.*?)</original>', page)
-          for indexa, fanart in enumerate(fanarts):
-              full_fanarts.append(("http://thegamesdb.net/banners/fanart/"+fanarts[indexa][1],"http://thegamesdb.net/banners/fanart/"+fanarts[indexa][1].replace("/original/","/thumb/"),"Fanart "+str(indexa+1)))
-          screenshots = re.findall('<original (.*?)">screenshots/(.*?)</original>', page)
-          for indexb, screenshot in enumerate(screenshots):
-              full_fanarts.append(("http://thegamesdb.net/banners/screenshots/"+screenshots[indexb][1],"http://thegamesdb.net/banners/screenshots/thumb/"+screenshots[indexb][1],"Screenshot "+str(indexb+1)))
-          return full_fanarts
-      except:
-          return full_fanarts
+    def set_options(self, region, imgsize):
+        pass
+
+    # Call common code in parent class
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
+
+    def get_images(self, game):
+        # --- Download game page XML data ---
+        # Maybe this is candidate for common code...
+        game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
+        log_debug('fanart_TheGamesDB::get_images game_id_url = {}'.format(game_id_url))
+        req = urllib2.Request(game_id_url)
+        req.add_unredirected_header('User-Agent', USER_AGENT)
+        page_data = net_get_URL_text(req)
+
+        # --- Parse game thumb information and make list of images ---
+        image_list = []
+        # Read fanart
+        fanarts = re.findall('<original (.*?)">fanart/(.*?)</original>', page_data)
+        for indexa, fanart in enumerate(fanarts):
+          image_list.append({'name'     : 'Fanart ' + str(indexa+1),
+                             'URL'      : 'http://thegamesdb.net/banners/fanart/' + fanarts[indexa][1], 
+                             'disp_URL' : 'http://thegamesdb.net/banners/fanart/' + fanarts[indexa][1].replace('/original/', '/thumb/')})
+
+        # Read screenshot
+        screenshots = re.findall('<original (.*?)">screenshots/(.*?)</original>', page)
+        for indexb, screenshot in enumerate(screenshots):
+          image_list.append({'name'     : 'Screenshot ' + str(indexb+1), 
+                             'URL'      : 'http://thegamesdb.net/banners/screenshots/' + screenshots[indexb][1],
+                             'disp_URL' : 'http://thegamesdb.net/banners/screenshots/' + screenshots[indexb][1]})
+
+        return image_list
 
 # -----------------------------------------------------------------------------
 # GameFAQs
 # ----------------------------------------------------------------------------- 
-class fanart_GameFAQs(Scraper_Fanart):
+class fanart_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
     def __init__(self):
-        self.name = 'GameFAQs'
+        self.name       = 'GameFAQs'
         self.fancy_name = 'GameFAQs Fanart scraper'
+        
+    def set_options(self, region, imgsize):
+        pass
 
-    def get_image_list(self, search_string, gamesys, region, imgsize):
-      full_fanarts = []
-      game_id_url = _get_game_page_url(system,search)
-      try:
-          req = urllib2.Request('http://www.gamefaqs.com'+game_id_url+'?page=0')
-          req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-          game_page = urllib2.urlopen(req)
-          if game_page:
-              for line in game_page.readlines():
-                  if 'pod game_imgs' in line:
-                      fanarts = re.findall('b"><a href="(.*?)"><img src="(.*?)"', line)
-                      for index, item in enumerate(fanarts):
-                          full_fanarts.append((item[0],item[1],'Image '+str(index)))
-          return full_fanarts
-      except:
-          return full_fanarts
+    # Call common code in parent class
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
 
-      # URL conversion
-      def _get_fanart(image_url):
-          images = []
-          try:
-              req = urllib2.Request('http://www.gamefaqs.com' + image_url)
-              req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-              search_page = urllib2.urlopen(req)
-              for line in search_page.readlines():
-                  if 'pod game_imgs' in line:
-                      images = re.findall('g"><a href="(.*?)"', line)
-                      return images[0]
-          except:
-              return ""
+    def get_images(self, game):
+        # --- Download game page data ---
+        # Maybe this is candidate for common code...
+        game_id_url = 'http://www.gamefaqs.com' + game['id'] + '/images'
+        log_debug('thumb_GameFAQs::get_images game_id_url = {}'.format(game_id_url))
+        req = urllib2.Request(game_id_url)
+        req.add_unredirected_header('User-Agent', USER_AGENT)
+        page_data = net_get_URL_text(req)
+
+        # --- Get fanarts ---
+        full_fanarts = []
+        for line in page_data.readlines():
+            if 'pod game_imgs' in line:
+                fanarts = re.findall('b"><a href="(.*?)"><img src="(.*?)"', line)
+                for index, item in enumerate(fanarts):
+                    full_fanarts.append((item[0], item[1], 'Image '+str(index)))
+
+        return full_fanarts
 
 # -----------------------------------------------------------------------------
 # arcadeHITS
@@ -99,10 +116,16 @@ class fanart_GameFAQs(Scraper_Fanart):
 # ----------------------------------------------------------------------------- 
 class fanart_arcadeHITS(Scraper_Fanart):
     def __init__(self):
-        self.name = 'arcadeHITS'
+        self.name       = 'arcadeHITS'
         self.fancy_name = 'arcadeHITS Fanart scraper'
 
-    def get_image_list(self, search_string, gamesys, region, imgsize):
+    def set_options(self, region, imgsize):
+        pass
+
+    def get_search(self, search_string, rom_base_noext, platform):
+        return []
+
+    def get_images(self, game):
       covers = []
       results = []
       try:
@@ -120,10 +143,16 @@ class fanart_arcadeHITS(Scraper_Fanart):
 # ----------------------------------------------------------------------------- 
 class fanart_Google(Scraper_Fanart):
     def __init__(self):
-        self.name = 'Google'
+        self.name       = 'Google'
         self.fancy_name = 'Google Fanart scraper'
 
-    def get_image_list(self, search_string, gamesys, region, imgsize):
+    def set_options(self, region, imgsize):
+        pass
+
+    def get_search(self, search_string, rom_base_noext, platform):
+        return []
+
+    def get_images(self, game):
       qdict = {'q':search,'imgsz':imgsize}
       query = urllib.urlencode(qdict)
       base_url = ('http://ajax.googleapis.com/ajax/services/search/images?v=1.0&start=%s&rsz=8&%s')

@@ -27,12 +27,12 @@ from utils import *
 # ----------------------------------------------------------------------------- 
 class Scraper_TheGamesDB():
     # Executes a search and returns a list of games found.
-    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+    def get_search(self, search_string, rom_base_noext, platform):
         results_ret = []
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         if DEBUG_SCRAPERS:
-            log_debug('get_games_search() AEL platform         "{}"'.format(platform))
-            log_debug('get_games_search() TheGamesDB platform  "{}"'.format(scraper_platform))
+            log_debug('Scraper_TheGamesDB::get_search AEL platform         "{}"'.format(platform))
+            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform  "{}"'.format(scraper_platform))
 
         # --- This returns an XML file ---
         # <Data>
@@ -69,12 +69,12 @@ class Scraper_TheGamesDB():
 # ----------------------------------------------------------------------------- 
 class Scraper_GameFAQs():
     # Executes a search and returns a list of games found.
-    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+    def get_search(self, search_string, rom_base_noext, platform):
         results_ret = []
         scraper_platform = AEL_platform_to_GameFAQs(platform)
         if DEBUG_SCRAPERS:
-            log_debug('get_games_search() AEL platform       "{}"'.format(platform))
-            log_debug('get_games_search() GameFAQs platform  "{}"'.format(scraper_platform))
+            log_debug('Scraper_GameFAQs::get_search AEL platform       "{}"'.format(platform))
+            log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{}"'.format(scraper_platform))
 
         # Example: 'street fighter', 'Nintendo SNES'
         # http://www.gamefaqs.com/search?platform=63&game=street+fighter
@@ -112,7 +112,7 @@ class Scraper_GameFAQs():
 # ----------------------------------------------------------------------------- 
 class Scraper_arcadeHITS():
     # Executes a search and returns a list of games found.
-    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+    def get_search(self, search_string, rom_base_noext, platform):
         results = []
         display = []
         try:
@@ -163,5 +163,5 @@ class Scraper_MobyGames():
     # <div class="searchResult">
     # <div class="searchNumber">2.</div>
     # ... 
-    def get_games_search(self, search_string, platform, rom_base_noext = ''):
+    def get_search(self, search_string, rom_base_noext, platform):
         return []

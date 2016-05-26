@@ -13,13 +13,33 @@ from scrap import *
 from utils import *
 
 # --- Scrapers to test ----------------------------------------------------------------------------
-TEST_OFFLINE    = True
-TEST_THEGAMESDB = False
-TEST_GAMEFAQS   = False
+TEST_THEGAMESDB = True
+TEST_GAMEFAQS   = True
 
-# --- main --------------------------------------------------------------------
-# Print name of all scrapers
-print('Short name  Fancy Name')
-print('----------  ---------------------------------')
-for scraper in scrapers_fanart:
-    print('{:10s}  {:}'.format(scraper.name.rjust(10), scraper.fancy_name))
+# --- main ----------------------------------------------------------------------------------------
+print_scraper_list(scrapers_fanart)
+
+if TEST_THEGAMESDB:
+    print('\n*** Online TheGamesDB *********************************************')
+    GamesDB = fanart_TheGamesDB()
+
+    # results = GamesDB.get_search('Castlevania', '', 'Nintendo SNES')
+    results = GamesDB.get_search('metroid', '', 'Nintendo SNES')
+    # results = GamesDB.get_search('Zelda', '', 'Nintendo SNES')
+    # results = GamesDB.get_search('Super Mario World', '', 'Nintendo SNES')
+    # results = GamesDB.get_search('street fighter', '', 'Nintendo SNES', '')
+
+    # --- Print list of fames found ---
+    print_games_search(results)
+    print_game_image_list(results, GamesDB)
+
+if TEST_GAMEFAQS:
+    print('\n*** Online GameFAQs *********************************************')
+    GameFAQs = fanart_GameFAQs()
+
+    results = GameFAQs.get_search('Castlevania', '', 'Nintendo SNES')
+    # results = GameFAQs.get_search('Metroid', '', 'Nintendo SNES')
+
+    # --- Print list of fames found ---
+    print_games_search(results)
+    print_game_image_list(results, GameFAQs)

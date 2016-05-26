@@ -272,6 +272,12 @@ STUDIO_LENGTH = 20
 PLOT_LENGTH   = 70
 URL_LENGTH    = 80
 
+def print_scraper_list(scraper_obj_list):
+    print('Short name        Fancy Name')
+    print('----------------  ---------------------------------')
+    for scraper_obj in scraper_obj_list:
+        print('{:10s}  {:}'.format(scraper_obj.name.rjust(16), scraper_obj.fancy_name))
+
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
 def print_games_search(results):
@@ -287,7 +293,7 @@ def print_games_search(results):
 def print_game_metadata(results, scraperObj):
     # --- Get metadata of first game ---
     if results:
-        metadata = scraperObj.get_game_metadata(results[0])
+        metadata = scraperObj.get_metadata(results[0])
 
         title  = text_limit_string(metadata['title'], NAME_LENGTH)
         genre  = text_limit_string(metadata['genre'], GENRE_LENGTH)
@@ -305,7 +311,7 @@ def print_game_metadata(results, scraperObj):
 def print_game_image_list(results, scraperObj):
     # --- Get image list of first game ---
     if results:
-        image_list = scraperObj.get_game_image_list(results[0])
+        image_list = scraperObj.get_images(results[0])
         print('\nFound {} image/s'.format(len(image_list)))
         print("{} {}".format('Display name'.ljust(NAME_LENGTH), 'URL'.ljust(URL_LENGTH)))
         print("{} {}".format('-'*NAME_LENGTH, '-'*URL_LENGTH))
