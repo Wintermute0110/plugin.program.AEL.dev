@@ -459,6 +459,11 @@ class Main:
     #      the copied filename is OK but Kodi refuses to display the image...
     #      Even more suprisingly, if later 'Select Local Image' is used and the file copied before to categories 
     #      artwork path is chosen then it works!
+    #
+    # Returns:
+    #   True   Changes were made.
+    #   False  No changes made.
+    #
     def _gui_edit_category_image(self, image_kind, categoryID):
         # Make this function as generic as possible to share code with launcher/rom thumb/fanart editing.
         if image_kind == IMAGE_THUMB:
@@ -496,12 +501,11 @@ class Main:
             log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
                                                  'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return
+            if not image_file or not os.path.isfile(image_file): return False
 
             # Update object and save XML
             log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
             objects_dic[objectID][image_key] = image_file
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
             log_info('Selected {} "{}"'.format(image_name, image_file))
 
@@ -518,7 +522,7 @@ class Main:
             log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name), 
                                                  "files", ".jpg|.jpeg|.gif|.png", True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return
+            if not image_file or not os.path.isfile(image_file): return False
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
@@ -540,9 +544,8 @@ class Main:
                 kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
 
             # Update object and save XML
-            log_debug('_gui_edit_category_image() Object is {} with ID = {0}'.format('Category', objectID))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
             objects_dic[objectID][image_key] = dest_path
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
             log_info('Copied image "{}"'.format(image_file))
             log_info('Into         "{}"'.format(dest_path))
@@ -551,9 +554,13 @@ class Main:
             # --- Update Kodi image cache ---
             kodi_update_image_cache(dest_path)
 
+        return True
+
     #
-    # Removes a category.
-    # Also removes all launchers in this category!
+    # Removes a category. Also removes all launchers in this category!
+    # Returns:
+    #   True   Changes made, save XML and update container.
+    #   False  No changes made.
     #
     def _gui_remove_category(self, categoryID):
         launcherID_list = []
@@ -575,12 +582,13 @@ class Main:
                     log_info('Deleting linked launcher "{}" id {}'.format(self.launchers[launcherID]['name'], launcherID))
                     roms_xml_file = self.launchers[launcherID]['roms_xml_file']
                     if os.path.isfile(roms_xml_file):
-                        log_info('Deleting ROM XML "{}"'.format(roms_xml_file))
+                        log_info('Deleting ROMs XML "{}"'.format(roms_xml_file))
                         os.remove(roms_xml_file)
                     self.launchers.pop(launcherID)
-                # Delete category and save remaining categories/launchers
+                # Delete category and make sure True is returned.
                 self.categories.pop(categoryID)
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            else:
+                return False
         else:
             ret = dialog.yesno('Advanced Emulator Launcher',
                                'Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
@@ -589,7 +597,10 @@ class Main:
                 log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
                 log_info('Category has no launchers, so no launchers to delete.')
                 self.categories.pop(categoryID)
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            else:
+                return False
+        
+        return True
 
     #
     # Reads a text file with category/launcher description. Checks file size to avoid importing binary files!
@@ -626,10 +637,10 @@ class Main:
             desc_str = text_limit_string(self.categories[categoryID]["description"], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata', 
-                                ["Edit Title: '{}'".format(self.categories[categoryID]["name"]),
-                                "Edit Genre: '{}'".format(self.categories[categoryID]["genre"]),
-                                "Edit Description: '{}'".format(desc_str),
-                                'Import Description from file...' ])
+                                  ["Edit Title: '{}'".format(self.categories[categoryID]["name"]),
+                                   "Edit Genre: '{}'".format(self.categories[categoryID]["genre"]),
+                                   "Edit Description: '{}'".format(desc_str),
+                                   'Import Description from file...' ])
             # Edition of the category name
             if type2 == 0:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Edit Title')
@@ -639,30 +650,30 @@ class Main:
                     if title == "":
                         title = self.categories[categoryID]["name"]
                     self.categories[categoryID]["name"] = title.rstrip()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 else:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information', 
-                                "Category name '{}' not changed".format(self.categories[categoryID]["name"]))
+                                   "Category name '{}' not changed".format(self.categories[categoryID]["name"]))
+                    return
             # Edition of the category genre
             elif type2 == 1:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], 'Edit Genre')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     self.categories[categoryID]["genre"] = keyboard.getText()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 else:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information', 
-                                "Category genre '{}' not changed".format(self.categories[categoryID]["genre"]))
+                                   "Category genre '{}' not changed".format(self.categories[categoryID]["genre"]))
+                    return
             # Edition of the plot (description)
             elif type2 == 2:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]["description"], 'Edit Description')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     self.categories[categoryID]["description"] = keyboard.getText()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 else:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information', 
-                                "Category description '{}' not changed".format(self.categories[categoryID]["description"]))
+                                   "Category description '{}' not changed".format(self.categories[categoryID]["description"]))
+                    return
             # Import category description
             elif type2 == 3:
                 text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
@@ -670,19 +681,24 @@ class Main:
                     file_data = self._gui_import_TXT_file(text_file)
                     if file_data != '':
                         self.categories[categoryID]["description"] = file_data
-                        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                    else:
+                        return
                 else:
                     desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
                     kodi_dialog_OK('Advanced Emulator Launcher - Information', 
                                 "Category description '{}' not changed".format(desc_str))
+                    return
 
         # Edit Thumbnail image
+        # If this function returns False no changes were made. No need to save categories XML and update container.
         elif type == 1:
-            self._gui_edit_category_image(IMAGE_THUMB, categoryID)
+            if not self._gui_edit_category_image(IMAGE_THUMB, categoryID):
+                return
 
         # Launcher Fanart menu option
         elif type == 2:
-            self._gui_edit_category_image(IMAGE_FANART, categoryID)
+            if not self._gui_edit_category_image(IMAGE_FANART, categoryID):
+                return
 
         # Category status
         elif type == 3:
@@ -690,16 +706,21 @@ class Main:
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.categories[categoryID]["finished"] = finished
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_dialog_OK('Advanced Emulator Launcher', 
                            'Category "{0}" status is now {1}'.format(self.categories[categoryID]["name"], finished_display))
+            
+        # Remove cateogory
         elif type == 4:
-            self._gui_remove_category(categoryID)
+            if not self._gui_remove_category(categoryID):
+                return
 
-        elif type == -1:
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        # User pressed cancel or close dialog
+        elif type < 0:
+            return
 
-        # Update container contents
+        # >> If this point is reached then changes to metadata/images were made.
+        # >> Save categories and update container contents so user sees those changes inmediately.
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)        
         xbmc.executebuiltin('Container.Refresh')
 
     def _command_add_new_category(self):
