@@ -614,60 +614,6 @@ class Main:
 
         return file_data
 
-    def _gui_edit_category_metadata(self, categoryID):
-        desc_str = text_limit_string(self.categories[categoryID]["description"], DESCRIPTION_MAXSIZE)
-        dialog = xbmcgui.Dialog()
-        type2 = dialog.select('Edit Category Metadata', 
-                              ["Edit Title: '{}'".format(self.categories[categoryID]["name"]),
-                               "Edit Genre: '{}'".format(self.categories[categoryID]["genre"]),
-                               "Edit Description: '{}'".format(desc_str),
-                               'Import Description from file...' ])
-        # Edition of the category name
-        if type2 == 0:
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Edit Title')
-            keyboard.doModal()
-            if keyboard.isConfirmed():
-                title = keyboard.getText()
-                if title == "":
-                    title = self.categories[categoryID]["name"]
-                self.categories[categoryID]["name"] = title.rstrip()
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            else:
-                kodi_dialog_OK('Advanced Emulator Launcher - Information', 
-                               "Category name '{}' not changed".format(self.categories[categoryID]["name"]))
-        # Edition of the category genre
-        elif type2 == 1:
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], 'Edit Genre')
-            keyboard.doModal()
-            if keyboard.isConfirmed():
-                self.categories[categoryID]["genre"] = keyboard.getText()
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            else:
-                kodi_dialog_OK('Advanced Emulator Launcher - Information', 
-                               "Category genre '{}' not changed".format(self.categories[categoryID]["genre"]))
-        # Edition of the plot (description)
-        elif type2 == 2:
-            keyboard = xbmc.Keyboard(self.categories[categoryID]["description"], 'Edit Description')
-            keyboard.doModal()
-            if keyboard.isConfirmed():
-                self.categories[categoryID]["description"] = keyboard.getText()
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            else:
-                kodi_dialog_OK('Advanced Emulator Launcher - Information', 
-                               "Category description '{}' not changed".format(self.categories[categoryID]["description"]))
-        # Import category description
-        elif type2 == 3:
-            text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
-            if os.path.isfile(text_file):
-                file_data = self._gui_import_TXT_file(text_file)
-                if file_data != '':
-                    self.categories[categoryID]["description"] = file_data
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            else:
-                desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
-                kodi_dialog_OK('Advanced Emulator Launcher - Information', 
-                               "Category description '{}' not changed".format(desc_str))
-
     def _command_edit_category(self, categoryID):
         # Shows a select box with the options to edit
         dialog = xbmcgui.Dialog()
@@ -677,7 +623,58 @@ class Main:
                               finished_display, 'Delete Category'])
         # Edit metadata
         if type == 0:
-            self._gui_edit_category_metadata(categoryID)
+            desc_str = text_limit_string(self.categories[categoryID]["description"], DESCRIPTION_MAXSIZE)
+            dialog = xbmcgui.Dialog()
+            type2 = dialog.select('Edit Category Metadata', 
+                                ["Edit Title: '{}'".format(self.categories[categoryID]["name"]),
+                                "Edit Genre: '{}'".format(self.categories[categoryID]["genre"]),
+                                "Edit Description: '{}'".format(desc_str),
+                                'Import Description from file...' ])
+            # Edition of the category name
+            if type2 == 0:
+                keyboard = xbmc.Keyboard(self.categories[categoryID]["name"], 'Edit Title')
+                keyboard.doModal()
+                if keyboard.isConfirmed():
+                    title = keyboard.getText()
+                    if title == "":
+                        title = self.categories[categoryID]["name"]
+                    self.categories[categoryID]["name"] = title.rstrip()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                else:
+                    kodi_dialog_OK('Advanced Emulator Launcher - Information', 
+                                "Category name '{}' not changed".format(self.categories[categoryID]["name"]))
+            # Edition of the category genre
+            elif type2 == 1:
+                keyboard = xbmc.Keyboard(self.categories[categoryID]["genre"], 'Edit Genre')
+                keyboard.doModal()
+                if keyboard.isConfirmed():
+                    self.categories[categoryID]["genre"] = keyboard.getText()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                else:
+                    kodi_dialog_OK('Advanced Emulator Launcher - Information', 
+                                "Category genre '{}' not changed".format(self.categories[categoryID]["genre"]))
+            # Edition of the plot (description)
+            elif type2 == 2:
+                keyboard = xbmc.Keyboard(self.categories[categoryID]["description"], 'Edit Description')
+                keyboard.doModal()
+                if keyboard.isConfirmed():
+                    self.categories[categoryID]["description"] = keyboard.getText()
+                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                else:
+                    kodi_dialog_OK('Advanced Emulator Launcher - Information', 
+                                "Category description '{}' not changed".format(self.categories[categoryID]["description"]))
+            # Import category description
+            elif type2 == 3:
+                text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
+                if os.path.isfile(text_file):
+                    file_data = self._gui_import_TXT_file(text_file)
+                    if file_data != '':
+                        self.categories[categoryID]["description"] = file_data
+                        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                else:
+                    desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
+                    kodi_dialog_OK('Advanced Emulator Launcher - Information', 
+                                "Category description '{}' not changed".format(desc_str))
 
         # Edit Thumbnail image
         elif type == 1:
