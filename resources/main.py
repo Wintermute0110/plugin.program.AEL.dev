@@ -20,7 +20,7 @@
 #    main body.
 
 # --- Main imports ---
-import sys, os, shutil, fnmatch, string, time
+import sys, os, shutil, fnmatch, string
 import re, urllib, urllib2, urlparse, socket, exceptions
 
 # --- Kodi stuff ---
@@ -689,7 +689,7 @@ class Main:
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # Update container contents
-        xbmc.executebuiltin("Container.Refresh")
+        xbmc.executebuiltin('Container.Refresh')
 
     def _command_add_new_category(self):
         dialog = xbmcgui.Dialog()
@@ -705,7 +705,7 @@ class Main:
         self.categories[categoryID] = category
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_notify('Advanced Emulator Launcher', 'Category {0} created'.format(category["name"]))
-        xbmc.executebuiltin("Container.Refresh")
+        xbmc.executebuiltin('Container.Refresh')
 
     #
     # Removes ROMs for a given launcher. Note this function will never be called for standalone launchers.
@@ -739,7 +739,7 @@ class Main:
                     log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
                     kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            xbmc.executebuiltin("Container.Refresh")
+            xbmc.executebuiltin('Container.Refresh')
 
     #
     # Removes a launcher. For ROMs launcher it also removes ROM XML. For standalone launcher there is no
@@ -751,16 +751,16 @@ class Main:
         if rompath == '':
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher', 
-                            'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]["name"]),
-                            'Are you sure you want to delete it?')
+                               'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]["name"]),
+                               'Are you sure you want to delete it?')
         # ROMs launcher
         else:
             roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
             num_roms = len(roms)
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher', 
-                            'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
-                            'Are you sure you want to delete it?')
+                               'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
+                               'Are you sure you want to delete it?')
         if ret:
             # Remove XML file and delete launcher object, only if launcher is not empty
             roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
@@ -799,7 +799,7 @@ class Main:
                                   'Change Category: {}'.format(category_name),
                                   finished_display, 'Manage ROM List...', 'Advanced Modifications...', 'Delete'])
 
-        # Edition of the launcher metadata
+        # --- Edition of the launcher metadata ---
         type_nb = 0
         if type == type_nb:
             dialog = xbmcgui.Dialog()
@@ -815,11 +815,9 @@ class Main:
                                    "Edit Description: '{}'".format(desc_str),
                                    'Import Description from file...',
                                    'Save metadata to NFO file'])
-            # Scrape metadata
+            # Scrape launcher metadata
             if type2 == 0:
-                kodi_dialog_OK('Advanced Emulator Launcher', 'Online scraping not supported yet. Sorry.')
-                return
-                # self._scrap_launcher_metadata(launcherID)
+                self._gui_scrap_launcher_metadata(launcherID)
             # Import launcher metadata from NFO file
             elif type2 == 1:
                 info_str = fs_import_launcher_nfo(self.settings, self.launchers, launcherID)
@@ -903,7 +901,7 @@ class Main:
         # Change launcher's category
         type_nb = type_nb + 1
         if type == type_nb:
-            current_category = self.launchers[launcherID]["category"]
+            current_category = self.launchers[launcherID]['category']
             dialog = xbmcgui.Dialog()
             categories_id = []
             categories_name = []
@@ -916,40 +914,38 @@ class Main:
                 fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categories_id[selected_cat]))
 
-        # Launcher status (finished [bool])
+        # --- Launcher status (finished [bool]) ---
         type_nb = type_nb + 1
         if type == type_nb:
-            finished = self.launchers[launcherID]["finished"]
+            finished = self.launchers[launcherID]['finished']
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
-            self.launchers[launcherID]["finished"] = finished
+            self.launchers[launcherID]['finished'] = finished
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_dialog_OK('Advanced Emulator Launcher', 
-                           'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]["name"], finished_display))
+                           'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]['name'], finished_display))
 
         # Launcher's Manage ROMs menu option
         # ONLY for ROM launchers, not for standalone launchers
-        if self.launchers[launcherID]["rompath"] != "":
+        if self.launchers[launcherID]['rompath'] != '':
             type_nb = type_nb + 1
             if type == type_nb:
                 dialog = xbmcgui.Dialog()
-                hasNoIntro_file = True if self.launchers[launcherID]["nointro_xml_file"] else False
-                if not hasNoIntro_file:
-                    type2 = dialog.select('Manage Items List', 
-                                          ['Add No-Intro XML DAT',
-                                           'Import ROMs metadata from NFO files',
-                                           'Export ROMs metadata to NFO files', 
-                                           'Clear ROMs from launcher' ])
+                has_NoIntro_DAT = True if self.launchers[launcherID]['nointro_xml_file'] else False
+                if has_NoIntro_DAT:
+                    nointro_xml_file = self.launchers[launcherID]['nointro_xml_file']
+                    add_delete_NoIntro_str = 'Delete No-Intro DAT: {}'.format(nointro_xml_file)
                 else:
-                    nointro_xml_file = self.launchers[launcherID]["nointro_xml_file"]
-                    type2 = dialog.select('Manage Items List',
-                                         ['Delete No-Intro DAT: {}'.format(nointro_xml_file),
-                                          'Import ROMs metadata from NFO files',
-                                          'Export ROMs metadata to NFO files', 
-                                          'Clear ROMs from launcher' ])
-                # Add/Delete No-Intro XML parent-clone DAT
+                    add_delete_NoIntro_str = 'Add No-Intro XML DAT'
+                type2 = dialog.select('Manage Items List', 
+                                      [add_delete_NoIntro_str, 'Audit ROMs using No-Intro DAT'
+                                       'Import ROMs metadata from NFO files',
+                                       'Export ROMs metadata to NFO files', 
+                                       'Clear ROMs from launcher' ])
+
+                # --- Add/Delete No-Intro XML parent-clone DAT ---
                 if type2 == 0:
-                    if hasNoIntro_file:
+                    if has_NoIntro_DAT:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
                         if ret:
@@ -965,30 +961,60 @@ class Main:
                             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                             kodi_dialog_OK('Advanced Emulator Launcher', 'DAT file successfully added. Rescan your ROMs to audit them.')
 
-                # Import Items list form NFO files
+                # --- Audit ROMs with No-Intro DAT ---
+                # >> This code is similar to the one in the ROM scanner _roms_import_roms()
                 elif type2 == 1:
-                    # Load ROMs, iterate and import NFO files
-                    roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+                    # Check if No-Intro XML DAT exists
+                    if not has_NoIntro_DAT:
+                        kodi_dialog_OK('Advanced Emulator Launcher', 'No-Intro XML DAT not configured. Add one before ROM audit.')
+                        return
+
+                    # --- Load ROMs for this launcher ---
+                    roms_xml_file = self.launchers[launcherID]['roms_xml_file']
+                    roms = fs_load_ROM_XML_file(roms_xml_file)
+                    
+                    # --- Load No-Intro DAT and audit ROMs ---
+                    log_info('Auditing ROMs using No-Intro DAT {}'.format(nointro_xml_file))
+
+                    # --- Update No-Intro status for ROMs ---
+                    # Note that roms dictionary is updated using Python pass by assigment.
+                    # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
+                    (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(roms, nointro_xml_file)
+
+                    # Report
+                    log_info('***** No-Intro audit finished. Report ******')
+                    log_info('No-Intro Have ROMs    {:6d}'.format(num_have))
+                    log_info('No-Intro Miss ROMs    {:6d}'.format(num_miss))
+                    log_info('No-Intro Unknown ROMs {:6d}'.format(num_unknown))
+
+                    # ~~~ Save ROMs XML file ~~~
+                    fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
+
+                # --- Import Items list form NFO files ---
+                elif type2 == 2:
+                    # >> Load ROMs, iterate and import NFO files
+                    roms_xml_file = self.launchers[launcherID]['roms_xml_file']
+                    roms = fs_load_ROM_XML_file(roms_xml_file)
                     for rom in roms:
                         fs_import_rom_nfo(launcherID, rom)
+                    # >> Save ROMs XML file
+                    fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
 
-                    # Write ROMs XML to disk
-                    
-                # Export Items list to NFO files
-                elif type2 == 2:
-                    # Load ROMs, iterate and write NFO files
+                # --- Export Items list to NFO files ---
+                elif type2 == 3:
+                    # >> Load ROMs, iterate and write NFO files
                     roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
                     for rom in roms:
                         fs_export_rom_nfo(launcherID, rom)
 
-                # Empty Launcher menu option
-                elif type2 == 3:
+                # --- Empty Launcher menu option ---
+                elif type2 == 4:
                     self._gui_empty_launcher(launcherID)
                     # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
                     # Container.Refresh at the end of this function and calling the plugin twice.
                     return
 
-        # Launcher Advanced menu option
+        # --- Launcher Advanced modifications menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
             lnk_str = 'ON' if self.launchers[launcherID]["lnk"] == True else 'OFF'
@@ -1294,19 +1320,19 @@ class Main:
             # This causes trouble...
             # xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
             # Just update container contents
-            xbmc.executebuiltin("Container.Refresh")
+            xbmc.executebuiltin('Container.Refresh')
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     #
     def _run_before_execution(self, launcher, name_str):
-        if self.settings[ "media_state" ] != "2" :
+        if self.settings['media_state'] != "2" :
             if xbmc.Player().isPlaying():
-                if self.settings[ "media_state" ] == "0":
+                if self.settings['media_state'] == "0":
                     xbmc.Player().stop()
-                if self.settings[ "media_state" ] == "1":
+                if self.settings['media_state'] == "1":
                     xbmc.Player().pause()
-                xbmc.sleep(self.settings[ "start_tempo" ] + 100)
+                xbmc.sleep(self.settings['start_tempo'] + 100)
                 try:
                     xbmc.audioSuspend()
                 except:
@@ -1314,14 +1340,14 @@ class Main:
         if launcher["minimize"] == "true":
             _toogle_fullscreen()
 
-        if self.settings[ "launcher_notification" ]:
+        if self.settings['launcher_notification']:
             kodi_notify('Advanced Emulator Launcher', 'Launching {0}'.format(name_str), 5000)
 
         try:
             xbmc.enableNavSounds(False)                                 
         except:
             pass
-        xbmc.sleep(self.settings[ "start_tempo" ])
+        xbmc.sleep(self.settings['start_tempo'])
 
     def _run_after_execution(self, launcher):
         xbmc.sleep(self.settings[ "start_tempo" ])
@@ -1333,13 +1359,13 @@ class Main:
         if launcher["minimize"] == "true":
             _toogle_fullscreen()
 
-        if self.settings[ "media_state" ] != "2" :
+        if self.settings['media_state'] != "2":
             try:
                 xbmc.audioResume()
             except:
                 pass
-            if ( self.settings[ "media_state" ] == "1" ):
-                xbmc.sleep(self.settings[ "start_tempo" ] + 100)
+            if self.settings['media_state'] == "1":
+                xbmc.sleep(self.settings['start_tempo'] + 100)
                 xbmc.Player().play()
 
     #
@@ -1451,14 +1477,14 @@ class Main:
         # ~~~~ Argument substitution ~~~~~
         if rom["altarg"] != "": arguments = rom["altarg"]
         else:                   arguments = launcher["args"]
-        arguments = arguments.replace("%rom%" ,     rom["filename"]).replace("%ROM%" , rom["filename"])
-        arguments = arguments.replace("%romfile%" , romfile).replace("%ROMFILE%" , romfile)
-        arguments = arguments.replace("%romname%" , romname).replace("%ROMNAME%" , romname)
-        arguments = arguments.replace("%rombasename%" , base_filename(romname)).replace("%ROMBASENAME%" , base_filename(romname))
-        arguments = arguments.replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
-        arguments = arguments.replace("%rompath%" , rompath).replace("%ROMPATH%" , rompath)
-        arguments = arguments.replace("%romtitle%" , rom["name"]).replace("%ROMTITLE%" , rom["name"])
-        arguments = arguments.replace("%romspath%" , rompath).replace("%ROMSPATH%" , rompath)
+        arguments = arguments.replace("%rom%", rom["filename"]).replace("%ROM%", rom["filename"])
+        arguments = arguments.replace("%romfile%", romfile).replace("%ROMFILE%", romfile)
+        arguments = arguments.replace("%romname%", romname).replace("%ROMNAME%", romname)
+        arguments = arguments.replace("%rombasename%", base_filename(romname)).replace("%ROMBASENAME%", base_filename(romname))
+        arguments = arguments.replace("%apppath%", apppath).replace("%APPPATH%", apppath)
+        arguments = arguments.replace("%rompath%", rompath).replace("%ROMPATH%", rompath)
+        arguments = arguments.replace("%romtitle%", rom["name"]).replace("%ROMTITLE%", rom["name"])
+        arguments = arguments.replace("%romspath%", rompath).replace("%ROMSPATH%", rompath)
         self._print_log('_run_rom() arguments   = "{0}"'.format(arguments))
 
         # Execute Kodi internal function (RetroPlayer?)
@@ -1478,7 +1504,7 @@ class Main:
                 if application.split(".")[-1] == "bat":
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
-                    if self.settings[ "show_batch" ]:
+                    if self.settings["show_batch"]:
                         info.wShowWindow = 5
                     else:
                         info.wShowWindow = 0
@@ -1487,9 +1513,9 @@ class Main:
                 startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
                 startproc.wait()
         elif sys.platform.startswith('linux'):
-            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.stop')
+            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.stop')
             os.system("\"%s\" %s " % (application, arguments))
-            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.start')
+            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.start')
         # Android???
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
@@ -1974,17 +2000,18 @@ class Main:
     #
     # Former _edit_rom()
     # Note that categoryID = launcherID = '0' if we are editing a ROM in Favourites
+    #
     def _command_edit_rom(self, categoryID, launcherID, romID):
         # --- Load ROMs ---
         if launcherID == '0':
             roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
         else:
-            rom_xml_path = self.launchers[launcherID]["roms_xml_file"]
-            roms = fs_load_ROM_XML_file(rom_xml_path)
+            roms_xml_file = self.launchers[launcherID]['roms_xml_file']
+            roms = fs_load_ROM_XML_file(roms_xml_file)
     
         # --- Show a dialog with ROM editing options ---
-        title = roms[romID]["name"]
-        finished_display = 'Status: Finished' if roms[romID]["finished"] == True else 'Status: Unfinished'
+        title = roms[romID]['name']
+        finished_display = 'Status: Finished' if roms[romID]['finished'] == True else 'Status: Unfinished'
         dialog = xbmcgui.Dialog()
         if launcherID == '0':
             type = dialog.select('Edit Favourite ROM %s' % title, 
@@ -1993,27 +2020,26 @@ class Main:
                                 'Choose another favourite parent ROM...'])
         else:
             type = dialog.select('Edit ROM %s' % title, 
-                                ['Edit Metadata...',
-                                'Change Thumbnail Image...', 'Change Fanart Image...',
+                                ['Edit Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
                                 finished_display, 'Advanced Modifications...'])
 
         # --- Edit ROM metadata ---
         if type == 0:
             dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string(roms[romID]["plot"], 40)
+            desc_str = text_limit_string(roms[romID]['plot'], DESCRIPTION_MAXSIZE)
             type2 = dialog.select('Modify ROM metadata', 
                                   ['Scrape from {}'.format(self.scraper_metadata.fancy_name),
                                    'Import metadata from NFO file...',
-                                   "Edit Title: '{}'".format(roms[romID]["name"]),
-                                   "Edit Release Year: '{}'".format(roms[romID]["year"]),
-                                   "Edit Studio: '{}'".format(roms[romID]["studio"]),
-                                   "Edit Genre: '{}'".format(roms[romID]["genre"]),
+                                   "Edit Title: '{}'".format(roms[romID]['name']),
+                                   "Edit Release Year: '{}'".format(roms[romID]['year']),
+                                   "Edit Studio: '{}'".format(roms[romID]['studio']),
+                                   "Edit Genre: '{}'".format(roms[romID]['genre']),
                                    "Edit Description: '{}'".format(desc_str),
                                    'Load Description from file ...',
                                    'Save metadata to NFO file'])
-            # Scrap rom metadata
+            # --- Scrap rom metadata ---
             if type2 == 0:
-                self._gui_scrap_rom_metadata(launcherID, romID)
+                self._gui_scrap_rom_metadata(roms, romID, launcherID)
             # Import ROM metadata from NFO file
             elif type2 == 1:
                 fs_import_ROM_NFO(launcher, roms, romID)
@@ -2067,10 +2093,10 @@ class Main:
 
         # Edit thumb and fanart
         elif type == 1:
-            self._gui_edit_image(IMAGE_THUMB, KIND_ROM, roms, romID)
+            self._gui_edit_image(IMAGE_THUMB, KIND_ROM, roms, romID, launcherID)
 
         elif type == 2:
-            self._gui_edit_image(IMAGE_FANART, KIND_ROM, roms, romID)
+            self._gui_edit_image(IMAGE_FANART, KIND_ROM, roms, romID, launcherID)
 
         # Edit status
         elif type == 3:
@@ -2188,6 +2214,13 @@ class Main:
                     # Save favourites
                     fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
 
+        # --- Save ROMs ---
+        if launcherID == '0':
+            fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
+        else:
+            launcher = self.launchers[launcherID]
+            fs_write_ROM_XML_file(roms_xml_file, roms, launcher)
+
         # It seems that updating the container does more harm than good... specially when having many ROMs
         # By the way, what is the difference between Container.Refresh() and Container.Update()
         # xbmc.executebuiltin("Container.Refresh")
@@ -2200,7 +2233,7 @@ class Main:
         type = dialog.select('Add/Update Items', ['Scan for New Items', 'Manually Add Item'])
         if type == 0:
             self._roms_import_roms(launcher)
-        if type == 1:
+        elif type == 1:
             self._roms_add_new_rom(launcher)
 
     #
@@ -2223,8 +2256,8 @@ class Main:
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
-        rom_xml_path = selectedLauncher["roms_xml_file"]
-        roms = fs_load_ROM_XML_file(rom_xml_path)
+        roms_xml_file = selectedLauncher['roms_xml_file']
+        roms = fs_load_ROM_XML_file(roms_xml_file)
         num_roms = len(roms)
 
         # --- Progress dialog ---
@@ -2289,6 +2322,7 @@ class Main:
             log_debug('ROM.path       "{}"'.format(ROM.path))
             # log_debug('ROM.path_noext "{}"'.format(ROM.path_noext))
             # log_debug('ROM.base       "{}"'.format(ROM.base))
+            # log_debug('ROM.dirname    "{}"'.format(ROM.dirname))
             # log_debug('ROM.base_noext "{}"'.format(ROM.base_noext))
             # log_debug('ROM.ext        "{}"'.format(ROM.ext))
 
@@ -2369,7 +2403,7 @@ class Main:
             log_info('No No-Intro DAT configured. No auditing ROMs.')
 
         # ~~~ Save ROMs XML file ~~~
-        fs_write_ROM_XML_file(rom_xml_path, roms, self.launchers[launcherID])
+        fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
         kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
@@ -2384,9 +2418,19 @@ class Main:
     # Dictionaries are mutable, so roms can be changed because passed by assigment.
     #
     def _roms_update_NoIntro_status(roms, nointro_xml_file):
-        # Load No-Intro DAT
+        # --- Check if DAT file exists ---
+        if not os.path.isfile(nointro_xml_file):
+            log_warn('_roms_update_NoIntro_status Not found {}'.format(nointro_xml_file))
+            return (0, 0, 0)
+        
+        # --- Load No-Intro DAT ---
         roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
         
+        # --- Check for errors ---
+        if not roms_nointro:
+            log_warn('_roms_update_NoIntro_status Error loading {}'.format(nointro_xml_file))
+            return (0, 0, 0)
+
         # Put ROM names in a set. Set is the fastes Python container for searching 
         # elements (implements hashed search).
         roms_nointro_set = set(roms_nointro.keys())
@@ -2420,11 +2464,16 @@ class Main:
         return (num_have, num_miss, num_unknown)
         
     def _roms_process_scanned_ROM(self, launcherID, ROM):
+        # --- "Constants" ---
+        META_TITLE_ONLY = 100
+        META_NFO_FILE   = 200
+        META_SCRAPER    = 300
+        
         # --- Create new rom dictionary ---
         launcher = self.launchers[launcherID]
         platform = launcher['platform']
         romdata  = fs_new_rom()
-        romdata['id']       = misc_generate_random_SID()
+        romdata['id'] = misc_generate_random_SID()
         romdata['filename'] = ROM.path
 
         # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2432,108 +2481,110 @@ class Main:
         metadata_scraper_text = 'Scraping metadata with {}'.format(self.scraper_metadata.name)
         self.pDialog.update(self.progress_number, self.file_text, metadata_scraper_text)
 
-        # scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
+        # >> Test if NFO file exists
+        nfo_file_path = ROM.path_noext + ".nfo"
+        log_debug('Testing NFO file "{}"'.format(nfo_file_path))
+        found_NFO_file = True if os.path.isfile(nfo_file_path) else False
+        
+        # >> Determine metadata action based on policy
+        # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
         scan_metadata_policy  = self.settings['scan_metadata_policy']
         scan_clean_tags       = self.settings['scan_clean_tags']
         scan_title_formatting = self.settings['scan_title_formatting']
         scan_ignore_title     = self.settings['scan_ignore_title']
+        metadata_action = META_TITLE_ONLY
         if scan_metadata_policy == 0:
             log_verb('Metadata policy: No NFO reading, no scraper. Only cleaning ROM name.')
-            romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+            metadata_action = META_TITLE_ONLY
+        elif scan_metadata_policy == 1:
+            log_verb('Metadata policy: Read NFO file only | Scraper OFF')
+            metadata_action = META_NFO_FILE
+        elif scan_metadata_policy == 2 and found_NFO_file:
+            log_verb('Metadata policy: Read NFO file ON, if not NFO then Scraper ON')
+            log_verb('Metadata policy: NFO file found | Scraper OFF')
+            metadata_action = META_NFO_FILE
+        elif scan_metadata_policy == 2 and not found_NFO_file:
+            log_verb('Metadata policy: Read NFO file ON, if not NFO then Scraper ON')
+            log_verb('Metadata policy: NFO file not found | Scraper ON')
+            metadata_action = META_SCRAPER
+        elif scan_metadata_policy == 3:
+            log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
+            log_verb('Metadata policy: Forced scraper ON')
+            metadata_action = META_SCRAPER
         else:
-            # Scrap metadata from NFO files
-            found_NFO_file = False
-            do_NFO_file_metadata = False
-            if scan_metadata_policy == 1:
-                log_verb('Metadata policy: Read NFO file only | Scraper OFF')
-                do_NFO_file_metadata = True
-            elif scan_metadata_policy == 2:
-                log_verb('Metadata policy: Read NFO file ON | if not NFO then Scraper ON')
-                do_NFO_file_metadata = True
-            elif scan_metadata_policy == 3:
-                log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
-                do_NFO_file_metadata = False
+            log_error('Invalid scan_metadata_policy value = {}'.format(scan_metadata_policy))
+            
+        # >> Do metadata action based on policy
+        if metadata_action == META_TITLE_ONLY:
+            romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+        elif metadata_action == META_NFO_FILE:
+            nfo_file_path = ROM.path_noext + ".nfo"
+            log_debug('Trying NFO file "{}"'.format(nfo_file_path))
+            if os.path.isfile(nfo_file_path):
+                log_debug('NFO file found. Reading it')
+                nfo_dic = fs_load_NFO_file_scanner(nfo_file_path)
+                # NOTE <platform> is chosen by AEL, never read from NFO files
+                romdata['name']   = nfo_dic['title']     # <title>
+                romdata['genre']  = nfo_dic['genre']     # <genre>
+                romdata['year']   = nfo_dic['year']      # <year>
+                romdata['studio'] = nfo_dic['publisher'] # <publisher>
+                romdata['plot']   = nfo_dic['plot']      # <plot>
             else:
-                log_error('Invalid scan_metadata_policy value = {}'.format(scan_metadata_policy))
+                log_debug('NFO file not found. Only cleaning ROM name.')
+                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+        elif metadata_action == META_SCRAPER:
+            # --- Do a search and get a list of games ---
+            rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
+            results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
+            log_debug('Metadata scraper found {} result/s'.format(len(results)))
+            if results:
+                # id="metadata_mode" values="Semi-automatic|Automatic"
+                if self.settings['metadata_mode'] == 0:
+                    log_debug('Metadata semi-automatic scraping')
+                    # Close progress dialog (and check it was not canceled)
+                    if self.pDialog.iscanceled(): self.pDialog_canceled = True
+                    self.pDialog.close()
 
-            if do_NFO_file_metadata:
-                nfo_file_path = ROM.path_noext + ".nfo"
-                log_debug('Trying NFO file "{}"'.format(nfo_file_path))
-                if os.path.isfile(nfo_file_path):
-                    log_debug('NFO file found. Reading it')
-                    found_NFO_file = True
-                    nfo_dic = fs_load_NFO_file_scanner(nfo_file_path)
-                    # NOTE <platform> is chosen by AEL, never read from NFO files
-                    romdata['name']    = nfo_dic['title']     # <title>
-                    romdata['genre']   = nfo_dic['genre']     # <genre>
-                    romdata['year']    = nfo_dic['year']      # <year>
-                    romdata['studio']  = nfo_dic['publisher'] # <publisher>
-                    romdata['plot']    = nfo_dic['plot']      # <plot>
+                    # Display corresponding game list found so user choses
+                    dialog = xbmcgui.Dialog()
+                    rom_name_list = []
+                    for game in results:
+                        rom_name_list.append(game['display_name'])
+                    selectgame = dialog.select('Select game for ROM {}'.format(ROM.base_noext), rom_name_list)
+                    if selectgame < 0: selectgame = 0
+
+                    # Open progress dialog again
+                    self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
+                    self.pDialog.update(self.progress_number, self.file_text, metadata_scraper_text)
+                elif self.settings['metadata_mode'] == 1:
+                    log_debug('Metadata automatic scraping. Selecting first result.') 
+                    selectgame = 0
                 else:
-                    found_NFO_file = False
-                    log_debug('NFO file not found. Only cleaning ROM name.')
+                    log_error('Invalid metadata_mode {}'.format(self.settings['metadata_mode'])) 
+                    selectgame = 0
+
+                # --- Grab metadata for selected game ---
+                gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+
+                # --- Put metadata into ROM dictionary ---
+                if scan_ignore_title:
+                    # Ignore scraped title
                     romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
-
-            # Scrap metadata. Note that scraper may be offline or online
-            do_metadata_scrapping = False
-            if scan_metadata_policy == 3:
-                log_verb('Metadata policy: Forced scraper ON')
-                do_metadata_scrapping = True
-            elif scan_metadata_policy == 2 and not found_NFO_file:
-                log_verb('Metadata policy: NFO file not found | Scraper ON')
-                do_metadata_scrapping = True
-
-            if do_metadata_scrapping:
-                # Do a search and get a list of games
-                rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
-                results = self.scraper_metadata.get_games_search(rom_name_scrapping, ROM.base_noext, platform)
-                log_debug('Metadata scraper found {} result/s'.format(len(results)))
-                if results:
-                    # id="metadata_mode" values="Semi-automatic|Automatic"
-                    if self.settings['metadata_mode'] == 0:
-                        log_debug('Metadata semi-automatic scraping')
-                        # Close progress dialog (and check it was not canceled)
-                        if self.pDialog.iscanceled(): self.pDialog_canceled = True
-                        self.pDialog.close()
-
-                        # Display corresponding game list found so user choses
-                        dialog = xbmcgui.Dialog()
-                        rom_name_list = []
-                        for game in results:
-                            rom_name_list.append(game['display_name'])
-                        selectgame = dialog.select('Select game for ROM {}'.format(romdata['name']), rom_name_list)
-                        if selectgame < 0: selectgame = 0
-
-                        # Open progress dialog again
-                        self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
-                        self.pDialog.update(self.progress_number, self.file_text, metadata_scraper_text)
-                    elif self.settings['metadata_mode'] == 1:
-                        log_debug('Metadata automatic scraping. Selecting first result.') 
-                        selectgame = 0
-                    else:
-                        log_error('Invalid metadata_mode {}'.format(self.settings['metadata_mode'])) 
-                        selectgame = 0
-
-                    # --- Grab metadata for selected game ---
-                    gamedata = self.scraper_metadata.get_game_metadata(results[selectgame])
-
-                    # --- Put metadata into ROM dictionary ---
-                    if scan_ignore_title:
-                        # Ignore scraped title
-                        romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
-                        log_debug("User wants to ignore scraper name. Setting name to '{}'".format(romdata['name']))
-                    else:
-                        # Use scraped title
-                        romdata['name'] = gamedata['title']
-                        log_debug("User wants scrapped name. Setting name to '{}'".format(romdata['name']))
-                    romdata['genre']  = gamedata['genre']
-                    romdata['year']   = gamedata['year']
-                    romdata['studio'] = gamedata['studio']
-                    romdata['plot']   = gamedata['plot']
+                    log_debug("User wants to ignore scraper name. Setting name to '{}'".format(romdata['name']))
                 else:
-                    log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
-                    romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
-
+                    # Use scraped title
+                    romdata['name'] = gamedata['title']
+                    log_debug("User wants scrapped name. Setting name to '{}'".format(romdata['name']))
+                romdata['genre']  = gamedata['genre']
+                romdata['year']   = gamedata['year']
+                romdata['studio'] = gamedata['studio']
+                romdata['plot']   = gamedata['plot']
+            else:
+                log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
+                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+        else:
+            log_error('Invalid metadata_action value = {}'.format(metadata_action))
+        
         # ~~~~~ Search for local artwork ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # If thumbs/fanart have the same path, then assign names 
         #   (f_base_noext)_thumb, 
@@ -2558,10 +2609,12 @@ class Main:
             log_verb('Thumb policy: local images only | Scraper OFF')
             selected_thumb = local_thumb            
         elif scan_thumb_policy == 1 and local_thumb == '':
-            log_verb('Thumb policy: local thumb not found | Scraper ON')
+            log_verb('Thumb policy: if not Local Image then Scraper ON')
+            log_verb('Thumb policy: local thumb NOT found | Scraper ON')
             selected_thumb = self._roms_scrap_image(IMAGE_THUMB, 'Thumb', local_thumb, launcherID, ROM)
         elif scan_thumb_policy == 1 and local_thumb != '':
-            log_verb('Thumb policy: local thumb found | Scraper OFF')
+            log_verb('Thumb policy: if not Local Image then Scraper ON')
+            log_verb('Thumb policy: local thumb FOUND | Scraper OFF')
             selected_thumb = local_thumb
         elif scan_thumb_policy == 2: 
             log_verb('Thumb policy: scraper will overwrite local thumb | Scraper ON')
@@ -2577,9 +2630,11 @@ class Main:
             log_verb('Fanart policy: local images only | Scraper OFF')
             selected_fanart = local_fanart            
         elif scan_fanart_policy == 1 and local_fanart == '':
+            log_verb('Fanart policy: if not Local Image then Scraper ON')
             log_verb('Fanart policy: local fanart not found | Scraper ON')
             selected_fanart = self._roms_scrap_image(IMAGE_FANART, 'Fanart', local_fanart, launcherID, ROM)
         elif scan_fanart_policy == 1 and local_fanart != '':
+            log_verb('Fanart policy: if not Local Image then Scraper ON')
             log_verb('Fanart policy: local fanart found | Scraper OFF')
             selected_fanart = local_fanart
         elif scan_fanart_policy == 2: 
@@ -2623,9 +2678,9 @@ class Main:
         self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         log_verb('Scraping {} with {}'.format(image_name, scraper_name))
 
-        # --- Do a search and get a list of games ---
+        # --- Call scraper and get a list of games ---
         rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
-        results = scraper_obj.get_games_search(rom_name_scrapping, ROM.base_noext, platform)
+        results = scraper_obj.get_search(rom_name_scrapping, ROM.base_noext, platform)
         log_debug('{} scraper found {} result/s'.format(image_name, len(results)))
         if not results:
             log_debug('{} scraper did not found any game'.format(image_name))
@@ -2660,10 +2715,10 @@ class Main:
             selectgame = 0
 
         # --- Grab list of images for the selected game ---
-        image_list = scraper_obj.get_game_image_list(results[selectgame])
+        image_list = scraper_obj.get_images(results[selectgame])
         log_verb('{} scraper returned {} images'.format(image_name, len(image_list)))
         if not image_list:
-            log_debug('{} scraper get_game_image_list() returned no images.'.format(image_name))
+            log_debug('{} scraper get_images() returned no images.'.format(image_name))
             return ret_imagepath
 
         # --- Semi-automatic scraping (user choses an image from a list) ---
@@ -2674,12 +2729,12 @@ class Main:
 
             # If there is a local image add it to the list and show it to the user
             if os.path.isfile(local_image):
-                image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image} ) 
+                image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image} ) 
 
-            # Returns a list of tuples(display_name, URL)
+            # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
             image_url = gui_show_image_select(image_list)
             log_debug('{} dialog returned image_url "{}"'.format(image_name, image_url))
-            if image_url == '': image_url = image_list[0][0]
+            if image_url == '': image_url = image_list[0]['URL']
 
             # Reopen progress dialog
             scraper_text = 'Scraping {} with {}. Downloading image...'.format(image_name, scraper_name)
@@ -2727,10 +2782,15 @@ class Main:
     # Launcher/ROM Thumb/Fanart image semiautomatic scrapers. 
     # Function is here because structure is very similar to scanner _roms_scrap_image(). User is 
     # presented with a list of scrapped images and chooses the best one.
+    # Called when editing a Launcher/ROM from context menu.
+    #
+    # objects_dic is changed using Python pass by assigment
+    # Caller is responsible for saving edited launcher/ROM
+    # Be aware that maybe launcherID = '0' if editing a ROM in Favourites
     # ---------------------------------------------------------------------------------------------
     def _gui_scrap_image_semiautomatic(self, image_kind, objects_kind, objects_dic, objectID, launcherID):
         # _gui_edit_image() already has checked for errors in parameters.
-        
+
         # --- Configure function depending of image kind ---
         # Customise function depending of object to edit
         if image_kind == IMAGE_THUMB:
@@ -2740,9 +2800,11 @@ class Main:
             if objects_kind == KIND_LAUNCHER:
                 object_name = 'Launcher'
                 artwork_path = objects_dic[objectID]['thumbpath']
+                local_image = 
             elif objects_kind == KIND_ROM:
                 object_name = 'ROM'
                 artwork_path = self.launchers[launcherID]['thumbpath']
+                local_image = 
         elif image_kind == IMAGE_FANART:
             scraper_obj = self.scraper_fanart
             image_key   = 'fanart'
@@ -2750,182 +2812,188 @@ class Main:
             if objects_kind == KIND_LAUNCHER:
                 object_name = 'Launcher'
                 artwork_path = objects_dic[objectID]['fanartpath']
+                local_image = 
             elif objects_kind == KIND_ROM:
                 object_name = 'ROM'
                 artwork_path = self.launchers[launcherID]['fanartpath']
+                local_image = 
         log_debug('_gui_scrap_image_semiautomatic() Editing {} {}'.format(object_name, image_name))        
 
         # --- Ask user to edit the image search string ---
         keyboard = xbmc.Keyboard(objects_dic[objectID]['name'], 'Enter the string to search for...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return
-
-        # --- Call scraper and get a list of images ---
-        object_name = objects_dic[objectID]['name']
-        scraper_name = scraper_obj.fancy_name
-        kodi_notify('Advanced Emulator Launcher', 
-                    'Importing ROM {} thumb with {}'.format(object_name, scraper_name))
-        kodi_busydialog_ON()
         search_string = keyboard.getText()
-        region        = self.settings['game_region']
-        img_size      = self.settings['thumb_image_size']
-        image_list    = scraper_obj.get_image_list(search_string, launcher_platform, region, imgsize)
+
+        # --- Call scraper and get a list of games ---
+        kodi_busydialog_ON()
+        results = scraper_obj.get_search(search_string, ROM.base_noext, platform)
         kodi_busydialog_OFF()
-
-        if image_list:
-            # --- Semi-automatic scraping (user choses an image from a list) ---
-            # If there is a local image add show it to the user
-            if os.path.isfile(thumb):
-                image_list.insert(0, ('Current local image', thumb)) 
-
-            # image_list is a list of tuples (display_name, URL)
-            image_url = gui_show_image_select(image_list)
-            log_debug('Thumb dialog returned image_url "{}"'.format(image_url))
-            if image_url == '': image_url = image_list[0][0]
-
-        else:
-            log_debug('Thumb scraper returned an empty list')
-            kodi_dialog_OK('Advanced Emulator Launcher', 'No thumb found for {}'.format(objects_dic[objectID]['name']))
-
-
-
-
-
-
-        # Show a Window with the current image and the found images so the
-        # user can choose. It is like a Dialog.select() but intead of text
-        # there is an image on each row of the select control.
-        nb_images = len(covers)
-        kodi_notify('Advanced Emulator Launcher', '%s thumbs for %s' % (nb_images, objects[objectID]["name"]))
-        covers.insert(0, (objects[objectID]["thumb"], objects[objectID]["thumb"], 'Current image'))
-        self.image_url = gui_show_image_select(covers)
-
-        # No image selected
-        if not self.image_url:
-            return
-        # User chose same image as it was
-        if self.image_url == objects[objectID]["thumb"]:
-            return
-        # Call scraper again to get resolved URL.
-        # Note that new AEL scrapers do not need this.
-        img_url = self._get_thumbnail(self.image_url)
-        if img_url == '':
-            kodi_notify('Advanced Emulator Launcher', 'No thumb found for %s' % (objects[objectID]["name"]))
+        log_debug('{} scraper found {} result/s'.format(image_name, len(results)))
+        if not results:
+            log_debug('{} scraper did not found any game'.format(image_name))
             return
 
-        # Get image extenstion
-        img_ext = os.path.splitext(img_url)[-1][0:4]
-        if img_ext == '':
-            return
+        # --- Choose game to download image ---
+        # Display corresponding game list found so user choses
+        dialog = xbmcgui.Dialog()
+        rom_name_list = []
+        for game in results:
+            rom_name_list.append(game['display_name'])
+        selectgame = dialog.select('Select game for ROM {}'.format(ROM.base_noext), rom_name_list)
+        if selectgame < 0: selectgame = 0
 
-        # Get filename where we should place the image
-        filename = objects[objectID]["filename"]
-        if (self.launchers[launcher]["thumbpath"] == self.launchers[launcher]["fanartpath"] ):
-            if (self.launchers[launcher]["thumbpath"] == self.launchers[launcher]["rompath"] ):
-                file_path = filename.replace("."+filename.split(".")[-1], '_thumb'+img_ext)
-            else:
-                file_path = os.path.join(os.path.dirname(self.launchers[launcher]["thumbpath"]),os.path.basename(filename.replace("."+filename.split(".")[-1], '_thumb'+img_ext)))
-        else:
-            if (self.launchers[launcher]["thumbpath"] == self.launchers[launcher]["rompath"] ):
-                file_path = filename.replace("."+filename.split(".")[-1], img_ext)
-            else:
-                file_path = os.path.join(os.path.dirname(self.launchers[launcher]["thumbpath"]),os.path.basename(filename.replace("."+filename.split(".")[-1], img_ext)))
+        # --- Grab list of images for the selected game ---
+        image_list = scraper_obj.get_images(results[selectgame])
+        log_verb('{} scraper returned {} images'.format(image_name, len(image_list)))
+        if not image_list:
+            log_debug('{} scraper get_images() returned no images.'.format(image_name))
+            return ret_imagepath
 
-        # --- Download selected image ---
-        kodi_notify('Advanced Emulator Launcher', 'Downloading thumb...', 300000)
-        try:
-            download_img(img_url, file_path)
+        # --- Always do semi-automatic scraping when editing images ---
+        # If there is a local image add it to the list and show it to the user
+        if os.path.isfile(local_image):
+            image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image} ) 
+
+        # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
+        image_url = gui_show_image_select(image_list)
+        log_debug('{} dialog returned image_url "{}"'.format(image_name, image_url))
+        if image_url == '': image_url = image_list[0]['URL']
+
+        # --- If user chose the local image don't download anything ---
+        if image_url != local_image:
+            # ~~~ Download scraped image ~~~
+            # Get Tumb/Fanart name with no extension, then get URL image extension 
+            # and make full thumb path. If extension cannot be determined
+            # from URL defaul to '.jpg'
+            img_ext    = text_get_image_URL_extension(image_url) # Includes front dot -> .jpg
+            image_path = image_path_noext + img_ext
+
+            # ~~~ Download image ~~~
+            log_debug('image_path_noext "{}"'.format(image_path_noext))
+            log_debug('img_ext          "{}"'.format(img_ext))
+            log_verb('Downloading URL  "{}"'.format(image_url))
+            log_verb('Into local file  "{}"'.format(image_path))
+            try:
+                net_download_img(image_url, image_path)
+            except socket.timeout:
+                kodi_notify_warn('Advanced Emulator Launcher', 
+                                 'Cannot download {} image (Timeout)'.format(image_name))
+
+            # ~~~ Update Kodi cache with downloaded image ~~~
+            # Recache only if local image is in the Kodi cache, this function takes care of that.
+            kodi_update_image_cache(image_path)
             
-            req = urllib2.Request(img_url)
-            req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31')
-            f = open(file_path, 'wb')
-            f.write(urllib2.urlopen(req).read())
-            f.close()
+            # --- Return value is downloaded image ---
+            ret_imagepath = image_path
+        else:
+            log_debug('{} scraper: user chose local image "{}"'.format(image_name, image_url))
+            ret_imagepath = image_url
 
-            if objects[objectID]["thumb"] != "":
-                _update_cache(file_path)
-
-            objects[objectID]["thumb"] = file_path
-            self._save_launchers()
-            kodi_notify('Advanced Emulator Launcher', 'Thumb has been updated')
-        except socket.timeout:
-            kodi_notify('Advanced Emulator Launcher', 'Cannot download image (Timeout)')
-        except exceptions.IOError:
-            kodi_notify('Advanced Emulator Launcher', 'Filesystem error (IOError)')
-
-        xbmc.executebuiltin("Container.Refresh")
+        # --- Edit using Python pass by assigment ---
+        # >> Caller is responsible to save launchers/ROMs
+        objects_dic[objectID][image_key] = ret_imagepath
 
     # ---------------------------------------------------------------------------------------------
     # Metadata scrapers
     # ---------------------------------------------------------------------------------------------
-    def _gui_scrap_rom_metadata(self, launcher, rom):
-        # Edition of the rom name
-        title = os.path.basename(roms[romID]["filename"]).split(".")[0]
-        keyboard = xbmc.Keyboard(roms[romID]["name"], 'Enter the file title to search...')
+    #
+    # Called when editing a ROM by _command_edit_rom()
+    # Always do semi-automatic scraping when editing ROMs/Launchers.
+    # launcherID = '0' if scraping ROM in Favourites
+    # roms are editing using Python arguments passed by assignment. Caller is responsible of
+    # saving the ROMs XML file.
+    #
+    def _gui_scrap_rom_metadata(self, roms, romID, launcherID):
+        # --- Grab ROM info and metadata scraper settings ---
+        launcher = self.launchers[launcherID]
+        platform = launcher['platform']
+        f_path   = roms[romID]['filename']
+        rom_name = roms[romID]['name']
+        ROM      = misc_split_path(f_path)
+        scan_clean_tags       = self.settings['scan_clean_tags']
+        scan_title_formatting = self.settings['scan_title_formatting']
+        scan_ignore_title     = self.settings['scan_ignore_title']
+
+        # --- Ask user to enter ROM metadata search string ---
+        keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string...')
         keyboard.doModal()
-        if keyboard.isConfirmed():
-            self._scrap_rom_algo(launcher, rom, keyboard.getText())
+        if not keyboard.isConfirmed(): return
+        
+        # --- Do a search and get a list of games ---
+        rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
+        results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
+        log_debug('Metadata scraper found {} result/s'.format(len(results)))
+        if results:
+            # Display corresponding game list found so user choses
+            dialog = xbmcgui.Dialog()
+            rom_name_list = []
+            for game in results:
+                rom_name_list.append(game['display_name'])
+            selectgame = dialog.select('Select game for ROM {}'.format(rom_name), rom_name_list)
+            if selectgame < 0: selectgame = 0
 
-            # Search game title
-            results,display = self._get_games_list(title)
-            if display:
-                # Display corresponding game list found
-                dialog = xbmcgui.Dialog()
-                # Game selection
-                selectgame = dialog.select('Select a item from %s' % ( self.settings[ "datas_scraper" ] ), display)
-                if not selectgame == -1:
-                    if self.settings[ "ignore_title" ]:
-                        roms[romID]["name"] = title_format(self,title)
-                    else:
-                        roms[romID]["name"] = title_format(self,results[selectgame]["title"])
-                    gamedata = self._get_game_data(results[selectgame]["id"])
-                    roms[romID]["genre"]  = gamedata["genre"]
-                    roms[romID]["year"]   = gamedata["year"]
-                    roms[romID]["studio"] = gamedata["studio"]
-                    roms[romID]["plot"]   = gamedata["plot"]
+            # --- Grab metadata for selected game ---
+            gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+
+            # --- Put metadata into ROM dictionary ---
+            if scan_ignore_title:
+                # >> Ignore scraped title
+                roms[romID]['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+                log_debug("User wants to ignore scraper name. Setting name to '{}'".format(roms[romID]['name']))
             else:
-                kodi_notify('Advanced Emulator Launcher', 'No data found')
+                # >> Use scraped title
+                roms[romID]['name'] = gamedata['title']
+                log_debug("User wants scrapped name. Setting name to '{}'".format(roms[romID]['name']))
+            roms[romID]['genre']  = gamedata['genre']
+            roms[romID]['year']   = gamedata['year']
+            roms[romID]['studio'] = gamedata['studio']
+            roms[romID]['plot']   = gamedata['plot']
 
-            self._save_launchers()
-        xbmc.executebuiltin('Container.Refresh')
+            # ROMs are saved in caller function
+        else:
+            kodi_notify('Advanced Emulator Launcher', 'No ROM metadata data found')
 
     #
+    # Called when editing a launcher by _command_edit_launcher()
     # Scrap standalone launcher (typically a game) metadata
+    # Called when editing a launcher...
+    # Always do semi-automatic scraping when editing ROMs/Launchers
     #
     def _gui_scrap_launcher_metadata(self, launcherID):
         # Edition of the launcher name
         keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the launcher search string ...')
         keyboard.doModal()
-        if keyboard.isConfirmed():
-            title = keyboard.getText()
+        if not keyboard.isConfirmed(): return
 
-            # Scrap and get a list of matches
-            results, display = self._get_games_list(title)
+        title = keyboard.getText()
 
-            if display:
-                # Display corresponding game list found
-                dialog = xbmcgui.Dialog()
+        # Scrap and get a list of matches
+        results, display = self._get_games_list(title)
 
-                # Game selection
-                selectgame = dialog.select('Select a item from %s' % ( self.settings[ "datas_scraper" ] ), display)
-                if not selectgame == -1:
-                    if self.settings[ "ignore_title" ]:
-                        self.launchers[launcherID]["name"] = title_format(self,self.launchers[launcherID]["name"])
-                    else:
-                        self.launchers[launcherID]["name"] = title_format(self,results[selectgame]["title"])
+        if display:
+            # Display corresponding game list found
+            dialog = xbmcgui.Dialog()
 
-                    # User made a decision. Get full metadata
-                    gamedata = self._get_game_data(results[selectgame]["id"])
-                    self.launchers[launcherID]["genre"]  = gamedata["genre"]
-                    self.launchers[launcherID]["year"]   = gamedata["year"]
-                    self.launchers[launcherID]["studio"] = gamedata["studio"]
-                    self.launchers[launcherID]["plot"]   = gamedata["plot"]
-            else:
-                kodi_notify('Advanced Emulator Launcher', 'No data found')
+            # Game selection
+            selectgame = dialog.select('Select a item from %s' % ( self.settings[ "datas_scraper" ] ), display)
+            if not selectgame == -1:
+                if self.settings[ "ignore_title" ]:
+                    self.launchers[launcherID]["name"] = title_format(self,self.launchers[launcherID]["name"])
+                else:
+                    self.launchers[launcherID]["name"] = title_format(self,results[selectgame]["title"])
 
-            # Save XML data to disk
-            self._save_launchers()
-        xbmc.executebuiltin('Container.Refresh')
+                # User made a decision. Get full metadata
+                gamedata = self._get_game_data(results[selectgame]["id"])
+                self.launchers[launcherID]["genre"]  = gamedata["genre"]
+                self.launchers[launcherID]["year"]   = gamedata["year"]
+                self.launchers[launcherID]["studio"] = gamedata["studio"]
+                self.launchers[launcherID]["plot"]   = gamedata["plot"]
+        else:
+            kodi_notify('Advanced Emulator Launcher', 'No data found')
+
+        # Save launchers XML
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
     #
     # Manually add a new ROM instead of a recursive scan.
@@ -3174,39 +3242,35 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
 
-        # self.listing = kwargs.get('listing')
-        # self.type = kwargs.get('category')
-        # self.property = kwargs.get('string')
-        
-        self.listing = kwargs.get( "listing" )
+        # >> Custom stuff
+        self.listing = kwargs.get('listing')
         self.selected_url = ''
 
     def onInit(self):
         self.container = self.getControl(6)
-        self.container.controlLeft(self.container)  # Disables movement left-right in image listbox
+        # >> Disables movement left-right in image listbox
+        self.container.controlLeft(self.container)
         self.container.controlRight(self.container)
 
-        # NOTE The mysterious control 7 is new in Kodi Krypton!
-        # See http://forum.kodi.tv/showthread.php?tid=250936&pid=2246458#pid2246458
-        #
+        # >> NOTE The mysterious control 7 is new in Kodi Krypton!
+        # >> See http://forum.kodi.tv/showthread.php?tid=250936&pid=2246458#pid2246458
         # self.cancel = self.getControl(7) # Produces an error "RuntimeError: Non-Existent Control 7"
         # self.cancel.setLabel('Ajo')
-
-        self.getControl(3).setVisible(False) # Another container which I don't understand...
         
-        self.getControl(1).setLabel('Choose item') # Window title on top
-
-        self.button = self.getControl(5) # OK button
+        # >> Another container which I don't understand...
+        self.getControl(3).setVisible(False)
+        # >> Window title on top        
+        self.getControl(1).setLabel('Choose item')
+        # >> OK button
+        self.button = self.getControl(5)
         self.button.setVisible(False)        
         # self.button.setLabel('Ar')
         
-        # Add items to list
-        # listitem = xbmcgui.ListItem(label='Example', iconImage='DefaultAddon.png')
-        # self.container.addItem(listitem)
+        # >> Add items to list
         listitems = []
         for index, item in enumerate(self.listing):
             name_str = item['name']
-            URL_str = item['URL']
+            URL_str  = item['disp_URL']
             listitem = xbmcgui.ListItem(label=name_str, label2=URL_str, iconImage='DefaultAddonImages.png', thumbnailImage=URL_str)
             listitems.append(listitem)
         self.container.addItems(listitems)
@@ -3218,8 +3282,9 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
 
     def onClick(self, controlID):
         if controlID == 6:
-            # num = self.container.getSelectedPosition()
-            self.selected_url = self.container.getSelectedItem().getLabel2()
+            # self.selected_url = self.container.getSelectedItem().getLabel2()
+            num = self.container.getSelectedPosition()
+            self.selected_url = self.listing[num]['URL']
             xbmc.sleep(100)
             self.close()
 
@@ -3234,15 +3299,15 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
     def onFocus(self, controlID):
         pass
 
-# From DialogSelect.xml in Confluence
-# Controls 5 and 7 are grouped
-# <control type="label" id="1">  | <description>header label</description>
-# 2 does not exist
-# <control type="list" id="3">
-# <control type="label" id="4">  | <description>No Settings Label</description>
-# <control type="button" id="5"> | <description>Manual button</description>
-# <control type="list" id="6">
-# <control type="button" id="7"> | <description>Cancel button</description>
+# >> From DialogSelect.xml in Confluence (Kodi Krypton taken from Github master)
+# >> Controls 5 and 7 are grouped
+# <control type="label"  id="1"> | <description>header label</description>      | Window title on top
+# control 2 does not exist
+# <control type="list"   id="3"> |                                              | Another container which I don't understand...
+# <control type="label"  id="4"> | <description>No Settings Label</description>
+# <control type="button" id="5"> | <description>Manual button</description>     | OK button
+# <control type="list"   id="6"> |                                              | Listbox
+# <control type="button" id="7"> | <description>Cancel button</description>     | New Krypton cancel button
 class ImgSelectDialog_Old(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
