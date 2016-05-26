@@ -291,8 +291,12 @@ class Main:
 
         # Initialise options of the thumb scraper
         region  = self.settings['scraper_region']
-        imgsize = self.settings['scraper_thumb_size']
-        self.scraper_thumb.set_thumb_options(region, imgsize)
+        thumb_imgsize = self.settings['scraper_thumb_size']
+        self.scraper_thumb.set_options(region, thumb_imgsize)
+
+        # Initialise options of the fanart scraper
+        fanart_imgsize = self.settings['scraper_fanart_size']
+        self.scraper_fanart.set_options(region, fanart_imgsize)
 
     # Creates default categories data struct
     # CAREFUL deletes current categories!
@@ -325,17 +329,24 @@ class Main:
     # image scraping is not allowed for categores.
     #
     # NOTE When editing ROMs optinal parameter launcherID is required.
+    # NOTE Caller is responsible for saving the Launchers/ROMs
+    # NOTE if image is changed container should be updated so the user sees new image instantly
+    # NOTE objects_dic is edited by assigment
+    #
+    # Returns:
+    #   True   Launchers/ROMs must be saved and container updated
+    #   False  No changes were made. No necessary to refresh container
     #
     def _gui_edit_image(self, image_kind, objects_kind, objects_dic, objectID, launcherID=''):
         # Check for errors
         if image_kind != IMAGE_THUMB and image_kind != IMAGE_FANART:
             log_error('_gui_edit_image() Unknown image_kind = {}'.format(image_kind))
             kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
-            return
+            return False
         if objects_kind != KIND_LAUNCHER and objects_kind != KIND_ROM:
             log_error('_gui_edit_image() Unknown objects_kind = {}'.format(objects_kind))
             kodi_notify_warn('Advanced Emulator Launcher', 'Unknown objects_kind = {}'.format(objects_kind))
-            return
+            return False
 
         # Customise function depending of object to edit
         if image_kind == IMAGE_THUMB:
@@ -371,7 +382,7 @@ class Main:
             log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
                                                  'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return
+            if not image_file or not os.path.isfile(image_file): return False
 
             # --- Update object and save XML ---
             log_debug('_gui_edit_image() Object is {} with ID = {}'.format(object_name, objectID))
@@ -395,7 +406,7 @@ class Main:
             log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
                                                  'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return
+            if not image_file or not os.path.isfile(image_file): return False
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
@@ -436,7 +447,10 @@ class Main:
 
         # Manual scrape and choose from a list of images
         elif type2 == 2:
-            self._scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
+            return self._gui_scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
+
+        # If we reach this point, changes were made. Launchers/ROMs must be saved, container must be refreshed.
+        return True
 
     #
     # Edit category thumb/fanart.
@@ -2800,11 +2814,15 @@ class Main:
             if objects_kind == KIND_LAUNCHER:
                 object_name = 'Launcher'
                 artwork_path = objects_dic[objectID]['thumbpath']
-                local_image = 
+                local_image = 0
+                kodi_dialog_OK('AEL', 'Implement me')
             elif objects_kind == KIND_ROM:
                 object_name = 'ROM'
-                artwork_path = self.launchers[launcherID]['thumbpath']
-                local_image = 
+                launcher = self.launchers[launcherID]
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                image_path_noext = misc_get_thumb_path_noext(launcher, ROM)
+                local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
+                platform = self.launchers[launcherID]['platform']
         elif image_kind == IMAGE_FANART:
             scraper_obj = self.scraper_fanart
             image_key   = 'fanart'
@@ -2812,11 +2830,15 @@ class Main:
             if objects_kind == KIND_LAUNCHER:
                 object_name = 'Launcher'
                 artwork_path = objects_dic[objectID]['fanartpath']
-                local_image = 
+                local_image = 0
+                kodi_dialog_OK('AEL', 'Implement me')
             elif objects_kind == KIND_ROM:
                 object_name = 'ROM'
-                artwork_path = self.launchers[launcherID]['fanartpath']
-                local_image = 
+                launcher = self.launchers[launcherID]
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                image_path_noext = misc_get_fanart_path_noext(launcher, ROM)
+                local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
+                platform = self.launchers[launcherID]['platform']
         log_debug('_gui_scrap_image_semiautomatic() Editing {} {}'.format(object_name, image_name))        
 
         # --- Ask user to edit the image search string ---

@@ -68,7 +68,7 @@ class fanart_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
                              'disp_URL' : 'http://thegamesdb.net/banners/fanart/' + fanarts[indexa][1].replace('/original/', '/thumb/')})
 
         # Read screenshot
-        screenshots = re.findall('<original (.*?)">screenshots/(.*?)</original>', page)
+        screenshots = re.findall('<original (.*?)">screenshots/(.*?)</original>', page_data)
         for indexb, screenshot in enumerate(screenshots):
           image_list.append({'name'     : 'Screenshot ' + str(indexb+1), 
                              'URL'      : 'http://thegamesdb.net/banners/screenshots/' + screenshots[indexb][1],
@@ -106,7 +106,7 @@ class fanart_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
             if 'pod game_imgs' in line:
                 fanarts = re.findall('b"><a href="(.*?)"><img src="(.*?)"', line)
                 for index, item in enumerate(fanarts):
-                    full_fanarts.append((item[0], item[1], 'Image '+str(index)))
+                    full_fanarts.append({'name' : 'Image ' + str(index), 'URL' : item[0], 'disp_URL' : item[1]})
 
         return full_fanarts
 

@@ -72,13 +72,17 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         for index, boxart in enumerate(boxarts):
             # print(index, boxart)
             log_debug('thumb_TheGamesDB::get_images Adding boxfront #{:>2s} {}'.format(str(index + 1), boxart[1]))
-            images.append( {'name': "Cover " + str(index + 1), 'URL' : "http://thegamesdb.net/banners/" + boxart[1]} )
+            images.append({'name'     : "Cover " + str(index + 1),
+                           'URL'      : "http://thegamesdb.net/banners/" + boxart[1],
+                           'disp_URL' : "http://thegamesdb.net/banners/" + boxart[1]})
 
         # Read banners
         banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
         for index, banner in enumerate(banners):
             log_debug('thumb_TheGamesDB::get_images Adding banner   #{:>2s} {}'.format(str(index + 1), banner[1]))
-            images.append( {'name' : "Banner " + str(index + 1), 'URL' : "http://thegamesdb.net/banners/" + banner[1]} )
+            images.append({'name'     : "Banner " + str(index + 1), 
+                           'URL'      : "http://thegamesdb.net/banners/" + banner[1],
+                           'disp_URL' : "http://thegamesdb.net/banners/" + banner[1]})
 
         return images
 
@@ -147,7 +151,7 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         for index, boxart in enumerate(results):
             str_index = str(index + 1)
             log_debug('thumb_GameFAQs::get_images Adding thumb #{:>2s} {}'.format(str_index, boxart[0]))
-            images.append( (boxart[1], boxart[0]) )
+            images.append({'name' : boxart[1], 'URL' : boxart[0], 'disp_URL' : boxart[0]})
 
         return images
 
