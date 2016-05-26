@@ -37,14 +37,14 @@
 </category>
 <category label="Paths">
     <setting id="separator" type="lsep" label="Categories paths"/>
-    <setting label="For Thumb images" type="folder" id="categories_thumb_path" default="" source="" />
-    <setting label="For Fanart images" type="folder" id="categories_fanart_path" default="" source=""/>
-    <setting label="For NFO files" type="folder" id="categories_nfo_path" default="" source="" />
+    <setting label="For Thumb images" type="folder" id="categories_thumb_dir" default="" source="" />
+    <setting label="For Fanart images" type="folder" id="categories_fanart_dir" default="" source=""/>
+    <setting label="For NFO files" type="folder" id="categories_nfo_dir" default="" source="" />
 
     <setting id="separator" type="lsep" label="Launchers paths"/>
-    <setting label="For Thumb images" type="folder" id="launchers_thumb_path" default="" source="" />
-    <setting label="For Fanart images" type="folder" id="launchers_fanart_path" default="" source=""/>
-    <setting label="For NFO files" type="folder" id="launchers_nfo_path" default="" source="" />
+    <setting label="For Thumb images" type="folder" id="launchers_thumb_dir" default="" source="" />
+    <setting label="For Fanart images" type="folder" id="launchers_fanart_dir" default="" source=""/>
+    <setting label="For NFO files" type="folder" id="launchers_nfo_dir" default="" source="" />
 </category>
 <category label="Advanced">
     <setting id="separator" type="lsep" label="Launcher options"/>

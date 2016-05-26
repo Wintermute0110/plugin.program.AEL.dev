@@ -258,12 +258,12 @@ class Main:
         self.settings["display_hide_finished"]         = True if addon_obj.getSetting("display_hide_finished") == "true" else False
         self.settings["display_launcher_notification"] = True if addon_obj.getSetting("display_launcher_notification") == "true" else False
         
-        self.settings["categories_thumb_path"]  = addon_obj.getSetting("categories_thumb_path")
-        self.settings["categories_fanart_path"] = addon_obj.getSetting("categories_fanart_path")
-        self.settings["categories_nfo_path"]    = addon_obj.getSetting("categories_nfo_path")
-        self.settings["launchers_thumb_path"]   = addon_obj.getSetting("launchers_thumb_path")
-        self.settings["launchers_fanart_path"]  = addon_obj.getSetting("launchers_fanart_path")
-        self.settings["launchers_nfo_path"]     = addon_obj.getSetting("launchers_nfo_path")
+        self.settings["categories_thumb_dir"]  = addon_obj.getSetting("categories_thumb_dir")
+        self.settings["categories_fanart_dir"] = addon_obj.getSetting("categories_fanart_dir")
+        self.settings["categories_nfo_dir"]    = addon_obj.getSetting("categories_nfo_dir")
+        self.settings["launchers_thumb_dir"]   = addon_obj.getSetting("launchers_thumb_dir")
+        self.settings["launchers_fanart_dir"]  = addon_obj.getSetting("launchers_fanart_dir")
+        self.settings["launchers_nfo_dir"]     = addon_obj.getSetting("launchers_nfo_dir")
         
         self.settings["media_state"]            = int(addon_obj.getSetting("media_state"))
         self.settings["lirc_state"]             = True if addon_obj.getSetting("lirc_state") == "true" else False
@@ -273,6 +273,14 @@ class Main:
 
         # --- Example of how to transform a number into string ---
         # self.settings["game_region"]          = ['World', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
+
+        # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
+        if self.settings['categories_thumb_dir']  == '': self.settings['categories_thumb_dir']  = DEFAULT_CAT_THUMB_DIR
+        if self.settings['categories_fanart_dir'] == '': self.settings['categories_fanart_dir'] = DEFAULT_CAT_FANART_DIR
+        if self.settings['categories_nfo_dir']    == '': self.settings['categories_nfo_dir']    = DEFAULT_CAT_NFO_DIR
+        if self.settings['launchers_thumb_dir']   == '': self.settings['launchers_thumb_dir']   = DEFAULT_LAUN_THUMB_DIR
+        if self.settings['launchers_fanart_dir']  == '': self.settings['launchers_fanart_dir']  = DEFAULT_LAUN_FANART_DIR
+        if self.settings['launchers_nfo_dir']     == '': self.settings['launchers_nfo_dir']     = DEFAULT_LAUN_NFO_DIR
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
@@ -363,7 +371,7 @@ class Main:
             image_name  = 'Thumb'
             if objects_kind == KIND_LAUNCHER:
                 object_name = 'Launcher'
-                artwork_path = objects_dic[objectID]['thumbpath']
+                artwork_path = self.settings['launchers_thumb_dir']
             elif objects_kind == KIND_ROM:
                 object_name = 'ROM'
                 # thumbpath/fanartpath are in the launcher data structure
@@ -373,7 +381,7 @@ class Main:
             image_name  = 'Fanart'
             if objects_kind == KIND_LAUNCHER:
                 object_name = 'Launcher'
-                artwork_path = objects_dic[objectID]['fanartpath']
+                artwork_path = self.settings['launchers_fanart_dir']
             elif objects_kind == KIND_ROM:
                 object_name = 'ROM'
                 artwork_path = self.launchers[launcherID]['fanartpath']
@@ -476,19 +484,17 @@ class Main:
     def _gui_edit_category_image(self, image_kind, categoryID):
         # Make this function as generic as possible to share code with launcher/rom thumb/fanart editing.
         if image_kind == IMAGE_THUMB:
-            objects_dic = self.categories
-            objectID    = categoryID
-            image_key   = 'thumb'
-            image_name  = 'Thumb'
-            if self.settings['launcher_thumb_path'] == '': artwork_path = DEFAULT_THUMB_DIR
-            else:                                          artwork_path = self.settings['launcher_thumb_path']
+            objects_dic  = self.categories
+            objectID     = categoryID
+            image_key    = 'thumb'
+            image_name   = 'Thumb'
+            artwork_path = self.settings['categories_thumb_dir']
         elif image_kind == IMAGE_FANART:
-            objects_dic = self.categories
-            objectID    = categoryID
-            image_key   = 'fanart'
-            image_name  = 'Fanart'
-            if self.settings['launcher_fanart_path'] == '': artwork_path = DEFAULT_FANART_DIR
-            else:                                           artwork_path = self.settings['launcher_fanart_path']
+            objects_dic  = self.categories
+            objectID     = categoryID
+            image_key    = 'fanart'
+            image_name   = 'Fanart'
+            artwork_path = self.settings['categories_fanart_dir']
         else:
             log_error('_gui_edit_category_image() Unknown image_kind = {}'.format(image_kind))
             kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
