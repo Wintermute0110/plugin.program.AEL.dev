@@ -54,10 +54,16 @@ CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__)
 ICON_IMG_FILE_PATH   = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
 CATEGORIES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
 FAVOURITES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
+
 # Artwork and NFO for Categories and Launchers
-DEFAULT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'thumbs')
-DEFAULT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'fanarts')
-DEFAULT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'nfos')
+DEFAULT_CAT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'categories-thumbs')
+DEFAULT_CAT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'categories-fanarts')
+DEFAULT_CAT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'categories-nfos')
+DEFAULT_LAUN_THUMB_DIR   = os.path.join(PLUGIN_DATA_DIR, 'launchers-thumbs')
+DEFAULT_LAUN_FANART_DIR  = os.path.join(PLUGIN_DATA_DIR, 'launchers-fanarts')
+DEFAULT_LAUN_NFO_DIR     = os.path.join(PLUGIN_DATA_DIR, 'launchers-nfos')
+
+# Misc "constants"
 KIND_CATEGORY        = 0
 KIND_LAUNCHER        = 1
 KIND_ROM             = 2
@@ -106,10 +112,13 @@ class Main:
         # log_debug('FAVOURITES_FILE_PATH = "{}"'.format(FAVOURITES_FILE_PATH))
 
         # --- Addon data paths creation ---
-        if not os.path.isdir(PLUGIN_DATA_DIR):    os.makedirs(PLUGIN_DATA_DIR)
-        if not os.path.isdir(DEFAULT_THUMB_DIR):  os.makedirs(DEFAULT_THUMB_DIR)
-        if not os.path.isdir(DEFAULT_FANART_DIR): os.makedirs(DEFAULT_FANART_DIR)
-        if not os.path.isdir(DEFAULT_NFO_DIR):    os.makedirs(DEFAULT_NFO_DIR)
+        if not os.path.isdir(PLUGIN_DATA_DIR):         os.makedirs(PLUGIN_DATA_DIR)
+        if not os.path.isdir(DEFAULT_CAT_THUMB_DIR):   os.makedirs(DEFAULT_CAT_THUMB_DIR)
+        if not os.path.isdir(DEFAULT_CAT_FANART_DIR):  os.makedirs(DEFAULT_CAT_FANART_DIR)
+        if not os.path.isdir(DEFAULT_CAT_NFO_DIR):     os.makedirs(DEFAULT_CAT_NFO_DIR)
+        if not os.path.isdir(DEFAULT_LAUN_THUMB_DIR):  os.makedirs(DEFAULT_LAUN_THUMB_DIR)
+        if not os.path.isdir(DEFAULT_LAUN_FANART_DIR): os.makedirs(DEFAULT_LAUN_FANART_DIR)
+        if not os.path.isdir(DEFAULT_LAUN_NFO_DIR):    os.makedirs(DEFAULT_LAUN_NFO_DIR)
 
         # ~~~~~ Process URL ~~~~~
         self.base_url = sys.argv[0]
@@ -170,8 +179,6 @@ class Main:
             self._command_add_new_category()
         elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
-        elif command == 'DELETE_CATEGORY':
-            kodi_dialog_OK('ERROR', 'DELETE_CATEGORY not implemented yet')
         elif command == 'SHOW_FAVOURITES':
             self._command_show_favourites()
         elif command == 'SHOW_LAUNCHERS':
@@ -180,8 +187,6 @@ class Main:
             self._command_add_new_launcher(args['catID'][0])
         elif command == 'EDIT_LAUNCHER':
             self._command_edit_launcher(args['launID'][0])
-        elif command == 'DELETE_LAUNCHER':
-            kodi_dialog_OK('ERROR', 'DELETE_LAUNCHER not implemented yet')
         # User clicked on a launcher. For standalone launchers run the executable.
         # For emulator launchers show roms.
         elif command == 'SHOW_ROMS':
@@ -250,18 +255,22 @@ class Main:
         self.settings["scraper_image_type"]     = int(addon_obj.getSetting("scraper_image_type"))
         self.settings["scraper_fanart_order"]   = int(addon_obj.getSetting("scraper_fanart_order"))
         
-        self.settings["hide_finished"]          = True if addon_obj.getSetting("hide_finished") == "true" else False
-        self.settings["launcher_notification"]  = True if addon_obj.getSetting("launcher_notification") == "true" else False
-        self.settings["launcher_thumb_path"]    = addon_obj.getSetting("launcher_thumb_path")
-        self.settings["launcher_fanart_path"]   = addon_obj.getSetting("launcher_fanart_path")
-        self.settings["launcher_nfo_path"]      = addon_obj.getSetting("launcher_nfo_path")
+        self.settings["display_hide_finished"]         = True if addon_obj.getSetting("display_hide_finished") == "true" else False
+        self.settings["display_launcher_notification"] = True if addon_obj.getSetting("display_launcher_notification") == "true" else False
+        
+        self.settings["categories_thumb_path"]  = addon_obj.getSetting("categories_thumb_path")
+        self.settings["categories_fanart_path"] = addon_obj.getSetting("categories_fanart_path")
+        self.settings["categories_nfo_path"]    = addon_obj.getSetting("categories_nfo_path")
+        self.settings["launchers_thumb_path"]   = addon_obj.getSetting("launchers_thumb_path")
+        self.settings["launchers_fanart_path"]  = addon_obj.getSetting("launchers_fanart_path")
+        self.settings["launchers_nfo_path"]     = addon_obj.getSetting("launchers_nfo_path")
         
         self.settings["media_state"]            = int(addon_obj.getSetting("media_state"))
         self.settings["lirc_state"]             = True if addon_obj.getSetting("lirc_state") == "true" else False
         self.settings["start_tempo"]            = int(round(float(addon_obj.getSetting("start_tempo"))))
         self.settings["log_level"]              = int(addon_obj.getSetting("log_level"))
         self.settings["show_batch_window"]      = True if addon_obj.getSetting("show_batch_window") == "true" else False
-        
+
         # --- Example of how to transform a number into string ---
         # self.settings["game_region"]          = ['World', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
 

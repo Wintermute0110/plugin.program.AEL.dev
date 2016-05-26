@@ -31,15 +31,20 @@
     <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
     <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="0" values="First|Half|Last"/>
 </category>
-<category label="Misc">
-    <setting id="separator" type="lsep" label="Display options"/>
-    <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="hide_finished" default="false" />
-    <setting label="Activate 'Launching Application' notification" type="bool" id="launcher_notification" default="false" />
+<category label="Display">
+    <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="display_hide_finished" default="false" />
+    <setting label="Activate 'Launching Application' notification" type="bool" id="display_launcher_notification" default="false" />
+</category>
+<category label="Paths">
+    <setting id="separator" type="lsep" label="Categories paths"/>
+    <setting label="For Thumb images" type="folder" id="categories_thumb_path" default="" source="" />
+    <setting label="For Fanart images" type="folder" id="categories_fanart_path" default="" source=""/>
+    <setting label="For NFO files" type="folder" id="categories_nfo_path" default="" source="" />
 
-    <setting id="separator" type="lsep" label="Categories/Launchers default paths"/>
-    <setting label="For Thumbs images" type="folder" id="launcher_thumb_path" default="" source="" />
-    <setting label="For Fanarts images" type="folder" id="launcher_fanart_path" default="" source=""/>
-    <setting label="For NFO files" type="folder" id="launcher_nfo_path" default="" source="" />
+    <setting id="separator" type="lsep" label="Launchers paths"/>
+    <setting label="For Thumb images" type="folder" id="launchers_thumb_path" default="" source="" />
+    <setting label="For Fanart images" type="folder" id="launchers_fanart_path" default="" source=""/>
+    <setting label="For NFO files" type="folder" id="launchers_nfo_path" default="" source="" />
 </category>
 <category label="Advanced">
     <setting id="separator" type="lsep" label="Launcher options"/>
