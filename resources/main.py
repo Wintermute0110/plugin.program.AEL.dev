@@ -1167,12 +1167,11 @@ class Main:
                 # Edition of the launcher rom extensions (only for emulator launcher)
                 type2_nb = type2_nb +1
                 if type2 == type2_nb:
-                    if not self.launchers[launcherID]["rompath"] == "":
-                        keyboard = xbmc.Keyboard(self.launchers[launcherID]["romext"], 
-                                                 'Edit files extensions, use &quot;|&quot; as separator. (e.g lnk|cbr)')
-                        keyboard.doModal()
-                        if not keyboard.isConfirmed(): return
-                            self.launchers[launcherID]["romext"] = keyboard.getText()
+                    keyboard = xbmc.Keyboard(self.launchers[launcherID]["romext"], 
+                                                'Edit ROM extensions, use &quot;|&quot; as separator. (e.g lnk|cbr)')
+                    keyboard.doModal()
+                    if not keyboard.isConfirmed(): return
+                    self.launchers[launcherID]["romext"] = keyboard.getText()
 
             # Launcher thumbnails path menu option
             type2_nb = type2_nb + 1
