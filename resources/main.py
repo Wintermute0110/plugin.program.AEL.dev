@@ -2105,45 +2105,47 @@ class Main:
                                    'Save metadata to NFO file'])
             # --- Scrap rom metadata ---
             if type2 == 0:
-                self._gui_scrap_rom_metadata(roms, romID, launcherID)
+                # >> If this returns False there were no changes so no need to save ROMs XML.
+                if not self._gui_scrap_rom_metadata(roms, romID, launcherID): return
+
             # Import ROM metadata from NFO file
             elif type2 == 1:
                 fs_import_ROM_NFO(launcher, roms, romID)
                 info_str = fs_import_launcher_nfo(self.launchers[launcherID], roms, romID)
                 kodi_notify('Advanced Emulator Launcher', info_str)
-                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
-            # Edition of the rom title
+
+            # Edit of the rom title
             elif type2 == 2:
                 keyboard = xbmc.Keyboard(roms[romID]["name"], 'Edit title')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    title = keyboard.getText()
-                    if title == "":
-                        title = roms[romID]["name"]
-                    roms[romID]["name"] = title.rstrip()
-                    fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
+                if not keyboard.isConfirmed(): return
+                title = keyboard.getText()
+                if title == "":
+                    title = roms[romID]["name"]
+                roms[romID]["name"] = title.rstrip()
+
             # Edition of the rom release year
             elif type2 == 3:
                 keyboard = xbmc.Keyboard(roms[romID]["year"], 'Edit release year')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
-                    roms[romID]["year"] = keyboard.getText()
-                    fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
+                if not keyboard.isConfirmed()): return
+                roms[romID]["year"] = keyboard.getText()
+
             # Edition of the rom studio name
             elif type2 == 4:
                 keyboard = xbmc.Keyboard(roms[romID]["studio"], 'Edit studio')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
-                    roms[romID]["studio"] = keyboard.getText()
-                    fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
+                if not keyboard.isConfirmed()): return
+                roms[romID]["studio"] = keyboard.getText()
+
             # Edition of the rom game genre
             elif type2 == 5:
                 keyboard = xbmc.Keyboard(roms[romID]["genre"], 'Edit genre')
                 keyboard.doModal()
-                if (keyboard.isConfirmed()):
-                    roms[romID]["genre"] = keyboard.getText()
-                    fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
-            # Import of the rom game plot
+                if not keyboard.isConfirmed()): return
+                roms[romID]["genre"] = keyboard.getText()
+
+            # Import of the rom game plot from TXT file
             elif type2 == 6:
                 text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
                 if os.path.isfile(text_file):
@@ -2152,17 +2154,20 @@ class Main:
                     text_plot.close()
                     roms[romID]["plot"] = string_plot.replace('&quot;','"')
                     fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
+
             # Export ROM metadata to NFO file
             elif type2 == 7:
                 info_str = fs_export_ROM_NFO(self.launchers[launcherID], roms[romID])
                 kodi_notify('Advanced Emulator Launcher', info_str)
 
-        # Edit thumb and fanart
+        # Edit ROM thumb and fanart
         elif type == 1:
-            self._gui_edit_image(IMAGE_THUMB, KIND_ROM, roms, romID, launcherID)
+            # >> Returns True if image was changed
+            # >> Launcher is change using Python passign by assigment
+            if not self._gui_edit_image(IMAGE_THUMB, KIND_ROM, roms, romID, launcherID): return
 
         elif type == 2:
-            self._gui_edit_image(IMAGE_FANART, KIND_ROM, roms, romID, launcherID)
+            if not self._gui_edit_image(IMAGE_FANART, KIND_ROM, roms, romID, launcherID): return
 
         # Edit status
         elif type == 3:
@@ -2170,7 +2175,6 @@ class Main:
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
             roms[romID]["finished"] = finished
-            fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
             kodi_dialog_OK('Advanced Emulator Launcher Information', 
                            'ROM "{}" status is now {}'.format(roms[romID]["name"], finished_display))
 
@@ -2190,24 +2194,21 @@ class Main:
                 item_file = xbmcgui.Dialog().browse(1, 'Select the file', "files", "." + romext.replace("|", "|."), 
                                                     False, False, filename)
                 roms[romID]["filename"] = item_file
-                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
             # Custom launcher application file path
             elif type2 == 1:
                 altapp = roms[romID]["altapp"]
                 filter_str = ".bat|.exe|.cmd" if sys.platform == "win32" else ''
                 app = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
                                               "files", filter_str, False, False, altapp)
-                # Returns empty tuple if dialog was canceled.
+                # Returns empty browse if dialog was canceled.
                 if not app: return
                 roms[romID]["altapp"] = app
-                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
             # Custom launcher arguments
             elif type2 == 2:
                 keyboard = xbmc.Keyboard(roms[romID]["altarg"], 'Edit ROM custom application arguments')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    roms[romID]["altarg"] = keyboard.getText()
-                    fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
+                if not keyboard.isConfirmed(): return
+                roms[romID]["altarg"] = keyboard.getText()
             # Selection of the rom trailer file
             elif type2 == 3:
                 trailer = xbmcgui.Dialog().browse(1, 'Select ROM Trailer file', 
@@ -2215,15 +2216,14 @@ class Main:
                                                   False, False, roms[romID]["trailer"])
                 if not app: return
                 roms[romID]["trailer"] = trailer
-                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
             # Selection of the rom customs path
             elif type2 == 4:
                 custom = xbmcgui.Dialog().browse(0, 'Select ROM Extra-fanarts path', "files", "", 
                                                  False, False, roms[romID]["custom"])
+                if not custom: return
                 roms[romID]["custom"] = custom
-                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
 
-        # Link this favourite ROM to a new parent ROM
+        # Link favourite ROM to a new parent ROM
         # ONLY IN FAVOURITE ROM EDITING
         elif type == 5:
             # STEP 1: select new launcher.
@@ -2277,10 +2277,13 @@ class Main:
                     roms[launcher_rom_id]['fav_status']  = 'OK'
                     if roms[launcher_rom_id]['thumb']  == '': roms[launcher_rom_id]['thumb']  = self.launchers[launcher_id]['thumb']
                     if roms[launcher_rom_id]['fanart'] == '': roms[launcher_rom_id]['fanart'] = self.launchers[launcher_id]['fanart']
-                    # Save favourites
-                    fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
+        
+        # User canceled select dialog
+        elif type < 0:
+            return
 
-        # --- Save ROMs ---
+        # --- Save ROMs or Favourites ROMs ---
+        # Always save if we reach this point of the function
         if launcherID == '0':
             fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
         else:
@@ -2288,8 +2291,8 @@ class Main:
             fs_write_ROM_XML_file(roms_xml_file, roms, launcher)
 
         # It seems that updating the container does more harm than good... specially when having many ROMs
-        # By the way, what is the difference between Container.Refresh() and Container.Update()
-        # xbmc.executebuiltin("Container.Refresh")
+        # By the way, what is the difference between Container.Refresh() and Container.Update()?
+        kodi_refresh_container()
 
     #
     # Add ROMS to launcher
