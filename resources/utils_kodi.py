@@ -108,6 +108,10 @@ def kodi_busydialog_ON():
 def kodi_busydialog_OFF():
     xbmc.executebuiltin('Dialog.Close(busydialog)')
 
+def kodi_refresh_container():
+    log_debug('kodi_refresh_container()')
+    xbmc.executebuiltin('Container.Refresh')
+
 # -----------------------------------------------------------------------------
 # Kodi specific stuff
 # -----------------------------------------------------------------------------

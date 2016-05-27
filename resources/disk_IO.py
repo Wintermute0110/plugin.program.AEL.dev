@@ -652,10 +652,9 @@ def fs_load_NFO_file_scanner(nfo_file_path):
 def fs_export_launcher_NFO(settings, launcher):
     # --- Get NFO file name ---
     log_debug('fs_export_launcher_NFO() Exporting launcher NFO file.')
-    nfo_file_path, temp_file_path = fs_get_launcher_NFO_names(settings, launcher)
+    nfo_file_path = fs_get_launcher_NFO_name(settings, launcher)
 
     # If NFO file does not exist then create them. If it exists, overwrite.
-    log_debug('fs_export_launcher_NFO() NFO file DOES NOT exist. Creating new one.')
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<launcher>\n')
@@ -667,10 +666,16 @@ def fs_export_launcher_NFO(settings, launcher):
     nfo_content.append(XML_text('plot',      launcher['plot']))
     nfo_content.append('</launcher>\n')
     full_string = ''.join(nfo_content)
-    usock = open(nfo_file_path, 'wt')
-    usock.write(full_string)
-    usock.close()
-    user_info_str = 'Created %s'.format(os.path.basename(nfo_file_path))
+    try:
+        f = open(nfo_file_path, 'wt')
+        f.write(full_string)
+        f.close()
+    except:
+        user_info_str = 'Exception writing NFO file {}'.format(os.path.basename(nfo_file_path))
+        log_error("fs_export_launcher_NFO() Exception writing'{}'".format(nfo_file_path))
+        return user_info_str
+
+    user_info_str = 'Created {}'.format(os.path.basename(nfo_file_path))
     log_debug("fs_export_launcher_NFO() Created '{}'".format(nfo_file_path))
 
     return user_info_str
@@ -688,9 +693,10 @@ def fs_export_launcher_NFO(settings, launcher):
 def fs_import_launcher_NFO(settings, launchers, launcherID):
     # --- Get NFO file name ---
     log_debug('fs_import_launcher_NFO() Importing launcher NFO file.')
-    nfo_file_path, _ = fs_get_launcher_NFO_names(settings, self.launchers[launcherID])
+    nfo_file_path = fs_get_launcher_NFO_name(settings, launchers[launcherID])
 
     # --- Import data ---
+    changes_made = False
     user_info_str = ''
     if os.path.isfile(nfo_file_path):
         # Read NFO file data
@@ -714,24 +720,21 @@ def fs_import_launcher_NFO(settings, launchers, launcherID):
         launchers[launcherID]['studio']   = text_unescape_XML(item_publisher[0])
         launchers[launcherID]['genre']    = text_unescape_XML(item_genre[0])
         launchers[launcherID]['plot']     = text_unescape_XML(item_plot[0])
+        
+        changes_made = True
         user_info_str = 'Imported {}'.format(nfo_file_path)
         log_debug("fs_import_launcher_NFO() Imported '{}'".format(nfo_file_path))
     else:
+        changes_made = False
         user_info_str = 'NFO file not found {}'.format(nfo_file_path)
         log_debug("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_file_path))
 
-    return user_info_str
+    return (changes_made, user_info_str)
 
-def fs_get_launcher_NFO_names(settings, launcher):
+def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['name']
-    if len(settings['launcher_nfo_path']) > 0:
-        nfo_dir = settings['launcher_nfo_path']
-        log_debug("fs_get_launcher_NFO_names() Using default launcher_nfo_path = '{}'".format(nfo_dir))
-        nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
-    else:
-        nfo_dir = settings['launcher_nfo_path']
-        log_debug("fs_get_launcher_NFO_names() User set launcher_nfo_path = '{}'".format(nfo_dir))
-        nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
-    log_debug("fs_get_launcher_NFO_names() Using nfo_file_path = '{}'".format(nfo_file_path))
+    nfo_dir = settings['launchers_nfo_dir']
+    nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
+    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{}'".format(nfo_file_path))
 
-    return nfo_file_path, temp_file_path
+    return nfo_file_path

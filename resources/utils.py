@@ -174,12 +174,12 @@ def text_get_image_URL_extension(url):
 # Full decomposes a file name path or directory into its constituents
 # In theory this is indepedent of the operating system.
 # Returns a FileName object:
-#   F.path        Full path
-#   F.path_noext  Full path with no extension
-#   F.dirname     Directory name of file. Does not end in '/'
-#   F.base        File name with no path
-#   F.base_noext  File name with no path and no extension
-#   F.ext         File extension
+#   F.path        Full path                                     /home/Wintermute/Sonic.zip
+#   F.path_noext  Full path with no extension                   /home/Wintermute/Sonic
+#   F.dirname     Directory name of file. Does not end in '/'   /home/Wintermute
+#   F.base        File name with no path                        Sonic.zip
+#   F.base_noext  File name with no path and no extension       Sonic
+#   F.ext         File extension                                .zip
 #
 class FileName:
     pass
@@ -199,40 +199,40 @@ def misc_split_path(f_path):
     return F
 
 #
-# Get thumb/fanart filenames
-# Given
-def misc_get_thumb_path_noext(launcher, F):
-    thumb_path  = launcher["thumbpath"]
-    fanart_path = launcher["fanartpath"]
+# Get thumb/fanart filenames.
+# RULE If thumb/fanart have the same path then a suffix must be added to ROM base_name.
+#      If thumb/fanart have different paths no suffix is added to ROM base_name
+#
+def misc_get_thumb_path_noext(thumb_path, fanart_path, base_noext):
     # log_debug('misc_get_thumb_path_noext()  thumb_path {}'.format(thumb_path))
     # log_debug('misc_get_thumb_path_noext() fanart_path {}'.format(fanart_path))
 
     if thumb_path == fanart_path:
         # log_debug('misc_get_thumb_path_noext() Thumbs/Fanarts have the same path')
-        tumb_path_noext = os.path.join(thumb_path, F.base_noext + '_thumb')
+        path_noext = os.path.join(thumb_path, base_noext + '_thumb')
     else:
         # log_debug('misc_get_thumb_path_noext() Thumbs/Fanarts into different folders')
-        tumb_path_noext = os.path.join(thumb_path, F.base_noext)
-    # log_debug('misc_get_thumb_path_noext() tumb_path_noext {}'.format(tumb_path_noext))
+        path_noext = os.path.join(thumb_path, base_noext)
 
-    return tumb_path_noext
+    return path_noext
 
-def misc_get_fanart_path_noext(launcher, F):
-    thumb_path  = launcher["thumbpath"]
-    fanart_path = launcher["fanartpath"]
+def misc_get_fanart_path_noext(thumb_path, fanart_path, base_noext):
     # log_debug('misc_get_fanart_path_noext()  thumb_path {}'.format(thumb_path))
     # log_debug('misc_get_fanart_path_noext() fanart_path {}'.format(fanart_path))
 
     if thumb_path == fanart_path:
-        log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts have the same path')
-        fanart_path_noext = os.path.join(fanart_path, F.base_noext + '_fanart')
+        # log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts have the same path')
+        path_noext = os.path.join(fanart_path, base_noext + '_fanart')
     else:
-        log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts into different folders')
-        fanart_path_noext = os.path.join(fanart_path, F.base_noext)
-    # log_debug('misc_get_fanart_path_noext() fanart_path_noext {}'.format(fanart_path_noext))
+        # log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts into different folders')
+        path_noext = os.path.join(fanart_path, base_noext)
 
-    return fanart_path_noext
+    return path_noext
 
+#
+# Given the image path (directory + filename) with no extension and a list of image extension, search
+# for a local image.
+#
 def misc_look_for_image(image_path_noext, img_exts):
     image_name = ''
     log_debug('Testing image prefix {}'.format(image_path_noext))

@@ -56,12 +56,12 @@ CATEGORIES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
 FAVOURITES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
 
 # Artwork and NFO for Categories and Launchers
-DEFAULT_CAT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'categories-thumbs')
-DEFAULT_CAT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'categories-fanarts')
-DEFAULT_CAT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'categories-nfos')
-DEFAULT_LAUN_THUMB_DIR   = os.path.join(PLUGIN_DATA_DIR, 'launchers-thumbs')
-DEFAULT_LAUN_FANART_DIR  = os.path.join(PLUGIN_DATA_DIR, 'launchers-fanarts')
-DEFAULT_LAUN_NFO_DIR     = os.path.join(PLUGIN_DATA_DIR, 'launchers-nfos')
+DEFAULT_CAT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'category-thumbs')
+DEFAULT_CAT_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'category-fanarts')
+DEFAULT_CAT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'category-nfos')
+DEFAULT_LAUN_THUMB_DIR   = os.path.join(PLUGIN_DATA_DIR, 'launcher-thumbs')
+DEFAULT_LAUN_FANART_DIR  = os.path.join(PLUGIN_DATA_DIR, 'launcher-fanarts')
+DEFAULT_LAUN_NFO_DIR     = os.path.join(PLUGIN_DATA_DIR, 'launcher-nfos')
 
 # Misc "constants"
 KIND_CATEGORY        = 0
@@ -345,7 +345,7 @@ class Main:
     # Edit launcher/rom thumbnail/fanart. Note that categories have another function because
     # image scraping is not allowed for categores.
     #
-    # NOTE When editing ROMs optinal parameter launcherID is required.
+    # NOTE When editing ROMs optional parameter launcherID is required.
     # NOTE Caller is responsible for saving the Launchers/ROMs
     # NOTE if image is changed container should be updated so the user sees new image instantly
     # NOTE objects_dic is edited by assigment
@@ -370,22 +370,33 @@ class Main:
             image_key   = 'thumb'
             image_name  = 'Thumb'
             if objects_kind == KIND_LAUNCHER:
-                object_name = 'Launcher'
-                artwork_path = self.settings['launchers_thumb_dir']
+                kind_name = 'Launcher'
+                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                dest_basename   = objects_dic[objectID]['name']
+                dest_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
             elif objects_kind == KIND_ROM:
-                object_name = 'ROM'
-                # thumbpath/fanartpath are in the launcher data structure
-                artwork_path = self.launchers[launcherID]['thumbpath']
+                kind_name = 'ROM'
+                thumb_dir  = self.launchers[launcherID]['thumbpath']
+                fanart_dir = self.launchers[launcherID]['fanartpath']
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                dest_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
         elif image_kind == IMAGE_FANART:
             image_key   = 'fanart'
             image_name  = 'Fanart'
             if objects_kind == KIND_LAUNCHER:
-                object_name = 'Launcher'
-                artwork_path = self.settings['launchers_fanart_dir']
+                kind_name = 'Launcher'
+                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                dest_basename   = objects_dic[objectID]['name']
+                dest_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
             elif objects_kind == KIND_ROM:
-                object_name = 'ROM'
-                artwork_path = self.launchers[launcherID]['fanartpath']
-        log_debug('_gui_edit_image() Editing {} {}'.format(object_name, image_name))        
+                kind_name = 'ROM'
+                thumb_dir  = self.launchers[launcherID]['thumbpath']
+                fanart_dir = self.launchers[launcherID]['fanartpath']
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                dest_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
+        log_debug('_gui_edit_image() Editing {} {}'.format(kind_name, image_name))        
 
         # Show image editing options
         dialog = xbmcgui.Dialog()
@@ -395,31 +406,32 @@ class Main:
                               'Scrape Image from {}'.format(self.scraper_thumb.fancy_name) ])
         # Link to an image
         if type2 == 0:
-            image_dir = artwork_path if objects_dic[objectID][image_key] == '' else objects_dic[objectID][image_key]
+            if objects_dic[objectID][image_key] != '':
+                F = misc_split_path(objects_dic[objectID][image_key])
+                image_dir = F.dirname
+            else:
+                image_dir = ''
             log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
                                                  'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
             if not image_file or not os.path.isfile(image_file): return False
 
-            # --- Update object and save XML ---
-            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(object_name, objectID))
-            if objects_kind == KIND_LAUNCHER:
-                self.launchers[objectID][image_key] = image_file
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            elif objects_kind == KIND_ROM:
-                objects_dic[objectID][image_key] = image_file
-                launcher = self.launchers[launcherID]
-                roms_xml_file = launcher['roms_xml_file']
-                fs_write_ROM_XML_file(roms_xml_file, objects_dic, launcher)
+            # Update object by assigment. XML will be save by parent
+            objects_dic[objectID][image_key] = image_file
             kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
-            log_info('Selected {} "{}"'.format(image_name, image_file))
+            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(kind_name, objectID))
+            log_info('Selected {} {} "{}"'.format(kind_name, image_name, image_file))
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(image_file)
 
         # Import an image
         elif type2 == 1:
-            image_dir = artwork_path if objects_dic[objectID][image_key] == '' else objects_dic[objectID][image_key]
+            if objects_dic[objectID][image_key] != '':
+                F = misc_split_path(objects_dic[objectID][image_key])
+                image_dir = F.dirname
+            else:
+                image_dir = ''
             log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
                                                  'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
@@ -427,37 +439,28 @@ class Main:
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
-            dest_basename = objects_dic[objectID]['name']
-            dest_path = os.path.join(artwork_path, dest_basename + '_' + image_key + F.ext)
+            dest_path = dest_path_noext + F.ext
             log_debug('_gui_edit_image() image_file    = "{0}"'.format(image_file))
             log_debug('_gui_edit_image() img_ext       = "{0}"'.format(F.ext))
-            log_debug('_gui_edit_image() dest_basename = "{0}"'.format(dest_basename))
             log_debug('_gui_edit_image() dest_path     = "{0}"'.format(dest_path))
 
             # Copy image file
             if image_file == dest_path: 
                 log_info('image_file and dest_path are the same. Returning')
-                return
+                return False
             try:
                 fs_encoding = get_fs_encoding()
                 shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
             except OSError:
                 kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
 
-            # --- Update object and save XML ---
-            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(object_name, objectID))
-            if objects_kind == KIND_LAUNCHER:
-                self.launchers[objectID][image_key] = dest_path
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            elif objects_kind == KIND_ROM:
-                objects_dic[objectID][image_key] = dest_path
-                launcher = self.launchers[launcherID]
-                roms_xml_file = launcher['roms_xml_file']
-                fs_write_ROM_XML_file(roms_xml_file, objects_dic, launcher)
+            # Update object by assigment. XML will be save by parent
+            objects_dic[objectID][image_key] = dest_path
             kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(kind_name, objectID))
             log_info('Copied image "{}"'.format(image_file))
             log_info('Into         "{}"'.format(dest_path))
-            log_info('Selected {} "{}"'.format(image_name, dest_path))
+            log_info('Selected {} {} "{}"'.format(kind_name, image_name, dest_path))
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(dest_path)
@@ -466,13 +469,17 @@ class Main:
         elif type2 == 2:
             return self._gui_scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
 
+        # User canceled select box
+        elif type2 < 0:
+            return False
+
         # If we reach this point, changes were made. Launchers/ROMs must be saved, container must be refreshed.
         return True
 
     #
     # Edit category thumb/fanart.
     #
-    # NOTE For some reason option 'Import Local Image (Copy and Rename)' does not work. I have checked
+    # NOTE For some reason option 'Import Local Image (Copy and Rename)' does not work well. I have checked
     #      the copied filename is OK but Kodi refuses to display the image...
     #      Even more suprisingly, if later 'Select Local Image' is used and the file copied before to categories 
     #      artwork path is chosen then it works!
@@ -488,17 +495,24 @@ class Main:
             objectID     = categoryID
             image_key    = 'thumb'
             image_name   = 'Thumb'
-            artwork_path = self.settings['categories_thumb_dir']
+            # If user set same path for thumb/fanart then a suffix must be added
+            categories_thumb_dir  = self.settings['categories_thumb_dir']
+            categories_fanart_dir = self.settings['categories_fanart_dir']
+            dest_basename   = objects_dic[objectID]['name']
+            dest_path_noext = misc_get_thumb_path_noext(categories_thumb_dir, categories_fanart_dir, dest_basename)
         elif image_kind == IMAGE_FANART:
             objects_dic  = self.categories
             objectID     = categoryID
             image_key    = 'fanart'
             image_name   = 'Fanart'
-            artwork_path = self.settings['categories_fanart_dir']
+            categories_thumb_dir  = self.settings['categories_thumb_dir']
+            categories_fanart_dir = self.settings['categories_fanart_dir']
+            dest_basename   = objects_dic[objectID]['name']
+            dest_path_noext = misc_get_fanart_path_noext(categories_thumb_dir, categories_fanart_dir, dest_basename)
         else:
             log_error('_gui_edit_category_image() Unknown image_kind = {}'.format(image_kind))
             kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
-            return
+            return False
         log_debug('_gui_edit_category_image() Editing {}'.format(image_name))
 
         # Show image editing options
@@ -518,10 +532,10 @@ class Main:
                                                  'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
             if not image_file or not os.path.isfile(image_file): return False
 
-            # Update object and save XML
-            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
+            # Update object by assigment. XML will be save by parent
             objects_dic[objectID][image_key] = image_file
             kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
             log_info('Selected {} "{}"'.format(image_name, image_file))
 
             # --- Update Kodi image cache ---
@@ -536,22 +550,20 @@ class Main:
                 image_dir = ''
             log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name), 
-                                                 "files", ".jpg|.jpeg|.gif|.png", True, False, image_dir)
+                                                 'files', ".jpg|.jpeg|.gif|.png", True, False, image_dir)
             if not image_file or not os.path.isfile(image_file): return False
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
-            dest_basename = objects_dic[objectID]['name']
-            dest_path = os.path.join(artwork_path, dest_basename + '_' + image_key + F.ext)
+            dest_path = dest_path_noext + F.ext
             log_debug('_gui_edit_category_image() image_file    = "{0}"'.format(image_file))
             log_debug('_gui_edit_category_image() img_ext       = "{0}"'.format(F.ext))
-            log_debug('_gui_edit_category_image() dest_basename = "{0}"'.format(dest_basename))
             log_debug('_gui_edit_category_image() dest_path     = "{0}"'.format(dest_path))
 
-            # Copy image file
+            # Copy image file, but never over itself
             if image_file == dest_path: 
                 log_info('image_file and dest_path are the same. Returning')
-                return
+                return False
             try:
                 fs_encoding = get_fs_encoding()
                 shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
@@ -559,15 +571,19 @@ class Main:
                 kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
 
             # Update object and save XML
-            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
             objects_dic[objectID][image_key] = dest_path
             kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
             log_info('Copied image "{}"'.format(image_file))
             log_info('Into         "{}"'.format(dest_path))
             log_info('Selected {} "{}"'.format(image_name, dest_path))
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(dest_path)
+
+        # User canceled select box
+        elif type2 < 0:
+            return False
 
         return True
 
@@ -736,7 +752,7 @@ class Main:
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)        
-        xbmc.executebuiltin('Container.Refresh')
+        kodi_refresh_container()
 
     def _command_add_new_category(self):
         dialog = xbmcgui.Dialog()
@@ -864,59 +880,59 @@ class Main:
                                    'Save metadata to NFO file'])
             # Scrape launcher metadata
             if type2 == 0:
-                self._gui_scrap_launcher_metadata(launcherID)
+                if not self._gui_scrap_launcher_metadata(launcherID): return
             # Import launcher metadata from NFO file
             elif type2 == 1:
-                info_str = fs_import_launcher_nfo(self.settings, self.launchers, launcherID)
+                # >> Launcher is edited using Python passing by assigment
+                (changes_made, info_str) = fs_import_launcher_NFO(self.settings, self.launchers, launcherID)
+                if not changes_made: return
                 kodi_notify('Advanced Emulator Launcher', info_str)
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
             # Edition of the launcher name
             elif type2 == 2:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Edit title')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    title = keyboard.getText()
-                    if title == "" :
-                        title = self.launchers[launcherID]["name"]
-                    self.launchers[launcherID]["name"] = title.rstrip()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            # Selection of the launcher game system
+                if not keyboard.isConfirmed(): return
+                title = keyboard.getText()
+                if title == "":
+                    title = self.launchers[launcherID]["name"]
+                self.launchers[launcherID]["name"] = title.rstrip()
+
+            # Selection of the launcher platform from AEL "official" list
             elif type2 == 3:
                 dialog = xbmcgui.Dialog()
                 platforms = emudata_platform_list()
                 sel_platform = dialog.select('Select the platform', platforms)
-                if not sel_platform == -1:
-                    self.launchers[launcherID]["platform"] = platforms[sel_platform]
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                if sel_platform < 0: return
+                self.launchers[launcherID]["platform"] = platforms[sel_platform]
+
             # Edition of the launcher release date (year)
             elif type2 == 4:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["year"], 'Edit release year')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    self.launchers[launcherID]["year"] = keyboard.getText()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                if not keyboard.isConfirmed(): return
+                self.launchers[launcherID]["year"] = keyboard.getText()
+
             # Edition of the launcher studio name
             elif type2 == 5:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["studio"], 'Edit studio')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    self.launchers[launcherID]["studio"] = keyboard.getText()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                if not keyboard.isConfirmed(): return
+                self.launchers[launcherID]["studio"] = keyboard.getText()
+
             # Edition of the launcher genre
             elif type2 == 6:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["genre"], 'Edit genre')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    self.launchers[launcherID]["genre"] = keyboard.getText()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                if not keyboard.isConfirmed(): return
+                self.launchers[launcherID]["genre"] = keyboard.getText()
 
             # Edit launcher description (plot)
             elif type2 == 7:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["plot"], 'Edit descripion')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    self.launchers[launcherID]["plot"] = keyboard.getText()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                if not keyboard.isConfirmed(): return
+                self.launchers[launcherID]["plot"] = keyboard.getText()
 
             # Import of the launcher descripion (plot)
             elif type2 == 8:
@@ -925,25 +941,33 @@ class Main:
                     file_data = self._gui_import_TXT_file(text_file)
                     if file_data != '':
                         self.launchers[launcherID]["plot"] = file_data
-                        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 else:
                     desc_str = text_limit_string(self.launchers[launcherID]["plot"], DESCRIPTION_MAXSIZE)
                     kodi_dialog_OK('Advanced Emulator Launcher - Information', 
                                    "Launcher plot '{}' not changed".format(desc_str))
+                    return
             # Export launcher metadata to NFO file
             elif type2 == 9:
-                info_str = fs_export_launcher_nfo(self.settings, self.launchers[launcherID])
+                info_str = fs_export_launcher_NFO(self.settings, self.launchers[launcherID])
                 kodi_notify('Advanced Emulator Launcher', info_str)
+                # >> No need to save launchers
+                return
+
+            # >> User canceled select dialog
+            elif type2 < 0:
+                return
 
         # Launcher Thumbnail menu option
         type_nb = type_nb + 1
         if type == type_nb:            
-            self._gui_edit_image(IMAGE_THUMB, KIND_LAUNCHER, self.launchers, launcherID)
+            # >> Returns True if image was changed
+            # >> Launcher is change using Python passign by assigment
+            if not self._gui_edit_image(IMAGE_THUMB, KIND_LAUNCHER, self.launchers, launcherID): return
 
         # Launcher Fanart menu option
         type_nb = type_nb + 1
         if type == type_nb:
-            self._gui_edit_image(IMAGE_FANART, KIND_LAUNCHER, self.launchers, launcherID)
+            if not self._gui_edit_image(IMAGE_FANART, KIND_LAUNCHER, self.launchers, launcherID): return
 
         # Change launcher's category
         type_nb = type_nb + 1
@@ -956,10 +980,11 @@ class Main:
                 categories_id.append(self.categories[key]['id'])
                 categories_name.append(self.categories[key]['name'])
             selected_cat = dialog.select('Select the category', categories_name)
-            if not selected_cat == -1:
-                self.launchers[launcherID]["category"] = categories_id[selected_cat]
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categories_id[selected_cat]))
+            if selected_cat <0: return
+            self.launchers[launcherID]["category"] = categories_id[selected_cat]
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categories_id[selected_cat]))
+            return
 
         # --- Launcher status (finished [bool]) ---
         type_nb = type_nb + 1
@@ -968,7 +993,6 @@ class Main:
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.launchers[launcherID]['finished'] = finished
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_dialog_OK('Advanced Emulator Launcher', 
                            'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]['name'], finished_display))
 
@@ -995,18 +1019,16 @@ class Main:
                     if has_NoIntro_DAT:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
-                        if ret:
-                            self.launchers[launcherID]["nointro_xml_file"] = ''
-                            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                            kodi_dialog_OK('Advanced Emulator Launcher', 'Rescan your ROMs to remove No-Intro tags.')
+                        if not ret: return
+                        self.launchers[launcherID]["nointro_xml_file"] = ''
+                        kodi_dialog_OK('Advanced Emulator Launcher', 'Rescan your ROMs to remove No-Intro tags.')
                     else:
                         # Browse for No-Intro file
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
                         dat_file = xbmcgui.Dialog().browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml')
-                        if os.path.isfile(dat_file) == True:
-                            self.launchers[launcherID]["nointro_xml_file"] = dat_file
-                            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                            kodi_dialog_OK('Advanced Emulator Launcher', 'DAT file successfully added. Rescan your ROMs to audit them.')
+                        if not os.path.isfile(dat_file): return
+                        self.launchers[launcherID]["nointro_xml_file"] = dat_file
+                        kodi_dialog_OK('Advanced Emulator Launcher', 'DAT file successfully added. Rescan your ROMs to audit them.')
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
@@ -1036,6 +1058,8 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
+                    # >> No need to save launchers
+                    return
 
                 # --- Import Items list form NFO files ---
                 elif type2 == 2:
@@ -1046,6 +1070,8 @@ class Main:
                         fs_import_rom_nfo(launcherID, rom)
                     # >> Save ROMs XML file
                     fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
+                    # >> No need to save launchers
+                    return
 
                 # --- Export Items list to NFO files ---
                 elif type2 == 3:
@@ -1053,6 +1079,7 @@ class Main:
                     roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
                     for rom in roms:
                         fs_export_rom_nfo(launcherID, rom)
+                    return
 
                 # --- Empty Launcher menu option ---
                 elif type2 == 4:
@@ -1061,7 +1088,7 @@ class Main:
                     # Container.Refresh at the end of this function and calling the plugin twice.
                     return
 
-        # --- Launcher Advanced modifications menu option ---
+        # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
             lnk_str = 'ON' if self.launchers[launcherID]["lnk"] == True else 'OFF'
@@ -1211,11 +1238,14 @@ class Main:
             # Container.Refresh at the end of this function and calling the plugin twice.
             return
 
-        if type == -1:
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        # User pressed cancel or close dialog
+        elif type < 0:
+            return
 
-        # Return to the launcher directory
-        xbmc.executebuiltin('Container.Refresh')
+        # >> If this point is reached then changes to metadata/images were made.
+        # >> Save categories and update container contents so user sees those changes inmediately.
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)        
+        kodi_refresh_container()
 
     def _command_add_new_launcher(self, categoryID):
         # If categoryID not found return to plugin root window.
@@ -2845,12 +2875,18 @@ class Main:
             image_key   = 'thumb'
             image_name  = 'Thumb'
             if objects_kind == KIND_LAUNCHER:
-                object_name = 'Launcher'
+                kind_name = 'Launcher'
+
                 artwork_path = objects_dic[objectID]['thumbpath']
                 local_image = 0
                 kodi_dialog_OK('AEL', 'Implement me')
+                
+                image_path_noext = misc_get_thumb_path_noext(launcher, ROM)
+                local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
+                platform = self.launchers[launcherID]['platform']
+                
             elif objects_kind == KIND_ROM:
-                object_name = 'ROM'
+                kind_name = 'ROM'
                 launcher = self.launchers[launcherID]
                 ROM = misc_split_path(objects_dic[objectID]['filename'])
                 image_path_noext = misc_get_thumb_path_noext(launcher, ROM)
@@ -2861,18 +2897,20 @@ class Main:
             image_key   = 'fanart'
             image_name  = 'Fanart'
             if objects_kind == KIND_LAUNCHER:
-                object_name = 'Launcher'
+                kind_name = 'Launcher'
                 artwork_path = objects_dic[objectID]['fanartpath']
                 local_image = 0
                 kodi_dialog_OK('AEL', 'Implement me')
+                
+                
             elif objects_kind == KIND_ROM:
-                object_name = 'ROM'
+                kind_name = 'ROM'
                 launcher = self.launchers[launcherID]
                 ROM = misc_split_path(objects_dic[objectID]['filename'])
                 image_path_noext = misc_get_fanart_path_noext(launcher, ROM)
                 local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
                 platform = self.launchers[launcherID]['platform']
-        log_debug('_gui_scrap_image_semiautomatic() Editing {} {}'.format(object_name, image_name))        
+        log_debug('_gui_scrap_image_semiautomatic() Editing {} {}'.format(kind_name, image_name))
 
         # --- Ask user to edit the image search string ---
         keyboard = xbmc.Keyboard(objects_dic[objectID]['name'], 'Enter the string to search for...')
