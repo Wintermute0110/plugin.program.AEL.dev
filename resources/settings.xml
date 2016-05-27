@@ -54,6 +54,6 @@
 
     <setting id="separator" type="lsep" label="Debug options"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
-    <setting label="Show batch command window" type="bool" id="show_batch_window" default="false"/>
+    <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
 </category>
 </settings>

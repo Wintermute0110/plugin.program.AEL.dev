@@ -1147,16 +1147,14 @@ class Main:
                 app = xbmcgui.Dialog().browse(1, 'Select the launcher application',
                                               "files","", False, False, self.launchers[launcherID]["application"])
                 self.launchers[launcherID]["application"] = app
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Edition of the launcher arguments
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]["args"], 'Edit application arguments')
                 keyboard.doModal()
-                if keyboard.isConfirmed():
-                    self.launchers[launcherID]["args"] = keyboard.getText()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                if not keyboard.isConfirmed(): return
+                self.launchers[launcherID]["args"] = keyboard.getText()
 
             if self.launchers[launcherID]["rompath"] != "":
                 # Launcher roms path menu option
@@ -1165,7 +1163,6 @@ class Main:
                     rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', "files", "", 
                                                        False, False, self.launchers[launcherID]["rompath"])
                     self.launchers[launcherID]["rompath"] = rom_path
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
                 # Edition of the launcher rom extensions (only for emulator launcher)
                 type2_nb = type2_nb +1
@@ -1174,9 +1171,8 @@ class Main:
                         keyboard = xbmc.Keyboard(self.launchers[launcherID]["romext"], 
                                                  'Edit files extensions, use &quot;|&quot; as separator. (e.g lnk|cbr)')
                         keyboard.doModal()
-                        if keyboard.isConfirmed():
+                        if not keyboard.isConfirmed(): return
                             self.launchers[launcherID]["romext"] = keyboard.getText()
-                            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Launcher thumbnails path menu option
             type2_nb = type2_nb + 1
@@ -1184,7 +1180,6 @@ class Main:
                 thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", 
                                                      False, False, self.launchers[launcherID]["thumbpath"])
                 self.launchers[launcherID]["thumbpath"] = thumb_path
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Launcher fanarts path menu option
             type2_nb = type2_nb + 1
@@ -1192,7 +1187,6 @@ class Main:
                 fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", 
                                                       False, False, self.launchers[launcherID]["fanartpath"])
                 self.launchers[launcherID]["fanartpath"] = fanart_path
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Launcher trailer file menu option
             type2_nb = type2_nb + 1
@@ -1201,7 +1195,6 @@ class Main:
                                                       ".mp4|.mpg|.avi|.wmv|.mkv|.flv", False, False, 
                                                       self.launchers[launcherID]["trailerpath"])
                 self.launchers[launcherID]["trailerpath"] = fanart_path
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Launcher custom path menu option
             type2_nb = type2_nb + 1
@@ -1209,7 +1202,6 @@ class Main:
                 fanart_path = xbmcgui.Dialog().browse(0, 'Select Extra-fanarts path', "files", "", False, False, 
                                                       self.launchers[launcherID]["custompath"])
                 self.launchers[launcherID]["custompath"] = fanart_path
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Launcher minimize state menu option
             type2_nb = type2_nb + 1
@@ -1217,7 +1209,6 @@ class Main:
                 dialog = xbmcgui.Dialog()
                 type3 = dialog.select('Toggle Kodi Fullscreen', ["%s (%s)" % ('OFF', 'default'), "%s" % ('ON')])
                 self.launchers[launcherID]["minimize"] = True if type3 == 1 else False
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # Launcher internal lnk option
             if sys.platform == 'win32':
@@ -1228,7 +1219,6 @@ class Main:
                                           ["%s (%s)" % ('ON','default'), 
                                            "%s (%s)" % ('OFF','experienced users')])
                     self.launchers[launcherID]["lnk"] = False if type3 == 1 else True
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # Remove Launcher menu option
         type_nb = type_nb + 1
