@@ -582,6 +582,7 @@ def fs_import_ROM_NFO(launcher, roms, romID):
     log_debug('fs_export_ROM_NFO() Loading "{}"'.format(nfo_file_path))
     
     # --- Import data ---
+    changes_made = False
     user_info_str = ''
     if os.path.isfile(nfo_file_path):
         # Read file, put in a string and remove line endings
@@ -604,13 +605,15 @@ def fs_import_ROM_NFO(launcher, roms, romID):
         if len(item_genre) > 0:     roms[romID]['genre']     = text_unescape_XML(item_genre[0])
         if len(item_plot) > 0:      roms[romID]['plot']      = text_unescape_XML(item_plot[0])
 
+        changes_made = True
         user_info_str = 'Imported {}'.format(nfo_file_path)
         log_debug("fs_import_ROM_NFO() Imported '{}'".format(nfo_file_path))
     else:
+        changes_made = False
         user_info_str = 'NFO file not found {}'.format(nfo_file_path)
         log_debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
 
-    return user_info_str
+    return (changes_made, user_info_str)
 
 #
 # This file is called by the ROM scanner to read a ROM info file automatically.

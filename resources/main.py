@@ -2100,8 +2100,8 @@ class Main:
                                    "Edit Release Year: '{}'".format(roms[romID]['year']),
                                    "Edit Studio: '{}'".format(roms[romID]['studio']),
                                    "Edit Genre: '{}'".format(roms[romID]['genre']),
-                                   "Edit Description: '{}'".format(desc_str),
-                                   'Load Description from file ...',
+                                   "Edit Plot: '{}'".format(desc_str),
+                                   'Load Plot from TXT file ...',
                                    'Save metadata to NFO file'])
             # --- Scrap rom metadata ---
             if type2 == 0:
@@ -2110,8 +2110,12 @@ class Main:
 
             # Import ROM metadata from NFO file
             elif type2 == 1:
-                fs_import_ROM_NFO(launcher, roms, romID)
-                info_str = fs_import_launcher_nfo(self.launchers[launcherID], roms, romID)
+                if launcherID == '0':
+                    kodi_dialog_OK('Advanced Emulator Launcher',
+                                   'Importing NFO file is not allowed for ROMs in Favourites.')
+                    return
+                (changes_made, user_info_str) = fs_import_ROM_NFO(launcher, roms, romID)
+                if not changes_made: return
                 kodi_notify('Advanced Emulator Launcher', info_str)
 
             # Edit of the rom title
@@ -2145,20 +2149,39 @@ class Main:
                 if not keyboard.isConfirmed()): return
                 roms[romID]["genre"] = keyboard.getText()
 
-            # Import of the rom game plot from TXT file
+            # Edit ROM description (plot)
             elif type2 == 6:
+                keyboard = xbmc.Keyboard(roms[romID]['plot'], 'Edit plot')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                roms[romID]['plot'] = keyboard.getText()
+
+            # Import of the rom game plot from TXT file
+            elif type2 == 7:
                 text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
                 if os.path.isfile(text_file):
-                    text_plot = open(text_file)
-                    string_plot = text_plot.read()
-                    text_plot.close()
-                    roms[romID]["plot"] = string_plot.replace('&quot;','"')
-                    fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, self.launchers[launcherID])
+                    file_data = self._gui_import_TXT_file(text_file)
+                    roms[romID]['plot'] = file_data
+                else:
+                    desc_str = text_limit_string(self.launchers[launcherID]["plot"], DESCRIPTION_MAXSIZE)
+                    kodi_dialog_OK('Advanced Emulator Launcher - Information', 
+                                   "Launcher plot '{}' not changed".format(desc_str))
+                    return
 
             # Export ROM metadata to NFO file
-            elif type2 == 7:
+            elif type2 == 8:
+                if launcherID == '0':
+                    kodi_dialog_OK('Advanced Emulator Launcher',
+                                   'Exporting NFO file is not allowed for ROMs in Favourites.')
+                    return
                 info_str = fs_export_ROM_NFO(self.launchers[launcherID], roms[romID])
                 kodi_notify('Advanced Emulator Launcher', info_str)
+                # >> No need to save ROMs
+                return
+
+            # >> User canceled select dialog
+            elif type2 < 0:
+                return
 
         # Edit ROM thumb and fanart
         elif type == 1:
@@ -2222,6 +2245,10 @@ class Main:
                                                  False, False, roms[romID]["custom"])
                 if not custom: return
                 roms[romID]["custom"] = custom
+
+            # >> User canceled select dialog
+            elif type2 < 0:
+                return
 
         # Link favourite ROM to a new parent ROM
         # ONLY IN FAVOURITE ROM EDITING
