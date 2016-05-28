@@ -1406,6 +1406,7 @@ class Main:
                 kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from Favourites')
                 # If Favourites is empty then go to addon root, if not refresh
                 if len(roms) == 0:
+                    # For some reason ReplaceWindow() does not work...
                     xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
                 else:
                     xbmc.executebuiltin('Container.Refresh')
