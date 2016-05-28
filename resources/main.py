@@ -1404,7 +1404,7 @@ class Main:
                 roms.pop(romID)
                 fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
                 kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from Favourites')
-                # If Favourites is empty then go to root, if not refresh
+                # If Favourites is empty then go to addon root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
                 else:
@@ -1425,7 +1425,7 @@ class Main:
                 launcher = self.launchers[launcherID]
                 fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, launcher)
                 kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from launcher')
-                # If launcher is empty then go to root, if not refresh
+                # If launcher is empty then go to addon root, if not refresh
                 if len(roms) == 0:
                     xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
                 else:
@@ -1861,7 +1861,7 @@ class Main:
         fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
 
         # Update container to show changes in Favourites flags. If not, user has to exit Favourites and enter again.
-        xbmc.executebuiltin('Container.Refresh')
+        kodi_refresh_container()
 
     #
     # Search ROMs in launcher
