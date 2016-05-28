@@ -2512,10 +2512,6 @@ class Main:
         romdata['filename'] = ROM.path
 
         # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # --- Update progress dialog ---
-        metadata_scraper_text = 'Scraping metadata with {}'.format(self.scraper_metadata.name)
-        self.pDialog.update(self.progress_number, self.file_text, metadata_scraper_text)
-
         # >> Test if NFO file exists
         nfo_file_path = ROM.path_noext + ".nfo"
         log_debug('Testing NFO file "{}"'.format(nfo_file_path))
@@ -2551,9 +2547,13 @@ class Main:
 
         # >> Do metadata action based on policy
         if metadata_action == META_TITLE_ONLY:
+            scraper_text = 'Formatting ROM name.'
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
         elif metadata_action == META_NFO_FILE:
             nfo_file_path = ROM.path_noext + ".nfo"
+            scraper_text = 'Reading NFO file {}'.format(nfo_file_path)
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             log_debug('Trying NFO file "{}"'.format(nfo_file_path))
             if os.path.isfile(nfo_file_path):
                 log_debug('NFO file found. Reading it')
@@ -2568,11 +2568,15 @@ class Main:
                 log_debug('NFO file not found. Only cleaning ROM name.')
                 romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
         elif metadata_action == META_SCRAPER:
+            scraper_text = 'Scraping metadata with {}. Searching for matching games...'.format(self.scraper_metadata.fancy_name)
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+
             # --- Do a search and get a list of games ---
             rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
             results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
             log_debug('Metadata scraper found {} result/s'.format(len(results)))
             if results:
+                scraper_text = 'Scraping metadata with {}. Game selected. Getting metadata...'.format(self.scraper_metadata.fancy_name)
                 # id="metadata_mode" values="Semi-automatic|Automatic"
                 if self.settings['metadata_mode'] == 0:
                     log_debug('Metadata semi-automatic scraping')
@@ -2590,13 +2594,15 @@ class Main:
 
                     # Open progress dialog again
                     self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
-                    self.pDialog.update(self.progress_number, self.file_text, metadata_scraper_text)
+                    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
                 elif self.settings['metadata_mode'] == 1:
                     log_debug('Metadata automatic scraping. Selecting first result.')
                     selectgame = 0
+                    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
                 else:
                     log_error('Invalid metadata_mode {}'.format(self.settings['metadata_mode']))
                     selectgame = 0
+                    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
                 # --- Grab metadata for selected game ---
                 gamedata = self.scraper_metadata.get_metadata(results[selectgame])
@@ -2698,12 +2704,16 @@ class Main:
             scraping_mode    = self.settings['thumb_mode']
             scraper_obj      = self.scraper_thumb
             scraper_name     = self.scraper_thumb.name
-            image_path_noext = misc_get_thumb_path_noext(launcher, ROM)
+            thumb_dir        = launcher['thumbpath']
+            fanart_dir       = launcher['fanartpath']
+            image_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
         elif image_kind == IMAGE_THUMB:
             scraping_mode    = self.settings['fanart_mode']
             scraper_obj      = self.scraper_fanart
             scraper_name     = self.scraper_fanart.name
-            image_path_noext = misc_get_fanart_path_noext(launcher, ROM)
+            thumb_dir        = launcher['thumbpath']
+            fanart_dir       = launcher['fanartpath']
+            image_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
         else:
             kodi_notify_warn('Advanced Emulator Launcher', 'Wrong image_kind = {}'.format(image_kind))
             log_error('_roms_scrap_image() Wrong image_kind = {}'.format(image_kind))
@@ -2724,6 +2734,7 @@ class Main:
             return ret_imagepath
 
         # --- Choose game to download image ---
+        scraper_text = 'Scraping {} with {}. Game selected. Getting list of images...'.format(image_name, scraper_name)
         # settings.xml: id="thumb_mode"  default="0" values="Semi-automatic|Automatic"
         # settings.xml: id="fanart_mode" default="0" values="Semi-automatic|Automatic"
         if scraping_mode == 0:
@@ -2741,15 +2752,16 @@ class Main:
             if selectgame < 0: selectgame = 0
 
             # Open progress dialog again
-            scraper_text = 'Scraping {} with {}. Game selected. Getting list of images...'.format(image_name, scraper_name)
             self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         elif scraping_mode == 1:
             log_debug('{} automatic scraping. Selecting first result.'.format(image_name))
             selectgame = 0
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         else:
             log_error('{} invalid thumb_mode {}'.format(image_name, scraping_mode))
             selectgame = 0
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
         # --- Grab list of images for the selected game ---
         image_list = scraper_obj.get_images(results[selectgame])
