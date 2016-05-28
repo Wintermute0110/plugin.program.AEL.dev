@@ -27,7 +27,7 @@ try:
     from utils_kodi import *
 except:
     from utils_kodi_standalone import *
- 
+
 # -----------------------------------------------------------------------------
 # Data model used in the plugin
 # -----------------------------------------------------------------------------
@@ -37,16 +37,16 @@ except:
 #
 # Tag name in the XML is the same as in the data dictionary.
 def fs_new_category():
-    category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '', 
+    category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '',
                 'description' : '', 'finished' : False}
 
     return category
 
 def fs_new_launcher():
-    launcher = {'id' : '', 'name' : '', 'categoryID' : '', 'platform' : '', 
-                'application' : '', 'args' : '', 'rompath' : '', 'romext' : '', 
-                'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '', 
-                'thumb' : '', 'fanart' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',  
+    launcher = {'id' : '', 'name' : '', 'categoryID' : '', 'platform' : '',
+                'application' : '', 'args' : '', 'rompath' : '', 'romext' : '',
+                'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '',
+                'thumb' : '', 'fanart' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',
                 'lnk' : False, 'finished': False, 'minimize' : False,
                 'roms_xml_file' : '', 'nointro_xml_file' : '' }
 
@@ -59,9 +59,9 @@ def fs_new_launcher():
 # nointro_status  string ['Have', 'Miss', 'Unknown', 'None'] default 'None'
 def fs_new_rom():
     rom = {'id' : '', 'name' : '', 'filename' : '',
-           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
-           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '', 
-           'altapp' : '', 'altarg' : '', 
+           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '',
+           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',
+           'altapp' : '', 'altarg' : '',
            'finished' : False, 'nointro_status' : 'None' }
 
     return rom
@@ -73,11 +73,11 @@ def fs_new_rom():
 # 'Broken'   filename does not exist. ROM is unplayable
 def fs_new_favourite_rom():
     rom = {'id' : '', 'name' : '', 'filename' : '',
-           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '', 
-           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '', 
+           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '',
+           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',
            'altapp' : '', 'altarg' : '',
            'finished' : False, 'nointro_status' : 'None',
-           'launcherID' : '', 'platform' : '', 
+           'launcherID' : '', 'platform' : '',
            'application' : '', 'args' : '', 'rompath' : '', 'romext' : '',
            'fav_status' : 'OK' }
 
@@ -92,7 +92,7 @@ def fs_new_favourite_rom():
 def XML_text(tag_name, tag_text):
     tag_text = text_escape_XML(tag_text)
     line = '  <{}>{}</{}>\n'.format(tag_name, tag_text, tag_name)
-    
+
     return line
 
 #
@@ -368,7 +368,7 @@ def fs_load_ROM_XML_file(roms_xml_file):
                     xml_string = xml_text if xml_text in ['Have', 'Miss', 'Unknown', 'None'] else 'None'
                     rom[xml_tag] = xml_string
             roms[rom['id']] = rom
-            
+
     # --- We are not busy anymore ---
     kodi_busydialog_OFF()
 
@@ -448,7 +448,7 @@ def fs_load_Favourites_XML_file(roms_xml_file):
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
                 rom[xml_tag] = xml_text
-                
+
                 # Now transform data depending on tag name
                 if xml_tag == 'finished':
                     xml_bool = True if xml_text == 'True' else False
@@ -459,7 +459,7 @@ def fs_load_Favourites_XML_file(roms_xml_file):
             roms[rom['id']] = rom
 
     return roms
-    
+
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
     if not os.path.isfile(roms_xml_file):
@@ -501,9 +501,9 @@ def fs_load_GameInfo_XML(xml_file):
         if game_element.tag == 'game':
             # Default values
             game = {'name'    : '', 'description'  : '', 'year'   : '',
-                    'rating'  : '', 'manufacturer' : '', 'dev'    : '', 
-                    'genre'   : '', 'score'        : '', 'player' : '', 
-                    'story'   : '', 'enabled'      : '', 'crc'    : '', 
+                    'rating'  : '', 'manufacturer' : '', 'dev'    : '',
+                    'genre'   : '', 'score'        : '', 'player' : '',
+                    'story'   : '', 'enabled'      : '', 'crc'    : '',
                     'cloneof' : '' }
 
             # ROM name is an attribute of <game>
@@ -541,7 +541,7 @@ def fs_load_GameInfo_XML(xml_file):
 # -------------------------------------------------------------------------------------------------
 #
 # Returns:
-# user_info_str  Information string that can be used for notifications in interactive mode (for example, 
+# user_info_str  Information string that can be used for notifications in interactive mode (for example,
 #                when "Edit ROM", or for logging (export all ROMs NFO files)
 #
 def fs_export_ROM_NFO(launcher, rom):
@@ -580,7 +580,7 @@ def fs_import_ROM_NFO(launcher, roms, romID):
     F = misc_split_path(roms[romID]['filename'])
     nfo_file_path = F.path_noext + '.nfo'
     log_debug('fs_export_ROM_NFO() Loading "{}"'.format(nfo_file_path))
-    
+
     # --- Import data ---
     changes_made = False
     user_info_str = ''
@@ -620,7 +620,7 @@ def fs_import_ROM_NFO(launcher, roms, romID):
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 #
 def fs_load_NFO_file_scanner(nfo_file_path):
-    nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '', 
+    nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '',
                'genre' : '', 'plot' : '' }
 
     # Read file, put in a string and remove line endings
@@ -706,7 +706,7 @@ def fs_import_launcher_NFO(settings, launchers, launcherID):
         f = open(nfo_file_path, 'rt')
         item_nfo = f.read().replace('\r','').replace('\n','')
         f.close()
-        
+
         # Find data
         item_title     = re.findall('<title>(.*?)</title>', item_nfo)
         item_platform  = re.findall('<platform>(.*?)</platform>', item_nfo)
@@ -723,7 +723,7 @@ def fs_import_launcher_NFO(settings, launchers, launcherID):
         launchers[launcherID]['studio']   = text_unescape_XML(item_publisher[0])
         launchers[launcherID]['genre']    = text_unescape_XML(item_genre[0])
         launchers[launcherID]['plot']     = text_unescape_XML(item_plot[0])
-        
+
         changes_made = True
         user_info_str = 'Imported {}'.format(nfo_file_path)
         log_debug("fs_import_launcher_NFO() Imported '{}'".format(nfo_file_path))
