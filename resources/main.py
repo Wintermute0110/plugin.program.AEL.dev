@@ -884,9 +884,7 @@ class Main:
             # Import launcher metadata from NFO file
             elif type2 == 1:
                 # >> Launcher is edited using Python passing by assigment
-                (changes_made, info_str) = fs_import_launcher_NFO(self.settings, self.launchers, launcherID)
-                if not changes_made: return
-                kodi_notify('Advanced Emulator Launcher', info_str)
+                if not fs_import_launcher_NFO(self.settings, self.launchers, launcherID): return
 
             # Edition of the launcher name
             elif type2 == 2:
@@ -939,8 +937,7 @@ class Main:
                 text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', "files", ".txt|.dat", False, False)
                 if os.path.isfile(text_file) == True:
                     file_data = self._gui_import_TXT_file(text_file)
-                    if file_data != '':
-                        self.launchers[launcherID]["plot"] = file_data
+                    self.launchers[launcherID]["plot"] = file_data
                 else:
                     desc_str = text_limit_string(self.launchers[launcherID]["plot"], DESCRIPTION_MAXSIZE)
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
@@ -948,8 +945,7 @@ class Main:
                     return
             # Export launcher metadata to NFO file
             elif type2 == 9:
-                info_str = fs_export_launcher_NFO(self.settings, self.launchers[launcherID])
-                kodi_notify('Advanced Emulator Launcher', info_str)
+                fs_export_launcher_NFO(self.settings, self.launchers[launcherID])
                 # >> No need to save launchers
                 return
 
@@ -2114,12 +2110,7 @@ class Main:
                     kodi_dialog_OK('Advanced Emulator Launcher',
                                    'Importing NFO file is not allowed for ROMs in Favourites.')
                     return
-                (changes_made, info_str) = fs_import_ROM_NFO(self.launchers[launcherID], roms, romID)
-                kodi_notify('Advanced Emulator Launcher', info_str)
-                if not changes_made:
-                    kodi_notify_warn('Advanced Emulator Launcher', info_str)
-                    return
-                kodi_notify('Advanced Emulator Launcher', info_str)
+                if not fs_import_ROM_NFO(self.launchers[launcherID], roms, romID): return
 
             # Edit of the rom title
             elif type2 == 2:
@@ -2166,7 +2157,7 @@ class Main:
                     file_data = self._gui_import_TXT_file(text_file)
                     roms[romID]['plot'] = file_data
                 else:
-                    desc_str = text_limit_string(self.launchers[launcherID]["plot"], DESCRIPTION_MAXSIZE)
+                    desc_str = text_limit_string(roms[romID]["plot"], DESCRIPTION_MAXSIZE)
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
                                    "Launcher plot '{}' not changed".format(desc_str))
                     return
@@ -2177,8 +2168,7 @@ class Main:
                     kodi_dialog_OK('Advanced Emulator Launcher',
                                    'Exporting NFO file is not allowed for ROMs in Favourites.')
                     return
-                info_str = fs_export_ROM_NFO(self.launchers[launcherID], roms[romID])
-                kodi_notify('Advanced Emulator Launcher', info_str)
+                fs_export_ROM_NFO(self.launchers[launcherID], roms[romID])
                 # >> No need to save ROMs
                 return
 
@@ -2197,10 +2187,10 @@ class Main:
 
         # Edit status
         elif type == 3:
-            finished = roms[romID]["finished"]
+            finished = roms[romID]['finished']
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
-            roms[romID]["finished"] = finished
+            roms[romID]['finished'] = finished
             kodi_dialog_OK('Advanced Emulator Launcher Information',
                            'ROM "{}" status is now {}'.format(roms[romID]["name"], finished_display))
 
@@ -2215,15 +2205,15 @@ class Main:
                                    'Change Extra-fanarts Path : %s' % roms[romID]["custom"]])
             # Selection of the item file
             if type2 == 0:
-                filename = roms[romID]["filename"]
-                romext   = roms[romID]["romext"]
-                item_file = xbmcgui.Dialog().browse(1, 'Select the file', "files", "." + romext.replace("|", "|."),
+                filename = roms[romID]['filename']
+                romext   = roms[romID]['romext']
+                item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', "." + romext.replace("|", "|."),
                                                     False, False, filename)
-                roms[romID]["filename"] = item_file
+                roms[romID]['filename'] = item_file
             # Custom launcher application file path
             elif type2 == 1:
-                altapp = roms[romID]["altapp"]
-                filter_str = ".bat|.exe|.cmd" if sys.platform == "win32" else ''
+                altapp = roms[romID]['altapp']
+                filter_str = '.bat|.exe|.cmd' if sys.platform == "win32" else ''
                 app = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
                                               "files", filter_str, False, False, altapp)
                 # Returns empty browse if dialog was canceled.
