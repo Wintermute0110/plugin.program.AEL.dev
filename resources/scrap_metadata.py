@@ -188,8 +188,8 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_TheGamesDB::get_search Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
-        return Scraper_TheGamesDB.get_search(self, search_string, platform, rom_base_noext)
+        log_verb("metadata_TheGamesDB::get_search Searching '{}' '{}' '{}'".format(search_string, rom_base_noext, platform))
+        return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
 
     # game is dictionary returned by the Scraper_TheGamesDB.get_game_search()
     def get_metadata(self, game):
@@ -233,8 +233,8 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_GameFAQs::get_search Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
-        return Scraper_GameFAQs.get_search(self, search_string, platform, rom_base_noext)
+        log_verb("metadata_GameFAQs::get_search Searching '{}' '{}' '{}'".format(search_string, rom_base_noext, platform))
+        return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
         gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
