@@ -197,10 +197,10 @@ class Main:
             launcherID = args['launID'][0]
             if self.launchers[launcherID]["rompath"] == '':
                 log_debug('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
-                log_debug('SHOW_ROMS | Calling _run_launcher()')
+                log_debug('SHOW_ROMS | Calling _command_run_standalone_launcher()')
                 self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
             else:
-                log_debug('SHOW_ROMS | Calling _gui_render_roms()')
+                log_debug('SHOW_ROMS | Calling _command_render_roms()')
                 self._command_render_roms(args['catID'][0], args['launID'][0])
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
