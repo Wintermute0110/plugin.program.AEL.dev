@@ -1805,6 +1805,7 @@ class Main:
         if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = self.launchers[launcherID]['thumb']
         if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
         fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
+        kodi_refresh_container()
 
     #
     # Check ROMs in favourites and set fav_status field.
