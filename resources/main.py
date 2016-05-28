@@ -121,6 +121,8 @@ class Main:
         if not os.path.isdir(DEFAULT_LAUN_THUMB_DIR):  os.makedirs(DEFAULT_LAUN_THUMB_DIR)
         if not os.path.isdir(DEFAULT_LAUN_FANART_DIR): os.makedirs(DEFAULT_LAUN_FANART_DIR)
         if not os.path.isdir(DEFAULT_LAUN_NFO_DIR):    os.makedirs(DEFAULT_LAUN_NFO_DIR)
+        if not os.path.isdir(DEFAULT_FAV_THUMB_DIR):   os.makedirs(DEFAULT_FAV_THUMB_DIR)
+        if not os.path.isdir(DEFAULT_FAV_FANART_DIR):  os.makedirs(DEFAULT_FAV_FANART_DIR)
 
         # ~~~~~ Process URL ~~~~~
         self.base_url = sys.argv[0]
@@ -182,7 +184,7 @@ class Main:
         elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
         elif command == 'SHOW_FAVOURITES':
-            self._command_show_favourites()
+            self._command_render_favourites()
         elif command == 'SHOW_LAUNCHERS':
             self._command_render_launchers(args['catID'][0])
         elif command == 'ADD_LAUNCHER':
@@ -484,92 +486,34 @@ class Main:
     def _command_add_new_launcher(self, categoryID):
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
-            kodi_notify('Advanced Emulator Launcher - Error', 'Target category not found.')
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Category ID not found.')
             return
 
         # Show "Create New Launcher" dialog
         dialog = xbmcgui.Dialog()
         type = dialog.select('Create New Launcher',
-                             ['Standalone launcher (normal executable)', 'Files launcher (game emulator)'])
+                             ['Files launcher (game emulator)', 'Standalone launcher (normal executable)'])
         log_info('_command_add_new_launcher() New launcher type = {}'.format(type))
-        if sys.platform == 'win32': filter = '.bat|.exe|.cmd|.lnk'
-        else:                       filter = ''
-
-        # 'Standalone launcher (normal executable)'
-        if type == 0:
-            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
-            if not app: return False
-
-            argument = ''
-            argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
-            argkeyboard.doModal()
-            args = argkeyboard.getText()
-
-            title = os.path.basename(app)
-            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
-            keyboard.doModal()
-            title = keyboard.getText()
-            if title == "" :
-                title = os.path.basename(app)
-                title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
-
-            # Selection of the launcher game system
-            dialog = xbmcgui.Dialog()
-            platforms = emudata_platform_list()
-            sel_platform = dialog.select('Select the platform', platforms)
-
-            # Selection of the thumbnails and fanarts path
-            if self.settings['launcher_thumb_path'] == '':
-                thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False)
-            else:
-                thumb_path = self.settings['launcher_thumb_path']
-            if self.settings['launcher_fanart_path'] == '':
-                fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False)
-            else:
-                fanart_path = self.settings['launcher_fanart_path']
-
-            # --- Create launcher object data, add to dictionary and write XML file ---
-            if not thumb_path:  thumb_path = ''
-            if not fanart_path: fanart_path = ''
-            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
-            else:                       launcher_platform = "Unknown"
-            if sys.platform == "win32": launcher_lnk = True
-            else:                       launcher_lnk = False
-            # add launcher to the launchers dictionary (using name as index)
-            launcherID = misc_generate_random_SID()
-            launcherdata = fs_new_launcher()
-            launcherdata['id']          = launcherID
-            launcherdata['name']        = title
-            launcherdata['categoryID']  = categoryID
-            launcherdata['application'] = app
-            launcherdata['args']        = args
-            launcherdata['thumbpath']   = thumb_path
-            launcherdata['fanartpath']  = fanart_path
-            launcherdata['platform']    = launcher_platform
-            launcherdata['lnk']         = launcher_lnk
-            self.launchers[launcherID]  = launcherdata
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
+        filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
 
         # 'Files launcher (game emulator)'
-        elif type == 1:
+        if type == 0:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
-            if not app: return False
+            if not app: return
 
             files_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', "files", "")
-            if not files_path: return False
+            if not files_path: return
 
             extensions = emudata_get_program_extensions(os.path.basename(app))
             extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
             extkey.doModal()
-            if not extkey.isConfirmed(): return False
+            if not extkey.isConfirmed(): return
             ext = extkey.getText()
 
             default_arguments = emudata_get_program_arguments(os.path.basename(app))
             argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
             argkeyboard.doModal()
-            if not argkeyboard.isConfirmed(): return False
+            if not argkeyboard.isConfirmed(): return
             args = argkeyboard.getText()
 
             title = os.path.basename(app)
@@ -623,22 +567,74 @@ class Main:
             launcherdata['platform']      = launcher_platform
             launcherdata['lnk']           = launcher_lnk
             launcherdata['roms_xml_file'] = roms_xml_file_path
-            self.launchers[launcherID] = launcherdata
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_notify('Advanced Emulator Launcher',
-                        'ROM launcher {} created.'.format(title))
+            self.launchers[launcherID]    = launcherdata
+            kodi_notify('Advanced Emulator Launcher', 'ROM launcher {} created.'.format(title))
 
-            # This causes trouble...
-            # xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
-            # Just update container contents
-            xbmc.executebuiltin('Container.Refresh')
+        # 'Standalone launcher (normal executable)'
+        elif type == 1:
+            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
+            if not app: return
+
+            argument = ''
+            argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
+            argkeyboard.doModal()
+            args = argkeyboard.getText()
+
+            title = os.path.basename(app)
+            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
+            keyboard.doModal()
+            title = keyboard.getText()
+            if title == "" :
+                title = os.path.basename(app)
+                title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+
+            # Selection of the launcher game system
+            dialog = xbmcgui.Dialog()
+            platforms = emudata_platform_list()
+            sel_platform = dialog.select('Select the platform', platforms)
+
+            # Selection of the thumbnails and fanarts path
+            if self.settings['launcher_thumb_path'] == '':
+                thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False)
+            else:
+                thumb_path = self.settings['launcher_thumb_path']
+            if self.settings['launcher_fanart_path'] == '':
+                fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False)
+            else:
+                fanart_path = self.settings['launcher_fanart_path']
+
+            # --- Create launcher object data, add to dictionary and write XML file ---
+            if not thumb_path:  thumb_path = ''
+            if not fanart_path: fanart_path = ''
+            launcher_platform = 'Unknown' if sel_platform < 0 else platforms[sel_platform]
+            launcher_lnk = True if sys.platform == 'win32' else False
+
+            # add launcher to the launchers dictionary (using name as index)
+            launcherID = misc_generate_random_SID()
+            launcherdata = fs_new_launcher()
+            launcherdata['id']          = launcherID
+            launcherdata['name']        = title
+            launcherdata['categoryID']  = categoryID
+            launcherdata['application'] = app
+            launcherdata['args']        = args
+            launcherdata['thumbpath']   = thumb_path
+            launcherdata['fanartpath']  = fanart_path
+            launcherdata['platform']    = launcher_platform
+            launcherdata['lnk']         = launcher_lnk
+            self.launchers[launcherID]  = launcherdata
+            kodi_notify('Advanced Emulator Launcher', 'App launcher {} created.'.format(title))
+
+        # >> If this point is reached then changes to metadata/images were made.
+        # >> Save categories and update container contents so user sees those changes inmediately.
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        kodi_refresh_container()
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
-        title = os.path.basename(self.launchers[launcherID]["name"])
+        title = os.path.basename(self.launchers[launcherID]['name'])
         finished_display = 'Status : Finished' if self.launchers[launcherID]["finished"] == True else 'Status : Unfinished'
         category_name = self.categories[self.launchers[launcherID]["categoryID"]]['name']
-        if self.launchers[launcherID]["rompath"] == "":
+        if self.launchers[launcherID]['rompath'] == '':
             type = dialog.select('Select Action for launcher %s' % title,
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
                                   'Change Category: {}'.format(category_name),
@@ -653,21 +649,22 @@ class Main:
         type_nb = 0
         if type == type_nb:
             dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string(self.launchers[launcherID]["plot"], DESCRIPTION_MAXSIZE)
+            desc_str = text_limit_string(self.launchers[launcherID]['plot'], DESCRIPTION_MAXSIZE)
             type2 = dialog.select('Modify Launcher Metadata',
-                                  ['Scrape from {}'.format(self.scraper_metadata.fancy_name),
-                                   'Import metadata from NFO file...',
-                                   "Edit Title: '{}'".format(self.launchers[launcherID]["name"]),
-                                   "Edit Platform: {}".format(self.launchers[launcherID]["platform"]),
-                                   "Edit Release Year: '{}'".format(self.launchers[launcherID]["year"]),
-                                   "Edit Studio: '{}'".format(self.launchers[launcherID]["studio"]),
-                                   "Edit Genre: '{}'".format(self.launchers[launcherID]["genre"]),
+                                  ['Scrape from {}...'.format(self.scraper_metadata.fancy_name),
+                                   'Import metadata from NFO file',
+                                   "Edit Title: '{}'".format(self.launchers[launcherID]['name']),
+                                   "Edit Platform: {}".format(self.launchers[launcherID]['platform']),
+                                   "Edit Release Year: '{}'".format(self.launchers[launcherID]['year']),
+                                   "Edit Studio: '{}'".format(self.launchers[launcherID]['studio']),
+                                   "Edit Genre: '{}'".format(self.launchers[launcherID]['genre']),
                                    "Edit Description: '{}'".format(desc_str),
                                    'Import Description from file...',
                                    'Save metadata to NFO file'])
             # Scrape launcher metadata
             if type2 == 0:
                 if not self._gui_scrap_launcher_metadata(launcherID): return
+
             # Import launcher metadata from NFO file
             elif type2 == 1:
                 # >> Launcher is edited using Python passing by assigment
@@ -675,13 +672,13 @@ class Main:
 
             # Edition of the launcher name
             elif type2 == 2:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Edit title')
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]['name'], 'Edit title')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 title = keyboard.getText()
-                if title == "":
-                    title = self.launchers[launcherID]["name"]
-                self.launchers[launcherID]["name"] = title.rstrip()
+                if title == '':
+                    title = self.launchers[launcherID]['name']
+                self.launchers[launcherID]['name'] = title.rstrip()
 
             # Selection of the launcher platform from AEL "official" list
             elif type2 == 3:
@@ -689,11 +686,11 @@ class Main:
                 platforms = emudata_platform_list()
                 sel_platform = dialog.select('Select the platform', platforms)
                 if sel_platform < 0: return
-                self.launchers[launcherID]["platform"] = platforms[sel_platform]
+                self.launchers[launcherID]['platform'] = platforms[sel_platform]
 
             # Edition of the launcher release date (year)
             elif type2 == 4:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["year"], 'Edit release year')
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]['year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]["year"] = keyboard.getText()
@@ -752,10 +749,16 @@ class Main:
         if type == type_nb:
             if not self._gui_edit_image(IMAGE_FANART, KIND_LAUNCHER, self.launchers, launcherID): return
 
-        # Change launcher's category
+        # Change launcher's Category
         type_nb = type_nb + 1
         if type == type_nb:
-            current_category = self.launchers[launcherID]['category']
+            # >> Category of the launcher we are editing now
+            old_categoryID = self.launchers[launcherID]['categoryID']
+
+            # If only one Category there is nothing to change
+            if len(self.categories) == 1:
+                kodi_dialog_OK('Advanced Emulator Launcher', 'There is only one category. Nothing to change.')
+                return
             dialog = xbmcgui.Dialog()
             categories_id = []
             categories_name = []
@@ -763,11 +766,23 @@ class Main:
                 categories_id.append(self.categories[key]['id'])
                 categories_name.append(self.categories[key]['name'])
             selected_cat = dialog.select('Select the category', categories_name)
-            if selected_cat <0: return
-            self.launchers[launcherID]["category"] = categories_id[selected_cat]
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categories_id[selected_cat]))
-            return
+            if selected_cat < 0: return
+            self.launchers[launcherID]['categoryID'] = categories_id[selected_cat]
+            
+            # >> If the former category is empty after editing (no launchers) then replace category window 
+            # >> with addon root
+            num_launchers_old_cat = 0
+            for laun_id, launcher in self.launchers.iteritems():
+                if launcher['categoryID'] == old_categoryID: num_launchers_old_cat += 1
+            log_debug('_command_edit_launcher() num_launchers_old_cat = {}'.format(num_launchers_old_cat))
+            if not num_launchers_old_cat:
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                log_debug('_command_edit_launcher() Replacing launcher window with root')
+                log_debug('_command_edit_launcher() base_url = "{}"'.format(self.base_url))
+                # For some reason this does not work... Kodi ignores ReplaceWindow() and does not
+                # go to the addon root (display of categories).
+                xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
+                return
 
         # --- Launcher status (finished [bool]) ---
         type_nb = type_nb + 1
@@ -777,7 +792,7 @@ class Main:
             finished_display = 'Finished' if finished == True else 'Unfinished'
             self.launchers[launcherID]['finished'] = finished
             kodi_dialog_OK('Advanced Emulator Launcher',
-                           'Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]['name'], finished_display))
+                           'Launcher "{}" status is now {}'.format(self.launchers[launcherID]['name'], finished_display))
 
         # Launcher's Manage ROMs menu option
         # ONLY for ROM launchers, not for standalone launchers
@@ -792,7 +807,8 @@ class Main:
                 else:
                     add_delete_NoIntro_str = 'Add No-Intro XML DAT'
                 type2 = dialog.select('Manage Items List',
-                                      [add_delete_NoIntro_str, 'Audit ROMs using No-Intro DAT'
+                                      [add_delete_NoIntro_str, 
+                                       'Audit ROMs using No-Intro DAT',
                                        'Import ROMs metadata from NFO files',
                                        'Export ROMs metadata to NFO files',
                                        'Clear ROMs from launcher' ])
@@ -849,8 +865,9 @@ class Main:
                     # >> Load ROMs, iterate and import NFO files
                     roms_xml_file = self.launchers[launcherID]['roms_xml_file']
                     roms = fs_load_ROM_XML_file(roms_xml_file)
-                    for rom in roms:
-                        fs_import_rom_nfo(launcherID, rom)
+                    # >> Iterating dictionaries gives the key.
+                    for rom_id in roms:
+                        fs_import_ROM_NFO(roms, rom_id, verbose = False)
                     # >> Save ROMs XML file
                     fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
                     # >> No need to save launchers
@@ -858,10 +875,15 @@ class Main:
 
                 # --- Export Items list to NFO files ---
                 elif type2 == 3:
-                    # >> Load ROMs, iterate and write NFO files
+                    # >> Load ROMs for current launcher, iterate and write NFO files
                     roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
-                    for rom in roms:
-                        fs_export_rom_nfo(launcherID, rom)
+                    if not roms: return
+                    # >> Iterating dictionaries gives the key.
+                    kodi_busydialog_ON()
+                    for rom_id in roms:
+                        fs_export_ROM_NFO(roms[rom_id], verbose = False)
+                    kodi_busydialog_OFF()
+                    # >> No need to save launchers XML / Update container
                     return
 
                 # --- Empty Launcher menu option ---
@@ -928,27 +950,27 @@ class Main:
             type2_nb = 0
             if type2 == type2_nb:
                 app = xbmcgui.Dialog().browse(1, 'Select the launcher application',
-                                              "files","", False, False, self.launchers[launcherID]["application"])
-                self.launchers[launcherID]["application"] = app
+                                              'files', '', False, False, self.launchers[launcherID]['application'])
+                self.launchers[launcherID]['application'] = app
 
             # Edition of the launcher arguments
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]["args"], 'Edit application arguments')
+                keyboard = xbmc.Keyboard(self.launchers[launcherID]['args'], 'Edit application arguments')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]["args"] = keyboard.getText()
+                self.launchers[launcherID]['args'] = keyboard.getText()
 
-            if self.launchers[launcherID]["rompath"] != "":
+            if self.launchers[launcherID]['rompath'] != '':
                 # Launcher roms path menu option
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
-                    rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', "files", "",
-                                                       False, False, self.launchers[launcherID]["rompath"])
-                    self.launchers[launcherID]["rompath"] = rom_path
+                    rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', 'files', '',
+                                                       False, False, self.launchers[launcherID]['rompath'])
+                    self.launchers[launcherID]['rompath'] = rom_path
 
                 # Edition of the launcher rom extensions (only for emulator launcher)
-                type2_nb = type2_nb +1
+                type2_nb = type2_nb + 1
                 if type2 == type2_nb:
                     keyboard = xbmc.Keyboard(self.launchers[launcherID]["romext"],
                                                 'Edit ROM extensions, use &quot;|&quot; as separator. (e.g lnk|cbr)')
@@ -1011,7 +1033,7 @@ class Main:
             return
 
         # User pressed cancel or close dialog
-        elif type < 0:
+        if type < 0:
             return
 
         # >> If this point is reached then changes to metadata/images were made.
@@ -1058,12 +1080,12 @@ class Main:
     # files to remove and no ROMs to check.
     #
     def _gui_remove_launcher(self, launcherID):
-        rompath = self.launchers[launcherID]["rompath"]
+        rompath = self.launchers[launcherID]['rompath']
         # Standalone launcher
         if rompath == '':
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]["name"]),
+                               'Launcher "{}" is standalone.'.format(self.launchers[launcherID]['name']),
                                'Are you sure you want to delete it?')
         # ROMs launcher
         else:
@@ -1071,21 +1093,22 @@ class Main:
             num_roms = len(roms)
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
+                               'Launcher "{}" has {1} ROMs'.format(self.launchers[launcherID]['name'], num_roms),
                                'Are you sure you want to delete it?')
         if ret:
             # Remove XML file and delete launcher object, only if launcher is not empty
-            roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
+            roms_xml_file = self.launchers[launcherID]['roms_xml_file']
             if roms_xml_file == '' or rompath == '':
                 log_debug('Launcher is empty or standalone. No ROMs XML to remove')
             else:
-                log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
+                log_debug('Removing ROMs XML "{}"'.format(roms_xml_file))
                 try:
                     os.remove(roms_xml_file)
                 except OSError:
-                    log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
+                    log_error('_gui_remove_launcher() OSError exception deleting "{}"'.format(roms_xml_file))
                     kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
-            categoryID = self.launchers[launcherID]["categoryID"]
+
+            categoryID = self.launchers[launcherID]['categoryID']
             self.launchers.pop(launcherID)
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             if self._cat_is_empty(categoryID):
@@ -1137,8 +1160,8 @@ class Main:
             dialog = xbmcgui.Dialog()
             desc_str = text_limit_string(roms[romID]['plot'], DESCRIPTION_MAXSIZE)
             type2 = dialog.select('Modify ROM metadata',
-                                  ['Scrape from {}'.format(self.scraper_metadata.fancy_name),
-                                   'Import metadata from NFO file...',
+                                  ['Scrape from {}...'.format(self.scraper_metadata.fancy_name),
+                                   'Import metadata from NFO file',
                                    "Edit Title: '{}'".format(roms[romID]['name']),
                                    "Edit Release Year: '{}'".format(roms[romID]['year']),
                                    "Edit Studio: '{}'".format(roms[romID]['studio']),
@@ -1157,7 +1180,7 @@ class Main:
                     kodi_dialog_OK('Advanced Emulator Launcher',
                                    'Importing NFO file is not allowed for ROMs in Favourites.')
                     return
-                if not fs_import_ROM_NFO(self.launchers[launcherID], roms, romID): return
+                if not fs_import_ROM_NFO(roms, romID): return
 
             # Edit of the rom title
             elif type2 == 2:
@@ -1215,7 +1238,7 @@ class Main:
                     kodi_dialog_OK('Advanced Emulator Launcher',
                                    'Exporting NFO file is not allowed for ROMs in Favourites.')
                     return
-                fs_export_ROM_NFO(self.launchers[launcherID], roms[romID])
+                fs_export_ROM_NFO(roms[romID])
                 # >> No need to save ROMs
                 return
 
@@ -1481,19 +1504,25 @@ class Main:
         # If the category has no launchers then render nothing.
         launcher_IDs = []
         for launcher_id in self.launchers:
-            if self.launchers[launcher_id]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
+            if self.launchers[launcher_id]['categoryID'] == categoryID: launcher_IDs.append(launcher_id)
         if not launcher_IDs:
             category_name = self.categories[categoryID]['name']
             kodi_notify('Advanced Emulator Launcher', 'Category {} has no launchers. Add launchers first'.format(category_name))
             # NOTE If we return at this point Kodi produces and error:
             # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
             # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
-            # How to avoid that? Rendering the categories again? If I call _gui_render_categories() it does not work well, categories
-            # are displayed in wrong alphabetical order and if go back is pressed the categories are rendered again (instead of
+            #
+            # How to avoid that? Rendering the categories again? If I call _command_render_categories() it does not work well, categories
+            # are displayed in wrong alphabetical order and if go back clicking on .. the categories window is rendered again (instead of
             # exiting the addon).
+            # self._command_render_categories()
+            #
             # What about replacewindow? I also get the error, still not clear why...
-            # self._gui_render_categories()
-            # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
+            # xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url)) # Does not work
+            # xbmc.executebuiltin('ReplaceWindow({})'.format(self.base_url)) # Does not work
+            # 
+            # Container.Refresh does not work either...
+            # kodi_refresh_container()
             return
 
         # Render launcher rows of this category
@@ -1577,7 +1606,7 @@ class Main:
         # Optimization Currently roms_fav is a dictionary, which is very fast when testing for element existence
         #              because it is hashed. However, set() is the fastest. If user has a lot of favourites
         #              there could be a small performance gain.
-        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
+        for key in sorted(roms, key= lambda x : roms[x]['filename']):
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False)
 
@@ -2597,8 +2626,10 @@ class Main:
         #   (f_base_noext)_fanart
         # Otherwise, thumb/fanart name is same as ROM, but different extension.
         # If no local artwork is found them names are empty strings ''
-        thumb_path_noext  = misc_get_thumb_path_noext(launcher, ROM)
-        fanart_path_noext = misc_get_fanart_path_noext(launcher, ROM)
+        thumb_path  = launcher['thumbpath']
+        fanart_path = launcher['fanartpath']
+        thumb_path_noext  = misc_get_thumb_path_noext(thumb_path, fanart_path, ROM.base_noext)
+        fanart_path_noext = misc_get_fanart_path_noext(thumb_path, fanart_path, ROM.base_noext)
         # log_debug('thumb_path_noext  = "{}"'.format(thumb_path_noext))
         # log_debug('fanart_path_noext = "{}"'.format(fanart_path_noext))
 
@@ -2925,6 +2956,9 @@ class Main:
     # launcherID = '0' if scraping ROM in Favourites
     # roms are editing using Python arguments passed by assignment. Caller is responsible of
     # saving the ROMs XML file.
+    # Returns:
+    #   True   Changes were made.
+    #   False  Changes not made. No need to save ROMs XML/Update container
     #
     def _gui_scrap_rom_metadata(self, roms, romID, launcherID):
         # --- Grab ROM info and metadata scraper settings ---
@@ -2940,12 +2974,12 @@ class Main:
         # --- Ask user to enter ROM metadata search string ---
         keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string...')
         keyboard.doModal()
-        if not keyboard.isConfirmed(): return
+        if not keyboard.isConfirmed(): return False
 
         # --- Do a search and get a list of games ---
         rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
         results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
-        log_debug('Metadata scraper found {} result/s'.format(len(results)))
+        log_debug('_gui_scrap_rom_metadata() Metadata scraper found {} result/s'.format(len(results)))
         if results:
             # Display corresponding game list found so user choses
             dialog = xbmcgui.Dialog()
@@ -2959,12 +2993,12 @@ class Main:
             gamedata = self.scraper_metadata.get_metadata(results[selectgame])
 
             # --- Put metadata into ROM dictionary ---
+            # >> Ignore scraped title
             if scan_ignore_title:
-                # >> Ignore scraped title
                 roms[romID]['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
                 log_debug("User wants to ignore scraper name. Setting name to '{}'".format(roms[romID]['name']))
+            # >> Use scraped title
             else:
-                # >> Use scraped title
                 roms[romID]['name'] = gamedata['title']
                 log_debug("User wants scrapped name. Setting name to '{}'".format(roms[romID]['name']))
             roms[romID]['genre']  = gamedata['genre']
@@ -2974,48 +3008,56 @@ class Main:
 
             # ROMs are saved in caller function
         else:
-            kodi_notify('Advanced Emulator Launcher', 'No ROM metadata data found')
+            kodi_notify('Advanced Emulator Launcher', 'Scraper found no matches')
+            return False
+            
+        # >> Changes were made
+        return True
 
     #
     # Called when editing a launcher by _command_edit_launcher()
+    # Note that launcher maybe a ROM launcher or a standalone launcher (game, app)
     # Scrap standalone launcher (typically a game) metadata
     # Called when editing a launcher...
     # Always do semi-automatic scraping when editing ROMs/Launchers
+    # Returns:
+    #   True   Changes were made.
+    #   False  Changes not made. No need to save ROMs XML/Update container
     #
     def _gui_scrap_launcher_metadata(self, launcherID):
         # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]["name"], 'Enter the launcher search string ...')
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]['name'], 'Enter the launcher search string ...')
         keyboard.doModal()
-        if not keyboard.isConfirmed(): return
-
-        title = keyboard.getText()
+        if not keyboard.isConfirmed(): return False
 
         # Scrap and get a list of matches
-        results, display = self._get_games_list(title)
-
-        if display:
-            # Display corresponding game list found
+        title = keyboard.getText()
+        results = self.scraper_metadata.get_search(title, '', platform)
+        log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {} result/s'.format(len(results)))
+        if results:
+            # Display corresponding game list found so user choses
             dialog = xbmcgui.Dialog()
+            rom_name_list = []
+            for game in results:
+                rom_name_list.append(game['display_name'])
+            selectgame = dialog.select('Select game for ROM {}'.format(rom_name), rom_name_list)
+            if selectgame < 0: selectgame = 0
 
-            # Game selection
-            selectgame = dialog.select('Select a item from %s' % ( self.settings[ "datas_scraper" ] ), display)
-            if not selectgame == -1:
-                if self.settings[ "ignore_title" ]:
-                    self.launchers[launcherID]["name"] = title_format(self,self.launchers[launcherID]["name"])
-                else:
-                    self.launchers[launcherID]["name"] = title_format(self,results[selectgame]["title"])
-
-                # User made a decision. Get full metadata
-                gamedata = self._get_game_data(results[selectgame]["id"])
-                self.launchers[launcherID]["genre"]  = gamedata["genre"]
-                self.launchers[launcherID]["year"]   = gamedata["year"]
-                self.launchers[launcherID]["studio"] = gamedata["studio"]
-                self.launchers[launcherID]["plot"]   = gamedata["plot"]
+            # --- Grab metadata for selected game ---
+            gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+                
+            # --- Put metadata into launcher dictionary ---
+            # >> Scraper should not change metadata
+            self.launchers[launcherID]['genre']  = gamedata['genre']
+            self.launchers[launcherID]['year']   = gamedata['year']
+            self.launchers[launcherID]['studio'] = gamedata['studio']
+            self.launchers[launcherID]['plot']   = gamedata['plot']
         else:
-            kodi_notify('Advanced Emulator Launcher', 'No data found')
+            kodi_notify('Advanced Emulator Launcher', 'Scraper found no matches')
+            return False
 
-        # Save launchers XML
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        # >> Changes were made
+        return True
 
     #
     # Edit launcher/rom thumbnail/fanart. Note that categories have another function because

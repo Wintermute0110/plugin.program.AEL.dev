@@ -540,11 +540,13 @@ def fs_load_GameInfo_XML(xml_file):
 # NFO files
 # -------------------------------------------------------------------------------------------------
 #
-# Returns:
-# user_info_str  Information string that can be used for notifications in interactive mode (for example,
-#                when "Edit ROM", or for logging (export all ROMs NFO files)
+# When called from "Edit ROM" --> "Edit Metadata" --> "Import metadata from NFO file" function should
+# be verbose and print notifications.
+# However, this function is also used to export launcher ROMs in bulk in 
+# "Edit Launcher" --> "Manage ROM List" --> "Export ROMs metadata to NFO files". In that case, function
+# must not be verbose because it can be called thousands of times for big ROM sets!
 #
-def fs_export_ROM_NFO(launcher, rom):
+def fs_export_ROM_NFO(rom, verbose = True):
     F = misc_split_path(rom['filename'])
     nfo_file_path  = F.path_noext + '.nfo'
     log_debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
@@ -554,7 +556,6 @@ def fs_export_ROM_NFO(launcher, rom):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<game>\n')
     nfo_content.append(XML_text('title',     rom['name']))
-    nfo_content.append(XML_text('platform',  rom['platform']))
     nfo_content.append(XML_text('year',      rom['year']))
     nfo_content.append(XML_text('publisher', rom['studio']))
     nfo_content.append(XML_text('genre',     rom['genre']))
@@ -566,29 +567,28 @@ def fs_export_ROM_NFO(launcher, rom):
         usock.write(full_string)
         usock.close()
     except:
-        kodi_notify_warn('Advanced Emulator Launcher',
-                         'Error writing {}'.format(nfo_file_path))
+        if verbose:
+            kodi_notify_warn('Advanced Emulator Launcher',
+                             'Error writing {}'.format(nfo_file_path))
         log_error("fs_export_ROM_NFO() Exception writing '{}'".format(nfo_file_path))
         return
-
-    kodi_notify('Advanced Emulator Launcher',
-                'Created {}'.format(nfo_file_path))
-    log_debug("fs_export_ROM_NFO() Created '{}'".format(nfo_file_path))
+    if verbose:
+        kodi_notify('Advanced Emulator Launcher',
+                    'Created NFO file {}'.format(nfo_file_path))
 
     return
 
 #
 # Reads an NFO file with ROM information.
 # Modifies roms dictionary even outside this function. See comments in fs_import_launcher_NFO()
-# This file is called by the gui when user is editing a ROM interactively.
+# See comments in fs_export_ROM_NFO() about verbosity.
 #
-def fs_import_ROM_NFO(launcher, roms, romID):
+def fs_import_ROM_NFO(roms, romID, verbose = True):
     F = misc_split_path(roms[romID]['filename'])
     nfo_file_path = F.path_noext + '.nfo'
     log_debug('fs_export_ROM_NFO() Loading "{}"'.format(nfo_file_path))
 
     # --- Import data ---
-    user_info_str = ''
     if os.path.isfile(nfo_file_path):
         # Read file, put in a string and remove line endings
         file = open(nfo_file_path, 'rt')
@@ -597,25 +597,24 @@ def fs_import_ROM_NFO(launcher, roms, romID):
 
         # Search for items
         item_title     = re.findall('<title>(.*?)</title>', nfo_str)
-        item_platform  = re.findall('<platform>(.*?)</platform>', nfo_str)
         item_year      = re.findall('<year>(.*?)</year>', nfo_str)
         item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
         item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
         item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
         if len(item_title) > 0:     roms[romID]['title']     = text_unescape_XML(item_title[0])
-        if len(item_title) > 0:     roms[romID]['platform']  = text_unescape_XML(item_platform[0])
         if len(item_year) > 0:      roms[romID]['year']      = text_unescape_XML(item_year[0])
         if len(item_publisher) > 0: roms[romID]['publisher'] = text_unescape_XML(item_publisher[0])
         if len(item_genre) > 0:     roms[romID]['genre']     = text_unescape_XML(item_genre[0])
         if len(item_plot) > 0:      roms[romID]['plot']      = text_unescape_XML(item_plot[0])
 
-        kodi_notify('Advanced Emulator Launcher',
-                    'Imported {}'.format(nfo_file_path))
-        log_debug("fs_import_ROM_NFO() Imported '{}'".format(nfo_file_path))
+        if verbose:
+            kodi_notify('Advanced Emulator Launcher',
+                        'Imported {}'.format(nfo_file_path))
     else:
-        kodi_notify_warn('Advanced Emulator Launcher',
-                         'NFO file not found {}'.format(nfo_file_path))
+        if verbose:
+            kodi_notify_warn('Advanced Emulator Launcher',
+                             'NFO file not found {}'.format(nfo_file_path))
         log_debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
         return False
 
@@ -686,7 +685,7 @@ def fs_export_launcher_NFO(settings, launcher):
         return False
 
     kodi_notify('Advanced Emulator Launcher',
-                'Created {}'.format(os.path.basename(nfo_file_path)))
+                'Created NFO file {}'.format(os.path.basename(nfo_file_path)))
     log_debug("fs_export_launcher_NFO() Created '{}'".format(nfo_file_path))
 
     return True
