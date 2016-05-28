@@ -170,7 +170,7 @@ class Main:
 
         # If no com parameter display categories. Display categories listbox (addon root directory)
         if 'com' not in args:
-            self._gui_render_categories()
+            self._command_render_categories()
             log_debug('AEL exiting after rendering Categories (addon root)')
             return
 
@@ -184,7 +184,7 @@ class Main:
         elif command == 'SHOW_FAVOURITES':
             self._command_show_favourites()
         elif command == 'SHOW_LAUNCHERS':
-            self._gui_render_launchers(args['catID'][0])
+            self._command_render_launchers(args['catID'][0])
         elif command == 'ADD_LAUNCHER':
             self._command_add_new_launcher(args['catID'][0])
         elif command == 'EDIT_LAUNCHER':
@@ -196,10 +196,10 @@ class Main:
             if self.launchers[launcherID]["rompath"] == '':
                 log_debug('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
                 log_debug('SHOW_ROMS | Calling _run_launcher()')
-                self._run_standalone_launcher(args['catID'][0], args['launID'][0])
+                self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
             else:
                 log_debug('SHOW_ROMS | Calling _gui_render_roms()')
-                self._gui_render_roms(args['catID'][0], args['launID'][0])
+                self._command_render_roms(args['catID'][0], args['launID'][0])
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
         # Edit ROM from launcher or Favourites
@@ -209,7 +209,7 @@ class Main:
         elif command == 'DELETE_ROM':
              self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
         elif args['com'][0] == 'LAUNCH_ROM':
-            self._run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+            self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'ADD_TO_FAV':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'CHECK_FAV':
@@ -321,359 +321,21 @@ class Main:
         fanart_imgsize = self.settings['scraper_fanart_size']
         self.scraper_fanart.set_options(region, fanart_imgsize)
 
-    # Creates default categories data struct
-    # CAREFUL deletes current categories!
-    # From _load_launchers
-    # Else create the default category
-    # self.categories["default"] = {"id":"default", "name":"Default", "thumb":"", "fanart":"", "genre":"", "plot":"", "finished":"false"}
-    def _cat_create_default(self):
-        # The key in the categories dictionary is an MD5 hash generate with current time plus some random number.
-        # This will make it unique and different for every category created.
+    def _command_add_new_category(self):
+        dialog = xbmcgui.Dialog()
+        keyboard = xbmc.Keyboard("", 'New Category Name')
+        keyboard.doModal()
+        if not keyboard.isConfirmed():
+            return False
+
         category = fs_new_category()
-        category['name'] = 'Emulators'
-        category_key = misc_generate_random_SID()
-        category['id'] = category_key
-        self.categories = {}
-        self.categories[category_key] = category
-
-    #
-    # Checks if the category is empty (no launchers defined)
-    #
-    def _cat_is_empty(self, categoryID):
-        empty_category = True
-        for cat in self.launchers.iterkeys():
-            if self.launchers[cat]['categoryID'] == categoryID:
-                empty_category = False
-
-        return empty_category
-
-    #
-    # Edit launcher/rom thumbnail/fanart. Note that categories have another function because
-    # image scraping is not allowed for categores.
-    #
-    # NOTE When editing ROMs optional parameter launcherID is required.
-    # NOTE Caller is responsible for saving the Launchers/ROMs
-    # NOTE if image is changed container should be updated so the user sees new image instantly
-    # NOTE objects_dic is edited by assigment
-    # NOTE a ROM in Favourites has launcherID = '0'
-    #
-    # Returns:
-    #   True   Launchers/ROMs must be saved and container updated
-    #   False  No changes were made. No necessary to refresh container
-    #
-    def _gui_edit_image(self, image_kind, objects_kind, objects_dic, objectID, launcherID=''):
-        # Check for errors
-        if image_kind != IMAGE_THUMB and image_kind != IMAGE_FANART:
-            log_error('_gui_edit_image() Unknown image_kind = {}'.format(image_kind))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
-            return False
-        if objects_kind != KIND_LAUNCHER and objects_kind != KIND_ROM:
-            log_error('_gui_edit_image() Unknown objects_kind = {}'.format(objects_kind))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown objects_kind = {}'.format(objects_kind))
-            return False
-
-        # Customise function depending of object to edit
-        if image_kind == IMAGE_THUMB:
-            image_key   = 'thumb'
-            image_name  = 'Thumb'
-            if objects_kind == KIND_LAUNCHER:
-                kind_name = 'Launcher'
-                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
-                launchers_fanart_dir = self.settings['launchers_fanart_dir']
-                dest_basename   = objects_dic[objectID]['name']
-                dest_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
-            elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                # Thumb of a ROM in Favourites
-                if launcherID == '0':
-                    thumb_dir  = self.settings['favourites_thumb_dir']
-                    fanart_dir = self.settings['favourites_fanart_dir']
-                # Thumb of a ROM in a Launcher
-                else:
-                    thumb_dir  = self.launchers[launcherID]['thumbpath']
-                    fanart_dir = self.launchers[launcherID]['fanartpath']
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                dest_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
-        elif image_kind == IMAGE_FANART:
-            image_key   = 'fanart'
-            image_name  = 'Fanart'
-            if objects_kind == KIND_LAUNCHER:
-                kind_name = 'Launcher'
-                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
-                launchers_fanart_dir = self.settings['launchers_fanart_dir']
-                dest_basename   = objects_dic[objectID]['name']
-                dest_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
-            elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                # Fanart in a ROM in Favourites
-                if launcherID == '0':
-                    thumb_dir  = self.settings['favourites_thumb_dir']
-                    fanart_dir = self.settings['favourites_fanart_dir']
-                # Fanart of a ROM in a Launcher
-                else:
-                    thumb_dir  = self.launchers[launcherID]['thumbpath']
-                    fanart_dir = self.launchers[launcherID]['fanartpath']
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                dest_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
-        log_debug('_gui_edit_image() Editing {} {}'.format(kind_name, image_name))
-
-        # Show image editing options
-        dialog = xbmcgui.Dialog()
-        type2 = dialog.select('Change Thumbnail Image',
-                             ['Select Local Image',
-                              'Import Local Image (Copy and Rename)',
-                              'Scrape Image from {}'.format(self.scraper_thumb.fancy_name) ])
-        # Link to an image
-        if type2 == 0:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
-                image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
-                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return False
-
-            # Update object by assigment. XML will be save by parent
-            objects_dic[objectID][image_key] = image_file
-            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
-            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(kind_name, objectID))
-            log_info('Selected {} {} "{}"'.format(kind_name, image_name, image_file))
-
-            # --- Update Kodi image cache ---
-            kodi_update_image_cache(image_file)
-
-        # Import an image
-        elif type2 == 1:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
-                image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
-                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return False
-
-            # Determine image extension and dest filename
-            F = misc_split_path(image_file)
-            dest_path = dest_path_noext + F.ext
-            log_debug('_gui_edit_image() image_file    = "{0}"'.format(image_file))
-            log_debug('_gui_edit_image() img_ext       = "{0}"'.format(F.ext))
-            log_debug('_gui_edit_image() dest_path     = "{0}"'.format(dest_path))
-
-            # Copy image file
-            if image_file == dest_path:
-                log_info('image_file and dest_path are the same. Returning')
-                return False
-            try:
-                fs_encoding = get_fs_encoding()
-                shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
-            except OSError:
-                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
-
-            # Update object by assigment. XML will be save by parent
-            objects_dic[objectID][image_key] = dest_path
-            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
-            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(kind_name, objectID))
-            log_info('Copied image "{}"'.format(image_file))
-            log_info('Into         "{}"'.format(dest_path))
-            log_info('Selected {} {} "{}"'.format(kind_name, image_name, dest_path))
-
-            # --- Update Kodi image cache ---
-            kodi_update_image_cache(dest_path)
-
-        # Manual scrape and choose from a list of images
-        elif type2 == 2:
-            return self._gui_scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
-
-        # User canceled select box
-        elif type2 < 0:
-            return False
-
-        # If we reach this point, changes were made. Launchers/ROMs must be saved, container must be refreshed.
-        return True
-
-    #
-    # Edit category thumb/fanart.
-    #
-    # NOTE For some reason option 'Import Local Image (Copy and Rename)' does not work well. I have checked
-    #      the copied filename is OK but Kodi refuses to display the image...
-    #      Even more suprisingly, if later 'Select Local Image' is used and the file copied before to categories
-    #      artwork path is chosen then it works!
-    #
-    # Returns:
-    #   True   Changes were made.
-    #   False  No changes made.
-    #
-    def _gui_edit_category_image(self, image_kind, categoryID):
-        # Make this function as generic as possible to share code with launcher/rom thumb/fanart editing.
-        if image_kind == IMAGE_THUMB:
-            objects_dic  = self.categories
-            objectID     = categoryID
-            image_key    = 'thumb'
-            image_name   = 'Thumb'
-            # If user set same path for thumb/fanart then a suffix must be added
-            categories_thumb_dir  = self.settings['categories_thumb_dir']
-            categories_fanart_dir = self.settings['categories_fanart_dir']
-            dest_basename   = objects_dic[objectID]['name']
-            dest_path_noext = misc_get_thumb_path_noext(categories_thumb_dir, categories_fanart_dir, dest_basename)
-        elif image_kind == IMAGE_FANART:
-            objects_dic  = self.categories
-            objectID     = categoryID
-            image_key    = 'fanart'
-            image_name   = 'Fanart'
-            categories_thumb_dir  = self.settings['categories_thumb_dir']
-            categories_fanart_dir = self.settings['categories_fanart_dir']
-            dest_basename   = objects_dic[objectID]['name']
-            dest_path_noext = misc_get_fanart_path_noext(categories_thumb_dir, categories_fanart_dir, dest_basename)
-        else:
-            log_error('_gui_edit_category_image() Unknown image_kind = {}'.format(image_kind))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
-            return False
-        log_debug('_gui_edit_category_image() Editing {}'.format(image_name))
-
-        # Show image editing options
-        dialog = xbmcgui.Dialog()
-        type2 = dialog.select('Change Thumbnail Image',
-                             ['Select Local Image',
-                              'Import Local Image (Copy and Rename)'])
-        # Link to an image
-        if type2 == 0:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
-                image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
-                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return False
-
-            # Update object by assigment. XML will be save by parent
-            objects_dic[objectID][image_key] = image_file
-            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
-            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
-            log_info('Selected {} "{}"'.format(image_name, image_file))
-
-            # --- Update Kodi image cache ---
-            kodi_update_image_cache(image_file)
-
-        # Import an image
-        elif type2 == 1:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
-                image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
-                                                 'files', ".jpg|.jpeg|.gif|.png", True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return False
-
-            # Determine image extension and dest filename
-            F = misc_split_path(image_file)
-            dest_path = dest_path_noext + F.ext
-            log_debug('_gui_edit_category_image() image_file    = "{0}"'.format(image_file))
-            log_debug('_gui_edit_category_image() img_ext       = "{0}"'.format(F.ext))
-            log_debug('_gui_edit_category_image() dest_path     = "{0}"'.format(dest_path))
-
-            # Copy image file, but never over itself
-            if image_file == dest_path: 
-                log_info('image_file and dest_path are the same. Returning')
-                return False
-            try:
-                fs_encoding = get_fs_encoding()
-                shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
-            except OSError:
-                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
-
-            # Update object and save XML
-            objects_dic[objectID][image_key] = dest_path
-            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
-            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
-            log_info('Copied image "{}"'.format(image_file))
-            log_info('Into         "{}"'.format(dest_path))
-            log_info('Selected {} "{}"'.format(image_name, dest_path))
-
-            # --- Update Kodi image cache ---
-            kodi_update_image_cache(dest_path)
-
-        # User canceled select box
-        elif type2 < 0:
-            return False
-
-        return True
-
-    #
-    # Removes a category. Also removes all launchers in this category!
-    # Returns:
-    #   True   Changes made, save XML and update container.
-    #   False  No changes made.
-    #
-    def _gui_remove_category(self, categoryID):
-        launcherID_list = []
-        category_name = self.categories[categoryID]["name"]
-        for launcherID in sorted(self.launchers.iterkeys()):
-            if self.launchers[launcherID]['categoryID'] == categoryID:
-                launcherID_list.append(launcherID)
-
-        dialog = xbmcgui.Dialog()
-        if len(launcherID_list) > 0:
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
-                               'Deleting it will also delete related launchers. ' +
-                               'Are you sure you want to delete "{}"?'.format(category_name) )
-            if ret:
-                log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
-                # Delete launchers and ROM XML associated with them
-                for launcherID in launcherID_list:
-                    log_info('Deleting linked launcher "{}" id {}'.format(self.launchers[launcherID]['name'], launcherID))
-                    roms_xml_file = self.launchers[launcherID]['roms_xml_file']
-                    if os.path.isfile(roms_xml_file):
-                        log_info('Deleting ROMs XML "{}"'.format(roms_xml_file))
-                        os.remove(roms_xml_file)
-                    self.launchers.pop(launcherID)
-                # Delete category and make sure True is returned.
-                self.categories.pop(categoryID)
-            else:
-                return False
-        else:
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
-                               'Are you sure you want to delete "{}"?'.format(category_name) )
-            if ret:
-                log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
-                log_info('Category has no launchers, so no launchers to delete.')
-                self.categories.pop(categoryID)
-            else:
-                return False
-
-        return True
-
-    #
-    # Reads a text file with category/launcher description. Checks file size to avoid importing binary files!
-    #
-    def _gui_import_TXT_file(text_file):
-        # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
-        log_debug('_gui_import_TXT_file() Importing plot from "{}"'.format(text_file))
-        statinfo = os.stat(text_file)
-        file_size = statinfo.st_size
-        log_debug('_gui_import_TXT_file() File size is {}'.format(file_size))
-        if file_size > 16384:
-            ret = kodi_dialog_yesno('Advanced Emulator Launcher',
-                                    'File "{}" has {} bytes and it is very big.'.format(text_file, file_size) +
-                                    'Are you sure this is the correct file?')
-            if not ret: return ''
-
-        # Import file
-        log_debug('_gui_import_TXT_file() Importing description from "{}"'.format(text_file))
-        text_plot = open(text_file, 'rt')
-        file_data = text_plot.read()
-        text_plot.close()
-
-        return file_data
+        categoryID = misc_generate_random_SID()
+        category["id"]   = categoryID,
+        category["name"] = keyboard.getText()
+        self.categories[categoryID] = category
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        kodi_notify('Advanced Emulator Launcher', 'Category {0} created'.format(category["name"]))
+        xbmc.executebuiltin('Container.Refresh')
 
     def _command_edit_category(self, categoryID):
         # Shows a select box with the options to edit
@@ -773,97 +435,203 @@ class Main:
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
-    def _command_add_new_category(self):
+    #
+    # Removes a category. Also removes all launchers in this category!
+    # Returns:
+    #   True   Changes made, save XML and update container.
+    #   False  No changes made.
+    #
+    def _gui_remove_category(self, categoryID):
+        launcherID_list = []
+        category_name = self.categories[categoryID]["name"]
+        for launcherID in sorted(self.launchers.iterkeys()):
+            if self.launchers[launcherID]['categoryID'] == categoryID:
+                launcherID_list.append(launcherID)
+
         dialog = xbmcgui.Dialog()
-        keyboard = xbmc.Keyboard("", 'New Category Name')
-        keyboard.doModal()
-        if not keyboard.isConfirmed():
-            return False
+        if len(launcherID_list) > 0:
+            ret = dialog.yesno('Advanced Emulator Launcher',
+                               'Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
+                               'Deleting it will also delete related launchers. ' +
+                               'Are you sure you want to delete "{}"?'.format(category_name) )
+            if ret:
+                log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
+                # Delete launchers and ROM XML associated with them
+                for launcherID in launcherID_list:
+                    log_info('Deleting linked launcher "{}" id {}'.format(self.launchers[launcherID]['name'], launcherID))
+                    roms_xml_file = self.launchers[launcherID]['roms_xml_file']
+                    if os.path.isfile(roms_xml_file):
+                        log_info('Deleting ROMs XML "{}"'.format(roms_xml_file))
+                        os.remove(roms_xml_file)
+                    self.launchers.pop(launcherID)
+                # Delete category and make sure True is returned.
+                self.categories.pop(categoryID)
+            else:
+                return False
+        else:
+            ret = dialog.yesno('Advanced Emulator Launcher',
+                               'Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
+                               'Are you sure you want to delete "{}"?'.format(category_name) )
+            if ret:
+                log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
+                log_info('Category has no launchers, so no launchers to delete.')
+                self.categories.pop(categoryID)
+            else:
+                return False
 
-        category = fs_new_category()
-        categoryID = misc_generate_random_SID()
-        category["id"]   = categoryID,
-        category["name"] = keyboard.getText()
-        self.categories[categoryID] = category
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_notify('Advanced Emulator Launcher', 'Category {0} created'.format(category["name"]))
-        xbmc.executebuiltin('Container.Refresh')
+        return True
 
-    #
-    # Removes ROMs for a given launcher. Note this function will never be called for standalone launchers.
-    #
-    def _gui_empty_launcher(self, launcherID):
-        roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
-        num_roms = len(roms)
-
-        # If launcher is empty (no ROMs) do nothing
-        if num_roms == 0:
-            kodi_dialog_OK('Advanced Emulator Launcher',
-                           'Launcher is empty. Nothing to do.')
+    def _command_add_new_launcher(self, categoryID):
+        # If categoryID not found return to plugin root window.
+        if categoryID not in self.categories:
+            kodi_notify('Advanced Emulator Launcher - Error', 'Target category not found.')
+            xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
             return
 
-        # Confirm user wants to delete ROMs
+        # Show "Create New Launcher" dialog
         dialog = xbmcgui.Dialog()
-        ret = dialog.yesno('Advanced Emulator Launcher',
-                           "Launcher '{}' has {} ROMs".format(self.launchers[launcherID]["name"], num_roms),
-                           'Are you sure you want to delete it?')
-        if ret:
-            # Just remove XML file. Keep the value of roms_xml_file to be reused when user add more ROMs.
-            # Note that if the file is not found fs_load_ROM_XML_file() will return an empty dictionary.
-            roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
-            if roms_xml_file == '':
-                log_debug('Launcher roms_xml_file = "". No ROMs XML to remove')
-            else:
-                log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
-                try:
-                    os.remove(roms_xml_file)
-                except OSError:
-                    log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
-                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            xbmc.executebuiltin('Container.Refresh')
+        type = dialog.select('Create New Launcher',
+                             ['Standalone launcher (normal executable)', 'Files launcher (game emulator)'])
+        log_info('_command_add_new_launcher() New launcher type = {}'.format(type))
+        if sys.platform == 'win32': filter = '.bat|.exe|.cmd|.lnk'
+        else:                       filter = ''
 
-    #
-    # Removes a launcher. For ROMs launcher it also removes ROM XML. For standalone launcher there is no
-    # files to remove and no ROMs to check.
-    #
-    def _gui_remove_launcher(self, launcherID):
-        rompath = self.launchers[launcherID]["rompath"]
-        # Standalone launcher
-        if rompath == '':
+        # 'Standalone launcher (normal executable)'
+        if type == 0:
+            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
+            if not app: return False
+
+            argument = ''
+            argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
+            argkeyboard.doModal()
+            args = argkeyboard.getText()
+
+            title = os.path.basename(app)
+            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
+            keyboard.doModal()
+            title = keyboard.getText()
+            if title == "" :
+                title = os.path.basename(app)
+                title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+
+            # Selection of the launcher game system
             dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]["name"]),
-                               'Are you sure you want to delete it?')
-        # ROMs launcher
-        else:
-            roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
-            num_roms = len(roms)
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
-                               'Are you sure you want to delete it?')
-        if ret:
-            # Remove XML file and delete launcher object, only if launcher is not empty
-            roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
-            if roms_xml_file == '' or rompath == '':
-                log_debug('Launcher is empty or standalone. No ROMs XML to remove')
+            platforms = emudata_platform_list()
+            sel_platform = dialog.select('Select the platform', platforms)
+
+            # Selection of the thumbnails and fanarts path
+            if self.settings['launcher_thumb_path'] == '':
+                thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False)
             else:
-                log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
-                try:
-                    os.remove(roms_xml_file)
-                except OSError:
-                    log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
-                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
-            categoryID = self.launchers[launcherID]["categoryID"]
-            self.launchers.pop(launcherID)
+                thumb_path = self.settings['launcher_thumb_path']
+            if self.settings['launcher_fanart_path'] == '':
+                fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False)
+            else:
+                fanart_path = self.settings['launcher_fanart_path']
+
+            # --- Create launcher object data, add to dictionary and write XML file ---
+            if not thumb_path:  thumb_path = ''
+            if not fanart_path: fanart_path = ''
+            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
+            else:                       launcher_platform = "Unknown"
+            if sys.platform == "win32": launcher_lnk = True
+            else:                       launcher_lnk = False
+            # add launcher to the launchers dictionary (using name as index)
+            launcherID = misc_generate_random_SID()
+            launcherdata = fs_new_launcher()
+            launcherdata['id']          = launcherID
+            launcherdata['name']        = title
+            launcherdata['categoryID']  = categoryID
+            launcherdata['application'] = app
+            launcherdata['args']        = args
+            launcherdata['thumbpath']   = thumb_path
+            launcherdata['fanartpath']  = fanart_path
+            launcherdata['platform']    = launcher_platform
+            launcherdata['lnk']         = launcher_lnk
+            self.launchers[launcherID]  = launcherdata
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            if self._cat_is_empty(categoryID):
-                log_error('_gui_remove_launcher() Launcher category empty. Replacing Window')
-                xbmc.executebuiltin('ReplaceWindow(Programs,%s)'.format(self.base_url))
-            else:
-                log_error('_gui_remove_launcher() Launcher category not empty. Container.Refresh()')
-                xbmc.executebuiltin('Container.Refresh')
+            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
+
+        # 'Files launcher (game emulator)'
+        elif type == 1:
+            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
+            if not app: return False
+
+            files_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', "files", "")
+            if not files_path: return False
+
+            extensions = emudata_get_program_extensions(os.path.basename(app))
+            extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
+            extkey.doModal()
+            if not extkey.isConfirmed(): return False
+            ext = extkey.getText()
+
+            default_arguments = emudata_get_program_arguments(os.path.basename(app))
+            argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
+            argkeyboard.doModal()
+            if not argkeyboard.isConfirmed(): return False
+            args = argkeyboard.getText()
+
+            title = os.path.basename(app)
+            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
+            keyboard.doModal()
+            title = keyboard.getText()
+            if title == "":
+                title = os.path.basename(app)
+                title = title.replace('.'+title.split('.')[-1],'').replace('.',' ')
+
+            # Selection of the launcher game system
+            dialog = xbmcgui.Dialog()
+            platforms = emudata_platform_list()
+            sel_platform = dialog.select('Select the platform', platforms)
+
+            # Selection of the thumbnails and fanarts path
+            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnail path', "files", "", False, False, files_path)
+            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanart path', "files", "", False, False, files_path)
+
+            # --- Create launcher object data, add to dictionary and write XML file ---
+            thumb_path  = "" if not thumb_path else thumb_path
+            fanart_path = "" if not fanart_path else fanart_path
+            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
+            else:                       launcher_platform = "Unknown"
+            launcher_lnk = True if sys.platform == "win32" else False
+
+            # Choose launcher ROM XML filename. There may be launchers with
+            # same name in different categories, or even launcher with the
+            # same name in the same category.
+            launcherID = misc_generate_random_SID()
+            category_name = self.categories[categoryID]['name']
+            clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
+            clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
+            clean_launch_title = clean_launch_title.replace(' ', '_')
+            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:5] + '.xml'
+            roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file_base)
+            log_info('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
+            log_info('Chosen roms_xml_file_path  "{0}"'.format(roms_xml_file_path))
+
+            # Create new launchers and save cateogories.xml
+            launcherdata = fs_new_launcher()
+            launcherdata['id']            = launcherID
+            launcherdata['name']          = title
+            launcherdata['categoryID']    = categoryID
+            launcherdata['application']   = app
+            launcherdata['args']          = args
+            launcherdata['rompath']       = files_path
+            launcherdata['thumbpath']     = thumb_path
+            launcherdata['fanartpath']    = fanart_path
+            launcherdata['romext']        = ext
+            launcherdata['platform']      = launcher_platform
+            launcherdata['lnk']           = launcher_lnk
+            launcherdata['roms_xml_file'] = roms_xml_file_path
+            self.launchers[launcherID] = launcherdata
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            kodi_notify('Advanced Emulator Launcher',
+                        'ROM launcher {} created.'.format(title))
+
+            # This causes trouble...
+            # xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
+            # Just update container contents
+            xbmc.executebuiltin('Container.Refresh')
 
     def _command_edit_launcher(self, launcherID):
         dialog = xbmcgui.Dialog()
@@ -1251,832 +1019,92 @@ class Main:
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
-    def _command_add_new_launcher(self, categoryID):
-        # If categoryID not found return to plugin root window.
-        if categoryID not in self.categories:
-            kodi_notify('Advanced Emulator Launcher - Error', 'Target category not found.')
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self.base_url))
+    #
+    # Removes ROMs for a given launcher. Note this function will never be called for standalone launchers.
+    #
+    def _gui_empty_launcher(self, launcherID):
+        roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+        num_roms = len(roms)
+
+        # If launcher is empty (no ROMs) do nothing
+        if num_roms == 0:
+            kodi_dialog_OK('Advanced Emulator Launcher',
+                           'Launcher is empty. Nothing to do.')
             return
 
-        # Show "Create New Launcher" dialog
+        # Confirm user wants to delete ROMs
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Create New Launcher',
-                             ['Standalone launcher (normal executable)', 'Files launcher (game emulator)'])
-        log_info('_command_add_new_launcher() New launcher type = {}'.format(type))
-        if sys.platform == 'win32': filter = '.bat|.exe|.cmd|.lnk'
-        else:                       filter = ''
-
-        # 'Standalone launcher (normal executable)'
-        if type == 0:
-            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
-            if not app: return False
-
-            argument = ''
-            argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
-            argkeyboard.doModal()
-            args = argkeyboard.getText()
-
-            title = os.path.basename(app)
-            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
-            keyboard.doModal()
-            title = keyboard.getText()
-            if title == "" :
-                title = os.path.basename(app)
-                title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
-
-            # Selection of the launcher game system
-            dialog = xbmcgui.Dialog()
-            platforms = emudata_platform_list()
-            sel_platform = dialog.select('Select the platform', platforms)
-
-            # Selection of the thumbnails and fanarts path
-            if self.settings['launcher_thumb_path'] == '':
-                thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False)
+        ret = dialog.yesno('Advanced Emulator Launcher',
+                           "Launcher '{}' has {} ROMs".format(self.launchers[launcherID]["name"], num_roms),
+                           'Are you sure you want to delete it?')
+        if ret:
+            # Just remove XML file. Keep the value of roms_xml_file to be reused when user add more ROMs.
+            # Note that if the file is not found fs_load_ROM_XML_file() will return an empty dictionary.
+            roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
+            if roms_xml_file == '':
+                log_debug('Launcher roms_xml_file = "". No ROMs XML to remove')
             else:
-                thumb_path = self.settings['launcher_thumb_path']
-            if self.settings['launcher_fanart_path'] == '':
-                fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False)
-            else:
-                fanart_path = self.settings['launcher_fanart_path']
-
-            # --- Create launcher object data, add to dictionary and write XML file ---
-            if not thumb_path:  thumb_path = ''
-            if not fanart_path: fanart_path = ''
-            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
-            else:                       launcher_platform = "Unknown"
-            if sys.platform == "win32": launcher_lnk = True
-            else:                       launcher_lnk = False
-            # add launcher to the launchers dictionary (using name as index)
-            launcherID = misc_generate_random_SID()
-            launcherdata = fs_new_launcher()
-            launcherdata['id']          = launcherID
-            launcherdata['name']        = title
-            launcherdata['categoryID']  = categoryID
-            launcherdata['application'] = app
-            launcherdata['args']        = args
-            launcherdata['thumbpath']   = thumb_path
-            launcherdata['fanartpath']  = fanart_path
-            launcherdata['platform']    = launcher_platform
-            launcherdata['lnk']         = launcher_lnk
-            self.launchers[launcherID]  = launcherdata
+                log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
+                try:
+                    os.remove(roms_xml_file)
+                except OSError:
+                    log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
+                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
-
-        # 'Files launcher (game emulator)'
-        elif type == 1:
-            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
-            if not app: return False
-
-            files_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', "files", "")
-            if not files_path: return False
-
-            extensions = emudata_get_program_extensions(os.path.basename(app))
-            extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
-            extkey.doModal()
-            if not extkey.isConfirmed(): return False
-            ext = extkey.getText()
-
-            default_arguments = emudata_get_program_arguments(os.path.basename(app))
-            argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
-            argkeyboard.doModal()
-            if not argkeyboard.isConfirmed(): return False
-            args = argkeyboard.getText()
-
-            title = os.path.basename(app)
-            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
-            keyboard.doModal()
-            title = keyboard.getText()
-            if title == "":
-                title = os.path.basename(app)
-                title = title.replace('.'+title.split('.')[-1],'').replace('.',' ')
-
-            # Selection of the launcher game system
-            dialog = xbmcgui.Dialog()
-            platforms = emudata_platform_list()
-            sel_platform = dialog.select('Select the platform', platforms)
-
-            # Selection of the thumbnails and fanarts path
-            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnail path', "files", "", False, False, files_path)
-            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanart path', "files", "", False, False, files_path)
-
-            # --- Create launcher object data, add to dictionary and write XML file ---
-            thumb_path  = "" if not thumb_path else thumb_path
-            fanart_path = "" if not fanart_path else fanart_path
-            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
-            else:                       launcher_platform = "Unknown"
-            launcher_lnk = True if sys.platform == "win32" else False
-
-            # Choose launcher ROM XML filename. There may be launchers with
-            # same name in different categories, or even launcher with the
-            # same name in the same category.
-            launcherID = misc_generate_random_SID()
-            category_name = self.categories[categoryID]['name']
-            clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
-            clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
-            clean_launch_title = clean_launch_title.replace(' ', '_')
-            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:5] + '.xml'
-            roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file_base)
-            log_info('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
-            log_info('Chosen roms_xml_file_path  "{0}"'.format(roms_xml_file_path))
-
-            # Create new launchers and save cateogories.xml
-            launcherdata = fs_new_launcher()
-            launcherdata['id']            = launcherID
-            launcherdata['name']          = title
-            launcherdata['categoryID']    = categoryID
-            launcherdata['application']   = app
-            launcherdata['args']          = args
-            launcherdata['rompath']       = files_path
-            launcherdata['thumbpath']     = thumb_path
-            launcherdata['fanartpath']    = fanart_path
-            launcherdata['romext']        = ext
-            launcherdata['platform']      = launcher_platform
-            launcherdata['lnk']           = launcher_lnk
-            launcherdata['roms_xml_file'] = roms_xml_file_path
-            self.launchers[launcherID] = launcherdata
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_notify('Advanced Emulator Launcher',
-                        'ROM launcher {} created.'.format(title))
-
-            # This causes trouble...
-            # xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s)" % (self.base_url, categoryID))
-            # Just update container contents
             xbmc.executebuiltin('Container.Refresh')
 
     #
-    # These two functions do things like stopping music before lunch, toggling full screen, etc.
+    # Removes a launcher. For ROMs launcher it also removes ROM XML. For standalone launcher there is no
+    # files to remove and no ROMs to check.
     #
-    def _run_before_execution(self, launcher, name_str):
-        if self.settings['media_state'] != "2" :
-            if xbmc.Player().isPlaying():
-                if self.settings['media_state'] == "0":
-                    xbmc.Player().stop()
-                if self.settings['media_state'] == "1":
-                    xbmc.Player().pause()
-                xbmc.sleep(self.settings['start_tempo'] + 100)
-                try:
-                    xbmc.audioSuspend()
-                except:
-                    pass
-        if launcher["minimize"] == "true":
-            _toogle_fullscreen()
-
-        if self.settings['launcher_notification']:
-            kodi_notify('Advanced Emulator Launcher', 'Launching {0}'.format(name_str), 5000)
-
-        try:
-            xbmc.enableNavSounds(False)
-        except:
-            pass
-        xbmc.sleep(self.settings['start_tempo'])
-
-    def _run_after_execution(self, launcher):
-        xbmc.sleep(self.settings[ "start_tempo" ])
-        try:
-            xbmc.enableNavSounds(True)
-        except:
-            pass
-
-        if launcher["minimize"] == "true":
-            _toogle_fullscreen()
-
-        if self.settings['media_state'] != "2":
-            try:
-                xbmc.audioResume()
-            except:
-                pass
-            if self.settings['media_state'] == "1":
-                xbmc.sleep(self.settings['start_tempo'] + 100)
-                xbmc.Player().play()
-
-    #
-    # Launchs an application
-    #
-    def _run_standalone_launcher(self, categoryID, launcherID):
-        # Check launcher is OK
-        if launcherID not in self.launchers:
-            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
-            return
-        launcher = self.launchers[launcherID]
-
-        # Kodi built-in???
-        # xbmc-fav- and xbmc-sea are Angelscry's hacks to implement launchers from favourites
-        # and launchers from searchers. For example, to run a launcher created from search
-        # results,
-        # app = "xbmc-sea-%s" % launcherid
-        # args = 'ActivateWindow(10001,"%s")' % launcher_query
-        apppath = os.path.dirname(launcher["application"])
-        if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or \
-           "xbmc-fav-" in launcher["application"] or "xbmc-sea-" in launcher["application"]:
-            xbmc.executebuiltin('XBMC.%s' % launcher["args"])
-            return
-
-        # ~~~~~ External application ~~~~~
-        application = launcher["application"]
-        application_basename = os.path.basename(launcher["application"])
-        if not os.path.exists(apppath):
-            kodi_notify_warn('Advanced Emulator Launcher',
-                             'File {0} not found.'.format(application_basename))
-            return
-        arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
-        self._print_log('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
-        self._print_log('_run_standalone_launcher() application          = "{0}"'.format(application))
-        self._print_log('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
-        self._print_log('_run_standalone_launcher() arguments            = "{0}"'.format(arguments))
-
-        # Do stuff before execution
-        self._run_before_execution(launcher, application_basename)
-
-        # Execute
-        if sys.platform == 'win32':
-            if launcher["application"].split(".")[-1] == "lnk":
-                os.system("start \"\" \"%s\"" % (application))
-            else:
-                if application.split(".")[-1] == "bat":
-                    info = subprocess_hack.STARTUPINFO()
-                    info.dwFlags = 1
-                    if ( self.settings[ "show_batch" ] ):
-                        info.wShowWindow = 5
-                    else:
-                        info.wShowWindow = 0
-                else:
-                    info = None
-                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
-                startproc.wait()
-        elif sys.platform.startswith('linux'):
-            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.stop')
-            os.system("\"%s\" %s " % (application, arguments))
-            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.start')
-        elif sys.platform.startswith('darwin'):
-            os.system("\"%s\" %s " % (application, arguments))
-        else:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
-
-        # Do stuff after execution
-        self._run_after_execution(launcher)
-
-    #
-    # Launchs a ROM
-    #
-    def _run_rom(self, categoryID, launcherID, romID):
-        # Check launcher is OK
-        if launcherID not in self.launchers:
-            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
-            return
-        launcher = self.launchers[launcherID]
-
-        # Load ROMs
-        roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
-
-        # Check ROM is XML data just read
-        if romID not in roms:
-            kodi_dialog_OK('ERROR', 'romID not in roms_dic')
-            return
-
-        # Launch ROM
-        rom = roms[romID]
-        if rom["altapp"] != "": application = rom["altapp"]
-        else:                   application = launcher["application"]
-        apppath = os.path.dirname(application)
-        romfile = os.path.basename(rom["filename"])
-        rompath = os.path.dirname(rom["filename"])
-        romname = os.path.splitext(romfile)[0]
-        self._print_log('_run_rom() application = "{0}"'.format(application))
-        self._print_log('_run_rom() apppath     = "{0}"'.format(apppath))
-        self._print_log('_run_rom() romfile     = "{0}"'.format(romfile))
-        self._print_log('_run_rom() rompath     = "{0}"'.format(rompath))
-        self._print_log('_run_rom() romname     = "{0}"'.format(romname))
-
-        # Check that app exists and ROM file exists
-        if not os.path.exists(apppath):
-            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % apppath, 10000)
-            return
-        if os.path.exists(romfile):
-            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % romfile, 10000)
-            return
-
-        # ~~~~ Argument substitution ~~~~~
-        if rom["altarg"] != "": arguments = rom["altarg"]
-        else:                   arguments = launcher["args"]
-        arguments = arguments.replace("%rom%", rom["filename"]).replace("%ROM%", rom["filename"])
-        arguments = arguments.replace("%romfile%", romfile).replace("%ROMFILE%", romfile)
-        arguments = arguments.replace("%romname%", romname).replace("%ROMNAME%", romname)
-        arguments = arguments.replace("%rombasename%", base_filename(romname)).replace("%ROMBASENAME%", base_filename(romname))
-        arguments = arguments.replace("%apppath%", apppath).replace("%APPPATH%", apppath)
-        arguments = arguments.replace("%rompath%", rompath).replace("%ROMPATH%", rompath)
-        arguments = arguments.replace("%romtitle%", rom["name"]).replace("%ROMTITLE%", rom["name"])
-        arguments = arguments.replace("%romspath%", rompath).replace("%ROMSPATH%", rompath)
-        self._print_log('_run_rom() arguments   = "{0}"'.format(arguments))
-
-        # Execute Kodi internal function (RetroPlayer?)
-        if os.path.basename(application).lower().replace(".exe" , "") == "xbmc":
-            xbmc.executebuiltin('XBMC.' + arguments)
-            return
-
-        # ~~~~~ Execute external application ~~~~~
-        # Do stuff before execution
-        self._run_before_execution(launcher, romname)
-
-        # Determine platform and launch application
-        if sys.platform == 'win32':
-            if launcher["lnk"] == "true" and launcher["romext"] == "lnk":
-                os.system("start \"\" \"%s\"" % (arguments))
-            else:
-                if application.split(".")[-1] == "bat":
-                    info = subprocess_hack.STARTUPINFO()
-                    info.dwFlags = 1
-                    if self.settings["show_batch"]:
-                        info.wShowWindow = 5
-                    else:
-                        info.wShowWindow = 0
-                else:
-                    info = None
-                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
-                startproc.wait()
-        elif sys.platform.startswith('linux'):
-            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.stop')
-            os.system("\"%s\" %s " % (application, arguments))
-            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.start')
-        # Android???
-        elif sys.platform.startswith('darwin'):
-            os.system("\"%s\" %s " % (application, arguments))
-        else:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform', 10000)
-
-        # Do stuff after application execution
-        self._run_after_execution(launcher)
-
-    def _gui_render_category_row(self, category_dic, key):
-        # --- Create listitem row ---
-        icon = "DefaultFolder.png"
-        if category_dic['thumb'] != '':
-            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
-        else:
-            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon )
-        if category_dic['finished'] == False: ICON_OVERLAY = 6
-        else:                                 ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", category_dic['fanart'])
-        # log_debug('_gui_render_category_row() Category {} fanart "{}"'.format(category_dic['name'], category_dic['fanart']))
-        listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'],
-                                    "Plot" : category_dic['description'], "overlay": ICON_OVERLAY } )
-
-        # --- Create context menu ---
-        # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
-        commands = []
-        categoryID = category_dic['id']
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
-        commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID), ))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
-        # Add Category to Kodi Favourites (do not know how to do it yet)
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
-
-        # --- Add row ---
-        # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
-        url_str = self._misc_url('SHOW_LAUNCHERS', key)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
-
-    def _gui_render_category_favourites(self):
-        # --- Create listitem row ---
-        fav_name = '<Favourites>'
-        fav_thumb = ''
-        fav_fanart = ''
-        icon = "DefaultFolder.png"
-        listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
-        listitem.setProperty("fanart_image", fav_fanart)
-        listitem.setInfo("video", { "Title": fav_name, "Genre" : 'All',
-                                    "Plot" : 'AEL favourite ROMs', "overlay": 7 } )
-
-        # --- Create context menu ---
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
-
-        # --- Add row ---
-        url_str = self._misc_url('SHOW_FAVOURITES')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
-
-    #
-    # Former _get_categories()
-    # Renders the categories (addon root window)
-    #
-    def _gui_render_categories(self):
-        # For every category, add it to the listbox. Order alphabetically by name
-        for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
-            self._gui_render_category_row(self.categories[key], key)
-        # AEL Favourites special category
-        self._gui_render_category_favourites()
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
-
-    def _gui_render_launcher_row(self, launcher_dic):
-        # --- Create listitem row ---
-        commands = []
-        if launcher_dic['rompath'] == '': # Executable launcher
-            folder = False
-            icon = "DefaultProgram.png"
-        else:                             # Files launcher
-            folder = True
-            icon = "DefaultFolder.png"
-        if launcher_dic['thumb']:
-            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
-        else:
-            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon )
-        if launcher_dic['finished'] != True: ICON_OVERLAY = 6
-        else:                                ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", launcher_dic['fanart'])
-        listitem.setInfo("video", {"Title"    : launcher_dic['name'],    "Label"     : os.path.basename(launcher_dic['rompath']),
-                                   "Plot"     : launcher_dic['plot'],    "Studio"    : launcher_dic['studio'],
-                                   "Genre"    : launcher_dic['genre'],   "Premiered" : launcher_dic['year'],
-                                   "Year"     : launcher_dic['year'],    "Writer"    : launcher_dic['platform'],
-                                   "Trailer"  : os.path.join(launcher_dic['trailerpath']),
-                                   "Director" : os.path.join(launcher_dic['custompath']),
-                                   "overlay"  : ICON_OVERLAY })
-
-        # --- Create context menu ---
-        launcherID = launcher_dic['id']
-        categoryID = launcher_dic['categoryID']
-        commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
-        commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
+    def _gui_remove_launcher(self, launcherID):
+        rompath = self.launchers[launcherID]["rompath"]
+        # Standalone launcher
+        if rompath == '':
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher',
+                               'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]["name"]),
+                               'Are you sure you want to delete it?')
         # ROMs launcher
-        if not launcher_dic['rompath'] == '':
-            commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID), ))
-        commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
-        # Add Launcher URL to Kodi Favourites (do not know how to do it yet)
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
-
-        # --- Add row ---
-        url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=folder)
-
-    #
-    # Former  _get_launchers
-    # Renders the launcher for a given category
-    #
-    def _gui_render_launchers(self, categoryID):
-        # If the category has no launchers then render nothing.
-        launcher_IDs = []
-        for launcher_id in self.launchers:
-            if self.launchers[launcher_id]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
-        if not launcher_IDs:
-            category_name = self.categories[categoryID]['name']
-            kodi_notify('Advanced Emulator Launcher', 'Category {} has no launchers. Add launchers first'.format(category_name))
-            # NOTE If we return at this point Kodi produces and error:
-            # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
-            # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
-            # How to avoid that? Rendering the categories again? If I call _gui_render_categories() it does not work well, categories
-            # are displayed in wrong alphabetical order and if go back is pressed the categories are rendered again (instead of
-            # exiting the addon).
-            # What about replacewindow? I also get the error, still not clear why...
-            # self._gui_render_categories()
-            # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
-            return
-
-        # Render launcher rows of this category
-        for key in sorted(self.launchers, key = lambda x : self.launchers[x]["application"]):
-            if self.launchers[key]["categoryID"] == categoryID:
-                self._gui_render_launcher_row(self.launchers[key])
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
-
-    #
-    # Former  _add_rom
-    # Note that if we are rendering favourites, categoryID = launcherID = '0'.
-    def _gui_render_rom_row( self, categoryID, launcherID, romID, rom, rom_is_in_favourites):
-        # --- Create listitem row ---
-        icon = "DefaultProgram.png"
-        # icon = "DefaultVideo.png"
-
-        # If we are rendering favourites mark fav_status
-        if launcherID == '0':
-            if rom['fav_status'] == 'OK':
-                rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom['name'])
-            elif rom['fav_status'] == 'Unlinked':
-                rom_name = '{} [COLOR yellow][Unlinked][/COLOR]'.format(rom['name'])
-            elif rom['fav_status'] == 'Broken':
-                rom_name = '{} [COLOR red][Broken][/COLOR]'.format(rom['name'])
-            else:
-                rom_name = rom['name']
-        # We are rendering ROMs in a normal launcher
         else:
-            # Mark No-Intro status
-            if rom['nointro_status'] == 'Have':
-                rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom['name'])
-            elif rom['nointro_status'] == 'Miss':
-                rom_name = '{} [COLOR red][Miss][/COLOR]'.format(rom['name'])
-            elif rom['nointro_status'] == 'Unknown':
-                rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom['name'])
-            else:
-                rom_name = rom['name']
-
-            # If listing regular launcher and rom is in favourites, mark it
-            if rom_is_in_favourites:
-                log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
-
-                # --- Workaround so the alphabetical order is not lost ---
-                # NOTE Missing ROMs must never be in favourites... However, mark them to help catching bugs.
-                # rom_name = '[COLOR violet]{} [Fav][/COLOR]'.format(rom['name'])
-                # rom_name = '{} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
-                rom_name += ' [COLOR violet][Fav][/COLOR]'
-
-        # --- Add ROM to lisitem ---
-        if rom['thumb']:
-            listitem = xbmcgui.ListItem(rom['name'], rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
-        else:
-            listitem = xbmcgui.ListItem(rom['name'], rom['name'], iconImage=icon)
-
-        # If ROM has no fanart then use launcher fanart
-        if launcherID == '0':
-            defined_fanart = rom["fanart"]
-        else:
-            defined_fanart = rom["fanart"] if rom["fanart"] != '' else self.launchers[launcherID]["fanart"]
-        if rom['finished'] is not True: ICON_OVERLAY = 6
-        else:                           ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", defined_fanart)
-
-        # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
-        # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
-        # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
-        # instead of changing the whole row colour.
-        if launcherID == '0':
-            platform = rom['platform']
-        else:
-            platform = self.launchers[launcherID]['platform']
-        listitem.setInfo("video", {"Title"   : rom_name,       "Label"     : 'test label',
-                                   "Plot"    : rom['plot'],    "Studio"    : rom['studio'],
-                                   "Genre"   : rom['genre'],   "Premiered" : rom['year'],
-                                   "Year"    : rom['year'],    "Writer"    : platform,
-                                   "Trailer" : 'test trailer', "Director"  : 'test director',
-                                   "overlay" : ICON_OVERLAY })
-
-        # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
-        # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
-        # really mean the item is a playable, it only means Kodi will wait for a call to
-        # xbmcplugin.setResolvedUrl and when this is called it will play the item. If you are going
-        # to play the item using xbmc.Player().play() then as far as Kodi is concerned it isn't playable.
-        #
-        # http://forum.kodi.tv/showthread.php?tid=173986&pid=1519987#pid1519987
-        # Otherwise the plugin is called back with an invalid handle (sys.arg[1]). It took me a lot of time
-        # to figure this out...
-        # if self._content_type == 'video':
-        # listitem.setProperty('IsPlayable', 'false')
-        # log_debug('Item Row IsPlayable false')
-
-        # --- Create context menu ---
-        commands = []
-        if launcherID == '0':
-            commands.append(('Check Favourite ROMs', self._misc_url_RunPlugin('CHECK_FAV', '0', '0', romID), ))
-            commands.append(('Edit ROM in Favourites', self._misc_url_RunPlugin('EDIT_ROM', '0', '0', romID), ))
-            commands.append(('Search Favourites', self._misc_url_RunPlugin('SEARCH_LAUNCHER', '0', '0'), ))
-            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', '0', '0', romID), ))
-        else:
-            commands.append(('Edit ROM', self._misc_url_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
-            commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
-            commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV', categoryID, launcherID, romID), ))
-            commands.append(('Delete ROM', self._misc_url_RunPlugin('DELETE_ROM', categoryID, launcherID, romID), ))
-        # Add ROM URL to Kodi Favourites (do not know how to do it yet) (maybe not will be used)
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
-
-        # --- Add row ---
-        # if finished != "true" or self.settings[ "hide_finished" ] == False:
-        # URLs must be different depending on the content type. If not, lot of WARNING: CreateLoader - unsupported protocol(plugin)
-        # in the log. See http://forum.kodi.tv/showthread.php?tid=187954
-        # if self._content_type == 'video':
-        #     url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        # else:
-        url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url_str, listitem=listitem, isFolder=False)
-
-    #
-    # Former  _get_roms
-    # Renders the roms listbox for a given launcher
-    #
-    def _gui_render_roms(self, categoryID, launcherID):
-        if launcherID not in self.launchers:
-            log_error('_gui_render_roms() Launcher hash not found.')
-            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
-            return
-
-        # Load ROMs for this launcher and display them
-        selectedLauncher = self.launchers[launcherID]
-        roms_xml_file = selectedLauncher['roms_xml_file']
-
-        # Check if XML file with ROMs exist
-        if not os.path.isfile(roms_xml_file):
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.')
-            xbmc.executebuiltin("Container.Refresh")
-            return
-
-        # Load ROMs
-        roms = fs_load_ROM_XML_file(roms_xml_file)
-        if not roms:
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.')
-            return
-
-        # Load favourites
-        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
-
-        # --- Display ROMs ---
-        # Optimization Currently roms_fav is a dictionary, which is very fast when testing for element existence
-        #              because it is hashed. However, set() is the fastest. If user has a lot of favourites
-        #              there could be a small performance gain.
-        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-            self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False)
-
-    #
-    # Renders the special category favourites, which is actually very similar to a ROM launcher
-    # Note that only ROMs in a launcher can be added to favourites. Thus, no standalone launchers.
-    # If user deletes launcher or favourite ROMs the ROM in favourites remain.
-    # Favourites ROM information includes the application launcher and arguments to launch the ROM.
-    # Basically, once a ROM is added to favourites is becomes kind of a standalone launcher.
-    # Favourites has categoryID = 0 and launcherID = 0. Thus, other functions can differentiate
-    # between a standard ROM and a favourite ROM.
-    #
-    # What if user changes the favourites Thumb/Fanart??? Where do we store them???
-    # What about the NFO files of favourite ROMs???
-    #
-    # PROBLEM If user rescan ROMs then same ROMs will have different ID. An option to "relink"
-    #         the favourites with their original ROMs must be provided, provided that the launcher
-    #         is the same.
-    # IMPROVEMENT Maybe it could be interesting to be able to export the list of favourites
-    #             to HTML or something like that.
-    #
-    def _command_show_favourites(self):
-        # Load favourites
-        roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
-        if not roms:
-            kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
-            return
-
-        # Display Favourites
-        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-            self._gui_render_rom_row('0', '0', key, roms[key], False)
-        xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False )
-
-    #
-    # Adds ROM to favourites
-    #
-    def _command_add_to_favourites(self, categoryID, launcherID, romID):
-        # Load ROMs in launcher
-        launcher = self.launchers[launcherID]
-        roms_xml_file = launcher["roms_xml_file"]
-        roms = fs_load_ROM_XML_file(roms_xml_file)
-        if not roms:
-            kodi_dialog_OK('Advanced Emulator Launcher',
-                               'Empty roms launcher in _command_add_to_favourites()',
-                               'This is a bug, please report it.')
-
-        # Load favourites
-        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
-
-        # DEBUG
-        log_verb('Adding ROM to Favourites')
-        log_verb('romID {}'.format(romID))
-        log_verb('name  {}'.format(roms[romID]['name']))
-
-        # Check if ROM already in favourites an warn user if so
-        if romID in roms_fav:
-            log_verb('Already in favourites')
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'ROM: {0}'.format(roms[romID]["name"]),
-                               'is already on AEL Favourites.', 'Overwrite it?')
-            if not ret:
-                log_verb('User does not want to overwrite. Exiting.')
-                return
-        # Confirm if rom should be added
-        else:
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                                'ROM: {0}'.format(roms[romID]["name"]),
-                                'Add this ROM to AEL Favourites?')
-            if not ret:
-                log_verb('User does not confirm addition. Exiting.')
-                return
-
-        # Add ROM to favourites ROMs and save to disk
-        # If thumb is empty then use launcher thum.
-        # If fanart is empty then use launcher fanart.
-        roms_fav[romID] = roms[romID]
-        roms_fav[romID]['launcherID']  = self.launchers[launcherID]['id']
-        roms_fav[romID]['platform']    = self.launchers[launcherID]['platform']
-        roms_fav[romID]['application'] = self.launchers[launcherID]['application']
-        roms_fav[romID]['args']        = self.launchers[launcherID]['args']
-        roms_fav[romID]['rompath']     = self.launchers[launcherID]['rompath']
-        roms_fav[romID]['romext']      = self.launchers[launcherID]['romext']
-        roms_fav[romID]['fav_status']  = 'OK'
-        if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = self.launchers[launcherID]['thumb']
-        if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
-        fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
-
-    #
-    # Check ROMs in favourites and set fav_status field.
-    # Note that categoryID = launcherID = '0'
-    #
-    def _command_check_favourites(self, categoryID, launcherID, romID):
-        # Load Favourite ROMs
-        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
-
-        # Reset fav_status filed for all favourites
-        log_debug('_command_check_favourites() STEP 0')
-        for rom_fav_ID in roms_fav:
-            roms_fav[rom_fav_ID]['fav_status'] = 'OK'
-
-        # STEP 1: Find missing launchers
-        log_debug('_command_check_favourites() STEP 1')
-        for rom_fav_ID in roms_fav:
-            if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
-                log_info('Fav ROM "{}" unlinked because launcherID not in launchers'.format(roms_fav[rom_fav_ID]['name']))
-                roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
-
-        # STEP 2: Find missing ROM ID
-        # Get a list of launchers Favourite ROMs belong
-        log_debug('_command_check_favourites() STEP 2')
-        launchers_fav = set()
-        for rom_fav_ID in roms_fav: launchers_fav.add(roms_fav[rom_fav_ID]['launcherID'])
-
-        # Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs that belong to
-        # that launcher.
-        for launcher_id in launchers_fav:
-            # Load launcher ROMs
-            rom_xml_path = self.launchers[launcher_id]["roms_xml_file"]
-            roms = fs_load_ROM_XML_file(rom_xml_path)
-
-            # Traverse all favourites and check them if belong to this launcher.
-            # This should be efficient because traversing favourites is cheap but loading ROMs is expensive.
-            for rom_fav_ID in roms_fav:
-                if roms_fav[rom_fav_ID]['launcherID'] == launcher_id:
-                    # Check if ROM ID exists
-                    if roms_fav[rom_fav_ID]['id'] not in roms:
-                        log_info('Fav ROM "{}" unlinked because romID not in launcher ROMs'.format(roms_fav[rom_fav_ID]['name']))
-                        roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
-
-        # STEP 3: Check if file exists. Even if the ROM ID is not there because user
-        # deleted ROM or launcher, the file may still be there.
-        log_debug('_command_check_favourites() STEP 3')
-        for rom_fav_ID in roms_fav:
-            if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
-                log_info('Fav ROM "{}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['name']))
-                roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
-
-        # Save favourite ROMs
-        fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
-
-        # Update container to show changes in Favourites flags. If not, user has to exit Favourites and enter again.
-        xbmc.executebuiltin('Container.Refresh')
-
-    #
-    # Deletes a ROM from a launcher.
-    # If categoryID = launcherID = '0' then delete from Favourites
-    #
-    def _command_remove_rom(self, categoryID, launcherID, romID):
-        if launcherID == '0':
-            # Load Favourite ROMs
-            roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
-            if not roms:
-                return
-
-            # Confirm deletion
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites',
-                               'ROM: {0}'.format(roms[romID]['name']),
-                               'Are you sure you want to delete it from favourites?')
-            if ret:
-                roms.pop(romID)
-                fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
-                kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from Favourites')
-                # If Favourites is empty then go to root, if not refresh
-                if len(roms) == 0:
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
-                else:
-                    xbmc.executebuiltin('Container.Refresh')
-        else:
-            # Load ROMs
             roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
-            if not roms:
-                return
-
+            num_roms = len(roms)
             dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites',
-                               'Launcher: {0}'.format(self.launchers[launcherID]['name']),
-                               'ROM: {0}'.format(roms[romID]['name']),
-                               'Are you sure you want to delete it from launcher?')
-            if ret:
-                roms.pop(romID)
-                launcher = self.launchers[launcherID]
-                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, launcher)
-                kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from launcher')
-                # If launcher is empty then go to root, if not refresh
-                if len(roms) == 0:
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
-                else:
-                    xbmc.executebuiltin('Container.Refresh')
+            ret = dialog.yesno('Advanced Emulator Launcher',
+                               'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]["name"], num_roms),
+                               'Are you sure you want to delete it?')
+        if ret:
+            # Remove XML file and delete launcher object, only if launcher is not empty
+            roms_xml_file = self.launchers[launcherID]["roms_xml_file"]
+            if roms_xml_file == '' or rompath == '':
+                log_debug('Launcher is empty or standalone. No ROMs XML to remove')
+            else:
+                log_debug('Removing ROMs XML "{0}"'.format(roms_xml_file))
+                try:
+                    os.remove(roms_xml_file)
+                except OSError:
+                    log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_xml_file))
+                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
+            categoryID = self.launchers[launcherID]["categoryID"]
+            self.launchers.pop(launcherID)
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            if self._cat_is_empty(categoryID):
+                log_error('_gui_remove_launcher() Launcher category empty. Replacing Window')
+                xbmc.executebuiltin('ReplaceWindow(Programs,%s)'.format(self.base_url))
+            else:
+                log_error('_gui_remove_launcher() Launcher category not empty. Container.Refresh()')
+                xbmc.executebuiltin('Container.Refresh')
+
+    #
+    # Add ROMS to launcher
+    #
+    def _command_add_roms(self, launcher):
+        dialog = xbmcgui.Dialog()
+        type = dialog.select('Add/Update Items', ['Scan for New Items', 'Manually Add Item'])
+        if type == 0:
+            self._roms_import_roms(launcher)
+        elif type == 1:
+            self._roms_add_new_rom(launcher)
 
     #
     # Former _edit_rom()
@@ -2334,15 +1362,936 @@ class Main:
         kodi_refresh_container()
 
     #
-    # Add ROMS to launcher
+    # Deletes a ROM from a launcher.
+    # If categoryID = launcherID = '0' then delete from Favourites
     #
-    def _command_add_roms(self, launcher):
+    def _command_remove_rom(self, categoryID, launcherID, romID):
+        if launcherID == '0':
+            # Load Favourite ROMs
+            roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+            if not roms:
+                return
+
+            # Confirm deletion
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites',
+                               'ROM: {0}'.format(roms[romID]['name']),
+                               'Are you sure you want to delete it from favourites?')
+            if ret:
+                roms.pop(romID)
+                fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms)
+                kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from Favourites')
+                # If Favourites is empty then go to root, if not refresh
+                if len(roms) == 0:
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
+                else:
+                    xbmc.executebuiltin('Container.Refresh')
+        else:
+            # Load ROMs
+            roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
+            if not roms:
+                return
+
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites',
+                               'Launcher: {0}'.format(self.launchers[launcherID]['name']),
+                               'ROM: {0}'.format(roms[romID]['name']),
+                               'Are you sure you want to delete it from launcher?')
+            if ret:
+                roms.pop(romID)
+                launcher = self.launchers[launcherID]
+                fs_write_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'], roms, launcher)
+                kodi_notify('Advanced Emulator Launcher', 'Deleted ROM from launcher')
+                # If launcher is empty then go to root, if not refresh
+                if len(roms) == 0:
+                    xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url))
+                else:
+                    xbmc.executebuiltin('Container.Refresh')
+
+    #
+    # Former _get_categories()
+    # Renders the categories (addon root window)
+    #
+    def _command_render_categories(self):
+        # For every category, add it to the listbox. Order alphabetically by name
+        for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
+            self._gui_render_category_row(self.categories[key], key)
+        # AEL Favourites special category
+        self._gui_render_category_favourites()
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
+
+    def _gui_render_category_row(self, category_dic, key):
+        # --- Create listitem row ---
+        icon = "DefaultFolder.png"
+        if category_dic['thumb'] != '':
+            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
+        else:
+            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon )
+        if category_dic['finished'] == False: ICON_OVERLAY = 6
+        else:                                 ICON_OVERLAY = 7
+        listitem.setProperty("fanart_image", category_dic['fanart'])
+        # log_debug('_gui_render_category_row() Category {} fanart "{}"'.format(category_dic['name'], category_dic['fanart']))
+        listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'],
+                                    "Plot" : category_dic['description'], "overlay": ICON_OVERLAY } )
+
+        # --- Create context menu ---
+        # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
+        commands = []
+        categoryID = category_dic['id']
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID), ))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        # Add Category to Kodi Favourites (do not know how to do it yet)
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
+
+        # --- Add row ---
+        # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
+        url_str = self._misc_url('SHOW_LAUNCHERS', key)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
+
+    def _gui_render_category_favourites(self):
+        # --- Create listitem row ---
+        fav_name = '<Favourites>'
+        fav_thumb = ''
+        fav_fanart = ''
+        icon = "DefaultFolder.png"
+        listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
+        listitem.setProperty("fanart_image", fav_fanart)
+        listitem.setInfo("video", { "Title": fav_name, "Genre" : 'All',
+                                    "Plot" : 'AEL favourite ROMs', "overlay": 7 } )
+
+        # --- Create context menu ---
+        commands = []
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
+
+        # --- Add row ---
+        url_str = self._misc_url('SHOW_FAVOURITES')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
+
+    #
+    # Former  _get_launchers
+    # Renders the launcher for a given category
+    #
+    def _command_render_launchers(self, categoryID):
+        # If the category has no launchers then render nothing.
+        launcher_IDs = []
+        for launcher_id in self.launchers:
+            if self.launchers[launcher_id]["categoryID"] == categoryID: launcher_IDs.append(launcher_id)
+        if not launcher_IDs:
+            category_name = self.categories[categoryID]['name']
+            kodi_notify('Advanced Emulator Launcher', 'Category {} has no launchers. Add launchers first'.format(category_name))
+            # NOTE If we return at this point Kodi produces and error:
+            # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
+            # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
+            # How to avoid that? Rendering the categories again? If I call _gui_render_categories() it does not work well, categories
+            # are displayed in wrong alphabetical order and if go back is pressed the categories are rendered again (instead of
+            # exiting the addon).
+            # What about replacewindow? I also get the error, still not clear why...
+            # self._gui_render_categories()
+            # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
+            return
+
+        # Render launcher rows of this category
+        for key in sorted(self.launchers, key = lambda x : self.launchers[x]["application"]):
+            if self.launchers[key]["categoryID"] == categoryID:
+                self._gui_render_launcher_row(self.launchers[key])
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
+
+    def _gui_render_launcher_row(self, launcher_dic):
+        # --- Create listitem row ---
+        commands = []
+        if launcher_dic['rompath'] == '': # Executable launcher
+            folder = False
+            icon = "DefaultProgram.png"
+        else:                             # Files launcher
+            folder = True
+            icon = "DefaultFolder.png"
+        if launcher_dic['thumb']:
+            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
+        else:
+            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon )
+        if launcher_dic['finished'] != True: ICON_OVERLAY = 6
+        else:                                ICON_OVERLAY = 7
+        listitem.setProperty("fanart_image", launcher_dic['fanart'])
+        listitem.setInfo("video", {"Title"    : launcher_dic['name'],    "Label"     : os.path.basename(launcher_dic['rompath']),
+                                   "Plot"     : launcher_dic['plot'],    "Studio"    : launcher_dic['studio'],
+                                   "Genre"    : launcher_dic['genre'],   "Premiered" : launcher_dic['year'],
+                                   "Year"     : launcher_dic['year'],    "Writer"    : launcher_dic['platform'],
+                                   "Trailer"  : os.path.join(launcher_dic['trailerpath']),
+                                   "Director" : os.path.join(launcher_dic['custompath']),
+                                   "overlay"  : ICON_OVERLAY })
+
+        # --- Create context menu ---
+        launcherID = launcher_dic['id']
+        categoryID = launcher_dic['categoryID']
+        commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
+        # ROMs launcher
+        if not launcher_dic['rompath'] == '':
+            commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID), ))
+        commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
+        # Add Launcher URL to Kodi Favourites (do not know how to do it yet)
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
+
+        # --- Add row ---
+        url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=folder)
+
+    #
+    # Former  _get_roms
+    # Renders the roms listbox for a given launcher
+    #
+    def _command_render_roms(self, categoryID, launcherID):
+        if launcherID not in self.launchers:
+            log_error('_gui_render_roms() Launcher hash not found.')
+            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
+            return
+
+        # Load ROMs for this launcher and display them
+        selectedLauncher = self.launchers[launcherID]
+        roms_xml_file = selectedLauncher['roms_xml_file']
+
+        # Check if XML file with ROMs exist
+        if not os.path.isfile(roms_xml_file):
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher.')
+            xbmc.executebuiltin("Container.Refresh")
+            return
+
+        # Load ROMs
+        roms = fs_load_ROM_XML_file(roms_xml_file)
+        if not roms:
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher.')
+            return
+
+        # Load favourites
+        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+
+        # --- Display ROMs ---
+        # Optimization Currently roms_fav is a dictionary, which is very fast when testing for element existence
+        #              because it is hashed. However, set() is the fastest. If user has a lot of favourites
+        #              there could be a small performance gain.
+        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
+            self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False)
+
+    #
+    # Renders the special category favourites, which is actually very similar to a ROM launcher
+    # Note that only ROMs in a launcher can be added to favourites. Thus, no standalone launchers.
+    # If user deletes launcher or favourite ROMs the ROM in favourites remain.
+    # Favourites ROM information includes the application launcher and arguments to launch the ROM.
+    # Basically, once a ROM is added to favourites is becomes kind of a standalone launcher.
+    # Favourites has categoryID = 0 and launcherID = 0. Thus, other functions can differentiate
+    # between a standard ROM and a favourite ROM.
+    #
+    # What if user changes the favourites Thumb/Fanart??? Where do we store them???
+    # What about the NFO files of favourite ROMs???
+    #
+    # PROBLEM If user rescan ROMs then same ROMs will have different ID. An option to "relink"
+    #         the favourites with their original ROMs must be provided, provided that the launcher
+    #         is the same.
+    # IMPROVEMENT Maybe it could be interesting to be able to export the list of favourites
+    #             to HTML or something like that.
+    #
+    def _command_render_favourites(self):
+        # Load favourites
+        roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+        if not roms:
+            kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
+            return
+
+        # Display Favourites
+        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
+            self._gui_render_rom_row('0', '0', key, roms[key], False)
+        xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False)
+
+    #
+    # Former  _add_rom
+    # Note that if we are rendering favourites, categoryID = launcherID = '0'.
+    def _gui_render_rom_row( self, categoryID, launcherID, romID, rom, rom_is_in_favourites):
+        # --- Create listitem row ---
+        icon = "DefaultProgram.png"
+        # icon = "DefaultVideo.png"
+
+        # If we are rendering favourites mark fav_status
+        if launcherID == '0':
+            if rom['fav_status'] == 'OK':
+                rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom['name'])
+            elif rom['fav_status'] == 'Unlinked':
+                rom_name = '{} [COLOR yellow][Unlinked][/COLOR]'.format(rom['name'])
+            elif rom['fav_status'] == 'Broken':
+                rom_name = '{} [COLOR red][Broken][/COLOR]'.format(rom['name'])
+            else:
+                rom_name = rom['name']
+        # We are rendering ROMs in a normal launcher
+        else:
+            # Mark No-Intro status
+            if rom['nointro_status'] == 'Have':
+                rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom['name'])
+            elif rom['nointro_status'] == 'Miss':
+                rom_name = '{} [COLOR red][Miss][/COLOR]'.format(rom['name'])
+            elif rom['nointro_status'] == 'Unknown':
+                rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom['name'])
+            else:
+                rom_name = rom['name']
+
+            # If listing regular launcher and rom is in favourites, mark it
+            if rom_is_in_favourites:
+                log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
+
+                # --- Workaround so the alphabetical order is not lost ---
+                # NOTE Missing ROMs must never be in favourites... However, mark them to help catching bugs.
+                # rom_name = '[COLOR violet]{} [Fav][/COLOR]'.format(rom['name'])
+                # rom_name = '{} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
+                rom_name += ' [COLOR violet][Fav][/COLOR]'
+
+        # --- Add ROM to lisitem ---
+        if rom['thumb']:
+            listitem = xbmcgui.ListItem(rom['name'], rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
+        else:
+            listitem = xbmcgui.ListItem(rom['name'], rom['name'], iconImage=icon)
+
+        # If ROM has no fanart then use launcher fanart
+        if launcherID == '0':
+            defined_fanart = rom["fanart"]
+        else:
+            defined_fanart = rom["fanart"] if rom["fanart"] != '' else self.launchers[launcherID]["fanart"]
+        if rom['finished'] is not True: ICON_OVERLAY = 6
+        else:                           ICON_OVERLAY = 7
+        listitem.setProperty("fanart_image", defined_fanart)
+
+        # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
+        # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
+        # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
+        # instead of changing the whole row colour.
+        if launcherID == '0':
+            platform = rom['platform']
+        else:
+            platform = self.launchers[launcherID]['platform']
+        listitem.setInfo("video", {"Title"   : rom_name,       "Label"     : 'test label',
+                                   "Plot"    : rom['plot'],    "Studio"    : rom['studio'],
+                                   "Genre"   : rom['genre'],   "Premiered" : rom['year'],
+                                   "Year"    : rom['year'],    "Writer"    : platform,
+                                   "Trailer" : 'test trailer', "Director"  : 'test director',
+                                   "overlay" : ICON_OVERLAY })
+
+        # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
+        # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
+        # really mean the item is a playable, it only means Kodi will wait for a call to
+        # xbmcplugin.setResolvedUrl and when this is called it will play the item. If you are going
+        # to play the item using xbmc.Player().play() then as far as Kodi is concerned it isn't playable.
+        #
+        # http://forum.kodi.tv/showthread.php?tid=173986&pid=1519987#pid1519987
+        # Otherwise the plugin is called back with an invalid handle (sys.arg[1]). It took me a lot of time
+        # to figure this out...
+        # if self._content_type == 'video':
+        # listitem.setProperty('IsPlayable', 'false')
+        # log_debug('Item Row IsPlayable false')
+
+        # --- Create context menu ---
+        commands = []
+        if launcherID == '0':
+            commands.append(('Check Favourite ROMs', self._misc_url_RunPlugin('CHECK_FAV', '0', '0', romID), ))
+            commands.append(('Edit ROM in Favourites', self._misc_url_RunPlugin('EDIT_ROM', '0', '0', romID), ))
+            commands.append(('Search Favourites', self._misc_url_RunPlugin('SEARCH_LAUNCHER', '0', '0'), ))
+            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', '0', '0', romID), ))
+        else:
+            commands.append(('Edit ROM', self._misc_url_RunPlugin('EDIT_ROM', categoryID, launcherID, romID), ))
+            commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
+            commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV', categoryID, launcherID, romID), ))
+            commands.append(('Delete ROM', self._misc_url_RunPlugin('DELETE_ROM', categoryID, launcherID, romID), ))
+        # Add ROM URL to Kodi Favourites (do not know how to do it yet) (maybe not will be used)
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        listitem.addContextMenuItems(commands, replaceItems=True)
+
+        # --- Add row ---
+        # if finished != "true" or self.settings[ "hide_finished" ] == False:
+        # URLs must be different depending on the content type. If not, lot of WARNING: CreateLoader - unsupported protocol(plugin)
+        # in the log. See http://forum.kodi.tv/showthread.php?tid=187954
+        # if self._content_type == 'video':
+        #     url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
+        # else:
+        url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
+        xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url_str, listitem=listitem, isFolder=False)
+
+    #
+    # Adds ROM to favourites
+    #
+    def _command_add_to_favourites(self, categoryID, launcherID, romID):
+        # Load ROMs in launcher
+        launcher = self.launchers[launcherID]
+        roms_xml_file = launcher["roms_xml_file"]
+        roms = fs_load_ROM_XML_file(roms_xml_file)
+        if not roms:
+            kodi_dialog_OK('Advanced Emulator Launcher',
+                               'Empty roms launcher in _command_add_to_favourites()',
+                               'This is a bug, please report it.')
+
+        # Load favourites
+        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+
+        # DEBUG
+        log_verb('Adding ROM to Favourites')
+        log_verb('romID {}'.format(romID))
+        log_verb('name  {}'.format(roms[romID]['name']))
+
+        # Check if ROM already in favourites an warn user if so
+        if romID in roms_fav:
+            log_verb('Already in favourites')
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher',
+                               'ROM: {0}'.format(roms[romID]["name"]),
+                               'is already on AEL Favourites.', 'Overwrite it?')
+            if not ret:
+                log_verb('User does not want to overwrite. Exiting.')
+                return
+        # Confirm if rom should be added
+        else:
+            dialog = xbmcgui.Dialog()
+            ret = dialog.yesno('Advanced Emulator Launcher',
+                                'ROM: {0}'.format(roms[romID]["name"]),
+                                'Add this ROM to AEL Favourites?')
+            if not ret:
+                log_verb('User does not confirm addition. Exiting.')
+                return
+
+        # Add ROM to favourites ROMs and save to disk
+        # If thumb is empty then use launcher thum.
+        # If fanart is empty then use launcher fanart.
+        roms_fav[romID] = roms[romID]
+        roms_fav[romID]['launcherID']  = self.launchers[launcherID]['id']
+        roms_fav[romID]['platform']    = self.launchers[launcherID]['platform']
+        roms_fav[romID]['application'] = self.launchers[launcherID]['application']
+        roms_fav[romID]['args']        = self.launchers[launcherID]['args']
+        roms_fav[romID]['rompath']     = self.launchers[launcherID]['rompath']
+        roms_fav[romID]['romext']      = self.launchers[launcherID]['romext']
+        roms_fav[romID]['fav_status']  = 'OK'
+        if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = self.launchers[launcherID]['thumb']
+        if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = self.launchers[launcherID]['fanart']
+        fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
+
+    #
+    # Check ROMs in favourites and set fav_status field.
+    # Note that categoryID = launcherID = '0'
+    #
+    def _command_check_favourites(self, categoryID, launcherID, romID):
+        # Load Favourite ROMs
+        roms_fav = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+
+        # Reset fav_status filed for all favourites
+        log_debug('_command_check_favourites() STEP 0')
+        for rom_fav_ID in roms_fav:
+            roms_fav[rom_fav_ID]['fav_status'] = 'OK'
+
+        # STEP 1: Find missing launchers
+        log_debug('_command_check_favourites() STEP 1')
+        for rom_fav_ID in roms_fav:
+            if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
+                log_info('Fav ROM "{}" unlinked because launcherID not in launchers'.format(roms_fav[rom_fav_ID]['name']))
+                roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
+
+        # STEP 2: Find missing ROM ID
+        # Get a list of launchers Favourite ROMs belong
+        log_debug('_command_check_favourites() STEP 2')
+        launchers_fav = set()
+        for rom_fav_ID in roms_fav: launchers_fav.add(roms_fav[rom_fav_ID]['launcherID'])
+
+        # Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs that belong to
+        # that launcher.
+        for launcher_id in launchers_fav:
+            # Load launcher ROMs
+            rom_xml_path = self.launchers[launcher_id]["roms_xml_file"]
+            roms = fs_load_ROM_XML_file(rom_xml_path)
+
+            # Traverse all favourites and check them if belong to this launcher.
+            # This should be efficient because traversing favourites is cheap but loading ROMs is expensive.
+            for rom_fav_ID in roms_fav:
+                if roms_fav[rom_fav_ID]['launcherID'] == launcher_id:
+                    # Check if ROM ID exists
+                    if roms_fav[rom_fav_ID]['id'] not in roms:
+                        log_info('Fav ROM "{}" unlinked because romID not in launcher ROMs'.format(roms_fav[rom_fav_ID]['name']))
+                        roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked'
+
+        # STEP 3: Check if file exists. Even if the ROM ID is not there because user
+        # deleted ROM or launcher, the file may still be there.
+        log_debug('_command_check_favourites() STEP 3')
+        for rom_fav_ID in roms_fav:
+            if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
+                log_info('Fav ROM "{}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['name']))
+                roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
+
+        # Save favourite ROMs
+        fs_write_Favourites_XML_file(FAVOURITES_FILE_PATH, roms_fav)
+
+        # Update container to show changes in Favourites flags. If not, user has to exit Favourites and enter again.
+        xbmc.executebuiltin('Container.Refresh')
+
+    #
+    # Search ROMs in launcher
+    #
+    def _command_search_launcher(self, categoryID, launcherID):
+        # Check that the launcher has items
+        if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
+            xbmc.executebuiltin("Container.Refresh")
+            return
+        roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
+        if not roms:
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
+            return
+
+        # Ask user what category to search
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Add/Update Items', ['Scan for New Items', 'Manually Add Item'])
-        if type == 0:
-            self._roms_import_roms(launcher)
-        elif type == 1:
-            self._roms_add_new_rom(launcher)
+        type = dialog.select('Search items...',
+                             ['By Title',
+                              'By Release Year',
+                              'By Studio',
+                              'By Genre'])
+
+        # Search by Title
+        type_nb = 0
+        if type == type_nb:
+            keyboard = xbmc.Keyboard("", 'Enter the file title to search...')
+            keyboard.doModal()
+            if keyboard.isConfirmed():
+                search_string = keyboard.getText()
+                # If we are displaying a category (showing its launchers) then search should not replace the window,
+                # so when the user presses back button (BACKSPACE in keyboard) returned to the launchers again.
+                # Pressing the back button is the same as chosing ".." in the listitem.
+                # In AL all searches were global, and user was returned to the addon root window always after pressing
+                # back (that's why AL replaces the current window with the search window). This make no sense in AEL
+                # for launcher searches and may annoy the user.
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_TITLE', search_string)
+                # log_debug('URL = {0}'.format(url))
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
+
+                # Using ActivateWindow with return address seems to have no effect. Note that dialogs
+                # are called with handle -1, and that seems to cause trouble. ActivateWindow does
+                # not honour the url_return.
+                # url_return = self._misc_url('SHOW_ROMS', categoryID, launcherID)
+                # url_return = self._misc_url('SHOW_LAUNCHERS', categoryID)
+                # log_debug('URL RETURN = {0}'.format(url_return))
+                # xbmc.executebuiltin("ActivateWindow(Programs,{0},{1})".format(url, url_return))
+
+                # Does not work
+                # xbmc.executebuiltin("RunPlugin({0})".format(url))
+
+                # Does not work
+                # xbmc.executebuiltin("RunAddon({0})".format(url))
+
+        # Search by Release Date
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_category(launcherID, "year", roms)
+            dialog = xbmcgui.Dialog()
+            selected_value = dialog.select('Select a Release year ...', searched_list)
+            if selected_value >= 0:
+                search_string = searched_list[selected_value]
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_YEAR', search_string)
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
+
+        # Search by System Platform
+        # Note that search by platform does not make sense when searching a launcher because all items have
+        # the same platform! It only makes sense for global searches... which AEL does not.
+        # I keep this AL old code for reference, though.
+        # type_nb = type_nb + 1
+        # if type == type_nb:
+        #     search = []
+        #     search = _search_category(self, "platform")
+        #     dialog = xbmcgui.Dialog()
+        #     selected = dialog.select('Select a Platform...', search)
+        #     if not selected == -1:
+        #         xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND))
+
+        # Search by Studio
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_category(launcherID, "studio", roms)
+            dialog = xbmcgui.Dialog()
+            selected_value = dialog.select('Select a Studio ...', searched_list)
+            if selected_value >= 0:
+                search_string = searched_list[selected_value]
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_STUDIO', search_string)
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
+
+        # Search by Genre
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_category(launcherID, "genre", roms)
+            dialog = xbmcgui.Dialog()
+            selected_value = dialog.select('Select a Genre ...', searched_list)
+            if selected_value >= 0:
+                search_string = searched_list[selected_value]
+                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_GENRE', search_string)
+                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
+
+    def _search_launcher_category(self, launcherID, search_dic_field, roms):
+        # Maybe this can be optimized a bit to make the search faster...
+        search = []
+        for keyr in sorted(roms.iterkeys()):
+            if roms[keyr][search_dic_field] == "":
+                search.append("[ %s ]" % 'Not Set')
+            else:
+                search.append(roms[keyr][search_dic_field])
+        # Search will have a lot of repeated entries, so converting them to a set makes them unique
+        search = list(set(search))
+        search.sort()
+
+        return search
+
+    def _command_execute_search_launcher(self, categoryID, launcherID, search_type, search_string):
+        if   search_type == 'SEARCH_TITLE'  : rom_search_field = 'name'
+        elif search_type == 'SEARCH_YEAR'   : rom_search_field = 'year'
+        elif search_type == 'SEARCH_STUDIO' : rom_search_field = 'studio'
+        elif search_type == 'SEARCH_GENRE'  : rom_search_field = 'genre'
+
+        # Load ROMs
+        # Check that the launcher has items
+        if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
+            xbmc.executebuiltin("Container.Refresh")
+            return
+        roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
+        if not roms:
+            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
+            return
+
+        # Go through rom list and search for user input
+        rl = {}
+        notset = ("[ %s ]" % 'Not Set')
+        text = search_string.lower()
+        empty = notset.lower()
+        for keyr in roms:
+            rom = roms[keyr][rom_search_field].lower()
+            if rom == "" and text == empty:
+                rl[keyr] = roms[keyr]
+
+            if rom_search_field == 'name':
+                if not rom.find(text) == -1:
+                    rl[keyr] = roms[keyr]
+            else:
+                if rom == text:
+                    rl[keyr] = roms[keyr]
+
+        # Print the list sorted (if there is anything to print)
+        if not rl:
+            kodi_dialog_OK('Advaned Emulator Launcher', 'Search produced no results')
+        for key in sorted(rl.iterkeys()):
+            self._gui_render_rom_row(categoryID, launcherID, key, rl[key])
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    #
+    # Launchs an application
+    #
+    def _command_run_standalone_launcher(self, categoryID, launcherID):
+        # Check launcher is OK
+        if launcherID not in self.launchers:
+            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
+            return
+        launcher = self.launchers[launcherID]
+
+        # Kodi built-in???
+        # xbmc-fav- and xbmc-sea are Angelscry's hacks to implement launchers from favourites
+        # and launchers from searchers. For example, to run a launcher created from search
+        # results,
+        # app = "xbmc-sea-%s" % launcherid
+        # args = 'ActivateWindow(10001,"%s")' % launcher_query
+        apppath = os.path.dirname(launcher["application"])
+        if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or \
+           "xbmc-fav-" in launcher["application"] or "xbmc-sea-" in launcher["application"]:
+            xbmc.executebuiltin('XBMC.%s' % launcher["args"])
+            return
+
+        # ~~~~~ External application ~~~~~
+        application = launcher["application"]
+        application_basename = os.path.basename(launcher["application"])
+        if not os.path.exists(apppath):
+            kodi_notify_warn('Advanced Emulator Launcher',
+                             'File {0} not found.'.format(application_basename))
+            return
+        arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
+        self._print_log('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
+        self._print_log('_run_standalone_launcher() application          = "{0}"'.format(application))
+        self._print_log('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
+        self._print_log('_run_standalone_launcher() arguments            = "{0}"'.format(arguments))
+
+        # Do stuff before execution
+        self._run_before_execution(launcher, application_basename)
+
+        # Execute
+        if sys.platform == 'win32':
+            if launcher["application"].split(".")[-1] == "lnk":
+                os.system("start \"\" \"%s\"" % (application))
+            else:
+                if application.split(".")[-1] == "bat":
+                    info = subprocess_hack.STARTUPINFO()
+                    info.dwFlags = 1
+                    if ( self.settings[ "show_batch" ] ):
+                        info.wShowWindow = 5
+                    else:
+                        info.wShowWindow = 0
+                else:
+                    info = None
+                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
+                startproc.wait()
+        elif sys.platform.startswith('linux'):
+            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.stop')
+            os.system("\"%s\" %s " % (application, arguments))
+            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.start')
+        elif sys.platform.startswith('darwin'):
+            os.system("\"%s\" %s " % (application, arguments))
+        else:
+            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
+
+        # Do stuff after execution
+        self._run_after_execution(launcher)
+
+    #
+    # Launchs a ROM
+    #
+    def _command_run_rom(self, categoryID, launcherID, romID):
+        # Check launcher is OK
+        if launcherID not in self.launchers:
+            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
+            return
+        launcher = self.launchers[launcherID]
+
+        # Load ROMs
+        roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
+
+        # Check ROM is XML data just read
+        if romID not in roms:
+            kodi_dialog_OK('ERROR', 'romID not in roms_dic')
+            return
+
+        # Launch ROM
+        rom = roms[romID]
+        if rom["altapp"] != "": application = rom["altapp"]
+        else:                   application = launcher["application"]
+        apppath = os.path.dirname(application)
+        romfile = os.path.basename(rom["filename"])
+        rompath = os.path.dirname(rom["filename"])
+        romname = os.path.splitext(romfile)[0]
+        self._print_log('_run_rom() application = "{0}"'.format(application))
+        self._print_log('_run_rom() apppath     = "{0}"'.format(apppath))
+        self._print_log('_run_rom() romfile     = "{0}"'.format(romfile))
+        self._print_log('_run_rom() rompath     = "{0}"'.format(rompath))
+        self._print_log('_run_rom() romname     = "{0}"'.format(romname))
+
+        # Check that app exists and ROM file exists
+        if not os.path.exists(apppath):
+            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % apppath, 10000)
+            return
+        if os.path.exists(romfile):
+            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % romfile, 10000)
+            return
+
+        # ~~~~ Argument substitution ~~~~~
+        if rom["altarg"] != "": arguments = rom["altarg"]
+        else:                   arguments = launcher["args"]
+        arguments = arguments.replace("%rom%", rom["filename"]).replace("%ROM%", rom["filename"])
+        arguments = arguments.replace("%romfile%", romfile).replace("%ROMFILE%", romfile)
+        arguments = arguments.replace("%romname%", romname).replace("%ROMNAME%", romname)
+        arguments = arguments.replace("%rombasename%", base_filename(romname)).replace("%ROMBASENAME%", base_filename(romname))
+        arguments = arguments.replace("%apppath%", apppath).replace("%APPPATH%", apppath)
+        arguments = arguments.replace("%rompath%", rompath).replace("%ROMPATH%", rompath)
+        arguments = arguments.replace("%romtitle%", rom["name"]).replace("%ROMTITLE%", rom["name"])
+        arguments = arguments.replace("%romspath%", rompath).replace("%ROMSPATH%", rompath)
+        self._print_log('_run_rom() arguments   = "{0}"'.format(arguments))
+
+        # Execute Kodi internal function (RetroPlayer?)
+        if os.path.basename(application).lower().replace(".exe" , "") == "xbmc":
+            xbmc.executebuiltin('XBMC.' + arguments)
+            return
+
+        # ~~~~~ Execute external application ~~~~~
+        # Do stuff before execution
+        self._run_before_execution(launcher, romname)
+
+        # Determine platform and launch application
+        if sys.platform == 'win32':
+            if launcher["lnk"] == "true" and launcher["romext"] == "lnk":
+                os.system("start \"\" \"%s\"" % (arguments))
+            else:
+                if application.split(".")[-1] == "bat":
+                    info = subprocess_hack.STARTUPINFO()
+                    info.dwFlags = 1
+                    if self.settings["show_batch"]:
+                        info.wShowWindow = 5
+                    else:
+                        info.wShowWindow = 0
+                else:
+                    info = None
+                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
+                startproc.wait()
+        elif sys.platform.startswith('linux'):
+            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.stop')
+            os.system("\"%s\" %s " % (application, arguments))
+            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.start')
+        # Android???
+        elif sys.platform.startswith('darwin'):
+            os.system("\"%s\" %s " % (application, arguments))
+        else:
+            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform', 10000)
+
+        # Do stuff after application execution
+        self._run_after_execution(launcher)
+
+    #
+    # These two functions do things like stopping music before lunch, toggling full screen, etc.
+    #
+    def _run_before_execution(self, launcher, name_str):
+        if self.settings['media_state'] != "2" :
+            if xbmc.Player().isPlaying():
+                if self.settings['media_state'] == "0":
+                    xbmc.Player().stop()
+                if self.settings['media_state'] == "1":
+                    xbmc.Player().pause()
+                xbmc.sleep(self.settings['start_tempo'] + 100)
+                try:
+                    xbmc.audioSuspend()
+                except:
+                    pass
+        if launcher["minimize"] == "true":
+            _toogle_fullscreen()
+
+        if self.settings['launcher_notification']:
+            kodi_notify('Advanced Emulator Launcher', 'Launching {0}'.format(name_str), 5000)
+
+        try:
+            xbmc.enableNavSounds(False)
+        except:
+            pass
+        xbmc.sleep(self.settings['start_tempo'])
+
+    def _run_after_execution(self, launcher):
+        xbmc.sleep(self.settings[ "start_tempo" ])
+        try:
+            xbmc.enableNavSounds(True)
+        except:
+            pass
+
+        if launcher["minimize"] == "true":
+            _toogle_fullscreen()
+
+        if self.settings['media_state'] != "2":
+            try:
+                xbmc.audioResume()
+            except:
+                pass
+            if self.settings['media_state'] == "1":
+                xbmc.sleep(self.settings['start_tempo'] + 100)
+                xbmc.Player().play()
+
+    #
+    # Manually add a new ROM instead of a recursive scan.
+    #   A) User chooses a ROM file
+    #   B) Title is formatted. No metadata scrapping.
+    #   C) Thumb and fanart are searched locally only.
+    # Later user can edit this ROM if he wants.
+    #
+    def _roms_add_new_rom(self, launcherID):
+        # --- Grab launcher information ---
+        launcher    = self.launchers[launcherID]
+        application = launcher['application']
+        romext      = launcher['romext']
+        rompath     = launcher['rompath']
+
+        # --- Load ROMs for this launcher ---
+        roms_xml_file = launcher['roms_xml_file']
+        roms = fs_load_ROM_XML_file(roms_xml_file)
+        if not roms: return
+
+        # --- Choose ROM file ---
+        dialog = xbmcgui.Dialog()
+        extensions = "." + romext.replace('|', '|.')
+        romfile = dialog.browse(1, 'Select the ROM file', 'files', extensions, False, False, rompath)
+        if not romfile: return
+
+        # --- Format title ---
+        scan_clean_tags       = self.settings['scan_clean_tags']
+        scan_title_formatting = self.settings['scan_title_formatting']
+        ROM = misc_split_path(romfile)
+        romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+
+        # --- Search for local Thumb/Fanart ---
+        thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, ROM)
+        fanart_path_noext = misc_get_fanart_path_noext(selectedLauncher, ROM)
+        local_thumb  = misc_look_for_image(thumb_path_noext, IMG_EXTS)
+        local_fanart = misc_look_for_image(fanart_path_noext, IMG_EXTS)
+        log_verb('Local images set Thumb  "{}"'.format(local_thumb))
+        log_verb('Local images set Fanart "{}"'.format(local_fanart))
+
+        # --- Create ROM data structure ---
+        romdata = fs_new_rom()
+        romID   = misc_generate_random_SID()
+        romdata['id']       = romID
+        romdata['filename'] = ROM.path
+        romdata['name']     = romname
+        romdata['thumb']    = local_thumb,
+        romdata['fanart']   = local_fanart,
+        roms[romID] = romdata
+
+        # ~~~ Save ROMs XML file ~~~
+        fs_write_ROM_XML_file(roms_xml_file, roms, launcher)
+
+    #
+    # Helper function to update ROMs No-Intro status if user configured a No-Intro
+    # DAT file.
+    # Dictionaries are mutable, so roms can be changed because passed by assigment.
+    #
+    def _roms_update_NoIntro_status(roms, nointro_xml_file):
+        # --- Check if DAT file exists ---
+        if not os.path.isfile(nointro_xml_file):
+            log_warn('_roms_update_NoIntro_status Not found {}'.format(nointro_xml_file))
+            return (0, 0, 0)
+
+        # --- Load No-Intro DAT ---
+        roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
+
+        # --- Check for errors ---
+        if not roms_nointro:
+            log_warn('_roms_update_NoIntro_status Error loading {}'.format(nointro_xml_file))
+            return (0, 0, 0)
+
+        # Put ROM names in a set. Set is the fastes Python container for searching
+        # elements (implements hashed search).
+        roms_nointro_set = set(roms_nointro.keys())
+        roms_set = set()
+        for romID in roms:
+            roms_set.add(roms[romID]['name'])
+
+        # Traverse ROMs and check they are in the DAT
+        num_have = num_miss = num_unknown = 0
+        for romID in roms:
+            if roms[romID]['name'] in roms_nointro_set:
+                roms[romID]['nointro_status'] = 'Have'
+                num_have += 1
+            else:
+                roms[romID]['nointro_status'] = 'Unknown'
+                num_unknown += 1
+
+        # Now add missing ROMs. Traverse the nointro set and add the ROM if it's not there.
+        for nointro_rom in roms_nointro_set:
+            if nointro_rom not in roms_set:
+                # Add new "fake" missing ROM. This ROM cannot be launched!
+                rom = fs_new_rom()
+                romID = misc_generate_random_SID()
+                rom['id'] = romID
+                rom['name'] = nointro_rom
+                rom['nointro_status'] = 'Miss'
+                roms[romID] = rom
+                num_miss += 1
+
+        # Return statistics
+        return (num_have, num_miss, num_unknown)
 
     #
     # ROM scanner. Called when user chooses "Add items" -> "Scan items"
@@ -2519,57 +2468,6 @@ class Main:
 
         # --- Seems this is not needed ---
         # xbmc.executebuiltin('Container.Refresh')
-
-    #
-    # Helper function to update ROMs No-Intro status if user configured a No-Intro
-    # DAT file.
-    # Dictionaries are mutable, so roms can be changed because passed by assigment.
-    #
-    def _roms_update_NoIntro_status(roms, nointro_xml_file):
-        # --- Check if DAT file exists ---
-        if not os.path.isfile(nointro_xml_file):
-            log_warn('_roms_update_NoIntro_status Not found {}'.format(nointro_xml_file))
-            return (0, 0, 0)
-
-        # --- Load No-Intro DAT ---
-        roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
-
-        # --- Check for errors ---
-        if not roms_nointro:
-            log_warn('_roms_update_NoIntro_status Error loading {}'.format(nointro_xml_file))
-            return (0, 0, 0)
-
-        # Put ROM names in a set. Set is the fastes Python container for searching
-        # elements (implements hashed search).
-        roms_nointro_set = set(roms_nointro.keys())
-        roms_set = set()
-        for romID in roms:
-            roms_set.add(roms[romID]['name'])
-
-        # Traverse ROMs and check they are in the DAT
-        num_have = num_miss = num_unknown = 0
-        for romID in roms:
-            if roms[romID]['name'] in roms_nointro_set:
-                roms[romID]['nointro_status'] = 'Have'
-                num_have += 1
-            else:
-                roms[romID]['nointro_status'] = 'Unknown'
-                num_unknown += 1
-
-        # Now add missing ROMs. Traverse the nointro set and add the ROM if it's not there.
-        for nointro_rom in roms_nointro_set:
-            if nointro_rom not in roms_set:
-                # Add new "fake" missing ROM. This ROM cannot be launched!
-                rom = fs_new_rom()
-                romID = misc_generate_random_SID()
-                rom['id'] = romID
-                rom['name'] = nointro_rom
-                rom['nointro_status'] = 'Miss'
-                roms[romID] = rom
-                num_miss += 1
-
-        # Return statistics
-        return (num_have, num_miss, num_unknown)
 
     def _roms_process_scanned_ROM(self, launcherID, ROM):
         # --- "Constants" ---
@@ -3120,210 +3018,311 @@ class Main:
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
     #
-    # Manually add a new ROM instead of a recursive scan.
-    #   A) User chooses a ROM file
-    #   B) Title is formatted. No metadata scrapping.
-    #   C) Thumb and fanart are searched locally only.
-    # Later user can edit this ROM if he wants.
+    # Edit launcher/rom thumbnail/fanart. Note that categories have another function because
+    # image scraping is not allowed for categores.
     #
-    def _roms_add_new_rom(self, launcherID):
-        # --- Grab launcher information ---
-        launcher    = self.launchers[launcherID]
-        application = launcher['application']
-        romext      = launcher['romext']
-        rompath     = launcher['rompath']
+    # NOTE When editing ROMs optional parameter launcherID is required.
+    # NOTE Caller is responsible for saving the Launchers/ROMs
+    # NOTE if image is changed container should be updated so the user sees new image instantly
+    # NOTE objects_dic is edited by assigment
+    # NOTE a ROM in Favourites has launcherID = '0'
+    #
+    # Returns:
+    #   True   Launchers/ROMs must be saved and container updated
+    #   False  No changes were made. No necessary to refresh container
+    #
+    def _gui_edit_image(self, image_kind, objects_kind, objects_dic, objectID, launcherID=''):
+        # Check for errors
+        if image_kind != IMAGE_THUMB and image_kind != IMAGE_FANART:
+            log_error('_gui_edit_image() Unknown image_kind = {}'.format(image_kind))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
+            return False
+        if objects_kind != KIND_LAUNCHER and objects_kind != KIND_ROM:
+            log_error('_gui_edit_image() Unknown objects_kind = {}'.format(objects_kind))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown objects_kind = {}'.format(objects_kind))
+            return False
 
-        # --- Load ROMs for this launcher ---
-        roms_xml_file = launcher['roms_xml_file']
-        roms = fs_load_ROM_XML_file(roms_xml_file)
-        if not roms: return
+        # Customise function depending of object to edit
+        if image_kind == IMAGE_THUMB:
+            image_key   = 'thumb'
+            image_name  = 'Thumb'
+            if objects_kind == KIND_LAUNCHER:
+                kind_name = 'Launcher'
+                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                dest_basename   = objects_dic[objectID]['name']
+                dest_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
+            elif objects_kind == KIND_ROM:
+                kind_name = 'ROM'
+                # Thumb of a ROM in Favourites
+                if launcherID == '0':
+                    thumb_dir  = self.settings['favourites_thumb_dir']
+                    fanart_dir = self.settings['favourites_fanart_dir']
+                # Thumb of a ROM in a Launcher
+                else:
+                    thumb_dir  = self.launchers[launcherID]['thumbpath']
+                    fanart_dir = self.launchers[launcherID]['fanartpath']
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                dest_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
+        elif image_kind == IMAGE_FANART:
+            image_key   = 'fanart'
+            image_name  = 'Fanart'
+            if objects_kind == KIND_LAUNCHER:
+                kind_name = 'Launcher'
+                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                dest_basename   = objects_dic[objectID]['name']
+                dest_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
+            elif objects_kind == KIND_ROM:
+                kind_name = 'ROM'
+                # Fanart in a ROM in Favourites
+                if launcherID == '0':
+                    thumb_dir  = self.settings['favourites_thumb_dir']
+                    fanart_dir = self.settings['favourites_fanart_dir']
+                # Fanart of a ROM in a Launcher
+                else:
+                    thumb_dir  = self.launchers[launcherID]['thumbpath']
+                    fanart_dir = self.launchers[launcherID]['fanartpath']
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                dest_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
+        log_debug('_gui_edit_image() Editing {} {}'.format(kind_name, image_name))
 
-        # --- Choose ROM file ---
+        # Show image editing options
         dialog = xbmcgui.Dialog()
-        extensions = "." + romext.replace('|', '|.')
-        romfile = dialog.browse(1, 'Select the ROM file', 'files', extensions, False, False, rompath)
-        if not romfile: return
+        type2 = dialog.select('Change Thumbnail Image',
+                             ['Select Local Image',
+                              'Import Local Image (Copy and Rename)',
+                              'Scrape Image from {}'.format(self.scraper_thumb.fancy_name) ])
+        # Link to an image
+        if type2 == 0:
+            if objects_dic[objectID][image_key] != '':
+                F = misc_split_path(objects_dic[objectID][image_key])
+                image_dir = F.dirname
+            else:
+                image_dir = ''
+            log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
+                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return False
 
-        # --- Format title ---
-        scan_clean_tags       = self.settings['scan_clean_tags']
-        scan_title_formatting = self.settings['scan_title_formatting']
-        ROM = misc_split_path(romfile)
-        romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+            # Update object by assigment. XML will be save by parent
+            objects_dic[objectID][image_key] = image_file
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(kind_name, objectID))
+            log_info('Selected {} {} "{}"'.format(kind_name, image_name, image_file))
 
-        # --- Search for local Thumb/Fanart ---
-        thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, ROM)
-        fanart_path_noext = misc_get_fanart_path_noext(selectedLauncher, ROM)
-        local_thumb  = misc_look_for_image(thumb_path_noext, IMG_EXTS)
-        local_fanart = misc_look_for_image(fanart_path_noext, IMG_EXTS)
-        log_verb('Local images set Thumb  "{}"'.format(local_thumb))
-        log_verb('Local images set Fanart "{}"'.format(local_fanart))
+            # --- Update Kodi image cache ---
+            kodi_update_image_cache(image_file)
 
-        # --- Create ROM data structure ---
-        romdata = fs_new_rom()
-        romID   = misc_generate_random_SID()
-        romdata['id']       = romID
-        romdata['filename'] = ROM.path
-        romdata['name']     = romname
-        romdata['thumb']    = local_thumb,
-        romdata['fanart']   = local_fanart,
-        roms[romID] = romdata
+        # Import an image
+        elif type2 == 1:
+            if objects_dic[objectID][image_key] != '':
+                F = misc_split_path(objects_dic[objectID][image_key])
+                image_dir = F.dirname
+            else:
+                image_dir = ''
+            log_debug('_gui_edit_image() Initial path "{}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
+                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return False
 
-        # ~~~ Save ROMs XML file ~~~
-        fs_write_ROM_XML_file(roms_xml_file, roms, launcher)
+            # Determine image extension and dest filename
+            F = misc_split_path(image_file)
+            dest_path = dest_path_noext + F.ext
+            log_debug('_gui_edit_image() image_file    = "{0}"'.format(image_file))
+            log_debug('_gui_edit_image() img_ext       = "{0}"'.format(F.ext))
+            log_debug('_gui_edit_image() dest_path     = "{0}"'.format(dest_path))
+
+            # Copy image file
+            if image_file == dest_path:
+                log_info('image_file and dest_path are the same. Returning')
+                return False
+            try:
+                fs_encoding = get_fs_encoding()
+                shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
+            except OSError:
+                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
+
+            # Update object by assigment. XML will be save by parent
+            objects_dic[objectID][image_key] = dest_path
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_debug('_gui_edit_image() Object is {} with ID = {}'.format(kind_name, objectID))
+            log_info('Copied image "{}"'.format(image_file))
+            log_info('Into         "{}"'.format(dest_path))
+            log_info('Selected {} {} "{}"'.format(kind_name, image_name, dest_path))
+
+            # --- Update Kodi image cache ---
+            kodi_update_image_cache(dest_path)
+
+        # Manual scrape and choose from a list of images
+        elif type2 == 2:
+            return self._gui_scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
+
+        # User canceled select box
+        elif type2 < 0:
+            return False
+
+        # If we reach this point, changes were made. Launchers/ROMs must be saved, container must be refreshed.
+        return True
 
     #
-    # Search ROMs in launcher
+    # Edit category thumb/fanart.
     #
-    def _command_search_launcher(self, categoryID, launcherID):
-        # Check that the launcher has items
-        if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
-            xbmc.executebuiltin("Container.Refresh")
-            return
-        roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
-        if not roms:
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
-            return
+    # NOTE For some reason option 'Import Local Image (Copy and Rename)' does not work well. I have checked
+    #      the copied filename is OK but Kodi refuses to display the image...
+    #      Even more suprisingly, if later 'Select Local Image' is used and the file copied before to categories
+    #      artwork path is chosen then it works!
+    #
+    # Returns:
+    #   True   Changes were made.
+    #   False  No changes made.
+    #
+    def _gui_edit_category_image(self, image_kind, categoryID):
+        # Make this function as generic as possible to share code with launcher/rom thumb/fanart editing.
+        if image_kind == IMAGE_THUMB:
+            objects_dic  = self.categories
+            objectID     = categoryID
+            image_key    = 'thumb'
+            image_name   = 'Thumb'
+            # If user set same path for thumb/fanart then a suffix must be added
+            categories_thumb_dir  = self.settings['categories_thumb_dir']
+            categories_fanart_dir = self.settings['categories_fanart_dir']
+            dest_basename   = objects_dic[objectID]['name']
+            dest_path_noext = misc_get_thumb_path_noext(categories_thumb_dir, categories_fanart_dir, dest_basename)
+        elif image_kind == IMAGE_FANART:
+            objects_dic  = self.categories
+            objectID     = categoryID
+            image_key    = 'fanart'
+            image_name   = 'Fanart'
+            categories_thumb_dir  = self.settings['categories_thumb_dir']
+            categories_fanart_dir = self.settings['categories_fanart_dir']
+            dest_basename   = objects_dic[objectID]['name']
+            dest_path_noext = misc_get_fanart_path_noext(categories_thumb_dir, categories_fanart_dir, dest_basename)
+        else:
+            log_error('_gui_edit_category_image() Unknown image_kind = {}'.format(image_kind))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {}'.format(image_kind))
+            return False
+        log_debug('_gui_edit_category_image() Editing {}'.format(image_name))
 
-        # Ask user what category to search
+        # Show image editing options
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Search items...',
-                             ['By Title',
-                              'By Release Year',
-                              'By Studio',
-                              'By Genre'])
-
-        # Search by Title
-        type_nb = 0
-        if type == type_nb:
-            keyboard = xbmc.Keyboard("", 'Enter the file title to search...')
-            keyboard.doModal()
-            if keyboard.isConfirmed():
-                search_string = keyboard.getText()
-                # If we are displaying a category (showing its launchers) then search should not replace the window,
-                # so when the user presses back button (BACKSPACE in keyboard) returned to the launchers again.
-                # Pressing the back button is the same as chosing ".." in the listitem.
-                # In AL all searches were global, and user was returned to the addon root window always after pressing
-                # back (that's why AL replaces the current window with the search window). This make no sense in AEL
-                # for launcher searches and may annoy the user.
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_TITLE', search_string)
-                # log_debug('URL = {0}'.format(url))
-                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
-
-                # Using ActivateWindow with return address seems to have no effect. Note that dialogs
-                # are called with handle -1, and that seems to cause trouble. ActivateWindow does
-                # not honour the url_return.
-                # url_return = self._misc_url('SHOW_ROMS', categoryID, launcherID)
-                # url_return = self._misc_url('SHOW_LAUNCHERS', categoryID)
-                # log_debug('URL RETURN = {0}'.format(url_return))
-                # xbmc.executebuiltin("ActivateWindow(Programs,{0},{1})".format(url, url_return))
-
-                # Does not work
-                # xbmc.executebuiltin("RunPlugin({0})".format(url))
-
-                # Does not work
-                # xbmc.executebuiltin("RunAddon({0})".format(url))
-
-        # Search by Release Date
-        type_nb = type_nb + 1
-        if type == type_nb:
-            searched_list = self._search_launcher_category(launcherID, "year", roms)
-            dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Release year ...', searched_list)
-            if selected_value >= 0:
-                search_string = searched_list[selected_value]
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_YEAR', search_string)
-                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
-
-        # Search by System Platform
-        # Note that search by platform does not make sense when searching a launcher because all items have
-        # the same platform! It only makes sense for global searches... which AEL does not.
-        # I keep this AL old code for reference, though.
-        # type_nb = type_nb + 1
-        # if type == type_nb:
-        #     search = []
-        #     search = _search_category(self, "platform")
-        #     dialog = xbmcgui.Dialog()
-        #     selected = dialog.select('Select a Platform...', search)
-        #     if not selected == -1:
-        #         xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND))
-
-        # Search by Studio
-        type_nb = type_nb + 1
-        if type == type_nb:
-            searched_list = self._search_launcher_category(launcherID, "studio", roms)
-            dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Studio ...', searched_list)
-            if selected_value >= 0:
-                search_string = searched_list[selected_value]
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_STUDIO', search_string)
-                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
-
-        # Search by Genre
-        type_nb = type_nb + 1
-        if type == type_nb:
-            searched_list = self._search_launcher_category(launcherID, "genre", roms)
-            dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Genre ...', searched_list)
-            if selected_value >= 0:
-                search_string = searched_list[selected_value]
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_GENRE', search_string)
-                xbmc.executebuiltin("ReplaceWindow(Programs,{0})".format(url))
-
-    def _search_launcher_category(self, launcherID, search_dic_field, roms):
-        # Maybe this can be optimized a bit to make the search faster...
-        search = []
-        for keyr in sorted(roms.iterkeys()):
-            if roms[keyr][search_dic_field] == "":
-                search.append("[ %s ]" % 'Not Set')
+        type2 = dialog.select('Change Thumbnail Image',
+                             ['Select Local Image',
+                              'Import Local Image (Copy and Rename)'])
+        # Link to an image
+        if type2 == 0:
+            if objects_dic[objectID][image_key] != '':
+                F = misc_split_path(objects_dic[objectID][image_key])
+                image_dir = F.dirname
             else:
-                search.append(roms[keyr][search_dic_field])
-        # Search will have a lot of repeated entries, so converting them to a set makes them unique
-        search = list(set(search))
-        search.sort()
+                image_dir = ''
+            log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
+                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return False
 
-        return search
+            # Update object by assigment. XML will be save by parent
+            objects_dic[objectID][image_key] = image_file
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
+            log_info('Selected {} "{}"'.format(image_name, image_file))
 
-    def _command_execute_search_launcher(self, categoryID, launcherID, search_type, search_string):
-        if   search_type == 'SEARCH_TITLE'  : rom_search_field = 'name'
-        elif search_type == 'SEARCH_YEAR'   : rom_search_field = 'year'
-        elif search_type == 'SEARCH_STUDIO' : rom_search_field = 'studio'
-        elif search_type == 'SEARCH_GENRE'  : rom_search_field = 'genre'
+            # --- Update Kodi image cache ---
+            kodi_update_image_cache(image_file)
 
-        # Load ROMs
-        # Check that the launcher has items
-        if not os.path.isfile(self.launchers[launcherID]["roms_xml_file"]):
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML missing. Add items to launcher')
-            xbmc.executebuiltin("Container.Refresh")
-            return
-        roms = fs_load_ROM_XML_file(self.launchers[launcherID]["roms_xml_file"])
-        if not roms:
-            kodi_notify('Advanced Emulator Launcher', 'Launcher XML empty. Add items to launcher')
-            return
-
-        # Go through rom list and search for user input
-        rl = {}
-        notset = ("[ %s ]" % 'Not Set')
-        text = search_string.lower()
-        empty = notset.lower()
-        for keyr in roms:
-            rom = roms[keyr][rom_search_field].lower()
-            if rom == "" and text == empty:
-                rl[keyr] = roms[keyr]
-
-            if rom_search_field == 'name':
-                if not rom.find(text) == -1:
-                    rl[keyr] = roms[keyr]
+        # Import an image
+        elif type2 == 1:
+            if objects_dic[objectID][image_key] != '':
+                F = misc_split_path(objects_dic[objectID][image_key])
+                image_dir = F.dirname
             else:
-                if rom == text:
-                    rl[keyr] = roms[keyr]
+                image_dir = ''
+            log_debug('_gui_edit_category_image() Initial path "{}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {} image'.format(image_name),
+                                                 'files', ".jpg|.jpeg|.gif|.png", True, False, image_dir)
+            if not image_file or not os.path.isfile(image_file): return False
 
-        # Print the list sorted (if there is anything to print)
-        if not rl:
-            kodi_dialog_OK('Advaned Emulator Launcher', 'Search produced no results')
-        for key in sorted(rl.iterkeys()):
-            self._gui_render_rom_row(categoryID, launcherID, key, rl[key])
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            # Determine image extension and dest filename
+            F = misc_split_path(image_file)
+            dest_path = dest_path_noext + F.ext
+            log_debug('_gui_edit_category_image() image_file    = "{0}"'.format(image_file))
+            log_debug('_gui_edit_category_image() img_ext       = "{0}"'.format(F.ext))
+            log_debug('_gui_edit_category_image() dest_path     = "{0}"'.format(dest_path))
+
+            # Copy image file, but never over itself
+            if image_file == dest_path: 
+                log_info('image_file and dest_path are the same. Returning')
+                return False
+            try:
+                fs_encoding = get_fs_encoding()
+                shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
+            except OSError:
+                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
+
+            # Update object and save XML
+            objects_dic[objectID][image_key] = dest_path
+            kodi_notify('Advanced Emulator Launcher', '{} has been updated'.format(image_name))
+            log_debug('_gui_edit_category_image() Object is {} with ID = {}'.format('Category', objectID))
+            log_info('Copied image "{}"'.format(image_file))
+            log_info('Into         "{}"'.format(dest_path))
+            log_info('Selected {} "{}"'.format(image_name, dest_path))
+
+            # --- Update Kodi image cache ---
+            kodi_update_image_cache(dest_path)
+
+        # User canceled select box
+        elif type2 < 0:
+            return False
+
+        return True
+
+    #
+    # Creates default categories data struct.
+    # CAREFUL deletes current categories!
+    #
+    def _cat_create_default(self):
+        # The key in the categories dictionary is an MD5 hash generate with current time plus some random number.
+        # This will make it unique and different for every category created.
+        category = fs_new_category()
+        category['name'] = 'Emulators'
+        category_key = misc_generate_random_SID()
+        category['id'] = category_key
+        self.categories = {}
+        self.categories[category_key] = category
+
+    #
+    # Checks if the category is empty (no launchers defined)
+    #
+    def _cat_is_empty(self, categoryID):
+        empty_category = True
+        for cat in self.launchers.iterkeys():
+            if self.launchers[cat]['categoryID'] == categoryID:
+                empty_category = False
+
+        return empty_category
+
+    #
+    # Reads a text file with category/launcher description. Checks file size to avoid importing binary files!
+    #
+    def _gui_import_TXT_file(text_file):
+        # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
+        log_debug('_gui_import_TXT_file() Importing plot from "{}"'.format(text_file))
+        statinfo = os.stat(text_file)
+        file_size = statinfo.st_size
+        log_debug('_gui_import_TXT_file() File size is {}'.format(file_size))
+        if file_size > 16384:
+            ret = kodi_dialog_yesno('Advanced Emulator Launcher',
+                                    'File "{}" has {} bytes and it is very big.'.format(text_file, file_size) +
+                                    'Are you sure this is the correct file?')
+            if not ret: return ''
+
+        # Import file
+        log_debug('_gui_import_TXT_file() Importing description from "{}"'.format(text_file))
+        text_plot = open(text_file, 'rt')
+        file_data = text_plot.read()
+        text_plot.close()
+
+        return file_data
 
     #
     # A set of functions to help making plugin URLs
