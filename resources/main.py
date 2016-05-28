@@ -2819,11 +2819,15 @@ class Main:
     # Launcher/ROM Thumb/Fanart image semiautomatic scrapers.
     # Function is here because structure is very similar to scanner _roms_scrap_image(). User is
     # presented with a list of scrapped images and chooses the best one.
-    # Called when editing a Launcher/ROM from context menu.
+    # Called when editing a Launcher/ROM Thumb/Fanart from context menu.
     #
     # objects_dic is changed using Python pass by assigment
     # Caller is responsible for saving edited launcher/ROM
     # Be aware that maybe launcherID = '0' if editing a ROM in Favourites
+    #
+    # Returns:
+    #   True   Changes were made to objects_dic. Caller must save XML/refresh container
+    #   False  No changes were made
     # ---------------------------------------------------------------------------------------------
     def _gui_scrap_image_semiautomatic(self, image_kind, objects_kind, objects_dic, objectID, launcherID):
         # _gui_edit_image() already has checked for errors in parameters.
@@ -2835,57 +2839,74 @@ class Main:
             image_key   = 'thumb'
             image_name  = 'Thumb'
             if objects_kind == KIND_LAUNCHER:
+                platform = objects_dic[objectID]['platform']
                 kind_name = 'Launcher'
-
-                artwork_path = objects_dic[objectID]['thumbpath']
-                local_image = 0
-                kodi_dialog_OK('AEL', 'Implement me')
-
-                image_path_noext = misc_get_thumb_path_noext(launcher, ROM)
-                local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
-                platform = self.launchers[launcherID]['platform']
-
+                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                dest_basename = objects_dic[objectID]['name']
+                rom_base_noext = '' # Used by offline scrapers only
+                image_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
             elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                launcher = self.launchers[launcherID]
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                image_path_noext = misc_get_thumb_path_noext(launcher, ROM)
-                local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
                 platform = self.launchers[launcherID]['platform']
+                kind_name = 'ROM'
+                # ROM in favourites
+                if launcherID == '0':
+                    thumb_dir  = self.settings['favourites_thumb_dir']
+                    fanart_dir = self.settings['favourites_fanart_dir']
+                # ROM in launcher
+                else:
+                    thumb_dir  = self.launchers[launcherID]['thumbpath']
+                    fanart_dir = self.launchers[launcherID]['fanartpath']
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                rom_base_noext = ROM.base_noext # Used by offline scrapers only
+                image_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)                
         elif image_kind == IMAGE_FANART:
             scraper_obj = self.scraper_fanart
             image_key   = 'fanart'
             image_name  = 'Fanart'
             if objects_kind == KIND_LAUNCHER:
+                platform = objects_dic[objectID]['platform']
                 kind_name = 'Launcher'
-                artwork_path = objects_dic[objectID]['fanartpath']
-                local_image = 0
-                kodi_dialog_OK('AEL', 'Implement me')
-                
-                
+                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                dest_basename = objects_dic[objectID]['name']
+                rom_base_noext = '' # Used by offline scrapers only
+                image_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
             elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                launcher = self.launchers[launcherID]
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                image_path_noext = misc_get_fanart_path_noext(launcher, ROM)
-                local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
                 platform = self.launchers[launcherID]['platform']
+                kind_name = 'ROM'
+                # ROM in favourites
+                if launcherID == '0':
+                    thumb_dir  = self.settings['favourites_thumb_dir']
+                    fanart_dir = self.settings['favourites_fanart_dir']
+                # ROM in launcher
+                else:
+                    thumb_dir  = self.launchers[launcherID]['thumbpath']
+                    fanart_dir = self.launchers[launcherID]['fanartpath']
+                ROM = misc_split_path(objects_dic[objectID]['filename'])
+                rom_base_noext = ROM.base_noext # Used by offline scrapers only
+                image_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)                
         log_debug('_gui_scrap_image_semiautomatic() Editing {} {}'.format(kind_name, image_name))
+        local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
 
         # --- Ask user to edit the image search string ---
         keyboard = xbmc.Keyboard(objects_dic[objectID]['name'], 'Enter the string to search for...')
         keyboard.doModal()
-        if not keyboard.isConfirmed(): return
+        if not keyboard.isConfirmed(): return False
         search_string = keyboard.getText()
 
         # --- Call scraper and get a list of games ---
+        # IMPORTANT Setting Kodi busy notification prevents the user to control the UI when a dialog with handler -1
+        #           has been called and nothing is displayed.
+        #           THIS PREVENTS THE RACE CONDITIONS THAT CAUSE TROUBLE IN ADVANCED LAUNCHER!!!
         kodi_busydialog_ON()
-        results = scraper_obj.get_search(search_string, ROM.base_noext, platform)
+        results = scraper_obj.get_search(search_string, rom_base_noext, platform)
         kodi_busydialog_OFF()
         log_debug('{} scraper found {} result/s'.format(image_name, len(results)))
         if not results:
+            kodi_dialog_OK('Advanced Emulator Launcher', 'Scraper found no matches.')
             log_debug('{} scraper did not found any game'.format(image_name))
-            return
+            return False
 
         # --- Choose game to download image ---
         # Display corresponding game list found so user choses
@@ -2893,15 +2914,20 @@ class Main:
         rom_name_list = []
         for game in results:
             rom_name_list.append(game['display_name'])
-        selectgame = dialog.select('Select game for ROM {}'.format(ROM.base_noext), rom_name_list)
-        if selectgame < 0: selectgame = 0
+        selectgame = dialog.select('Select game for {}'.format(search_string), rom_name_list)
+        if selectgame < 0:
+            # >> User canceled select dialog
+            return False
 
         # --- Grab list of images for the selected game ---
+        # >> Prevent race conditions
+        kodi_busydialog_ON()
         image_list = scraper_obj.get_images(results[selectgame])
+        kodi_busydialog_OFF()
         log_verb('{} scraper returned {} images'.format(image_name, len(image_list)))
         if not image_list:
-            log_debug('{} scraper get_images() returned no images.'.format(image_name))
-            return ret_imagepath
+            kodi_dialog_OK('Advanced Emulator Launcher', 'Scraper found no images.')
+            return False
 
         # --- Always do semi-automatic scraping when editing images ---
         # If there is a local image add it to the list and show it to the user
@@ -2927,25 +2953,31 @@ class Main:
             log_debug('img_ext          "{}"'.format(img_ext))
             log_verb('Downloading URL  "{}"'.format(image_url))
             log_verb('Into local file  "{}"'.format(image_path))
+            # >> Prevent race conditions
+            kodi_busydialog_ON()
             try:
                 net_download_img(image_url, image_path)
             except socket.timeout:
                 kodi_notify_warn('Advanced Emulator Launcher',
                                  'Cannot download {} image (Timeout)'.format(image_name))
+            kodi_busydialog_OFF()
 
             # ~~~ Update Kodi cache with downloaded image ~~~
             # Recache only if local image is in the Kodi cache, this function takes care of that.
             kodi_update_image_cache(image_path)
-
-            # --- Return value is downloaded image ---
-            ret_imagepath = image_path
         else:
-            log_debug('{} scraper: user chose local image "{}"'.format(image_name, image_url))
-            ret_imagepath = image_url
+            log_debug('{} scraper: user chose local image "{}"'.format(image_name, local_image))
+            # >> If current image is same as found local image then there is nothing to update
+            if objects_dic[objectID][image_key] == local_image: 
+                log_debug('Local image already in object. Returning False')
+                return False
+            image_path = local_image
 
         # --- Edit using Python pass by assigment ---
         # >> Caller is responsible to save launchers/ROMs
-        objects_dic[objectID][image_key] = ret_imagepath
+        objects_dic[objectID][image_key] = image_path
+
+        return True
 
     # ---------------------------------------------------------------------------------------------
     # Metadata scrapers
@@ -2956,6 +2988,7 @@ class Main:
     # launcherID = '0' if scraping ROM in Favourites
     # roms are editing using Python arguments passed by assignment. Caller is responsible of
     # saving the ROMs XML file.
+    #
     # Returns:
     #   True   Changes were made.
     #   False  Changes not made. No need to save ROMs XML/Update container
@@ -2975,43 +3008,53 @@ class Main:
         keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
+        search_string = keyboard.getText()
 
         # --- Do a search and get a list of games ---
-        rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
-        results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
+        # >> Prevent race conditions
+        kodi_busydialog_ON()
+        results = self.scraper_metadata.get_search(search_string, ROM.base_noext, platform)
+        kodi_busydialog_OFF()
         log_debug('_gui_scrap_rom_metadata() Metadata scraper found {} result/s'.format(len(results)))
-        if results:
-            # Display corresponding game list found so user choses
-            dialog = xbmcgui.Dialog()
-            rom_name_list = []
-            for game in results:
-                rom_name_list.append(game['display_name'])
-            selectgame = dialog.select('Select game for ROM {}'.format(rom_name), rom_name_list)
-            if selectgame < 0: selectgame = 0
-
-            # --- Grab metadata for selected game ---
-            gamedata = self.scraper_metadata.get_metadata(results[selectgame])
-
-            # --- Put metadata into ROM dictionary ---
-            # >> Ignore scraped title
-            if scan_ignore_title:
-                roms[romID]['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
-                log_debug("User wants to ignore scraper name. Setting name to '{}'".format(roms[romID]['name']))
-            # >> Use scraped title
-            else:
-                roms[romID]['name'] = gamedata['title']
-                log_debug("User wants scrapped name. Setting name to '{}'".format(roms[romID]['name']))
-            roms[romID]['genre']  = gamedata['genre']
-            roms[romID]['year']   = gamedata['year']
-            roms[romID]['studio'] = gamedata['studio']
-            roms[romID]['plot']   = gamedata['plot']
-
-            # ROMs are saved in caller function
-        else:
-            kodi_notify('Advanced Emulator Launcher', 'Scraper found no matches')
+        if not results:
+            kodi_notify_warn('Advanced Emulator Launcher', 'Scraper found no matches')
             return False
             
+        # Display corresponding game list found so user choses
+        dialog = xbmcgui.Dialog()
+        rom_name_list = []
+        for game in results:
+            rom_name_list.append(game['display_name'])
+        selectgame = dialog.select('Select game for ROM {}'.format(rom_name), rom_name_list)
+        if selectgame < 0: 
+            # >> User canceled select dialog
+            return False
+
+        # --- Grab metadata for selected game ---
+        # >> Prevent race conditions
+        kodi_busydialog_ON()
+        gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+        kodi_busydialog_OFF()
+        if not gamedata:
+            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot download game metadata.')
+            return False
+
+        # --- Put metadata into ROM dictionary ---
+        # >> Ignore scraped title
+        if scan_ignore_title:
+            roms[romID]['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+            log_debug("User wants to ignore scraper name. Setting name to '{}'".format(roms[romID]['name']))
+        # >> Use scraped title
+        else:
+            roms[romID]['name'] = gamedata['title']
+            log_debug("User wants scrapped name. Setting name to '{}'".format(roms[romID]['name']))
+        roms[romID]['genre']  = gamedata['genre']
+        roms[romID]['year']   = gamedata['year']
+        roms[romID]['studio'] = gamedata['studio']
+        roms[romID]['plot']   = gamedata['plot']
+
         # >> Changes were made
+        kodi_notify('Advanced Emulator Launcher', 'ROM metadata updated')
         return True
 
     #
@@ -3020,41 +3063,54 @@ class Main:
     # Scrap standalone launcher (typically a game) metadata
     # Called when editing a launcher...
     # Always do semi-automatic scraping when editing ROMs/Launchers
+    #
     # Returns:
     #   True   Changes were made.
     #   False  Changes not made. No need to save ROMs XML/Update container
     #
     def _gui_scrap_launcher_metadata(self, launcherID):
+        launcher = self.launchers[launcherID]
+        platform = launcher['platform']
+        
         # Edition of the launcher name
         keyboard = xbmc.Keyboard(self.launchers[launcherID]['name'], 'Enter the launcher search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
+        search_string = keyboard.getText()
 
         # Scrap and get a list of matches
-        title = keyboard.getText()
-        results = self.scraper_metadata.get_search(title, '', platform)
+        kodi_busydialog_ON()
+        results = self.scraper_metadata.get_search(search_string, '', platform)
+        kodi_busydialog_OFF()
         log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {} result/s'.format(len(results)))
-        if results:
-            # Display corresponding game list found so user choses
-            dialog = xbmcgui.Dialog()
-            rom_name_list = []
-            for game in results:
-                rom_name_list.append(game['display_name'])
-            selectgame = dialog.select('Select game for ROM {}'.format(rom_name), rom_name_list)
-            if selectgame < 0: selectgame = 0
-
-            # --- Grab metadata for selected game ---
-            gamedata = self.scraper_metadata.get_metadata(results[selectgame])
-                
-            # --- Put metadata into launcher dictionary ---
-            # >> Scraper should not change metadata
-            self.launchers[launcherID]['genre']  = gamedata['genre']
-            self.launchers[launcherID]['year']   = gamedata['year']
-            self.launchers[launcherID]['studio'] = gamedata['studio']
-            self.launchers[launcherID]['plot']   = gamedata['plot']
-        else:
-            kodi_notify('Advanced Emulator Launcher', 'Scraper found no matches')
+        if not results:
+            kodi_notify_warn('Advanced Emulator Launcher', 'Scraper found no matches')
             return False
+
+        # Display corresponding game list found so user choses
+        dialog = xbmcgui.Dialog()
+        rom_name_list = []
+        for game in results:
+            rom_name_list.append(game['display_name'])
+        selectgame = dialog.select('Select game for ROM {}'.format(rom_name), rom_name_list)
+        if selectgame < 0: 
+            return False
+
+        # --- Grab metadata for selected game ---
+        # >> Prevent race conditions
+        kodi_busydialog_ON()
+        gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+        kodi_busydialog_OFF()
+        if not gamedata:
+            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot download game metadata.')
+            return False
+
+        # --- Put metadata into launcher dictionary ---
+        # >> Scraper should not change launcher title
+        self.launchers[launcherID]['genre']  = gamedata['genre']
+        self.launchers[launcherID]['year']   = gamedata['year']
+        self.launchers[launcherID]['studio'] = gamedata['studio']
+        self.launchers[launcherID]['plot']   = gamedata['plot']
 
         # >> Changes were made
         return True
@@ -3086,6 +3142,7 @@ class Main:
 
         # Customise function depending of object to edit
         if image_kind == IMAGE_THUMB:
+            scraper_obj = self.scraper_thumb
             image_key   = 'thumb'
             image_name  = 'Thumb'
             if objects_kind == KIND_LAUNCHER:
@@ -3107,6 +3164,7 @@ class Main:
                 ROM = misc_split_path(objects_dic[objectID]['filename'])
                 dest_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
         elif image_kind == IMAGE_FANART:
+            scraper_obj = self.scraper_fanart
             image_key   = 'fanart'
             image_name  = 'Fanart'
             if objects_kind == KIND_LAUNCHER:
@@ -3134,7 +3192,7 @@ class Main:
         type2 = dialog.select('Change Thumbnail Image',
                              ['Select Local Image',
                               'Import Local Image (Copy and Rename)',
-                              'Scrape Image from {}'.format(self.scraper_thumb.fancy_name) ])
+                              'Scrape Image from {}'.format(scraper_obj.fancy_name) ])
         # Link to an image
         if type2 == 0:
             if objects_dic[objectID][image_key] != '':
