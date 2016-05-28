@@ -35,21 +35,37 @@
 The zipfile must have this structure:
 
 ~~~
-plugin.hyper.launcher/addon.xml
-plugin.hyper.launcher/changelog.txt
-plugin.hyper.launcher/default.py
-plugin.hyper.launcher/fanart.jpg
-plugin.hyper.launcher/icon.png
-plugin.hyper.launcher/LICENSE.txt
-plugin.hyper.launcher/README.txt
+plugin.program.advanced.emulator.launcher/addon.xml
+plugin.program.advanced.emulator.launcher/changelog.txt
+plugin.program.advanced.emulator.launcher/default.py
+plugin.program.advanced.emulator.launcher/fanart.jpg
+plugin.program.advanced.emulator.launcher/icon.png
+plugin.program.advanced.emulator.launcher/LICENSE.txt
+plugin.program.advanced.emulator.launcher/README.txt
 ~~~
 
-I think once the addon has been installed, it can be eddited in place (that is, in the Kodi directory).
-This will simplify the development a lot!
+Once the addon has been installed, it can be eddited in place (that is, in the Kodi directory where
+the addon Python files are installed). This will simplify the development a lot!
 
-I created a soft link to the github cloned directory witht the correct name, plugin.program.advanced.emulator.launcher,
-and then created the zipfile with 
+## Developed environment ##
+
+I created a soft link to the github cloned directory witht the correct name 
+`plugin.program.advanced.emulator.launcher` and then created the zipfile with 
 
 `$ zip -r plugin.program.advanced.emulator.launcher.zip plugin.program.advanced.emulator.launcher/*`
 
 Then, intalled in Kodi with System -- Add-ons -- Install from zip file. It worked well.
+
+# Installing the addon from github #
+
+It is very important that the addon files are inside the correct directory
+`plugin.program.advanced.emulator.launcher`.
+
+To install the plugin from Github, click on `Clone or download` -- `Download ZIP`.
+This will download the repository contents to a ZIP file named
+`plugin.program.advanced.emulator.launcher-master.zip`. Also, addon is
+packed inside directory `plugin.program.advanced.emulator.launcher-master`.
+
+This ZIP file should be decompressed, the directory renamed to
+`plugin.program.advanced.emulator.launcher`, and packed into a ZIP file again.
+Then, install the ZIP file.
