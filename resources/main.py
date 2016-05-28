@@ -62,6 +62,8 @@ DEFAULT_CAT_NFO_DIR      = os.path.join(PLUGIN_DATA_DIR, 'category-nfos')
 DEFAULT_LAUN_THUMB_DIR   = os.path.join(PLUGIN_DATA_DIR, 'launcher-thumbs')
 DEFAULT_LAUN_FANART_DIR  = os.path.join(PLUGIN_DATA_DIR, 'launcher-fanarts')
 DEFAULT_LAUN_NFO_DIR     = os.path.join(PLUGIN_DATA_DIR, 'launcher-nfos')
+DEFAULT_FAV_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'favourite-thumbs')
+DEFAULT_FAV_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'favourite-fanarts')
 
 # Misc "constants"
 KIND_CATEGORY        = 0
@@ -264,6 +266,8 @@ class Main:
         self.settings["launchers_thumb_dir"]   = addon_obj.getSetting("launchers_thumb_dir")
         self.settings["launchers_fanart_dir"]  = addon_obj.getSetting("launchers_fanart_dir")
         self.settings["launchers_nfo_dir"]     = addon_obj.getSetting("launchers_nfo_dir")
+        self.settings["favourites_thumb_dir"]  = addon_obj.getSetting("favourites_thumb_dir")
+        self.settings["favourites_fanart_dir"] = addon_obj.getSetting("favourites_fanart_dir")
 
         self.settings["media_state"]            = int(addon_obj.getSetting("media_state"))
         self.settings["lirc_state"]             = True if addon_obj.getSetting("lirc_state") == "true" else False
@@ -281,6 +285,8 @@ class Main:
         if self.settings['launchers_thumb_dir']   == '': self.settings['launchers_thumb_dir']   = DEFAULT_LAUN_THUMB_DIR
         if self.settings['launchers_fanart_dir']  == '': self.settings['launchers_fanart_dir']  = DEFAULT_LAUN_FANART_DIR
         if self.settings['launchers_nfo_dir']     == '': self.settings['launchers_nfo_dir']     = DEFAULT_LAUN_NFO_DIR
+        if self.settings['favourites_thumb_dir']  == '': self.settings['favourites_thumb_dir']  = DEFAULT_FAV_THUMB_DIR
+        if self.settings['favourites_fanart_dir'] == '': self.settings['favourites_fanart_dir'] = DEFAULT_FAV_FANART_DIR
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
@@ -349,6 +355,7 @@ class Main:
     # NOTE Caller is responsible for saving the Launchers/ROMs
     # NOTE if image is changed container should be updated so the user sees new image instantly
     # NOTE objects_dic is edited by assigment
+    # NOTE a ROM in Favourites has launcherID = '0'
     #
     # Returns:
     #   True   Launchers/ROMs must be saved and container updated
@@ -377,8 +384,14 @@ class Main:
                 dest_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
             elif objects_kind == KIND_ROM:
                 kind_name = 'ROM'
-                thumb_dir  = self.launchers[launcherID]['thumbpath']
-                fanart_dir = self.launchers[launcherID]['fanartpath']
+                # Thumb of a ROM in Favourites
+                if launcherID == '0':
+                    thumb_dir  = self.settings['favourites_thumb_dir']
+                    fanart_dir = self.settings['favourites_fanart_dir']
+                # Thumb of a ROM in a Launcher
+                else:
+                    thumb_dir  = self.launchers[launcherID]['thumbpath']
+                    fanart_dir = self.launchers[launcherID]['fanartpath']
                 ROM = misc_split_path(objects_dic[objectID]['filename'])
                 dest_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
         elif image_kind == IMAGE_FANART:
@@ -392,8 +405,14 @@ class Main:
                 dest_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
             elif objects_kind == KIND_ROM:
                 kind_name = 'ROM'
-                thumb_dir  = self.launchers[launcherID]['thumbpath']
-                fanart_dir = self.launchers[launcherID]['fanartpath']
+                # Fanart in a ROM in Favourites
+                if launcherID == '0':
+                    thumb_dir  = self.settings['favourites_thumb_dir']
+                    fanart_dir = self.settings['favourites_fanart_dir']
+                # Fanart of a ROM in a Launcher
+                else:
+                    thumb_dir  = self.launchers[launcherID]['thumbpath']
+                    fanart_dir = self.launchers[launcherID]['fanartpath']
                 ROM = misc_split_path(objects_dic[objectID]['filename'])
                 dest_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
         log_debug('_gui_edit_image() Editing {} {}'.format(kind_name, image_name))

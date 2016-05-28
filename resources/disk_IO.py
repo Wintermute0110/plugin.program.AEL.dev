@@ -567,12 +567,12 @@ def fs_export_ROM_NFO(launcher, rom):
         usock.close()
     except:
         kodi_notify_warn('Advanced Emulator Launcher',
-                         'Error writing {}'.format(nfo_file_path)
+                         'Error writing {}'.format(nfo_file_path))
         log_error("fs_export_ROM_NFO() Exception writing '{}'".format(nfo_file_path))
         return
 
     kodi_notify('Advanced Emulator Launcher',
-                'Created {}'.format(nfo_file_path)
+                'Created {}'.format(nfo_file_path))
     log_debug("fs_export_ROM_NFO() Created '{}'".format(nfo_file_path))
 
     return
@@ -611,11 +611,11 @@ def fs_import_ROM_NFO(launcher, roms, romID):
         if len(item_plot) > 0:      roms[romID]['plot']      = text_unescape_XML(item_plot[0])
 
         kodi_notify('Advanced Emulator Launcher',
-                    'Imported {}'.format(nfo_file_path)
+                    'Imported {}'.format(nfo_file_path))
         log_debug("fs_import_ROM_NFO() Imported '{}'".format(nfo_file_path))
     else:
         kodi_notify_warn('Advanced Emulator Launcher',
-                         'NFO file not found {}'.format(nfo_file_path)
+                         'NFO file not found {}'.format(nfo_file_path))
         log_debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
         return False
 
@@ -681,12 +681,12 @@ def fs_export_launcher_NFO(settings, launcher):
         f.close()
     except:
         kodi_notify_warn('Advanced Emulator Launcher',
-                         'Exception writing NFO file {}'.format(os.path.basename(nfo_file_path))
+                         'Exception writing NFO file {}'.format(os.path.basename(nfo_file_path)))
         log_error("fs_export_launcher_NFO() Exception writing'{}'".format(nfo_file_path))
         return False
 
     kodi_notify('Advanced Emulator Launcher',
-                'Created {}'.format(os.path.basename(nfo_file_path))
+                'Created {}'.format(os.path.basename(nfo_file_path)))
     log_debug("fs_export_launcher_NFO() Created '{}'".format(nfo_file_path))
 
     return True
@@ -731,11 +731,11 @@ def fs_import_launcher_NFO(settings, launchers, launcherID):
         launchers[launcherID]['plot']     = text_unescape_XML(item_plot[0])
 
         kodi_notify('Advanced Emulator Launcher',
-                    'Imported {}'.format(nfo_file_path)
+                    'Imported {}'.format(nfo_file_path))
         log_debug("fs_import_launcher_NFO() Imported '{}'".format(nfo_file_path))
     else:
         kodi_notify_warn('Advanced Emulator Launcher',
-                         'NFO file not found {}'.format(nfo_file_path)
+                         'NFO file not found {}'.format(nfo_file_path))
         log_debug("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_file_path))
         return False
 
