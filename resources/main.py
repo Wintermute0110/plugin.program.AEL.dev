@@ -630,7 +630,7 @@ class Main:
             type = dialog.select('Select Action for launcher %s' % title,
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
                                   'Change Category: {}'.format(category_name),
-                                  finished_display, 'Advanced Modifications..', 'Delete'])
+                                  finished_display, 'Advanced Modifications...', 'Delete'])
         else:
             type = dialog.select('Select Action for launcher %s' % title,
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
@@ -1069,8 +1069,8 @@ class Main:
         # Confirm user wants to delete ROMs
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno('Advanced Emulator Launcher',
-                           "Launcher '{}' has {} ROMs".format(self.launchers[launcherID]["name"], num_roms),
-                           'Are you sure you want to delete it?')
+                           "Launcher '{}' has {} ROMs. Are you sure you want to delete them " \
+                           "from AEL database?".format(self.launchers[launcherID]["name"], num_roms))
         if ret:
             # Just remove XML file. Keep the value of roms_xml_file to be reused when user add more ROMs.
             # Note that if the file is not found fs_load_ROM_XML_file() will return an empty dictionary.
