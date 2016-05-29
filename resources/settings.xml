@@ -3,14 +3,14 @@
 <category label="ROM scanner">
     <!-- <setting id="separator" type="lsep" label="Scan settings"/> -->
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
-    <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="false"/>
+    <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
     <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy"  default="2" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
     <setting label="Thumb scan policy" type="enum" id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     <setting label="Fanart scan policy" type="enum" id="scan_fanart_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     
     <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
-    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="false" id="scan_ignore_scrapped_title" />
-    <setting label="Clean No-Intro/TOSEC Titles Tags (tag) [tag]" type="bool" default="false" id="scan_clean_tags" />
+    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="true" id="scan_ignore_scrapped_title" />
+    <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag]" type="bool" default="false" id="scan_clean_tags" />
 </category>
 <category label="ROM scrapping">
     <setting id="separator" type="lsep" label="Scrapers"/>
@@ -20,15 +20,15 @@
 
     <setting id="separator" type="lsep" label="Scrapping mode"/>
     <setting label="Metadata scrapping mode" type="enum" id="metadata_mode" default="1" values="Semi-automatic|Automatic"/>
-    <setting label="Thumb scrapping mode" type="enum" id="thumb_mode" default="0" values="Semi-automatic|Automatic"/>
-    <setting label="Fanart scrapping mode" type="enum" id="fanart_mode" default="0" values="Semi-automatic|Automatic"/>
+    <setting label="Thumb scrapping mode" type="enum" id="thumb_mode" default="1" values="Semi-automatic|Automatic"/>
+    <setting label="Fanart scrapping mode" type="enum" id="fanart_mode" default="1" values="Semi-automatic|Automatic"/>
 </category>
 <category label="Scrapers">
     <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
     <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
     <setting label="Fanart Images Size" type="enum" id="scraper_fanart_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
     <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
-    <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="0" values="First|Half|Last"/>
+    <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
 </category>
 <category label="Display">
     <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="display_hide_finished" default="false" />
