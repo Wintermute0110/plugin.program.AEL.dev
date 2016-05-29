@@ -1340,9 +1340,10 @@ class Main:
             # STEP 1: select new launcher.
             launcher_IDs = []
             launcher_names = []
-            for launcherID in self.launchers:
-                launcher_IDs.append(launcherID)
-                launcher_names.append(self.launchers[launcherID]['name'])
+            for launcher_id in self.launchers:
+                launcher_IDs.append(launcher_id)
+                launcher_names.append(self.launchers[launcher_id]['name'])
+                
             # Order alphabetically both lists
             sorted_idx = [i[0] for i in sorted(enumerate(launcher_names), key=lambda x:x[1])]
             launcher_IDs   = [launcher_IDs[i] for i in sorted_idx]
@@ -1386,6 +1387,7 @@ class Main:
                     roms[launcher_rom_id]['rompath']     = self.launchers[launcher_id]['rompath']
                     roms[launcher_rom_id]['romext']      = self.launchers[launcher_id]['romext']
                     roms[launcher_rom_id]['fav_status']  = 'OK'
+                    # If missing thumb/fanart then use launcher's
                     if roms[launcher_rom_id]['thumb']  == '': roms[launcher_rom_id]['thumb']  = self.launchers[launcher_id]['thumb']
                     if roms[launcher_rom_id]['fanart'] == '': roms[launcher_rom_id]['fanart'] = self.launchers[launcher_id]['fanart']
 
