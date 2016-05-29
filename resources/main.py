@@ -525,18 +525,17 @@ class Main:
 
             # Selection of the launcher game system
             dialog = xbmcgui.Dialog()
-            platforms = emudata_platform_list()
-            sel_platform = dialog.select('Select the platform', platforms)
+            sel_platform = dialog.select('Select the platform', AEL_platform_list)
+            if sel_platform < 0: return
+            launcher_platform = AEL_platform_list[sel_platform]
 
             # Selection of the thumbnails and fanarts path
-            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnail path', "files", "", False, False, files_path)
-            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanart path', "files", "", False, False, files_path)
+            thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnail path', 'files', '', False, False, files_path)
+            fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanart path', 'files', '', False, False, files_path)
 
             # --- Create launcher object data, add to dictionary and write XML file ---
-            thumb_path  = "" if not thumb_path else thumb_path
-            fanart_path = "" if not fanart_path else fanart_path
-            if not sel_platform == -1:  launcher_platform = platforms[sel_platform]
-            else:                       launcher_platform = "Unknown"
+            thumb_path  = '' if not thumb_path else thumb_path
+            fanart_path = '' if not fanart_path else fanart_path
             launcher_lnk = True if sys.platform == "win32" else False
 
             # Choose launcher ROM XML filename. There may be launchers with
@@ -589,8 +588,9 @@ class Main:
 
             # Selection of the launcher game system
             dialog = xbmcgui.Dialog()
-            platforms = emudata_platform_list()
-            sel_platform = dialog.select('Select the platform', platforms)
+            sel_platform = dialog.select('Select the platform', AEL_platform_list)
+            if sel_platform < 0: return
+            launcher_platform = AEL_platform_list[sel_platform]
 
             # --- Selection of the thumbnails and fanarts path ---
             thumb_path  = self.settings['launchers_thumb_dir']
@@ -599,7 +599,6 @@ class Main:
             # --- Create launcher object data, add to dictionary and write XML file ---
             if not thumb_path:  thumb_path = ''
             if not fanart_path: fanart_path = ''
-            launcher_platform = 'Unknown' if sel_platform < 0 else platforms[sel_platform]
             launcher_lnk = True if sys.platform == 'win32' else False
 
             # add launcher to the launchers dictionary (using name as index)
@@ -676,10 +675,9 @@ class Main:
             # Selection of the launcher platform from AEL "official" list
             elif type2 == 3:
                 dialog = xbmcgui.Dialog()
-                platforms = emudata_platform_list()
-                sel_platform = dialog.select('Select the platform', platforms)
+                sel_platform = dialog.select('Select the platform', AEL_platform_list)
                 if sel_platform < 0: return
-                self.launchers[launcherID]['platform'] = platforms[sel_platform]
+                self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
 
             # Edition of the launcher release date (year)
             elif type2 == 4:

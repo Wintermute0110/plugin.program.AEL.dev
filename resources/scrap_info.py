@@ -27,6 +27,7 @@ def emudata_get_program_arguments( app ):
         'mupen64plus' : '--nogui --noask --noosd --fullscreen "%rom%"',
         'nestopia'    : '"%rom%"',
         'xbmc'        : 'PlayMedia(%rom%)',
+        'kodi'        : 'PlayMedia(%rom%)',
         'retroarch'   : '-L /path/to/core -f "%rom%"',
         'yabause'     : '-a -f -i "%rom%"',
     }
@@ -58,25 +59,66 @@ def emudata_get_program_extensions( app ):
 # with offline scraping information as value. File location is relative to
 # this file location, CURRENT_ADDON_DIR/resources/.
 # -----------------------------------------------------------------------------
-offline_scrapers_dic = {
-    'MAME'             : 'resources/data/GameDB/MAME.xml', 
-    'Sega 32X'         : 'resources/data/GameDB/Sega 32x.xml',
-    'Sega Genesis'     : '',
-    'Nintendo SNES'    : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Unknown'          : ''
-}
-
-def emudata_platform_list():
-    game_list = []
-    
-    for key in sorted(offline_scrapers_dic):
-        game_list.append(key)
-
-    return game_list
+AEL_platform_list = [
+    # Arcade
+    'MAME',    
+    # NEC
+    'NEC PC Engine',
+    # Nintendo
+    'Nintendo 64',
+    'Nintendo DS',
+    'Nintendo GameBoy',
+    'Nintendo GameBoy Advance',
+    'Nintendo GameBoy Color',
+    'Nintendo GameCube',
+    'Nintendo NES',
+    'Nintendo SNES',
+    # Sega
+    'Sega 32X',
+    'Sega Genesis/MegaDrive',
+    'Sega Master System',
+    'Sega Game Gear',
+    'Sega MegaCD',
+    'Sega Saturn',
+    'Sega Dreamcast',
+    # SONY
+    'Sony PlayStation',
+    'Sony PlayStation 2',
+    'Sony PSP',
+    # SNK
+    'SNK Neo-Geo',
+    # Unknown
+    'Unknown'
+]
 
 # -----------------------------------------------------------------------------
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -----------------------------------------------------------------------------
+platform_AEL_to_Offline_GameDB = {
+    'MAME'                     : 'resources/data/GameDB/MAME.xml',
+    'NEC PC Engine'            : '',
+    'Nintendo 64'              : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Nintendo DS'              : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Nintendo NES'             : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Nintendo GameBoy'         : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Nintendo GameBoy Advance' : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Nintendo GameBoy Color'   : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Nintendo GameCube'        : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Nintendo SNES'            : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
+    'Sega 32X'                 : 'resources/data/GameDB/Sega 32x.xml',
+    'Sega Genesis'             : '',
+    'Sega Master System'       : '',
+    'Sega Game Gear'           : '',
+    'Sega MegaCD'              : '',
+    'Sega Saturn'              : '',
+    'Sega Deamcast'            : '',
+    'Sony PlayStation'         : '',
+    'Sony PlayStation 2'       : '',
+    'Sony PSP'                 : '',
+    'SNK Neo-Geo'              : '',
+    'Unknown'                  : ''
+}
+
 platform_AEL_to_TheGamesDB_dic = {
     'MAME'          : 'Arcade',
     'Sega Genesis'  : 'Sega Mega Drive',
