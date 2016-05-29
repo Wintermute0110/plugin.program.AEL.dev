@@ -805,10 +805,11 @@ class Main:
                     nointro_xml_file = self.launchers[launcherID]['nointro_xml_file']
                     add_delete_NoIntro_str = 'Delete No-Intro DAT: {}'.format(nointro_xml_file)
                 else:
-                    add_delete_NoIntro_str = 'Add No-Intro XML DAT'
+                    add_delete_NoIntro_str = 'Add No-Intro XML DAT...'
                 type2 = dialog.select('Manage Items List',
                                       [add_delete_NoIntro_str, 
-                                       'Audit ROMs using No-Intro DAT',
+                                       'Audit ROMs using No-Intro XML PClone DAT',
+                                       'Clear No-Intro audit status',
                                        'Import ROMs metadata from NFO files',
                                        'Export ROMs metadata to NFO files',
                                        'Clear ROMs from launcher' ])
@@ -819,14 +820,14 @@ class Main:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
                         if not ret: return
-                        self.launchers[launcherID]["nointro_xml_file"] = ''
+                        self.launchers[launcherID]['nointro_xml_file'] = ''
                         kodi_dialog_OK('Advanced Emulator Launcher', 'Rescan your ROMs to remove No-Intro tags.')
                     else:
                         # Browse for No-Intro file
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
                         dat_file = xbmcgui.Dialog().browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml')
                         if not os.path.isfile(dat_file): return
-                        self.launchers[launcherID]["nointro_xml_file"] = dat_file
+                        self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('Advanced Emulator Launcher', 'DAT file successfully added. Rescan your ROMs to audit them.')
 
                 # --- Audit ROMs with No-Intro DAT ---
@@ -849,19 +850,35 @@ class Main:
                     # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
                     (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(roms, nointro_xml_file)
 
-                    # Report
+                    # --- Report ---
                     log_info('***** No-Intro audit finished. Report ******')
                     log_info('No-Intro Have ROMs    {:6d}'.format(num_have))
                     log_info('No-Intro Miss ROMs    {:6d}'.format(num_miss))
                     log_info('No-Intro Unknown ROMs {:6d}'.format(num_unknown))
+                    kodi_notify('Advanced Emulator Launcher', 
+                                'Audit finished. Have {}/Miss {}/Unknown {}'.format(num_have, num_miss, num_unknown))
 
                     # ~~~ Save ROMs XML file ~~~
                     fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
                     # >> No need to save launchers
                     return
 
-                # --- Import Items list form NFO files ---
+                # --- Reset audit status ---
                 elif type2 == 2:
+                    # --- Load ROMs for this launcher ---
+                    roms_xml_file = self.launchers[launcherID]['roms_xml_file']
+                    roms = fs_load_ROM_XML_file(roms_xml_file)
+                    
+                    num_removed_roms = self._roms_reset_NoIntro_status(roms)
+                    kodi_notify('Advanced Emulator Launcher', 'Reset No-Intro status. Removed {} missing ROMs'.format(num_removed_roms))
+                    
+                    # ~~~ Save ROMs XML file ~~~
+                    fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
+                    # >> No need to save launchers
+                    return
+
+                # --- Import Items list form NFO files ---
+                elif type2 == 3:
                     # >> Load ROMs, iterate and import NFO files
                     roms_xml_file = self.launchers[launcherID]['roms_xml_file']
                     roms = fs_load_ROM_XML_file(roms_xml_file)
@@ -874,7 +891,7 @@ class Main:
                     return
 
                 # --- Export Items list to NFO files ---
-                elif type2 == 3:
+                elif type2 == 4:
                     # >> Load ROMs for current launcher, iterate and write NFO files
                     roms = fs_load_ROM_XML_file(self.launchers[launcherID]['roms_xml_file'])
                     if not roms: return
@@ -887,10 +904,14 @@ class Main:
                     return
 
                 # --- Empty Launcher menu option ---
-                elif type2 == 4:
+                elif type2 == 5:
                     self._gui_empty_launcher(launcherID)
                     # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
                     # Container.Refresh at the end of this function and calling the plugin twice.
+                    return
+
+                elif type2 < 0:
+                    # >> User canceled select dialog
                     return
 
         # --- Launcher Advanced Modifications menu option ---
@@ -2221,6 +2242,92 @@ class Main:
                 xbmc.sleep(self.settings['start_tempo'] + 100)
                 xbmc.Player().play()
 
+    def _roms_reset_NoIntro_status(self, roms):
+        # --- Reset the No-Intro status ---
+        # 1) Remove all ROMs which does not exist.
+        # 2) Set status of remaining ROMs to nointro_status = 'None'
+        num_removed_roms = 0
+        num_roms = len(roms)
+        log_info('_roms_reset_NoIntro_status() Launcher DB contain {} items'.format(num_roms))
+        if num_roms > 0:
+            log_verb('_roms_reset_NoIntro_status() Starting dead items scan')
+            for rom_id in sorted(roms.iterkeys()):
+                name = roms[rom_id]['name']
+                filename = roms[rom_id]['filename']
+                log_debug('_roms_reset_NoIntro_status() Testing {}'.format(name))
+
+                # Remove missing ROMs
+                if not os.path.isfile(filename):
+                    log_debug('_roms_reset_NoIntro_status() Delete {} item entry'.format(name))
+                    del roms[rom_id]
+                    num_removed_roms += 1
+                    continue
+
+                # Reset status for remaining ROMs
+                roms[rom_id]['nointro_status'] = 'None'
+
+            if num_removed_roms > 0:
+                log_info('_roms_reset_NoIntro_status() {} dead ROMs removed successfully'.format(num_removed_roms))
+            else:
+                log_info('_roms_reset_NoIntro_status() No dead ROMs found.')
+        else:
+            log_info('_roms_reset_NoIntro_status() Launcher is empty. No dead ROM check.')
+
+        return num_removed_roms
+
+    #
+    # Helper function to update ROMs No-Intro status if user configured a No-Intro DAT file.
+    # Dictionaries are mutable, so roms can be changed because passed by assigment.
+    #
+    def _roms_update_NoIntro_status(self, roms, nointro_xml_file):
+        # --- Reset the No-Intro status ---
+        self._roms_reset_NoIntro_status(roms)
+
+        # --- Check if DAT file exists ---
+        if not os.path.isfile(nointro_xml_file):
+            log_warn('_roms_update_NoIntro_status Not found {}'.format(nointro_xml_file))
+            return (0, 0, 0)
+
+        # --- Load No-Intro DAT ---
+        roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
+
+        # --- Check for errors ---
+        if not roms_nointro:
+            log_warn('_roms_update_NoIntro_status Error loading {}'.format(nointro_xml_file))
+            return (0, 0, 0)
+
+        # Put ROM names in a set. Set is the fastes Python container for searching
+        # elements (implements hashed search).
+        roms_nointro_set = set(roms_nointro.keys())
+        roms_set = set()
+        for romID in roms:
+            roms_set.add(roms[romID]['name'])
+
+        # Traverse ROMs and check they are in the DAT
+        num_have = num_miss = num_unknown = 0
+        for romID in roms:
+            if roms[romID]['name'] in roms_nointro_set:
+                roms[romID]['nointro_status'] = 'Have'
+                num_have += 1
+            else:
+                roms[romID]['nointro_status'] = 'Unknown'
+                num_unknown += 1
+
+        # Now add missing ROMs. Traverse the nointro set and add the ROM if it's not there.
+        for nointro_rom in roms_nointro_set:
+            if nointro_rom not in roms_set:
+                # Add new "fake" missing ROM. This ROM cannot be launched!
+                rom = fs_new_rom()
+                romID = misc_generate_random_SID()
+                rom['id'] = romID
+                rom['name'] = nointro_rom
+                rom['nointro_status'] = 'Miss'
+                roms[romID] = rom
+                num_miss += 1
+
+        # Return statistics
+        return (num_have, num_miss, num_unknown)
+
     #
     # Manually add a new ROM instead of a recursive scan.
     #   A) User chooses a ROM file
@@ -2272,57 +2379,6 @@ class Main:
 
         # ~~~ Save ROMs XML file ~~~
         fs_write_ROM_XML_file(roms_xml_file, roms, launcher)
-
-    #
-    # Helper function to update ROMs No-Intro status if user configured a No-Intro
-    # DAT file.
-    # Dictionaries are mutable, so roms can be changed because passed by assigment.
-    #
-    def _roms_update_NoIntro_status(roms, nointro_xml_file):
-        # --- Check if DAT file exists ---
-        if not os.path.isfile(nointro_xml_file):
-            log_warn('_roms_update_NoIntro_status Not found {}'.format(nointro_xml_file))
-            return (0, 0, 0)
-
-        # --- Load No-Intro DAT ---
-        roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
-
-        # --- Check for errors ---
-        if not roms_nointro:
-            log_warn('_roms_update_NoIntro_status Error loading {}'.format(nointro_xml_file))
-            return (0, 0, 0)
-
-        # Put ROM names in a set. Set is the fastes Python container for searching
-        # elements (implements hashed search).
-        roms_nointro_set = set(roms_nointro.keys())
-        roms_set = set()
-        for romID in roms:
-            roms_set.add(roms[romID]['name'])
-
-        # Traverse ROMs and check they are in the DAT
-        num_have = num_miss = num_unknown = 0
-        for romID in roms:
-            if roms[romID]['name'] in roms_nointro_set:
-                roms[romID]['nointro_status'] = 'Have'
-                num_have += 1
-            else:
-                roms[romID]['nointro_status'] = 'Unknown'
-                num_unknown += 1
-
-        # Now add missing ROMs. Traverse the nointro set and add the ROM if it's not there.
-        for nointro_rom in roms_nointro_set:
-            if nointro_rom not in roms_set:
-                # Add new "fake" missing ROM. This ROM cannot be launched!
-                rom = fs_new_rom()
-                romID = misc_generate_random_SID()
-                rom['id'] = romID
-                rom['name'] = nointro_rom
-                rom['nointro_status'] = 'Miss'
-                roms[romID] = rom
-                num_miss += 1
-
-        # Return statistics
-        return (num_have, num_miss, num_unknown)
 
     #
     # ROM scanner. Called when user chooses "Add items" -> "Scan items"
@@ -2494,7 +2550,7 @@ class Main:
         fs_write_ROM_XML_file(roms_xml_file, roms, self.launchers[launcherID])
 
         # ~~~ Notify user ~~~
-        kodi_notify('Advanced Emulator Launcher', '{} new added ROMs'.format(num_new_roms))
+        kodi_notify('Advanced Emulator Launcher', 'Added {} new ROMs'.format(num_new_roms))
         log_debug('_roms_import_roms() ========== END ==========')
 
         # --- Seems this is not needed ---
@@ -2578,7 +2634,6 @@ class Main:
             results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
             log_debug('Metadata scraper found {} result/s'.format(len(results)))
             if results:
-                scraper_text = 'Scraping metadata with {}. Game selected. Getting metadata...'.format(self.scraper_metadata.fancy_name)
                 # id="metadata_mode" values="Semi-automatic|Automatic"
                 if self.settings['metadata_mode'] == 0:
                     log_debug('Metadata semi-automatic scraping')
@@ -2596,16 +2651,15 @@ class Main:
 
                     # Open progress dialog again
                     self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
-                    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
                 elif self.settings['metadata_mode'] == 1:
                     log_debug('Metadata automatic scraping. Selecting first result.')
                     selectgame = 0
-                    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
                 else:
                     log_error('Invalid metadata_mode {}'.format(self.settings['metadata_mode']))
                     selectgame = 0
-                    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-
+                scraper_text = 'Scraping metadata with {}. Game selected. Getting metadata...'.format(self.scraper_metadata.fancy_name)
+                self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+                    
                 # --- Grab metadata for selected game ---
                 gamedata = self.scraper_metadata.get_metadata(results[selectgame])
 
@@ -2736,7 +2790,6 @@ class Main:
             return ret_imagepath
 
         # --- Choose game to download image ---
-        scraper_text = 'Scraping {} with {}. Game selected. Getting list of images...'.format(image_name, scraper_name)
         # settings.xml: id="thumb_mode"  default="0" values="Semi-automatic|Automatic"
         # settings.xml: id="fanart_mode" default="0" values="Semi-automatic|Automatic"
         if scraping_mode == 0:
@@ -2755,15 +2808,14 @@ class Main:
 
             # Open progress dialog again
             self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         elif scraping_mode == 1:
             log_debug('{} automatic scraping. Selecting first result.'.format(image_name))
             selectgame = 0
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         else:
             log_error('{} invalid thumb_mode {}'.format(image_name, scraping_mode))
             selectgame = 0
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+        scraper_text = 'Scraping {} with {}. Game selected. Getting list of images...'.format(image_name, scraper_name)
+        self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
         # --- Grab list of images for the selected game ---
         image_list = scraper_obj.get_images(results[selectgame])
