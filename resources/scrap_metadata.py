@@ -126,7 +126,14 @@ class metadata_Offline(Scraper_Metadata):
             log_verb("metadata_Offline::get_search Mode No-Intro searching for '{}'".format(search_string))
             search_string_lower = search_string.lower()
             regexp = '.*{}.*'.format(search_string_lower)
-            p = re.compile(regexp)
+            try:
+                # Sometimes this produces raise error, v # invalid expression
+                p = re.compile(regexp)
+            except:
+                log_info('metadata_Offline::get_search Exception in re.compile(regexp)')
+                log_info('metadata_Offline::get_search regexp = "{}"'.format(regexp))
+                return results_ret
+
             game_list = []
             for key in self.games:
                 this_game_name = self.games[key]['name']
