@@ -2112,25 +2112,42 @@ class Main:
     # Launchs a ROM
     #
     def _command_run_rom(self, categoryID, launcherID, romID):
-        # Check launcher is OK
-        if launcherID not in self.launchers:
-            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
-            return
-        launcher = self.launchers[launcherID]
+        # ROM in Favourites
+        if launcherID == '0':
+            log_info('_command_run_rom() Launching ROM in Favourites...')
+            # Load Favourites
+            roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+            rom = roms[romID]
+            application = rom['application'] if rom['altapp'] == '' else rom['altapp']
+            arguments   = rom['args'] if rom['altarg'] == '' else rom['altarg']
+            # WARNING WARNING WARNING
+            # This field is still not copied into Favourites... as a workaround, I set it to False.
+            minimize_flag = False
 
-        # Load ROMs
-        roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
+        # ROM in launcher
+        else:
+            log_info('_command_run_rom() Launching ROM in Launcher...')
+            # Check launcher is OK
+            if launcherID not in self.launchers:
+                kodi_dialog_OK('ERROR', 'launcherID not found in self.launchers')
+                return
+            launcher = self.launchers[launcherID]
 
-        # Check ROM is XML data just read
-        if romID not in roms:
-            kodi_dialog_OK('ERROR', 'romID not in roms_dic')
-            return
+            # Load ROMs
+            roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
+
+            # Check ROM is XML data just read
+            if romID not in roms:
+                kodi_dialog_OK('ERROR', 'romID not in roms dictionary')
+                return
+            rom = roms[romID]
+            application = launcher['application'] if rom['altapp'] == '' else rom['altapp']
+            arguments = launcher['args'] if rom['altarg'] == '' else rom['altarg']
+            minimize_flag = launcher['minimize']
 
         # Launch ROM
-        rom = roms[romID]
-        application = launcher['application'] if rom['altapp'] == '' else rom['altapp']
-        apppath = os.path.dirname(application)
-        ROM = misc_split_path(rom['filename'])
+        apppath     = os.path.dirname(application)
+        ROM         = misc_split_path(rom['filename'])
         romfile     = ROM.path
         rompath     = ROM.dirname
         rombasename = ROM.base
@@ -2142,23 +2159,22 @@ class Main:
 
         # --- Check for errors and abort if found ---
         if not os.path.exists(application):
-            lod_error('Launching app {} not found'.format(application))
+            lod_error('Launching app not found "{}"'.format(application))
             kodi_notify_warn('Advanced Emulator Launcher', 'Launching app not found {}'.format(application))
             return
 
         if not os.path.exists(romfile):
-            log_error('ROM {} not found'.format(romfile))
+            log_error('ROM not found "{}"'.format(romfile))
             kodi_notify_warn('Advanced Emulator Launcher', 'ROM not found {}'.format(romfile))
             return
 
         # ~~~~ Argument substitution ~~~~~
-        arguments = launcher['args'] if rom['altarg'] == '' else rom['altarg']
         arguments = arguments.replace("%rom%",         romfile).replace("%ROM%",             romfile)
         arguments = arguments.replace("%rombasename%", rombasename).replace("%ROMBASENAME%", rombasename)
         arguments = arguments.replace("%apppath%",     apppath).replace("%APPPATH%",         apppath)
         arguments = arguments.replace("%rompath%",     rompath).replace("%ROMPATH%",         rompath)
-        arguments = arguments.replace("%romtitle%",    rom["name"]).replace("%ROMTITLE%",    rom["name"])
-        log_info('_command_run_rom() arguments   = "{0}"'.format(arguments))
+        arguments = arguments.replace("%romtitle%",    rom['name']).replace("%ROMTITLE%",    rom['name'])
+        log_info('_command_run_rom() arguments   = "{}"'.format(arguments))
 
         # Execute Kodi internal function (RetroPlayer?)
         if os.path.basename(application).lower().replace('.exe', '') == 'xbmc':
@@ -2167,7 +2183,7 @@ class Main:
 
         # ~~~~~ Execute external application ~~~~~
         # Do stuff before execution
-        self._run_before_execution(launcher, romfile)
+        self._run_before_execution(rombasename, minimize_flag)
 
         # Determine platform and launch application
         if sys.platform == 'win32':
@@ -2196,12 +2212,12 @@ class Main:
             kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
 
         # Do stuff after application execution
-        self._run_after_execution(launcher)
+        self._run_after_execution(minimize_flag)
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     #
-    def _run_before_execution(self, launcher, name_str):
+    def _run_before_execution(self, rombasename, minimize_flag):
         if self.settings['media_state'] != "2" :
             if xbmc.Player().isPlaying():
                 if self.settings['media_state'] == "0":
@@ -2214,11 +2230,11 @@ class Main:
                 except:
                     pass
 
-        if launcher['minimize']:
+        if minimize_flag:
             kodi_toogle_fullscreen()
 
         if self.settings['display_launcher_notification']:
-            kodi_notify('Advanced Emulator Launcher', 'Launching {}'.format(name_str))
+            kodi_notify('Advanced Emulator Launcher', 'Launching {}'.format(rombasename))
 
         try:
             xbmc.enableNavSounds(False)
@@ -2228,7 +2244,7 @@ class Main:
         # >> Stop Kodi some time
         xbmc.sleep(self.settings['start_tempo'])
 
-    def _run_after_execution(self, launcher):
+    def _run_after_execution(self, minimize_flag):
         # >> Stop Kodi some time
         xbmc.sleep(self.settings['start_tempo'])
 
@@ -2237,7 +2253,7 @@ class Main:
         except:
             pass
 
-        if launcher['minimize']:
+        if minimize_flag:
             kodi_toogle_fullscreen()
 
         if self.settings['media_state'] != "2":
