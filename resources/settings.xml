@@ -49,7 +49,7 @@
 <category label="Advanced">
     <setting id="separator" type="lsep" label="Launcher options"/>
     <setting label="Action on Kodi playing media" type="enum" id="media_state" default="0" values="Stop|Pause|Let Play" />
-    <setting label="Disable LIRC (Linux)" type="bool" id="lirc_state" default="true" />
+    <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
     <setting label="Delay (ms)" type="slider" id="start_tempo" default="500" range="0,100,15000" option="int"/>
 
     <setting id="separator" type="lsep" label="Debug options"/>

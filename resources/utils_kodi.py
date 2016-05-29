@@ -182,7 +182,7 @@ def kodi_update_image_cache(img_path):
     # xbmc.executebuiltin('XBMC.ReloadSkin()')
 
 def kodi_toogle_fullscreen():
-    # Frodo + compatible
+    # Frodo and up compatible
     xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
 
 def kodi_kodi_read_favourites():

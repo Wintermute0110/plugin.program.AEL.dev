@@ -2056,7 +2056,7 @@ class Main:
     def _command_run_standalone_launcher(self, categoryID, launcherID):
         # Check launcher is OK
         if launcherID not in self.launchers:
-            kodi_dialog_OK('ERROR', 'launcherID not found in launcherID')
+            kodi_dialog_OK('ERROR', 'launcherID not found in self.launchers')
             return
         launcher = self.launchers[launcherID]
 
@@ -2077,13 +2077,13 @@ class Main:
         application_basename = os.path.basename(launcher["application"])
         if not os.path.exists(apppath):
             kodi_notify_warn('Advanced Emulator Launcher',
-                             'File {0} not found.'.format(application_basename))
+                             'App {} not found.'.format(apppath))
             return
         arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
-        self._print_log('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
-        self._print_log('_run_standalone_launcher() application          = "{0}"'.format(application))
-        self._print_log('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
-        self._print_log('_run_standalone_launcher() arguments            = "{0}"'.format(arguments))
+        log_info('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
+        log_info('_run_standalone_launcher() application          = "{0}"'.format(application))
+        log_info('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
+        log_info('_run_standalone_launcher() arguments            = "{0}"'.format(arguments))
 
         # Do stuff before execution
         self._run_before_execution(launcher, application_basename)
@@ -2096,7 +2096,7 @@ class Main:
                 if application.split(".")[-1] == "bat":
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
-                    if ( self.settings[ "show_batch" ] ):
+                    if self.settings['show_batch_window']:
                         info.wShowWindow = 5
                     else:
                         info.wShowWindow = 0
@@ -2105,9 +2105,9 @@ class Main:
                 startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
                 startproc.wait()
         elif sys.platform.startswith('linux'):
-            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.stop')
+            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
             os.system("\"%s\" %s " % (application, arguments))
-            if self.settings[ "lirc_state" ]: xbmc.executebuiltin('LIRC.start')
+            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
@@ -2136,47 +2136,46 @@ class Main:
 
         # Launch ROM
         rom = roms[romID]
-        if rom["altapp"] != "": application = rom["altapp"]
-        else:                   application = launcher["application"]
+        application = launcher['application'] if rom['altapp'] == '' else rom['altapp']
         apppath = os.path.dirname(application)
-        romfile = os.path.basename(rom["filename"])
-        rompath = os.path.dirname(rom["filename"])
-        romname = os.path.splitext(romfile)[0]
-        self._print_log('_run_rom() application = "{0}"'.format(application))
-        self._print_log('_run_rom() apppath     = "{0}"'.format(apppath))
-        self._print_log('_run_rom() romfile     = "{0}"'.format(romfile))
-        self._print_log('_run_rom() rompath     = "{0}"'.format(rompath))
-        self._print_log('_run_rom() romname     = "{0}"'.format(romname))
+        ROM = misc_split_path(rom['filename'])
+        romfile     = ROM.path
+        rompath     = ROM.dirname
+        rombasename = ROM.base
+        log_info('_command_run_rom() application = "{}"'.format(application))
+        log_info('_command_run_rom() apppath     = "{}"'.format(apppath))
+        log_info('_command_run_rom() romfile     = "{}"'.format(romfile))
+        log_info('_command_run_rom() rompath     = "{}"'.format(rompath))
+        log_info('_command_run_rom() rombasename = "{}"'.format(rombasename))
 
-        # Check that app exists and ROM file exists
-        if not os.path.exists(apppath):
-            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % apppath, 10000)
+        # --- Check for errors and abort if found ---
+        if not os.path.exists(application):
+            lod_error('Launching app {} not found'.format(application))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Launching app {} not found'.format(application))
             return
-        if os.path.exists(romfile):
-            kodi_notify_warn("Advanced Emulator Launcher", 'File %s not found.' % romfile, 10000)
+
+        if not os.path.exists(romfile):
+            log_error('ROM {} not found'.format(romfile))
+            kodi_notify_warn('Advanced Emulator Launcher', 'ROM {} not found'.format(romfile))
             return
 
         # ~~~~ Argument substitution ~~~~~
-        if rom["altarg"] != "": arguments = rom["altarg"]
-        else:                   arguments = launcher["args"]
-        arguments = arguments.replace("%rom%", rom["filename"]).replace("%ROM%", rom["filename"])
-        arguments = arguments.replace("%romfile%", romfile).replace("%ROMFILE%", romfile)
-        arguments = arguments.replace("%romname%", romname).replace("%ROMNAME%", romname)
-        arguments = arguments.replace("%rombasename%", base_filename(romname)).replace("%ROMBASENAME%", base_filename(romname))
-        arguments = arguments.replace("%apppath%", apppath).replace("%APPPATH%", apppath)
-        arguments = arguments.replace("%rompath%", rompath).replace("%ROMPATH%", rompath)
-        arguments = arguments.replace("%romtitle%", rom["name"]).replace("%ROMTITLE%", rom["name"])
-        arguments = arguments.replace("%romspath%", rompath).replace("%ROMSPATH%", rompath)
-        self._print_log('_run_rom() arguments   = "{0}"'.format(arguments))
+        arguments = launcher['args'] if rom['altarg'] == '' else rom['altarg']
+        arguments = arguments.replace("%rom%",         romfile).replace("%ROM%",             romfile)
+        arguments = arguments.replace("%rombasename%", rombasename).replace("%ROMBASENAME%", rombasename)
+        arguments = arguments.replace("%apppath%",     apppath).replace("%APPPATH%",         apppath)
+        arguments = arguments.replace("%rompath%",     rompath).replace("%ROMPATH%",         rompath)
+        arguments = arguments.replace("%romtitle%",    rom["name"]).replace("%ROMTITLE%",    rom["name"])
+        log_info('_command_run_rom() arguments   = "{0}"'.format(arguments))
 
         # Execute Kodi internal function (RetroPlayer?)
-        if os.path.basename(application).lower().replace(".exe" , "") == "xbmc":
+        if os.path.basename(application).lower().replace('.exe', '') == 'xbmc':
             xbmc.executebuiltin('XBMC.' + arguments)
             return
 
         # ~~~~~ Execute external application ~~~~~
         # Do stuff before execution
-        self._run_before_execution(launcher, romname)
+        self._run_before_execution(launcher, romfile)
 
         # Determine platform and launch application
         if sys.platform == 'win32':
@@ -2195,14 +2194,14 @@ class Main:
                 startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
                 startproc.wait()
         elif sys.platform.startswith('linux'):
-            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.stop')
+            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
             os.system("\"%s\" %s " % (application, arguments))
-            if self.settings["lirc_state"]: xbmc.executebuiltin('LIRC.start')
+            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
         # Android???
         elif sys.platform.startswith('darwin'):
             os.system("\"%s\" %s " % (application, arguments))
         else:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform', 10000)
+            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
 
         # Do stuff after application execution
         self._run_after_execution(launcher)
@@ -2222,27 +2221,32 @@ class Main:
                     xbmc.audioSuspend()
                 except:
                     pass
-        if launcher["minimize"] == "true":
-            _toogle_fullscreen()
 
-        if self.settings['launcher_notification']:
-            kodi_notify('Advanced Emulator Launcher', 'Launching {0}'.format(name_str), 5000)
+        if launcher['minimize']:
+            kodi_toogle_fullscreen()
+
+        if self.settings['display_launcher_notification']:
+            kodi_notify('Advanced Emulator Launcher', 'Launching {}'.format(name_str))
 
         try:
             xbmc.enableNavSounds(False)
         except:
             pass
+        
+        # >> Stop Kodi some time
         xbmc.sleep(self.settings['start_tempo'])
 
     def _run_after_execution(self, launcher):
-        xbmc.sleep(self.settings[ "start_tempo" ])
+        # >> Stop Kodi some time
+        xbmc.sleep(self.settings['start_tempo'])
+
         try:
             xbmc.enableNavSounds(True)
         except:
             pass
 
-        if launcher["minimize"] == "true":
-            _toogle_fullscreen()
+        if launcher['minimize']:
+            kodi_toogle_fullscreen()
 
         if self.settings['media_state'] != "2":
             try:
@@ -2253,10 +2257,12 @@ class Main:
                 xbmc.sleep(self.settings['start_tempo'] + 100)
                 xbmc.Player().play()
 
+    #
+    # Reset the No-Intro status
+    # 1) Remove all ROMs which does not exist.
+    # 2) Set status of remaining ROMs to nointro_status = 'None'
+    #
     def _roms_reset_NoIntro_status(self, roms):
-        # --- Reset the No-Intro status ---
-        # 1) Remove all ROMs which does not exist.
-        # 2) Set status of remaining ROMs to nointro_status = 'None'
         num_removed_roms = 0
         num_roms = len(roms)
         log_info('_roms_reset_NoIntro_status() Launcher DB contain {} items'.format(num_roms))
