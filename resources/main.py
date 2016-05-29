@@ -1462,11 +1462,15 @@ class Main:
         # For every category, add it to the listbox. Order alphabetically by name
         for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
             self._gui_render_category_row(self.categories[key], key)
-        # AEL Favourites special category
+        # --- AEL Favourites special category ---
         self._gui_render_category_favourites()
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     def _gui_render_category_row(self, category_dic, key):
+        # --- Do not render row if category finished ---
+        if category_dic['finished'] and self.settings['display_hide_finished']:
+            return
+
         # --- Create listitem row ---
         icon = "DefaultFolder.png"
         if category_dic['thumb'] != '':
@@ -1493,7 +1497,6 @@ class Main:
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
-        # if ( finished != "true" ) or ( self.settings[ "hide_finished" ] == False) :
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
@@ -1548,13 +1551,17 @@ class Main:
             # kodi_refresh_container()
             return
 
-        # Render launcher rows of this category
+        # Render launcher rows of this launcher
         for key in sorted(self.launchers, key = lambda x : self.launchers[x]["application"]):
             if self.launchers[key]["categoryID"] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     def _gui_render_launcher_row(self, launcher_dic):
+        # --- Do not render row if launcher finished ---
+        if launcher_dic['finished'] and self.settings['display_hide_finished']:
+            return
+
         # --- Create listitem row ---
         commands = []
         if launcher_dic['rompath'] == '': # Executable launcher
@@ -1667,6 +1674,10 @@ class Main:
     # Former  _add_rom
     # Note that if we are rendering favourites, categoryID = launcherID = '0'.
     def _gui_render_rom_row( self, categoryID, launcherID, romID, rom, rom_is_in_favourites):
+        # --- Do not render row if ROM is finished ---
+        if rom['finished'] and self.settings['display_hide_finished']:
+            return
+
         # --- Create listitem row ---
         icon = "DefaultProgram.png"
         # icon = "DefaultVideo.png"
@@ -1764,9 +1775,8 @@ class Main:
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         # --- Add row ---
-        # if finished != "true" or self.settings[ "hide_finished" ] == False:
-        # URLs must be different depending on the content type. If not, lot of WARNING: CreateLoader - unsupported protocol(plugin)
-        # in the log. See http://forum.kodi.tv/showthread.php?tid=187954
+        # URLs must be different depending on the content type. If not, lot of 
+        # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
         # if self._content_type == 'video':
         #     url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
         # else:

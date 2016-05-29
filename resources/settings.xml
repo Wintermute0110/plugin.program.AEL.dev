@@ -31,8 +31,8 @@
     <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
 </category>
 <category label="Display">
-    <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="display_hide_finished" default="false" />
-    <setting label="Activate 'Launching Application' notification" type="bool" id="display_launcher_notification" default="false" />
+    <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" default="false" id="display_hide_finished" />
+    <setting label="Activate 'Launching Application' notification" type="bool" default="true" id="display_launcher_notification" />
 </category>
 <category label="Paths">
     <setting label="Category Thumb images" type="folder" id="categories_thumb_dir" default="" source="" />
