@@ -115,33 +115,31 @@ def text_clean_ROM_name_for_scrapping(title):
     
     return title
 
+# def text_ROM_base_filename(filename):
+#     filename = re.sub('(\[.*?\]|\(.*?\)|\{.*?\})', '', filename)
+#     filename = re.sub('(\.|-| |_)cd\d+$', '', filename)
 #
-#
-#
-def text_ROM_base_filename(filename):
-    filename = re.sub('(\[.*?\]|\(.*?\)|\{.*?\})', '', filename)
-    filename = re.sub('(\.|-| |_)cd\d+$', '', filename)
-
-    return filename.rstrip()
+#     return filename.rstrip()
 
 #
-# Format ROM file name when scraping is disabled
+# Format ROM file name when scraping is disabled.
+# 1) Remove No-Intro/TOSEC tags (), [], {}
 #
-def text_ROM_title_format(title, clean_tags, format_title):
+def text_ROM_title_format(title, clean_tags):
     if clean_tags:
         title = re.sub('\[.*?\]', '', title)
         title = re.sub('\(.*?\)', '', title)
         title = re.sub('\{.*?\}', '', title)
     new_title = title.rstrip()
     
-    if format_title:
-        if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
-        if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
-        if (title.startswith("An ")): new_title = title.replace("An ","", 1)+", An"
-    else:
-        if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The", 1))
-        if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
-        if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
+    # if format_title:
+    #     if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
+    #     if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
+    #     if (title.startswith("An ")): new_title = title.replace("An ","", 1)+", An"
+    # else:
+    #     if (title.endswith(", The")): new_title = "The "+"".join(title.rsplit(", The", 1))
+    #     if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
+    #     if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
 
     return new_title
 

@@ -89,8 +89,8 @@ class Main:
     #
     def run_plugin(self):
         # --- Initialise log system ---
-        # Force DEBUG log level for development. Place it before setting loading so settings can be
-        # dumped during debugging.
+        # Force DEBUG log level for development.
+        # Place it before setting loading so settings can be dumped during debugging.
         # set_log_level(LOG_DEBUG)
 
         # --- Fill in settings dictionary using addon_obj.getSetting() ---
