@@ -111,14 +111,14 @@ platform_AEL_to_Offline_GameDBInfo = {
     'Nintendo GameBoy Color'      : 'resources/data/GameDBInfo/Nintendo Game Boy Color.xml',
     'Nintendo GameCube'           : 'resources/data/GameDBInfo/Nintendo GameCube.xml',
     'Nintendo 64'                 : 'resources/data/GameDBInfo/Nintendo 64.xml',
-    'Nintendo DS'                 : ''
+    'Nintendo DS'                 : '',
     'Nintendo NES'                : 'resources/data/GameDBInfo/Nintendo Entertainment System.xml',
     'Nintendo SNES'               : 'resources/data/GameDBInfo/Super Nintendo Entertainment System.xml',
-    'Nintendo Wii'                : ''
+    'Nintendo Wii'                : '',
     'Sega 32X'                    : 'resources/data/GameDBInfo/Sega 32x.xml',
     'Sega Game Gear'              : 'resources/data/GameDBInfo/Sega Game Gear.xml',
     'Sega Master System/Mark III' : 'resources/data/GameDBInfo/Sega Master System.xml',
-    'Sega MegaDrive/Genesis'      : ''
+    'Sega MegaDrive/Genesis'      : '',
     'Sega MegaCD'                 : 'resources/data/GameDBInfo/Sega CD.xml',
     'Sega Saturn'                 : 'resources/data/GameDBInfo/Sega Saturn.xml',
     'Sega Dreamcast'              : 'resources/data/GameDBInfo/Sega Dreamcast.xml',
