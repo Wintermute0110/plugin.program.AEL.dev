@@ -55,38 +55,48 @@ def emudata_get_program_extensions( app ):
     return ""
 
 # -----------------------------------------------------------------------------
-# This dictionary has the AEL "official" game system list as key, and the XML file 
-# with offline scraping information as value. File location is relative to
-# this file location, CURRENT_ADDON_DIR/resources/.
+# This dictionary has the AEL "official" game system list.
 # -----------------------------------------------------------------------------
+# >> When possible user No-Intro DAT-o-MATIC names
+# >> Fallback to Wikipedia
+#
 AEL_platform_list = [
     # Arcade
-    'MAME',    
+    'MAME',
+    # Atari
+    'Atari 5200',
+    'Atari 7800',
+    'Atari Jaguar',
+    'Atari Lynx',
+    'Atari ST',
     # NEC
-    'NEC PC Engine',
+    'NEC PC Engine/TurboGrafx 16',
+    'NEC PC Super Grafx',
     # Nintendo
-    'Nintendo 64',
-    'Nintendo DS',
     'Nintendo GameBoy',
     'Nintendo GameBoy Advance',
     'Nintendo GameBoy Color',
     'Nintendo GameCube',
+    'Nintendo 64',
+    'Nintendo DS',
     'Nintendo NES',
     'Nintendo SNES',
+    'Nintendo Wii',
     # Sega
     'Sega 32X',
-    'Sega Genesis/MegaDrive',
-    'Sega Master System',
     'Sega Game Gear',
+    'Sega Master System/Mark III',
+    'Sega MegaDrive/Genesis',
     'Sega MegaCD',
     'Sega Saturn',
     'Sega Dreamcast',
     # SONY
     'Sony PlayStation',
     'Sony PlayStation 2',
-    'Sony PSP',
+    'Sony PlayStation Portable',
     # SNK
-    'SNK Neo-Geo',
+    'SNK Neo-Geo Pocket',
+    'SNK Neo-Geo Pocket Color',
     # Unknown
     'Unknown'
 ]
