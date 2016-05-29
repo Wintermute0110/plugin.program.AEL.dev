@@ -104,29 +104,28 @@ AEL_platform_list = [
 # -----------------------------------------------------------------------------
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -----------------------------------------------------------------------------
-platform_AEL_to_Offline_GameDB = {
-    'MAME'                     : 'resources/data/GameDB/MAME.xml',
-    'NEC PC Engine'            : '',
-    'Nintendo 64'              : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Nintendo DS'              : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Nintendo NES'             : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Nintendo GameBoy'         : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Nintendo GameBoy Advance' : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Nintendo GameBoy Color'   : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Nintendo GameCube'        : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Nintendo SNES'            : 'resources/data/GameDB/Super Nintendo Entertainment System.xml',
-    'Sega 32X'                 : 'resources/data/GameDB/Sega 32x.xml',
-    'Sega Genesis'             : '',
-    'Sega Master System'       : '',
-    'Sega Game Gear'           : '',
-    'Sega MegaCD'              : '',
-    'Sega Saturn'              : '',
-    'Sega Deamcast'            : '',
-    'Sony PlayStation'         : '',
-    'Sony PlayStation 2'       : '',
-    'Sony PSP'                 : '',
-    'SNK Neo-Geo'              : '',
-    'Unknown'                  : ''
+platform_AEL_to_Offline_GameDBInfo = {
+    'MAME'                        : 'resources/data/GameDBInfo/MAME.xml',
+    'Nintendo GameBoy'            : 'resources/data/GameDBInfo/Nintendo Game Boy.xml',
+    'Nintendo GameBoy Advance'    : 'resources/data/GameDBInfo/Nintendo Game Boy Advance.xml',
+    'Nintendo GameBoy Color'      : 'resources/data/GameDBInfo/Nintendo Game Boy Color.xml',
+    'Nintendo GameCube'           : 'resources/data/GameDBInfo/Nintendo GameCube.xml',
+    'Nintendo 64'                 : 'resources/data/GameDBInfo/Nintendo 64.xml',
+    'Nintendo DS'                 : ''
+    'Nintendo NES'                : 'resources/data/GameDBInfo/Nintendo Entertainment System.xml',
+    'Nintendo SNES'               : 'resources/data/GameDBInfo/Super Nintendo Entertainment System.xml',
+    'Nintendo Wii'                : ''
+    'Sega 32X'                    : 'resources/data/GameDBInfo/Sega 32x.xml',
+    'Sega Game Gear'              : 'resources/data/GameDBInfo/Sega Game Gear.xml',
+    'Sega Master System/Mark III' : 'resources/data/GameDBInfo/Sega Master System.xml',
+    'Sega MegaDrive/Genesis'      : ''
+    'Sega MegaCD'                 : 'resources/data/GameDBInfo/Sega CD.xml',
+    'Sega Saturn'                 : 'resources/data/GameDBInfo/Sega Saturn.xml',
+    'Sega Dreamcast'              : 'resources/data/GameDBInfo/Sega Dreamcast.xml',
+    'Sony PlayStation'            : 'resources/data/GameDBInfo/Sony PlayStation.xml',
+    'Sony PlayStation 2'          : 'resources/data/GameDBInfo/Sony Playstation 2.xml',
+    'Sony PlayStation Portable'   : 'resources/data/GameDBInfo/Sony PSP.xml',
+    'Unknown'                     : ''
 }
 
 platform_AEL_to_TheGamesDB_dic = {
