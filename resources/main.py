@@ -237,13 +237,13 @@ class Main:
         self.settings = {}
 
         # --- Scanner settings ---
-        self.settings["scan_recursive"]         = True if addon_obj.getSetting("scan_recursive") == "true" else False
-        self.settings["scan_ignore_bios"]       = True if addon_obj.getSetting("scan_ignore_bios") == "true" else False
-        self.settings["scan_metadata_policy"]   = int(addon_obj.getSetting("scan_metadata_policy"))
-        self.settings["scan_thumb_policy"]      = int(addon_obj.getSetting("scan_thumb_policy"))
-        self.settings["scan_fanart_policy"]     = int(addon_obj.getSetting("scan_fanart_policy"))
-        self.settings["scan_ignore_title"]      = True if addon_obj.getSetting("scan_ignore_title") == "true" else False
-        self.settings["scan_clean_tags"]        = True if addon_obj.getSetting("scan_clean_tags") == "true" else False
+        self.settings["scan_recursive"]             = True if addon_obj.getSetting("scan_recursive") == "true" else False
+        self.settings["scan_ignore_bios"]           = True if addon_obj.getSetting("scan_ignore_bios") == "true" else False
+        self.settings["scan_metadata_policy"]       = int(addon_obj.getSetting("scan_metadata_policy"))
+        self.settings["scan_thumb_policy"]          = int(addon_obj.getSetting("scan_thumb_policy"))
+        self.settings["scan_fanart_policy"]         = int(addon_obj.getSetting("scan_fanart_policy"))
+        self.settings["scan_ignore_scrapped_title"] = True if addon_obj.getSetting("scan_ignore_scrapped_title") == "true" else False
+        self.settings["scan_clean_tags"]            = True if addon_obj.getSetting("scan_clean_tags") == "true" else False
 
         self.settings["metadata_scraper"]       = int(addon_obj.getSetting("metadata_scraper"))
         self.settings["thumb_scraper"]          = int(addon_obj.getSetting("thumb_scraper"))
@@ -2577,9 +2577,9 @@ class Main:
 
         # >> Determine metadata action based on policy
         # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
-        scan_metadata_policy  = self.settings['scan_metadata_policy']
-        scan_clean_tags       = self.settings['scan_clean_tags']
-        scan_ignore_title     = self.settings['scan_ignore_title']
+        scan_metadata_policy       = self.settings['scan_metadata_policy']
+        scan_clean_tags            = self.settings['scan_clean_tags']
+        scan_ignore_scrapped_title = self.settings['scan_ignore_scrapped_title']
         metadata_action = META_TITLE_ONLY
         if scan_metadata_policy == 0:
             log_verb('Metadata policy: No NFO reading, no scraper. Only cleaning ROM name.')
@@ -2663,7 +2663,7 @@ class Main:
                 gamedata = self.scraper_metadata.get_metadata(results[selectgame])
 
                 # --- Put metadata into ROM dictionary ---
-                if scan_ignore_title:
+                if scan_ignore_scrapped_title:
                     # Ignore scraped title
                     romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
                     log_debug("User wants to ignore scraper name. Setting name to '{}'".format(romdata['name']))
@@ -3065,8 +3065,8 @@ class Main:
         f_path   = roms[romID]['filename']
         rom_name = roms[romID]['name']
         ROM      = misc_split_path(f_path)
-        scan_clean_tags       = self.settings['scan_clean_tags']
-        scan_ignore_title     = self.settings['scan_ignore_title']
+        scan_clean_tags            = self.settings['scan_clean_tags']
+        scan_ignore_scrapped_title = self.settings['scan_ignore_scrapped_title']
 
         # --- Ask user to enter ROM metadata search string ---
         keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string...')
@@ -3105,7 +3105,7 @@ class Main:
 
         # --- Put metadata into ROM dictionary ---
         # >> Ignore scraped title
-        if scan_ignore_title:
+        if scan_ignore_scrapped_title:
             roms[romID]['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
             log_debug("User wants to ignore scraper name. Setting name to '{}'".format(roms[romID]['name']))
         # >> Use scraped title
