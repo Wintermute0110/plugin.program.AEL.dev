@@ -583,7 +583,7 @@ class Main:
             keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
             keyboard.doModal()
             title = keyboard.getText()
-            if title == "" :
+            if title == '':
                 title = os.path.basename(app)
                 title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
 
@@ -592,15 +592,9 @@ class Main:
             platforms = emudata_platform_list()
             sel_platform = dialog.select('Select the platform', platforms)
 
-            # Selection of the thumbnails and fanarts path
-            if self.settings['launcher_thumb_path'] == '':
-                thumb_path = xbmcgui.Dialog().browse(0, 'Select Thumbnails path', "files", "", False, False)
-            else:
-                thumb_path = self.settings['launcher_thumb_path']
-            if self.settings['launcher_fanart_path'] == '':
-                fanart_path = xbmcgui.Dialog().browse(0, 'Select Fanarts path', "files", "", False, False)
-            else:
-                fanart_path = self.settings['launcher_fanart_path']
+            # --- Selection of the thumbnails and fanarts path ---
+            thumb_path  = self.settings['launchers_thumb_dir']
+            fanart_path = self.settings['launchers_fanart_dir']
 
             # --- Create launcher object data, add to dictionary and write XML file ---
             if not thumb_path:  thumb_path = ''
