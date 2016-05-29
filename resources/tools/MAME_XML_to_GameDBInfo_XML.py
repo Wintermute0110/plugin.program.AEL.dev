@@ -172,13 +172,13 @@ def string_to_XML(str):
 try:
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    str_list.append('<menu>\n')
     str_list.append('<header>\n' +
                     '  <listname>MAME</listname>\n' +
                     '  <lastlistupdate></lastlistupdate>\n' +
                     '  <listversion>{}</listversion>\n'.format(mame_version_str) +
                     '  <exporterversion>{}</exporterversion>\n'.format('MAME_XML_to_GameDBInfo_XML') +
                     '</header>\n')
-    str_list.append('<menu>\n')
     for key in sorted(machines):
         name         = string_to_XML(machines[key]['name'])
         description  = string_to_XML(machines[key]['description'])
