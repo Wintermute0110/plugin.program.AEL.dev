@@ -38,11 +38,11 @@ print('Addon directory is "{}"'.format(addon_dir))
 
 # Traverse list of platforms
 for platform in AEL_platform_list:
-    if platform in platform_AEL_to_Offline_GameDBInfo:
+    if platform in platform_AEL_to_Offline_GameDBInfo_XML:
         print('platform "{}" in Offline_GameDBInfo'.format(platform))
         
         # Check if source file exists
-        dest_dir_raw = platform_AEL_to_Offline_GameDBInfo[platform]
+        dest_dir_raw = platform_AEL_to_Offline_GameDBInfo_XML[platform]
         file_name = dest_dir_raw.replace('resources/data/GameDBInfo/', '')
         source_file = addon_dir + 'resources/tools/Game-database-info/xml files/' + file_name
         dest_file = addon_dir + 'resources/data/GameDBInfo/' + file_name

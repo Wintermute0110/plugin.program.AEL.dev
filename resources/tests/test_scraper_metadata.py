@@ -15,8 +15,8 @@ from utils import *
 
 # --- Scrapers to test ----------------------------------------------------------------------------
 TEST_OFFLINE    = True
-TEST_THEGAMESDB = True
-TEST_GAMEFAQS   = True
+TEST_THEGAMESDB = False
+TEST_GAMEFAQS   = False
 
 # --- main ----------------------------------------------------------------------------------------
 print_scraper_list(scrapers_metadata)
@@ -24,16 +24,16 @@ print_scraper_list(scrapers_metadata)
 if TEST_OFFLINE:
     print('\n*** Offline scraper ***********************************************')
     Offline = metadata_Offline()
-    # Offline.set_addon_dir('/home/mendi/.kodi/addons/plugin.program.advanced.emulator.launcher/')
-    Offline.set_addon_dir('/cygdrive/e/Mendi/plugin/')
+    Offline.set_addon_dir('/home/mendi/.kodi/addons/plugin.program.advanced.emulator.launcher/')
+    # Offline.set_addon_dir('/cygdrive/e/Mendi/plugin/')
 
     # First time a platform is used XML database is loaded and cached for subsequent
     # calls until object is destroyed or platform is changed.
-    # results = Offline.get_search('super mario world', '', 'Nintendo SNES')
-    results = Offline.get_search('castle', '', 'Nintendo SNES')
+    # results = Offline.get_search('super mario world', 'super mario world', 'Nintendo SNES')
+    # results = Offline.get_search('castle', 'castle', 'Nintendo SNES')
 
     # Test MAME offline scraper
-    # results = Offline.get_search('dino', 'dino', 'MAME')
+    results = Offline.get_search('dino', 'dino', 'MAME')
     # results = Offline.get_search('aliens', 'aliens', 'MAME')
     # results = Offline.get_search('spang', 'spang', 'MAME')
     # results = Offline.get_search('toki', 'toki', 'MAME')
