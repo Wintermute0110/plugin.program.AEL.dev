@@ -2143,12 +2143,12 @@ class Main:
         # --- Check for errors and abort if found ---
         if not os.path.exists(application):
             lod_error('Launching app {} not found'.format(application))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Launching app {} not found'.format(application))
+            kodi_notify_warn('Advanced Emulator Launcher', 'Launching app not found {}'.format(application))
             return
 
         if not os.path.exists(romfile):
             log_error('ROM {} not found'.format(romfile))
-            kodi_notify_warn('Advanced Emulator Launcher', 'ROM {} not found'.format(romfile))
+            kodi_notify_warn('Advanced Emulator Launcher', 'ROM not found {}'.format(romfile))
             return
 
         # ~~~~ Argument substitution ~~~~~

@@ -91,14 +91,14 @@ def kodi_notify(title, text, time = 5000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
-def kodi_notify_warn(title, text, time = 5000):
+def kodi_notify_warn(title, text, time = 10000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 #
 # Do not use this much because it is the same icon as when Python fails, and that may confuse the user.
 #
-def kodi_notify_error(title, text, time = 5000):
+def kodi_notify_error(title, text, time = 10000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
