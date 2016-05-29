@@ -2389,14 +2389,14 @@ class Main:
 
         # Get game system, thumbnails and fanarts paths from launcher
         selectedLauncher = self.launchers[launcherID]
-        launcher_app     = selectedLauncher["application"]
-        launcher_path    = selectedLauncher["rompath"]
-        launcher_exts    = selectedLauncher["romext"]
-        log_debug('Launcher "{}" selected'.format(selectedLauncher["name"]))
+        launcher_app     = selectedLauncher['application']
+        launcher_path    = selectedLauncher['rompath']
+        launcher_exts    = selectedLauncher['romext']
+        log_debug('Launcher "{}" selected'.format(selectedLauncher['name']))
         log_debug('launcher_app  = {}'.format(launcher_app))
         log_debug('launcher_path = {}'.format(launcher_path))
         log_debug('launcher_exts = {}'.format(launcher_exts))
-        log_debug('platform      = {}'.format(selectedLauncher["platform"]))
+        log_debug('platform      = {}'.format(selectedLauncher['platform']))
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
@@ -2493,12 +2493,20 @@ class Main:
             # Check that ROM is not already in the list of ROMs
             repeatedROM = False
             for rom_id in roms:
-                if roms[rom_id]["filename"] == f_path:
+                if roms[rom_id]['filename'] == f_path:
                     log_debug('File already into launcher list')
                     repeatedROM = True
             # If file already in ROM list skip it
             if repeatedROM:
                 continue
+
+            # --- Ignore BIOS ROMs ---
+            # Name of bios is: '[BIOS] Rom name example.zip'
+            if self.settings['scan_ignore_bios']:
+                BIOS_re = re.findall('[BIOS]', ROM.base)
+                if len(BIOS_re) > 0:
+                    log_info("BIOS detected. Skipping ROM '{}'".format(ROM.path))
+                    continue
 
             # ~~~~~ Process new ROM and add to the list ~~~~~
             romdata     = self._roms_process_scanned_ROM(launcherID, ROM)
