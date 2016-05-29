@@ -17,11 +17,11 @@
 # --- INSTRUCTIONS -------------------------------------------------------------
 # To create the MAME XML file type
 #
-# $ mame -listxml > mame_xxxx.xml
+# $ mame -listxml > MAME_raw.xml
 #
-# where xxxx is the mame version, 0.173 will be 0173. Then, run this utility,
+# Place catver.ini in this directory. Then, run this utility,
 #
-# $ ./util_simpleXML_from_MAME_XML
+# $ ./MAME_XML_to_GameDBInfo_XML.py
 #
 # The output file will be named MAME.xml
 
@@ -31,8 +31,9 @@
 # ------------------------------------------------------------------------------
 
 # --- Configuration -----------------------------------------------------------
-MAME_XML_filename   = 'mame_0173.xml'
+MAME_XML_filename   = 'MAME_raw.xml'
 Catver_ini_filename = 'catver.ini'
+output_filename     = 'MAME.xml'
 
 # --- Python standard library ---
 import xml.etree.ElementTree as ET 
@@ -94,6 +95,8 @@ __debug_MAME_XML_parser = 0
 context = ET.iterparse(MAME_XML_filename, events=("start", "end"))
 context = iter(context)
 event, root = context.next()
+mame_version_str = 'MAME ' + root.attrib['build']
+print('MAME version is "{}"'.format(mame_version_str))
 
 # --- Data variables ---
 # Create a dictionary of the form,
@@ -114,6 +117,7 @@ for event, elem in context:
     # print('                   Elem.text   "{0}"'.format(elem.text))
     # print('                   Elem.attrib "{0}"'.format(elem.attrib))
 
+    # Get MAME version
     if event == "start" and elem.tag == "machine":
         machine = {'name' : '', 'description' : '', 'year' : '', 'manufacturer' : '' }
         machine_name = elem.attrib['name']
@@ -168,6 +172,12 @@ def string_to_XML(str):
 try:
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    str_list.append('<header>\n' +
+                    '  <listname>MAME</listname>\n' +
+                    '  <lastlistupdate></lastlistupdate>\n' +
+                    '  <listversion>{}</listversion>\n'.format(mame_version_str) +
+                    '  <exporterversion>{}</exporterversion>\n'.format('MAME_XML_to_GameDBInfo_XML') +
+                    '</header>\n')
     str_list.append('<menu>\n')
     for key in sorted(machines):
         name         = string_to_XML(machines[key]['name'])
@@ -176,14 +186,14 @@ try:
         manufacturer = string_to_XML(machines[key]['manufacturer'])
         genre        = categories_dic[key] if key in categories_dic else 'Unknown'
         genre        = string_to_XML(genre)
-        str_list.append('<game name="{0}">\n'.format(name) +
+        str_list.append('<game name="{}">\n'.format(name) +
                         '  <description>'  + description   + '</description>\n' +
                         '  <year>'         + year          + '</year>\n' +
                         '  <manufacturer>' + manufacturer  + '</manufacturer>\n' +
                         '  <genre>'        + genre         + '</genre>\n' +
                         '</game>\n')
     str_list.append('</menu>\n')
-    file_obj = open('MAME.xml', 'wt' )
+    file_obj = open(output_filename, 'wt' )
     file_obj.write(''.join(str_list)) 
     file_obj.close()
 except OSError:
