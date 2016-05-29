@@ -2513,7 +2513,7 @@ class Main:
             # --- Ignore BIOS ROMs ---
             # Name of bios is: '[BIOS] Rom name example.zip'
             if self.settings['scan_ignore_bios']:
-                BIOS_re = re.findall('[BIOS]', ROM.base)
+                BIOS_re = re.findall('\[BIOS\]', ROM.base)
                 if len(BIOS_re) > 0:
                     log_info("BIOS detected. Skipping ROM '{}'".format(ROM.path))
                     continue
