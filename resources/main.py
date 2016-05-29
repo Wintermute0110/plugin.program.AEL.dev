@@ -244,7 +244,6 @@ class Main:
         self.settings["scan_fanart_policy"]     = int(addon_obj.getSetting("scan_fanart_policy"))
         self.settings["scan_ignore_title"]      = True if addon_obj.getSetting("scan_ignore_title") == "true" else False
         self.settings["scan_clean_tags"]        = True if addon_obj.getSetting("scan_clean_tags") == "true" else False
-        self.settings["scan_title_formatting"]  = True if addon_obj.getSetting("scan_title_formatting") == "true" else False
 
         self.settings["metadata_scraper"]       = int(addon_obj.getSetting("metadata_scraper"))
         self.settings["thumb_scraper"]          = int(addon_obj.getSetting("thumb_scraper"))
@@ -2357,9 +2356,8 @@ class Main:
 
         # --- Format title ---
         scan_clean_tags       = self.settings['scan_clean_tags']
-        scan_title_formatting = self.settings['scan_title_formatting']
         ROM = misc_split_path(romfile)
-        romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+        romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
 
         # --- Search for local Thumb/Fanart ---
         thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, ROM)
@@ -2581,7 +2579,6 @@ class Main:
         # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
         scan_metadata_policy  = self.settings['scan_metadata_policy']
         scan_clean_tags       = self.settings['scan_clean_tags']
-        scan_title_formatting = self.settings['scan_title_formatting']
         scan_ignore_title     = self.settings['scan_ignore_title']
         metadata_action = META_TITLE_ONLY
         if scan_metadata_policy == 0:
@@ -2609,7 +2606,7 @@ class Main:
         if metadata_action == META_TITLE_ONLY:
             scraper_text = 'Formatting ROM name.'
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-            romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+            romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
             nfo_file_path = ROM.path_noext + ".nfo"
             scraper_text = 'Reading NFO file {}'.format(nfo_file_path)
@@ -2626,7 +2623,7 @@ class Main:
                 romdata['plot']   = nfo_dic['plot']      # <plot>
             else:
                 log_debug('NFO file not found. Only cleaning ROM name.')
-                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
         elif metadata_action == META_SCRAPER:
             scraper_text = 'Scraping metadata with {}. Searching for matching games...'.format(self.scraper_metadata.fancy_name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
@@ -2668,7 +2665,7 @@ class Main:
                 # --- Put metadata into ROM dictionary ---
                 if scan_ignore_title:
                     # Ignore scraped title
-                    romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+                    romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
                     log_debug("User wants to ignore scraper name. Setting name to '{}'".format(romdata['name']))
                 else:
                     # Use scraped title
@@ -2680,7 +2677,7 @@ class Main:
                 romdata['plot']   = gamedata['plot']
             else:
                 log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
-                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
         else:
             log_error('Invalid metadata_action value = {}'.format(metadata_action))
 
@@ -3069,7 +3066,6 @@ class Main:
         rom_name = roms[romID]['name']
         ROM      = misc_split_path(f_path)
         scan_clean_tags       = self.settings['scan_clean_tags']
-        scan_title_formatting = self.settings['scan_title_formatting']
         scan_ignore_title     = self.settings['scan_ignore_title']
 
         # --- Ask user to enter ROM metadata search string ---
@@ -3110,7 +3106,7 @@ class Main:
         # --- Put metadata into ROM dictionary ---
         # >> Ignore scraped title
         if scan_ignore_title:
-            roms[romID]['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags, scan_title_formatting)
+            roms[romID]['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
             log_debug("User wants to ignore scraper name. Setting name to '{}'".format(roms[romID]['name']))
         # >> Use scraped title
         else:

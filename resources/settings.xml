@@ -9,9 +9,8 @@
     <setting label="Fanart scan policy" type="enum" id="scan_fanart_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     
     <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
-    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="false" id="scan_ignore_title" />
-    <setting label="Clean Titles Tags" type="bool" default="false" id="scan_clean_tags" />
-    <setting label="Article ('The', 'A') at the end" type="bool" default="false" id="scan_title_formatting" />
+    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="false" id="scan_ignore_scrapped_title" />
+    <setting label="Clean No-Intro/TOSEC Titles Tags (tag) [tag]" type="bool" default="false" id="scan_clean_tags" />
 </category>
 <category label="ROM scrapping">
     <setting id="separator" type="lsep" label="Scrapers"/>
