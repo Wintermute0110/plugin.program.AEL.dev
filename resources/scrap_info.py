@@ -104,7 +104,7 @@ AEL_platform_list = [
 # -----------------------------------------------------------------------------
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -----------------------------------------------------------------------------
-platform_AEL_to_Offline_GameDBInfo = {
+platform_AEL_to_Offline_GameDBInfo_XML = {
     'MAME'                        : 'resources/data/GameDBInfo/MAME.xml',
     'Nintendo GameBoy'            : 'resources/data/GameDBInfo/Nintendo Game Boy.xml',
     'Nintendo GameBoy Advance'    : 'resources/data/GameDBInfo/Nintendo Game Boy Advance.xml',

@@ -75,7 +75,7 @@ class metadata_Offline(Scraper_Metadata):
         # What if platform is not in the official list dictionary? Then load
         # nothing and behave like the NULL scraper.
         try:
-            xml_file = offline_scrapers_dic[platform]
+            xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
         except:
             log_debug('metadata_Offline::initialise_scraper Platform {} not found'.format(platform))
             log_debug('metadata_Offline::initialise_scraper Defaulting to Unknown')
@@ -100,7 +100,7 @@ class metadata_Offline(Scraper_Metadata):
 
     # List of games found
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_Offline::get_search Searching '{}' '{}' '{}'".format(search_string, platform, rom_base_noext))
+        log_verb("metadata_Offline::get_search Searching '{}' '{}' '{}'".format(search_string, rom_base_noext, platform))
         results_ret = []
 
         # If not cached XML data found (maybe offline scraper does not exist
@@ -154,11 +154,11 @@ class metadata_Offline(Scraper_Metadata):
             key = game['id']
             log_verb("metadata_Offline::get_metadata Mode MAME id = '{0}'".format(key))
             gamedata['title'] = self.games[key]['description']
-            # gamedata['genre'] = self.games[key]['category']
+            gamedata['genre'] = self.games[key]['genre']
             gamedata['year'] = self.games[key]['year']
             gamedata['studio'] = self.games[key]['manufacturer']
             # gamedata['plot'] = self.games[key]['plot']
-        
+
         # Unknown platform. Behave like NULL scraper
         elif self.cached_platform == 'Unknown':
             log_verb("metadata_Offline::get_metadata Mode Unknown. Doing nothing.")
