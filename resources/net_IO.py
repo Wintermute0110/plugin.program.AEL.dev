@@ -88,12 +88,12 @@ def net_get_URL_text(req):
     log_debug('net_get_URL_text() Reading URL "{}"'.format(req.get_full_url()))
     page_data = ''
     try:
-        # Read data
+        # --- Read data ---
         f = urllib2.urlopen(req)
         page_data = f.read()
         f.close()
 
-        # Put all text into one string
+        # --- Put all text into one string ---
         page_data = page_data.replace('\r\n', '')
         page_data = page_data.replace('\n', '')
     except: # Catches all exceptions

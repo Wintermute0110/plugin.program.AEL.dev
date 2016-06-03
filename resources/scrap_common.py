@@ -31,6 +31,8 @@ class Scraper_TheGamesDB():
         results_ret = []
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         if DEBUG_SCRAPERS:
+            log_debug('Scraper_TheGamesDB::get_search search_string        "{}"'.format(search_string))
+            log_debug('Scraper_TheGamesDB::get_search rom_base_noext       "{}"'.format(rom_base_noext))
             log_debug('Scraper_TheGamesDB::get_search AEL platform         "{}"'.format(platform))
             log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform  "{}"'.format(scraper_platform))
 
@@ -53,13 +55,15 @@ class Scraper_TheGamesDB():
         games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle><ReleaseDate>(.*?)</ReleaseDate><Platform>(.*?)</Platform></Game>", page_data)
         game_list = []
         for item in games:
-            game = {'id' : item[0], 'display_name' : item[1], 'order' : 1}
-            # Increase search score based on our own search
             title = item[1]
-            if title.lower() == search_string.lower():          game["order"] += 1
-            if title.lower().find(search_string.lower()) != -1: game["order"] += 1
+            display_name = title + ' / ' + item[3]
+            game = {'id' : item[0], 'display_name' : display_name, 'order' : 1}
+            # Increase search score based on our own search
+            if title.lower() == search_string.lower():          game['order'] += 1
+            if title.lower().find(search_string.lower()) != -1: game['order'] += 1
             game_list.append(game)
-        game_list.sort(key = lambda result: result["order"], reverse = True)
+        # >> Order list based on score
+        game_list.sort(key = lambda result: result['order'], reverse = True)
         results_ret = game_list
 
         return results_ret
@@ -73,6 +77,8 @@ class Scraper_GameFAQs():
         results_ret = []
         scraper_platform = AEL_platform_to_GameFAQs(platform)
         if DEBUG_SCRAPERS:
+            log_debug('Scraper_GameFAQs::get_search search_string      "{}"'.format(search_string))
+            log_debug('Scraper_GameFAQs::get_search rom_base_noext     "{}"'.format(rom_base_noext))
             log_debug('Scraper_GameFAQs::get_search AEL platform       "{}"'.format(platform))
             log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{}"'.format(scraper_platform))
 
@@ -92,17 +98,18 @@ class Scraper_GameFAQs():
         for get in gets:
             game = {}
             gamesystem = get[1].split('/')
-            game["id"]           = get[1]
-            game["title"]        = text_unescape_HTML(get[4])
-            game["display_name"] = text_unescape_HTML(get[4])
-            game["gamesys"]      = gamesystem[1].capitalize()
-            game["order"]        = 1
+            game['id']           = get[1]
+            game['display_name'] = text_unescape_HTML(get[4]) + ' / ' + gamesystem[1].capitalize()
+            game['order']        = 1
+            # game["gamesys"]      = gamesystem[1].capitalize()
+            # game["title"]        = text_unescape_HTML(get[4])
+
             # Increase search score based on our own search
-            title = game["title"] 
-            if title.lower() == search_string.lower():          game["order"] += 1
-            if title.lower().find(search_string.lower()) != -1: game["order"] += 1
+            title = text_unescape_HTML(get[4])
+            if title.lower() == search_string.lower():          game['order'] += 1
+            if title.lower().find(search_string.lower()) != -1: game['order'] += 1
             game_list.append(game)
-        game_list.sort(key = lambda result: result["order"], reverse = True)
+        game_list.sort(key = lambda result: result['order'], reverse = True)
         results_ret = game_list
 
         return results_ret
@@ -139,6 +146,8 @@ class Scraper_MobyGames():
     # Executes a search and returns a list of games found.
     #
     # http://www.mobygames.com/search/quick?q=super+mario+world
+    #
+    # <div class="d90b5a09a3d745cdd81e22d52188f8000">
     # <div class="searchResult">
     # <div class="searchNumber">1.</div>
     # <div class="searchImage">

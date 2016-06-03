@@ -268,7 +268,7 @@ GENRE_LENGTH  = 20
 YEAR_LENGTH   = 4
 STUDIO_LENGTH = 20
 PLOT_LENGTH   = 70
-URL_LENGTH    = 80
+URL_LENGTH    = 70
 
 def print_scraper_list(scraper_obj_list):
     print('Short name        Fancy Name')
@@ -311,9 +311,10 @@ def print_game_image_list(results, scraperObj):
     if results:
         image_list = scraperObj.get_images(results[0])
         print('\nFound {} image/s'.format(len(image_list)))
-        print("{} {}".format('Display name'.ljust(NAME_LENGTH), 'URL'.ljust(URL_LENGTH)))
-        print("{} {}".format('-'*NAME_LENGTH, '-'*URL_LENGTH))
+        print("{} {} {}".format('Display name'.ljust(NAME_LENGTH), 'URL'.ljust(URL_LENGTH), 'Display URL'.ljust(URL_LENGTH)))
+        print("{} {} {}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
         for image in image_list:
-            display_name  = text_limit_string(image[0], NAME_LENGTH)
-            url           = text_limit_string(image[1], URL_LENGTH)
-            print("{} {}".format(display_name.ljust(NAME_LENGTH), url.ljust(URL_LENGTH)))
+            display_name  = text_limit_string(image['name'], NAME_LENGTH)
+            url           = text_limit_string(image['URL'], URL_LENGTH)
+            disp_url      = text_limit_string(image['disp_URL'], URL_LENGTH)
+            print("{} {} {}".format(display_name.ljust(NAME_LENGTH), url.ljust(URL_LENGTH), disp_url.ljust(URL_LENGTH)))

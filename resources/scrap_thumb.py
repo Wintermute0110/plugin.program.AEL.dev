@@ -111,14 +111,16 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         page_data = net_get_URL_text(req)
     
         # --- Parse game thumb information ---
-        # The previous URL shows a page with thumbnails for several regions.
-        # Each region has a separate game with the full size artwork.
+        # The game URL shows a page with boxart and screenshots. Boxart can be diferent depending 
+        # on the region. Each region has then a separate page with the full size artwork (boxfront, boxback, etc.)
+        #
+        # Example: http://www.gamefaqs.com/snes/588741-super-metroid/images
         #
         # <div class="img boxshot">
-        # <a href="/snes/588741-super-metroid/images/14598">
-        # <img class="img100 imgboxart" src="http://img.gamefaqs.net/box/3/2/1/51321_thumb.jpg" alt="Super Metroid (JP)" />
-        # </a>
-        # <div class="region">JP 03/19/94</div>
+        #  <a href="/snes/588741-super-metroid/images/14598">
+        #  <img class="img100 imgboxart" src="http://img.gamefaqs.net/box/3/2/1/51321_thumb.jpg" alt="Super Metroid (JP)" />
+        #  </a>
+        #  <div class="region">JP 03/19/94</div>
         # </div>
         img_pages = []
         results = re.findall('<div class="img boxshot"><a href="(.+?)"><img class="img100 imgboxart" src="(.+?)" alt="(.+?)" /></a>', page_data)
@@ -150,7 +152,7 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         # print(results)
         for index, boxart in enumerate(results):
             str_index = str(index + 1)
-            log_debug('thumb_GameFAQs::get_images Adding thumb #{:>2s} {}'.format(str_index, boxart[0]))
+            log_debug('thumb_GameFAQs::get_images Adding thumb #{} {}'.format(str_index, boxart[0]))
             images.append({'name' : boxart[1], 'URL' : boxart[0], 'disp_URL' : boxart[0]})
 
         return images

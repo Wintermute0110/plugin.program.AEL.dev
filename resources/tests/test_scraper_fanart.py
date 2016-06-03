@@ -23,8 +23,8 @@ if TEST_THEGAMESDB:
     print('\n*** Online TheGamesDB *********************************************')
     GamesDB = fanart_TheGamesDB()
 
-    # results = GamesDB.get_search('Castlevania', '', 'Nintendo SNES')
-    results = GamesDB.get_search('metroid', '', 'Nintendo SNES')
+    results = GamesDB.get_search('Castlevania', '', 'Nintendo SNES')
+    # results = GamesDB.get_search('metroid', '', 'Nintendo SNES')
     # results = GamesDB.get_search('Zelda', '', 'Nintendo SNES')
     # results = GamesDB.get_search('Super Mario World', '', 'Nintendo SNES')
     # results = GamesDB.get_search('street fighter', '', 'Nintendo SNES', '')
@@ -37,8 +37,8 @@ if TEST_GAMEFAQS:
     print('\n*** Online GameFAQs *********************************************')
     GameFAQs = fanart_GameFAQs()
 
-    results = GameFAQs.get_search('Castlevania', '', 'Nintendo SNES')
-    # results = GameFAQs.get_search('Metroid', '', 'Nintendo SNES')
+    # results = GameFAQs.get_search('Castlevania', '', 'Nintendo SNES')
+    results = GameFAQs.get_search('Metroid', '', 'Nintendo SNES')
 
     # --- Print list of fames found ---
     print_games_search(results)
