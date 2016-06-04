@@ -31,10 +31,10 @@ class Scraper_TheGamesDB():
         results_ret = []
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         if DEBUG_SCRAPERS:
-            log_debug('Scraper_TheGamesDB::get_search search_string        "{}"'.format(search_string))
-            log_debug('Scraper_TheGamesDB::get_search rom_base_noext       "{}"'.format(rom_base_noext))
-            log_debug('Scraper_TheGamesDB::get_search AEL platform         "{}"'.format(platform))
-            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform  "{}"'.format(scraper_platform))
+            log_debug('Scraper_TheGamesDB::get_search search_string        "{0}"'.format(search_string))
+            log_debug('Scraper_TheGamesDB::get_search rom_base_noext       "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_TheGamesDB::get_search AEL platform         "{0}"'.format(platform))
+            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform  "{0}"'.format(scraper_platform))
 
         # --- This returns an XML file ---
         # <Data>
@@ -77,10 +77,10 @@ class Scraper_GameFAQs():
         results_ret = []
         scraper_platform = AEL_platform_to_GameFAQs(platform)
         if DEBUG_SCRAPERS:
-            log_debug('Scraper_GameFAQs::get_search search_string      "{}"'.format(search_string))
-            log_debug('Scraper_GameFAQs::get_search rom_base_noext     "{}"'.format(rom_base_noext))
-            log_debug('Scraper_GameFAQs::get_search AEL platform       "{}"'.format(platform))
-            log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{}"'.format(scraper_platform))
+            log_debug('Scraper_GameFAQs::get_search search_string      "{0}"'.format(search_string))
+            log_debug('Scraper_GameFAQs::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_GameFAQs::get_search AEL platform       "{0}"'.format(platform))
+            log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{0}"'.format(scraper_platform))
 
         # Example: 'street fighter', 'Nintendo SNES'
         # http://www.gamefaqs.com/search?platform=63&game=street+fighter

@@ -213,7 +213,7 @@ class Main:
             launcherID = args['launID'][0]
             # >> Virtual launcher in virtual category (years/genres/studios)
             if launcherID not in self.launchers:
-                log_debug('SHOW_ROMS | Virtual launcher = {}'.format(args['catID'][0]))
+                log_debug('SHOW_ROMS | Virtual launcher = {0}'.format(args['catID'][0]))
                 log_debug('SHOW_ROMS | Calling _command_render_virtual_category_roms()')
                 self._command_render_virtual_category_roms(args['catID'][0], args['launID'][0])
             elif self.launchers[launcherID]['rompath'] == '':
@@ -321,7 +321,7 @@ class Main:
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
         # for key in sorted(self.settings):
-        #     log_debug('{} --> {:10s} {:}'.format(key.rjust(21), str(self.settings[key]), type(self.settings[key])))
+        #     log_debug('{0} --> {1:10s} {2}'.format(key.rjust(21), str(self.settings[key]), type(self.settings[key])))
         # log_debug('Settings dump END')
 
     #
@@ -1563,8 +1563,8 @@ class Main:
             vcategory_fanart = ''
             vcategory_label  = 'Studio'
         else:
-            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {}'.format(virtual_category_kind))
-            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_category_kind))
+            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             return
         icon = 'DefaultFolder.png'
         listitem = xbmcgui.ListItem(vcategory_name, iconImage=icon, thumbnailImage=vcategory_thumb)
@@ -1576,11 +1576,11 @@ class Main:
         commands.append(('Update {0} database'.format(vcategory_label), 
                          self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind), ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
-        # log_debug('_gui_render_virtual_category_row() url_str = {}'.format(url_str))
+        # log_debug('_gui_render_virtual_category_row() url_str = {0}'.format(url_str))
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     #
@@ -1921,8 +1921,8 @@ class Main:
         elif virtual_categoryID == VCATEGORY_STUDIO_ID:
             vcategory_db_filepath = VIRTUAL_CAT_STUDIO_DIR
         else:
-            log_error('_command_render_virtual_category_roms() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
-            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            log_error('_command_render_virtual_category_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
 
         # --- Load favourites ---
