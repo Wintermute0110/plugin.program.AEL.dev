@@ -463,7 +463,7 @@ def fs_load_Favourites_XML_file(roms_xml_file):
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
     if not os.path.isfile(roms_xml_file):
-        return {0}
+        return {}
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_NoIntro_XML_file() Loading XML file {0}'.format(roms_xml_file))
