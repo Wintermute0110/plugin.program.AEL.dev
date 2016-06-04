@@ -110,7 +110,7 @@ class Main:
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
-        log_debug(sys.version)
+        log_debug(sys.version.replace('\n', ''))
         # log_debug('__addon_name__ {0}'.format(__addon_name__))
         log_debug('__addon_id__   {0}'.format(__addon_id__))
         log_debug('__version__    {0}'.format(__version__))
@@ -199,12 +199,8 @@ class Main:
             self._command_edit_category(args['catID'][0])
         elif command == 'SHOW_FAVOURITES':
             self._command_render_favourites()
-        elif command == 'SHOW_SPECIAL_YEARS':
-            self._command_render_virtual_category(VCATEGORY_YEARS_ID)
-        elif command == 'SHOW_SPECIAL_GENRE':
-            self._command_render_virtual_category(VCATEGORY_GENRE_ID)
-        elif command == 'SHOW_SPECIAL_STUDIO':
-            self._command_render_virtual_category(VCATEGORY_STUDIO_ID)
+        elif command == 'SHOW_VIRTUAL_CATEGORY':
+            self._command_render_virtual_category(args['catID'][0])
         elif command == 'SHOW_LAUNCHERS':
             self._command_render_launchers(args['catID'][0])
         elif command == 'ADD_LAUNCHER':
@@ -254,7 +250,7 @@ class Main:
             self._command_view_ROM(args['catID'][0], args['launID'][0], args['romID'][0])
 
         # >> Update virtual categories databases
-        elif command == 'UPDATE_VIRTUAL:_CATEGORY':
+        elif command == 'UPDATE_VIRTUAL_CATEGORY':
             self._command_update_virtual_category_db(args['catID'][0])
 
         else:
@@ -1552,20 +1548,20 @@ class Main:
 
     def _gui_render_virtual_category_row(self, virtual_category_kind):
         if virtual_category_kind == VCATEGORY_YEARS_ID:
-            vcategory_name    = '<Browse by Year>'
-            vcategory_thumb   = ''
-            vcategory_fanart  = ''
-            vcategory_command = 'SHOW_SPECIAL_YEARS'
+            vcategory_name   = '<Browse by Year>'
+            vcategory_thumb  = ''
+            vcategory_fanart = ''
+            vcategory_label  = 'Years'
         elif virtual_category_kind == VCATEGORY_GENRE_ID:
             vcategory_name   = '<Browse by Genre>'
             vcategory_thumb  = ''
             vcategory_fanart = ''
-            vcategory_command = 'SHOW_SPECIAL_GENRE'
+            vcategory_label  = 'Genre'
         elif virtual_category_kind == VCATEGORY_STUDIO_ID:
             vcategory_name   = '<Browse by Studio>'
             vcategory_thumb  = ''
             vcategory_fanart = ''
-            vcategory_command = 'SHOW_SPECIAL_STUDIO'
+            vcategory_label  = 'Studio'
         else:
             log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {}'.format(virtual_category_kind))
             kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_category_kind))
@@ -1577,13 +1573,14 @@ class Main:
                                     'Plot' : 'AEL virtual category', 'overlay': 7 } )
 
         commands = []
-        commands.append(('Update Years database', self._misc_url_RunPlugin('UPDATE_VCATEGORY_YEARS'), ))
+        commands.append(('Update {0} database'.format(vcategory_label), 
+                         self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind), ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
-        url_str = self._misc_url('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
-        log_debug('_gui_render_virtual_category_row() url_str = {}'.format(url_str))
+        url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
+        # log_debug('_gui_render_virtual_category_row() url_str = {}'.format(url_str))
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     #
@@ -1856,31 +1853,34 @@ class Main:
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_YEARS_ID:
             vcategory_db_filename = VCAT_YEARS_FILE_PATH
+            vcategory_name = 'Browse by Year'
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
             vcategory_db_filename = VCAT_GENRE_FILE_PATH
+            vcategory_name = 'Browse by Genre'
         elif virtual_categoryID == VCATEGORY_STUDIO_ID:
             vcategory_db_filename = VCAT_STUDIO_FILE_PATH
+            vcategory_name = 'Browse by Studio'
         else:
-            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
-            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
 
         # --- If the virtual category has no launchers then render nothing ---
         # >> Also, tell the user to update the virtual launcher database
         if not os.path.isfile(vcategory_db_filename):
             kodi_dialog_OK('Advanced Emulator Launcher',
-                           'Virtual category database not found. Update the virtual category database first.')
+                           '{0} database not found. '.format(vcategory_name) +
+                           'Update the virtual category database first.')
             return
 
         # --- Write virtual launchers XML file ---
-        vcategory_launchers_fileName = VCAT_YEARS_FILE_PATH
-        vcategory_launchers = fs_load_VCategory_XML_file(vcategory_launchers_fileName)
+        vcategory_launchers = fs_load_VCategory_XML_file(vcategory_db_filename)
 
         # --- Render virtual launchers rows ---
         icon = 'DefaultFolder.png'
         for vlauncher_id in vcategory_launchers:
             vlauncher = vcategory_launchers[vlauncher_id]
-            vlauncher_name = vlauncher['name'] + '  ({} ROM/s)'.format(vlauncher['rom_count'])
+            vlauncher_name = vlauncher['name'] + '  ({0} ROM/s)'.format(vlauncher['rom_count'])
             # listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
             listitem = xbmcgui.ListItem(vlauncher_name, iconImage = icon)
             # listitem.setProperty('fanart_image', launcher_dic['fanart'])
