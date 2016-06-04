@@ -2324,20 +2324,54 @@ class Main:
     #
     def _command_update_virtual_category_db(self, virtual_categoryID):
         # --- Customise function depending on virtual category ---
-        if virtual_categoryID == VCATEGORY_YEARS:
+        if virtual_categoryID == VCATEGORY_YEARS_ID:
+            vcategory_db_directory = VIRTUAL_CAT_YEARS_DIR
             vcategory_db_filename = VCAT_YEARS_FILE_PATH
-        elif virtual_categoryID == VCATEGORY_GENRE:
+            vcategory_field_name = 'year'
+        elif virtual_categoryID == VCATEGORY_GENRE_ID:
+            vcategory_db_directory = VIRTUAL_CAT_GENRE_DIR
             vcategory_db_filename = VCAT_GENRE_FILE_PATH
-        elif virtual_categoryID == VCATEGORY_STUDIO:
+            vcategory_field_name = 'genre'
+        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
+            vcategory_db_directory = VIRTUAL_CAT_STUDIO_DIR
             vcategory_db_filename = VCAT_STUDIO_FILE_PATH
+            vcategory_field_name = 'studio'
         else:
-            log_error('_command_update_virtual_category_db() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
-            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            log_error('_command_update_virtual_category_db() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
-    
+
+        # Sanity checks
+        if len(self.launchers) == 0:
+            kodi_dialog_OK('Advanced Emulator Launcher',
+                           'You do not have yet any Launchers. Add a ROMs Launcher first')
+            return
+
+        # --- Delete previous hashed database XMLs ---
+        log_info('_command_update_virtual_category_db() Cleaning hashed database old XMLs')
+        for the_file in os.listdir(vcategory_db_directory):
+            filename, file_extension = os.path.splitext(the_file)
+            if file_extension.lower() != '.xml':
+                # >> There should be only XMLs in this directory
+                log_error('_command_update_virtual_category_db() Found non XML file "{0}"'.format(the_file))
+                log_error('_command_update_virtual_category_db() Skipping it from deletion')
+                continue
+            file_path = os.path.join(vcategory_db_directory, the_file)
+            log_error('_command_update_virtual_category_db() Deleting "{0}"'.format(file_path))
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                log_error('_command_update_virtual_category_db() Excepcion deleting hashed DB XMLs')
+                log_error('_command_update_virtual_category_db() {0}'.format(e))
+                return
+
         # --- Make a big dictionary will all the ROMs ---
+        # TODO It would be nice to have a progress dialog here...
+        log_verb('_command_update_virtual_category_db() Creating list of all ROMs in all Launchers')
         all_roms = {}
         for launcher_id in self.launchers:
+            # >> Get current launcher
             launcher = self.launchers[launcher_id]
 
             # >> If launcher is standalone skip
@@ -2347,6 +2381,7 @@ class Main:
             roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
             
             # >> Add additional fields to ROM to make a Favourites ROM
+            # >> Virtual categories/launchers are like Favourite ROMs that cannot be edited.
             for rom_id in roms:
                 rom = roms[rom_id]
                 rom['launcherID']  = launcher['id']
@@ -2362,40 +2397,46 @@ class Main:
 
         # --- Create a dictionary that hast key the virtual category and value a dictionay of roms 
         #     belonging to that virtual category ---
+        # TODO It would be nice to have a progress dialog here...
+        log_verb('_command_update_virtual_category_db() Creating hashed database')
         virtual_launchers = {}
         for rom_id in all_roms:
             rom = all_roms[rom_id]
-            rom_year = rom['year']
-            if rom_year in virtual_launchers:
-                virtual_launchers[rom_year][rom['id']] = rom
+            vcategory_key = rom[vcategory_field_name]
+            # >> '' is a special case
+            if vcategory_key == '': vcategory_key = '[ Not set ]'
+            if vcategory_key in virtual_launchers:
+                virtual_launchers[vcategory_key][rom['id']] = rom
             else:
-                virtual_launchers[rom_year] = {rom['id'] : rom}
+                virtual_launchers[vcategory_key] = {rom['id'] : rom}
 
-        # --- Write hashed database ---
+        # --- Write hashed distributed database XML files ---
+        # TODO It would be nice to have a progress dialog here...
+        log_verb('_command_update_virtual_category_db() Writing hashed database XMLs')
         vcategory_launchers = {}
         for vlauncher_id in virtual_launchers:
             vlauncher_id_md5   = hashlib.md5(vlauncher_id)
             hashed_db_UUID     = vlauncher_id_md5.hexdigest()
-            hashed_db_filename = os.path.join(VIRTUAL_CAT_YEARS_DIR, hashed_db_UUID + '.xml')
-            log_debug('_command_update_virtual_category_db() vlauncher_id       "{}"'.format(vlauncher_id))
-            log_debug('_command_update_virtual_category_db() hashed_db_UUID     "{}"'.format(hashed_db_UUID))
-            # log_debug('_command_update_virtual_category_db() hashed_db_filename "{}"'.format(hashed_db_filename))
+            hashed_db_filename = os.path.join(vcategory_db_directory, hashed_db_UUID + '.xml')
+            log_debug('_command_update_virtual_category_db() vlauncher_id       "{0}"'.format(vlauncher_id))
+            log_debug('_command_update_virtual_category_db() hashed_db_UUID     "{0}"'.format(hashed_db_UUID))
 
             # >> Virtual launcher ROMs are like Favourite ROMs. They contain all required fields to launch
             # >> the ROM, and also share filesystem I/O functions with Favourite ROMs.
             vlauncher_roms = virtual_launchers[vlauncher_id]
-            log_debug('_command_update_virtual_category_db() Number of ROMs = {}'.format(len(vlauncher_roms)))
+            log_debug('_command_update_virtual_category_db() Number of ROMs = {0}'.format(len(vlauncher_roms)))
             fs_write_Favourites_XML_file(hashed_db_filename, vlauncher_roms)
             
             # >> Create virtual launcher
-            vcategory_launchers[hashed_db_UUID] = { 'id' : hashed_db_UUID,
-                                                    'name' : vlauncher_id,
-                                                    'rom_count' : str(len(vlauncher_roms)),
-                                                    'roms_xml_file' :  hashed_db_filename }
+            vcategory_launchers[hashed_db_UUID] = {'id' : hashed_db_UUID,
+                                                   'name' : vlauncher_id,
+                                                   'rom_count' : str(len(vlauncher_roms)),
+                                                   'roms_xml_file' :  hashed_db_filename }
 
         # --- Write virtual launchers XML file ---
-        vcategory_launchers_fileName = VCAT_YEARS_FILE_PATH
-        fs_write_VCategory_XML_file(vcategory_launchers_fileName, vcategory_launchers)
+        # >> This file is small, no progress dialog
+        log_verb('_command_update_virtual_category_db() Writing virtual cateogory XML index')
+        fs_write_VCategory_XML_file(vcategory_db_filename, vcategory_launchers)
 
     #
     # Launchs an application
