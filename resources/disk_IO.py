@@ -460,6 +460,67 @@ def fs_load_Favourites_XML_file(roms_xml_file):
 
     return roms
 
+#
+# Write to disk favourites.xml
+#
+def fs_write_VCategory_XML_file(roms_xml_file, roms):
+    log_info('fs_write_VCategory_XML_file() Saving XML file {0}'.format(roms_xml_file))
+    try:
+        str_list = []
+        str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        str_list.append('<advanced_emulator_launcher_Virtual_Cateogory version="1.0">\n')
+        for romID in sorted(roms, key = lambda x : roms[x]['name']):
+            rom = roms[romID]
+            str_list.append('<rom>\n')
+            str_list.append(XML_text('id', romID))
+            str_list.append(XML_text('name', rom['name']))
+            str_list.append(XML_text('rom_count', rom['rom_count']))
+            str_list.append(XML_text('roms_xml_file', rom['roms_xml_file']))
+            str_list.append('</rom>\n')
+        str_list.append('</advanced_emulator_launcher_Virtual_Cateogory>\n')
+        full_string = ''.join(str_list)
+        file_obj = open(roms_xml_file, 'wt' )
+        file_obj.write(full_string)
+        file_obj.close()
+    except OSError:
+        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+    except IOError:
+        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+
+#
+# Loads an XML file containing the favourite ROMs
+# It is basically the same as ROMs, but with some more fields to store launching application data.
+#
+def fs_load_VCategory_XML_file(roms_xml_file):
+    __debug_xml_parser = 0
+    roms = {}
+
+    # --- If file does not exist return empty dictionary ---
+    if not os.path.isfile(roms_xml_file):
+        return {}
+
+    # --- Parse using cElementTree ---
+    log_verb('fs_load_VCategory_XML_file() Loading XML file {0}'.format(roms_xml_file))
+    xml_tree = ET.parse(roms_xml_file)
+    xml_root = xml_tree.getroot()
+    for root_element in xml_root:
+        if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
+
+        if root_element.tag == 'rom':
+            # Default values
+            rom = fs_new_favourite_rom()
+            for rom_child in root_element:
+                # By default read strings
+                xml_text = rom_child.text if rom_child.text is not None else ''
+                xml_text = text_unescape_XML(xml_text)
+                xml_tag  = rom_child.tag
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+                rom[xml_tag] = xml_text
+            # >> Add ROM to dictionary
+            roms[rom['id']] = rom
+
+    return roms
+
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
     if not os.path.isfile(roms_xml_file):

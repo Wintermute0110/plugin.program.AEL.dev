@@ -21,7 +21,7 @@
 
 # --- Main imports ---
 import sys, os, shutil, fnmatch, string
-import re, urllib, urllib2, urlparse, socket, exceptions
+import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
@@ -45,15 +45,18 @@ __type__       = addon_obj.getAddonInfo('type')
 
 # --- Addon paths and constant definition ---
 # _FILE_PATH is a filename | _DIR is a directory (with trailing /)
-PLUGIN_DATA_DIR      = xbmc.translatePath(os.path.join('special://profile/addon_data', __addon_id__))
-BASE_DIR             = xbmc.translatePath(os.path.join('special://', 'profile'))
-HOME_DIR             = xbmc.translatePath(os.path.join('special://', 'home'))
-KODI_FAV_FILE_PATH   = xbmc.translatePath('special://profile/favourites.xml')
-ADDONS_DIR           = xbmc.translatePath(os.path.join(HOME_DIR, 'addons'))
-CURRENT_ADDON_DIR    = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__))
-ICON_IMG_FILE_PATH   = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
-CATEGORIES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
-FAVOURITES_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
+PLUGIN_DATA_DIR       = xbmc.translatePath(os.path.join('special://profile/addon_data', __addon_id__))
+BASE_DIR              = xbmc.translatePath(os.path.join('special://', 'profile'))
+HOME_DIR              = xbmc.translatePath(os.path.join('special://', 'home'))
+KODI_FAV_FILE_PATH    = xbmc.translatePath('special://profile/favourites.xml')
+ADDONS_DIR            = xbmc.translatePath(os.path.join(HOME_DIR, 'addons'))
+CURRENT_ADDON_DIR     = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__))
+ICON_IMG_FILE_PATH    = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
+CATEGORIES_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
+FAVOURITES_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
+VCAT_YEARS_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_years.xml')
+VCAT_GENRE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_genre.xml')
+VCAT_STUDIO_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml')
 
 # Artwork and NFO for Categories and Launchers
 DEFAULT_CAT_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'category-thumbs')
@@ -64,6 +67,9 @@ DEFAULT_LAUN_FANART_DIR  = os.path.join(PLUGIN_DATA_DIR, 'launcher-fanarts')
 DEFAULT_LAUN_NFO_DIR     = os.path.join(PLUGIN_DATA_DIR, 'launcher-nfos')
 DEFAULT_FAV_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'favourite-thumbs')
 DEFAULT_FAV_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'favourite-fanarts')
+VIRTUAL_CAT_YEARS_DIR    = os.path.join(PLUGIN_DATA_DIR, 'db_years')
+VIRTUAL_CAT_GENRE_DIR    = os.path.join(PLUGIN_DATA_DIR, 'db_genre')
+VIRTUAL_CAT_STUDIO_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_studio')
 
 # Misc "constants"
 KIND_CATEGORY        = 0
@@ -73,6 +79,11 @@ IMAGE_THUMB          = 100
 IMAGE_FANART         = 200
 DESCRIPTION_MAXSIZE  = 40
 IMG_EXTS             = ['png', 'jpg', 'gif', 'jpeg', 'bmp', 'PNG', 'JPG', 'GIF', 'JPEG', 'BMP']
+VCATEGORY_FAV_ID     = 'fav'
+VCATEGORY_YEARS_ID   = 'vcat_years'
+VCATEGORY_GENRE_ID   = 'vcat_genre'
+VCATEGORY_STUDIO_ID  = 'vcat_studio'
+VLAUNCHER_FAV_ID     = 'fav'
 
 # --- Main code ---
 class Main:
@@ -123,6 +134,9 @@ class Main:
         if not os.path.isdir(DEFAULT_LAUN_NFO_DIR):    os.makedirs(DEFAULT_LAUN_NFO_DIR)
         if not os.path.isdir(DEFAULT_FAV_THUMB_DIR):   os.makedirs(DEFAULT_FAV_THUMB_DIR)
         if not os.path.isdir(DEFAULT_FAV_FANART_DIR):  os.makedirs(DEFAULT_FAV_FANART_DIR)
+        if not os.path.isdir(VIRTUAL_CAT_YEARS_DIR):   os.makedirs(VIRTUAL_CAT_YEARS_DIR)
+        if not os.path.isdir(VIRTUAL_CAT_GENRE_DIR):   os.makedirs(VIRTUAL_CAT_GENRE_DIR)
+        if not os.path.isdir(VIRTUAL_CAT_STUDIO_DIR):  os.makedirs(VIRTUAL_CAT_STUDIO_DIR)
 
         # ~~~~~ Process URL ~~~~~
         self.base_url = sys.argv[0]
@@ -186,11 +200,11 @@ class Main:
         elif command == 'SHOW_FAVOURITES':
             self._command_render_favourites()
         elif command == 'SHOW_SPECIAL_YEARS':
-            self._command_render_years()
+            self._command_render_virtual_category(VCATEGORY_YEARS_ID)
         elif command == 'SHOW_SPECIAL_GENRE':
-            self._command_render_genre()
+            self._command_render_virtual_category(VCATEGORY_GENRE_ID)
         elif command == 'SHOW_SPECIAL_STUDIO':
-            self._command_render_studio()
+            self._command_render_virtual_category(VCATEGORY_STUDIO_ID)
         elif command == 'SHOW_LAUNCHERS':
             self._command_render_launchers(args['catID'][0])
         elif command == 'ADD_LAUNCHER':
@@ -201,7 +215,12 @@ class Main:
         # For emulator launchers show roms.
         elif command == 'SHOW_ROMS':
             launcherID = args['launID'][0]
-            if self.launchers[launcherID]['rompath'] == '':
+            # >> Virtual launcher in virtual category (years/genres/studios)
+            if launcherID not in self.launchers:
+                log_debug('SHOW_ROMS | Virtual launcher = {}'.format(args['catID'][0]))
+                log_debug('SHOW_ROMS | Calling _command_render_virtual_category_roms()')
+                self._command_render_virtual_category_roms(args['catID'][0], args['launID'][0])
+            elif self.launchers[launcherID]['rompath'] == '':
                 log_debug('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
                 log_debug('SHOW_ROMS | Calling _command_run_standalone_launcher()')
                 self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
@@ -230,10 +249,14 @@ class Main:
         elif command == 'EXEC_SEARCH_LAUNCHER':
             self._command_execute_search_launcher(args['catID'][0], args['launID'][0],
                                                   args['search_type'][0], args['search_string'][0])
-        # >> Shows infor about cateogires/launchers/ROMs
+        # >> Shows info about categories/launchers/ROMs
         elif command == 'VIEW_ROM':
             self._command_view_ROM(args['catID'][0], args['launID'][0], args['romID'][0])
-            
+
+        # >> Update virtual categories databases
+        elif command == 'UPDATE_VIRTUAL:_CATEGORY':
+            self._command_update_virtual_category_db(args['catID'][0])
+
         else:
             kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )
 
@@ -1465,10 +1488,10 @@ class Main:
         for key in sorted(self.categories, key= lambda x : self.categories[x]["name"]):
             self._gui_render_category_row(self.categories[key], key)
         # --- AEL Favourites special category ---
-        self._gui_render_category_favourites()
-        self._gui_render_category_years()
-        self._gui_render_category_genre()
-        self._gui_render_category_studio()
+        self._gui_render_category_favourites_row()
+        self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
     def _gui_render_category_row(self, category_dic, key):
@@ -1477,17 +1500,17 @@ class Main:
             return
 
         # --- Create listitem row ---
-        icon = "DefaultFolder.png"
+        icon = 'DefaultFolder.png'
         if category_dic['thumb'] != '':
             listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
         else:
             listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon )
         if category_dic['finished'] == False: ICON_OVERLAY = 6
         else:                                 ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", category_dic['fanart'])
+        listitem.setProperty('fanart_image', category_dic['fanart'])
         # log_debug('_gui_render_category_row() Category {} fanart "{}"'.format(category_dic['name'], category_dic['fanart']))
-        listitem.setInfo("video", { "Title": category_dic['name'], "Genre" : category_dic['genre'],
-                                    "Plot" : category_dic['description'], "overlay": ICON_OVERLAY } )
+        listitem.setInfo('video', { 'Title': category_dic['name'], 'Genre' : category_dic['genre'],
+                                    'Plot' : category_dic['description'], 'overlay': ICON_OVERLAY } )
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
@@ -1505,16 +1528,16 @@ class Main:
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
-    def _gui_render_category_favourites(self):
+    def _gui_render_category_favourites_row(self):
         # --- Create listitem row ---
         fav_name = '<Favourites>'
         fav_thumb = ''
         fav_fanart = ''
-        icon = "DefaultFolder.png"
+        icon = 'DefaultFolder.png'
         listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
-        listitem.setProperty("fanart_image", fav_fanart)
-        listitem.setInfo("video", { "Title": fav_name, "Genre" : 'All',
-                                    "Plot" : 'AEL favourite ROMs', "overlay": 7 } )
+        listitem.setProperty('fanart_image', fav_fanart)
+        listitem.setInfo('video', { 'Title': fav_name, 'Genre' : 'All',
+                                    'Plot' : 'AEL favourite ROMs', 'overlay': 7 } )
 
         # --- Create context menu ---
         commands = []
@@ -1527,61 +1550,40 @@ class Main:
         url_str = self._misc_url('SHOW_FAVOURITES')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
-    def _gui_render_category_years(self):
-        fav_name = '<Browse by Year>'
-        fav_thumb = ''
-        fav_fanart = ''
-        icon = "DefaultFolder.png"
-        listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
-        listitem.setProperty("fanart_image", fav_fanart)
-        listitem.setInfo("video", { "Title": fav_name, "Genre" : 'All',
-                                    "Plot" : 'AEL favourite ROMs', "overlay": 7 } )
+    def _gui_render_virtual_category_row(self, virtual_category_kind):
+        if virtual_category_kind == VCATEGORY_YEARS_ID:
+            vcategory_name    = '<Browse by Year>'
+            vcategory_thumb   = ''
+            vcategory_fanart  = ''
+            vcategory_command = 'SHOW_SPECIAL_YEARS'
+        elif virtual_category_kind == VCATEGORY_GENRE_ID:
+            vcategory_name   = '<Browse by Genre>'
+            vcategory_thumb  = ''
+            vcategory_fanart = ''
+            vcategory_command = 'SHOW_SPECIAL_GENRE'
+        elif virtual_category_kind == VCATEGORY_STUDIO_ID:
+            vcategory_name   = '<Browse by Studio>'
+            vcategory_thumb  = ''
+            vcategory_fanart = ''
+            vcategory_command = 'SHOW_SPECIAL_STUDIO'
+        else:
+            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {}'.format(virtual_category_kind))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_category_kind))
+            return
+        icon = 'DefaultFolder.png'
+        listitem = xbmcgui.ListItem(vcategory_name, iconImage=icon, thumbnailImage=vcategory_thumb)
+        listitem.setProperty('fanart_image', vcategory_fanart)
+        listitem.setInfo('video', { 'Title': vcategory_name, 'Genre' : 'All',
+                                    'Plot' : 'AEL virtual category', 'overlay': 7 } )
 
         commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('Update Years database', self._misc_url_RunPlugin('UPDATE_VCATEGORY_YEARS'), ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems=True)
 
-        url_str = self._misc_url('SHOW_SPECIAL_YEARS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
-
-    def _gui_render_category_genre(self):
-        fav_name = '<Browse by Genre>'
-        fav_thumb = ''
-        fav_fanart = ''
-        icon = "DefaultFolder.png"
-        listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
-        listitem.setProperty("fanart_image", fav_fanart)
-        listitem.setInfo("video", { "Title": fav_name, "Genre" : 'All',
-                                    "Plot" : 'AEL favourite ROMs', "overlay": 7 } )
-
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
-
-        url_str = self._misc_url('SHOW_SPECIAL_GENRE')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
-
-    def _gui_render_category_studio(self):
-        fav_name = '<Browse by Studio>'
-        fav_thumb = ''
-        fav_fanart = ''
-        icon = "DefaultFolder.png"
-        listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
-        listitem.setProperty("fanart_image", fav_fanart)
-        listitem.setInfo("video", { "Title": fav_name, "Genre" : 'All',
-                                    "Plot" : 'AEL favourite ROMs', "overlay": 7 } )
-
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
-
-        url_str = self._misc_url('SHOW_SPECIAL_STUDIO')
+        url_str = self._misc_url('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
+        log_debug('_gui_render_virtual_category_row() url_str = {}'.format(url_str))
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     #
@@ -1589,7 +1591,7 @@ class Main:
     # Renders the launcher for a given category
     #
     def _command_render_launchers(self, categoryID):
-        # If the category has no launchers then render nothing.
+        # --- If the category has no launchers then render nothing ---
         launcher_IDs = []
         for launcher_id in self.launchers:
             if self.launchers[launcher_id]['categoryID'] == categoryID: launcher_IDs.append(launcher_id)
@@ -1615,7 +1617,7 @@ class Main:
 
         # Render launcher rows of this launcher
         for key in sorted(self.launchers, key = lambda x : self.launchers[x]["application"]):
-            if self.launchers[key]["categoryID"] == categoryID:
+            if self.launchers[key]['categoryID'] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
 
@@ -1625,20 +1627,19 @@ class Main:
             return
 
         # --- Create listitem row ---
-        commands = []
         if launcher_dic['rompath'] == '': # Executable launcher
             folder = False
-            icon = "DefaultProgram.png"
+            icon = 'DefaultProgram.png'
         else:                             # Files launcher
             folder = True
-            icon = "DefaultFolder.png"
+            icon = 'DefaultFolder.png'
         if launcher_dic['thumb']:
             listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
         else:
             listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon )
         if launcher_dic['finished'] != True: ICON_OVERLAY = 6
         else:                                ICON_OVERLAY = 7
-        listitem.setProperty("fanart_image", launcher_dic['fanart'])
+        listitem.setProperty('fanart_image', launcher_dic['fanart'])
         listitem.setInfo("video", {"Title"    : launcher_dic['name'],    "Label"     : os.path.basename(launcher_dic['rompath']),
                                    "Plot"     : launcher_dic['plot'],    "Studio"    : launcher_dic['studio'],
                                    "Genre"    : launcher_dic['genre'],   "Premiered" : launcher_dic['year'],
@@ -1648,6 +1649,7 @@ class Main:
                                    "overlay"  : ICON_OVERLAY })
 
         # --- Create context menu ---
+        commands = []
         launcherID = launcher_dic['id']
         categoryID = launcher_dic['categoryID']
         commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
@@ -1671,8 +1673,8 @@ class Main:
     #
     def _command_render_roms(self, categoryID, launcherID):
         if launcherID not in self.launchers:
-            log_error('_gui_render_roms() Launcher hash not found.')
-            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Launcher hash not found.', '@_gui_render_roms()')
+            log_error('_command_render_roms() Launcher hash not found.')
+            kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Launcher hash not found.', '@_command_render_roms()')
             return
 
         # Load ROMs for this launcher and display them
@@ -1698,51 +1700,9 @@ class Main:
         # Optimization Currently roms_fav is a dictionary, which is very fast when testing for element existence
         #              because it is hashed. However, set() is the fastest. If user has a lot of favourites
         #              there could be a small performance gain.
-        for key in sorted(roms, key= lambda x : roms[x]['filename']):
+        for key in sorted(roms, key = lambda x : roms[x]['filename']):
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False)
-
-    #
-    # Renders the special category favourites, which is actually very similar to a ROM launcher
-    # Note that only ROMs in a launcher can be added to favourites. Thus, no standalone launchers.
-    # If user deletes launcher or favourite ROMs the ROM in favourites remain.
-    # Favourites ROM information includes the application launcher and arguments to launch the ROM.
-    # Basically, once a ROM is added to favourites is becomes kind of a standalone launcher.
-    # Favourites has categoryID = 0 and launcherID = 0. Thus, other functions can differentiate
-    # between a standard ROM and a favourite ROM.
-    #
-    # What if user changes the favourites Thumb/Fanart??? Where do we store them???
-    # What about the NFO files of favourite ROMs???
-    #
-    # PROBLEM If user rescan ROMs then same ROMs will have different ID. An option to "relink"
-    #         the favourites with their original ROMs must be provided, provided that the launcher
-    #         is the same.
-    # IMPROVEMENT Maybe it could be interesting to be able to export the list of favourites
-    #             to HTML or something like that.
-    #
-    def _command_render_favourites(self):
-        # Load favourites
-        roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
-        if not roms:
-            kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first', 5000)
-            return
-
-        # Display Favourites
-        for key in sorted(roms, key= lambda x : roms[x]["filename"]):
-            self._gui_render_rom_row('0', '0', key, roms[key], False)
-        xbmcplugin.endOfDirectory( handle = self.addon_handle, succeeded=True, cacheToDisc=False)
-
-    #
-    # Render special categories: years, genres, studios
-    #
-    def _command_render_years(self):
-        kodi_dialog_OK('AEL', 'Year browser not coded yet. Sorry.')
-
-    def _command_render_genre(self):
-        kodi_dialog_OK('AEL', 'Genre browser not coded yet. Sorry.')
-
-    def _command_render_studio(self):
-        kodi_dialog_OK('AEL', 'Studio browser not coded yet. Sorry.')
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
     # Former  _add_rom
@@ -1780,7 +1740,7 @@ class Main:
 
             # If listing regular launcher and rom is in favourites, mark it
             if rom_is_in_favourites:
-                log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
+                # log_debug('gui_render_rom_row() ROM is in favourites {}'.format(rom_name))
 
                 # --- Workaround so the alphabetical order is not lost ---
                 # NOTE Missing ROMs must never be in favourites... However, mark them to help catching bugs.
@@ -1858,6 +1818,127 @@ class Main:
         # else:
         url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
         xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url_str, listitem=listitem, isFolder=False)
+
+    #
+    # Renders the special category favourites, which is actually very similar to a ROM launcher
+    # Note that only ROMs in a launcher can be added to favourites. Thus, no standalone launchers.
+    # If user deletes launcher or favourite ROMs the ROM in favourites remain.
+    # Favourites ROM information includes the application launcher and arguments to launch the ROM.
+    # Basically, once a ROM is added to favourites is becomes kind of a standalone launcher.
+    # Favourites has categoryID = 0 and launcherID = 0. Thus, other functions can differentiate
+    # between a standard ROM and a favourite ROM.
+    #
+    # What if user changes the favourites Thumb/Fanart??? Where do we store them???
+    # What about the NFO files of favourite ROMs???
+    #
+    # PROBLEM If user rescan ROMs then same ROMs will have different ID. An option to "relink"
+    #         the favourites with their original ROMs must be provided, provided that the launcher
+    #         is the same.
+    # IMPROVEMENT Maybe it could be interesting to be able to export the list of favourites
+    #             to HTML or something like that.
+    #
+    def _command_render_favourites(self):
+        # --- Load favourites ---
+        roms = fs_load_Favourites_XML_file(FAVOURITES_FILE_PATH)
+        if not roms:
+            kodi_notify('Advanced Emulator Launcher', 'Favourites XML empty. Add items to favourites first')
+            return
+
+        # --- Display Favourites ---
+        for key in sorted(roms, key= lambda x : roms[x]['filename']):
+            self._gui_render_rom_row('0', '0', key, roms[key], False)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    #
+    # Render special categories: years, genres, studios
+    #
+    def _command_render_virtual_category(self, virtual_categoryID):
+        # --- Load virtual launchers in this category ---
+        if virtual_categoryID == VCATEGORY_YEARS_ID:
+            vcategory_db_filename = VCAT_YEARS_FILE_PATH
+        elif virtual_categoryID == VCATEGORY_GENRE_ID:
+            vcategory_db_filename = VCAT_GENRE_FILE_PATH
+        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
+            vcategory_db_filename = VCAT_STUDIO_FILE_PATH
+        else:
+            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            return
+
+        # --- If the virtual category has no launchers then render nothing ---
+        # >> Also, tell the user to update the virtual launcher database
+        if not os.path.isfile(vcategory_db_filename):
+            kodi_dialog_OK('Advanced Emulator Launcher',
+                           'Virtual category database not found. Update the virtual category database first.')
+            return
+
+        # --- Write virtual launchers XML file ---
+        vcategory_launchers_fileName = VCAT_YEARS_FILE_PATH
+        vcategory_launchers = fs_load_VCategory_XML_file(vcategory_launchers_fileName)
+
+        # --- Render virtual launchers rows ---
+        icon = 'DefaultFolder.png'
+        for vlauncher_id in vcategory_launchers:
+            vlauncher = vcategory_launchers[vlauncher_id]
+            vlauncher_name = vlauncher['name'] + '  ({} ROM/s)'.format(vlauncher['rom_count'])
+            # listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
+            listitem = xbmcgui.ListItem(vlauncher_name, iconImage = icon)
+            # listitem.setProperty('fanart_image', launcher_dic['fanart'])
+            listitem.setInfo("video", {"Title"    : 'Title text',
+                                       "Label"    : 'Label text',
+                                       "Plot"     : 'Plot text',  "Studio"    : 'Studio text',
+                                       "Genre"    : 'Genre text', "Premiered" : 'Premiered text',
+                                       "Year"     : 'Year text',  "Writer"    : 'Writer text',
+                                       "Trailer"  : 'Trailer text',
+                                       "Director" : 'Director text',
+                                       "overlay"  : 7} )
+
+            # --- Create context menu ---
+            commands = []
+            # launcherID = launcher_dic['id']
+            # categoryID = launcher_dic['categoryID']
+            # commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
+            # commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
+            # >> ROMs launcher
+            # if not launcher_dic['rompath'] == '':
+            #     commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID), ))
+            # commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
+            # >> Add Launcher URL to Kodi Favourites (do not know how to do it yet)
+            commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
+            commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+            listitem.addContextMenuItems(commands, replaceItems=True)
+
+            url_str = self._misc_url('SHOW_ROMS', virtual_categoryID, vlauncher_id)
+            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    def _command_render_virtual_category_roms(self, virtual_categoryID, virtual_launcherID):
+        # --- Load virtual launchers in this category ---
+        if virtual_categoryID == VCATEGORY_YEARS_ID:
+            vcategory_db_filepath = VIRTUAL_CAT_YEARS_DIR
+        elif virtual_categoryID == VCATEGORY_GENRE_ID:
+            vcategory_db_filepath = VIRTUAL_CAT_GENRE_DIR
+        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
+            vcategory_db_filepath = VIRTUAL_CAT_STUDIO_DIR
+        else:
+            log_error('_command_render_virtual_category_roms() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            return
+
+        # --- Load favourites ---
+        hashed_db_filename = os.path.join(vcategory_db_filepath, virtual_launcherID + '.xml')
+        if not os.path.isfile(hashed_db_filename):
+            kodi_dialog_OK('AEL', 'Virtual launcher XML file not found.')
+            return
+        roms = fs_load_Favourites_XML_file(hashed_db_filename)
+        if not roms:
+            kodi_notify('Advanced Emulator Launcher', 'Virtual category XML empty. Add items to favourites first')
+            return
+
+        # --- Display Favourites ---
+        for key in sorted(roms, key= lambda x : roms[x]['filename']):
+            self._gui_render_rom_row('0', '0', key, roms[key], False)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
     # Adds ROM to favourites
@@ -2239,6 +2320,84 @@ class Main:
             pass
 
     #
+    # Makes a virtual category database
+    #
+    def _command_update_virtual_category_db(self, virtual_categoryID):
+        # --- Customise function depending on virtual category ---
+        if virtual_categoryID == VCATEGORY_YEARS:
+            vcategory_db_filename = VCAT_YEARS_FILE_PATH
+        elif virtual_categoryID == VCATEGORY_GENRE:
+            vcategory_db_filename = VCAT_GENRE_FILE_PATH
+        elif virtual_categoryID == VCATEGORY_STUDIO:
+            vcategory_db_filename = VCAT_STUDIO_FILE_PATH
+        else:
+            log_error('_command_update_virtual_category_db() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            return
+    
+        # --- Make a big dictionary will all the ROMs ---
+        all_roms = {}
+        for launcher_id in self.launchers:
+            launcher = self.launchers[launcher_id]
+
+            # >> If launcher is standalone skip
+            if launcher['rompath'] == '': continue
+
+            # >> Open launcher and add roms to the big list
+            roms = fs_load_ROM_XML_file(launcher['roms_xml_file'])
+            
+            # >> Add additional fields to ROM to make a Favourites ROM
+            for rom_id in roms:
+                rom = roms[rom_id]
+                rom['launcherID']  = launcher['id']
+                rom['platform']    = launcher['platform']
+                rom['application'] = launcher['application']
+                rom['args']        = launcher['args']
+                rom['rompath']     = launcher['rompath']
+                rom['romext']      = launcher['romext']
+                rom['fav_status']  = 'OK'
+
+            # >> Update dictionary
+            all_roms.update(roms)
+
+        # --- Create a dictionary that hast key the virtual category and value a dictionay of roms 
+        #     belonging to that virtual category ---
+        virtual_launchers = {}
+        for rom_id in all_roms:
+            rom = all_roms[rom_id]
+            rom_year = rom['year']
+            if rom_year in virtual_launchers:
+                virtual_launchers[rom_year][rom['id']] = rom
+            else:
+                virtual_launchers[rom_year] = {rom['id'] : rom}
+
+        # --- Write hashed database ---
+        vcategory_launchers = {}
+        for vlauncher_id in virtual_launchers:
+            vlauncher_id_md5   = hashlib.md5(vlauncher_id)
+            hashed_db_UUID     = vlauncher_id_md5.hexdigest()
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_YEARS_DIR, hashed_db_UUID + '.xml')
+            log_debug('_command_update_virtual_category_db() vlauncher_id       "{}"'.format(vlauncher_id))
+            log_debug('_command_update_virtual_category_db() hashed_db_UUID     "{}"'.format(hashed_db_UUID))
+            # log_debug('_command_update_virtual_category_db() hashed_db_filename "{}"'.format(hashed_db_filename))
+
+            # >> Virtual launcher ROMs are like Favourite ROMs. They contain all required fields to launch
+            # >> the ROM, and also share filesystem I/O functions with Favourite ROMs.
+            vlauncher_roms = virtual_launchers[vlauncher_id]
+            log_debug('_command_update_virtual_category_db() Number of ROMs = {}'.format(len(vlauncher_roms)))
+            fs_write_Favourites_XML_file(hashed_db_filename, vlauncher_roms)
+            
+            # >> Create virtual launcher
+            vcategory_launchers[hashed_db_UUID] = { 'id' : hashed_db_UUID,
+                                                    'name' : vlauncher_id,
+                                                    'rom_count' : str(len(vlauncher_roms)),
+                                                    'roms_xml_file' :  hashed_db_filename }
+
+        # --- Write virtual launchers XML file ---
+        vcategory_launchers_fileName = VCAT_YEARS_FILE_PATH
+        fs_write_VCategory_XML_file(vcategory_launchers_fileName, vcategory_launchers)
+
+    #
     # Launchs an application
     #
     def _command_run_standalone_launcher(self, categoryID, launcherID):
@@ -2254,20 +2413,20 @@ class Main:
         # results,
         # app = "xbmc-sea-%s" % launcherid
         # args = 'ActivateWindow(10001,"%s")' % launcher_query
-        apppath = os.path.dirname(launcher["application"])
-        if os.path.basename(launcher["application"]).lower().replace(".exe" , "") == "xbmc"  or \
-           "xbmc-fav-" in launcher["application"] or "xbmc-sea-" in launcher["application"]:
-            xbmc.executebuiltin('XBMC.%s' % launcher["args"])
+        apppath = os.path.dirname(launcher['application'])
+        if os.path.basename(launcher['application']).lower().replace('.exe' , '') == 'xbmc'  or \
+           'xbmc-fav-' in launcher['application'] or 'xbmc-sea-' in launcher['application']:
+            xbmc.executebuiltin('XBMC.%s' % launcher['args'])
             return
 
         # ~~~~~ External application ~~~~~
-        application = launcher["application"]
-        application_basename = os.path.basename(launcher["application"])
+        application = launcher['application']
+        application_basename = os.path.basename(launcher['application'])
         if not os.path.exists(apppath):
             kodi_notify_warn('Advanced Emulator Launcher',
                              'App {} not found.'.format(apppath))
             return
-        arguments = launcher["args"].replace("%apppath%" , apppath).replace("%APPPATH%" , apppath)
+        arguments = launcher['args'].replace('%apppath%' , apppath).replace('%APPPATH%' , apppath)
         log_info('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
         log_info('_run_standalone_launcher() application          = "{0}"'.format(application))
         log_info('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
@@ -2278,10 +2437,10 @@ class Main:
 
         # Execute
         if sys.platform == 'win32':
-            if launcher["application"].split(".")[-1] == "lnk":
+            if launcher['application'].split('.')[-1] == 'lnk':
                 os.system("start \"\" \"%s\"" % (application))
             else:
-                if application.split(".")[-1] == "bat":
+                if application.split('.')[-1] == 'bat':
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
                     if self.settings['show_batch_window']:
