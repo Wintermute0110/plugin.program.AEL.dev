@@ -62,14 +62,14 @@ class metadata_Offline(Scraper_Metadata):
 
     def set_addon_dir(self, plugin_dir):
         self.addon_dir = plugin_dir
-        log_debug('metadata_Offline::set_addon_dir() self.addon_dir = {}'.format(self.addon_dir))
+        log_debug('metadata_Offline::set_addon_dir() self.addon_dir = {0}'.format(self.addon_dir))
         
     # Load XML information for this scraper and keep it cached in memory.
     # For offline scrapers.
     def initialise_scraper(self, platform):
         # Check if we have data already cached in object memory for this platform
         if self.cached_platform == platform:
-            log_debug('metadata_Offline::initialise_scraper platform = {} is cached in object.'.format(platform))
+            log_debug('metadata_Offline::initialise_scraper platform = {0} is cached in object.'.format(platform))
             return
     
         # What if platform is not in the official list dictionary? Then load
@@ -77,7 +77,7 @@ class metadata_Offline(Scraper_Metadata):
         try:
             xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
         except:
-            log_debug('metadata_Offline::initialise_scraper Platform {} not found'.format(platform))
+            log_debug('metadata_Offline::initialise_scraper Platform {0} not found'.format(platform))
             log_debug('metadata_Offline::initialise_scraper Defaulting to Unknown')
             self.games = {}
             self.cached_xml_path = ''
@@ -86,7 +86,7 @@ class metadata_Offline(Scraper_Metadata):
 
         # Load XML database and keep it in memory for subsequent calls
         xml_path = os.path.join(self.addon_dir, xml_file)
-        log_debug('metadata_Offline::initialise_scraper Loading XML {}'.format(xml_path))
+        log_debug('metadata_Offline::initialise_scraper Loading XML {0}'.format(xml_path))
         self.games = fs_load_GameInfo_XML(xml_path)
         if not self.games:
             self.games = {}
@@ -95,12 +95,12 @@ class metadata_Offline(Scraper_Metadata):
             return
         self.cached_xml_path = xml_path
         self.cached_platform = platform
-        log_debug('metadata_Offline::initialise_scraper cached_xml_path = {}'.format(self.cached_xml_path))
-        log_debug('metadata_Offline::initialise_scraper cached_platform = {}'.format(self.cached_platform))
+        log_debug('metadata_Offline::initialise_scraper cached_xml_path = {0}'.format(self.cached_xml_path))
+        log_debug('metadata_Offline::initialise_scraper cached_platform = {0}'.format(self.cached_platform))
 
     # List of games found
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_Offline::get_search Searching '{}' '{}' '{}'".format(search_string, rom_base_noext, platform))
+        log_verb("metadata_Offline::get_search Searching '{0}' '{1}' '{2}'".format(search_string, rom_base_noext, platform))
         results_ret = []
 
         # If not cached XML data found (maybe offline scraper does not exist
@@ -111,7 +111,7 @@ class metadata_Offline(Scraper_Metadata):
 
         # Search MAME games
         if platform == 'MAME':
-            log_verb("metadata_Offline::get_search Mode MAME searching for '{}'".format(rom_base_noext))
+            log_verb("metadata_Offline::get_search Mode MAME searching for '{0}'".format(rom_base_noext))
             
             # --- MAME rom_base_noext is exactly the rom name ---
             if rom_base_noext.lower() in self.games:
@@ -123,15 +123,15 @@ class metadata_Offline(Scraper_Metadata):
 
         # Search No-Intro games
         else:
-            log_verb("metadata_Offline::get_search Mode No-Intro searching for '{}'".format(search_string))
+            log_verb("metadata_Offline::get_search Mode No-Intro searching for '{0}'".format(search_string))
             search_string_lower = search_string.lower()
-            regexp = '.*{}.*'.format(search_string_lower)
+            regexp = '.*{0}.*'.format(search_string_lower)
             try:
                 # Sometimes this produces raise error, v # invalid expression
                 p = re.compile(regexp)
             except:
                 log_info('metadata_Offline::get_search Exception in re.compile(regexp)')
-                log_info('metadata_Offline::get_search regexp = "{}"'.format(regexp))
+                log_info('metadata_Offline::get_search regexp = "{0}"'.format(regexp))
                 return results_ret
 
             game_list = []
@@ -195,7 +195,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_TheGamesDB::get_search Searching '{}' '{}' '{}'".format(search_string, rom_base_noext, platform))
+        log_verb("metadata_TheGamesDB::get_search Searching '{0}' '{1}' '{2}'".format(search_string, rom_base_noext, platform))
         return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
 
     # game is dictionary returned by the Scraper_TheGamesDB.get_game_search()
@@ -204,7 +204,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 
         # --- TheGamesDB returns an XML file with GetGame.php?id ---
         game_id = game['id']
-        log_debug('metadata_TheGamesDB::get_metadata Game ID "{}"'.format(game_id))
+        log_debug('metadata_TheGamesDB::get_metadata Game ID "{0}"'.format(game_id))
         req = urllib2.Request('http://thegamesdb.net/api/GetGame.php?id=' + game_id)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -240,7 +240,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_GameFAQs::get_search Searching '{}' '{}' '{}'".format(search_string, rom_base_noext, platform))
+        log_verb("metadata_GameFAQs::get_search Searching '{0}' '{1}' '{2}'".format(search_string, rom_base_noext, platform))
         return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
@@ -248,7 +248,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         
         # Get game page
         game_id = game['id']
-        log_debug('metadata_GameFAQs::get_metadata Game ID "{}"'.format(game_id))
+        log_debug('metadata_GameFAQs::get_metadata Game ID "{0}"'.format(game_id))
         req = urllib2.Request('http://www.gamefaqs.com' + game_id)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -266,7 +266,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         if game_genre:
             gamedata["genre"] = game_genre[0][3]
 
-        # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 »</a></li>
+        # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 ?</a></li>
         game_release = re.findall('<li><b>Release:</b> <a href="(.*?)">(.*?) &raquo;</a></li>', page_data)
         if game_release:
             gamedata["year"] = game_release[0][1][-4:]

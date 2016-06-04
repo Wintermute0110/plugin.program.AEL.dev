@@ -86,7 +86,7 @@ class Scraper_GameFAQs():
         # http://www.gamefaqs.com/search?platform=63&game=street+fighter
         search_string = search_string.replace(' ','+')
         req = urllib2.Request('http://www.gamefaqs.com/search/index.html?' +
-                              'platform={}'.format(scraper_platform) +
+                              'platform={0}'.format(scraper_platform) +
                               '&game=' + search_string + '')
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
