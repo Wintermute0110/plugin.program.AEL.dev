@@ -202,8 +202,8 @@ def misc_split_path(f_path):
 #      If thumb/fanart have different paths no suffix is added to ROM base_name
 #
 def misc_get_thumb_path_noext(thumb_path, fanart_path, base_noext):
-    # log_debug('misc_get_thumb_path_noext()  thumb_path {}'.format(thumb_path))
-    # log_debug('misc_get_thumb_path_noext() fanart_path {}'.format(fanart_path))
+    # log_debug('misc_get_thumb_path_noext()  thumb_path {0}'.format(thumb_path))
+    # log_debug('misc_get_thumb_path_noext() fanart_path {0}'.format(fanart_path))
 
     if thumb_path == fanart_path:
         # log_debug('misc_get_thumb_path_noext() Thumbs/Fanarts have the same path')
@@ -215,8 +215,8 @@ def misc_get_thumb_path_noext(thumb_path, fanart_path, base_noext):
     return path_noext
 
 def misc_get_fanart_path_noext(thumb_path, fanart_path, base_noext):
-    # log_debug('misc_get_fanart_path_noext()  thumb_path {}'.format(thumb_path))
-    # log_debug('misc_get_fanart_path_noext() fanart_path {}'.format(fanart_path))
+    # log_debug('misc_get_fanart_path_noext()  thumb_path {0}'.format(thumb_path))
+    # log_debug('misc_get_fanart_path_noext() fanart_path {0}'.format(fanart_path))
 
     if thumb_path == fanart_path:
         # log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts have the same path')
@@ -233,10 +233,10 @@ def misc_get_fanart_path_noext(thumb_path, fanart_path, base_noext):
 #
 def misc_look_for_image(image_path_noext, img_exts):
     image_name = ''
-    log_debug('Testing image prefix {}'.format(image_path_noext))
+    log_debug('Testing image prefix {0}'.format(image_path_noext))
     for ext in img_exts:
         test_img = image_path_noext + '.' + ext
-        # log_debug('Testing image "{}"'.format(test_img))
+        # log_debug('Testing image "{0}"'.format(test_img))
         if os.path.isfile(test_img):
             # Optimization Stop loop as soon as an image is found
             image_name = test_img
@@ -274,18 +274,18 @@ def print_scraper_list(scraper_obj_list):
     print('Short name        Fancy Name')
     print('----------------  ---------------------------------')
     for scraper_obj in scraper_obj_list:
-        print('{:10s}  {:}'.format(scraper_obj.name.rjust(16), scraper_obj.fancy_name))
+        print('{0:10s}  {1:}'.format(scraper_obj.name.rjust(16), scraper_obj.fancy_name))
 
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
 def print_games_search(results):
-    print('\nFound {} game/s'.format(len(results)))
-    print("{} {}".format('Display name'.ljust(NAME_LENGTH), 'Id'.ljust(ID_LENGTH)))
-    print("{} {}".format('-'*NAME_LENGTH, '-'*ID_LENGTH))
+    print('\nFound {0} game/s'.format(len(results)))
+    print("{0} {1}".format('Display name'.ljust(NAME_LENGTH), 'Id'.ljust(ID_LENGTH)))
+    print("{0} {1}".format('-'*NAME_LENGTH, '-'*ID_LENGTH))
     for game in results:
         display_name = text_limit_string(game['display_name'], NAME_LENGTH)
         id           = text_limit_string(game['id'], ID_LENGTH)
-        print("{} {}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH)))
+        print("{0} {1}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH)))
     print('')
 
 def print_game_metadata(results, scraperObj):
@@ -298,23 +298,23 @@ def print_game_metadata(results, scraperObj):
         year   = metadata['year']
         studio = text_limit_string(metadata['studio'], STUDIO_LENGTH)
         plot   = text_limit_string(metadata['plot'], PLOT_LENGTH)
-        print('\nDisplaying metadata for title "{}"'.format(title))
-        print("{} {} {} {} {}".format('Title'.ljust(NAME_LENGTH), 'Genre'.ljust(GENRE_LENGTH), 
+        print('\nDisplaying metadata for title "{0}"'.format(title))
+        print("{0} {1} {2} {3} {4}".format('Title'.ljust(NAME_LENGTH), 'Genre'.ljust(GENRE_LENGTH), 
                                       'Year'.ljust(YEAR_LENGTH), 'Studio'.ljust(STUDIO_LENGTH), 'Plot'.ljust(PLOT_LENGTH)))
-        print("{} {} {} {} {}".format('-'*NAME_LENGTH, '-'*GENRE_LENGTH, '-'*YEAR_LENGTH, 
+        print("{0} {1} {2} {3} {4}".format('-'*NAME_LENGTH, '-'*GENRE_LENGTH, '-'*YEAR_LENGTH, 
                                       '-'*STUDIO_LENGTH, '-'*PLOT_LENGTH))
-        print("{} {} {} {} {}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), year.ljust(YEAR_LENGTH), 
+        print("{0} {1} {2} {3} {4}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), year.ljust(YEAR_LENGTH), 
                                       studio.ljust(STUDIO_LENGTH), plot.ljust(PLOT_LENGTH)))
 
 def print_game_image_list(results, scraperObj):
     # --- Get image list of first game ---
     if results:
         image_list = scraperObj.get_images(results[0])
-        print('\nFound {} image/s'.format(len(image_list)))
-        print("{} {} {}".format('Display name'.ljust(NAME_LENGTH), 'URL'.ljust(URL_LENGTH), 'Display URL'.ljust(URL_LENGTH)))
-        print("{} {} {}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
+        print('\nFound {0} image/s'.format(len(image_list)))
+        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH), 'URL'.ljust(URL_LENGTH), 'Display URL'.ljust(URL_LENGTH)))
+        print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
         for image in image_list:
             display_name  = text_limit_string(image['name'], NAME_LENGTH)
             url           = text_limit_string(image['URL'], URL_LENGTH)
             disp_url      = text_limit_string(image['disp_URL'], URL_LENGTH)
-            print("{} {} {}".format(display_name.ljust(NAME_LENGTH), url.ljust(URL_LENGTH), disp_url.ljust(URL_LENGTH)))
+            print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), url.ljust(URL_LENGTH), disp_url.ljust(URL_LENGTH)))

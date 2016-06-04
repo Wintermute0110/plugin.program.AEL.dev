@@ -82,8 +82,8 @@ try:
     f.close()
 except:
     pass
-print('Catver Number of machines   {:6d}'.format(len(categories_dic)))
-print('Catver Number of categories {:6d}'.format(len(categories_set)))
+print('Catver Number of machines   {0:6d}'.format(len(categories_dic)))
+print('Catver Number of categories {0:6d}'.format(len(categories_set)))
 
 # -----------------------------------------------------------------------------
 # Incremental Parsing approach B (from [1])
@@ -96,7 +96,7 @@ context = ET.iterparse(MAME_XML_filename, events=("start", "end"))
 context = iter(context)
 event, root = context.next()
 mame_version_str = 'MAME ' + root.attrib['build']
-print('MAME version is "{}"'.format(mame_version_str))
+print('MAME version is "{0}"'.format(mame_version_str))
 
 # --- Data variables ---
 # Create a dictionary of the form,
@@ -152,12 +152,12 @@ for event, elem in context:
     # --- Print something to prove we are doing stuff ---
     num_iteration += 1
     if num_iteration % 25000 == 0:
-      print('Processed {:10d} events ({:6d} machines so far) ...'.format(num_iteration, num_machines))
+      print('Processed {0:10d} events ({1:6d} machines so far) ...'.format(num_iteration, num_machines))
 
     # --- Stop after some iterations for debug ---
     # if num_iteration > 25000: break
-print('Processed {} MAME XML events'.format(num_iteration))
-print('Total number of machines {}'.format(num_machines))
+print('Processed {0} MAME XML events'.format(num_iteration))
+print('Total number of machines {0}'.format(num_machines))
 
 # -----------------------------------------------------------------------------
 # Now write simplified XML output file
@@ -168,7 +168,7 @@ def string_to_XML(str):
 
     return str_A.replace('<', '&lt;').replace('>', '&gt;')
 
-# log_info('_fs_write_Favourites_XML_file() Saving XML file {}'.format(roms_xml_file))
+# log_info('_fs_write_Favourites_XML_file() Saving XML file {0}'.format(roms_xml_file))
 try:
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
@@ -176,8 +176,8 @@ try:
     str_list.append('<header>\n' +
                     '  <listname>MAME</listname>\n' +
                     '  <lastlistupdate></lastlistupdate>\n' +
-                    '  <listversion>{}</listversion>\n'.format(mame_version_str) +
-                    '  <exporterversion>{}</exporterversion>\n'.format('MAME_XML_to_GameDBInfo_XML') +
+                    '  <listversion>{0}</listversion>\n'.format(mame_version_str) +
+                    '  <exporterversion>{0}</exporterversion>\n'.format('MAME_XML_to_GameDBInfo_XML') +
                     '</header>\n')
     for key in sorted(machines):
         name         = string_to_XML(machines[key]['name'])
@@ -186,7 +186,7 @@ try:
         manufacturer = string_to_XML(machines[key]['manufacturer'])
         genre        = categories_dic[key] if key in categories_dic else 'Unknown'
         genre        = string_to_XML(genre)
-        str_list.append('<game name="{}">\n'.format(name) +
+        str_list.append('<game name="{0}">\n'.format(name) +
                         '  <description>'  + description   + '</description>\n' +
                         '  <year>'         + year          + '</year>\n' +
                         '  <manufacturer>' + manufacturer  + '</manufacturer>\n' +

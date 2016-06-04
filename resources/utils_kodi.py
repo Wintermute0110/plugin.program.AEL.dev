@@ -148,8 +148,8 @@ def kodi_get_cached_image(image_path):
 def kodi_update_image_cache(img_path):
     # What if image is not cached?
     cached_thumb = kodi_get_cached_image(img_path)
-    log_debug('kodi_update_image_cache()     img_path {}'.format(img_path))
-    log_debug('kodi_update_image_cache() cached_thumb {}'.format(cached_thumb))
+    log_debug('kodi_update_image_cache()     img_path {0}'.format(img_path))
+    log_debug('kodi_update_image_cache() cached_thumb {0}'.format(cached_thumb))
 
     # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
     # However, images in the cache have the original extension. Replace TBN extension
@@ -158,7 +158,7 @@ def kodi_update_image_cache(img_path):
     if F_cached.ext == '.tbn':
         F_img = utils.misc_split_path(img_path)
         cached_thumb = cached_thumb.replace('.tbn', F_img.ext)
-        log_debug('kodi_update_image_cache() New cached_thumb {}'.format(cached_thumb))
+        log_debug('kodi_update_image_cache() New cached_thumb {0}'.format(cached_thumb))
 
     # Check if file exists in the cache
     # xbmc.getCacheThumbName() seems to return a cache filename even if the local file does not exist!
@@ -167,8 +167,8 @@ def kodi_update_image_cache(img_path):
         return
 
     # --- Copy local image into Kodi image cache ---
-    log_debug('kodi_update_image_cache() copying {}'.format(img_path))
-    log_debug('kodi_update_image_cache() into    {}'.format(cached_thumb))
+    log_debug('kodi_update_image_cache() copying {0}'.format(img_path))
+    log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb))
     fs_encoding = disk_IO.get_fs_encoding()
     decoded_img_path     = img_path.decode(fs_encoding, 'ignore')
     decoded_cached_thumb = cached_thumb.decode(fs_encoding, 'ignore')
