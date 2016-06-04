@@ -82,8 +82,8 @@ try:
     f.close()
 except:
     pass
-print('Catver Number of machines   {:6d}'.format(len(categories_dic)))
-print('Catver Number of categories {:6d}'.format(len(categories_set)))
+print('Catver Number of machines   {0:6d}'.format(len(categories_dic)))
+print('Catver Number of categories {0:6d}'.format(len(categories_set)))
 
 # -----------------------------------------------------------------------------
 # Incremental Parsing approach B (from [1])
@@ -152,7 +152,7 @@ for event, elem in context:
     # --- Print something to prove we are doing stuff ---
     num_iteration += 1
     if num_iteration % 25000 == 0:
-      print('Processed {:10d} events ({:6d} machines so far) ...'.format(num_iteration, num_machines))
+      print('Processed {0:10d} events ({1:6d} machines so far) ...'.format(num_iteration, num_machines))
 
     # --- Stop after some iterations for debug ---
     # if num_iteration > 25000: break

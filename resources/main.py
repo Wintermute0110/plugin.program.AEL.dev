@@ -99,7 +99,7 @@ class Main:
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
-        # log_debug(sys.version)
+        log_debug(sys.version)
         # log_debug('__addon_name__ {0}'.format(__addon_name__))
         log_debug('__addon_id__   {0}'.format(__addon_id__))
         log_debug('__version__    {0}'.format(__version__))
@@ -853,9 +853,9 @@ class Main:
 
                     # --- Report ---
                     log_info('***** No-Intro audit finished. Report ******')
-                    log_info('No-Intro Have ROMs    {:6d}'.format(num_have))
-                    log_info('No-Intro Miss ROMs    {:6d}'.format(num_miss))
-                    log_info('No-Intro Unknown ROMs {:6d}'.format(num_unknown))
+                    log_info('No-Intro Have ROMs    {0:6d}'.format(num_have))
+                    log_info('No-Intro Miss ROMs    {0:6d}'.format(num_miss))
+                    log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
                     kodi_notify('Advanced Emulator Launcher', 
                                 'Audit finished. Have {0}/Miss {1}/Unknown {2}'.format(num_have, num_miss, num_unknown))
 
@@ -2749,9 +2749,9 @@ class Main:
                 return
         self.pDialog.close()
         log_info('***** ROM scanner finished. Report ******')
-        log_info('Removed dead ROMs {:6d}'.format(num_removed_roms))
-        log_info('Files checked     {:6d}'.format(num_files_checked))
-        log_info('New added ROMs    {:6d}'.format(num_new_roms))
+        log_info('Removed dead ROMs {0:6d}'.format(num_removed_roms))
+        log_info('Files checked     {0:6d}'.format(num_files_checked))
+        log_info('New added ROMs    {0:6d}'.format(num_new_roms))
 
         if len(roms) == 0:
             kodi_dialog_OK('Advanced Emulator Launcher',
@@ -2774,9 +2774,9 @@ class Main:
 
             # Report
             log_info('***** No-Intro audit finished. Report ******')
-            log_info('No-Intro Have ROMs    {:6d}'.format(num_have))
-            log_info('No-Intro Miss ROMs    {:6d}'.format(num_miss))
-            log_info('No-Intro Unknown ROMs {:6d}'.format(num_unknown))
+            log_info('No-Intro Have ROMs    {0:6d}'.format(num_have))
+            log_info('No-Intro Miss ROMs    {0:6d}'.format(num_miss))
+            log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
         else:
             log_info('No No-Intro DAT configured. No auditing ROMs.')
 

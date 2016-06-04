@@ -274,7 +274,7 @@ def print_scraper_list(scraper_obj_list):
     print('Short name        Fancy Name')
     print('----------------  ---------------------------------')
     for scraper_obj in scraper_obj_list:
-        print('{:10s}  {:}'.format(scraper_obj.name.rjust(16), scraper_obj.fancy_name))
+        print('{0:10s}  {1:}'.format(scraper_obj.name.rjust(16), scraper_obj.fancy_name))
 
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
