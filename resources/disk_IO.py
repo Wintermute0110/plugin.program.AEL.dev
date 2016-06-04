@@ -468,7 +468,7 @@ def fs_write_VCategory_XML_file(roms_xml_file, roms):
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_Virtual_Cateogory version="1.0">\n')
+        str_list.append('<advanced_emulator_launcher_Virtual_Category version="1.0">\n')
         for romID in sorted(roms, key = lambda x : roms[x]['name']):
             rom = roms[romID]
             str_list.append('<rom>\n')
@@ -477,7 +477,7 @@ def fs_write_VCategory_XML_file(roms_xml_file, roms):
             str_list.append(XML_text('rom_count', rom['rom_count']))
             str_list.append(XML_text('roms_xml_file', rom['roms_xml_file']))
             str_list.append('</rom>\n')
-        str_list.append('</advanced_emulator_launcher_Virtual_Cateogory>\n')
+        str_list.append('</advanced_emulator_launcher_Virtual_Category>\n')
         full_string = ''.join(str_list)
         file_obj = open(roms_xml_file, 'wt' )
         file_obj.write(full_string)
