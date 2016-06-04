@@ -31,8 +31,8 @@ class Scraper_TheGamesDB():
         results_ret = []
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         if DEBUG_SCRAPERS:
-            log_debug('Scraper_TheGamesDB::get_search AEL platform         "{}"'.format(platform))
-            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform  "{}"'.format(scraper_platform))
+            log_debug('Scraper_TheGamesDB::get_search AEL platform         "{0}"'.format(platform))
+            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform  "{0}"'.format(scraper_platform))
 
         # --- This returns an XML file ---
         # <Data>
@@ -73,14 +73,14 @@ class Scraper_GameFAQs():
         results_ret = []
         scraper_platform = AEL_platform_to_GameFAQs(platform)
         if DEBUG_SCRAPERS:
-            log_debug('Scraper_GameFAQs::get_search AEL platform       "{}"'.format(platform))
-            log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{}"'.format(scraper_platform))
+            log_debug('Scraper_GameFAQs::get_search AEL platform       "{0}"'.format(platform))
+            log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{0}"'.format(scraper_platform))
 
         # Example: 'street fighter', 'Nintendo SNES'
         # http://www.gamefaqs.com/search?platform=63&game=street+fighter
         search_string = search_string.replace(' ','+')
         req = urllib2.Request('http://www.gamefaqs.com/search/index.html?' +
-                              'platform={}'.format(scraper_platform) +
+                              'platform={0}'.format(scraper_platform) +
                               '&game=' + search_string + '')
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)

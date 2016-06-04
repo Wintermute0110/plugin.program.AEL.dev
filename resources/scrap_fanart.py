@@ -53,7 +53,7 @@ class fanart_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         # --- Download game page XML data ---
         # Maybe this is candidate for common code...
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
-        log_debug('fanart_TheGamesDB::get_images game_id_url = {}'.format(game_id_url))
+        log_debug('fanart_TheGamesDB::get_images game_id_url = {0}'.format(game_id_url))
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -95,7 +95,7 @@ class fanart_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         # --- Download game page data ---
         # Maybe this is candidate for common code...
         game_id_url = 'http://www.gamefaqs.com' + game['id'] + '/images'
-        log_debug('thumb_GameFAQs::get_images game_id_url = {}'.format(game_id_url))
+        log_debug('thumb_GameFAQs::get_images game_id_url = {0}'.format(game_id_url))
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)

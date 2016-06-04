@@ -85,7 +85,7 @@ def net_download_img(img_url, file_path):
     f.close()                                
 
 def net_get_URL_text(req):
-    log_debug('net_get_URL_text() Reading URL "{}"'.format(req.get_full_url()))
+    log_debug('net_get_URL_text() Reading URL "{0}"'.format(req.get_full_url()))
     page_data = ''
     try:
         # Read data
@@ -98,7 +98,7 @@ def net_get_URL_text(req):
         page_data = page_data.replace('\n', '')
     except: # Catches all exceptions
         e = sys.exc_info()[0]
-        log_debug('Exception {}'.format(e))
-    log_debug('net_get_URL_text() Read {} bytes'.format(len(page_data)))
+        log_debug('Exception {0}'.format(e))
+    log_debug('net_get_URL_text() Read {0} bytes'.format(len(page_data)))
 
     return page_data

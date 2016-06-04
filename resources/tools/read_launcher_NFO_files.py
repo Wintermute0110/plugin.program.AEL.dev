@@ -38,14 +38,14 @@ def print_NFO_dic(games_nfo_dic):
     length_plot      = 60
 
     # Print table header
-    print("{} {} {} {} {} {}".format('Ar', 'Er', 'Ir', 'Or', 'Ur', 'Ar'))
-    print("{} {} {} {} {} {}".format('-'.ljust(name_length), '-'.ljust(id_length), '-'.ljust(name_length),
+    print("{0} {1} {2} {3} {4} {5}".format('Ar', 'Er', 'Ir', 'Or', 'Ur', 'Ar'))
+    print("{0} {1} {2} {3} {4} {5}".format('-'.ljust(name_length), '-'.ljust(id_length), '-'.ljust(name_length),
                                      '-'.ljust(name_length), '-'.ljust(id_length), '-'.ljust(name_length) ))
     # Print table rows
     for game in results:
         display_name = text_limit_string(game['display_name'], name_length)
         id           = text_limit_string(game['id'], id_length)
-        print("'{}' '{}'".format(display_name.ljust(name_length), id.ljust(id_length)))
+        print("'{0}' '{1}'".format(display_name.ljust(name_length), id.ljust(id_length)))
 
 # --- main ----------------------------------------------------------------------------------------
 # Scan all NFO files in launcher, recursive. Use same functions as in plugin.

@@ -91,7 +91,7 @@ def fs_new_favourite_rom():
 #
 def XML_text(tag_name, tag_text):
     tag_text = text_escape_XML(tag_text)
-    line = '  <{}>{}</{}>\n'.format(tag_name, tag_text, tag_name)
+    line = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text, tag_name)
 
     return line
 
@@ -313,11 +313,11 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {} file (OSError)'.format(roms_xml_file))
-        log_error('fs_write_ROM_XML_file() (OSerror) Cannot write file "{}"'.format(roms_xml_file))
+        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+        log_error('fs_write_ROM_XML_file() (OSerror) Cannot write file "{0}"'.format(roms_xml_file))
     except IOError:
-        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {} file (IOError)'.format(roms_xml_file))
-        log_error('fs_write_ROM_XML_file() (IOError) Cannot write file "{}"'.format(roms_xml_file))
+        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+        log_error('fs_write_ROM_XML_file() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # --- We are not busy anymore ---
     kodi_busydialog_OFF()
@@ -463,10 +463,10 @@ def fs_load_Favourites_XML_file(roms_xml_file):
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
     if not os.path.isfile(roms_xml_file):
-        return {}
+        return {0}
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_NoIntro_XML_file() Loading XML file {}'.format(roms_xml_file))
+    log_verb('fs_load_NoIntro_XML_file() Loading XML file {0}'.format(roms_xml_file))
     nointro_roms = {}
     xml_tree = ET.parse(roms_xml_file)
     xml_root = xml_tree.getroot()
@@ -487,16 +487,16 @@ def fs_load_GameInfo_XML(xml_file):
 
     # --- Check that file exists ---
     if not os.path.isfile(xml_file):
-        log_error("Cannot load file '{}'".format(xml_file))
+        log_error("Cannot load file '{0}'".format(xml_file))
         return games
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_GameInfo_XML() Loading "{}"'.format(xml_file))
+    log_verb('fs_load_GameInfo_XML() Loading "{0}"'.format(xml_file))
     xml_tree = ET.parse(xml_file)
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser: 
-            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
+            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
@@ -549,7 +549,7 @@ def fs_load_GameInfo_XML(xml_file):
 def fs_export_ROM_NFO(rom, verbose = True):
     F = misc_split_path(rom['filename'])
     nfo_file_path  = F.path_noext + '.nfo'
-    log_debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
+    log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path))
 
     # Always overwrite NFO files.
     nfo_content = []
@@ -569,12 +569,12 @@ def fs_export_ROM_NFO(rom, verbose = True):
     except:
         if verbose:
             kodi_notify_warn('Advanced Emulator Launcher',
-                             'Error writing {}'.format(nfo_file_path))
-        log_error("fs_export_ROM_NFO() Exception writing '{}'".format(nfo_file_path))
+                             'Error writing {0}'.format(nfo_file_path))
+        log_error("fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path))
         return
     if verbose:
         kodi_notify('Advanced Emulator Launcher',
-                    'Created NFO file {}'.format(nfo_file_path))
+                    'Created NFO file {0}'.format(nfo_file_path))
 
     return
 
@@ -586,7 +586,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     F = misc_split_path(roms[romID]['filename'])
     nfo_file_path = F.path_noext + '.nfo'
-    log_debug('fs_export_ROM_NFO() Loading "{}"'.format(nfo_file_path))
+    log_debug('fs_export_ROM_NFO() Loading "{0}"'.format(nfo_file_path))
 
     # --- Import data ---
     if os.path.isfile(nfo_file_path):
@@ -610,12 +610,12 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 
         if verbose:
             kodi_notify('Advanced Emulator Launcher',
-                        'Imported {}'.format(nfo_file_path))
+                        'Imported {0}'.format(nfo_file_path))
     else:
         if verbose:
             kodi_notify_warn('Advanced Emulator Launcher',
-                             'NFO file not found {}'.format(nfo_file_path))
-        log_debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
+                             'NFO file not found {0}'.format(nfo_file_path))
+        log_debug("fs_import_ROM_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
     return True
@@ -680,13 +680,13 @@ def fs_export_launcher_NFO(settings, launcher):
         f.close()
     except:
         kodi_notify_warn('Advanced Emulator Launcher',
-                         'Exception writing NFO file {}'.format(os.path.basename(nfo_file_path)))
-        log_error("fs_export_launcher_NFO() Exception writing'{}'".format(nfo_file_path))
+                         'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
+        log_error("fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_file_path))
         return False
 
     kodi_notify('Advanced Emulator Launcher',
-                'Created NFO file {}'.format(os.path.basename(nfo_file_path)))
-    log_debug("fs_export_launcher_NFO() Created '{}'".format(nfo_file_path))
+                'Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
+    log_debug("fs_export_launcher_NFO() Created '{0}'".format(nfo_file_path))
 
     return True
 
@@ -730,12 +730,12 @@ def fs_import_launcher_NFO(settings, launchers, launcherID):
         launchers[launcherID]['plot']     = text_unescape_XML(item_plot[0])
 
         kodi_notify('Advanced Emulator Launcher',
-                    'Imported {}'.format(nfo_file_path))
-        log_debug("fs_import_launcher_NFO() Imported '{}'".format(nfo_file_path))
+                    'Imported {0}'.format(nfo_file_path))
+        log_debug("fs_import_launcher_NFO() Imported '{0}'".format(nfo_file_path))
     else:
         kodi_notify_warn('Advanced Emulator Launcher',
-                         'NFO file not found {}'.format(nfo_file_path))
-        log_debug("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_file_path))
+                         'NFO file not found {0}'.format(nfo_file_path))
+        log_debug("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
     return True
@@ -744,6 +744,6 @@ def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['name']
     nfo_dir = settings['launchers_nfo_dir']
     nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
-    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{}'".format(nfo_file_path))
+    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
