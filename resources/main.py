@@ -54,6 +54,7 @@ CURRENT_ADDON_DIR     = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__
 ICON_IMG_FILE_PATH    = os.path.join(CURRENT_ADDON_DIR, 'icon.png')
 CATEGORIES_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'categories.xml')
 FAVOURITES_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'favourites.xml')
+VCAT_TITLE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_title.xml')
 VCAT_YEARS_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_years.xml')
 VCAT_GENRE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_genre.xml')
 VCAT_STUDIO_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml')
@@ -67,6 +68,7 @@ DEFAULT_LAUN_FANART_DIR  = os.path.join(PLUGIN_DATA_DIR, 'launcher-fanarts')
 DEFAULT_LAUN_NFO_DIR     = os.path.join(PLUGIN_DATA_DIR, 'launcher-nfos')
 DEFAULT_FAV_THUMB_DIR    = os.path.join(PLUGIN_DATA_DIR, 'favourite-thumbs')
 DEFAULT_FAV_FANART_DIR   = os.path.join(PLUGIN_DATA_DIR, 'favourite-fanarts')
+VIRTUAL_CAT_TITLE_DIR    = os.path.join(PLUGIN_DATA_DIR, 'db_title')
 VIRTUAL_CAT_YEARS_DIR    = os.path.join(PLUGIN_DATA_DIR, 'db_years')
 VIRTUAL_CAT_GENRE_DIR    = os.path.join(PLUGIN_DATA_DIR, 'db_genre')
 VIRTUAL_CAT_STUDIO_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_studio')
@@ -80,6 +82,7 @@ IMAGE_FANART         = 200
 DESCRIPTION_MAXSIZE  = 40
 IMG_EXTS             = ['png', 'jpg', 'gif', 'jpeg', 'bmp', 'PNG', 'JPG', 'GIF', 'JPEG', 'BMP']
 VCATEGORY_FAV_ID     = 'fav'
+VCATEGORY_TITLE_ID   = 'vcat_title'
 VCATEGORY_YEARS_ID   = 'vcat_years'
 VCATEGORY_GENRE_ID   = 'vcat_genre'
 VCATEGORY_STUDIO_ID  = 'vcat_studio'
@@ -134,6 +137,7 @@ class Main:
         if not os.path.isdir(DEFAULT_LAUN_NFO_DIR):    os.makedirs(DEFAULT_LAUN_NFO_DIR)
         if not os.path.isdir(DEFAULT_FAV_THUMB_DIR):   os.makedirs(DEFAULT_FAV_THUMB_DIR)
         if not os.path.isdir(DEFAULT_FAV_FANART_DIR):  os.makedirs(DEFAULT_FAV_FANART_DIR)
+        if not os.path.isdir(VIRTUAL_CAT_TITLE_DIR):   os.makedirs(VIRTUAL_CAT_TITLE_DIR)
         if not os.path.isdir(VIRTUAL_CAT_YEARS_DIR):   os.makedirs(VIRTUAL_CAT_YEARS_DIR)
         if not os.path.isdir(VIRTUAL_CAT_GENRE_DIR):   os.makedirs(VIRTUAL_CAT_GENRE_DIR)
         if not os.path.isdir(VIRTUAL_CAT_STUDIO_DIR):  os.makedirs(VIRTUAL_CAT_STUDIO_DIR)
@@ -1485,6 +1489,7 @@ class Main:
             self._gui_render_category_row(self.categories[key], key)
         # --- AEL Favourites special category ---
         self._gui_render_category_favourites_row()
+        self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
         self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
         self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
@@ -1547,7 +1552,12 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     def _gui_render_virtual_category_row(self, virtual_category_kind):
-        if virtual_category_kind == VCATEGORY_YEARS_ID:
+        if virtual_category_kind == VCATEGORY_TITLE_ID:
+            vcategory_name   = '<Browse by Title>'
+            vcategory_thumb  = ''
+            vcategory_fanart = ''
+            vcategory_label  = 'Title'
+        elif virtual_category_kind == VCATEGORY_YEARS_ID:
             vcategory_name   = '<Browse by Year>'
             vcategory_thumb  = ''
             vcategory_fanart = ''
@@ -1851,7 +1861,10 @@ class Main:
     #
     def _command_render_virtual_category(self, virtual_categoryID):
         # --- Load virtual launchers in this category ---
-        if virtual_categoryID == VCATEGORY_YEARS_ID:
+        if virtual_categoryID == VCATEGORY_TITLE_ID:
+            vcategory_db_filename = VCAT_TITLE_FILE_PATH
+            vcategory_name = 'Browse by Title'
+        elif virtual_categoryID == VCATEGORY_YEARS_ID:
             vcategory_db_filename = VCAT_YEARS_FILE_PATH
             vcategory_name = 'Browse by Year'
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
@@ -1861,7 +1874,7 @@ class Main:
             vcategory_db_filename = VCAT_STUDIO_FILE_PATH
             vcategory_name = 'Browse by Studio'
         else:
-            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
+            log_error('_command_render_virtual_category() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
 
@@ -1914,7 +1927,9 @@ class Main:
 
     def _command_render_virtual_category_roms(self, virtual_categoryID, virtual_launcherID):
         # --- Load virtual launchers in this category ---
-        if virtual_categoryID == VCATEGORY_YEARS_ID:
+        if virtual_categoryID == VCATEGORY_TITLE_ID:
+            vcategory_db_filepath = VIRTUAL_CAT_TITLE_DIR
+        elif virtual_categoryID == VCATEGORY_YEARS_ID:
             vcategory_db_filepath = VIRTUAL_CAT_YEARS_DIR
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
             vcategory_db_filepath = VIRTUAL_CAT_GENRE_DIR
@@ -2324,7 +2339,11 @@ class Main:
     #
     def _command_update_virtual_category_db(self, virtual_categoryID):
         # --- Customise function depending on virtual category ---
-        if virtual_categoryID == VCATEGORY_YEARS_ID:
+        if virtual_categoryID == VCATEGORY_TITLE_ID:
+            vcategory_db_directory = VIRTUAL_CAT_TITLE_DIR
+            vcategory_db_filename = VCAT_TITLE_FILE_PATH
+            vcategory_field_name = 'name'
+        elif virtual_categoryID == VCATEGORY_YEARS_ID:
             vcategory_db_directory = VIRTUAL_CAT_YEARS_DIR
             vcategory_db_filename = VCAT_YEARS_FILE_PATH
             vcategory_field_name = 'year'
@@ -2402,7 +2421,10 @@ class Main:
         virtual_launchers = {}
         for rom_id in all_roms:
             rom = all_roms[rom_id]
-            vcategory_key = rom[vcategory_field_name]
+            if virtual_categoryID == VCATEGORY_TITLE_ID:
+                vcategory_key = rom['name'][0].upper()
+            else:
+                vcategory_key = rom[vcategory_field_name]
             # >> '' is a special case
             if vcategory_key == '': vcategory_key = '[ Not set ]'
             if vcategory_key in virtual_launchers:
