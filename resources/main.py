@@ -252,11 +252,11 @@ class Main:
         # >> Shows info about categories/launchers/ROMs
         elif command == 'VIEW_ROM':
             self._command_view_ROM(args['catID'][0], args['launID'][0], args['romID'][0])
-
         # >> Update virtual categories databases
         elif command == 'UPDATE_VIRTUAL_CATEGORY':
             self._command_update_virtual_category_db(args['catID'][0])
-
+        elif command == 'IMPORT_AL_LAUNCHERS':
+            self._command_import_legacy_AL()
         else:
             kodi_dialog_OK('Advanced Emulator Launcher - ERROR', 'Unknown command {0}'.format(args['com'][0]) )
 
@@ -571,18 +571,10 @@ class Main:
             fanart_path = '' if not fanart_path else fanart_path
             launcher_lnk = True if sys.platform == "win32" else False
 
-            # Choose launcher ROM XML filename. There may be launchers with
-            # same name in different categories, or even launcher with the
-            # same name in the same category.
-            launcherID = misc_generate_random_SID()
-            category_name = self.categories[categoryID]['name']
-            clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
-            clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
-            clean_launch_title = clean_launch_title.replace(' ', '_')
-            roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:5] + '.xml'
-            roms_xml_file_path = os.path.join(PLUGIN_DATA_DIR, roms_xml_file_base)
-            log_info('Chosen roms_xml_file_base  "{0}"'.format(roms_xml_file_base))
-            log_info('Chosen roms_xml_file_path  "{0}"'.format(roms_xml_file_path))
+            # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or 
+            # even launcher with the same name in the same category.
+            launcherID         = misc_generate_random_SID()
+            roms_xml_file_path = fs_get_ROMs_XML_file_name(self.categories[categoryID], title, PLUGIN_DATA_DIR)
 
             # Create new launchers and save cateogories.xml
             launcherdata = fs_new_launcher()
@@ -2459,6 +2451,125 @@ class Main:
         # >> This file is small, no progress dialog
         log_verb('_command_update_virtual_category_db() Writing virtual cateogory XML index')
         fs_write_VCategory_XML_file(vcategory_db_filename, vcategory_launchers)
+
+    #
+    # Import legacy Advanced Launcher launchers.xml
+    #
+    def _command_import_legacy_AL(self):
+        AL_DATA_DIR       = xbmc.translatePath(os.path.join('special://profile/addon_data', 
+                                                            'plugin.program.advanced.launcher'))
+        LAUNCHERS_FILE_PATH  = os.path.join(AL_DATA_DIR, 'launchers.xml')
+
+
+        # >> Check that launchers.xml exist
+        if not os.path.isfile(LAUNCHERS_FILE_PATH):
+            log_error("_command_import_legacy_AL() Cannot find '{0}'".format(LAUNCHERS_FILE_PATH))
+            kodi_dialog_OK('Advanced Emulator Launcher', 'launchers.xml not found!')
+            return
+
+        # >> Read launchers.xml
+        AL_categories = {}
+        AL_launchers = {}
+        fs_load_legacy_AL_launchers(LAUNCHERS_FILE_PATH, AL_categories, AL_launchers)
+        
+        # >> Sanity checks
+        
+        
+        # >> Traverse AL data and create categories/launchers/ROMs
+        num_categories = 0
+        num_launchers = 0
+        num_ROMs = 0
+        default_SID = ''
+        for AL_category_key in AL_categories:
+            num_categories += 1
+            AL_category = AL_categories[AL_category_key]
+            category = fs_new_category()
+            # >> Do translation
+            if AL_category['id'] == 'default':
+                category['id'] = misc_generate_random_SID()
+                default_SID = category['id']
+            else:
+                category['id'] = AL_category['id']
+            category['name']        = AL_category['name']
+            category['thumb']       = AL_category['thumb']
+            category['fanart']      = AL_category['fanart']
+            category['genre']       = AL_category['genre']
+            category['description'] = AL_category['description']
+            category['finished']    = False if AL_category['finished'] == 'false' else True
+            self.categories[category['id']] = category
+
+        for AL_launcher_key in AL_launchers:
+            num_launchers += 1
+            AL_launcher = AL_launchers[AL_launcher_key]
+            launcher = fs_new_launcher()
+            # >> Do translation
+            launcher['id']   = AL_launcher['id']
+            launcher['name'] = AL_launcher['name']
+            if AL_launcher['category'] == 'default':
+                launcher['categoryID'] = default_SID
+            else:
+                launcher['categoryID'] = AL_launcher['category']
+            launcher['platform']    = 'Unknown'
+            launcher['application'] = AL_launcher['application']
+            launcher['args']        = AL_launcher['args']
+            launcher['rompath']     = AL_launcher['rompath']
+            launcher['romext']      = AL_launcher['romext']
+            launcher['thumbpath']   = AL_launcher['thumbpath']
+            launcher['fanartpath']  = AL_launcher['fanartpath']
+            launcher['trailerpath'] = AL_launcher['trailerpath']
+            launcher['custompath']  = AL_launcher['custompath']
+            launcher['thumb']       = AL_launcher['thumb']
+            launcher['fanart']      = AL_launcher['fanart']
+            launcher['genre']       = AL_launcher['genre']
+            launcher['year']        = AL_launcher['release']
+            launcher['studio']      = AL_launcher['publisher']
+            launcher['plot']        = AL_launcher['launcherplot']
+            launcher['lnk']         = False if AL_launcher['lnk'] == '' else True
+            launcher['finished']    = False if AL_launcher['finished'] == 'false' else True
+            launcher['minimize']    = False if AL_launcher['minimize'] == 'false' else True
+
+            # >> Import ROMs
+            AL_roms = AL_launcher['roms']
+            roms = {}
+            category_name = self.categories[launcher['categoryID']]['name']
+            roms_xml_file = fs_get_ROMs_XML_file_name(category_name, launcher['id'], launcher['name'], PLUGIN_DATA_DIR)
+            launcher['roms_xml_file'] = roms_xml_file
+            for AL_rom_ID in AL_roms:
+                num_ROMs += 1
+                AL_rom = AL_roms[AL_rom_ID]
+                rom = fs_new_rom()
+                # >> Do translation
+                rom['id']       = AL_rom['id']
+                rom['name']     = AL_rom['name']
+                rom['filename'] = AL_rom['filename']
+                rom['thumb']    = AL_rom['thumb']
+                rom['fanart']   = AL_rom['fanart']
+                rom['trailer']  = AL_rom['trailer']
+                rom['custom']   = AL_rom['custom']
+                rom['genre']    = AL_rom['name']
+                rom['year']     = AL_rom['release']
+                rom['studio']   = AL_rom['publisher']
+                rom['plot']     = AL_rom['gameplot']
+                rom['altapp']   = AL_rom['altapp']
+                rom['altarg']   = AL_rom['altarg']
+                rom['finished'] = False if AL_rom['finished'] == 'false' else True
+                # >> Add to ROM dictionary
+                roms[rom['id']] = rom
+
+            # >> Save ROMs XML
+            fs_write_ROM_XML_file(roms_xml_file, roms, launcher)
+
+            # >> Add launcher to AEL
+            self.launchers[launcher['id']] = launcher
+
+        # >> Save AEL categories.xml
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+        # --- Show some information to user ---
+        kodi_dialog_OK('Advanced Emulator Launcher',
+                       'Imported {0} Categories, {1} Launchers '.format(num_categories, num_launchers) +
+                       ' and {0} ROMs.'.format(num_ROMs))
+        kodi_refresh_container()
 
     #
     # Launchs an application

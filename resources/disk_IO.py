@@ -45,7 +45,7 @@ def fs_new_category():
 def fs_new_launcher():
     launcher = {'id' : '', 'name' : '', 'categoryID' : '', 'platform' : '',
                 'application' : '', 'args' : '', 'rompath' : '', 'romext' : '',
-                'thumbpath' : '', 'fanartpath' : '', 'custompath' : '', 'trailerpath' : '',
+                'thumbpath' : '', 'fanartpath' : '', 'trailerpath' : '', 'custompath' : '',
                 'thumb' : '', 'fanart' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',
                 'lnk' : False, 'finished': False, 'minimize' : False,
                 'roms_xml_file' : '', 'nointro_xml_file' : '' }
@@ -91,7 +91,11 @@ def fs_new_favourite_rom():
 #
 def XML_text(tag_name, tag_text):
     tag_text = text_escape_XML(tag_text)
-    line = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text, tag_name)
+    try:
+        line = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text.encode('utf-8'), tag_name)
+    except UnicodeEncodeError:
+        log_error('XML_text() Exception UnicodeEncodeError tag_text "{0}"'.format(tag_text.encode('utf-8', 'replace')))
+        line = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text.encode('utf-8', 'replace'), tag_name)
 
     return line
 
@@ -596,6 +600,63 @@ def fs_load_GameInfo_XML(xml_file):
             games[key] = game
 
     return games
+
+# -------------------------------------------------------------------------------------------------
+# Legacy AL launchers.xml parser
+# -------------------------------------------------------------------------------------------------
+def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
+    __debug_xml_parser = True
+
+    # --- Parse using ElementTree ---
+    log_verb('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath))
+    xml_tree = ET.parse(AL_launchers_filepath)
+    xml_root = xml_tree.getroot()
+
+    for root_element in xml_root:
+        log_debug('=== Root child tag "{0}" ==='.format(root_element.tag))
+        if root_element.tag == 'categories':
+            for category_element in root_element:
+                log_debug('New Category')
+                category = {}
+                for category_child in category_element:
+                    if category_child.tag == 'name': log_debug('Category name "{0}"'.format(category_child.text))
+                    # >> ElementTree makes text = None if it's '' in the XML. Correct that
+                    if category_child.text == None: category_child.text = ''
+                    category[category_child.tag] = category_child.text
+                categories[category['id']] = category
+
+        elif root_element.tag == 'launchers':
+            for launcher_element in root_element:
+                log_debug('New Launcher')
+                launcher = {}
+                for launcher_child in launcher_element:
+                    if launcher_child.tag == 'name': log_debug('Launcher name "{0}"'.format(launcher_child.text))
+                    if launcher_child.tag != 'roms':
+                        # >> ElementTree makes text = None if it's '' in the XML. Correct that
+                        if launcher_child.text == None: launcher_child.text = ''
+                        launcher[launcher_child.tag] = launcher_child.text
+                    else:
+                        roms = {}
+                        roms_element = launcher_child
+                        for rom_element in roms_element:
+                            rom = {}
+                            # >> Defaul AL ROM values
+                            rom['trailer']   = ''
+                            rom['altapp']    = ''
+                            rom['altarg']    = ''
+                            rom['finished']  = 'false'
+                            rom['release']   = ''
+                            rom['publisher'] = ''
+                            rom['gameplot']  = ''
+                            rom['thumb']     = ''
+                            rom['fanart']    = ''
+                            rom['custom']    = ''
+                            for rom_child in rom_element:
+                                rom[rom_child.tag] = rom_child.text
+                            roms[rom['id']] = rom
+                        launcher['roms'] = roms
+                launchers[launcher['id']] = launcher
+                log_debug('Launcher has {0} ROMs'.format(len(launcher['roms'])))
 
 # -------------------------------------------------------------------------------------------------
 # NFO files
