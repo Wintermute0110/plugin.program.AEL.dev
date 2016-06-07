@@ -20,6 +20,9 @@
 
 # ~~~ Using ElementTree seems to solve the problem
 import xml.etree.ElementTree as ET
+import json
+import io
+import codecs, time
 
 # --- AEL packages ---
 from utils import *
@@ -30,6 +33,8 @@ except:
 
 # -----------------------------------------------------------------------------
 # Data model used in the plugin
+# Internally all string in the data model are Unicode. They will be encoded to
+# UTF-8 when writing files.
 # -----------------------------------------------------------------------------
 # These three functions create a new data structure for the given object
 # and (very importantly) fill the correct default values). These must match
@@ -37,18 +42,20 @@ except:
 #
 # Tag name in the XML is the same as in the data dictionary.
 def fs_new_category():
-    category = {'id' : '', 'name' : '', 'thumb' : '', 'fanart' : '', 'genre' : '',
-                'description' : '', 'finished' : False}
+    category = {'id'     : u'', 'name'  : u'', 'thumb'       : u'', 
+                'fanart' : u'', 'genre' : u'', 'description' : u'', 
+                'finished' : False}
 
     return category
 
 def fs_new_launcher():
-    launcher = {'id' : '', 'name' : '', 'categoryID' : '', 'platform' : '',
-                'application' : '', 'args' : '', 'rompath' : '', 'romext' : '',
-                'thumbpath' : '', 'fanartpath' : '', 'trailerpath' : '', 'custompath' : '',
-                'thumb' : '', 'fanart' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',
-                'lnk' : False, 'finished': False, 'minimize' : False,
-                'roms_xml_file' : '', 'nointro_xml_file' : '' }
+    launcher = {'id' : u'',            'name' : u'',       'categoryID' : u'',  'platform' : u'',
+                'application' : u'',   'args' : u'',       'rompath' : u'',     'romext' : u'',
+                'thumbpath' : u'',     'fanartpath' : u'', 'trailerpath' : u'', 'custompath' : u'',
+                'thumb' : u'',         'fanart' : u'',     'genre' : u'',       'year' : u'', 
+                'studio' : u'',        'plot' : u'',
+                'finished': False,     'minimize' : False,
+                'roms_xml_file' : u'', 'nointro_xml_file' : u'' }
 
     return launcher
 
@@ -58,44 +65,75 @@ def fs_new_launcher():
 # finished        bool ['True', 'False'] default 'False'
 # nointro_status  string ['Have', 'Miss', 'Unknown', 'None'] default 'None'
 def fs_new_rom():
-    rom = {'id' : '', 'name' : '', 'filename' : '',
-           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '',
-           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',
-           'altapp' : '', 'altarg' : '',
+    rom = {'id' : u'',         'name' : u'',   'filename' : u'',
+           'thumb' : u'',      'fanart' : u'', 'trailer' : u'',  'custom' : u'',
+           'genre' : u'',      'year' : u'',   'studio' : u'',   'plot' : u'',
+           'altapp' : u'',     'altarg' : u'',
            'finished' : False, 'nointro_status' : 'None' }
 
     return rom
 
+#
+# DO NOT USE THIS FUNCTION TO CREATE FAVOURITES. USE fs_new_favourite_rom() INSTEAD.
+#
 # fav_status = ['OK', 'Unlinked', 'Broken'] default 'OK'
 # 'OK'       filename exists and launcher exists and ROM id exists
 # 'Unlinked' filename exists but launcher or ROM ID in launcher does not
 #            Note that if the launcher does not exists implies ROM ID does not exist
 # 'Broken'   filename does not exist. ROM is unplayable
 def fs_new_favourite_rom():
-    rom = {'id' : '', 'name' : '', 'filename' : '',
-           'thumb' : '', 'fanart' : '', 'trailer' : '', 'custom' : '',
-           'genre' : '', 'year' : '', 'studio' : '', 'plot' : '',
-           'altapp' : '', 'altarg' : '',
-           'finished' : False, 'nointro_status' : 'None',
-           'launcherID' : '', 'platform' : '',
-           'application' : '', 'args' : '', 'rompath' : '', 'romext' : '',
-           'fav_status' : 'OK' }
+    rom = {'id' : u'',          'name' : u'',   'filename' : u'',
+           'thumb' : u'',       'fanart' : u'', 'trailer' : u'', 'custom' : u'',
+           'genre' : u'',       'year' : u'',   'studio' : u'',  'plot' : u'',
+           'altapp' : u'',      'altarg' : u'',
+           'finished' : False,  'nointro_status' : 'None',
+           'launcherID' : u'',  'platform' : u'',
+           'application' : u'', 'args' : u'', 'rompath' : '', 'romext' : '',
+           'minimize' : False,  'fav_status' : u'OK' }
 
     return rom
+
+#
+# Note that Virtual Launchers ROMs use the Favourite ROMs data model.
+# Missing ROMs are not allowed in Favourites or Virtual Launchers.
+#
+def fs_get_Favourite_from_ROM(rom, launcher):
+    # >> Copy dictionary object
+    favourite = dict(rom)
+
+    # Delete nointro_status field from ROM. Make sure this is done in the copy to be
+    # returned to avoid chaning the function parameters (dictionaries are mutable!)
+    # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
+    # NOTE keep it!
+    # del favourite['nointro_status']
+    
+    # >> Copy launcher stuff
+    favourite['launcherID']  = launcher['id']
+    favourite['platform']    = launcher['platform']
+    favourite['application'] = launcher['application']
+    favourite['args']        = launcher['args']
+    favourite['rompath']     = launcher['rompath']
+    favourite['romext']      = launcher['romext']
+    favourite['minimize']    = launcher['minimize']
+    favourite['fav_status']  = u'OK'
+
+    return favourite
 
 # -----------------------------------------------------------------------------
 # Filesystem very low-level utilities
 # -----------------------------------------------------------------------------
 #
 # Writes a XML text tag line, indented 2 spaces (root sub-child)
+# Both tag_name and tag_text must be Unicode strings. Data will be encoded to UFT-8.
+# Returns an UTF-8 encoded string.
 #
 def XML_text(tag_name, tag_text):
     tag_text = text_escape_XML(tag_text)
     try:
-        line = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text.encode('utf-8'), tag_name)
+        line = '  <{0}>{1}</{2}>\n'.format(tag_name.encode('utf-8'), tag_text.encode('utf-8'), tag_name.encode('utf-8'))
     except UnicodeEncodeError:
         log_error('XML_text() Exception UnicodeEncodeError tag_text "{0}"'.format(tag_text.encode('utf-8', 'replace')))
-        line = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text.encode('utf-8', 'replace'), tag_name)
+        line = '  <{0}>{1}</{2}>\n'.format(tag_name.encode('utf-8'), tag_text.encode('utf-8', 'replace'), tag_name.encode('utf-8'))
 
     return line
 
@@ -106,7 +144,7 @@ def get_fs_encoding():
     try:
         return sys.getfilesystemencoding()
     except UnicodeEncodeError, UnicodeDecodeError:
-        return "utf-8"
+        return 'utf-8'
 
 # -----------------------------------------------------------------------------
 # Disk IO functions
@@ -128,10 +166,22 @@ def fs_write_catfile(categories_file, categories, launchers):
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
         str_list.append('<advanced_emulator_launcher version="1.0">\n')
 
+        # --- Control information ---
+        # >> time.time() returns a float. Usually precision is much better than a second, but not always.
+        # >> See https://docs.python.org/2/library/time.html#time.time
+        _t = time.time()
+
+        # >> Write a timestamp when file is created. This enables the Virtual Launchers to know if
+        # >> it's time for an update.
+        str_list.append('<control>\n')
+        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append('</control>\n')
+
         # --- Create Categories XML list ---
-        for categoryID in sorted(categories, key = lambda x : categories[x]["name"]):
+        for categoryID in sorted(categories, key = lambda x : categories[x]['name']):
             category = categories[categoryID]
             # Data which is not string must be converted to string
+            # XML text returns UFT-8 encoded strings. Dictionary strings are in Unicode!
             str_list.append('<category>\n')
             str_list.append(XML_text('id', categoryID))
             str_list.append(XML_text('name', category['name']))
@@ -139,11 +189,11 @@ def fs_write_catfile(categories_file, categories, launchers):
             str_list.append(XML_text('fanart', category['fanart']))
             str_list.append(XML_text('genre', category['genre']))
             str_list.append(XML_text('description', category['description']))
-            str_list.append(XML_text('finished', str(category['finished'])))
+            str_list.append(XML_text('finished', unicode(category['finished'])))
             str_list.append('</category>\n')
 
         # --- Write launchers ---
-        for launcherID in sorted(launchers, key = lambda x : launchers[x]["name"]):
+        for launcherID in sorted(launchers, key = lambda x : launchers[x]['name']):
             # Data which is not string must be converted to string
             launcher = launchers[launcherID]
             str_list.append('<launcher>\n')
@@ -165,16 +215,16 @@ def fs_write_catfile(categories_file, categories, launchers):
             str_list.append(XML_text('year', launcher['year']))
             str_list.append(XML_text('studio', launcher['studio']))
             str_list.append(XML_text('plot', launcher['plot']))
-            str_list.append(XML_text('lnk', str(launcher['lnk'])))
-            str_list.append(XML_text('finished', str(launcher['finished'])))
-            str_list.append(XML_text('minimize', str(launcher['minimize'])))
+            str_list.append(XML_text('finished', unicode(launcher['finished'])))
+            str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
             str_list.append(XML_text('roms_xml_file', launcher['roms_xml_file']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append('</launcher>\n')
         # End of file
         str_list.append('</advanced_emulator_launcher>\n')
 
-        # Join string and save categories.xml file
+        # Strings in the list are encoded in UTF-8, ready to be written on disk.
+        # Join string, and save categories.xml file
         full_string = ''.join(str_list)
         file_obj = open(categories_file, 'wt' )
         file_obj.write(full_string)
@@ -191,6 +241,7 @@ def fs_write_catfile(categories_file, categories, launchers):
 #
 def fs_load_catfile(categories_file):
     __debug_xml_parser = 0
+    update_timestamp = 0.0
     categories = {}
     launchers = {}
 
@@ -208,7 +259,13 @@ def fs_load_catfile(categories_file):
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))
 
-        if category_element.tag == 'category':
+        if category_element.tag == 'control':
+            for control_child in category_element:
+                if control_child.tag == 'update_timestamp':
+                    # >> Convert Unicode to float
+                    update_timestamp = float(control_child.text)
+
+        elif category_element.tag == 'category':
             # Default values
             category = fs_new_category()
 
@@ -219,6 +276,7 @@ def fs_load_catfile(categories_file):
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = category_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+                # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
                 category[xml_tag] = xml_text
 
                 # Now transform data depending on tag name
@@ -243,14 +301,14 @@ def fs_load_catfile(categories_file):
                 launcher[xml_tag] = xml_text
 
                 # Now transform data depending on tag name
-                if xml_tag == 'lnk' or xml_tag == 'finished' or xml_tag == 'minimize':
+                if xml_tag == 'finished' or xml_tag == 'minimize':
                     xml_bool = True if xml_text == 'True' else False
                     launcher[xml_tag] = xml_bool
 
             # Add launcher to categories dictionary
             launchers[launcher['id']] = launcher
 
-    return (categories, launchers)
+    return (update_timestamp, categories, launchers)
 
 #
 # Write to disk launcher ROMs XML database.
@@ -284,7 +342,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
         str_list.append(XML_text('fanartpath', launcher['fanartpath']))
         str_list.append('</launcher>\n')
 
-        # Create list of ROMs
+        # --- Create list of ROMs ---
         # Size optimization: only write in the XML fields which are not ''. This
         # will save A LOT of disk space and reduce loading times (at a cost of
         # some writing time, but writing is much less frequent than reading).
@@ -293,7 +351,7 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
             rom = roms[romID]
             str_list.append('<rom>\n')
             str_list.append(XML_text('id', romID))
-            str_list.append(XML_text('name', rom["name"]))
+            str_list.append(XML_text('name', rom['name']))
             if rom['filename']: str_list.append(XML_text('filename', rom['filename']))
             if rom['thumb']:    str_list.append(XML_text('thumb', rom['thumb']))
             if rom['fanart']:   str_list.append(XML_text('fanart', rom['fanart']))
@@ -305,13 +363,13 @@ def fs_write_ROM_XML_file(roms_xml_file, roms, launcher):
             if rom['plot']:     str_list.append(XML_text('plot', rom['plot']))
             if rom['altapp']:   str_list.append(XML_text('altapp', rom['altapp']))
             if rom['altarg']:   str_list.append(XML_text('altarg', rom['altarg']))
-            str_list.append(XML_text('finished', str(rom['finished'])))
+            str_list.append(XML_text('finished', unicode(rom['finished'])))
             str_list.append(XML_text('nointro_status', rom['nointro_status']))
             str_list.append('</rom>\n')
         # End of file
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
-        # Join string and save categories.xml file
+        # --- Join string and save categories.xml file ---
         full_string = ''.join(str_list)
         file_obj = open(roms_xml_file, 'wt' )
         file_obj.write(full_string)
@@ -387,30 +445,34 @@ def fs_write_Favourites_XML_file(roms_xml_file, roms):
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
         str_list.append('<advanced_emulator_launcher_Favourites version="1.0">\n')
+        # Size optimization: only write in the XML fields which are not ''. This
+        # will save A LOT of disk space and reduce loading times (at a cost of
+        # some writing time, but writing is much less frequent than reading).
         for romID in sorted(roms, key = lambda x : roms[x]["name"]):
             rom = roms[romID]
             str_list.append('<rom>\n')
             str_list.append(XML_text('id', romID))
             str_list.append(XML_text('name', rom['name']))
-            str_list.append(XML_text('filename', rom['filename']))
-            str_list.append(XML_text('thumb', rom['thumb']))
-            str_list.append(XML_text('fanart', rom['fanart']))
-            str_list.append(XML_text('trailer', rom['trailer']))
-            str_list.append(XML_text('custom', rom['custom']))
-            str_list.append(XML_text('genre', rom['genre']))
-            str_list.append(XML_text('year', rom['year']))
-            str_list.append(XML_text('studio', rom['studio']))
-            str_list.append(XML_text('plot', rom['plot']))
-            str_list.append(XML_text('altapp', rom['altapp']))
-            str_list.append(XML_text('altarg', rom['altarg']))
-            str_list.append(XML_text('finished', str(rom['finished'])))
+            if rom['filename']:    str_list.append(XML_text('filename', rom['filename']))
+            if rom['thumb']:       str_list.append(XML_text('thumb', rom['thumb']))
+            if rom['fanart']:      str_list.append(XML_text('fanart', rom['fanart']))
+            if rom['trailer']:     str_list.append(XML_text('trailer', rom['trailer']))
+            if rom['custom']:      str_list.append(XML_text('custom', rom['custom']))
+            if rom['genre']:       str_list.append(XML_text('genre', rom['genre']))
+            if rom['year']:        str_list.append(XML_text('year', rom['year']))
+            if rom['studio']:      str_list.append(XML_text('studio', rom['studio']))
+            if rom['plot']:        str_list.append(XML_text('plot', rom['plot']))
+            if rom['altapp']:      str_list.append(XML_text('altapp', rom['altapp']))
+            if rom['altarg']:      str_list.append(XML_text('altarg', rom['altarg']))
+            str_list.append(XML_text('finished', unicode(rom['finished'])))
             str_list.append(XML_text('nointro_status', rom['nointro_status']))
-            str_list.append(XML_text('launcherID', rom['launcherID']))
-            str_list.append(XML_text('platform', rom['platform']))
-            str_list.append(XML_text('application', rom['application']))
-            str_list.append(XML_text('args', rom['args']))
-            str_list.append(XML_text('rompath', rom['rompath']))
-            str_list.append(XML_text('romext', rom['romext']))
+            if rom['launcherID']:  str_list.append(XML_text('launcherID', rom['launcherID']))
+            if rom['platform']:    str_list.append(XML_text('platform', rom['platform']))
+            if rom['application']: str_list.append(XML_text('application', rom['application']))
+            if rom['args']:        str_list.append(XML_text('args', rom['args']))
+            if rom['rompath']:     str_list.append(XML_text('rompath', rom['rompath']))
+            if rom['romext']:      str_list.append(XML_text('romext', rom['romext']))
+            str_list.append(XML_text('minimize', unicode(rom['minimize'])))
             str_list.append(XML_text('fav_status', rom['fav_status']))
             str_list.append('</rom>\n')
         str_list.append('</advanced_emulator_launcher_Favourites>\n')
@@ -454,7 +516,7 @@ def fs_load_Favourites_XML_file(roms_xml_file):
                 rom[xml_tag] = xml_text
 
                 # Now transform data depending on tag name
-                if xml_tag == 'finished':
+                if xml_tag == 'finished' or xml_tag == 'minimize':
                     xml_bool = True if xml_text == 'True' else False
                     rom[xml_tag] = xml_bool
                 elif xml_tag == 'fav_status':
@@ -473,14 +535,22 @@ def fs_write_VCategory_XML_file(roms_xml_file, roms):
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
         str_list.append('<advanced_emulator_launcher_Virtual_Category version="1.0">\n')
+
+        # --- Control information ---
+        _t = time.time()
+        str_list.append('<control>\n')
+        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append('</control>\n')
+
+        # --- Virtual Launchers ---
         for romID in sorted(roms, key = lambda x : roms[x]['name']):
             rom = roms[romID]
-            str_list.append('<rom>\n')
+            str_list.append('<VLauncher>\n')
             str_list.append(XML_text('id', romID))
             str_list.append(XML_text('name', rom['name']))
             str_list.append(XML_text('rom_count', rom['rom_count']))
             str_list.append(XML_text('roms_xml_file', rom['roms_xml_file']))
-            str_list.append('</rom>\n')
+            str_list.append('</VLauncher>\n')
         str_list.append('</advanced_emulator_launcher_Virtual_Category>\n')
         full_string = ''.join(str_list)
         file_obj = open(roms_xml_file, 'wt' )
@@ -492,12 +562,13 @@ def fs_write_VCategory_XML_file(roms_xml_file, roms):
         gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
 
 #
-# Loads an XML file containing the favourite ROMs
+# Loads an XML file containing Virtual Launcher indices
 # It is basically the same as ROMs, but with some more fields to store launching application data.
 #
 def fs_load_VCategory_XML_file(roms_xml_file):
     __debug_xml_parser = 0
-    roms = {}
+    update_timestamp = 0.0
+    VLaunchers = {}
 
     # --- If file does not exist return empty dictionary ---
     if not os.path.isfile(roms_xml_file):
@@ -510,21 +581,57 @@ def fs_load_VCategory_XML_file(roms_xml_file):
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
 
-        if root_element.tag == 'rom':
+        if root_element.tag == 'control':
+            for control_child in root_element:
+                if control_child.tag == 'update_timestamp':
+                    # >> Convert Unicode to float
+                    update_timestamp = float(control_child.text)
+
+        elif root_element.tag == 'VLauncher':
             # Default values
-            rom = fs_new_favourite_rom()
+            VLauncher = {'id' : u'', 'name' : u'', 'rom_count' : u'', 'roms_xml_file' : u''}
             for rom_child in root_element:
                 # By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
-                rom[xml_tag] = xml_text
-            # >> Add ROM to dictionary
-            roms[rom['id']] = rom
+                VLauncher[xml_tag] = xml_text
+            VLaunchers[VLauncher['id']] = VLauncher
+
+    return (update_timestamp, VLaunchers)
+
+#
+# Write virtual category ROMs
+#
+def fs_write_VCategory_ROMs_JSON(roms_json_file, roms):
+    log_info('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
+    try:
+        with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
+          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
+    except OSError:
+        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+    except IOError:
+        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+
+#
+# Loads an JSON file containing the Virtual Launcher ROMs
+#
+def fs_load_VCategory_ROMs_JSON(roms_json_file):
+    roms = {}
+
+    # --- If file does not exist return empty dictionary ---
+    if not os.path.isfile(roms_json_file):
+        return {}
+
+    # --- Parse using cElementTree ---
+    log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
+    with open(roms_json_file) as file:    
+        roms = json.load(file)
 
     return roms
 
+    
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
     if not os.path.isfile(roms_xml_file):
@@ -581,21 +688,8 @@ def fs_load_GameInfo_XML(xml_file):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-
-                # Solve Unicode problems
-                # See http://stackoverflow.com/questions/3224268/python-unicode-encode-error
-                # See https://pythonhosted.org/kitchen/unicode-frustrations.html
-                # See http://stackoverflow.com/questions/2508847/convert-or-strip-out-illegal-unicode-characters
-                # print('Before type of xml_text is ' + str(type(xml_text)))
-                if type(xml_text) == unicode:
-                    xml_text = xml_text.encode('ascii', errors = 'replace')
-                # print('After type of xml_text is ' + str(type(xml_text)))
-
-                # Put data into memory
                 if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
-
-            # Add game to games dictionary
             key = game['name']
             games[key] = game
 
@@ -651,6 +745,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
                             rom['thumb']     = ''
                             rom['fanart']    = ''
                             rom['custom']    = ''
+                            rom['genre']     = ''
                             for rom_child in rom_element:
                                 rom[rom_child.tag] = rom_child.text
                             roms[rom['id']] = rom
@@ -704,16 +799,19 @@ def fs_export_ROM_NFO(rom, verbose = True):
 # Reads an NFO file with ROM information.
 # Modifies roms dictionary even outside this function. See comments in fs_import_launcher_NFO()
 # See comments in fs_export_ROM_NFO() about verbosity.
+# About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
 #
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     F = misc_split_path(roms[romID]['filename'])
-    nfo_file_path = F.path_noext + '.nfo'
+    nfo_file_path = F.path_noext + u'.nfo'
     log_debug('fs_export_ROM_NFO() Loading "{0}"'.format(nfo_file_path))
 
     # --- Import data ---
     if os.path.isfile(nfo_file_path):
-        # Read file, put in a string and remove line endings
-        file = open(nfo_file_path, 'rt')
+        # >> Read file, put in a string and remove line endings.
+        # >> We assume NFO files are UTF-8. Decode data to Unicode.
+        # file = open(nfo_file_path, 'rt')
+        file = codecs.open(nfo_file_path, 'rt', 'utf-8')
         nfo_str = file.read().replace('\r', '').replace('\n', '')
         file.close()
 
@@ -750,8 +848,8 @@ def fs_load_NFO_file_scanner(nfo_file_path):
     nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '',
                'genre' : '', 'plot' : '' }
 
-    # Read file, put in a string and remove line endings
-    file = open(nfo_file_path, 'rt')
+    # >> Read file, put in a string and remove line endings
+    file = codecs.open(nfo_file_path, 'rt', 'utf-8')
     nfo_str = file.read().replace('\r', '').replace('\n', '')
     file.close()
 
@@ -776,6 +874,7 @@ def fs_load_NFO_file_scanner(nfo_file_path):
 # Standalone launchers:
 #   NFO files are stored in self.settings["launcher_thumb_path"] if not empty.
 #   If empty, it defaults to DEFAULT_NFO_DIR = os.path.join(PLUGIN_DATA_DIR, 'nfos')
+#
 # ROM launchers:
 #   Same as standalone launchers.
 #
@@ -829,10 +928,10 @@ def fs_import_launcher_NFO(settings, launchers, launcherID):
 
     # --- Import data ---
     if os.path.isfile(nfo_file_path):
-        # Read NFO file data
-        f = open(nfo_file_path, 'rt')
-        item_nfo = f.read().replace('\r','').replace('\n','')
-        f.close()
+        # >> Read NFO file data
+        file = codecs.open(nfo_file_path, 'rt', 'utf-8')
+        item_nfo = file.read().replace('\r','').replace('\n','')
+        file.close()
 
         # Find data
         item_title     = re.findall('<title>(.*?)</title>', item_nfo)
@@ -865,7 +964,7 @@ def fs_import_launcher_NFO(settings, launchers, launcherID):
 def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['name']
     nfo_dir = settings['launchers_nfo_dir']
-    nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
+    nfo_file_path = os.path.join(nfo_dir, launcher_name + u'.nfo')
     log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
