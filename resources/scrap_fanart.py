@@ -53,7 +53,7 @@ class fanart_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         # --- Download game page XML data ---
         # Maybe this is candidate for common code...
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
-        log_debug('fanart_TheGamesDB::get_images game_id_url = {}'.format(game_id_url))
+        log_debug('fanart_TheGamesDB::get_images game_id_url = {0}'.format(game_id_url))
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -95,7 +95,7 @@ class fanart_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         # --- Download game page data ---
         # Maybe this is candidate for common code...
         game_id_url = 'http://www.gamefaqs.com' + game['id'] + '/images'
-        log_debug('fanart_GameFAQs::get_images game_id_url = {}'.format(game_id_url))
+        log_debug('fanart_GameFAQs::get_images game_id_url = {0}'.format(game_id_url))
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -119,7 +119,7 @@ class fanart_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         # Choose one full size artwork page based on game region
         for index, boxart in enumerate(results):
             str_index = str(index + 1)
-            log_debug('fanart_GameFAQs::get_images Artwork page #{:>2s} {}'.format(str_index, boxart[0]))
+            log_debug('fanart_GameFAQs::get_images Artwork page #{0} {1}'.format(str_index, boxart[0]))
             img_pages.append( (boxart[0], boxart[1]) )
 
         # For now just pick the first one. According to settings maybe last or something in the middle should
@@ -130,7 +130,7 @@ class fanart_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
 
         # --- Go to full size page and get thumb ---
         image_url = 'http://www.gamefaqs.com' + img_page[0]
-        log_debug('fanart_GameFAQs::get_images image_url = {}'.format(image_url))
+        log_debug('fanart_GameFAQs::get_images image_url = {0}'.format(image_url))
         req = urllib2.Request(image_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -148,7 +148,7 @@ class fanart_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
         # print(results)
         for index, boxart in enumerate(results):
             str_index = str(index + 1)
-            log_debug('fanart_GameFAQs::get_images Adding thumb #{} {}'.format(str_index, boxart[0]))
+            log_debug('fanart_GameFAQs::get_images Adding thumb #{0} {0}'.format(str_index, boxart[0]))
             images.append({'name' : boxart[1], 'URL' : boxart[0], 'disp_URL' : boxart[0]})
 
         return images

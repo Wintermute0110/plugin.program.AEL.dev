@@ -43,25 +43,41 @@ def set_log_level(level):
 
     current_log_level = level
 
+# For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
+#
 def log_debug(str_text):
     if current_log_level >= LOG_DEBUG:
-        xbmc.log("AEL DEBUG: " + str_text)
+        # if it is str we assume it's "utf-8" encoded.
+        # will fail if called with other encodings (latin, etc).
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+                                  
+        # At this point we are sure str_text is a unicode string.
+        log_text = u'AEL DEBUG: ' + str_text
+        xbmc.log(log_text.encode('utf-8'))
 
 def log_verb(str_text):
     if current_log_level >= LOG_VERB:
-        xbmc.log("AEL VERB : " + str_text)
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AEL VERB : ' + str_text
+        xbmc.log(log_text.encode('utf-8'))
 
 def log_info(str_text):
     if current_log_level >= LOG_INFO:
-        xbmc.log("AEL INFO : " + str_text)
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AEL INFO : ' + str_text
+        xbmc.log(log_text.encode('utf-8'))
 
 def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
-        xbmc.log("AEL WARN : " + str_text)
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AEL WARN : ' + str_text
+        xbmc.log(log_text.encode('utf-8'))
 
 def log_error(str_text):
     if current_log_level >= LOG_ERROR:
-        xbmc.log("AEL ERROR: " + str_text)
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AEL ERROR: ' + str_text
+        xbmc.log(log_text.encode('utf-8'))
 
 # -----------------------------------------------------------------------------
 # Kodi notifications and dialogs
@@ -148,8 +164,8 @@ def kodi_get_cached_image(image_path):
 def kodi_update_image_cache(img_path):
     # What if image is not cached?
     cached_thumb = kodi_get_cached_image(img_path)
-    log_debug('kodi_update_image_cache()     img_path {}'.format(img_path))
-    log_debug('kodi_update_image_cache() cached_thumb {}'.format(cached_thumb))
+    log_debug('kodi_update_image_cache()     img_path {0}'.format(img_path))
+    log_debug('kodi_update_image_cache() cached_thumb {0}'.format(cached_thumb))
 
     # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
     # However, images in the cache have the original extension. Replace TBN extension
@@ -158,7 +174,7 @@ def kodi_update_image_cache(img_path):
     if F_cached.ext == '.tbn':
         F_img = utils.misc_split_path(img_path)
         cached_thumb = cached_thumb.replace('.tbn', F_img.ext)
-        log_debug('kodi_update_image_cache() New cached_thumb {}'.format(cached_thumb))
+        log_debug('kodi_update_image_cache() New cached_thumb {0}'.format(cached_thumb))
 
     # Check if file exists in the cache
     # xbmc.getCacheThumbName() seems to return a cache filename even if the local file does not exist!
@@ -167,8 +183,8 @@ def kodi_update_image_cache(img_path):
         return
 
     # --- Copy local image into Kodi image cache ---
-    log_debug('kodi_update_image_cache() copying {}'.format(img_path))
-    log_debug('kodi_update_image_cache() into    {}'.format(cached_thumb))
+    log_debug('kodi_update_image_cache() copying {0}'.format(img_path))
+    log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb))
     fs_encoding = disk_IO.get_fs_encoding()
     decoded_img_path     = img_path.decode(fs_encoding, 'ignore')
     decoded_cached_thumb = cached_thumb.decode(fs_encoding, 'ignore')

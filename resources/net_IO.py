@@ -70,35 +70,39 @@ def net_get_random_UserAgent():
             token = ''
         return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os + '; ' + token + 'Trident/' + engine + ')'
 
-# def net_download_page(url):
-#     req = urllib2.Request(url)
-#     req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
-#    
-#     return urllib2.urlopen(req)
-
 def net_download_img(img_url, file_path):
-    req = urllib2.Request(img_url)
-    req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
+    try:
+        req = urllib2.Request(img_url)
+        req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
 
-    f = open(file_path, 'wb')
-    f.write(urllib2.urlopen(req).read())
-    f.close()                                
+        f = open(file_path, 'wb')
+        f.write(urllib2.urlopen(req).read())
+        f.close()                                
+    # Catches all exceptions
+    except:
+        e = sys.exc_info()[0]
+        log_error('net_download_img() Exception {0}'.format(e))
+        kodi_notify_warn('Advanced Emulator Launcher', 'Error downloading image')
 
 def net_get_URL_text(req):
-    log_debug('net_get_URL_text() Reading URL "{}"'.format(req.get_full_url()))
-    page_data = ''
+    log_debug('net_get_URL_text() Reading URL "{0}"'.format(req.get_full_url()))
+    page_data = u''
+    num_bytes = 0
     try:
         # --- Read data ---
         f = urllib2.urlopen(req)
         page_data = f.read()
         f.close()
+        num_bytes = len(page_data)
 
         # --- Put all text into one string ---
-        page_data = page_data.replace('\r\n', '')
-        page_data = page_data.replace('\n', '')
-    except: # Catches all exceptions
+        page_data = page_data.replace(u'\r\n', u'')
+        page_data = page_data.replace(u'\n', u'')
+    # Catches all exceptions
+    except:
         e = sys.exc_info()[0]
-        log_debug('Exception {}'.format(e))
-    log_debug('net_get_URL_text() Read {} bytes'.format(len(page_data)))
+        log_error('net_get_URL_text() Exception {0}'.format(e))
+        kodi_notify_warn('Advanced Emulator Launcher', 'Error downloading URL text page')
+    log_debug('net_get_URL_text() Read {0} bytes'.format(num_bytes))
 
     return page_data

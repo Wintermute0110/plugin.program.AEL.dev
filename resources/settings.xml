@@ -51,6 +51,7 @@
     <setting label="Action on Kodi playing media" type="enum" id="media_state" default="0" values="Stop|Pause|Let Play" />
     <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
     <setting label="Delay (ms)" type="slider" id="start_tempo" default="500" range="0,100,15000" option="int"/>
+    <setting label="Import AL launchers.xml..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
 
     <setting id="separator" type="lsep" label="Debug options"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
