@@ -15,6 +15,7 @@
 # GNU General Public License for more details.
 
 # Import AEL stuff
+import sys, os
 if __name__ == "__main__" and __package__ is None:
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from disk_IO import *
