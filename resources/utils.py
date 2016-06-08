@@ -259,17 +259,6 @@ def misc_generate_random_SID():
 
     return sid
 
-def fs_get_ROMs_XML_file_name(category_name, launcherID, title, plugin_data_dir):
-    clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
-    clean_launch_title = ''.join([i if i in string.printable else '_' for i in title])
-    clean_launch_title = clean_launch_title.replace(' ', '_')
-    roms_xml_file_base = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:5] + '.xml'
-    roms_xml_file_path = os.path.join(plugin_data_dir, roms_xml_file_base)
-    log_info('fs_get_ROMs_XML_file_name() roms_xml_file_base "{0}"'.format(roms_xml_file_base))
-    log_info('fs_get_ROMs_XML_file_name() roms_xml_file_path "{0}"'.format(roms_xml_file_path))
-
-    return roms_xml_file_path
-
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
 # -------------------------------------------------------------------------------------------------
