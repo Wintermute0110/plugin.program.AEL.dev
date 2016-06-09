@@ -27,6 +27,6 @@ output_filename = 'favourites.json'
 # --- Main ----------------------------------------------------------------------------------------
 print('Reading {0}...'.format(input_filename))
 roms = fs_load_Favourites_XML(input_filename)
-print('Reading {0}...'.format(output_filename))
+print('Writing {0}...'.format(output_filename))
 fs_write_Favourites_JSON(output_filename, roms)
 print('Done!')
