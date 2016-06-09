@@ -1745,8 +1745,10 @@ class Main:
             platform = rom['platform']
             if rom['fav_status'] == 'OK':
                 rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom['name'])
-            elif rom['fav_status'] == 'Unlinked':
-                rom_name = '{0} [COLOR yellow][Unlinked][/COLOR]'.format(rom['name'])
+            elif rom['fav_status'] == 'Unlinked ROM':
+                rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom['name'])
+            elif rom['fav_status'] == 'Unlinked Launcher':
+                rom_name = '{0} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom['name'])
             elif rom['fav_status'] == 'Broken':
                 rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom['name'])
             else:
@@ -2871,7 +2873,7 @@ class Main:
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID:
             log_info('_command_run_rom() Launching ROM in Title Virtual Launcher...')
-            roms = fs_load_VCategory_ROMs_JSON(VCAT_TITLE_FILE_PATH, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
             rom  = roms[romID]
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
