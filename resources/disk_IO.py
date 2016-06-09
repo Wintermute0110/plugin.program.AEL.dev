@@ -76,11 +76,13 @@ def fs_new_rom():
 #
 # DO NOT USE THIS FUNCTION TO CREATE FAVOURITES. USE fs_new_favourite_rom() INSTEAD.
 #
-# fav_status = ['OK', 'Unlinked', 'Broken'] default 'OK'
-# 'OK'       filename exists and launcher exists and ROM id exists
-# 'Unlinked' filename exists but launcher or ROM ID in launcher does not
-#            Note that if the launcher does not exists implies ROM ID does not exist
-# 'Broken'   filename does not exist. ROM is unplayable
+# fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
+# 'OK'                ROM filename exists and launcher exists and ROM id exists
+# 'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
+# 'Unlinked Launcher' ROM filename exists but Launcher ID not found
+#                     Note that if the launcher does not exists implies ROM ID does not exist. If launcher
+#                     doesn't exist ROM JSON cannot be loaded.
+# 'Broken'            ROM filename does not exist. ROM is unplayable
 def fs_new_favourite_rom():
     r = {'id' : u'',          'name' : u'',   'filename' : u'',
          'thumb' : u'',       'fanart' : u'', 'trailer' : u'', 'custom' : u'',
