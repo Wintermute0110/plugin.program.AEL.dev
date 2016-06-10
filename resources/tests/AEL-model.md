@@ -1,12 +1,12 @@
-* Advanced Emulator Launcher metadata and artwork data model *
+# Advanced Emulator Launcher metadata and artwork data model #
 
-** Console ROMs Metadata **
+## Console ROMs Metadata ##
 
  Metada source | Title | Year | Genre | Studio | Plot | Platform |
 ---------------|-------|------|-------|--------|------|----------|
 
 
-** MAME/Arcade Metadata **
+## MAME/Arcade Metadata ##
 
 
  Metada source | Title | Year | Genre | Studio | Plot | Manual | Status | Input | Players | Coins | Orientation | 
@@ -14,10 +14,10 @@
  MAME XML      |
 
 
-** Software Lists Metadata **
+## Software Lists Metadata ##
 
 
-** Console ROMs Artwork **
+## Console ROMs Artwork ##
 
  Artwork site  | Title | Snap | Fanart | Banner | Boxfront | Boxback | Cartridge | Flyer | Map | Manual | Video trailer |
 ---------------|-------|------|--------|--------|----------|---------|-----------|-------|-----|--------|---------------|
@@ -30,7 +30,7 @@
  GiantBomb     |
 
 
-** MAME/Arcade Artwork **
+## MAME/Arcade Artwork ##
 
  Artwork site  |  Title | Snap | Fanart | Banner | Boss | GameOver | Score | Cabinet | Marquee | PCB | CPO | Flyer | Video trailer |
 ---------------|--------|------|--------|--------|------|----------|-------|---------|---------|-----|-----|-------|---------------|
@@ -39,10 +39,10 @@
  ArcadeItalia  |
 
 
-** Software Lists Artwork **
+## Software Lists Artwork ##
 
  
-** AEL artwork policy **
+## AEL artwork policy ##
 
  * One artwork directory will be required for every ROM launcher.
  * User will be asked for one Artwork directory. AEL will create subdirectories inside.
@@ -97,7 +97,7 @@ ROMs directory           ~/ROMs/SNES/Super Mario World (Europe).zip
                          ~/ROMs/SNES/Super Mario World (Europe)_trailer.mpeg
 ```
 
-** AL import into AEL **
+## AL import into AEL ##
 
  * AL thumb will be imported as title.
  * AL fanart will be imported as fanart.
