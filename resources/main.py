@@ -20,7 +20,7 @@
 #    main body.
 
 # --- Main imports ---
-import sys, os, shutil, fnmatch, string
+import sys, os, shutil, fnmatch, string, time
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 
 # --- Kodi stuff ---
@@ -2422,6 +2422,7 @@ class Main:
             info_text += u"[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
             info_text += u"[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
             info_text += u"[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
+            info_text += u"[COLOR skyblue]report_timestamp[/COLOR]: {0}\n".format(launcher['report_timestamp'])
 
             info_text += u'\n[COLOR orange]Category information[/COLOR]\n'
             info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
@@ -2475,6 +2476,7 @@ class Main:
         info_text += u"[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
         info_text += u"[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
         info_text += u"[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
+        info_text += u"[COLOR skyblue]report_timestamp[/COLOR]: {0}\n".format(launcher['report_timestamp'])
 
         info_text += u'\n[COLOR orange]Category information[/COLOR]\n'
         info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
@@ -2524,7 +2526,7 @@ class Main:
             log_error(u'_command_view_Category() Exception rendering INFO window')
             
     def _command_view_Launcher_Report(self, categoryID, launcherID):
-        # --- Read report file ---
+        # --- Get report filename ---
         category = self.categories[categoryID]
         launcher = self.launchers[launcherID]
         roms_base_noext = fs_get_ROMs_basename(category['name'], launcher['name'], launcherID)
@@ -2532,11 +2534,27 @@ class Main:
         window_title = u'Launcher {0} Report'.format(launcher['name'])
         log_verb(u'_command_view_Launcher_Report() Report filename "{0}"'.format(report_file_name))
 
-        # --- Make info string ---
+        # --- If report doesn't exists create it automatically ---
         if not os.path.isfile(report_file_name):
-            kodi_dialog_OK('Advanced Emulator Launcher',
-                           'Report file not found. Generate it in "Edit Launcher", "Manage ROM List", "Create Launcher report".')
-            return
+            kodi_dialog_OK('Advanced Emulator Launcher', 'Report file not found. Will be generated now.')
+            self._roms_create_launcher_report(categoryID, launcherID)
+            xbmc.sleep(250)
+            # >> Update report timestamp
+            self.launchers[launcherID]['report_timestamp'] = time.time()
+            # >> Save Categories/Launchers
+            # >> DO NOT update the timestamp of categories/launchers of report will always be obsolete!!!
+            # >> Keep same timestamp as before.
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+        
+        # --- If report timestamp is older than categories/launchers last modification, recreate it ---
+        if self.launchers[launcherID]['report_timestamp'] < self.update_timestamp:
+            kodi_dialog_OK('Advanced Emulator Launcher', 'Report is outdated. Will be regenerated now.')
+            self._roms_create_launcher_report(categoryID, launcherID)
+            xbmc.sleep(250)
+            self.launchers[launcherID]['report_timestamp'] = time.time()
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+
+        # --- Read report file ---
         try:
             file = open(report_file_name, 'rt')
             info_text = file.read()

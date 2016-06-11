@@ -55,7 +55,7 @@ def fs_new_launcher():
          'thumb' : u'',           'fanart' : u'',     'genre' : u'',       'year' : u'', 
          'studio' : u'',          'plot' : u'',
          'finished': False,       'minimize' : False,
-         'roms_base_noext' : u'', 'nointro_xml_file' : u'' }
+         'roms_base_noext' : u'', 'nointro_xml_file' : u'', u'report_timestamp' : 0.0 }
 
     return l
 
@@ -163,7 +163,7 @@ def get_fs_encoding():
 #
 # Write to disk categories.xml
 #
-def fs_write_catfile(categories_file, categories, launchers):
+def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 0.0):
     log_verb('fs_write_catfile() Writing {0}'.format(categories_file))
 
     # Original Angelscry method for generating the XML was to grow a string, like this
@@ -180,7 +180,9 @@ def fs_write_catfile(categories_file, categories, launchers):
         # --- Control information ---
         # >> time.time() returns a float. Usually precision is much better than a second, but not always.
         # >> See https://docs.python.org/2/library/time.html#time.time
-        _t = time.time()
+        # NOTE When updating reports timestamp of categories/launchers must not be modified.
+        if not update_timestamp: _t = time.time()
+        else:                    _t = update_timestamp
 
         # >> Write a timestamp when file is created. This enables the Virtual Launchers to know if
         # >> it's time for an update.
@@ -230,6 +232,7 @@ def fs_write_catfile(categories_file, categories, launchers):
             str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
+            str_list.append(XML_text('report_timestamp', unicode(launcher['report_timestamp'])))
             str_list.append('</launcher>\n')
         # End of file
         str_list.append('</advanced_emulator_launcher>\n')
@@ -311,10 +314,13 @@ def fs_load_catfile(categories_file):
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
                 launcher[xml_tag] = xml_text
 
-                # Now transform data depending on tag name
+                # Now transform data type depending on tag name
                 if xml_tag == 'finished' or xml_tag == 'minimize':
                     xml_bool = True if xml_text == 'True' else False
                     launcher[xml_tag] = xml_bool
+                elif xml_tag == 'report_timestamp':
+                    xml_float = float(xml_text)
+                    launcher[xml_tag] = xml_float
 
             # Add launcher to categories dictionary
             launchers[launcher['id']] = launcher
