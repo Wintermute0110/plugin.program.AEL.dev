@@ -3007,6 +3007,10 @@ class Main:
             kodi_notify_warn('Advanced Emulator Launcher', 'ROM not found {0}'.format(romfile))
             return
 
+        # -- Escape quotes and double quotes in romfile
+        romfile = romfile.replace("'", "\\'")
+        romfile = romfile.replace("\"", "\\\"")
+
         # ~~~~ Argument substitution ~~~~~
         arguments = arguments.replace('%rom%',         romfile).replace('%ROM%',             romfile)
         arguments = arguments.replace('%rombasename%', rombasename).replace('%ROMBASENAME%', rombasename)
