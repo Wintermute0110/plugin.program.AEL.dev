@@ -242,8 +242,8 @@ class Main:
             self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'ADD_TO_FAV':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'CHECK_FAV':
-            self._command_check_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
+        elif command == 'MANAGE_FAV':
+            self._command_manage_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
         # This command is issued when user clicks on "Search" on the context menu of a launcher
         # in the launchers view, or context menu inside a launcher. User is asked to enter the
         # search string and the field to search (name, category, etc.)
@@ -1177,30 +1177,24 @@ class Main:
 
     #
     # Former _edit_rom()
-    # Note that categoryID = launcherID = '0' if we are editing a ROM in Favourites
+    # Note that categoryID = VCATEGORY_FAV_ID, launcherID = VLAUNCHER_FAV_ID if we are editing 
+    # a ROM in Favourites.
     #
     def _command_edit_rom(self, categoryID, launcherID, romID):
         # --- Load ROMs ---
         if launcherID == VLAUNCHER_FAV_ID:
-            # roms = fs_load_Favourites_XML(FAV_XML_FILE_PATH)
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         else:
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
             roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
 
         # --- Show a dialog with ROM editing options ---
-        title = roms[romID]['name']
+        rom_name = roms[romID]['name']
         finished_display = 'Status: Finished' if roms[romID]['finished'] == True else 'Status: Unfinished'
         dialog = xbmcgui.Dialog()
-        if launcherID == VLAUNCHER_FAV_ID:
-            type = dialog.select('Edit Favourite ROM %s' % title,
-                                ['Edit Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
-                                finished_display, 'Advanced Modifications...',
-                                'Choose another favourite parent ROM...'])
-        else:
-            type = dialog.select('Edit ROM %s' % title,
-                                ['Edit Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
-                                finished_display, 'Advanced Modifications...'])
+        type = dialog.select('Edit ROM {0}'.format(rom_name),
+                            ['Edit Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
+                            finished_display, 'Advanced Modifications...'])
 
         # --- Edit ROM metadata ---
         if type == 0:
@@ -1360,64 +1354,6 @@ class Main:
             elif type2 < 0:
                 return
 
-        # Link favourite ROM to a new parent ROM
-        # ONLY IN FAVOURITE ROM EDITING
-        elif type == 5:
-            # STEP 1: select new launcher.
-            launcher_IDs = []
-            launcher_names = []
-            for launcher_id in self.launchers:
-                # >> ONLY SHOW ROMs LAUNCHERS, NOT STANDALONE LAUNCHERS!!!
-                if self.launchers[launcher_id]['rompath'] == '': continue
-                launcher_IDs.append(launcher_id)
-                launcher_names.append(self.launchers[launcher_id]['name'])
-                
-            # Order alphabetically both lists
-            sorted_idx = [i[0] for i in sorted(enumerate(launcher_names), key=lambda x:x[1])]
-            launcher_IDs   = [launcher_IDs[i] for i in sorted_idx]
-            launcher_names = [launcher_names[i] for i in sorted_idx]
-            dialog = xbmcgui.Dialog()
-            selected_launcher = dialog.select('New launcher for {0}'.format(roms[romID]['name']), launcher_names)
-            if not selected_launcher == -1:
-                # STEP 2: select ROMs in that launcher.
-                launcher_id = launcher_IDs[selected_launcher]
-                launcher_roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
-                if not launcher_roms: return
-                roms_IDs = []
-                roms_names = []
-                for rom_id in launcher_roms:
-                    # ROMs with nointro_status = 'Miss' are invalid! Do not add to the list
-                    if launcher_roms[rom_id]['nointro_status'] == 'Miss': continue
-                    roms_IDs.append(rom_id)
-                    roms_names.append(launcher_roms[rom_id]['name'])
-                sorted_idx = [i[0] for i in sorted(enumerate(roms_names), key=lambda x:x[1])]
-                roms_IDs   = [roms_IDs[i] for i in sorted_idx]
-                roms_names = [roms_names[i] for i in sorted_idx]
-                selected_rom = dialog.select('New ROM for Favourite {0}'.format(roms[romID]['name']), roms_names)
-                # Do the relinking and save favourites.
-                if not selected_rom == -1:
-                    launcher_rom_id = roms_IDs[selected_rom]
-                    current_rom = launcher_roms[launcher_rom_id]
-                    # Check that the selected ROM ID is not already in Favourites
-                    if launcher_rom_id in roms:
-                        kodi_dialog_OK('Advanced Emulator Launcher', 'Selected ROM already in Favourites. Exiting.')
-                        return
-                    # Delete current Favourite
-                    roms.pop(romID)
-                    # Copy parent ROM data files into favourite.
-                    # Overwrite everything in Favourite ROM
-                    roms[launcher_rom_id] = current_rom
-                    roms[launcher_rom_id]['launcherID']  = self.launchers[launcher_id]['id']
-                    roms[launcher_rom_id]['platform']    = self.launchers[launcher_id]['platform']
-                    roms[launcher_rom_id]['application'] = self.launchers[launcher_id]['application']
-                    roms[launcher_rom_id]['args']        = self.launchers[launcher_id]['args']
-                    roms[launcher_rom_id]['rompath']     = self.launchers[launcher_id]['rompath']
-                    roms[launcher_rom_id]['romext']      = self.launchers[launcher_id]['romext']
-                    roms[launcher_rom_id]['fav_status']  = 'OK'
-                    # If missing thumb/fanart then use launcher's
-                    if roms[launcher_rom_id]['thumb']  == '': roms[launcher_rom_id]['thumb']  = self.launchers[launcher_id]['thumb']
-                    if roms[launcher_rom_id]['fanart'] == '': roms[launcher_rom_id]['fanart'] = self.launchers[launcher_id]['fanart']
-
         # User canceled select dialog
         elif type < 0:
             return
@@ -1425,7 +1361,6 @@ class Main:
         # --- Save ROMs or Favourites ROMs ---
         # Always save if we reach this point of the function
         if launcherID == VLAUNCHER_FAV_ID:
-            # fs_write_Favourites_XML(FAV_XML_FILE_PATH, roms)
             fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
         else:
             # >> Also save categories/launchers to update timestamp
@@ -1817,7 +1752,7 @@ class Main:
         commands = []
         if categoryID == VCATEGORY_FAV_ID:
             commands.append(('View Favourite ROM data',    self._misc_url_RunPlugin('VIEW_ROM', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
-            commands.append(('Check Favourite ROMs',       self._misc_url_RunPlugin('CHECK_FAV', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
+            commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
             commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
             commands.append(('Search Favourites',          self._misc_url_RunPlugin('SEARCH_LAUNCHER', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID), ))
             commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
@@ -2056,22 +1991,133 @@ class Main:
         kodi_refresh_container()
 
     #
-    # Check ROMs in favourites and set fav_status field.
-    # Note that categoryID = launcherID = '0'
+    # Manage Favourite ROMs. Similar to Edit ROM/Edit Launcher
+    # Will be displayed on Favourite ROMs context menu only.
     #
-    def _command_check_favourites(self, categoryID, launcherID, romID):
-        kodi_notify('Advanced Emulator Launcher', 'Checking Favourite ROMs...')
-
+    def _command_manage_favourites(self, categoryID, launcherID, romID):
         # --- Load Favourite ROMs ---
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        name = roms_fav[romID]['name']
 
+        # --- Show selection dialog ---
+        dialog = xbmcgui.Dialog()
+        type = dialog.select('Manage Favourite ROM {0}'.format(name),
+                            ['Check all Favourite ROMs', 
+                             'Repair all Unlinked ROMs', 
+                             'Choose another parent ROM for Favourite ROM...'])
+
+        # --- Check Favourite ROMs ---
+        if type == 0:
+            kodi_notify('Advanced Emulator Launcher', 'Checking Favourite ROMs...')
+            self._fav_check_favourites(roms_fav)
+
+        # --- Repair Unliked Favorite ROMs ---
+        elif type == 1:
+            # 1) Traverse list of Favourites.
+            # 2) If romID not found in launcher, then search for a ROM with same filename.
+            # 3) If found, then replace romID in Favourites with romID of found ROM. Do not
+            #    copy any metadata because user maybe customised Favourite ROM.
+            # Refreshing Favourite status will locate Unlinked ROMs!
+            self._fav_check_favourites(roms_fav)
+            for rom_fav_ID in roms_fav:
+                if roms_fav[rom_fav_ID]['fav_status'] != 'Unlinked ROM': continue
+                fav_name = roms_fav[rom_fav_ID]['name']
+                log_debug('_command_manage_favourites() Relinking Unlinked ROM Fav {0}'.format(fav_name))
+
+                # >> Get ROMs of launcher
+                launcher_id = roms_fav[rom_fav_ID]['launcherID']
+                launcher_roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
+                
+                # >> Is there a ROM with same filename as the Favourite?
+                filename_found = False
+                for rom_id in launcher_roms:
+                    if launcher_roms[rom_id]['filename'] == roms_fav[rom_fav_ID]['filename']:
+                        filename_found = True
+                        new_rom_fav_ID = rom_id
+                        break
+
+                # >> Relink Favourite ROM
+                if filename_found:
+                    log_debug('_command_manage_favourites() Relinked to {0}'.format(new_rom_fav_ID))
+                    roms_fav[rom_fav_ID]['id'] = new_rom_fav_ID
+                    roms_fav[rom_fav_ID]['fav_status'] = 'OK'
+                else:
+                    log_debug('_command_manage_favourites() Filename in launcher not found! This is a BUG.')
+
+        # --- Choose another parent ROM for Favourite ---
+        elif type == 2:
+            # STEP 1: select new launcher.
+            launcher_IDs = []
+            launcher_names = []
+            for launcher_id in self.launchers:
+                # >> ONLY SHOW ROMs LAUNCHERS, NOT STANDALONE LAUNCHERS!!!
+                if self.launchers[launcher_id]['rompath'] == '': continue
+                launcher_IDs.append(launcher_id)
+                launcher_names.append(self.launchers[launcher_id]['name'])
+                
+            # Order alphabetically both lists
+            sorted_idx = [i[0] for i in sorted(enumerate(launcher_names), key=lambda x:x[1])]
+            launcher_IDs   = [launcher_IDs[i] for i in sorted_idx]
+            launcher_names = [launcher_names[i] for i in sorted_idx]
+            dialog = xbmcgui.Dialog()
+            selected_launcher = dialog.select('New launcher for {0}'.format(roms_fav[romID]['name']), launcher_names)
+            if selected_launcher < 0: return
+                
+            # STEP 2: select ROMs in that launcher.
+            launcher_id = launcher_IDs[selected_launcher]
+            launcher_roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
+            if not launcher_roms: return
+            roms_IDs = []
+            roms_names = []
+            for rom_id in launcher_roms:
+                # ROMs with nointro_status = 'Miss' are invalid! Do not add to the list
+                if launcher_roms[rom_id]['nointro_status'] == 'Miss': continue
+                roms_IDs.append(rom_id)
+                roms_names.append(launcher_roms[rom_id]['name'])
+            sorted_idx = [i[0] for i in sorted(enumerate(roms_names), key=lambda x:x[1])]
+            roms_IDs   = [roms_IDs[i] for i in sorted_idx]
+            roms_names = [roms_names[i] for i in sorted_idx]
+            selected_rom = dialog.select('New ROM for Favourite {0}'.format(roms_fav[romID]['name']), roms_names)
+            if selected_rom < 0 : return
+
+            # Do the relinking and save favourites.
+            launcher_rom_id = roms_IDs[selected_rom]
+            current_rom = launcher_roms[launcher_rom_id]
+            # Check that the selected ROM ID is not already in Favourites
+            if launcher_rom_id in roms_fav:
+                kodi_dialog_OK('Advanced Emulator Launcher', 'Selected ROM already in Favourites. Exiting.')
+                return
+            # Delete current Favourite
+            roms.pop(romID)
+            # Copy parent ROM data files into favourite.
+            # Overwrite everything in Favourite ROM
+            launcher = self.launchers[launcher_id]
+            roms[launcher_rom_id] = fs_get_Favourite_from_ROM(current_rom, launcher)
+            # If missing thumb/fanart then use launcher's
+            if roms[launcher_rom_id]['thumb']  == '': roms[launcher_rom_id]['thumb']  = launcher['thumb']
+            if roms[launcher_rom_id]['fanart'] == '': roms[launcher_rom_id]['fanart'] = launcher['fanart']
+
+        # --- User cancelled dialog ---
+        elif type < 0:
+            return
+        
+        # --- If we reach this point save favourites and refresh container ---
+        fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
+        kodi_refresh_container()
+
+    #
+    # Check ROMs in favourites and set fav_status field.
+    # Note that categoryID = VCATEGORY_FAV_ID, launcherID = '0'
+    # roms_fav edited by passing by assgiment, dictionaries are mutable.
+    #
+    def _fav_check_favourites(self, roms_fav):
         # Reset fav_status filed for all favourites
-        log_debug('_command_check_favourites() STEP 0: Reset status')
+        log_debug('_fav_check_favourites() STEP 0: Reset status')
         for rom_fav_ID in roms_fav:
             roms_fav[rom_fav_ID]['fav_status'] = 'OK'
 
         # STEP 1: Find missing launchers
-        log_debug('_command_check_favourites() STEP 1: Search unlinked Launchers')
+        log_debug('_fav_check_favourites() STEP 1: Search unlinked Launchers')
         for rom_fav_ID in roms_fav:
             if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
                 log_info('Fav ROM "{0}" Unlinked Launcher because launcherID not in self.launchers'.format(roms_fav[rom_fav_ID]['name']))
@@ -2079,7 +2125,7 @@ class Main:
 
         # STEP 2: Find missing ROM ID
         # >> Get a list of launchers Favourite ROMs belong
-        log_debug('_command_check_favourites() STEP 2: Search unlinked ROMs')
+        log_debug('_fav_check_favourites() STEP 2: Search unlinked ROMs')
         launchers_fav = set()
         for rom_fav_ID in roms_fav: launchers_fav.add(roms_fav[rom_fav_ID]['launcherID'])
 
@@ -2100,17 +2146,11 @@ class Main:
 
         # STEP 3: Check if file exists. Even if the ROM ID is not there because user
         # deleted ROM or launcher, the file may still be there.
-        log_debug('_command_check_favourites() STEP 3: Search broken ROMs')
+        log_debug('_fav_check_favourites() STEP 3: Search broken ROMs')
         for rom_fav_ID in roms_fav:
             if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
                 log_info('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
-
-        # --- Save favourite ROMs ---
-        fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
-
-        # Update container to show changes in Favourites flags. If not, user has to exit Favourites and enter again.
-        kodi_refresh_container()
 
     #
     # Search ROMs in launcher
