@@ -2088,14 +2088,14 @@ class Main:
                 kodi_dialog_OK('Advanced Emulator Launcher', 'Selected ROM already in Favourites. Exiting.')
                 return
             # Delete current Favourite
-            roms.pop(romID)
+            roms_fav.pop(romID)
             # Copy parent ROM data files into favourite.
             # Overwrite everything in Favourite ROM
             launcher = self.launchers[launcher_id]
-            roms[launcher_rom_id] = fs_get_Favourite_from_ROM(current_rom, launcher)
+            roms_fav[launcher_rom_id] = fs_get_Favourite_from_ROM(current_rom, launcher)
             # If missing thumb/fanart then use launcher's
-            if roms[launcher_rom_id]['thumb']  == '': roms[launcher_rom_id]['thumb']  = launcher['thumb']
-            if roms[launcher_rom_id]['fanart'] == '': roms[launcher_rom_id]['fanart'] = launcher['fanart']
+            if roms_fav[launcher_rom_id]['thumb']  == '': roms_fav[launcher_rom_id]['thumb']  = launcher['thumb']
+            if roms_fav[launcher_rom_id]['fanart'] == '': roms_fav[launcher_rom_id]['fanart'] = launcher['fanart']
 
         # --- User cancelled dialog ---
         elif type < 0:
