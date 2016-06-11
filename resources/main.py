@@ -2011,13 +2011,14 @@ class Main:
             kodi_notify('Advanced Emulator Launcher', 'Checking Favourite ROMs...')
             self._fav_check_favourites(roms_fav)
 
-        # --- Repair Unliked Favorite ROMs ---
+        # --- Repair Unliked Favourite ROMs ---
         elif type == 1:
             # 1) Traverse list of Favourites.
             # 2) If romID not found in launcher, then search for a ROM with same filename.
             # 3) If found, then replace romID in Favourites with romID of found ROM. Do not
             #    copy any metadata because user maybe customised Favourite ROM.
-            # Refreshing Favourite status will locate Unlinked ROMs!
+            kodi_notify('Advanced Emulator Launcher', 'Repairing Unlinked Favourite ROMs...')
+            # >> Refreshing Favourite status will locate Unlinked ROMs!
             self._fav_check_favourites(roms_fav)
             for rom_fav_ID in roms_fav:
                 if roms_fav[rom_fav_ID]['fav_status'] != 'Unlinked ROM': continue
