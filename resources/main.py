@@ -2040,8 +2040,13 @@ class Main:
                 # >> Relink Favourite ROM
                 if filename_found:
                     log_debug('_command_manage_favourites() Relinked to {0}'.format(new_rom_fav_ID))
-                    roms_fav[rom_fav_ID]['id'] = new_rom_fav_ID
-                    roms_fav[rom_fav_ID]['fav_status'] = 'OK'
+                    # >> Remove old Favourite before inserting new one!
+                    rom_temp = roms_fav[rom_fav_ID]
+                    roms_fav.pop(rom_fav_ID)
+                    rom_temp['id']         = new_rom_fav_ID
+                    rom_temp['launcherID'] = launcher_id
+                    rom_temp['fav_status'] = 'OK'
+                    roms_fav[new_rom_fav_ID] = rom_temp
                 else:
                     log_debug('_command_manage_favourites() Filename in launcher not found! This is a BUG.')
 
