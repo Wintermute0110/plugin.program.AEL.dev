@@ -126,7 +126,7 @@ def fs_get_ROMs_basename(category_name, launcher_name, launcherID):
     clean_launch_title = ''.join([i if i in string.printable else '_' for i in launcher_name])
     clean_launch_title = clean_launch_title.replace(' ', '_')
     roms_base_noext = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:6]
-    log_info('fs_get_ROMs_basename() roms_base_noext "{0}"'.format(roms_base_noext))
+    log_verb('fs_get_ROMs_basename() roms_base_noext "{0}"'.format(roms_base_noext))
 
     return roms_base_noext
 
