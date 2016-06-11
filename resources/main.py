@@ -841,23 +841,15 @@ class Main:
                 else:
                     add_delete_NoIntro_str = u'Add No-Intro XML DAT...'
                 type2 = dialog.select(u'Manage Items List',
-                                      [u'Create Launcher report',
-                                       add_delete_NoIntro_str, 
+                                      [add_delete_NoIntro_str, 
                                        u'Audit ROMs using No-Intro XML PClone DAT',
                                        u'Clear No-Intro audit status',
                                        u'Remove missing/dead ROMs',
                                        u'Import ROMs metadata from NFO files',
                                        u'Export ROMs metadata to NFO files',
                                        u'Clear ROMs from launcher' ])
-
-                # --- Create Launcher report in TXT format ---
-                if type2 == 0:
-                    # >> No need to refresh or save launchers
-                    self._roms_create_launcher_report(categoryID, launcherID)
-                    return
-
                 # --- Add/Delete No-Intro XML parent-clone DAT ---
-                if type2 == 1:
+                if type2 == 0:
                     if has_NoIntro_DAT:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
@@ -875,7 +867,7 @@ class Main:
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
-                elif type2 == 2:
+                elif type2 == 1:
                     # Check if No-Intro XML DAT exists
                     if not has_NoIntro_DAT:
                         kodi_dialog_OK('Advanced Emulator Launcher', 'No-Intro XML DAT not configured. Add one before ROM audit.')
@@ -908,7 +900,7 @@ class Main:
                     return
 
                 # --- Reset audit status ---
-                elif type2 == 3:
+                elif type2 == 2:
                     # --- Load ROMs for this launcher ---
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
@@ -923,7 +915,7 @@ class Main:
                     return
 
                 # --- Remove dead ROMs ---
-                elif type2 == 4:
+                elif type2 == 3:
                     ret = kodi_dialog_yesno('Advanced Emulator Launcher',
                                             'Are you sure you want to remove missing/dead ROMs?')
                     if not ret: return
@@ -943,7 +935,7 @@ class Main:
                     return
 
                 # --- Import Items list form NFO files ---
-                elif type2 == 5:
+                elif type2 == 4:
                     # >> Load ROMs, iterate and import NFO files
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
@@ -957,7 +949,7 @@ class Main:
                     return
 
                 # --- Export Items list to NFO files ---
-                elif type2 == 6:
+                elif type2 == 5:
                     # >> Load ROMs for current launcher, iterate and write NFO files
                     roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
                     if not roms: return
@@ -970,7 +962,7 @@ class Main:
                     return
 
                 # --- Empty Launcher menu option ---
-                elif type2 == 7:
+                elif type2 == 6:
                     self._gui_empty_launcher(launcherID)
                     # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
                     # Container.Refresh at the end of this function and calling the plugin twice.
