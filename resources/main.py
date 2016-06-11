@@ -673,12 +673,12 @@ class Main:
             type = dialog.select('Select Action for launcher %s' % title,
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
                                   u'Change Category: {0}'.format(category_name),
-                                  finished_display, 'Advanced Modifications...', 'Delete'])
+                                  finished_display, 'Advanced Modifications...', 'Delete Launcher'])
         else:
             type = dialog.select('Select Action for launcher %s' % title,
                                  ['Modify Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
                                   u'Change Category: {0}'.format(category_name),
-                                  finished_display, 'Manage ROM List...', 'Advanced Modifications...', 'Delete'])
+                                  finished_display, 'Manage ROM List...', 'Advanced Modifications...', 'Delete Launcher'])
 
         # --- Edition of the launcher metadata ---
         type_nb = 0
@@ -2126,7 +2126,7 @@ class Main:
         log_debug('_fav_check_favourites() STEP 1: Search unlinked Launchers')
         for rom_fav_ID in roms_fav:
             if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
-                log_info('Fav ROM "{0}" Unlinked Launcher because launcherID not in self.launchers'.format(roms_fav[rom_fav_ID]['name']))
+                log_verb('Fav ROM "{0}" Unlinked Launcher because launcherID not in self.launchers'.format(roms_fav[rom_fav_ID]['name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked Launcher'
 
         # STEP 2: Find missing ROM ID
@@ -2147,7 +2147,7 @@ class Main:
                 if roms_fav[rom_fav_ID]['launcherID'] == launcher_id:
                     # Check if ROM ID exists
                     if roms_fav[rom_fav_ID]['id'] not in roms:
-                        log_info('Fav ROM "{0}" Unlinked ROM because romID not in launcher ROMs'.format(roms_fav[rom_fav_ID]['name']))
+                        log_verb('Fav ROM "{0}" Unlinked ROM because romID not in launcher ROMs'.format(roms_fav[rom_fav_ID]['name']))
                         roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked ROM'
 
         # STEP 3: Check if file exists. Even if the ROM ID is not there because user
@@ -2155,7 +2155,7 @@ class Main:
         log_debug('_fav_check_favourites() STEP 3: Search broken ROMs')
         for rom_fav_ID in roms_fav:
             if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
-                log_info('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['name']))
+                log_verb('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
 
     #
