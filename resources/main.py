@@ -687,26 +687,41 @@ class Main:
             desc_str = text_limit_string(self.launchers[launcherID]['plot'], DESCRIPTION_MAXSIZE)
             type2 = dialog.select('Modify Launcher Metadata',
                                   [u'Scrape from {0}...'.format(self.scraper_metadata.fancy_name),
-                                   u'Import metadata from NFO file',
+                                   u'Import metadata from NFO (automatic)',
+                                   u'Import metadata from NFO (browse NFO)...',
                                    u"Edit Title: '{0}'".format(self.launchers[launcherID]['name']),
                                    u"Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
                                    u"Edit Release Year: '{0}'".format(self.launchers[launcherID]['year']),
                                    u"Edit Studio: '{0}'".format(self.launchers[launcherID]['studio']),
                                    u"Edit Genre: '{0}'".format(self.launchers[launcherID]['genre']),
                                    u"Edit Description: '{0}'".format(desc_str),
-                                   u'Import Description from file...',
                                    u'Save metadata to NFO file'])
-            # Scrape launcher metadata
+            # --- Scrape launcher metadata ---
             if type2 == 0:
                 if not self._gui_scrap_launcher_metadata(launcherID): return
 
-            # Import launcher metadata from NFO file
+            # --- Import launcher metadata from NFO file (automatic) ---
             elif type2 == 1:
+                # >> Get NFO file name for launcher
+                NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
+                
                 # >> Launcher is edited using Python passing by assigment
-                if not fs_import_launcher_NFO(self.settings, self.launchers, launcherID): return
+                # >> Returns True if changes were made
+                if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
 
-            # Edition of the launcher name
+            # --- Browse for NFO file ---
             elif type2 == 2:
+                # >> Get launcher NFO file
+                # No-Intro reading of files: use Unicode string for u'.dat|.xml'. However, | belongs to ASCII...
+                NFO_file = xbmcgui.Dialog().browse(1, u'Select description file (NFO)', u'files', u'.nfo', False, False)
+                if not os.path.isfile(NFO_file): return
+                
+                # >> Launcher is edited using Python passing by assigment
+                # >> Returns True if changes were made
+                if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
+
+            # --- Edition of the launcher name ---
+            elif type2 == 3:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['name'], 'Edit title')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
@@ -716,54 +731,56 @@ class Main:
                 self.launchers[launcherID]['name'] = title.rstrip()
 
             # Selection of the launcher platform from AEL "official" list
-            elif type2 == 3:
+            elif type2 == 4:
                 dialog = xbmcgui.Dialog()
                 sel_platform = dialog.select('Select the platform', AEL_platform_list)
                 if sel_platform < 0: return
                 self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
 
             # Edition of the launcher release date (year)
-            elif type2 == 4:
+            elif type2 == 5:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['year'] = keyboard.getText()
 
             # Edition of the launcher studio name
-            elif type2 == 5:
+            elif type2 == 6:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['studio'], 'Edit studio')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['studio'] = keyboard.getText()
 
             # Edition of the launcher genre
-            elif type2 == 6:
+            elif type2 == 7:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['genre'], 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['genre'] = keyboard.getText()
 
-            # Edit launcher description (plot)
-            elif type2 == 7:
+            # --- Edit launcher description (plot) ---
+            elif type2 == 8:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['plot'], 'Edit descripion')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['plot'] = keyboard.getText()
 
-            # Import of the launcher descripion (plot)
-            elif type2 == 8:
-                text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False)
-                if os.path.isfile(text_file) == True:
-                    file_data = self._gui_import_TXT_file(text_file)
-                    self.launchers[launcherID]['plot'] = file_data
-                else:
-                    desc_str = text_limit_string(self.launchers[launcherID]['plot'], DESCRIPTION_MAXSIZE)
-                    kodi_dialog_OK('Advanced Emulator Launcher - Information',
-                                   "Launcher plot '{0}' not changed".format(desc_str))
-                    return
-            # Export launcher metadata to NFO file
+            # --- Import of the launcher descripion (plot) ---
+            # elif type2 == 8:
+            #     text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False)
+            #     if os.path.isfile(text_file) == True:
+            #         file_data = self._gui_import_TXT_file(text_file)
+            #         self.launchers[launcherID]['plot'] = file_data
+            #     else:
+            #         desc_str = text_limit_string(self.launchers[launcherID]['plot'], DESCRIPTION_MAXSIZE)
+            #         kodi_dialog_OK('Advanced Emulator Launcher - Information',
+            #                        "Launcher plot '{0}' not changed".format(desc_str))
+            #         return
+
+            # --- Export launcher metadata to NFO file ---
             elif type2 == 9:
-                fs_export_launcher_NFO(self.settings, self.launchers[launcherID])
+                NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
+                fs_export_launcher_NFO(NFO_file, self.launchers[launcherID])
                 # >> No need to save launchers
                 return
 

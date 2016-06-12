@@ -1081,23 +1081,20 @@ def fs_load_NFO_file_scanner(nfo_file_path):
 
 #
 # Standalone launchers:
-#   NFO files are stored in self.settings["launcher_thumb_path"] if not empty.
-#   If empty, it defaults to DEFAULT_NFO_DIR = os.path.join(PLUGIN_DATA_DIR, 'nfos')
+#   NFO files are stored in self.settings["launchers_nfo_dir"] if not empty.
+#   If empty, it defaults to DEFAULT_LAUN_NFO_DIR.
 #
 # ROM launchers:
 #   Same as standalone launchers.
 #
-def fs_export_launcher_NFO(settings, launcher):
+def fs_export_launcher_NFO(nfo_file_path, launcher):
     # --- Get NFO file name ---
-    log_debug('fs_export_launcher_NFO() Exporting launcher NFO file.')
-    nfo_file_path = fs_get_launcher_NFO_name(settings, launcher)
+    log_debug(u'fs_export_launcher_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<launcher>\n')
-    nfo_content.append(XML_text('title',     launcher['name']))
-    nfo_content.append(XML_text('platform',  launcher['platform']))
     nfo_content.append(XML_text('year',      launcher['year']))
     nfo_content.append(XML_text('publisher', launcher['studio']))
     nfo_content.append(XML_text('genre',     launcher['genre']))
@@ -1110,13 +1107,13 @@ def fs_export_launcher_NFO(settings, launcher):
         f.close()
     except:
         kodi_notify_warn('Advanced Emulator Launcher',
-                         'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
-        log_error("fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_file_path))
+                         u'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
+        log_error(u"fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_file_path))
         return False
 
     kodi_notify('Advanced Emulator Launcher',
-                'Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
-    log_debug("fs_export_launcher_NFO() Created '{0}'".format(nfo_file_path))
+                u'Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
+    log_debug(u"fs_export_launcher_NFO() Created '{0}'".format(nfo_file_path))
 
     return True
 
@@ -1130,43 +1127,46 @@ def fs_export_launcher_NFO(settings, launcher):
 #
 # Function asumes that the NFO file already exists.
 #
-def fs_import_launcher_NFO(settings, launchers, launcherID):
+def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
     # --- Get NFO file name ---
-    log_debug('fs_import_launcher_NFO() Importing launcher NFO file.')
-    nfo_file_path = fs_get_launcher_NFO_name(settings, launchers[launcherID])
+    log_debug(u'fs_import_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path))
 
     # --- Import data ---
     if os.path.isfile(nfo_file_path):
         # >> Read NFO file data
-        file = codecs.open(nfo_file_path, 'rt', 'utf-8')
-        item_nfo = file.read().replace('\r','').replace('\n','')
-        file.close()
-
-        # Find data
-        item_title     = re.findall('<title>(.*?)</title>', item_nfo)
-        item_platform  = re.findall('<platform>(.*?)</platform>', item_nfo)
-        item_year      = re.findall('<year>(.*?)</year>', item_nfo)
-        item_publisher = re.findall('<publisher>(.*?)</publisher>', item_nfo)
-        item_genre     = re.findall('<genre>(.*?)</genre>', item_nfo)
-        item_plot      = re.findall('<plot>(.*?)</plot>', item_nfo)
-
-        # Careful about object mutability! This should modify the dictionary
-        # passed as argument outside this function.
-        launchers[launcherID]['name']     = text_unescape_XML(item_title[0])
-        launchers[launcherID]['platform'] = text_unescape_XML(item_platform[0])
-        launchers[launcherID]['year']     = text_unescape_XML(item_year[0])
-        launchers[launcherID]['studio']   = text_unescape_XML(item_publisher[0])
-        launchers[launcherID]['genre']    = text_unescape_XML(item_genre[0])
-        launchers[launcherID]['plot']     = text_unescape_XML(item_plot[0])
-
-        kodi_notify('Advanced Emulator Launcher',
-                    'Imported {0}'.format(nfo_file_path))
-        log_debug("fs_import_launcher_NFO() Imported '{0}'".format(nfo_file_path))
+        try:
+            file = codecs.open(nfo_file_path, 'rt', 'utf-8')
+            item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
+            file.close()
+        except:
+            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(nfo_file_path))
+            log_error(u"fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
+            return False
+        # log_debug(u"fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
     else:
-        kodi_notify_warn('Advanced Emulator Launcher',
-                         'NFO file not found {0}'.format(nfo_file_path))
-        log_debug("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_file_path))
+        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(nfo_file_path))
+        log_info(u"fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
+
+    # Find data
+    item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+    item_publisher = re.findall('<publisher>(.*?)</publisher>', item_nfo)
+    item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+    item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
+    # log_debug(u"fs_import_launcher_NFO() item_year      '{0}'".format(item_year[0]))
+    # log_debug(u"fs_import_launcher_NFO() item_publisher '{0}'".format(item_publisher[0]))
+    # log_debug(u"fs_import_launcher_NFO() item_genre     '{0}'".format(item_genre[0]))
+    # log_debug(u"fs_import_launcher_NFO() item_plot      '{0}'".format(item_plot[0]))
+
+    # >> Careful about object mutability! This should modify the dictionary
+    # >> passed as argument outside this function.
+    if item_year:      launchers[launcherID]['year']   = text_unescape_XML(item_year[0])
+    if item_publisher: launchers[launcherID]['studio'] = text_unescape_XML(item_publisher[0])
+    if item_genre:     launchers[launcherID]['genre']  = text_unescape_XML(item_genre[0])
+    if item_plot:      launchers[launcherID]['plot']   = text_unescape_XML(item_plot[0])
+
+    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(nfo_file_path))
+    log_verb(u"fs_import_launcher_NFO() Imported '{0}'".format(nfo_file_path))
 
     return True
 
@@ -1174,6 +1174,6 @@ def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['name']
     nfo_dir = settings['launchers_nfo_dir']
     nfo_file_path = os.path.join(nfo_dir, launcher_name + u'.nfo')
-    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+    log_debug(u"fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
