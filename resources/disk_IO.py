@@ -1139,12 +1139,12 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
             item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
             file.close()
         except:
-            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(nfo_file_path))
+            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
             log_error(u"fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
             return False
         # log_debug(u"fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
     else:
-        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(nfo_file_path))
+        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
         log_info(u"fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
@@ -1165,7 +1165,7 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
     if item_genre:     launchers[launcherID]['genre']  = text_unescape_XML(item_genre[0])
     if item_plot:      launchers[launcherID]['plot']   = text_unescape_XML(item_plot[0])
 
-    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(nfo_file_path))
+    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(os.path.basename(nfo_file_path)))
     log_verb(u"fs_import_launcher_NFO() Imported '{0}'".format(nfo_file_path))
 
     return True
@@ -1191,7 +1191,7 @@ def fs_export_category_NFO(nfo_file_path, category):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<category>\n')
     nfo_content.append(XML_text('genre', category['genre']))
-    nfo_content.append(XML_text('plot',  category['plot']))
+    nfo_content.append(XML_text('plot',  category['description']))
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content)
     try:
@@ -1205,7 +1205,7 @@ def fs_export_category_NFO(nfo_file_path, category):
         return False
 
     kodi_notify('Advanced Emulator Launcher',
-                u'Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
+                u'Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
     log_debug(u"fs_export_category_NFO() Created '{0}'".format(nfo_file_path))
 
     return True
@@ -1221,21 +1221,21 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
             item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
             file.close()
         except:
-            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(nfo_file_path))
+            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
             log_error(u"fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
             return False
     else:
-        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(nfo_file_path))
+        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
         log_info(u"fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
     item_genre = re.findall('<genre>(.*?)</genre>', item_nfo)
     item_plot  = re.findall('<plot>(.*?)</plot>',   item_nfo)
 
-    if item_genre: categories[categoryID]['genre'] = text_unescape_XML(item_genre[0])
-    if item_plot:  categories[categoryID]['plot']  = text_unescape_XML(item_plot[0])
+    if item_genre: categories[categoryID]['genre']        = text_unescape_XML(item_genre[0])
+    if item_plot:  categories[categoryID]['description']  = text_unescape_XML(item_plot[0])
 
-    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(nfo_file_path))
+    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(os.path.basename(nfo_file_path)))
     log_verb(u"fs_import_category_NFO() Imported '{0}'".format(nfo_file_path))
 
     return True
