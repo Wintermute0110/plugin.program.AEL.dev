@@ -397,13 +397,35 @@ class Main:
         if type == 0:
             desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Edit Category Metadata',
-                                  [u"Edit Title: '{0}'".format(self.categories[categoryID]['name']),
+            type2 = dialog.select(u'Edit Category Metadata',
+                                  [u'Import metadata from NFO (automatic)',
+                                   u'Import metadata from NFO (browse NFO)...',
+                                   u"Edit Title: '{0}'".format(self.categories[categoryID]['name']),
                                    u"Edit Genre: '{0}'".format(self.categories[categoryID]['genre']),
                                    u"Edit Description: '{0}'".format(desc_str),
-                                   'Import Description from file...' ])
-            # Edition of the category name
+                                   u'Save metadata to NFO file'])
+            # --- Import launcher metadata from NFO file (automatic) ---
             if type2 == 0:
+                # >> Get NFO file name for launcher
+                NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
+
+                # >> Launcher is edited using Python passing by assigment
+                # >> Returns True if changes were made
+                if not fs_import_category_NFO(NFO_file, self.categories, categoryID): return
+
+            # --- Browse for NFO file ---
+            elif type2 == 1:
+                # >> Get launcher NFO file
+                # No-Intro reading of files: use Unicode string for u'.dat|.xml'. However, | belongs to ASCII...
+                NFO_file = xbmcgui.Dialog().browse(1, u'Select description file (NFO)', u'files', u'.nfo', False, False)
+                if not os.path.isfile(NFO_file): return
+
+                # >> Launcher is edited using Python passing by assigment
+                # >> Returns True if changes were made
+                if not fs_import_category_NFO(NFO_file, self.categories, categoryID): return
+
+            # --- Edition of the category name ---
+            elif type2 == 2:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['name'], 'Edit Title')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -415,8 +437,9 @@ class Main:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
                                    "Category name '{0}' not changed".format(self.categories[categoryID]['name']))
                     return
+
             # Edition of the category genre
-            elif type2 == 1:
+            elif type2 == 3:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['genre'], 'Edit Genre')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -425,8 +448,9 @@ class Main:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
                                    "Category genre '{0}' not changed".format(self.categories[categoryID]['genre']))
                     return
+
             # Edition of the plot (description)
-            elif type2 == 2:
+            elif type2 == 4:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['description'], 'Edit Description')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -435,22 +459,34 @@ class Main:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
                                    "Category description '{0}' not changed".format(self.categories[categoryID]['description']))
                     return
-            # Import category description
-            elif type2 == 3:
-                text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False)
-                if os.path.isfile(text_file):
-                    file_data = self._gui_import_TXT_file(text_file)
-                    if file_data != '':
-                        self.categories[categoryID]["description"] = file_data
-                    else:
-                        return
-                else:
-                    desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
-                    kodi_dialog_OK('Advanced Emulator Launcher - Information',
-                                   "Category description '{0}' not changed".format(desc_str))
-                    return
 
-        # Edit Thumbnail image
+            # --- Import category description ---
+            # elif type2 == 3:
+            #     text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False)
+            #     if os.path.isfile(text_file):
+            #         file_data = self._gui_import_TXT_file(text_file)
+            #         if file_data != '':
+            #             self.categories[categoryID]["description"] = file_data
+            #         else:
+            #             return
+            #     else:
+            #         desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
+            #         kodi_dialog_OK('Advanced Emulator Launcher - Information',
+            #                        "Category description '{0}' not changed".format(desc_str))
+            #         return
+
+            # --- Export launcher metadata to NFO file ---
+            elif type2 == 5:
+                NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
+                fs_export_category_NFO(NFO_file, self.categories[categoryID])
+                # >> No need to save launchers
+                return
+
+            # >> User canceled select dialog
+            elif type2 < 0:
+                return
+
+        # --- Edit Thumbnail image ---
         # If this function returns False no changes were made. No need to save categories XML and update container.
         elif type == 1:
             if not self._gui_edit_category_image(IMAGE_THUMB, categoryID):
@@ -685,7 +721,7 @@ class Main:
         if type == type_nb:
             dialog = xbmcgui.Dialog()
             desc_str = text_limit_string(self.launchers[launcherID]['plot'], DESCRIPTION_MAXSIZE)
-            type2 = dialog.select('Modify Launcher Metadata',
+            type2 = dialog.select(u'Modify Launcher Metadata',
                                   [u'Scrape from {0}...'.format(self.scraper_metadata.fancy_name),
                                    u'Import metadata from NFO (automatic)',
                                    u'Import metadata from NFO (browse NFO)...',

@@ -1177,3 +1177,73 @@ def fs_get_launcher_NFO_name(settings, launcher):
     log_debug(u"fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
+
+#
+# Look at the launcher NFO files for a reference implementation.
+# Categories NFO files only have genre and plot.
+#
+def fs_export_category_NFO(nfo_file_path, category):
+    # --- Get NFO file name ---
+    log_debug(u'fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path))
+
+    # If NFO file does not exist then create them. If it exists, overwrite.
+    nfo_content = []
+    nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    nfo_content.append('<category>\n')
+    nfo_content.append(XML_text('genre', category['genre']))
+    nfo_content.append(XML_text('plot',  category['plot']))
+    nfo_content.append('</category>\n')
+    full_string = ''.join(nfo_content)
+    try:
+        f = open(nfo_file_path, 'wt')
+        f.write(full_string)
+        f.close()
+    except:
+        kodi_notify_warn('Advanced Emulator Launcher',
+                         u'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
+        log_error(u"fs_export_category_NFO() Exception writing'{0}'".format(nfo_file_path))
+        return False
+
+    kodi_notify('Advanced Emulator Launcher',
+                u'Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
+    log_debug(u"fs_export_category_NFO() Created '{0}'".format(nfo_file_path))
+
+    return True
+
+def fs_import_category_NFO(nfo_file_path, categories, categoryID):
+    # --- Get NFO file name ---
+    log_debug(u'fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path))
+
+    # --- Import data ---
+    if os.path.isfile(nfo_file_path):
+        try:
+            file = codecs.open(nfo_file_path, 'rt', 'utf-8')
+            item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
+            file.close()
+        except:
+            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(nfo_file_path))
+            log_error(u"fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
+            return False
+    else:
+        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(nfo_file_path))
+        log_info(u"fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
+        return False
+
+    item_genre = re.findall('<genre>(.*?)</genre>', item_nfo)
+    item_plot  = re.findall('<plot>(.*?)</plot>',   item_nfo)
+
+    if item_genre: categories[categoryID]['genre'] = text_unescape_XML(item_genre[0])
+    if item_plot:  categories[categoryID]['plot']  = text_unescape_XML(item_plot[0])
+
+    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(nfo_file_path))
+    log_verb(u"fs_import_category_NFO() Imported '{0}'".format(nfo_file_path))
+
+    return True
+
+def fs_get_category_NFO_name(settings, category):
+    category_name = category['name']
+    nfo_dir = settings['categories_nfo_dir']
+    nfo_file_path = os.path.join(nfo_dir, category_name + u'.nfo')
+    log_debug(u"fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+
+    return nfo_file_path
