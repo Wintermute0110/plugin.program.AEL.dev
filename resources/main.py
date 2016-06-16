@@ -1501,16 +1501,16 @@ class Main:
             return
 
         # --- Create listitem row ---
-        icon = 'DefaultFolder.png'
-        if category_dic['thumb'] != '':
-            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon, thumbnailImage=category_dic['thumb'] )
-        else:
-            listitem = xbmcgui.ListItem(category_dic['name'], iconImage=icon )
-        if category_dic['finished'] == False: ICON_OVERLAY = 6
-        else:                                 ICON_OVERLAY = 7
-        listitem.setProperty('fanart_image', category_dic['fanart'])
+
+        listitem = xbmcgui.ListItem(category_dic['name'])
+        if category_dic['finished'] == False: ICON_OVERLAY = 4
+        else:                                 ICON_OVERLAY = 5
         listitem.setInfo('video', {'Title': category_dic['name'],        'Genre' : category_dic['genre'],
                                    'Plot' : category_dic['description'], 'overlay': ICON_OVERLAY } )
+        # Set ListItem artwork
+        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart ': category_dic['fanart']})
+        if category_dic['thumb'] != '':
+            listitem.setArt({'icon': category_dic['thumb']})
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
@@ -1534,12 +1534,11 @@ class Main:
         fav_name = '<Favourites>'
         fav_thumb = ''
         fav_fanart = ''
-        icon = 'DefaultFolder.png'
-        listitem = xbmcgui.ListItem(fav_name, iconImage=icon, thumbnailImage=fav_thumb)
-        listitem.setProperty('fanart_image', fav_fanart)
+        listitem = xbmcgui.ListItem(fav_name)
         listitem.setInfo('video', { 'Title': fav_name,             'Genre' : 'All',
-                                    'Plot' : 'AEL Favourite ROMs', 'overlay': 7 } )
-
+                                    'Plot' : 'AEL Favourite ROMs', 'overlay': 5 } )
+        # Set ListItem artwork
+        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart ': fav_fanart, 'thumb': fav_thumb})
         # --- Create context menu ---
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
@@ -1576,11 +1575,11 @@ class Main:
             log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             return
-        icon = 'DefaultFolder.png'
-        listitem = xbmcgui.ListItem(vcategory_name, iconImage=icon, thumbnailImage=vcategory_thumb)
-        listitem.setProperty('fanart_image', vcategory_fanart)
+        listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', { 'Title': vcategory_name,         'Genre' : 'All',
-                                    'Plot' : 'AEL virtual category', 'overlay': 7 } )
+                                    'Plot' : 'AEL virtual category', 'overlay': 5 } )
+        # Set ListItem artwork
+        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart ': vcategory_fanart, 'thumb': vcategory_thumb})
 
         commands = []
         update_vcat_URL     = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
@@ -1641,13 +1640,9 @@ class Main:
         else:                             # Files launcher
             folder = True
             icon = 'DefaultFolder.png'
-        if launcher_dic['thumb']:
-            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
-        else:
-            listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon )
-        if launcher_dic['finished'] != True: ICON_OVERLAY = 6
-        else:                                ICON_OVERLAY = 7
-        listitem.setProperty('fanart_image', launcher_dic['fanart'])
+        listitem = xbmcgui.ListItem(launcher_dic['name'])
+        if launcher_dic['finished'] != True: ICON_OVERLAY = 4
+        else:                                ICON_OVERLAY = 5
         listitem.setInfo('video', {'Title'    : launcher_dic['name'],    'Label'     : os.path.basename(launcher_dic['rompath']),
                                    'Plot'     : launcher_dic['plot'],    'Studio'    : launcher_dic['studio'],
                                    'Genre'    : launcher_dic['genre'],   'Premiered' : launcher_dic['year'],
@@ -1655,7 +1650,10 @@ class Main:
                                    'Trailer'  : os.path.join(launcher_dic['trailerpath']),
                                    'Director' : os.path.join(launcher_dic['custompath']),
                                    'overlay'  : ICON_OVERLAY })
-
+        # Set ListItem artwork
+        listitem.setArt({'icon': icon, 'fanart ': launcher_dic['fanart']})
+        if launcher_dic['thumb']:
+            listitem.setArt({'thumb': launcher_dic['thumb']})
         # --- Create context menu ---
         commands = []
         launcherID = launcher_dic['id']
@@ -1725,9 +1723,6 @@ class Main:
             return
 
         # --- Create listitem row ---
-        icon = "DefaultProgram.png"
-        # icon = "DefaultVideo.png"
-
         # If we are rendering Favourites then mark fav_status
         defined_fanart = u''
         platform = u''
@@ -1769,13 +1764,9 @@ class Main:
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
         
         # --- Add ROM to lisitem ---
-        if rom['thumb']:
-            listitem = xbmcgui.ListItem(rom['name'], rom['name'], iconImage=icon, thumbnailImage=rom['thumb'])
-        else:
-            listitem = xbmcgui.ListItem(rom['name'], rom['name'], iconImage=icon)
-        if rom['finished'] is not True: ICON_OVERLAY = 6
-        else:                           ICON_OVERLAY = 7
-        listitem.setProperty('fanart_image', defined_fanart)
+        listitem = xbmcgui.ListItem(rom['name'])
+        if rom['finished'] is not True: ICON_OVERLAY = 4
+        else:                           ICON_OVERLAY = 5
 
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
         # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
@@ -1787,6 +1778,10 @@ class Main:
                                    'Year'    : rom['year'],                  'Writer'    : platform,
                                    'Trailer' : os.path.join(rom['trailer']), 'Director'  : os.path.join(rom['custom']),
                                    'overlay' : ICON_OVERLAY })
+        # Set ListItem artwork
+        listitem.setArt({'icon': 'DefaultProgram.png', 'fanart ': defined_fanart})
+        if rom['thumb']:
+            listitem.setArt({'thumb': rom['thumb']})
 
         # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
         # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
@@ -1903,21 +1898,19 @@ class Main:
                            'Categories/Launchers/ROMs were modified. Virtual category database should be updated!')
 
         # --- Render virtual launchers rows ---
-        icon = 'DefaultFolder.png'
         for vlauncher_id in vcategory_launchers:
             vlauncher = vcategory_launchers[vlauncher_id]
             vlauncher_name = vlauncher['name'] + '  ({0} ROM/s)'.format(vlauncher['rom_count'])
-            # listitem = xbmcgui.ListItem( launcher_dic['name'], iconImage=icon, thumbnailImage=launcher_dic['thumb'] )
-            listitem = xbmcgui.ListItem(vlauncher_name, iconImage = icon)
-            # listitem.setProperty('fanart_image', launcher_dic['fanart'])
+            listitem = xbmcgui.ListItem(vlauncher_name)
             listitem.setInfo('video', {'Title'    : 'Title text',
                                        'Label'    : 'Label text',
                                        'Plot'     : 'Plot text',    'Studio'    : 'Studio text',
                                        'Genre'    : 'Genre text',   'Premiered' : 'Premiered text',
                                        'Year'     : 'Year text',    'Writer'    : 'Writer text',
                                        'Trailer'  : 'Trailer text', 'Director'  : 'Director text',
-                                       'overlay'  : 7} )
-
+                                       'overlay'  : 5} )
+            # Set ListItem artwork
+            listitem.setArt({'icon': 'DefaultFolder.png'})
             # --- Create context menu ---
             commands = []
             # launcherID = launcher_dic['id']
@@ -4667,7 +4660,8 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
         for index, item in enumerate(self.listing):
             name_str = item['name']
             URL_str  = item['disp_URL']
-            listitem = xbmcgui.ListItem(label=name_str, label2=URL_str, iconImage='DefaultAddonImages.png', thumbnailImage=URL_str)
+            listitem = xbmcgui.ListItem(label=name_str, label2=URL_str)
+            listitem.setArt({'icon': 'DefaultAddonImages.png', 'thumb': URL_str})
             listitems.append(listitem)
         self.container.addItems(listitems)
         self.setFocus(self.container)
@@ -4735,7 +4729,7 @@ class ImgSelectDialog_Old(xbmcgui.WindowXMLDialog):
 
         for index, item in enumerate(self.listing):
             listitem = xbmcgui.ListItem(item[2]) # string image name
-            listitem.setIconImage(item[1])       # Image URL (http://)
+            listitem.setArt({'icon': item[1]})   # Image URL (http://)
             listitem.setLabel2(item[0])          # Image URL (http://)
             self.img_list.addItem(listitem)
 
