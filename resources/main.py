@@ -1523,7 +1523,7 @@ class Main:
         # Add Category to Kodi Favourites (do not know how to do it yet)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
@@ -1545,7 +1545,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_FAVOURITES')
@@ -1589,7 +1589,7 @@ class Main:
         commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL, ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
@@ -1671,7 +1671,7 @@ class Main:
         # Add Launcher URL to Kodi Favourites (do not know how to do it yet)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems=True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
@@ -1931,7 +1931,7 @@ class Main:
             # >> Add Launcher URL to Kodi Favourites (do not know how to do it yet)
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-            listitem.addContextMenuItems(commands, replaceItems=True)
+            listitem.addContextMenuItems(commands)
 
             url_str = self._misc_url('SHOW_ROMS', virtual_categoryID, vlauncher_id)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)

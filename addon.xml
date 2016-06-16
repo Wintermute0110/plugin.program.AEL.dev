@@ -2,19 +2,16 @@
 <addon id="plugin.program.advanced.emulator.launcher" name="Advanced Emulator Launcher" version="0.9.3" provider-name="Wintermute0110">
   <requires>
     <!-- 2.14.0 Kodi Gotham 13.x and up -->
-    <import addon="xbmc.python" version="2.14.0"/>
-    
+    <import addon="xbmc.python" version="2.25.0" />
     <!-- 1.2.8 is the ElementTree module available in Gotham 
          See http://mirrors.kodi.tv/addons/gotham/
          NOTE Seems this is not needed in Kodi Jarvis
       -->
     <!-- <import addon="script.module.elementtree" version="1.2.8"/> -->
   </requires>
-
   <extension point="xbmc.python.pluginsource" library="addon.py">
     <provides>executable</provides>
   </extension>
-
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <disclaimer>Developed in Kodi Jarvis. Should work on Kodi Gotham and up.</disclaimer>
