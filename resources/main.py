@@ -1508,7 +1508,7 @@ class Main:
         listitem.setInfo('video', {'Title': category_dic['name'],        'Genre' : category_dic['genre'],
                                    'Plot' : category_dic['description'], 'overlay': ICON_OVERLAY } )
         # Set ListItem artwork
-        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart ': category_dic['fanart']})
+        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart': category_dic['fanart']})
         if category_dic['thumb'] != '':
             listitem.setArt({'icon': category_dic['thumb']})
 
@@ -1538,7 +1538,7 @@ class Main:
         listitem.setInfo('video', { 'Title': fav_name,             'Genre' : 'All',
                                     'Plot' : 'AEL Favourite ROMs', 'overlay': 5 } )
         # Set ListItem artwork
-        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart ': fav_fanart, 'thumb': fav_thumb})
+        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart': fav_fanart, 'thumb': fav_thumb})
         # --- Create context menu ---
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
@@ -1579,7 +1579,7 @@ class Main:
         listitem.setInfo('video', { 'Title': vcategory_name,         'Genre' : 'All',
                                     'Plot' : 'AEL virtual category', 'overlay': 5 } )
         # Set ListItem artwork
-        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart ': vcategory_fanart, 'thumb': vcategory_thumb})
+        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart': vcategory_fanart, 'thumb': vcategory_thumb})
 
         commands = []
         update_vcat_URL     = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
@@ -1651,7 +1651,7 @@ class Main:
                                    'Director' : os.path.join(launcher_dic['custompath']),
                                    'overlay'  : ICON_OVERLAY })
         # Set ListItem artwork
-        listitem.setArt({'icon': icon, 'fanart ': launcher_dic['fanart']})
+        listitem.setArt({'icon': icon, 'fanart': launcher_dic['fanart']})
         if launcher_dic['thumb']:
             listitem.setArt({'thumb': launcher_dic['thumb']})
         # --- Create context menu ---
@@ -1779,7 +1779,7 @@ class Main:
                                    'Trailer' : os.path.join(rom['trailer']), 'Director'  : os.path.join(rom['custom']),
                                    'overlay' : ICON_OVERLAY })
         # Set ListItem artwork
-        listitem.setArt({'icon': 'DefaultProgram.png', 'fanart ': defined_fanart})
+        listitem.setArt({'icon': 'DefaultProgram.png', 'fanart': defined_fanart})
         if rom['thumb']:
             listitem.setArt({'thumb': rom['thumb']})
 
