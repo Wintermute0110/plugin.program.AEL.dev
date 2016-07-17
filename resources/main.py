@@ -1371,37 +1371,38 @@ class Main:
             if type2 == 0:
                 filename = roms[romID]['filename']
                 romext   = roms[romID]['romext']
-                item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', "." + romext.replace("|", "|."),
+                item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', '.' + romext.replace('|', '|.'),
                                                     False, False, filename)
+                if not item_file: return
                 roms[romID]['filename'] = item_file
             # Custom launcher application file path
             elif type2 == 1:
-                altapp = roms[romID]['altapp']
-                filter_str = '.bat|.exe|.cmd' if sys.platform == "win32" else ''
-                app = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
-                                              "files", filter_str, False, False, altapp)
+                filter_str = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
+                altapp = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
+                                                 'files', filter_str, 
+                                                 False, False, roms[romID]['altapp'])
                 # Returns empty browse if dialog was canceled.
-                if not app: return
-                roms[romID]["altapp"] = app
+                if not altapp: return
+                roms[romID]['altapp'] = altapp
             # Custom launcher arguments
             elif type2 == 2:
-                keyboard = xbmc.Keyboard(roms[romID]["altarg"], 'Edit ROM custom application arguments')
+                keyboard = xbmc.Keyboard(roms[romID]['altarg'], 'Edit ROM custom application arguments')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                roms[romID]["altarg"] = keyboard.getText()
+                roms[romID]['altarg'] = keyboard.getText()
             # Selection of the rom trailer file
             elif type2 == 3:
                 trailer = xbmcgui.Dialog().browse(1, 'Select ROM Trailer file',
-                                                  "files", ".mp4|.mpg|.avi|.wmv|.mkv|.flv",
-                                                  False, False, roms[romID]["trailer"])
-                if not app: return
-                roms[romID]["trailer"] = trailer
+                                                  'files', '.mp4|.mpg|.avi|.wmv|.mkv|.flv',
+                                                  False, False, roms[romID]['trailer'])
+                if not trailer: return
+                roms[romID]['trailer'] = trailer
             # Selection of the rom customs path
             elif type2 == 4:
-                custom = xbmcgui.Dialog().browse(0, 'Select ROM Extra-fanarts path', "files", "",
-                                                 False, False, roms[romID]["custom"])
+                custom = xbmcgui.Dialog().browse(0, 'Select ROM Extra-fanarts path', 'files', '',
+                                                 False, False, roms[romID]['custom'])
                 if not custom: return
-                roms[romID]["custom"] = custom
+                roms[romID]['custom'] = custom
 
             # >> User canceled select dialog
             elif type2 < 0:
