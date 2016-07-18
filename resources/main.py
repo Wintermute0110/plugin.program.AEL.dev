@@ -3428,28 +3428,26 @@ class Main:
     def _roms_add_new_rom(self, launcherID):
         # --- Grab launcher information ---
         launcher    = self.launchers[launcherID]
-        application = launcher['application']
         romext      = launcher['romext']
         rompath     = launcher['rompath']
 
         # --- Load ROMs for this launcher ---
         roms = fs_load_ROMs(ROMS_DIR, launcher['roms_base_noext'])
-        if not roms: return
 
         # --- Choose ROM file ---
         dialog = xbmcgui.Dialog()
-        extensions = "." + romext.replace('|', '|.')
+        extensions = '.' + romext.replace('|', '|.')
         romfile = dialog.browse(1, 'Select the ROM file', 'files', extensions, False, False, rompath)
         if not romfile: return
 
         # --- Format title ---
-        scan_clean_tags       = self.settings['scan_clean_tags']
+        scan_clean_tags = self.settings['scan_clean_tags']
         ROM = misc_split_path(romfile)
         romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
 
         # --- Search for local Thumb/Fanart ---
-        thumb_path_noext  = misc_get_thumb_path_noext(selectedLauncher, ROM)
-        fanart_path_noext = misc_get_fanart_path_noext(selectedLauncher, ROM)
+        thumb_path_noext  = misc_get_thumb_path_noext(launcher, ROM)
+        fanart_path_noext = misc_get_fanart_path_noext(launcher, ROM)
         local_thumb  = misc_look_for_image(thumb_path_noext, IMG_EXTS)
         local_fanart = misc_look_for_image(fanart_path_noext, IMG_EXTS)
         log_verb('Local images set Thumb  "{0}"'.format(local_thumb))
@@ -3461,8 +3459,8 @@ class Main:
         romdata['id']       = romID
         romdata['filename'] = ROM.path
         romdata['name']     = romname
-        romdata['thumb']    = local_thumb,
-        romdata['fanart']   = local_fanart,
+        romdata['thumb']    = local_thumb
+        romdata['fanart']   = local_fanart
         roms[romID] = romdata
 
         # ~~~ Save ROMs XML file ~~~
