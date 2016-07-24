@@ -3483,8 +3483,10 @@ class Main:
         romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
 
         # --- Search for local Thumb/Fanart ---
-        thumb_path_noext  = misc_get_thumb_path_noext(launcher, ROM)
-        fanart_path_noext = misc_get_fanart_path_noext(launcher, ROM)
+        thumb_path  = launcher['thumbpath']
+        fanart_path = launcher['fanartpath']
+        thumb_path_noext  = misc_get_thumb_path_noext(thumb_path, fanart_path, ROM.base_noext)
+        fanart_path_noext = misc_get_fanart_path_noext(thumb_path, fanart_path, ROM.base_noext)
         local_thumb  = misc_look_for_image(thumb_path_noext, IMG_EXTS)
         local_fanart = misc_look_for_image(fanart_path_noext, IMG_EXTS)
         log_verb('Local images set Thumb  "{0}"'.format(local_thumb))
@@ -3492,13 +3494,19 @@ class Main:
 
         # --- Create ROM data structure ---
         romdata = fs_new_rom()
-        romID   = misc_generate_random_SID()
+        romID = misc_generate_random_SID()
         romdata['id']       = romID
         romdata['filename'] = ROM.path
         romdata['name']     = romname
         romdata['thumb']    = local_thumb
         romdata['fanart']   = local_fanart
         roms[romID] = romdata
+        log_info('_roms_add_new_rom() Added a new ROM')
+        log_info('_roms_add_new_rom() romID    "{0}"'.format(romdata['id']))
+        log_info('_roms_add_new_rom() filename "{0}"'.format(romdata['filename']))
+        log_info('_roms_add_new_rom() name     "{0}"'.format(romdata['name']))
+        log_info('_roms_add_new_rom() thumb    "{0}"'.format(romdata['thumb']))
+        log_info('_roms_add_new_rom() fanart   "{0}"'.format(romdata['fanart']))
 
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
