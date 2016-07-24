@@ -281,51 +281,51 @@ class Main:
         self.settings = {}
 
         # --- Scanner settings ---
-        self.settings["scan_recursive"]             = True if addon_obj.getSetting("scan_recursive") == "true" else False
-        self.settings["scan_ignore_bios"]           = True if addon_obj.getSetting("scan_ignore_bios") == "true" else False
-        self.settings["scan_metadata_policy"]       = int(addon_obj.getSetting("scan_metadata_policy"))
-        self.settings["scan_thumb_policy"]          = int(addon_obj.getSetting("scan_thumb_policy"))
-        self.settings["scan_fanart_policy"]         = int(addon_obj.getSetting("scan_fanart_policy"))
-        self.settings["scan_ignore_scrapped_title"] = True if addon_obj.getSetting("scan_ignore_scrapped_title") == "true" else False
-        self.settings["scan_clean_tags"]            = True if addon_obj.getSetting("scan_clean_tags") == "true" else False
+        self.settings['scan_recursive']                = True if addon_obj.getSetting('scan_recursive') == 'true' else False
+        self.settings['scan_ignore_bios']              = True if addon_obj.getSetting('scan_ignore_bios') == 'true' else False
+        self.settings['scan_metadata_policy']          = int(addon_obj.getSetting('scan_metadata_policy'))
+        self.settings['scan_thumb_policy']             = int(addon_obj.getSetting('scan_thumb_policy'))
+        self.settings['scan_fanart_policy']            = int(addon_obj.getSetting('scan_fanart_policy'))
+        self.settings['scan_ignore_scrapped_title']    = True if addon_obj.getSetting('scan_ignore_scrapped_title') == 'true' else False
+        self.settings['scan_clean_tags']               = True if addon_obj.getSetting('scan_clean_tags') == 'true' else False
 
-        self.settings["metadata_scraper"]           = int(addon_obj.getSetting("metadata_scraper"))
-        self.settings["thumb_scraper"]              = int(addon_obj.getSetting("thumb_scraper"))
-        self.settings["fanart_scraper"]             = int(addon_obj.getSetting("fanart_scraper"))
-        self.settings["metadata_mode"]              = int(addon_obj.getSetting("metadata_mode"))
-        self.settings["thumb_mode"]                 = int(addon_obj.getSetting("thumb_mode"))
-        self.settings["fanart_mode"]                = int(addon_obj.getSetting("fanart_mode"))
+        self.settings['metadata_scraper']              = int(addon_obj.getSetting('metadata_scraper'))
+        self.settings['thumb_scraper']                 = int(addon_obj.getSetting('thumb_scraper'))
+        self.settings['fanart_scraper']                = int(addon_obj.getSetting('fanart_scraper'))
+        self.settings['metadata_mode']                 = int(addon_obj.getSetting('metadata_mode'))
+        self.settings['thumb_mode']                    = int(addon_obj.getSetting('thumb_mode'))
+        self.settings['fanart_mode']                   = int(addon_obj.getSetting('fanart_mode'))
 
-        self.settings["scraper_region"]             = int(addon_obj.getSetting("scraper_region"))
-        self.settings["scraper_thumb_size"]         = int(addon_obj.getSetting("scraper_thumb_size"))
-        self.settings["scraper_fanart_size"]        = int(addon_obj.getSetting("scraper_fanart_size"))
-        self.settings["scraper_image_type"]         = int(addon_obj.getSetting("scraper_image_type"))
-        self.settings["scraper_fanart_order"]       = int(addon_obj.getSetting("scraper_fanart_order"))
+        self.settings['scraper_region']                = int(addon_obj.getSetting('scraper_region'))
+        self.settings['scraper_thumb_size']            = int(addon_obj.getSetting('scraper_thumb_size'))
+        self.settings['scraper_fanart_size']           = int(addon_obj.getSetting('scraper_fanart_size'))
+        self.settings['scraper_image_type']            = int(addon_obj.getSetting('scraper_image_type'))
+        self.settings['scraper_fanart_order']          = int(addon_obj.getSetting('scraper_fanart_order'))
 
-        self.settings["display_launcher_notification"] = True if addon_obj.getSetting("display_launcher_notification") == "true" else False
-        self.settings["display_hide_finished"]         = True if addon_obj.getSetting("display_hide_finished") == "true" else False
-        self.settings["display_hide_title"]            = True if addon_obj.getSetting("display_hide_title") == "true" else False
-        self.settings["display_hide_year"]             = True if addon_obj.getSetting("display_hide_year") == "true" else False
-        self.settings["display_hide_genre"]            = True if addon_obj.getSetting("display_hide_genre") == "true" else False
-        self.settings["display_hide_studio"]           = True if addon_obj.getSetting("display_hide_studio") == "true" else False
+        self.settings['display_launcher_notification'] = True if addon_obj.getSetting('display_launcher_notification') == 'true' else False
+        self.settings['display_hide_finished']         = True if addon_obj.getSetting('display_hide_finished') == 'true' else False
+        self.settings['display_hide_title']            = True if addon_obj.getSetting('display_hide_title') == 'true' else False
+        self.settings['display_hide_year']             = True if addon_obj.getSetting('display_hide_year') == 'true' else False
+        self.settings['display_hide_genre']            = True if addon_obj.getSetting('display_hide_genre') == 'true' else False
+        self.settings['display_hide_studio']           = True if addon_obj.getSetting('display_hide_studio') == 'true' else False
 
-        self.settings["categories_thumb_dir"]       = addon_obj.getSetting("categories_thumb_dir").decode('utf-8')
-        self.settings["categories_fanart_dir"]      = addon_obj.getSetting("categories_fanart_dir").decode('utf-8')
-        self.settings["categories_nfo_dir"]         = addon_obj.getSetting("categories_nfo_dir").decode('utf-8')
-        self.settings["launchers_thumb_dir"]        = addon_obj.getSetting("launchers_thumb_dir").decode('utf-8')
-        self.settings["launchers_fanart_dir"]       = addon_obj.getSetting("launchers_fanart_dir").decode('utf-8')
-        self.settings["launchers_nfo_dir"]          = addon_obj.getSetting("launchers_nfo_dir").decode('utf-8')
-        self.settings["favourites_thumb_dir"]       = addon_obj.getSetting("favourites_thumb_dir").decode('utf-8')
-        self.settings["favourites_fanart_dir"]      = addon_obj.getSetting("favourites_fanart_dir").decode('utf-8')
+        self.settings['categories_thumb_dir']          = addon_obj.getSetting('categories_thumb_dir').decode('utf-8')
+        self.settings['categories_fanart_dir']         = addon_obj.getSetting('categories_fanart_dir').decode('utf-8')
+        self.settings['categories_nfo_dir']            = addon_obj.getSetting('categories_nfo_dir').decode('utf-8')
+        self.settings['launchers_thumb_dir']           = addon_obj.getSetting('launchers_thumb_dir').decode('utf-8')
+        self.settings['launchers_fanart_dir']          = addon_obj.getSetting('launchers_fanart_dir').decode('utf-8')
+        self.settings['launchers_nfo_dir']             = addon_obj.getSetting('launchers_nfo_dir').decode('utf-8')
+        self.settings['favourites_thumb_dir']          = addon_obj.getSetting('favourites_thumb_dir').decode('utf-8')
+        self.settings['favourites_fanart_dir']         = addon_obj.getSetting('favourites_fanart_dir').decode('utf-8')
 
-        self.settings["media_state"]                = int(addon_obj.getSetting("media_state"))
-        self.settings["lirc_state"]                 = True if addon_obj.getSetting("lirc_state") == "true" else False
-        self.settings["start_tempo"]                = int(round(float(addon_obj.getSetting("start_tempo"))))
-        self.settings["log_level"]                  = int(addon_obj.getSetting("log_level"))
-        self.settings["show_batch_window"]          = True if addon_obj.getSetting("show_batch_window") == "true" else False
+        self.settings['media_state']                   = int(addon_obj.getSetting('media_state'))
+        self.settings['lirc_state']                    = True if addon_obj.getSetting('lirc_state') == 'true' else False
+        self.settings['start_tempo']                   = int(round(float(addon_obj.getSetting('start_tempo'))))
+        self.settings['log_level']                     = int(addon_obj.getSetting('log_level'))
+        self.settings['show_batch_window']             = True if addon_obj.getSetting('show_batch_window') == 'true' else False
 
         # --- Example of how to transform a number into string ---
-        # self.settings["game_region"]          = ['World', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
+        # self.settings['game_region']          = ['World', 'Europe', 'Japan', 'USA'][int(addon_obj.getSetting('game_region'))]
 
         # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_thumb_dir']  == '': self.settings['categories_thumb_dir']  = DEFAULT_CAT_THUMB_DIR
@@ -351,9 +351,9 @@ class Main:
         # Scraper objects are created and inserted into a list. This list order matches
         # exactly the number returned by the settings. If scrapers are changed make sure the
         # list in scrapers.py and in settings.xml have same values!
-        self.scraper_metadata = scrapers_metadata[self.settings["metadata_scraper"]]
-        self.scraper_thumb    = scrapers_thumb[self.settings["thumb_scraper"]]
-        self.scraper_fanart   = scrapers_fanart[self.settings["fanart_scraper"]]
+        self.scraper_metadata = scrapers_metadata[self.settings['metadata_scraper']]
+        self.scraper_thumb    = scrapers_thumb[self.settings['thumb_scraper']]
+        self.scraper_fanart   = scrapers_fanart[self.settings['fanart_scraper']]
         log_verb('Loaded metadata scraper  {0}'.format(self.scraper_metadata.name))
         log_verb('Loaded thumb scraper     {0}'.format(self.scraper_thumb.name))
         log_verb('Loaded fanart scraper    {0}'.format(self.scraper_fanart.name))
@@ -1040,7 +1040,7 @@ class Main:
                                        u"Change Fanarts Path: '{0}'".format(self.launchers[launcherID]['fanartpath']),
                                        u"Change Trailer file: '{0}'".format(self.launchers[launcherID]['trailerpath']),
                                        u"Change Extra-fanarts Path: '{0}'".format(self.launchers[launcherID]['custompath']),
-                                       u"Toggle Kodi into Windowed mode: '{0}'".format(minimize_str) ])
+                                       u"Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
             # --- Standalone launcher -------------------------------------------------------------
             else:
                 type2 = dialog.select('Advanced Modifications',
@@ -1052,7 +1052,7 @@ class Main:
                                        u"Change Fanarts Path: '{0}'".format(self.launchers[launcherID]['fanartpath']),
                                        u"Change Trailer file: '{0}'".format(self.launchers[launcherID]['trailerpath']),
                                        u"Change Extra-fanarts Path: '{0}'".format(self.launchers[launcherID]['custompath']),
-                                       u"Toggle Kodi into Windowed mode: '{0}'".format(minimize_str) ])
+                                       u"Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
 
             # Launcher application path menu option
             type2_nb = 0
@@ -1120,9 +1120,11 @@ class Main:
             if type2 == type2_nb:
                 dialog = xbmcgui.Dialog()
                 type3 = dialog.select('Toggle Kodi Fullscreen', ['OFF (default)', 'ON'])
+                # User canceled select dialog
+                if type3 < 0: return
                 self.launchers[launcherID]['minimize'] = True if type3 == 1 else False
 
-        # Remove Launcher menu option
+        # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
             self._gui_remove_launcher(launcherID)
@@ -3093,6 +3095,9 @@ class Main:
         romfile     = ROM.path
         rompath     = ROM.dirname
         rombasename = ROM.base
+        log_info('_command_run_rom() categoryID  = {0}'.format(categoryID))
+        log_info('_command_run_rom() launcherID  = {0}'.format(launcherID))
+        log_info('_command_run_rom() romID       = {0}'.format(romID))
         log_info('_command_run_rom() application = "{0}"'.format(application))
         log_info('_command_run_rom() apppath     = "{0}"'.format(apppath))
         log_info('_command_run_rom() romfile     = "{0}"'.format(romfile))
@@ -3129,7 +3134,7 @@ class Main:
 
         # ~~~~~ Execute external application ~~~~~
         # Do stuff before execution
-        self._run_before_execution(rombasename, minimize_flag)
+        kodi_was_playing_flag = self._run_before_execution(rombasename, minimize_flag)
 
         # >> Determine platform and launch application
         # See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
@@ -3160,58 +3165,90 @@ class Main:
             kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
 
         # Do stuff after application execution
-        self._run_after_execution(minimize_flag)
+        self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     #
     def _run_before_execution(self, rombasename, minimize_flag):
-        if self.settings['media_state'] != '2':
-            if xbmc.Player().isPlaying():
-                if self.settings['media_state'] == '0':
-                    xbmc.Player().stop()
-                if self.settings['media_state'] == '1':
-                    xbmc.Player().pause()
-                xbmc.sleep(self.settings['start_tempo'] + 100)
-                try:
-                    xbmc.audioSuspend()
-                except:
-                    pass
+        # --- Stop/Pause Kodi mediaplayer if requested in settings ---
+        kodi_was_playing_flag = False
+        # id="media_state" default="0" values="Stop|Pause|Let Play"
+        media_state = self.settings['media_state']
+        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state]
+        log_verb('_run_before_execution() media_state is "{0}" ({1})'.format(media_state_str, media_state))
+        if media_state != 2 and xbmc.Player().isPlaying():
+            kodi_was_playing_flag = True
+            if media_state == 0:
+                log_verb('_run_before_execution() Calling xbmc.Player().stop()')
+                xbmc.Player().stop()
+            elif media_state == 1:
+                log_verb('_run_before_execution() Calling xbmc.Player().pause()')
+                xbmc.Player().pause()
+            xbmc.sleep(self.settings['start_tempo'] + 100)
 
+            # >> Don't know what this code does... Maybe compatibility with old versions of Kodi?
+            try:
+                log_verb('_run_before_execution() Calling xbmc.audioSuspend()')
+                xbmc.audioSuspend()
+            except:
+                log_verb('_run_before_execution() EXCEPCION calling xbmc.audioSuspend()')
+
+        # --- Minimize Kodi if requested ---
         if minimize_flag:
+            log_verb(u'_run_before_execution() Toggling Kodi fullscreen')
             kodi_toogle_fullscreen()
+        else:
+            log_verb(u'_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
         if self.settings['display_launcher_notification']:
             kodi_notify('Advanced Emulator Launcher', 'Launching {0}'.format(rombasename))
 
+        # >> Disable navigation sounds?
         try:
+            log_verb('_run_before_execution() Calling xbmc.enableNavSounds(False)')
             xbmc.enableNavSounds(False)
         except:
-            pass
-        
-        # >> Stop Kodi some time
+            log_verb('_run_before_execution() EXCEPCION calling xbmc.enableNavSounds(False)')
+
+        # >> Pause Kodi execution some time
         xbmc.sleep(self.settings['start_tempo'])
 
-    def _run_after_execution(self, minimize_flag):
+        return kodi_was_playing_flag
+
+    def _run_after_execution(self, kodi_was_playing_flag, minimize_flag):
         # >> Stop Kodi some time
         xbmc.sleep(self.settings['start_tempo'])
 
         try:
+            log_verb('_run_after_execution() Calling xbmc.enableNavSounds(True)')
             xbmc.enableNavSounds(True)
         except:
-            pass
+            log_verb('_run_after_execution() EXCEPCION calling xbmc.enableNavSounds(True)')
 
         if minimize_flag:
+            log_verb(u'_run_after_execution() Toggling Kodi fullscreen')
             kodi_toogle_fullscreen()
+        else:
+            log_verb(u'_run_after_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
-        if self.settings['media_state'] != '2':
+        # --- Resume Kodi playing if it was stop/paused ---
+        media_state = self.settings['media_state']
+        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state]
+        log_verb('_run_after_execution() media_state is "{0}" ({1})'.format(media_state_str, media_state))
+        log_verb('_run_after_execution() kodi_was_playing_flag is {0}'.format(kodi_was_playing_flag))
+        if media_state != 2 and kodi_was_playing_flag:
             try:
+                log_verb('_run_after_execution() Calling xbmc.audioResume()')
                 xbmc.audioResume()
             except:
-                pass
-            if self.settings['media_state'] == '1':
+                log_verb('_run_after_execution() EXCEPCION calling xbmc.audioResume()')
+
+            if media_state == 1:
+                log_verb('_run_after_execution() Calling xbmc.Player().play()')
                 xbmc.sleep(self.settings['start_tempo'] + 100)
                 xbmc.Player().play()
+        log_debug(u'_run_after_execution() function ENDS')
 
     #
     # Creates a Launcher report having:
