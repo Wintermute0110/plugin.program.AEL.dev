@@ -2969,6 +2969,7 @@ class Main:
             kodi_dialog_OK(AEL_NAME_STR, 'launcherID not found in self.launchers')
             return
         launcher = self.launchers[launcherID]
+        minimize_flag = launcher['minimize']
 
         # --- Execute Kodi built-in function under certain conditions ---
         apppath = os.path.dirname(launcher['application'])
@@ -2979,18 +2980,23 @@ class Main:
 
         # ~~~~~ External application ~~~~~
         application = launcher['application']
-        application_basename = os.path.basename(launcher['application'])
-        if not os.path.exists(apppath):
-            kodi_notify_warn(AEL_NAME_STR, 'App {0} not found.'.format(apppath))
-            return
+        app_basename = os.path.basename(launcher['application'])
         arguments = launcher['args'].replace('%apppath%' , apppath).replace('%APPPATH%' , apppath)
-        log_info('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
-        log_info('_run_standalone_launcher() application          = "{0}"'.format(application))
-        log_info('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
-        log_info('_run_standalone_launcher() arguments            = "{0}"'.format(arguments))
+        log_info('_run_standalone_launcher() categoryID   = {0}'.format(categoryID))
+        log_info('_run_standalone_launcher() launcherID   = {0}'.format(launcherID))
+        log_info('_run_standalone_launcher() application  = "{0}"'.format(application))
+        log_info('_run_standalone_launcher() apppath      = "{0}"'.format(apppath))
+        log_info('_run_standalone_launcher() app_basename = "{0}"'.format(app_basename))
+        log_info('_run_standalone_launcher() arguments    = "{0}"'.format(arguments))
+
+        # --- Check for errors and abort if errors found ---
+        if not os.path.exists(application):
+            log_error('Launching app not found "{0}"'.format(application))
+            kodi_notify_warn(AEL_NAME_STR, 'App {0} not found.'.format(application))
+            return
 
         # --- Do stuff before execution ---
-        self._run_before_execution(launcher, application_basename)
+        kodi_was_playing_flag = self._run_before_execution(app_basename, minimize_flag)
 
         # ~~~~~ Execute ~~~~~
         if sys.platform == 'win32':
@@ -3018,7 +3024,7 @@ class Main:
             kodi_notify_warn(AEL_NAME_STR, 'Cannot determine the running platform')
 
         # --- Do stuff after execution ---
-        self._run_after_execution(launcher)
+        self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
     # Launchs a ROM
@@ -3183,12 +3189,12 @@ class Main:
                 xbmc.Player().pause()
             xbmc.sleep(self.settings['start_tempo'] + 100)
 
-            # >> Don't know what this code does... Maybe compatibility with old versions of Kodi?
-            try:
-                log_verb('_run_before_execution() Calling xbmc.audioSuspend()')
-                xbmc.audioSuspend()
-            except:
-                log_verb('_run_before_execution() EXCEPCION calling xbmc.audioSuspend()')
+            # >> Don't know what this code does exactly... Maybe compatibility with old versions of Kodi?
+            # try:
+            #     log_verb('_run_before_execution() Calling xbmc.audioSuspend()')
+            #     xbmc.audioSuspend()
+            # except:
+            #     log_verb('_run_before_execution() EXCEPCION calling xbmc.audioSuspend()')
 
         # --- Minimize Kodi if requested ---
         if minimize_flag:
@@ -3208,13 +3214,17 @@ class Main:
             log_verb('_run_before_execution() EXCEPCION calling xbmc.enableNavSounds(False)')
 
         # >> Pause Kodi execution some time
-        xbmc.sleep(self.settings['start_tempo'])
+        start_tempo_ms = self.settings['start_tempo']
+        log_verb('_run_after_execution() Pausing {0} ms'.format(start_tempo_ms))
+        xbmc.sleep(start_tempo_ms)
 
         return kodi_was_playing_flag
 
     def _run_after_execution(self, kodi_was_playing_flag, minimize_flag):
         # >> Stop Kodi some time
-        xbmc.sleep(self.settings['start_tempo'])
+        start_tempo_ms = self.settings['start_tempo']
+        log_verb('_run_after_execution() Pausing {0} ms'.format(start_tempo_ms))
+        xbmc.sleep(start_tempo_ms)
 
         try:
             log_verb('_run_after_execution() Calling xbmc.enableNavSounds(True)')
@@ -3234,15 +3244,23 @@ class Main:
         log_verb('_run_after_execution() media_state is "{0}" ({1})'.format(media_state_str, media_state))
         log_verb('_run_after_execution() kodi_was_playing_flag is {0}'.format(kodi_was_playing_flag))
         if media_state != 2 and kodi_was_playing_flag:
-            try:
-                log_verb('_run_after_execution() Calling xbmc.audioResume()')
-                xbmc.audioResume()
-            except:
-                log_verb('_run_after_execution() EXCEPCION calling xbmc.audioResume()')
+            # Calling xmbc.audioResume() takes a loong time (2/4 secs) if audio was not properly suspended!
+            # Also produces this in Kodi's log:
+            # WARNING: CActiveAE::StateMachine - signal: 0 from port: OutputControlPort not handled for state: 7
+            #   ERROR: ActiveAE::Resume - failed to init
+            #
+            # I will deactivate this and also in _run_before_execution() and see what happens.
+            # try:
+            #     log_verb('_run_after_execution() Calling xbmc.audioResume()')
+            #     xbmc.audioResume()
+            # except:
+            #     log_verb('_run_after_execution() EXCEPCION calling xbmc.audioResume()')
 
+            # >> If Kodi was paused then resume playing media.
             if media_state == 1:
+                log_verb('_run_after_execution() Pausing {0} ms'.format(start_tempo_ms + 100))
+                xbmc.sleep(start_tempo_ms + 100)
                 log_verb('_run_after_execution() Calling xbmc.Player().play()')
-                xbmc.sleep(self.settings['start_tempo'] + 100)
                 xbmc.Player().play()
         log_debug(u'_run_after_execution() function ENDS')
 
