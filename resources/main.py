@@ -2615,9 +2615,14 @@ class Main:
             log_error(u'_command_view_Category() Exception rendering INFO window')
             
     def _command_view_Launcher_Report(self, categoryID, launcherID):
-        # --- Get report filename ---
+        # --- Standalone launchers do not have reports! ---
         category = self.categories[categoryID]
         launcher = self.launchers[launcherID]
+        if not launcher['rompath']:
+            kodi_notify_warn(AEL_NAME_STR, 'Cannot create report for standalone launcher')
+            return
+
+        # --- Get report filename ---
         roms_base_noext = fs_get_ROMs_basename(category['name'], launcher['name'], launcherID)
         report_file_name = os.path.join(REPORTS_DIR, roms_base_noext + u'.txt')
         window_title = u'Launcher {0} Report'.format(launcher['name'])
