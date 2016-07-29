@@ -6,7 +6,7 @@ Fork of Advanced Launcher.
 
 It is important that you follow this instructions or Advanced Emulator Launcher won't work well.
 
-  1) Go to AML Github main page and click on the green button `Clone or Download` --> `Download ZIP`
+  1) In this page click on the green button `Clone or Download` --> `Download ZIP`
 
   2) Uncompress this ZIP file. This will create a folder named `plugin.program.advanced.emulator.launcher-master`
 
