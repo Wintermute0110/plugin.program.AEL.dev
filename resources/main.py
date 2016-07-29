@@ -1512,10 +1512,9 @@ class Main:
         else:                                 ICON_OVERLAY = 5
         listitem.setInfo('video', {'Title': category_dic['name'],        'Genre' : category_dic['genre'],
                                    'Plot' : category_dic['description'], 'overlay': ICON_OVERLAY } )
-        # Set ListItem artwork
+        # --- Set Category artwork ---
         listitem.setArt({'icon': 'DefaultFolder.png', 'fanart': category_dic['fanart']})
-        if category_dic['thumb'] != '':
-            listitem.setArt({'icon': category_dic['thumb']})
+        if category_dic['thumb']: listitem.setArt({'icon': category_dic['thumb']})
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
@@ -1528,7 +1527,7 @@ class Main:
         # Add Category to Kodi Favourites (do not know how to do it yet)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands)
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
@@ -1542,14 +1541,15 @@ class Main:
         listitem = xbmcgui.ListItem(fav_name)
         listitem.setInfo('video', { 'Title': fav_name,             'Genre' : 'All',
                                     'Plot' : 'AEL Favourite ROMs', 'overlay': 5 } )
-        # Set ListItem artwork
+        # --- Set Virtual Launcher artwork ---
         listitem.setArt({'icon': 'DefaultFolder.png', 'fanart': fav_fanart, 'thumb': fav_thumb})
+
         # --- Create context menu ---
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands)
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_FAVOURITES')
@@ -1674,7 +1674,7 @@ class Main:
         # Add Launcher URL to Kodi Favourites (do not know how to do it yet)
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands)
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
@@ -1767,7 +1767,7 @@ class Main:
                 # rom_name = '[COLOR violet]{0} [Fav][/COLOR]'.format(rom['name'])
                 # rom_name = '{0} [COLOR violet][Fav][/COLOR]'.format(rom['name'])
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
-        
+
         # --- Add ROM to lisitem ---
         listitem = xbmcgui.ListItem(rom['name'])
         if rom['finished'] is not True: ICON_OVERLAY = 4
@@ -1783,10 +1783,9 @@ class Main:
                                    'Year'    : rom['year'],                  'Writer'    : platform,
                                    'Trailer' : os.path.join(rom['trailer']), 'Director'  : os.path.join(rom['custom']),
                                    'overlay' : ICON_OVERLAY })
-        # Set ListItem artwork
+        # --- Set ROM artwork ---
         listitem.setArt({'icon': 'DefaultProgram.png', 'fanart': defined_fanart})
-        if rom['thumb']:
-            listitem.setArt({'thumb': rom['thumb']})
+        if rom['thumb']: listitem.setArt({'thumb': rom['thumb']})
 
         # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
         # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
