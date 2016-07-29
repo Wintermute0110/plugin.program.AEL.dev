@@ -44,7 +44,8 @@ __profile__    = addon_obj.getAddonInfo('profile')
 __type__       = addon_obj.getAddonInfo('type')
 
 # --- Addon paths and constant definition ---
-# _FILE_PATH is a filename | _DIR is a directory (with trailing /)
+# _FILE_PATH is a filename
+# _DIR is a directory (with trailing /)
 PLUGIN_DATA_DIR       = xbmc.translatePath(os.path.join('special://profile/addon_data', __addon_id__)).decode('utf-8')
 BASE_DIR              = xbmc.translatePath(os.path.join('special://', 'profile')).decode('utf-8')
 HOME_DIR              = xbmc.translatePath(os.path.join('special://', 'home')).decode('utf-8')
@@ -60,7 +61,7 @@ VCAT_YEARS_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_years.xml').decode('
 VCAT_GENRE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_genre.xml').decode('utf-8')
 VCAT_STUDIO_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml').decode('utf-8')
 
-# Artwork and NFO for Categories and Launchers
+# --- Artwork and NFO for Categories and Launchers ---
 DEFAULT_CAT_THUMB_DIR   = os.path.join(PLUGIN_DATA_DIR, 'category-thumbs').decode('utf-8')
 DEFAULT_CAT_FANART_DIR  = os.path.join(PLUGIN_DATA_DIR, 'category-fanarts').decode('utf-8')
 DEFAULT_CAT_NFO_DIR     = os.path.join(PLUGIN_DATA_DIR, 'category-nfos').decode('utf-8')
@@ -76,7 +77,7 @@ VIRTUAL_CAT_STUDIO_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_studio').decode('utf
 ROMS_DIR                = os.path.join(PLUGIN_DATA_DIR, 'ROMs').decode('utf-8')
 REPORTS_DIR             = os.path.join(PLUGIN_DATA_DIR, 'reports').decode('utf-8')
 
-# Misc "constants"
+# --- Misc "constants" ---
 KIND_CATEGORY       = 0
 KIND_LAUNCHER       = 1
 KIND_ROM            = 2
@@ -90,6 +91,7 @@ VCATEGORY_YEARS_ID  = 'vcat_years'
 VCATEGORY_GENRE_ID  = 'vcat_genre'
 VCATEGORY_STUDIO_ID = 'vcat_studio'
 VLAUNCHER_FAV_ID    = 'vlauncher_fav'
+AEL_NAME_STR        = 'Advanced Emulator Launcher'
 
 # --- Main code ---
 class Main:
@@ -2953,27 +2955,22 @@ class Main:
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # --- Show some information to user ---
-        kodi_dialog_OK('Advanced Emulator Launcher',
+        kodi_dialog_OK(AEL_NAME_STR,
                        'Imported {0} Category/s, {1} Launcher/s '.format(num_categories, num_launchers) +
                        'and {0} ROM/s.'.format(num_ROMs))
         kodi_refresh_container()
 
     #
-    # Launchs an application
+    # Launchs a standalone application.
     #
     def _command_run_standalone_launcher(self, categoryID, launcherID):
-        # Check launcher is OK
+        # --- Check launcher is OK ---
         if launcherID not in self.launchers:
-            kodi_dialog_OK('ERROR', 'launcherID not found in self.launchers')
+            kodi_dialog_OK(AEL_NAME_STR, 'launcherID not found in self.launchers')
             return
         launcher = self.launchers[launcherID]
 
-        # Kodi built-in???
-        # xbmc-fav- and xbmc-sea are Angelscry's hacks to implement launchers from favourites
-        # and launchers from searchers. For example, to run a launcher created from search
-        # results,
-        # app = "xbmc-sea-%s" % launcherid
-        # args = 'ActivateWindow(10001,"%s")' % launcher_query
+        # --- Execute Kodi built-in function under certain conditions ---
         apppath = os.path.dirname(launcher['application'])
         if os.path.basename(launcher['application']).lower().replace('.exe' , '') == 'xbmc'  or \
            'xbmc-fav-' in launcher['application'] or 'xbmc-sea-' in launcher['application']:
@@ -2984,8 +2981,7 @@ class Main:
         application = launcher['application']
         application_basename = os.path.basename(launcher['application'])
         if not os.path.exists(apppath):
-            kodi_notify_warn('Advanced Emulator Launcher',
-                             'App {0} not found.'.format(apppath))
+            kodi_notify_warn(AEL_NAME_STR, 'App {0} not found.'.format(apppath))
             return
         arguments = launcher['args'].replace('%apppath%' , apppath).replace('%APPPATH%' , apppath)
         log_info('_run_standalone_launcher() apppath              = "{0}"'.format(apppath))
@@ -2993,10 +2989,10 @@ class Main:
         log_info('_run_standalone_launcher() application_basename = "{0}"'.format(application_basename))
         log_info('_run_standalone_launcher() arguments            = "{0}"'.format(arguments))
 
-        # Do stuff before execution
+        # --- Do stuff before execution ---
         self._run_before_execution(launcher, application_basename)
 
-        # Execute
+        # ~~~~~ Execute ~~~~~
         if sys.platform == 'win32':
             if launcher['application'].split('.')[-1] == 'lnk':
                 os.system('start "" "{0}"'.format(application))
@@ -3019,9 +3015,9 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system('"{0}" {1}'.format(application, arguments))
         else:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
+            kodi_notify_warn(AEL_NAME_STR, 'Cannot determine the running platform')
 
-        # Do stuff after execution
+        # --- Do stuff after execution ---
         self._run_after_execution(launcher)
 
     #
@@ -3115,7 +3111,7 @@ class Main:
             kodi_notify_warn('Advanced Emulator Launcher', 'ROM not found {0}'.format(romfile))
             return
 
-        # -- Escape quotes and double quotes in romfile
+        # --- Escape quotes and double quotes in romfile ---
         romfile = romfile.replace("'", "\\'")
         romfile = romfile.replace("\"", "\\\"")
 
