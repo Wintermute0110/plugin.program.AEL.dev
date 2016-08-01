@@ -35,9 +35,9 @@ LOG_DEBUG   = 4
 # --- Internal globals --------------------------------------------------------
 current_log_level = LOG_INFO
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # Logging functions
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 def set_log_level(level):
     global current_log_level
 
@@ -53,31 +53,31 @@ def log_debug(str_text):
                                   
         # At this point we are sure str_text is a unicode string.
         log_text = u'AEL DEBUG: ' + str_text
-        xbmc.log(log_text.encode('utf-8'))
+        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_verb(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL VERB : ' + str_text
-        xbmc.log(log_text.encode('utf-8'))
+        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_info(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL INFO : ' + str_text
-        xbmc.log(log_text.encode('utf-8'))
+        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL WARN : ' + str_text
-        xbmc.log(log_text.encode('utf-8'))
+        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_error(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL ERROR: ' + str_text
-        xbmc.log(log_text.encode('utf-8'))
+        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 # -----------------------------------------------------------------------------
 # Kodi notifications and dialogs
@@ -99,7 +99,7 @@ def kodi_dialog_yesno(title, row1, row2='', row3=''):
 #
 # Displays a small box in the low right corner
 #
-def kodi_notify(title, text, time = 5000):
+def kodi_notify(text, title = 'Advanced Emulator Launcher', time = 5000):
     # --- Old way ---
     # xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
 
@@ -107,14 +107,14 @@ def kodi_notify(title, text, time = 5000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
-def kodi_notify_warn(title, text, time = 10000):
+def kodi_notify_warn(text, title = 'Advanced Emulator Launcher warning', time = 7000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 #
-# Do not use this much because it is the same icon as when Python fails, and that may confuse the user.
+# Do not use this function much because it is the same icon as when Python fails, and that may confuse the user.
 #
-def kodi_notify_error(title, text, time = 10000):
+def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7000):
     dialog = xbmcgui.Dialog()
     dialog.notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
