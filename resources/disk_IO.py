@@ -987,7 +987,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
     nfo_content.append(XML_text('genre',     rom['genre']))
     nfo_content.append(XML_text('plot',      rom['plot']))
     nfo_content.append('</game>\n')
-    full_string = ''.join(nfo_content)
+    full_string = ''.join(nfo_content).encode('utf-8')
     try:
         usock = open(nfo_file_path, 'wt')
         usock.write(full_string)
@@ -1020,7 +1020,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         # >> Read file, put in a string and remove line endings.
         # >> We assume NFO files are UTF-8. Decode data to Unicode.
         # file = open(nfo_file_path, 'rt')
-        file = codecs.open(nfo_file_path, 'rt', 'utf-8')
+        file = codecs.open(nfo_file_path, 'r', 'utf-8')
         nfo_str = file.read().replace('\r', '').replace('\n', '')
         file.close()
 
@@ -1058,7 +1058,7 @@ def fs_load_NFO_file_scanner(nfo_file_path):
                'genre' : '', 'plot' : '' }
 
     # >> Read file, put in a string and remove line endings
-    file = codecs.open(nfo_file_path, 'rt', 'utf-8')
+    file = codecs.open(nfo_file_path, 'r', 'utf-8')
     nfo_str = file.read().replace('\r', '').replace('\n', '')
     file.close()
 
@@ -1100,7 +1100,7 @@ def fs_export_launcher_NFO(nfo_file_path, launcher):
     nfo_content.append(XML_text('genre',     launcher['genre']))
     nfo_content.append(XML_text('plot',      launcher['plot']))
     nfo_content.append('</launcher>\n')
-    full_string = ''.join(nfo_content)
+    full_string = ''.join(nfo_content).encode('utf-8')
     try:
         f = open(nfo_file_path, 'wt')
         f.write(full_string)
@@ -1135,7 +1135,7 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
     if os.path.isfile(nfo_file_path):
         # >> Read NFO file data
         try:
-            file = codecs.open(nfo_file_path, 'rt', 'utf-8')
+            file = codecs.open(nfo_file_path, 'r', 'utf-8')
             item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
             file.close()
         except:
@@ -1193,7 +1193,7 @@ def fs_export_category_NFO(nfo_file_path, category):
     nfo_content.append(XML_text('genre', category['genre']))
     nfo_content.append(XML_text('plot',  category['description']))
     nfo_content.append('</category>\n')
-    full_string = ''.join(nfo_content)
+    full_string = ''.join(nfo_content).encode('utf-8')
     try:
         f = open(nfo_file_path, 'wt')
         f.write(full_string)
@@ -1217,7 +1217,7 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
     # --- Import data ---
     if os.path.isfile(nfo_file_path):
         try:
-            file = codecs.open(nfo_file_path, 'rt', 'utf-8')
+            file = codecs.open(nfo_file_path, 'r', 'utf-8')
             item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
             file.close()
         except:
