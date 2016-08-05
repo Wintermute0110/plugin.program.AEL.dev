@@ -190,7 +190,9 @@ class Main:
         # There is a command to process
         # For some reason args['com'] is a list, so get first element of the list (a string)
         command = args['com'][0]
-        if command == 'ADD_CATEGORY':
+        if command == 'SHOW_ALL_CATEGORIES':
+            self._command_render_all_categories()
+        elif command == 'ADD_CATEGORY':
             self._command_add_new_category()
         elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
@@ -200,6 +202,8 @@ class Main:
             self._command_render_virtual_category(args['catID'][0])
         elif command == 'SHOW_LAUNCHERS':
             self._command_render_launchers(args['catID'][0])
+        elif command == 'SHOW_ALL_LAUNCHERS':
+            self._command_render_all_launchers()
         elif command == 'ADD_LAUNCHER':
             self._command_add_new_launcher(args['catID'][0])
         elif command == 'EDIT_LAUNCHER':
@@ -1546,14 +1550,31 @@ class Main:
         # For every category, add it to the listbox. Order alphabetically by name
         for key in sorted(self.categories, key= lambda x : self.categories[x]['m_name']):
             self._gui_render_category_row(self.categories[key], key)
-        # >> AEL Favourites special category
+
+        # --- AEL Favourites special category ---
         self._gui_render_category_favourites_row()
-        # >> Virtual Launchers
+
+        # --- AEL Virtual Categories ---
         if not self.settings['display_hide_title']:  self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         if not self.settings['display_hide_year']:   self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
         if not self.settings['display_hide_genre']:  self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
         if not self.settings['display_hide_studio']: self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded=True, cacheToDisc=False )
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    #
+    # Renders all categories withouth Favourites, VLaunchers, etc.
+    # This function is called by skins.
+    #
+    def _command_render_all_categories(self):
+        # >> If no categories render nothing
+        if not self.categories:
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        # >> For every category, add it to the listbox. Order alphabetically by name
+        for key in sorted(self.categories, key = lambda x : self.categories[x]['name']):
+            self._gui_render_category_row(self.categories[key], key)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_category_row(self, category_dic, key):
         # --- Do not render row if category finished ---
@@ -1694,10 +1715,24 @@ class Main:
             # kodi_refresh_container()
             return
 
-        # Render launcher rows of this launcher
-        for key in sorted(self.launchers, key = lambda x : self.launchers[x]["application"]):
+        # >> Render launcher rows of this launcher
+        for key in sorted(self.launchers, key = lambda x : self.launchers[x]['application']):
             if self.launchers[key]['categoryID'] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key])
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    #
+    # Renders all launchers belonging to all categories. This function is called by skins
+    #
+    def _command_render_all_launchers(self):
+        # >> If no launchers render nothing
+        if not self.launchers:
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        # >> Render all launchers (sort by application? Is not better to sort by name alphabetically?)
+        for key in sorted(self.launchers, key = lambda x : self.launchers[x]['application']):
+            self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_launcher_row(self, launcher_dic):
@@ -4417,7 +4452,7 @@ class Main:
 
     #
     # Edit launcher/rom thumbnail/fanart. Note that categories have another function because
-    # image scraping is not allowed for categores.
+    # image scraping is not allowed for categories.
     #
     # NOTE When editing ROMs optional parameter launcherID is required.
     # NOTE Caller is responsible for saving the Launchers/ROMs
