@@ -370,20 +370,20 @@ class Main:
         # Shows a select box with the options to edit
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]['finished'] == True else 'Status: Unfinished'
-        type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['name']),
+        type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['m_name']),
                              ['Edit Title/Genre/Description...', 'Edit Assets/Artwork...',
                               finished_display, 'Delete Category'])
 
         # --- Edit category metadata ---
         if type == 0:
-            desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
+            plot_str = text_limit_string(self.categories[categoryID]['m_plot'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select(u'Edit Category Metadata',
                                   [u'Import metadata from NFO (automatic)',
                                    u'Import metadata from NFO (browse NFO)...',
-                                   u"Edit Title: '{0}'".format(self.categories[categoryID]['name']),
-                                   u"Edit Genre: '{0}'".format(self.categories[categoryID]['genre']),
-                                   u"Edit Description: '{0}'".format(desc_str),
+                                   u"Edit Title: '{0}'".format(self.categories[categoryID]['m_name']),
+                                   u"Edit Genre: '{0}'".format(self.categories[categoryID]['m_genre']),
+                                   u"Edit Plot: '{0}'".format(plot_str),
                                    u'Save metadata to NFO file'])
             # --- Import launcher metadata from NFO file (automatic) ---
             if type2 == 0:
@@ -407,38 +407,38 @@ class Main:
 
             # --- Edition of the category name ---
             elif type2 == 2:
-                keyboard = xbmc.Keyboard(self.categories[categoryID]['name'], 'Edit Title')
+                keyboard = xbmc.Keyboard(self.categories[categoryID]['m_name'], 'Edit Title')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
                     title = keyboard.getText()
                     if title == '':
-                        title = self.categories[categoryID]['name']
-                    self.categories[categoryID]['name'] = title.rstrip()
+                        title = self.categories[categoryID]['m_name']
+                    self.categories[categoryID]['m_name'] = title.rstrip()
                 else:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
-                                   "Category name '{0}' not changed".format(self.categories[categoryID]['name']))
+                                   "Category name '{0}' not changed".format(self.categories[categoryID]['m_name']))
                     return
 
             # Edition of the category genre
             elif type2 == 3:
-                keyboard = xbmc.Keyboard(self.categories[categoryID]['genre'], 'Edit Genre')
+                keyboard = xbmc.Keyboard(self.categories[categoryID]['m_genre'], 'Edit Genre')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
-                    self.categories[categoryID]['genre'] = keyboard.getText()
+                    self.categories[categoryID]['m_genre'] = keyboard.getText()
                 else:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
-                                   "Category genre '{0}' not changed".format(self.categories[categoryID]['genre']))
+                                   "Category genre '{0}' not changed".format(self.categories[categoryID]['m_genre']))
                     return
 
             # Edition of the plot (description)
             elif type2 == 4:
-                keyboard = xbmc.Keyboard(self.categories[categoryID]['description'], 'Edit Description')
+                keyboard = xbmc.Keyboard(self.categories[categoryID]['m_plot'], 'Edit Plot')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
-                    self.categories[categoryID]['description'] = keyboard.getText()
+                    self.categories[categoryID]['m_plot'] = keyboard.getText()
                 else:
                     kodi_dialog_OK('Advanced Emulator Launcher - Information',
-                                   "Category description '{0}' not changed".format(self.categories[categoryID]['description']))
+                                   "Category plot '{0}' not changed".format(self.categories[categoryID]['m_plot']))
                     return
 
             # --- Import category description ---
@@ -473,8 +473,8 @@ class Main:
             category = self.categories[categoryID]
             status_thumb_str   = 'HAVE' if category['s_thumb'] else 'MISSING'
             status_fanart_str  = 'HAVE' if category['s_fanart'] else 'MISSING'
-            status_logo_str    = 'HAVE' if category['s_logo'] else 'MISSING'
-            status_poster_str  = 'HAVE' if category['s_poster'] else 'MISSING'
+            status_banner_str  = 'HAVE' if category['s_banner'] else 'MISSING'
+            status_flyer_str   = 'HAVE' if category['s_flyer'] else 'MISSING'
             status_trailer_str = 'HAVE' if category['s_trailer'] else 'MISSING'
             asset_thumb  = assets_get_thumb_fallback_str(category)
             asset_fanart = assets_get_fanart_fallback_str(category)
@@ -482,8 +482,8 @@ class Main:
             type2 = dialog.select(u'Edit Category Assets/Artwork',
                                   [u"Edit Thumbnail ({0})...".format(status_thumb_str),
                                    u"Edit Fanart ({0})...".format(status_fanart_str),
-                                   u"Edit Logo ({0})...".format(status_logo_str),
-                                   u"Edit Poster ({0})...".format(status_poster_str),
+                                   u"Edit Banner ({0})...".format(status_banner_str),
+                                   u"Edit Flyer ({0})...".format(status_flyer_str),
                                    u"Edit Trailer ({0})...".format(status_trailer_str),
                                    u'Choose asset for Thumb (currently {0})'.format(asset_thumb), 
                                    u'Choose asset for Fanart (currently {0})'.format(asset_fanart)])
@@ -723,16 +723,16 @@ class Main:
 
     def _command_edit_launcher(self, categoryID, launcherID):
         dialog = xbmcgui.Dialog()
-        title = os.path.basename(self.launchers[launcherID]['name'])
+        title = os.path.basename(self.launchers[launcherID]['m_name'])
         finished_display = 'Status : Finished' if self.launchers[launcherID]['finished'] == True else 'Status : Unfinished'
-        category_name = self.categories[self.launchers[launcherID]['categoryID']]['name']
+        category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
         if self.launchers[launcherID]['rompath'] == '':
-            type = dialog.select('Select Action for launcher %s' % title,
+            type = dialog.select('Select Action for launcher {0}'.format(title),
                                  ['Modify Metadata...', 'Edit Assets/Artwork...',
                                   u'Change Category: {0}'.format(category_name), finished_display, 
                                   'Advanced Modifications...', 'Delete Launcher'])
         else:
-            type = dialog.select('Select Action for launcher %s' % title,
+            type = dialog.select('Select Action for launcher {0}'.format(title),
                                  ['Modify Metadata...', 'Edit Assets/Artwork...',
                                   u'Change Category: {0}'.format(category_name), finished_display, 
                                   'Manage ROM List...', 'Manage ROM Asset directories...',
@@ -742,17 +742,17 @@ class Main:
         type_nb = 0
         if type == type_nb:
             dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string(self.launchers[launcherID]['plot'], DESCRIPTION_MAXSIZE)
+            desc_str = text_limit_string(self.launchers[launcherID]['m_plot'], DESCRIPTION_MAXSIZE)
             type2 = dialog.select(u'Modify Launcher Metadata',
                                   [u'Scrape from {0}...'.format(self.scraper_metadata.fancy_name),
                                    u'Import metadata from NFO (automatic)',
                                    u'Import metadata from NFO (browse NFO)...',
-                                   u"Edit Title: '{0}'".format(self.launchers[launcherID]['name']),
+                                   u"Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
                                    u"Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
-                                   u"Edit Release Year: '{0}'".format(self.launchers[launcherID]['year']),
-                                   u"Edit Studio: '{0}'".format(self.launchers[launcherID]['studio']),
-                                   u"Edit Genre: '{0}'".format(self.launchers[launcherID]['genre']),
-                                   u"Edit Description: '{0}'".format(desc_str),
+                                   u"Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
+                                   u"Edit Studio: '{0}'".format(self.launchers[launcherID]['m_studio']),
+                                   u"Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
+                                   u"Edit Plot: '{0}'".format(desc_str),
                                    u'Save metadata to NFO file'])
             # --- Scrape launcher metadata ---
             if type2 == 0:
@@ -852,8 +852,8 @@ class Main:
             launcher = self.categories[categoryID]
             status_thumb_str   = 'HAVE' if launcher['s_thumb'] else 'MISSING'
             status_fanart_str  = 'HAVE' if launcher['s_fanart'] else 'MISSING'
-            status_logo_str    = 'HAVE' if launcher['s_logo'] else 'MISSING'
-            status_poster_str  = 'HAVE' if launcher['s_poster'] else 'MISSING'
+            status_banner_str  = 'HAVE' if launcher['s_banner'] else 'MISSING'
+            status_flyer_str   = 'HAVE' if launcher['s_flyer'] else 'MISSING'
             status_trailer_str = 'HAVE' if launcher['s_trailer'] else 'MISSING'
             asset_thumb  = assets_get_thumb_fallback_str(launcher)
             asset_fanart = assets_get_fanart_fallback_str(launcher)
@@ -861,8 +861,8 @@ class Main:
             type2 = dialog.select(u'Edit Launcher Assets/Artwork',
                                   [u"Edit Thumbnail ({0})...".format(status_thumb_str),
                                    u"Edit Fanart ({0})...".format(status_fanart_str),
-                                   u"Edit Logo ({0})...".format(status_logo_str),
-                                   u"Edit Poster ({0})...".format(status_poster_str),
+                                   u"Edit Banner ({0})...".format(status_banner_str),
+                                   u"Edit Flyer ({0})...".format(status_flyer_str),
                                    u"Edit Trailer ({0})...".format(status_trailer_str),
                                    u'Choose asset for Thumb (currently {0})'.format(asset_thumb), 
                                    u'Choose asset for Fanart (currently {0})'.format(asset_fanart)])
@@ -1106,6 +1106,7 @@ class Main:
                                        u"Change Trailers path: '{0}'".format(launcher['path_trailer']) ])
 
                 # Launcher thumbnails path menu option
+                type2_nb = 0
                 if type2 == type2_nb:
                     thumb_path = dialog.browse(0, 'Select Thumbnails path', 'files', '',
                                                False, False, self.launchers[launcherID]['thumbpath'])
@@ -1543,10 +1544,11 @@ class Main:
     #
     def _command_render_categories(self):
         # For every category, add it to the listbox. Order alphabetically by name
-        for key in sorted(self.categories, key= lambda x : self.categories[x]['name']):
+        for key in sorted(self.categories, key= lambda x : self.categories[x]['m_name']):
             self._gui_render_category_row(self.categories[key], key)
-        # --- AEL Favourites special category ---
+        # >> AEL Favourites special category
         self._gui_render_category_favourites_row()
+        # >> Virtual Launchers
         if not self.settings['display_hide_title']:  self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         if not self.settings['display_hide_year']:   self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
         if not self.settings['display_hide_genre']:  self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
@@ -1560,13 +1562,15 @@ class Main:
 
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if category_dic['finished'] else 4
-        listitem = xbmcgui.ListItem(category_dic['name'])
-        listitem.setInfo('video', {'Title': category_dic['name'],   'Genre' : category_dic['m_genre'],
-                                   'Plot' : category_dic['m_plot'], 'Overlay': ICON_OVERLAY } )
+        listitem = xbmcgui.ListItem(category_dic['m_name'])
+        listitem.setInfo('video', {'title'   : category_dic['m_name'],    'genre'   : category_dic['m_genre'],
+                                   'plot'    : category_dic['m_plot'],    'rating'  : category_dic['m_rating'],
+                                   'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY } )
+
         # --- Set Category artwork ---
-        listitem.setArt({'icon': 'DefaultFolder.png',    'fanart': category_dic['s_fanart'],
-                         'logo': category_dic['s_logo'], 'poster': category_dic['s_poster'], })
-        if category_dic['s_thumb']: listitem.setArt({'icon': category_dic['s_thumb']})
+        listitem.setArt({'thumb'  : 'DefaultFolder.png',      'fanart' : category_dic['s_fanart'],
+                         'banner' : category_dic['s_banner'], 'poster' : category_dic['s_flyer'], })
+        if category_dic['s_thumb']: listitem.setArt({'thumb' : category_dic['s_thumb']})
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
@@ -1589,13 +1593,15 @@ class Main:
     def _gui_render_category_favourites_row(self):
         # --- Create listitem row ---
         fav_name = '<Favourites>'
-        fav_thumb = ''
+        fav_thumb = 'DefaultFolder.png'
         fav_fanart = ''
+        fav_banner = ''
+        fav_flyer = ''
         listitem = xbmcgui.ListItem(fav_name)
-        listitem.setInfo('video', { 'Title': fav_name,             'Genre' : 'All',
-                                    'Plot' : 'AEL Favourite ROMs', 'overlay': 5 } )
+        listitem.setInfo('video', { 'title': fav_name,             'genre' : 'AEL Favourites',
+                                    'plot' : 'AEL Favourite ROMs', 'overlay' : 4 } )
         # --- Set Virtual Launcher artwork ---
-        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart': fav_fanart, 'thumb': fav_thumb})
+        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
 
         # --- Create context menu ---
         commands = []
@@ -1613,31 +1619,39 @@ class Main:
             vcategory_name   = '[Browse by Title]'
             vcategory_thumb  = ''
             vcategory_fanart = ''
+            vcategory_banner = ''
+            vcategory_flyer  = ''
             vcategory_label  = 'Title'
         elif virtual_category_kind == VCATEGORY_YEARS_ID:
             vcategory_name   = '[Browse by Year]'
             vcategory_thumb  = ''
             vcategory_fanart = ''
+            vcategory_banner = ''
+            vcategory_flyer  = ''
             vcategory_label  = 'Years'
         elif virtual_category_kind == VCATEGORY_GENRE_ID:
             vcategory_name   = '[Browse by Genre]'
             vcategory_thumb  = ''
             vcategory_fanart = ''
+            vcategory_banner = ''
+            vcategory_flyer  = ''
             vcategory_label  = 'Genre'
         elif virtual_category_kind == VCATEGORY_STUDIO_ID:
             vcategory_name   = '[Browse by Studio]'
             vcategory_thumb  = ''
             vcategory_fanart = ''
+            vcategory_banner = ''
+            vcategory_flyer  = ''
             vcategory_label  = 'Studio'
         else:
             log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             return
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', { 'Title': vcategory_name,         'Genre' : 'All',
-                                    'Plot' : 'AEL virtual category', 'overlay': 5 } )
+        listitem.setInfo('video', { 'title': vcategory_name,         'genre' : 'AEL Virtual Launcher',
+                                    'plot' : 'AEL virtual category', 'overlay': 4 } )
         # Set ListItem artwork
-        listitem.setArt({'icon': 'DefaultFolder.png', 'fanart': vcategory_fanart, 'thumb': vcategory_thumb})
+        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart, 'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
         commands = []
         update_vcat_URL     = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
@@ -1694,21 +1708,22 @@ class Main:
         # --- Create listitem row ---
         if launcher_dic['rompath'] == '': # Executable launcher
             folder_flag = False
-            icon = 'DefaultProgram.png'
+            kodi_thumb = 'DefaultProgram.png'
         else:                             # Emulator (files) launcher
             folder_flag = True
-            icon = 'DefaultFolder.png'
+            kodi_thumb = 'DefaultFolder.png'
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
-        listitem = xbmcgui.ListItem(launcher_dic['name'])
-        listitem.setInfo('video', {'Title'   : launcher_dic['name'],      'Writer'  : launcher_dic['platform'],
-                                   'Year'    : launcher_dic['m_year'],    'Genre'   : launcher_dic['m_genre'],
-                                   'Plot'    : launcher_dic['m_plot'],    'Studio'  : launcher_dic['m_studio'],  
-                                   'Trailer' : launcher_dic['s_trailer'], 'Overlay' : ICON_OVERLAY })
+        listitem = xbmcgui.ListItem(launcher_dic['m_name'])
+        listitem.setInfo('video', {'title'   : launcher_dic['m_name'],    'year'    : launcher_dic['m_year'], 
+                                   'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
+                                   'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
+                                   'trailer' : launcher_dic['s_trailer'], 'Overlay' : ICON_OVERLAY })
+        listitem.setProperty('platform', launcher_dic['platform'])
 
         # --- Set ListItem artwork ---
-        listitem.setArt({'icon': icon, 'fanart': launcher_dic['s_fanart'],
-                         'logo': launcher_dic['s_logo'], 'poster': launcher_dic['s_poster'], })
-        if launcher_dic['s_thumb']: listitem.setArt({'thumb': launcher_dic['s_thumb']})
+        listitem.setArt({'thumb'  : kodi_thumb,               'fanart' : launcher_dic['s_fanart'],
+                         'banner' : launcher_dic['s_banner'], 'poster' : launcher_dic['s_flyer']})
+        if launcher_dic['s_thumb']: listitem.setArt({'thumb' : launcher_dic['s_thumb']})
 
         # --- Create context menu ---
         commands = []
@@ -1728,7 +1743,7 @@ class Main:
 
         # --- Add row to ListItem ---
         url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=folder_flag)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = folder_flag)
 
     #
     # Former  _get_roms
@@ -1819,22 +1834,25 @@ class Main:
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
 
         # --- Add ROM to lisitem ---
-        listitem = xbmcgui.ListItem(rom['name'])
-        if rom['finished'] is not True: ICON_OVERLAY = 4
-        else:                           ICON_OVERLAY = 5
+        ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
+        listitem = xbmcgui.ListItem(rom['m_name'])
 
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
         # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
         # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
         # instead of changing the whole row colour.
-        listitem.setInfo('video', {'Title'   : rom_name,        'Year'    : rom['m_year'],
-                                   'Genre'   : rom['m_genre'],  'Plot'    : rom['m_plot'],
-                                   'Studio'  : rom['m_studio'], 'Rating'  : rom['m_rating'],
-                                   'Writer'  : platform,        'Trailer' : rom['s_trailer'],
-                                   'Overlay' : ICON_OVERLAY })
+        listitem.setInfo('video', {'title'   : rom_name,         'year'    : rom['m_year'],
+                                   'genre'   : rom['m_genre'],   'plot'    : rom['m_plot'],
+                                   'studio'  : rom['m_studio'],  'rating'  : rom['m_rating'],
+                                   'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
+        listitem.setProperty('platform', platform)
+
         # --- Set ROM artwork ---
-        listitem.setArt({'icon': 'DefaultProgram.png', 'fanart': defined_fanart})
-        if rom['thumb']: listitem.setArt({'thumb': rom['thumb']})
+        listitem.setArt({'thumb'    : 'DefaultProgram.png', 'title'   : rom['s_title'],   'snap'      : rom['s_snap'],
+                         'fanart'   : rom['s_fanart'],      'banner'  : rom['s_banner'],  'clearlogo' : rom['s_clearlogo'],
+                         'boxfront' : rom['s_boxfront'],    'boxback' : rom['s_boxback'], 'cartridge' : rom['s_cartridge'],
+                         'poster'   : rom['s_flyer'] })
+        if rom['s_thumb']: listitem.setArt({'thumb' : rom['s_thumb']})
 
         # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
         # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
@@ -2508,21 +2526,7 @@ class Main:
 
         # --- Make information string ---
         info_text  = u'[COLOR orange]ROM information[/COLOR]\n'
-        info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(rom['id'])
-        info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(rom['name'])
-        info_text += u"[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])
-        info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(rom['thumb'])
-        info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(rom['fanart'])
-        info_text += u"[COLOR violet]trailer[/COLOR]: '{0}'\n".format(rom['trailer'])
-        info_text += u"[COLOR violet]custom[/COLOR]: '{0}'\n".format(rom['custom'])
-        info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(rom['genre'])
-        info_text += u"[COLOR violet]year[/COLOR]: '{0}'\n".format(rom['year'])
-        info_text += u"[COLOR violet]studio[/COLOR]: '{0}'\n".format(rom['studio'])
-        info_text += u"[COLOR violet]plot[/COLOR]: '{0}'\n".format(rom['plot'])
-        info_text += u"[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom['altapp'])
-        info_text += u"[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
-        info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
-        info_text += u"[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
+        info_text += self._misc_print_string_ROM(rom)
 
         # --- Display category/launcher information ---
         if not regular_launcher:
@@ -2537,38 +2541,9 @@ class Main:
             info_text += u"[COLOR violet]fav_status[/COLOR]: '{0}'\n".format(rom['fav_status'])
         else:
             info_text += u'\n[COLOR orange]Launcher information[/COLOR]\n'
-            info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(launcher['id'])
-            info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(launcher['name'])
-            info_text += u"[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
-            info_text += u"[COLOR violet]platform[/COLOR]: '{0}'\n".format(launcher['platform'])
-            info_text += u"[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher['application'])
-            info_text += u"[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
-            info_text += u"[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
-            info_text += u"[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
-            info_text += u"[COLOR violet]thumbpath[/COLOR]: '{0}'\n".format(launcher['thumbpath'])
-            info_text += u"[COLOR violet]fanartpath[/COLOR]: '{0}'\n".format(launcher['fanartpath'])
-            info_text += u"[COLOR violet]trailerpath[/COLOR]: '{0}'\n".format(launcher['trailerpath'])
-            info_text += u"[COLOR violet]custompath[/COLOR]: '{0}'\n".format(launcher['custompath'])
-            info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(launcher['thumb'])
-            info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(launcher['fanart'])
-            info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(launcher['genre'])
-            info_text += u"[COLOR violet]year[/COLOR]: '{0}'\n".format(launcher['year'])
-            info_text += u"[COLOR violet]studio[/COLOR]: '{0}'\n".format(launcher['studio'])
-            info_text += u"[COLOR violet]plot[/COLOR]: '{0}'\n".format(launcher['plot'])
-            info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
-            info_text += u"[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
-            info_text += u"[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
-            info_text += u"[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
-            info_text += u"[COLOR skyblue]report_timestamp[/COLOR]: {0}\n".format(launcher['report_timestamp'])
-
+            info_text += self._misc_print_string_Launcher(launcher)
             info_text += u'\n[COLOR orange]Category information[/COLOR]\n'
-            info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
-            info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(category['name'])
-            info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(category['thumb'])
-            info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(category['fanart'])
-            info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(category['genre'])
-            info_text += u"[COLOR violet]description[/COLOR]: '{0}'\n".format(category['description'])
-            info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])
+            info_text += self._misc_print_string_Category(category)
 
         # --- Show information window ---
         try:
@@ -2591,38 +2566,9 @@ class Main:
 
         # --- Make info string ---
         info_text  = u'\n[COLOR orange]Launcher information[/COLOR]\n'
-        info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(launcher['id'])
-        info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(launcher['name'])
-        info_text += u"[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
-        info_text += u"[COLOR violet]platform[/COLOR]: '{0}'\n".format(launcher['platform'])
-        info_text += u"[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher['application'])
-        info_text += u"[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
-        info_text += u"[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
-        info_text += u"[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
-        info_text += u"[COLOR violet]thumbpath[/COLOR]: '{0}'\n".format(launcher['thumbpath'])
-        info_text += u"[COLOR violet]fanartpath[/COLOR]: '{0}'\n".format(launcher['fanartpath'])
-        info_text += u"[COLOR violet]trailerpath[/COLOR]: '{0}'\n".format(launcher['trailerpath'])
-        info_text += u"[COLOR violet]custompath[/COLOR]: '{0}'\n".format(launcher['custompath'])
-        info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(launcher['thumb'])
-        info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(launcher['fanart'])
-        info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(launcher['genre'])
-        info_text += u"[COLOR violet]year[/COLOR]: '{0}'\n".format(launcher['year'])
-        info_text += u"[COLOR violet]studio[/COLOR]: '{0}'\n".format(launcher['studio'])
-        info_text += u"[COLOR violet]plot[/COLOR]: '{0}'\n".format(launcher['plot'])
-        info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
-        info_text += u"[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
-        info_text += u"[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
-        info_text += u"[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
-        info_text += u"[COLOR skyblue]report_timestamp[/COLOR]: {0}\n".format(launcher['report_timestamp'])
-
+        info_text += self._misc_print_string_Launcher(launcher)
         info_text += u'\n[COLOR orange]Category information[/COLOR]\n'
-        info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
-        info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(category['name'])
-        info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(category['thumb'])
-        info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(category['fanart'])
-        info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(category['genre'])
-        info_text += u"[COLOR violet]description[/COLOR]: '{0}'\n".format(category['description'])
-        info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])
+        info_text += self._misc_print_string_Category(category)
 
         # --- Show information window ---
         try:
@@ -2644,13 +2590,7 @@ class Main:
 
         # --- Make info string ---
         info_text  = u'\n[COLOR orange]Category information[/COLOR]\n'
-        info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
-        info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(category['name'])
-        info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(category['thumb'])
-        info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(category['fanart'])
-        info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(category['genre'])
-        info_text += u"[COLOR violet]description[/COLOR]: '{0}'\n".format(category['description'])
-        info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])
+        info_text += self._misc_print_string_Category(category)
 
         # --- Show information window ---
         try:
@@ -2661,7 +2601,90 @@ class Main:
             window.getControl(5).setText(info_text)
         except:
             log_error(u'_command_view_Category() Exception rendering INFO window')
-            
+
+    def _misc_print_string_ROM(self, rom):
+        info_text  = u''
+        info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(rom['id'])
+        info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(rom['name'])
+        info_text += u"[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])
+        info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(rom['thumb'])
+        info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(rom['fanart'])
+        info_text += u"[COLOR violet]trailer[/COLOR]: '{0}'\n".format(rom['trailer'])
+        info_text += u"[COLOR violet]custom[/COLOR]: '{0}'\n".format(rom['custom'])
+        info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(rom['genre'])
+        info_text += u"[COLOR violet]year[/COLOR]: '{0}'\n".format(rom['year'])
+        info_text += u"[COLOR violet]studio[/COLOR]: '{0}'\n".format(rom['studio'])
+        info_text += u"[COLOR violet]plot[/COLOR]: '{0}'\n".format(rom['plot'])
+        info_text += u"[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom['altapp'])
+        info_text += u"[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
+        info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
+        info_text += u"[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
+
+        return info_text
+
+    def _misc_print_string_Launcher(self, launcher):
+        info_text  = u''
+        info_text += u"[COLOR violet]launcherID[/COLOR]: '{0}'\n".format(launcher['launcherID'])
+        info_text += u"[COLOR violet]m_name[/COLOR]: '{0}'\n".format(launcher['m_name'])
+        info_text += u"[COLOR violet]m_year[/COLOR]: '{0}'\n".format(launcher['m_year'])        
+        info_text += u"[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(launcher['m_genre'])
+        info_text += u"[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(launcher['m_plot'])
+        info_text += u"[COLOR violet]m_studio[/COLOR]: '{0}'\n".format(launcher['m_studio'])
+        info_text += u"[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(launcher['m_rating'])
+
+        info_text += u"[COLOR violet]platform[/COLOR]: '{0}'\n".format(launcher['platform'])        
+        info_text += u"[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
+        info_text += u"[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher['application'])
+        info_text += u"[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
+        info_text += u"[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
+        info_text += u"[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
+        info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
+        info_text += u"[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
+        info_text += u"[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
+        info_text += u"[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
+        info_text += u"[COLOR skyblue]report_timestamp[/COLOR]: {0}\n".format(launcher['report_timestamp'])        
+        info_text += u"[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(launcher['default_thumb'])
+        info_text += u"[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher['default_fanart'])
+
+        info_text += u"[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(launcher['s_thumb'])
+        info_text += u"[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
+        info_text += u"[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(launcher['s_banner'])
+        info_text += u"[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(launcher['s_flyer'])
+        info_text += u"[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(launcher['s_trailer'])
+
+        info_text += u"[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher['path_title'])
+        info_text += u"[COLOR violet]path_snap[/COLOR]: '{0}'\n".format(launcher['path_snap'])
+        info_text += u"[COLOR violet]path_fanart[/COLOR]: '{0}'\n".format(launcher['path_fanart'])
+        info_text += u"[COLOR violet]path_banner[/COLOR]: '{0}'\n".format(launcher['path_banner'])
+        info_text += u"[COLOR violet]path_clearlogo[/COLOR]: '{0}'\n".format(launcher['path_clearlogo'])
+        info_text += u"[COLOR violet]path_boxfront[/COLOR]: '{0}'\n".format(launcher['path_boxfront'])
+        info_text += u"[COLOR violet]path_boxback[/COLOR]: '{0}'\n".format(launcher['path_boxback'])
+        info_text += u"[COLOR violet]path_cartridge[/COLOR]: '{0}'\n".format(launcher['path_cartridge'])
+        info_text += u"[COLOR violet]path_flyer[/COLOR]: '{0}'\n".format(launcher['path_flyer'])
+        info_text += u"[COLOR violet]path_map[/COLOR]: '{0}'\n".format(launcher['path_map'])
+        info_text += u"[COLOR violet]path_manual[/COLOR]: '{0}'\n".format(launcher['path_manual'])
+        info_text += u"[COLOR violet]path_trailer[/COLOR]: '{0}'\n".format(launcher['path_trailer'])
+
+        return info_text
+
+    def _misc_print_string_Category(self, category):
+        info_text  = u''
+        info_text += u"[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(category['categoryID'])
+        info_text += u"[COLOR violet]m_name[/COLOR]: '{0}'\n".format(category['m_name'])
+        info_text += u"[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(category['m_genre'])
+        info_text += u"[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(category['m_plot'])
+        info_text += u"[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(category['m_rating'])
+        info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])        
+        info_text += u"[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(category['default_thumb'])
+        info_text += u"[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(category['default_fanart'])
+        info_text += u"[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(category['s_thumb'])
+        info_text += u"[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(category['s_fanart'])
+        info_text += u"[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(category['s_banner'])
+        info_text += u"[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(category['s_flyer'])
+        info_text += u"[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(category['s_trailer'])
+
+        return info_text
+
     def _command_view_Launcher_Report(self, categoryID, launcherID):
         # --- Standalone launchers do not have reports! ---
         category = self.categories[categoryID]
@@ -4653,6 +4676,19 @@ class Main:
 
         return True
 
+    #
+    # Logical choice is to have one function to edit category/launcher images and another one
+    # for ROMs. Reason is that category/launcher and ROMs have different assets.
+    # Also, ROM image paths are stored in the launcher, where category/launchers do not have
+    # a separated directory + image_file structure.
+    #
+    def _gui_edit_image_catlauncher(self, image_kind, categoryID):
+        pass
+
+        
+    def _gui_edit_image_ROM(self, image_kind, categoryID):    
+        pass
+    
     #
     # Creates default categories data struct.
     # CAREFUL deletes current categories!
