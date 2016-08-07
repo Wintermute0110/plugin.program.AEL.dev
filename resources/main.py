@@ -4128,10 +4128,8 @@ class Main:
             selected_map       = local_map
             selected_manual    = local_manual
             selected_trailer   = local_trailer
-
         elif scan_asset_policy == 1:
             log_verb('Asset policy: if not Local Image then Scraper ON')
-
             selected_title     = self._roms_process_asset_policy_2(ASSET_TITLE, local_title, ROM, launcher)
             selected_snap      = self._roms_process_asset_policy_2(ASSET_SNAP, local_snap, ROM, launcher)
             selected_fanart    = self._roms_process_asset_policy_2(ASSET_FANART, local_fanart, ROM, launcher)
@@ -4144,11 +4142,20 @@ class Main:
             selected_map       = self._roms_process_asset_policy_2(ASSET_MAP, local_map, ROM, launcher)
             selected_manual    = self._roms_process_asset_policy_2(ASSET_MANUAL, local_manual, ROM, launcher)
             selected_trailer   = self._roms_process_asset_policy_2(ASSET_TRAILER, local_trailer, ROM, launcher)
-
         elif scan_asset_policy == 2:
             log_verb('Asset policy: scraper will overwrite local assets | Scraper ON')
-
-            selected_title  = self._roms_scrap_asset(ASSET_TITLE, local_thumb, ROM, launcher)
+            selected_title     = self._roms_scrap_asset(ASSET_TITLE, local_title, ROM, launcher)
+            selected_snap      = self._roms_scrap_asset(ASSET_SNAP, local_snap, ROM, launcher)
+            selected_fanart    = self._roms_scrap_asset(ASSET_FANART, local_fanart, ROM, launcher)
+            selected_banner    = self._roms_scrap_asset(ASSET_BANNER, local_banner, ROM, launcher)
+            selected_clearlogo = self._roms_scrap_asset(ASSET_CLEARLOGO, local_clearlogo, ROM, launcher)
+            selected_boxfront  = self._roms_scrap_asset(ASSET_BOXFRONT, local_boxfront, ROM, launcher)
+            selected_boxback   = self._roms_scrap_asset(ASSET_BOXBACK, local_boxback, ROM, launcher)
+            selected_cartridge = self._roms_scrap_asset(ASSET_CARTRIDGE, local_cartridge, ROM, launcher)
+            selected_flyer     = self._roms_scrap_asset(ASSET_FLYER, local_flyer, ROM, launcher)
+            selected_map       = self._roms_scrap_asset(ASSET_MAP, local_map, ROM, launcher)
+            selected_manual    = self._roms_scrap_asset(ASSET_MANUAL, local_manual, ROM, launcher)
+            selected_trailer   = self._roms_scrap_asset(ASSET_TRAILER, local_trailer, ROM, launcher)
 
         romdata['s_title']     = selected_title
         romdata['s_snap']      = selected_snap
