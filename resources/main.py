@@ -154,7 +154,7 @@ class Main:
         #      need it!
         # Experiment to try to increase the number of views the addon supports. I do not know why
         # programs does not support all views movies do.
-        # xbmcplugin.setContent(handle=self.addon_handle, content = 'movies')
+        # xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
 
         # Adds a sorting method for the media list.
         if self.addon_handle > 0:
@@ -2850,9 +2850,9 @@ class Main:
             return
 
         # --- Get report filename ---
-        roms_base_noext = fs_get_ROMs_basename(category['name'], launcher['name'], launcherID)
+        roms_base_noext = fs_get_ROMs_basename(category['m_name'], launcher['m_name'], launcherID)
         report_file_name = os.path.join(REPORTS_DIR, roms_base_noext + u'.txt')
-        window_title = u'Launcher {0} Report'.format(launcher['name'])
+        window_title = u'Launcher {0} Report'.format(launcher['m_name'])
         log_verb(u'_command_view_Launcher_Report() Report filename "{0}"'.format(report_file_name))
 
         # --- If report doesn't exists create it automatically ---
@@ -3532,7 +3532,7 @@ class Main:
         for rom_id in sorted(roms, key = lambda x : roms[x]['name']):
             rom = roms[rom_id]
             rom_info = {}
-            rom_info['name'] = rom['name']
+            rom_info['m_name'] = rom['m_name']
             if rom['genre']:  rom_info['genre']  = 'YES'
             else:             rom_info['genre']  = ' NO'; missing_genre += 1
             if rom['year']:   rom_info['year']   = 'YES'
@@ -3552,7 +3552,7 @@ class Main:
         # >> Step 5: Make report
         str_list = []
         str_list.append(u'<Launcher Information>\n')
-        str_list.append(u'Launcher name    {0}\n'.format(launcher['name']))
+        str_list.append(u'Launcher name    {0}\n'.format(launcher['m_name']))
         str_list.append(u'Number of ROMs   {0}\n'.format(num_roms))
         str_list.append(u'ROMs with Genre  {0} ({1} missing)\n'.format(num_roms - missing_genre, missing_genre))
         str_list.append(u'ROMs with Year   {0} ({1} missing)\n'.format(num_roms - missing_year, missing_year))
