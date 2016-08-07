@@ -4829,6 +4829,19 @@ class Main:
 # Release - Image Resource selection script (NOTE is a script, not an addon!)
 # See http://forum.kodi.tv/showthread.php?tid=239558
 # See https://github.com/ronie/script.image.resource.select/blob/master/default.py
+#
+# >> From DialogSelect.xml in Confluence (Kodi Krypton taken from Github master)
+# >> https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
+# >> Controls 5 and 7 are grouped
+#
+# <control type="label"  id="1"> | <description>header label</description>      | Window title on top
+# control 2 does not exist
+# <control type="list"   id="3"> |                                              | Another container which I don't understand...
+# <control type="label"  id="4"> | <description>No Settings Label</description>
+# <control type="button" id="5"> | <description>Manual button</description>     | OK button
+# <control type="list"   id="6"> |                                              | Listbox
+# <control type="button" id="7"> | <description>Cancel button</description>     | New Krypton cancel button
+#
 class ImgSelectDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
@@ -4891,75 +4904,10 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
     def onFocus(self, controlID):
         pass
 
-# >> From DialogSelect.xml in Confluence (Kodi Krypton taken from Github master)
-# >> Controls 5 and 7 are grouped
-# <control type="label"  id="1"> | <description>header label</description>      | Window title on top
-# control 2 does not exist
-# <control type="list"   id="3"> |                                              | Another container which I don't understand...
-# <control type="label"  id="4"> | <description>No Settings Label</description>
-# <control type="button" id="5"> | <description>Manual button</description>     | OK button
-# <control type="list"   id="6"> |                                              | Listbox
-# <control type="button" id="7"> | <description>Cancel button</description>     | New Krypton cancel button
-class ImgSelectDialog_Old(xbmcgui.WindowXMLDialog):
-    def __init__(self, *args, **kwargs):
-        xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
-        xbmc.executebuiltin("Skin.Reset(AnimeWindowXMLDialogClose)")
-        xbmc.executebuiltin("Skin.SetBool(AnimeWindowXMLDialogClose)")
-
-        # This is the list of lists returned by the scraper.
-        # In case of TheGamesDB each sublist is: [ URL, URL, 'Cover covername' ]
-        # First element is always the current image: [ rom["thumb"], rom["thumb"], 'Current image' ]
-        self.listing = kwargs.get( "listing" )
-        self.selected_url = ''
-
-    # I guess this is executed at the beginning
-    def onInit(self):
-        try:
-            self.img_list = self.getControl(6)
-            # Prevents moving to the cancel button. Note that the cancel button does not show
-            # on Cirrus Extended.
-            self.img_list.controlLeft(self.img_list)
-            self.img_list.controlRight(self.img_list)
-            self.getControl(3).setVisible(False)
-        except:
-            print_exc()
-            self.img_list = self.getControl(3)
-
-        self.getControl(5).setVisible(False) # Upper button on the left (OK button)
-        # self.getControl(7).setVisible(False) # Lower button on the left (Cancel)
-        # self.getControl(1).setVisible(False) # Window title
-
-        for index, item in enumerate(self.listing):
-            listitem = xbmcgui.ListItem(item[2]) # string image name
-            listitem.setArt({'icon': item[1]})   # Image URL (http://)
-            listitem.setLabel2(item[0])          # Image URL (http://)
-            self.img_list.addItem(listitem)
-
-        self.setFocus(self.img_list)
-
-    def onAction(self, action):
-        # Close the script
-        if action == 10:
-            self.close()
-
-    def onClick(self, controlID):
-        # Action sur la liste
-        if controlID == 6 or controlID == 3:
-            # Renvoie l'item selectionne
-            num = self.img_list.getSelectedPosition()
-            self.selected_url = self.img_list.getSelectedItem().getLabel2()
-            self.close()
-
-    def onFocus(self, controlID):
-        pass
-
 def gui_show_image_select(img_list):
     # The xml file needs to be part of your addon, or included in the skin you use.
     # Yes, DialogSelect.xml is defined in Confluence here
     # https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
-    # w = ImgSelectDialog("DialogSelect.xml", BASE_DIR, listing = img_list)
-
-    # See comments above.
     w = ImgSelectDialog('DialogSelect.xml', BASE_DIR, listing = img_list)
 
     # Execute dialog
