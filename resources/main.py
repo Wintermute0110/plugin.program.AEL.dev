@@ -84,7 +84,7 @@ VCATEGORY_TITLE_ID       = 'vcat_title'
 VCATEGORY_YEARS_ID       = 'vcat_years'
 VCATEGORY_GENRE_ID       = 'vcat_genre'
 VCATEGORY_STUDIO_ID      = 'vcat_studio'
-VLAUNCHER_FAV_ID         = 'vlauncher_fav'
+VLAUNCHER_FAVOURITES_ID  = 'vlauncher_fav'
 
 # --- Main code ---
 class Main:
@@ -94,8 +94,7 @@ class Main:
     launchers        = {}
     roms             = {}
     scraper_metadata = None
-    scraper_thumb    = None
-    scraper_fanart   = None
+    scraper_asset    = None
 
     #
     # This is the plugin entry point.
@@ -177,9 +176,6 @@ class Main:
 
         # --- Load categories.xml and fill categories and launchers dictionaries ---
         (self.update_timestamp, self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
-
-        # --- Load scrapers ---
-        self._load_scrapers()
 
         # If no com parameter display categories. Display categories listbox (addon root directory)
         if 'com' not in args:
@@ -274,52 +270,55 @@ class Main:
         # Get the users preference settings
         self.settings = {}
 
-        # --- Scanner settings ---
-        self.settings['scan_recursive']                = True if __addon_obj__.getSetting('scan_recursive') == 'true' else False
-        self.settings['scan_ignore_bios']              = True if __addon_obj__.getSetting('scan_ignore_bios') == 'true' else False
-        self.settings['scan_metadata_policy']          = int(__addon_obj__.getSetting('scan_metadata_policy'))
-        self.settings['scan_thumb_policy']             = int(__addon_obj__.getSetting('scan_thumb_policy'))
-        self.settings['scan_fanart_policy']            = int(__addon_obj__.getSetting('scan_fanart_policy'))
-        self.settings['scan_ignore_scrapped_title']    = True if __addon_obj__.getSetting('scan_ignore_scrapped_title') == 'true' else False
-        self.settings['scan_clean_tags']               = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
+        # --- ROM Scanner settings ---
+        self.settings['scan_recursive']          = True if __addon_obj__.getSetting('scan_recursive') == 'true' else False
+        self.settings['scan_ignore_bios']        = True if __addon_obj__.getSetting('scan_ignore_bios') == 'true' else False
+        self.settings['scan_metadata_policy']    = int(__addon_obj__.getSetting('scan_metadata_policy'))
+        self.settings['scan_asset_policy']       = int(__addon_obj__.getSetting('scan_asset_policy'))
+        self.settings['scan_ignore_scrap_title'] = True if __addon_obj__.getSetting('scan_ignore_scrap_title') == 'true' else False
+        self.settings['scan_clean_tags']         = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
 
-        self.settings['metadata_scraper']              = int(__addon_obj__.getSetting('metadata_scraper'))
-        self.settings['thumb_scraper']                 = int(__addon_obj__.getSetting('thumb_scraper'))
-        self.settings['fanart_scraper']                = int(__addon_obj__.getSetting('fanart_scraper'))
-        self.settings['metadata_mode']                 = int(__addon_obj__.getSetting('metadata_mode'))
-        self.settings['thumb_mode']                    = int(__addon_obj__.getSetting('thumb_mode'))
-        self.settings['fanart_mode']                   = int(__addon_obj__.getSetting('fanart_mode'))
+        # --- ROM scrapping ---
+        self.settings['metadata_scraper']        = int(__addon_obj__.getSetting('metadata_scraper'))
+        self.settings['asset_scraper']           = int(__addon_obj__.getSetting('asset_scraper'))
 
-        self.settings['scraper_region']                = int(__addon_obj__.getSetting('scraper_region'))
-        self.settings['scraper_thumb_size']            = int(__addon_obj__.getSetting('scraper_thumb_size'))
-        self.settings['scraper_fanart_size']           = int(__addon_obj__.getSetting('scraper_fanart_size'))
-        self.settings['scraper_image_type']            = int(__addon_obj__.getSetting('scraper_image_type'))
-        self.settings['scraper_fanart_order']          = int(__addon_obj__.getSetting('scraper_fanart_order'))
+        self.settings['metadata_scraper_mode']   = int(__addon_obj__.getSetting('metadata_scraper_mode'))
+        self.settings['asset_scraper_mode']      = int(__addon_obj__.getSetting('asset_scraper_mode'))
 
+        # --- Scrapers ---
+        self.settings['scraper_region']          = int(__addon_obj__.getSetting('scraper_region'))
+        self.settings['scraper_thumb_size']      = int(__addon_obj__.getSetting('scraper_thumb_size'))
+        self.settings['scraper_fanart_size']     = int(__addon_obj__.getSetting('scraper_fanart_size'))
+        self.settings['scraper_image_type']      = int(__addon_obj__.getSetting('scraper_image_type'))
+        self.settings['scraper_fanart_order']    = int(__addon_obj__.getSetting('scraper_fanart_order'))
+
+        # --- Display ---
         self.settings['display_launcher_notify'] = True if __addon_obj__.getSetting('display_launcher_notify') == 'true' else False
-        self.settings['display_hide_finished']         = True if __addon_obj__.getSetting('display_hide_finished') == 'true' else False
-        self.settings['display_hide_title']            = True if __addon_obj__.getSetting('display_hide_title') == 'true' else False
-        self.settings['display_hide_year']             = True if __addon_obj__.getSetting('display_hide_year') == 'true' else False
-        self.settings['display_hide_genre']            = True if __addon_obj__.getSetting('display_hide_genre') == 'true' else False
-        self.settings['display_hide_studio']           = True if __addon_obj__.getSetting('display_hide_studio') == 'true' else False
+        self.settings['display_hide_finished']   = True if __addon_obj__.getSetting('display_hide_finished') == 'true' else False
+        self.settings['display_hide_title']      = True if __addon_obj__.getSetting('display_hide_title') == 'true' else False
+        self.settings['display_hide_year']       = True if __addon_obj__.getSetting('display_hide_year') == 'true' else False
+        self.settings['display_hide_genre']      = True if __addon_obj__.getSetting('display_hide_genre') == 'true' else False
+        self.settings['display_hide_studio']     = True if __addon_obj__.getSetting('display_hide_studio') == 'true' else False
 
-        self.settings['categories_asset_dir']          = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
-        self.settings['launchers_asset_dir']           = __addon_obj__.getSetting('launchers_asset_dir').decode('utf-8')
-        self.settings['favourites_asset_dir']          = __addon_obj__.getSetting('favourites_asset_dir').decode('utf-8')
+        # --- Paths ---
+        self.settings['categories_asset_dir']    = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
+        self.settings['launchers_asset_dir']     = __addon_obj__.getSetting('launchers_asset_dir').decode('utf-8')
+        self.settings['favourites_asset_dir']    = __addon_obj__.getSetting('favourites_asset_dir').decode('utf-8')
 
-        self.settings['media_state']                   = int(__addon_obj__.getSetting('media_state'))
-        self.settings['lirc_state']                    = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
-        self.settings['start_tempo']                   = int(round(float(__addon_obj__.getSetting('start_tempo'))))
-        self.settings['log_level']                     = int(__addon_obj__.getSetting('log_level'))
-        self.settings['show_batch_window']             = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
+        # --- Advanced ---
+        self.settings['media_state']             = int(__addon_obj__.getSetting('media_state'))
+        self.settings['lirc_state']              = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
+        self.settings['start_tempo']             = int(round(float(__addon_obj__.getSetting('start_tempo'))))
+        self.settings['log_level']               = int(__addon_obj__.getSetting('log_level'))
+        self.settings['show_batch_window']       = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
 
         # --- Example of how to transform a number into string ---
-        # self.settings['game_region']          = ['World', 'Europe', 'Japan', 'USA'][int(__addon_obj__.getSetting('game_region'))]
+        # self.settings['game_region'] = ['World', 'Europe', 'Japan', 'USA'][int(__addon_obj__.getSetting('game_region'))]
 
-        # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
-        # if self.settings['categories_thumb_dir']  == '': self.settings['categories_thumb_dir']  = DEFAULT_CAT_THUMB_DIR
-        # if self.settings['launchers_thumb_dir']   == '': self.settings['launchers_thumb_dir']   = DEFAULT_LAUN_THUMB_DIR
-        # if self.settings['favourites_thumb_dir']  == '': self.settings['favourites_thumb_dir']  = DEFAULT_FAV_THUMB_DIR
+        # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
+        if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir'] = DEFAULT_CAT_ASSET_DIR
+        if self.settings['launchers_asset_dir']   == '': self.settings['launchers_asset_dir']  = DEFAULT_LAUN_ASSET_DIR
+        if self.settings['favourites_asset_dir']  == '': self.settings['favourites_asset_dir'] = DEFAULT_FAV_ASSET_DIR
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
@@ -330,29 +329,27 @@ class Main:
     #
     # Load scrapers based on the user settings.
     # Pass settings to the scraper objects based on user preferences.
+    # Scrapers are loaded when needed, no always at main() as before. This will make the plugin
+    # a little bit faster.
     #
-    def _load_scrapers(self):
+    def _load_metadata_scraper(self):
         # Scraper objects are created and inserted into a list. This list order matches
         # exactly the number returned by the settings. If scrapers are changed make sure the
         # list in scrapers.py and in settings.xml have same values!
         self.scraper_metadata = scrapers_metadata[self.settings['metadata_scraper']]
-        self.scraper_thumb    = scrapers_thumb[self.settings['thumb_scraper']]
-        self.scraper_fanart   = scrapers_fanart[self.settings['fanart_scraper']]
-        log_verb('Loaded metadata scraper  {0}'.format(self.scraper_metadata.name))
-        log_verb('Loaded thumb scraper     {0}'.format(self.scraper_thumb.name))
-        log_verb('Loaded fanart scraper    {0}'.format(self.scraper_fanart.name))
+        log_verb('_load_metadata_scraper() Loaded metadata scraper {0}'.format(self.scraper_metadata.name))
 
         # Initialise metadata scraper plugin installation dir, for offline scrapers
         self.scraper_metadata.set_addon_dir(CURRENT_ADDON_DIR)
 
-        # Initialise options of the thumb scraper
-        region  = self.settings['scraper_region']
-        thumb_imgsize = self.settings['scraper_thumb_size']
-        self.scraper_thumb.set_options(region, thumb_imgsize)
+    def _load_asset_scraper(self):
+        self.scraper_asset = scrapers_asset[self.settings['asset_scraper']]
+        log_verb('_load_asset_scraper() Loaded asset scraper {0}'.format(self.scraper_asset.name))
 
-        # Initialise options of the fanart scraper
-        fanart_imgsize = self.settings['scraper_fanart_size']
-        self.scraper_fanart.set_options(region, fanart_imgsize)
+        # Initialise options of the thumb scraper
+        region = self.settings['scraper_region']
+        thumb_imgsize = self.settings['scraper_thumb_size']
+        self.scraper_asset.set_options(region, thumb_imgsize)
 
     def _command_add_new_category(self):
         dialog = xbmcgui.Dialog()
@@ -375,7 +372,7 @@ class Main:
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]['finished'] == True else 'Status: Unfinished'
         type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['m_name']),
-                             ['Edit Title/Genre/Description...', 'Edit Assets/Artwork...',
+                             ['Edit Metadata...', 'Edit Assets/Artwork...',
                               finished_display, 'Delete Category'])
 
         # --- Edit category metadata ---
@@ -493,28 +490,39 @@ class Main:
                                    u'Choose asset for Fanart (currently {0})'.format(asset_fanart)])
 
             # --- Edit Assets ---
+            # >> _gui_edit_asset() returns True if image was changed
+            # >> Category is changed using Python passign by assigment
             if type2 == 0:
-                if not self._gui_edit_category_image(ASSET_THUMB, categoryID): return
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_THUMB, category): return
             elif type2 == 1:
-                if not self._gui_edit_category_image(ASSET_FANART, categoryID): return
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_FANART, category): return
             elif type2 == 2:
-                if not self._gui_edit_category_image(ASSET_LOGO, categoryID): return
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_BANNER, category): return
             elif type2 == 3:
-                if not self._gui_edit_category_image(ASSET_POSTER, categoryID): return
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_FLYER, category): return
             elif type2 == 4:
-                if not self._gui_edit_category_image(ASSET_TRAILER, categoryID): return
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_TRAILER, category): return
 
             # >> Choose default thumb/fanart
             elif type2 == 5:
                 dialog = xbmcgui.Dialog()
                 type3 = dialog.select(u'Choose default Asset for Thumb',
-                                      [u'Thumbnail', u'Fanart', u'Logo', u'Poster'])
-                return
+                                      [u'Thumbnail', u'Fanart', u'Banner', u'Flyer'])
+
+                if   type3 == 0: self.categories[categoryID]['default_thumb'] = 's_thumb'
+                elif type3 == 1: self.categories[categoryID]['default_thumb'] = 's_fanart'
+                elif type3 == 2: self.categories[categoryID]['default_thumb'] = 's_banner'
+                elif type3 == 3: self.categories[categoryID]['default_thumb'] = 's_flyer'
+                else: return
 
             elif type2 == 6:
                 type3 = dialog.select(u'Choose default Asset for Fanart',
-                                      [u'Thumbnail', u'Fanart', u'Logo', u'Poster'])
-                return
+                                      [u'Thumbnail', u'Fanart', u'Banner', u'Flyer'])
+                if   type3 == 0: self.categories[categoryID]['default_fanart'] = 's_thumb'
+                elif type3 == 1: self.categories[categoryID]['default_fanart'] = 's_fanart'
+                elif type3 == 2: self.categories[categoryID]['default_fanart'] = 's_banner'
+                elif type3 == 3: self.categories[categoryID]['default_fanart'] = 's_flyer'
+                else: return
 
             # >> User canceled select dialog
             elif type2 < 0:
@@ -598,7 +606,7 @@ class Main:
     def _command_add_new_launcher(self, categoryID):
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Category ID not found.')
+            kodi_notify_warn('Category ID not found.')
             return
 
         # Show "Create New Launcher" dialog
@@ -654,13 +662,13 @@ class Main:
             # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or 
             # even launcher with the same name in the same category.
             launcherID      = misc_generate_random_SID()
-            category_name   = self.categories[categoryID]['name']
+            category_name   = self.categories[categoryID]['m_name']
             roms_base_noext = fs_get_ROMs_basename(category_name, title, launcherID)
 
             # --- Create new launcher. categories.xml is save at the end of this function ---
             launcherdata = fs_new_launcher()
             launcherdata['launcherID']      = launcherID
-            launcherdata['name']            = title
+            launcherdata['m_name']          = title
             launcherdata['platform']        = launcher_platform
             launcherdata['categoryID']      = categoryID
             launcherdata['application']     = app
@@ -731,13 +739,13 @@ class Main:
         finished_display = 'Status : Finished' if self.launchers[launcherID]['finished'] == True else 'Status : Unfinished'
         category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
         if self.launchers[launcherID]['rompath'] == '':
-            type = dialog.select('Select Action for launcher {0}'.format(title),
-                                 ['Modify Metadata...', 'Edit Assets/Artwork...',
+            type = dialog.select('Select action for launcher {0}'.format(title),
+                                 ['Edit Metadata...', 'Edit Assets/Artwork...',
                                   u'Change Category: {0}'.format(category_name), finished_display, 
                                   'Advanced Modifications...', 'Delete Launcher'])
         else:
-            type = dialog.select('Select Action for launcher {0}'.format(title),
-                                 ['Modify Metadata...', 'Edit Assets/Artwork...',
+            type = dialog.select('Select action for launcher {0}'.format(title),
+                                 ['Edit Metadata...', 'Edit Assets/Artwork...',
                                   u'Change Category: {0}'.format(category_name), finished_display, 
                                   'Manage ROM List...', 'Manage ROM Asset directories...',
                                   'Advanced Modifications...', 'Delete Launcher'])
@@ -747,7 +755,7 @@ class Main:
         if type == type_nb:
             dialog = xbmcgui.Dialog()
             desc_str = text_limit_string(self.launchers[launcherID]['m_plot'], DESCRIPTION_MAXSIZE)
-            type2 = dialog.select(u'Modify Launcher Metadata',
+            type2 = dialog.select(u'Edit Launcher Metadata',
                                   [u'Scrape from {0}...'.format(self.scraper_metadata.fancy_name),
                                    u'Import metadata from NFO (automatic)',
                                    u'Import metadata from NFO (browse NFO)...',
@@ -850,10 +858,10 @@ class Main:
             elif type2 < 0:
                 return
 
-         # --- Edit Launcher Asstes/Artwork ---
+        # --- Edit Launcher Assets/Artwork ---
         type_nb = type_nb + 1
         if type == type_nb:
-            launcher = self.categories[categoryID]
+            launcher = self.launchers[launcherID]
             status_thumb_str   = 'HAVE' if launcher['s_thumb'] else 'MISSING'
             status_fanart_str  = 'HAVE' if launcher['s_fanart'] else 'MISSING'
             status_banner_str  = 'HAVE' if launcher['s_banner'] else 'MISSING'
@@ -871,31 +879,39 @@ class Main:
                                    u'Choose asset for Thumb (currently {0})'.format(asset_thumb), 
                                    u'Choose asset for Fanart (currently {0})'.format(asset_fanart)])
             # --- Edit Assets ---
-            # >> _gui_edit function returns True if image was changed
-            # >> Launcher is change using Python passign by assigment
-            # if not self._gui_edit_image(IMAGE_THUMB, KIND_LAUNCHER, self.launchers, launcherID): return
+            # >> _gui_edit_asset() returns True if image was changed
+            # >> Launcher is changed using Python passign by assigment
             if type2 == 0:
-                if not self._gui_edit_category_image(ASSET_THUMB, categoryID): return
+                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_THUMB, launcher): return
             elif type2 == 1:
-                if not self._gui_edit_category_image(ASSET_FANART, categoryID): return
+                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_FANART, launcher): return
             elif type2 == 2:
-                if not self._gui_edit_category_image(ASSET_LOGO, categoryID): return
+                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_BANNER, launcher): return
             elif type2 == 3:
-                if not self._gui_edit_category_image(ASSET_POSTER, categoryID): return
+                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_FLYER, launcher): return
             elif type2 == 4:
-                if not self._gui_edit_category_image(ASSET_TRAILER, categoryID): return
+                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_TRAILER, launcher): return
 
             # >> Choose default thumb/fanart
             elif type2 == 5:
                 dialog = xbmcgui.Dialog()
                 type3 = dialog.select(u'Choose default Asset for Thumb',
-                                      [u'Thumbnail', u'Fanart', u'Logo', u'Poster'])
-                return
+                                      [u'Thumbnail', u'Fanart', u'Banner', u'Flyer'])
+
+                if   type3 == 0: self.launchers[launcherID]['default_thumb'] = 's_thumb'
+                elif type3 == 1: self.launchers[launcherID]['default_thumb'] = 's_fanart'
+                elif type3 == 2: self.launchers[launcherID]['default_thumb'] = 's_banner'
+                elif type3 == 3: self.launchers[launcherID]['default_thumb'] = 's_flyer'
+                else: return
 
             elif type2 == 6:
                 type3 = dialog.select(u'Choose default Asset for Fanart',
-                                      [u'Thumbnail', u'Fanart', u'Logo', u'Poster'])
-                return
+                                      [u'Thumbnail', u'Fanart', u'Banner', u'Flyer'])
+                if   type3 == 0: self.launchers[launcherID]['default_fanart'] = 's_thumb'
+                elif type3 == 1: self.launchers[launcherID]['default_fanart'] = 's_fanart'
+                elif type3 == 2: self.launchers[launcherID]['default_fanart'] = 's_banner'
+                elif type3 == 3: self.launchers[launcherID]['default_fanart'] = 's_flyer'
+                else: return
 
             # >> User canceled select dialog
             elif type2 < 0:
@@ -1008,8 +1024,7 @@ class Main:
                     log_info('No-Intro Have ROMs    {0:6d}'.format(num_have))
                     log_info('No-Intro Miss ROMs    {0:6d}'.format(num_miss))
                     log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
-                    kodi_notify(
-                                'Audit finished. Have {0}/Miss {1}/Unknown {2}'.format(num_have, num_miss, num_unknown))
+                    kodi_notify('Audit finished. Have {0}/Miss {1}/Unknown {2}'.format(num_have, num_miss, num_unknown))
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Also save categories/launchers to update timestamp
@@ -1130,13 +1145,13 @@ class Main:
 
             # --- ROMS launcher -------------------------------------------------------------------
             if self.launchers[launcherID]['rompath'] == '':
-                type2 = dialog.select('Advanced Modifications',
+                type2 = dialog.select('Advanced Launcher Modification',
                                       [u"Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        u"Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        u"Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
             # --- Standalone launcher -------------------------------------------------------------
             else:
-                type2 = dialog.select('Advanced Modifications',
+                type2 = dialog.select('Advanced Launcher Modification',
                                       [u"Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        u"Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        u"Change ROMs Path: '{0}'".format(self.launchers[launcherID]['rompath']),
@@ -1218,7 +1233,7 @@ class Main:
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno('Advanced Emulator Launcher',
                            u"Launcher '{0}' has {1} ROMs. Are you sure you want to delete them " \
-                            'from AEL database?'.format(self.launchers[launcherID]['name'], num_roms))
+                            'from AEL database?'.format(self.launchers[launcherID]['m_name'], num_roms))
         if ret:
             # Just remove ROMs file. Keep the value of roms_base_noext to be reused when user add more ROMs.
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
@@ -1231,7 +1246,7 @@ class Main:
                     os.remove(roms_file_path)
                 except OSError:
                     log_error(u'_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_file_path))
-                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs database')
+                    kodi_notify_warn('OSError exception deleting ROMs database')
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_refresh_container()
 
@@ -1245,7 +1260,7 @@ class Main:
         if rompath == '':
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]['name']),
+                               'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]['m_name']),
                                'Are you sure you want to delete it?')
         # ROMs launcher
         else:
@@ -1253,7 +1268,7 @@ class Main:
             num_roms = len(roms)
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]['name'], num_roms),
+                               'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]['m_name'], num_roms),
                                'Are you sure you want to delete it?')
         if ret:
             # Remove XML file and delete launcher object, only if launcher is not empty
@@ -1264,10 +1279,10 @@ class Main:
                 roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
                 log_debug('Removing ROMs XML "{0}"'.format(roms_file_path))
                 try:
-                    os.remove(roms_file_path)
+                    if os.path.isfile(roms_file_path): os.remove(roms_file_path)
                 except OSError:
                     log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_file_path))
-                    kodi_notify_warn('Advanced Emulator Launcher', 'OSError exception deleting ROMs XML')
+                    kodi_notify_warn('OSError exception deleting ROMs XML')
 
             categoryID = self.launchers[launcherID]['categoryID']
             self.launchers.pop(launcherID)
@@ -1292,23 +1307,27 @@ class Main:
 
     #
     # Former _edit_rom()
-    # Note that categoryID = VCATEGORY_FAV_ID, launcherID = VLAUNCHER_FAV_ID if we are editing 
+    # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID if we are editing 
     # a ROM in Favourites.
     #
     def _command_edit_rom(self, categoryID, launcherID, romID):
         # --- Load ROMs ---
-        if launcherID == VLAUNCHER_FAV_ID:
+        if launcherID == VLAUNCHER_FAVOURITES_ID:
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         else:
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
             roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
 
+        # --- Load scrapers ---
+        self._load_metadata_scraper()
+        self._load_asset_scraper()
+
         # --- Show a dialog with ROM editing options ---
-        rom_name = roms[romID]['name']
+        rom_name = roms[romID]['m_name']
         finished_display = 'Status: Finished' if roms[romID]['finished'] == True else 'Status: Unfinished'
         dialog = xbmcgui.Dialog()
         type = dialog.select('Edit ROM {0}'.format(rom_name),
-                            ['Edit Metadata...', 'Change Thumbnail Image...', 'Change Fanart Image...',
+                            ['Edit Metadata...', 'Edit Assets/Artwork...',
                             finished_display, 'Advanced Modifications...'])
 
         # --- Edit ROM metadata ---
@@ -1318,10 +1337,10 @@ class Main:
             type2 = dialog.select('Modify ROM metadata',
                                   ['Scrape from {0}...'.format(self.scraper_metadata.fancy_name),
                                    'Import metadata from NFO file',
-                                   "Edit Title: '{0}'".format(roms[romID]['name']),
-                                   "Edit Release Year: '{0}'".format(roms[romID]['year']),
-                                   "Edit Studio: '{0}'".format(roms[romID]['studio']),
-                                   "Edit Genre: '{0}'".format(roms[romID]['genre']),
+                                   "Edit Title: '{0}'".format(roms[romID]['m_name']),
+                                   "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
+                                   "Edit Studio: '{0}'".format(roms[romID]['m_studio']),
+                                   "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
                                    "Edit Plot: '{0}'".format(desc_str),
                                    'Load Plot from TXT file ...',
                                    'Save metadata to NFO file'])
@@ -1402,34 +1421,109 @@ class Main:
             elif type2 < 0:
                 return
 
-        # Edit ROM thumb and fanart
+        # --- Edit Launcher Assets/Artwork ---
         elif type == 1:
-            # >> Returns True if image was changed
-            # >> Launcher is change using Python passign by assigment
-            if not self._gui_edit_image(IMAGE_THUMB, KIND_ROM, roms, romID, launcherID): return
+            rom = roms[romID]
+            launcher = self.launchers[launcherID]
+            status_title_str     = 'HAVE' if rom['s_title'] else 'MISSING'
+            status_snap_str      = 'HAVE' if rom['s_snap'] else 'MISSING'
+            status_fanart_str    = 'HAVE' if rom['s_fanart'] else 'MISSING'
+            status_banner_str    = 'HAVE' if rom['s_banner'] else 'MISSING'
+            status_clearlogo_str = 'HAVE' if rom['s_clearlogo'] else 'MISSING'
+            status_boxfront_str  = 'HAVE' if rom['s_boxfront'] else 'MISSING'
+            status_boxback_str   = 'HAVE' if rom['s_boxback'] else 'MISSING'
+            status_cartridge_str = 'HAVE' if rom['s_cartridge'] else 'MISSING'
+            status_flyer_str     = 'HAVE' if rom['s_flyer'] else 'MISSING'
+            status_map_str       = 'HAVE' if rom['s_map'] else 'MISSING'
+            status_manual_str    = 'HAVE' if rom['s_manual'] else 'MISSING'
+            status_trailer_str   = 'HAVE' if rom['s_trailer'] else 'MISSING'
+            asset_thumb  = assets_get_thumb_fallback_str(rom)
+            asset_fanart = assets_get_fanart_fallback_str(rom)
+            dialog = xbmcgui.Dialog()
+            type2 = dialog.select(u'Edit Launcher Assets/Artwork',
+                                  [u"Edit Title ({0})...".format(status_title_str),
+                                   u"Edit Snap ({0})...".format(status_snap_str),
+                                   u"Edit Fanart ({0})...".format(status_fanart_str),
+                                   u"Edit Banner ({0})...".format(status_banner_str),
+                                   u"Edit Clearlogo ({0})...".format(status_clearlogo_str),
+                                   u"Edit Boxfront ({0})...".format(status_boxfront_str),
+                                   u"Edit Boxback ({0})...".format(status_boxback_str),
+                                   u"Edit Cartridge ({0})...".format(status_cartridge_str),
+                                   u"Edit Flyer ({0})...".format(status_flyer_str),
+                                   u"Edit Map ({0})...".format(status_map_str),
+                                   u"Edit Manual ({0})...".format(status_manual_str),
+                                   u"Edit Trailer ({0})...".format(status_trailer_str),
+                                   u'Choose asset for Thumb (currently {0})'.format(asset_thumb), 
+                                   u'Choose asset for Fanart (currently {0})'.format(asset_fanart)])
+            # --- Edit Assets ---
+            # >> _gui_edit_asset() returns True if image was changed
+            # >> ROM is changed using Python passign by assigment
+            if type2 == 0:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_TITLE, rom, launcher): return
+            elif type2 == 1:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_SNAP, rom, launcher): return
+            elif type2 == 2:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_FANART, rom, launcher): return
+            elif type2 == 3:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_BANNER, rom, launcher): return
+            elif type2 == 4:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_CLEARLOGO, rom, launcher): return
+            elif type2 == 5:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXFRONT, rom, launcher): return
+            elif type2 == 6:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXBACK, rom, launcher): return
+            elif type2 == 7:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_CARTRIDGE, rom, launcher): return
+            elif type2 == 8:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_FLYER, rom, launcher): return
+            elif type2 == 9:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_MAP, rom, launcher): return
+            elif type2 == 10:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_MANUAL, rom, launcher): return
+            elif type2 == 11:
+                if not self._gui_edit_asset(KIND_ROM, ASSET_TRAILER, rom, launcher): return
 
+            # >> Choose default thumb/fanart
+            elif type2 == 12:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select(u'Choose default Asset for Thumb',
+                                      [u'Boxfront', u'Title', u'Boxback', u'Cartridge'])
+
+                if   type3 == 0: roms[romID]['default_thumb'] = 's_boxfront'
+                elif type3 == 1: roms[romID]['default_thumb'] = 's_title'
+                elif type3 == 2: roms[romID]['default_thumb'] = 's_boxback'
+                elif type3 == 3: roms[romID]['default_thumb'] = 's_cartridge'
+                else: return
+
+            elif type2 == 13:
+                type3 = dialog.select(u'Choose default Asset for Fanart',
+                                      [u'Fanart', u'Snap', u'Flyer'])
+                if   type3 == 0: roms[romID]['default_fanart'] = 's_fanart'
+                elif type3 == 1: roms[romID]['default_fanart'] = 's_snap'
+                elif type3 == 2: roms[romID]['default_fanart'] = 's_flyer'
+                else: return
+
+            # >> User canceled select dialog
+            elif type2 < 0:
+                return
+
+        # --- Edit status ---
         elif type == 2:
-            if not self._gui_edit_image(IMAGE_FANART, KIND_ROM, roms, romID, launcherID): return
-
-        # Edit status
-        elif type == 3:
             finished = roms[romID]['finished']
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
             roms[romID]['finished'] = finished
             kodi_dialog_OK('Advanced Emulator Launcher Information',
-                           'ROM "{0}" status is now {1}'.format(roms[romID]["name"], finished_display))
+                           "ROM '{0}' status is now {1}".format(roms[romID]['name'], finished_display))
 
-        # Advanced Modifications
-        elif type == 4:
+        # --- Advanced Modifications ---
+        elif type == 3:
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Advanced Modifications',
-                                  ['Change File : %s' % roms[romID]["filename"],
-                                   'Alternative application : %s' % roms[romID]["altapp"],
-                                   'Alternative arguments : %s' % roms[romID]["altarg"],
-                                   'Change Trailer file : %s' % roms[romID]["trailer"],
-                                   'Change Extra-fanarts Path : %s' % roms[romID]["custom"]])
-            # Selection of the item file
+            type2 = dialog.select('Advanced ROM Modifications',
+                                  [u"Change ROM file: '{0}'".format(roms[romID]['filename']),
+                                   u"Alternative application: '{0}'".format(roms[romID]['altapp']),
+                                   u"Alternative arguments: '{0}'".format(roms[romID]['altarg']) ])
+            # >> Selection of the item file
             if type2 == 0:
                 filename = roms[romID]['filename']
                 romext   = roms[romID]['romext']
@@ -1437,7 +1531,7 @@ class Main:
                                                     False, False, filename)
                 if not item_file: return
                 roms[romID]['filename'] = item_file
-            # Custom launcher application file path
+            # >> Alternative launcher application file path
             elif type2 == 1:
                 filter_str = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
                 altapp = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
@@ -1446,37 +1540,23 @@ class Main:
                 # Returns empty browse if dialog was canceled.
                 if not altapp: return
                 roms[romID]['altapp'] = altapp
-            # Custom launcher arguments
+            # >> Alternative launcher arguments
             elif type2 == 2:
                 keyboard = xbmc.Keyboard(roms[romID]['altarg'], 'Edit ROM custom application arguments')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['altarg'] = keyboard.getText()
-            # Selection of the rom trailer file
-            elif type2 == 3:
-                trailer = xbmcgui.Dialog().browse(1, 'Select ROM Trailer file',
-                                                  'files', '.mp4|.mpg|.avi|.wmv|.mkv|.flv',
-                                                  False, False, roms[romID]['trailer'])
-                if not trailer: return
-                roms[romID]['trailer'] = trailer
-            # Selection of the rom customs path
-            elif type2 == 4:
-                custom = xbmcgui.Dialog().browse(0, 'Select ROM Extra-fanarts path', 'files', '',
-                                                 False, False, roms[romID]['custom'])
-                if not custom: return
-                roms[romID]['custom'] = custom
-
             # >> User canceled select dialog
             elif type2 < 0:
                 return
 
-        # User canceled select dialog
+        # --- User canceled select dialog ---
         elif type < 0:
             return
 
         # --- Save ROMs or Favourites ROMs ---
         # Always save if we reach this point of the function
-        if launcherID == VLAUNCHER_FAV_ID:
+        if launcherID == VLAUNCHER_FAVOURITES_ID:
             fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
         else:
             # >> Also save categories/launchers to update timestamp
@@ -1554,6 +1634,9 @@ class Main:
         # --- AEL Favourites special category ---
         self._gui_render_category_favourites_row()
 
+        # --- AEL Collections special category ---
+        self._gui_render_category_collections_row()
+
         # --- AEL Virtual Categories ---
         if not self.settings['display_hide_title']:  self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         if not self.settings['display_hide_year']:   self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
@@ -1572,7 +1655,7 @@ class Main:
             return
 
         # >> For every category, add it to the listbox. Order alphabetically by name
-        for key in sorted(self.categories, key = lambda x : self.categories[x]['name']):
+        for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
             self._gui_render_category_row(self.categories[key], key)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -1596,7 +1679,7 @@ class Main:
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
-        categoryID = category_dic['categoryID']
+        categoryID = category_dic['id']
         commands.append(('View Category data',  self._misc_url_RunPlugin('VIEW_CATEGORY', categoryID), ))
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
         commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID), ))
@@ -1619,9 +1702,8 @@ class Main:
         fav_banner = ''
         fav_flyer = ''
         listitem = xbmcgui.ListItem(fav_name)
-        listitem.setInfo('video', { 'title': fav_name,             'genre' : 'AEL Favourites',
-                                    'plot' : 'AEL Favourite ROMs', 'overlay' : 4 } )
-        # --- Set Virtual Launcher artwork ---
+        listitem.setInfo('video', {'title': fav_name,             'genre' : 'AEL Favourites',
+                                   'plot' : 'AEL Favourite ROMs', 'overlay' : 4 } )
         listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
 
         # --- Create context menu ---
@@ -1633,7 +1715,29 @@ class Main:
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_FAVOURITES')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_category_collections_row(self):
+        collections_name   = '{ROM Collections}'
+        collections_thumb  = ''
+        collections_fanart = ''
+        collections_banner = ''
+        collections_flyer  = ''
+        collections_label  = 'Title'
+        listitem = xbmcgui.ListItem(collections_name)
+        listitem.setInfo('video', {'title': collections_name,         'genre' : 'AEL Collections',
+                                   'plot' : 'AEL virtual category', 'overlay': 4 } )
+        listitem.setArt({'thumb' : collections_thumb, 'fanart' : collections_fanart, 'banner' : collections_banner, 'poster' : collections_flyer})
+
+        commands = []
+        commands.append(('Create New Collection', self._misc_url_RunPlugin('CREATE_COLLECTION'), ))
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        listitem.addContextMenuItems(commands)
+
+        url_str = self._misc_url('SHOW_COLLECTIONS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_virtual_category_row(self, virtual_category_kind):
         if virtual_category_kind == VCATEGORY_TITLE_ID:
@@ -1669,9 +1773,8 @@ class Main:
             kodi_dialog_OK('AEL', 'Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             return
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', { 'title': vcategory_name,         'genre' : 'AEL Virtual Launcher',
-                                    'plot' : 'AEL virtual category', 'overlay': 4 } )
-        # Set ListItem artwork
+        listitem.setInfo('video', {'title': vcategory_name,         'genre' : 'AEL Virtual Launcher',
+                                   'plot' : 'AEL virtual category', 'overlay': 4 } )
         listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart, 'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
         commands = []
@@ -1684,7 +1787,7 @@ class Main:
         listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     #
     # Former  _get_launchers
@@ -1696,7 +1799,7 @@ class Main:
         for launcher_id in self.launchers:
             if self.launchers[launcher_id]['categoryID'] == categoryID: launcher_IDs.append(launcher_id)
         if not launcher_IDs:
-            category_name = self.categories[categoryID]['name']
+            category_name = self.categories[categoryID]['m_name']
             kodi_notify('Category {0} has no launchers. Add launchers first'.format(category_name))
             # NOTE If we return at this point Kodi produces and error:
             # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
@@ -1713,10 +1816,15 @@ class Main:
             # 
             # Container.Refresh does not work either...
             # kodi_refresh_container()
+            #
+            # SOLUTION: call xbmcplugin.endOfDirectory(). It will create an empty ListItem wiht only '..' entry.
+            #           User cannot open a context menu and the only option is to go back to categories display.
+            #           No errors in Kodi log!
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
         # >> Render launcher rows of this launcher
-        for key in sorted(self.launchers, key = lambda x : self.launchers[x]['application']):
+        for key in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             if self.launchers[key]['categoryID'] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -1762,7 +1870,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        launcherID = launcher_dic['launcherID']
+        launcherID = launcher_dic['id']
         categoryID = launcher_dic['categoryID']
         commands.append(('View Launcher data',   self._misc_url_RunPlugin('VIEW_LAUNCHER', categoryID, launcherID), ))
         commands.append(('View Launcher report', self._misc_url_RunPlugin('VIEW_LAUNCHER_REPORT', categoryID, launcherID), ))
@@ -1796,15 +1904,15 @@ class Main:
 
         # Check if XML file with ROMs exist
         if not os.path.isfile(roms_file_path):
-            kodi_notify('Launcher XML missing. Add items to launcher.')
-            kodi_refresh_container()
+            kodi_notify('Launcher XML/JSON missing. Add items to launcher.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
         # --- Load ROMs ---
         roms = fs_load_ROMs(ROMS_DIR, selectedLauncher['roms_base_noext'])
         if not roms:
-            kodi_notify('Launcher XML empty. Add items to launcher.')
-            kodi_refresh_container()
+            kodi_notify('Launcher XML/JSON empty. Add items to launcher.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
         # --- Load favourites ---
@@ -1831,7 +1939,7 @@ class Main:
         # If we are rendering Favourites then mark fav_status
         defined_fanart = u''
         platform = u''
-        if categoryID == VCATEGORY_FAV_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID:
             defined_fanart = rom['fanart']
             platform = rom['platform']
             if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom['name'])
@@ -1852,7 +1960,8 @@ class Main:
         # >> If rendering a normal launcher OR virtual launcher then mark nointro_status and rom_is_in_favourites
         else:
             # >> If ROM has no fanart then use launcher fanart
-            defined_fanart = rom['fanart'] if rom['fanart'] != '' else self.launchers[launcherID]['fanart']
+            # defined_fanart = rom['fanart'] if rom['fanart'] != '' else self.launchers[launcherID]['fanart']
+            defined_fanart = u''
             platform = self.launchers[launcherID]['platform']
             # >> Mark No-Intro status
             if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom['name'])
@@ -1869,7 +1978,7 @@ class Main:
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
 
         # --- Add ROM to lisitem ---
-        ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
+        ICON_OVERLAY = 5 if rom['finished'] else 4
         listitem = xbmcgui.ListItem(rom['m_name'])
 
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
@@ -1887,7 +1996,7 @@ class Main:
                          'fanart'   : rom['s_fanart'],      'banner'  : rom['s_banner'],  'clearlogo' : rom['s_clearlogo'],
                          'boxfront' : rom['s_boxfront'],    'boxback' : rom['s_boxback'], 'cartridge' : rom['s_cartridge'],
                          'poster'   : rom['s_flyer'] })
-        if rom['s_thumb']: listitem.setArt({'thumb' : rom['s_thumb']})
+        # if rom['s_thumb']: listitem.setArt({'thumb' : rom['s_thumb']})
 
         # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
         # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
@@ -1904,14 +2013,13 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        if categoryID == VCATEGORY_FAV_ID:
-            commands.append(('View Favourite ROM data',    self._misc_url_RunPlugin('VIEW_ROM', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
-            commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
-            commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
-            commands.append(('Search Favourites',          self._misc_url_RunPlugin('SEARCH_LAUNCHER', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID), ))
-            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', VCATEGORY_FAV_ID, VLAUNCHER_FAV_ID, romID), ))
-        elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
-             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID:
+            commands.append(('View Favourite ROM data',    self._misc_url_RunPlugin('VIEW_ROM', VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAV_ID, romID), ))
+            commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV', VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAV_ID, romID), ))
+            commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM', VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAV_ID, romID), ))
+            commands.append(('Search Favourites',          self._misc_url_RunPlugin('SEARCH_LAUNCHER', VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAV_ID), ))
+            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAV_ID, romID), ))
+        elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
             commands.append(('View Virtual Launcher ROM data', self._misc_url_RunPlugin('VIEW_ROM', categoryID, launcherID, romID), ))
             commands.append(('Add ROM to AEL Favourites',      self._misc_url_RunPlugin('ADD_TO_FAV', categoryID, launcherID, romID), ))
         else:
@@ -2485,9 +2593,8 @@ class Main:
     def _command_view_ROM(self, categoryID, launcherID, romID):
         # --- Read ROMs ---
         regular_launcher = True
-        if categoryID == VCATEGORY_FAV_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID:
             log_info('_command_view_ROM() Viewing ROM in Favourites...')
-            # roms = fs_load_Favourites_XML(FAV_XML_FILE_PATH)
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             rom = roms[romID]
             window_title = 'Favourite ROM data'
@@ -2640,26 +2747,40 @@ class Main:
     def _misc_print_string_ROM(self, rom):
         info_text  = u''
         info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(rom['id'])
-        info_text += u"[COLOR violet]name[/COLOR]: '{0}'\n".format(rom['name'])
+        
+        info_text += u"[COLOR violet]m_name[/COLOR]: '{0}'\n".format(rom['m_name'])
+        info_text += u"[COLOR violet]m_year[/COLOR]: '{0}'\n".format(rom['m_year'])
+        info_text += u"[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(rom['m_genre'])
+        info_text += u"[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(rom['m_plot'])
+        info_text += u"[COLOR violet]m_studio[/COLOR]: '{0}'\n".format(rom['m_studio'])
+        info_text += u"[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(rom['m_rating'])
+
         info_text += u"[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])
-        info_text += u"[COLOR violet]thumb[/COLOR]: '{0}'\n".format(rom['thumb'])
-        info_text += u"[COLOR violet]fanart[/COLOR]: '{0}'\n".format(rom['fanart'])
-        info_text += u"[COLOR violet]trailer[/COLOR]: '{0}'\n".format(rom['trailer'])
-        info_text += u"[COLOR violet]custom[/COLOR]: '{0}'\n".format(rom['custom'])
-        info_text += u"[COLOR violet]genre[/COLOR]: '{0}'\n".format(rom['genre'])
-        info_text += u"[COLOR violet]year[/COLOR]: '{0}'\n".format(rom['year'])
-        info_text += u"[COLOR violet]studio[/COLOR]: '{0}'\n".format(rom['studio'])
-        info_text += u"[COLOR violet]plot[/COLOR]: '{0}'\n".format(rom['plot'])
         info_text += u"[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom['altapp'])
         info_text += u"[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
         info_text += u"[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
         info_text += u"[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
+        info_text += u"[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(rom['default_thumb'])
+        info_text += u"[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(rom['default_fanart'])
+
+        info_text += u"[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
+        info_text += u"[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
+        info_text += u"[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(rom['s_fanart'])
+        info_text += u"[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(rom['s_banner'])
+        info_text += u"[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(rom['s_clearlogo'])
+        info_text += u"[COLOR violet]s_boxfront[/COLOR]: '{0}'\n".format(rom['s_boxfront'])
+        info_text += u"[COLOR violet]s_boxback[/COLOR]: '{0}'\n".format(rom['s_boxback'])
+        info_text += u"[COLOR violet]s_cartridge[/COLOR]: '{0}'\n".format(rom['s_cartridge'])
+        info_text += u"[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(rom['s_flyer'])
+        info_text += u"[COLOR violet]s_map[/COLOR]: '{0}'\n".format(rom['s_map'])
+        info_text += u"[COLOR violet]s_manual[/COLOR]: '{0}'\n".format(rom['s_manual'])
+        info_text += u"[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(rom['s_trailer'])
 
         return info_text
 
     def _misc_print_string_Launcher(self, launcher):
         info_text  = u''
-        info_text += u"[COLOR violet]launcherID[/COLOR]: '{0}'\n".format(launcher['launcherID'])
+        info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(launcher['id'])
         info_text += u"[COLOR violet]m_name[/COLOR]: '{0}'\n".format(launcher['m_name'])
         info_text += u"[COLOR violet]m_year[/COLOR]: '{0}'\n".format(launcher['m_year'])        
         info_text += u"[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(launcher['m_genre'])
@@ -2704,7 +2825,7 @@ class Main:
 
     def _misc_print_string_Category(self, category):
         info_text  = u''
-        info_text += u"[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(category['categoryID'])
+        info_text += u"[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
         info_text += u"[COLOR violet]m_name[/COLOR]: '{0}'\n".format(category['m_name'])
         info_text += u"[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(category['m_genre'])
         info_text += u"[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(category['m_plot'])
@@ -2725,7 +2846,7 @@ class Main:
         category = self.categories[categoryID]
         launcher = self.launchers[launcherID]
         if not launcher['rompath']:
-            kodi_notify_warn(AEL_NAME_STR, 'Cannot create report for standalone launcher')
+            kodi_notify_warn('Cannot create report for standalone launcher')
             return
 
         # --- Get report filename ---
@@ -3103,7 +3224,7 @@ class Main:
         # --- Check for errors and abort if errors found ---
         if not os.path.exists(application):
             log_error('Launching app not found "{0}"'.format(application))
-            kodi_notify_warn(AEL_NAME_STR, 'App {0} not found.'.format(application))
+            kodi_notify_warn('App {0} not found.'.format(application))
             return
 
         # --- Do stuff before execution ---
@@ -3132,7 +3253,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system('"{0}" {1}'.format(application, arguments))
         else:
-            kodi_notify_warn(AEL_NAME_STR, 'Cannot determine the running platform')
+            kodi_notify_warn('Cannot determine the running platform')
 
         # --- Do stuff after execution ---
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
@@ -3220,12 +3341,12 @@ class Main:
         # --- Check for errors and abort if found ---
         if not os.path.exists(application):
             log_error('Launching app not found "{0}"'.format(application))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Launching app not found {0}'.format(application))
+            kodi_notify_warn('Launching app not found {0}'.format(application))
             return
 
         if not os.path.exists(romfile):
             log_error('ROM not found "{0}"'.format(romfile))
-            kodi_notify_warn('Advanced Emulator Launcher', 'ROM not found {0}'.format(romfile))
+            kodi_notify_warn('ROM not found {0}'.format(romfile))
             return
 
         # --- Escape quotes and double quotes in romfile ---
@@ -3275,7 +3396,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             os.system('"{0}" {1}'.format(application, arguments))
         else:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot determine the running platform')
+            kodi_notify_warn('Cannot determine the running platform')
 
         # Do stuff after application execution
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
@@ -3469,10 +3590,10 @@ class Main:
             file.close()
         except OSError:
             log_error('Cannot write Launcher Report file (OSError)')
-            kodi_notify_warn('AEL Error', 'Cannot write Launcher Report (OSError)')
+            kodi_notify_warn('Cannot write Launcher Report (OSError)')
         except IOError:
             log_error('Cannot write categories.xml file (IOError)')
-            kodi_notify_warn('AEL Error', 'Cannot write Launcher Report (IOError)')
+            kodi_notify_warn('Cannot write Launcher Report (IOError)')
 
     #
     # Deletes missing ROMs
@@ -3643,14 +3764,14 @@ class Main:
     # Note that actually this command is "Add/Update" ROMs.
     #
     def _roms_import_roms(self, launcherID):
-        log_debug('_roms_import_roms() ========== BEGIN ==========')
+        log_debug('========== _roms_import_roms() BEGIN ==========')
 
-        # Get game system, thumbnails and fanarts paths from launcher
+        # --- Get information from launcher ---
         selectedLauncher = self.launchers[launcherID]
         launcher_app     = selectedLauncher['application']
         launcher_path    = selectedLauncher['rompath']
         launcher_exts    = selectedLauncher['romext']
-        log_debug('Launcher "{0}" selected'.format(selectedLauncher['name']))
+        log_debug('Launcher "{0}" selected'.format(selectedLauncher['m_name']))
         log_debug('launcher_app  = {0}'.format(launcher_app))
         log_debug('launcher_path = {0}'.format(launcher_path))
         log_debug('launcher_exts = {0}'.format(launcher_exts))
@@ -3660,6 +3781,10 @@ class Main:
         # If file does not exist or is empty then return an empty dictionary.
         roms = fs_load_ROMs(ROMS_DIR, selectedLauncher['roms_base_noext'])
         num_roms = len(roms)
+
+        # --- Load metadata/asset scrapers ---
+        self._load_metadata_scraper()
+        self._load_asset_scraper()
 
         # --- Progress dialog ---
         # Put in in object variables so it can be access in helper functions.
@@ -3818,7 +3943,7 @@ class Main:
 
         # ~~~ Notify user ~~~
         kodi_notify('Added {0} new ROMs'.format(num_new_roms))
-        log_debug('_roms_import_roms() ========== END ==========')
+        log_debug('========== _roms_import_roms() END ==========')
         kodi_refresh_container()
 
     def _roms_process_scanned_ROM(self, launcherID, ROM):
@@ -3898,8 +4023,8 @@ class Main:
             results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
             log_debug('Metadata scraper found {0} result/s'.format(len(results)))
             if results:
-                # id="metadata_mode" values="Semi-automatic|Automatic"
-                if self.settings['metadata_mode'] == 0:
+                # id="metadata_scraper_mode" values="Semi-automatic|Automatic"
+                if self.settings['metadata_scraper_mode'] == 0:
                     log_debug('Metadata semi-automatic scraping')
                     # Close progress dialog (and check it was not canceled)
                     if self.pDialog.iscanceled(): self.pDialog_canceled = True
@@ -3915,11 +4040,11 @@ class Main:
 
                     # Open progress dialog again
                     self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
-                elif self.settings['metadata_mode'] == 1:
+                elif self.settings['metadata_scraper_mode'] == 1:
                     log_debug('Metadata automatic scraping. Selecting first result.')
                     selectgame = 0
                 else:
-                    log_error('Invalid metadata_mode {0}'.format(self.settings['metadata_mode']))
+                    log_error('Invalid metadata_scraper_mode {0}'.format(self.settings['metadata_scraper_mode']))
                     selectgame = 0
                 scraper_text = 'Scraping metadata with {0}. Game selected. Getting metadata...'.format(self.scraper_metadata.fancy_name)
                 self.pDialog.update(self.progress_number, self.file_text, scraper_text)
@@ -3946,118 +4071,162 @@ class Main:
         else:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
-        # ~~~~~ Search for local artwork ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # If thumbs/fanart have the same path, then assign names
-        #   (f_base_noext)_thumb,
-        #   (f_base_noext)_fanart
-        # Otherwise, thumb/fanart name is same as ROM, but different extension.
-        # If no local artwork is found them names are empty strings ''
-        thumb_path  = launcher['thumbpath']
-        fanart_path = launcher['fanartpath']
-        thumb_path_noext  = misc_get_thumb_path_noext(thumb_path, fanart_path, ROM.base_noext)
-        fanart_path_noext = misc_get_fanart_path_noext(thumb_path, fanart_path, ROM.base_noext)
-        # log_debug('thumb_path_noext  = "{0}"'.format(thumb_path_noext))
-        # log_debug('fanart_path_noext = "{0}"'.format(fanart_path_noext))
+        # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        A_title     = assets_get_info_scheme_A(ASSET_TITLE, ROM.base_noext, launcher)
+        A_snap      = assets_get_info_scheme_A(ASSET_SNAP, ROM.base_noext, launcher)
+        A_fanart    = assets_get_info_scheme_A(ASSET_FANART, ROM.base_noext, launcher)
+        A_banner    = assets_get_info_scheme_A(ASSET_BANNER, ROM.base_noext, launcher)
+        A_clearlogo = assets_get_info_scheme_A(ASSET_CLEARLOGO, ROM.base_noext, launcher)
+        A_boxfront  = assets_get_info_scheme_A(ASSET_BOXFRONT, ROM.base_noext, launcher)
+        A_boxback   = assets_get_info_scheme_A(ASSET_BOXBACK, ROM.base_noext, launcher)
+        A_cartridge = assets_get_info_scheme_A(ASSET_CARTRIDGE, ROM.base_noext, launcher)
+        A_flyer     = assets_get_info_scheme_A(ASSET_FLYER, ROM.base_noext, launcher)
+        A_map       = assets_get_info_scheme_A(ASSET_MAP, ROM.base_noext, launcher)
+        A_manual    = assets_get_info_scheme_A(ASSET_MANUAL, ROM.base_noext, launcher)
+        A_trailer   = assets_get_info_scheme_A(ASSET_TRAILER, ROM.base_noext, launcher)
 
-        # --- Look for local artwork ---
-        local_thumb  = misc_look_for_image(thumb_path_noext, IMG_EXTS)
-        local_fanart = misc_look_for_image(fanart_path_noext, IMG_EXTS)
-        log_verb('Local image scanner found Thumb  "{0}"'.format(local_thumb))
-        log_verb('Local image scanner found Fanart "{0}"'.format(local_fanart))
+        local_title     = misc_look_for_file(A_title.path_noext, IMG_EXTS)
+        local_snap      = misc_look_for_file(A_snap.path_noext, IMG_EXTS)
+        local_fanart    = misc_look_for_file(A_fanart.path_noext, IMG_EXTS)
+        local_banner    = misc_look_for_file(A_banner.path_noext, IMG_EXTS)
+        local_clearlogo = misc_look_for_file(A_clearlogo.path_noext, IMG_EXTS)
+        local_boxfront  = misc_look_for_file(A_boxfront.path_noext, IMG_EXTS)
+        local_boxback   = misc_look_for_file(A_boxback.path_noext, IMG_EXTS)
+        local_cartridge = misc_look_for_file(A_cartridge.path_noext, IMG_EXTS)
+        local_flyer     = misc_look_for_file(A_flyer.path_noext, IMG_EXTS)
+        local_map       = misc_look_for_file(A_map.path_noext, IMG_EXTS)
+        local_manual    = misc_look_for_file(A_manual.path_noext, IMG_EXTS)
+        local_trailer   = misc_look_for_file(A_trailer.path_noext, IMG_EXTS)
+        
+        log_verb('Local asset scanner found Title     "{0}"'.format(local_title))
+        log_verb('Local asset scanner found Snap      "{0}"'.format(local_snap))
+        log_verb('Local asset scanner found Fanart    "{0}"'.format(local_fanart))
+        log_verb('Local asset scanner found Banner    "{0}"'.format(local_banner))
+        log_verb('Local asset scanner found Clearlogo "{0}"'.format(local_clearlogo))
+        log_verb('Local asset scanner found Boxfront  "{0}"'.format(local_boxfront))
+        log_verb('Local asset scanner found Boxback   "{0}"'.format(local_boxback))
+        log_verb('Local asset scanner found Cartridge "{0}"'.format(local_cartridge))
+        log_verb('Local asset scanner found Flyer     "{0}"'.format(local_flyer))
+        log_verb('Local asset scanner found Map       "{0}"'.format(local_map))
+        log_verb('Local asset scanner found Manual    "{0}"'.format(local_manual))
+        log_verb('Local asset scanner found Trailer   "{0}"'.format(local_trailer))
 
-        # ~~~ Thumb scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # settings.xml -> id="scan_thumb_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers"
-        scan_thumb_policy = self.settings["scan_thumb_policy"]
-        if scan_thumb_policy == 0:
-            log_verb('Thumb policy: local images only | Scraper OFF')
-            selected_thumb = local_thumb
-        elif scan_thumb_policy == 1 and local_thumb == '':
-            log_verb('Thumb policy: if not Local Image then Scraper ON')
-            log_verb('Thumb policy: local thumb NOT found | Scraper ON')
-            selected_thumb = self._roms_scrap_image(IMAGE_THUMB, 'Thumb', local_thumb, launcherID, ROM)
-        elif scan_thumb_policy == 1 and local_thumb != '':
-            log_verb('Thumb policy: if not Local Image then Scraper ON')
-            log_verb('Thumb policy: local thumb FOUND | Scraper OFF')
-            selected_thumb = local_thumb
-        elif scan_thumb_policy == 2:
-            log_verb('Thumb policy: scraper will overwrite local thumb | Scraper ON')
-            selected_thumb = self._roms_scrap_image(IMAGE_THUMB, 'Thumb', local_thumb, launcherID, ROM)
-        romdata['thumb'] = selected_thumb
-        log_verb('Set Thumb to file "{0}"'.format(romdata['thumb']))
+        # ~~~ Asset scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # settings.xml -> id="scan_asset_policy" default="0" values="Local Assets|Local Assets + Scrapers|Scrapers only"
+        scan_asset_policy = self.settings['scan_asset_policy']
+        if scan_asset_policy == 0:
+            log_verb('Asset policy: local images only | Scraper OFF')
+            selected_title     = local_title
+            selected_snap      = local_snap
+            selected_fanart    = local_fanart
+            selected_banner    = local_banner
+            selected_clearlogo = local_clearlogo
+            selected_boxfront  = local_boxfront
+            selected_boxback   = local_boxback
+            selected_cartridge = local_cartridge
+            selected_flyer     = local_flyer
+            selected_map       = local_map
+            selected_manual    = local_manual
+            selected_trailer   = local_trailer
 
-        # ~~~ Fanart scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Fanart scraping policy has same values as Thumb. If not, bad things will happen.
-        # settings.xml -> id="scan_fanart_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers"
-        scan_fanart_policy = self.settings["scan_fanart_policy"]
-        if scan_fanart_policy == 0:
-            log_verb('Fanart policy: local images only | Scraper OFF')
-            selected_fanart = local_fanart
-        elif scan_fanart_policy == 1 and local_fanart == '':
-            log_verb('Fanart policy: if not Local Image then Scraper ON')
-            log_verb('Fanart policy: local fanart not found | Scraper ON')
-            selected_fanart = self._roms_scrap_image(IMAGE_FANART, 'Fanart', local_fanart, launcherID, ROM)
-        elif scan_fanart_policy == 1 and local_fanart != '':
-            log_verb('Fanart policy: if not Local Image then Scraper ON')
-            log_verb('Fanart policy: local fanart found | Scraper OFF')
-            selected_fanart = local_fanart
-        elif scan_fanart_policy == 2:
-            log_verb('Fanart policy: scraper will overwrite local fanart | Scraper ON')
-            selected_fanart = self._roms_scrap_image(IMAGE_FANART, 'Fanart', local_fanart, launcherID, ROM)
-        romdata['fanart'] = selected_fanart
-        log_verb('Set Fanart to file "{0}"'.format(romdata['fanart']))
+        elif scan_asset_policy == 1:
+            log_verb('Asset policy: if not Local Image then Scraper ON')
 
-        # --- Return romdata dictionary ---
+            selected_title     = self._roms_process_asset_policy_2(ASSET_TITLE, local_title, ROM, launcher)
+            selected_snap      = self._roms_process_asset_policy_2(ASSET_SNAP, local_snap, ROM, launcher)
+            selected_fanart    = self._roms_process_asset_policy_2(ASSET_FANART, local_fanart, ROM, launcher)
+            selected_banner    = self._roms_process_asset_policy_2(ASSET_BANNER, local_banner, ROM, launcher)
+            selected_clearlogo = self._roms_process_asset_policy_2(ASSET_CLEARLOGO, local_clearlogo, ROM, launcher)
+            selected_boxfront  = self._roms_process_asset_policy_2(ASSET_BOXFRONT, local_boxfront, ROM, launcher)
+            selected_boxback   = self._roms_process_asset_policy_2(ASSET_BOXBACK, local_boxback, ROM, launcher)
+            selected_cartridge = self._roms_process_asset_policy_2(ASSET_CARTRIDGE, local_cartridge, ROM, launcher)
+            selected_flyer     = self._roms_process_asset_policy_2(ASSET_FLYER, local_flyer, ROM, launcher)
+            selected_map       = self._roms_process_asset_policy_2(ASSET_MAP, local_map, ROM, launcher)
+            selected_manual    = self._roms_process_asset_policy_2(ASSET_MANUAL, local_manual, ROM, launcher)
+            selected_trailer   = self._roms_process_asset_policy_2(ASSET_TRAILER, local_trailer, ROM, launcher)
+
+        elif scan_asset_policy == 2:
+            log_verb('Asset policy: scraper will overwrite local assets | Scraper ON')
+
+            selected_title  = self._roms_scrap_asset(ASSET_TITLE, local_thumb, ROM, launcher)
+
+        romdata['s_title']     = selected_title
+        romdata['s_snap']      = selected_snap
+        romdata['s_fanart']    = selected_fanart
+        romdata['s_banner']    = selected_banner
+        romdata['s_clearlogo'] = selected_clearlogo
+        romdata['s_boxfront']  = selected_boxfront
+        romdata['s_boxback']   = selected_boxback
+        romdata['s_cartridge'] = selected_cartridge
+        romdata['s_flyer']     = selected_flyer
+        romdata['s_map']       = selected_map
+        romdata['s_manual']    = selected_manual
+        romdata['s_trailer']   = selected_trailer
+
+        log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+        log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+        log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+        log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+        log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+        log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+        log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+        log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+        log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+        log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+        log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+        log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+        
         return romdata
+
+    def _roms_process_asset_policy_2(self, asset_kind, local_asset, ROM, launcher):
+        if local_asset == '':
+            A = assets_get_info_scheme_A(asset_kind, ROM.path_noext, launcher)
+            log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
+            selected_asset = self._roms_scrap_asset(asset_kind, local_asset, ROM, launcher)
+        else:
+            A = assets_get_info_scheme_A(asset_kind, ROM.path_noext, launcher)
+            log_verb('Asset policy: local {0} FOUND | Scraper OFF'.format(A.name))
+            selected_asset = local_asset
+        
+        return selected_asset
 
     #
     # Returns a valid filename of the downloaded scrapped image, filename of local image
     # or empty string if scraper finds nothing or download failed.
     #
-    def _roms_scrap_image(self, image_kind, image_name, local_image, launcherID, ROM):
-        # By default always use local image in case scraper fails
-        ret_imagepath = local_image
+    def _roms_scrap_asset(self, asset_kind, local_asset_path, ROM, launcher):
+        # >> By default always use local image in case scraper fails
+        ret_asset_path = local_asset_path
 
         # --- Cutomise function depending of image_king ---
-        launcher = self.launchers[launcherID]
+        asset_base_noext = ROM.base_noext
+        A = assets_get_info_scheme_A(asset_kind, asset_base_noext, launcher)
+        scraper_obj = self.scraper_asset
         platform = launcher['platform']
-        if image_kind == IMAGE_THUMB:
-            scraping_mode    = self.settings['thumb_mode']
-            scraper_obj      = self.scraper_thumb
-            scraper_name     = self.scraper_thumb.name
-            thumb_dir        = launcher['thumbpath']
-            fanart_dir       = launcher['fanartpath']
-            image_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
-        elif image_kind == IMAGE_THUMB:
-            scraping_mode    = self.settings['fanart_mode']
-            scraper_obj      = self.scraper_fanart
-            scraper_name     = self.scraper_fanart.name
-            thumb_dir        = launcher['thumbpath']
-            fanart_dir       = launcher['fanartpath']
-            image_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
-        else:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Wrong image_kind = {0}'.format(image_kind))
-            log_error('_roms_scrap_image() Wrong image_kind = {0}'.format(image_kind))
-            return ret_imagepath
 
         # --- Updated progress dialog ---
         file_text = 'ROM {0}'.format(ROM.base)
-        scraper_text = 'Scraping {0} with {1}. Searching for matching games...'.format(image_name, scraper_name)
+        scraper_text = 'Scraping {0} with {1}. Searching for matching games...'.format(A.name, scraper_obj.name)
         self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-        log_verb('Scraping {0} with {1}'.format(image_name, scraper_name))
+        log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
+        log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
+        log_debug('_roms_scrap_asset() asset_base_noext "{0}"'.format(asset_base_noext))
+        log_debug('_roms_scrap_asset() A.base_noext     "{0}"'.format(A.base_noext))
+        log_debug('_roms_scrap_asset() A.path_noext     "{0}"'.format(A.path_noext))
 
         # --- Call scraper and get a list of games ---
         rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
         results = scraper_obj.get_search(rom_name_scrapping, ROM.base_noext, platform)
-        log_debug('{0} scraper found {1} result/s'.format(image_name, len(results)))
+        log_debug('{0} scraper found {1} result/s'.format(A.name, len(results)))
         if not results:
-            log_debug('{0} scraper did not found any game'.format(image_name))
+            log_debug('{0} scraper did not found any game'.format(A.name))
             return ret_imagepath
 
         # --- Choose game to download image ---
-        # settings.xml: id="thumb_mode"  default="0" values="Semi-automatic|Automatic"
-        # settings.xml: id="fanart_mode" default="0" values="Semi-automatic|Automatic"
+        # settings.xml: id="asset_scraper_mode"  default="0" values="Semi-automatic|Automatic"
+        scraping_mode = self.settings['asset_scraper_mode']
         if scraping_mode == 0:
-            log_debug('{0} semi-automatic scraping. User chooses.'.format(image_name))
+            log_debug('{0} semi-automatic scraping. User chooses.'.format(A.name))
             # Close progress dialog (and check it was not canceled)
             if self.pDialog.iscanceled(): self.pDialog_canceled = True
             self.pDialog.close()
@@ -4073,19 +4242,19 @@ class Main:
             # Open progress dialog again
             self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
         elif scraping_mode == 1:
-            log_debug('{0} automatic scraping. Selecting first result.'.format(image_name))
+            log_debug('{0} automatic scraping. Selecting first result.'.format(A.name))
             selectgame = 0
         else:
-            log_error('{0} invalid thumb_mode {1}'.format(image_name, scraping_mode))
+            log_error('{0} invalid thumb_mode {1}'.format(A.name, scraping_mode))
             selectgame = 0
-        scraper_text = 'Scraping {0} with {1}. Game selected. Getting list of images...'.format(image_name, scraper_name)
+        scraper_text = 'Scraping {0} with {1}. Game selected. Getting list of images...'.format(A.name, scraper_obj.name)
         self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
         # --- Grab list of images for the selected game ---
         image_list = scraper_obj.get_images(results[selectgame])
-        log_verb('{0} scraper returned {1} images'.format(image_name, len(image_list)))
+        log_verb('{0} scraper returned {1} images'.format(A.name, len(image_list)))
         if not image_list:
-            log_debug('{0} scraper get_images() returned no images.'.format(image_name))
+            log_debug('{0} scraper get_images() returned no images.'.format(A.name))
             return ret_imagepath
 
         # --- Semi-automatic scraping (user choses an image from a list) ---
@@ -4100,11 +4269,11 @@ class Main:
 
             # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
             image_url = gui_show_image_select(image_list)
-            log_debug('{0} dialog returned image_url "{1}"'.format(image_name, image_url))
+            log_debug('{0} dialog returned image_url "{1}"'.format(A.name, image_url))
             if image_url == '': image_url = image_list[0]['URL']
 
             # Reopen progress dialog
-            scraper_text = 'Scraping {0} with {1}. Downloading image...'.format(image_name, scraper_name)
+            scraper_text = 'Scraping {0} with {1}. Downloading image...'.format(A.name, scraper_obj.name)
             self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         # --- Automatic scraping. Pick first image. ---
@@ -4113,24 +4282,23 @@ class Main:
             image_url = image_list[0]['URL']
 
         # If user chose the local image don't download anything
-        if image_url != local_image:
+        if image_url != local_asset_path:
             # ~~~ Download scraped image ~~~
             # Get Tumb/Fanart name with no extension, then get URL image extension
             # and make full thumb path. If extension cannot be determined
             # from URL defaul to '.jpg'
             img_ext    = text_get_image_URL_extension(image_url) # Includes front dot -> .jpg
-            image_path = image_path_noext + img_ext
+            image_path = A.path_noext + img_ext
 
             # ~~~ Download image ~~~
-            log_debug('image_path_noext "{0}"'.format(image_path_noext))
+            log_debug('image_path_noext "{0}"'.format(A.path_noext))
             log_debug('img_ext          "{0}"'.format(img_ext))
             log_verb('Downloading URL  "{0}"'.format(image_url))
             log_verb('Into local file  "{0}"'.format(image_path))
             try:
                 net_download_img(image_url, image_path)
             except socket.timeout:
-                kodi_notify_warn('Advanced Emulator Launcher',
-                                 'Cannot download {0} image (Timeout)'.format(image_name))
+                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
 
             # ~~~ Update Kodi cache with downloaded image ~~~
             # Recache only if local image is in the Kodi cache, this function takes care of that.
@@ -4290,8 +4458,7 @@ class Main:
             try:
                 net_download_img(image_url, image_path)
             except socket.timeout:
-                kodi_notify_warn('Advanced Emulator Launcher',
-                                 'Cannot download {0} image (Timeout)'.format(image_name))
+                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
             kodi_busydialog_OFF()
 
             # ~~~ Update Kodi cache with downloaded image ~~~
@@ -4352,7 +4519,7 @@ class Main:
         kodi_busydialog_OFF()
         log_debug('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Scraper found no matches')
+            kodi_notify_warn('Scraper found no matches')
             return False
             
         # Display corresponding game list found so user choses
@@ -4371,7 +4538,7 @@ class Main:
         gamedata = self.scraper_metadata.get_metadata(results[selectgame])
         kodi_busydialog_OFF()
         if not gamedata:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot download game metadata.')
+            kodi_notify_warn('Cannot download game metadata.')
             return False
 
         # --- Put metadata into ROM dictionary ---
@@ -4419,7 +4586,7 @@ class Main:
         kodi_busydialog_OFF()
         log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Scraper found no matches')
+            kodi_notify_warn('Scraper found no matches')
             return False
 
         # Display corresponding game list found so user choses
@@ -4437,7 +4604,7 @@ class Main:
         gamedata = self.scraper_metadata.get_metadata(results[selectgame])
         kodi_busydialog_OFF()
         if not gamedata:
-            kodi_notify_warn('Advanced Emulator Launcher', 'Cannot download game metadata.')
+            kodi_notify_warn('Cannot download game metadata.')
             return False
 
         # --- Put metadata into launcher dictionary ---
@@ -4455,275 +4622,118 @@ class Main:
     # image scraping is not allowed for categories.
     #
     # NOTE When editing ROMs optional parameter launcherID is required.
-    # NOTE Caller is responsible for saving the Launchers/ROMs
+    # NOTE Caller is responsible for saving the Categories/Launchers/ROMs
     # NOTE if image is changed container should be updated so the user sees new image instantly
-    # NOTE objects_dic is edited by assigment
+    # NOTE object_dic is edited by assigment
     # NOTE a ROM in Favourites has launcherID = '0'
     #
     # Returns:
-    #   True   Launchers/ROMs must be saved and container updated
+    #   True   Categories/Launchers/ROMs must be saved and container updated
     #   False  No changes were made. No necessary to refresh container
     #
-    def _gui_edit_image(self, image_kind, objects_kind, objects_dic, objectID, launcherID=''):
-        # Check for errors
-        if image_kind != IMAGE_THUMB and image_kind != IMAGE_FANART:
-            log_error('_gui_edit_image() Unknown image_kind = {0}'.format(image_kind))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {0}'.format(image_kind))
-            return False
-        if objects_kind != KIND_LAUNCHER and objects_kind != KIND_ROM:
-            log_error('_gui_edit_image() Unknown objects_kind = {0}'.format(objects_kind))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown objects_kind = {0}'.format(objects_kind))
-            return False
+    def _gui_edit_asset(self, object_kind, asset_kind, object_dic, launcher_dic = {}):
+        scraper_obj = self.scraper_asset
 
-        # Customise function depending of object to edit
-        if image_kind == IMAGE_THUMB:
-            scraper_obj = self.scraper_thumb
-            image_key   = 'thumb'
-            image_name  = 'Thumb'
-            if objects_kind == KIND_LAUNCHER:
-                kind_name = 'Launcher'
-                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
-                launchers_fanart_dir = self.settings['launchers_fanart_dir']
-                dest_basename   = objects_dic[objectID]['name']
-                dest_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
-            elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                # Thumb of a ROM in Favourites
-                if launcherID == VLAUNCHER_FAV_ID:
-                    thumb_dir  = self.settings['favourites_thumb_dir']
-                    fanart_dir = self.settings['favourites_fanart_dir']
-                # Thumb of a ROM in a Launcher
-                else:
-                    thumb_dir  = self.launchers[launcherID]['thumbpath']
-                    fanart_dir = self.launchers[launcherID]['fanartpath']
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                dest_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
-        elif image_kind == IMAGE_FANART:
-            scraper_obj = self.scraper_fanart
-            image_key   = 'fanart'
-            image_name  = 'Fanart'
-            if objects_kind == KIND_LAUNCHER:
-                kind_name = 'Launcher'
-                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
-                launchers_fanart_dir = self.settings['launchers_fanart_dir']
-                dest_basename   = objects_dic[objectID]['name']
-                dest_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
-            elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                # Fanart in a ROM in Favourites
-                if launcherID == VLAUNCHER_FAV_ID:
-                    thumb_dir  = self.settings['favourites_thumb_dir']
-                    fanart_dir = self.settings['favourites_fanart_dir']
-                # Fanart of a ROM in a Launcher
-                else:
-                    thumb_dir  = self.launchers[launcherID]['thumbpath']
-                    fanart_dir = self.launchers[launcherID]['fanartpath']
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                dest_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)
-        log_debug('_gui_edit_image() Editing {0} {1}'.format(kind_name, image_name))
+        # >> Get asset object information and initialise scrapers
+        if object_kind == KIND_CATEGORY:
+            kind_name = 'Category'
+            A = assets_get_info_scheme_B(asset_kind, object_dic['m_name'], self.settings['categories_asset_dir'])
+        elif object_kind == KIND_LAUNCHER:
+            kind_name = 'Launcher'
+            A = assets_get_info_scheme_B(asset_kind, object_dic['m_name'], self.settings['launchers_asset_dir'])
+        elif object_kind == KIND_ROM:
+            kind_name = 'ROM'
+            ROM = misc_split_path(object_dic['filename'])
+            A = assets_get_info_scheme_A(asset_kind, ROM.base_noext, launcher_dic)
+        else:
+            log_error('_gui_edit_asset() Unknown object_kind = {0}'.format(object_kind))
+            kodi_notify_warn("Unknown object_kind '{0}'".format(object_kind))
+            return False
+        log_debug('_gui_edit_asset() Editing {0} {1}'.format(kind_name, A.name))
 
-        # Show image editing options
+        # --- Show image editing options ---
         dialog = xbmcgui.Dialog()
-        type2 = dialog.select('Change Thumbnail Image',
+        type2 = dialog.select('Change {0} Image'.format(A.name),
                              ['Select Local Image',
                               'Import Local Image (Copy and Rename)',
-                              'Scrape Image from {0}'.format(scraper_obj.fancy_name) ])
-        # Link to an image
+                              'Scrape {0} from {1}'.format(A.name, scraper_obj.name)])
+
+        # --- Link to a local image ---
         if type2 == 0:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
+            image_dir = ''
+            if object_dic[A.key] != '':
+                F = misc_split_path(object_dic[A.key])
                 image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_image() Initial path "{0}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(image_name),
-                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
+            log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(A.name), 'files',
+                                                 '.jpg|.jpeg|.gif|.png', True, False, image_dir)
             if not image_file or not os.path.isfile(image_file): return False
 
-            # Update object by assigment. XML will be save by parent
-            objects_dic[objectID][image_key] = image_file
-            kodi_notify('{0} has been updated'.format(image_name))
-            log_debug('_gui_edit_image() Object is {0} with ID = {1}'.format(kind_name, objectID))
-            log_info('Selected {0} {1} "{2}"'.format(kind_name, image_name, image_file))
+            # --- Update object by assigment. XML/JSON will be save by parent ---
+            object_dic[A.key] = image_file
+            kodi_notify('{0} has been updated'.format(A.name))
+            log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(kind_name, A.name, image_file))
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(image_file)
 
-        # Import an image
+        # --- Import an image ---
+        # >> Copy and rename a local image into asset directory
         elif type2 == 1:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
+            image_dir = ''
+            if object_dic[A.key] != '':
+                F = misc_split_path(object_dic[A.key])
                 image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_image() Initial path "{0}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(image_name),
-                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
+            log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
+            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(A.name), 'files',
+                                                 '.jpg|.jpeg|.gif|.png', True, False, image_dir)
             if not image_file or not os.path.isfile(image_file): return False
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
-            dest_path = dest_path_noext + F.ext
-            log_debug('_gui_edit_image() image_file    = "{0}"'.format(image_file))
-            log_debug('_gui_edit_image() img_ext       = "{0}"'.format(F.ext))
-            log_debug('_gui_edit_image() dest_path     = "{0}"'.format(dest_path))
+            dest_path = A.path_noext + F.ext
+            log_debug('_gui_edit_asset() image_file   "{0}"'.format(image_file))
+            log_debug('_gui_edit_asset() img_ext      "{0}"'.format(F.ext))
+            log_debug('_gui_edit_asset() dest_path    "{0}"'.format(dest_path))
 
             # Copy image file
             if image_file == dest_path:
-                log_info('image_file and dest_path are the same. Returning')
+                log_info('_gui_edit_asset() image_file and dest_path are the same. Returning')
                 return False
             try:
                 fs_encoding = get_fs_encoding()
                 shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
             except OSError:
-                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
+                log_error('_gui_edit_asset() OSError exception copying image')
+                kodi_notify_warn('OSError exception copying image')
+                return False
+            except IOError:
+                log_error('_gui_edit_asset() IOError exception copying image')
+                kodi_notify_warn('IOError exception copying image')
+                return False
 
             # Update object by assigment. XML will be save by parent
-            objects_dic[objectID][image_key] = dest_path
-            kodi_notify('{0} has been updated'.format(image_name))
-            log_debug('_gui_edit_image() Object is {0} with ID = {1}'.format(kind_name, objectID))
-            log_info('Copied image "{0}"'.format(image_file))
-            log_info('Into         "{0}"'.format(dest_path))
-            log_info('Selected {0} {1} "{2}"'.format(kind_name, image_name, dest_path))
+            object_dic[A.key] = dest_path
+            kodi_notify('{0} has been updated'.format(A.name))
+            log_info('_gui_edit_asset() Copied image "{0}"'.format(image_file))
+            log_info('_gui_edit_asset() Into         "{0}"'.format(dest_path))
+            log_info('_gui_edit_asset() Selected {0} {1} "{2}"'.format(kind_name, A.name, dest_path))
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(dest_path)
 
-        # Manual scrape and choose from a list of images
+        # --- Manual scrape and choose from a list of images ---
         elif type2 == 2:
             return self._gui_scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
 
-        # User canceled select box
+        # --- User canceled select box ---
         elif type2 < 0:
             return False
 
-        # If we reach this point, changes were made. Launchers/ROMs must be saved, container must be refreshed.
+        # >> If we reach this point, changes were made.
+        # >> Categories/Launchers/ROMs must be saved, container must be refreshed.
         return True
 
-    #
-    # Edit category assets. 
-    #  A) Categories always used naming scheme 2 (all assets in same dir, filenames use suffixes).
-    #  B) Directory to store category images is always self.settings['categories_asset_dir'] 
-    #  C) Default category asset directory is in plugin datadir.
-    #
-    # NOTE For some reason option 'Import Local Image (Copy and Rename)' does not work well. I have checked
-    #      the copied filename is OK but Kodi refuses to display the image...
-    #      Even more suprisingly, if later 'Select Local Image' is used and the file copied before to categories
-    #      artwork path is chosen then it works!
-    #
-    # Returns:
-    #   True   Changes were made.
-    #   False  No changes made.
-    #
-    def _gui_edit_category_image(self, image_kind, categoryID):
-        objects_dic  = self.categories
-        objectID     = categoryID
-
-        if image_kind == ASSET_THUMB:
-            image_key    = 'thumb'
-            image_name   = 'Thumb'
-            dest_basename = objects_dic[objectID]['name']
-            asset_path_noext = assets_get_category_asset_path_noext(ASSET_THUMB, self.settings['categories_asset_dir'], dest_basename)
-
-        elif image_kind == ASSET_FANART:
-            image_key    = 'fanart'
-            image_name   = 'Fanart'
-            categories_thumb_dir  = self.settings['categories_thumb_dir']
-            categories_fanart_dir = self.settings['categories_fanart_dir']
-            dest_basename   = objects_dic[objectID]['name']
-            dest_path_noext = misc_get_fanart_path_noext(categories_thumb_dir, categories_fanart_dir, dest_basename)
-
-        else:
-            log_error('_gui_edit_category_image() Unknown image_kind = {0}'.format(image_kind))
-            kodi_notify_warn('Advanced Emulator Launcher', 'Unknown image_kind = {0}'.format(image_kind))
-            return False
-        log_debug('_gui_edit_category_image() Editing {0}'.format(image_name))
-
-        # Show image editing options
-        dialog = xbmcgui.Dialog()
-        type2 = dialog.select('Change Thumbnail Image',
-                             ['Select Local Image',
-                              'Import Local Image (Copy and Rename)'])
-        # Link to an image
-        if type2 == 0:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
-                image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_category_image() Initial path "{0}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(image_name),
-                                                 'files', '.jpg|.jpeg|.gif|.png', True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return False
-
-            # Update object by assigment. XML will be save by parent
-            objects_dic[objectID][image_key] = image_file
-            kodi_notify('{0} has been updated'.format(image_name))
-            log_debug('_gui_edit_category_image() Object is {0} with ID = {1}'.format('Category', objectID))
-            log_info('Selected {0} "{1}"'.format(image_name, image_file))
-
-            # --- Update Kodi image cache ---
-            kodi_update_image_cache(image_file)
-
-        # Import an image
-        elif type2 == 1:
-            if objects_dic[objectID][image_key] != '':
-                F = misc_split_path(objects_dic[objectID][image_key])
-                image_dir = F.dirname
-            else:
-                image_dir = ''
-            log_debug('_gui_edit_category_image() Initial path "{0}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(image_name),
-                                                 'files', ".jpg|.jpeg|.gif|.png", True, False, image_dir)
-            if not image_file or not os.path.isfile(image_file): return False
-
-            # Determine image extension and dest filename
-            F = misc_split_path(image_file)
-            dest_path = dest_path_noext + F.ext
-            log_debug('_gui_edit_category_image() image_file    = "{0}"'.format(image_file))
-            log_debug('_gui_edit_category_image() img_ext       = "{0}"'.format(F.ext))
-            log_debug('_gui_edit_category_image() dest_path     = "{0}"'.format(dest_path))
-
-            # Copy image file, but never over itself
-            if image_file == dest_path: 
-                log_info('image_file and dest_path are the same. Returning')
-                return False
-            try:
-                fs_encoding = get_fs_encoding()
-                shutil.copy(image_file.decode(fs_encoding, 'ignore') , dest_path.decode(fs_encoding, 'ignore'))
-            except OSError:
-                kodi_notify_warn('Advanced Emulator Launcher', 'OSError when copying image')
-
-            # Update object and save XML
-            objects_dic[objectID][image_key] = dest_path
-            kodi_notify('{0} has been updated'.format(image_name))
-            log_debug('_gui_edit_category_image() Object is {0} with ID = {1}'.format('Category', objectID))
-            log_info('Copied image "{0}"'.format(image_file))
-            log_info('Into         "{0}"'.format(dest_path))
-            log_info('Selected {0} "{1}"'.format(image_name, dest_path))
-
-            # --- Update Kodi image cache ---
-            kodi_update_image_cache(dest_path)
-
-        # User canceled select box
-        elif type2 < 0:
-            return False
-
-        return True
-
-    #
-    # Logical choice is to have one function to edit category/launcher images and another one
-    # for ROMs. Reason is that category/launcher and ROMs have different assets.
-    # Also, ROM image paths are stored in the launcher, where category/launchers do not have
-    # a separated directory + image_file structure.
-    #
-    def _gui_edit_image_catlauncher(self, image_kind, categoryID):
-        pass
-
-        
-    def _gui_edit_image_ROM(self, image_kind, categoryID):    
-        pass
-    
     #
     # Creates default categories data struct.
     # CAREFUL deletes current categories!
@@ -4733,8 +4743,11 @@ class Main:
         # This will make it unique and different for every category created.
         category = fs_new_category()
         category_key = misc_generate_random_SID()
-        category['name'] = 'Emulators'
-        category['categoryID'] = category_key
+        category['id']      = category_key
+        category['m_name']  = 'Emulators'
+        category['m_genre'] = 'Emulators'
+        category['m_plot']  = 'Initial AEL category.'
+        # category['m_rating'] = '10'
         self.categories = {}
         self.categories[category_key] = category
 

@@ -197,53 +197,21 @@ def misc_split_path(f_path):
     return F
 
 #
-# Get thumb/fanart filenames.
-# RULE If thumb/fanart have the same path then a suffix must be added to ROM base_name.
-#      If thumb/fanart have different paths no suffix is added to ROM base_name
+# Given the image path with no extension and a list of file extensions search for a file.
 #
-def misc_get_thumb_path_noext(thumb_path, fanart_path, base_noext):
-    # log_debug('misc_get_thumb_path_noext()  thumb_path {0}'.format(thumb_path))
-    # log_debug('misc_get_thumb_path_noext() fanart_path {0}'.format(fanart_path))
-
-    if thumb_path == fanart_path:
-        # log_debug('misc_get_thumb_path_noext() Thumbs/Fanarts have the same path')
-        path_noext = os.path.join(thumb_path, base_noext + '_thumb')
-    else:
-        # log_debug('misc_get_thumb_path_noext() Thumbs/Fanarts into different folders')
-        path_noext = os.path.join(thumb_path, base_noext)
-
-    return path_noext
-
-def misc_get_fanart_path_noext(thumb_path, fanart_path, base_noext):
-    # log_debug('misc_get_fanart_path_noext()  thumb_path {0}'.format(thumb_path))
-    # log_debug('misc_get_fanart_path_noext() fanart_path {0}'.format(fanart_path))
-
-    if thumb_path == fanart_path:
-        # log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts have the same path')
-        path_noext = os.path.join(fanart_path, base_noext + '_fanart')
-    else:
-        # log_debug('misc_get_fanart_path_noext() Thumbs/Fanarts into different folders')
-        path_noext = os.path.join(fanart_path, base_noext)
-
-    return path_noext
-
-#
-# Given the image path (directory + filename) with no extension and a list of image extension, search
-# for a local image.
-#
-def misc_look_for_image(image_path_noext, img_exts):
-    image_name = ''
-    log_debug('Testing image prefix {0}'.format(image_path_noext))
-    for ext in img_exts:
-        test_img = image_path_noext + '.' + ext
-        # log_debug('Testing image "{0}"'.format(test_img))
-        if os.path.isfile(test_img):
+def misc_look_for_file(file_path_noext, file_exts):
+    file_path = ''
+    log_debug('Testing file_path_noext {0}'.format(file_path_noext))
+    for ext in file_exts:
+        test_file = file_path_noext + '.' + ext
+        # log_debug('Testing file "{0}"'.format(test_file))
+        if os.path.isfile(test_file):
             # Optimization Stop loop as soon as an image is found
-            image_name = test_img
-            log_debug('Found image "{0}"'.format(test_img))
+            file_path = test_file
+            log_debug('Found file "{0}"'.format(test_file))
             break
 
-    return image_name
+    return file_path
 
 # -------------------------------------------------------------------------------------------------
 # Misc stuff

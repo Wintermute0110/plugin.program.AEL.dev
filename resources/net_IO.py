@@ -82,7 +82,7 @@ def net_download_img(img_url, file_path):
     except:
         e = sys.exc_info()[0]
         log_error('net_download_img() Exception {0}'.format(e))
-        kodi_notify_warn('Advanced Emulator Launcher', 'Error downloading image')
+        kodi_notify_warn('Error downloading image')
 
 def net_get_URL_text(req):
     log_debug('net_get_URL_text() Reading URL "{0}"'.format(req.get_full_url()))
@@ -102,7 +102,7 @@ def net_get_URL_text(req):
     except:
         e = sys.exc_info()[0]
         log_error('net_get_URL_text() Exception {0}'.format(e))
-        kodi_notify_warn('Advanced Emulator Launcher', 'Error downloading URL text page')
+        kodi_notify_warn('Error downloading URL text page')
     log_debug('net_get_URL_text() Read {0} bytes'.format(num_bytes))
 
     return page_data

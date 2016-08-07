@@ -28,16 +28,15 @@ ASSET_TITLE     = 100
 ASSET_SNAP      = 200
 ASSET_FANART    = 300
 ASSET_BANNER    = 400
-ASSET_BOXFRONT  = 500
-ASSET_BOXBACK   = 600
-ASSET_CARTRIDGE = 700
-ASSET_FLYER     = 800
-ASSET_MAP       = 900
-ASSET_MANUAL    = 1000
-ASSET_TRAILER   = 1100
-ASSET_THUMB     = 1200 # Only used in Categories/Launchers
-ASSET_LOGO      = 1300 # Only used in Categories/Launchers
-ASSET_POSTER    = 1400 # Only used in Categories/Launchers
+ASSET_CLEARLOGO = 500
+ASSET_BOXFRONT  = 600
+ASSET_BOXBACK   = 700
+ASSET_CARTRIDGE = 800
+ASSET_FLYER     = 900
+ASSET_MAP       = 1000
+ASSET_MANUAL    = 1100
+ASSET_TRAILER   = 1200
+ASSET_THUMB     = 1300 # Only used in Categories/Launchers
 
 # -------------------------------------------------------------------------------------------------
 # Asset functions
@@ -59,6 +58,7 @@ def assets_init_asset_dir(asset_path, launcher):
         launcher['path_snap']      = os.path.join(asset_path, 'snaps').decode('utf-8')
         launcher['path_fanart']    = os.path.join(asset_path, 'fanarts').decode('utf-8')
         launcher['path_banner']    = os.path.join(asset_path, 'banners').decode('utf-8')
+        launcher['path_clearlogo'] = os.path.join(asset_path, 'clearlogos').decode('utf-8')
         launcher['path_boxfront']  = os.path.join(asset_path, 'boxfront').decode('utf-8')
         launcher['path_boxback']   = os.path.join(asset_path, 'boxback').decode('utf-8')
         launcher['path_cartridge'] = os.path.join(asset_path, 'cartridges').decode('utf-8')
@@ -72,6 +72,7 @@ def assets_init_asset_dir(asset_path, launcher):
         assets_create_dir_or_abort(launcher['path_snap'])
         assets_create_dir_or_abort(launcher['path_fanart'])
         assets_create_dir_or_abort(launcher['path_banner'])
+        assets_create_dir_or_abort(launcher['path_clearlogo'])        
         assets_create_dir_or_abort(launcher['path_boxfront'])
         assets_create_dir_or_abort(launcher['path_boxback'])
         assets_create_dir_or_abort(launcher['path_cartridge'])
@@ -90,7 +91,7 @@ def assets_create_dir_or_abort(directory):
         os.makedirs(directory)
 
 #
-# Gets asset name for category/launcher
+# Gets asset name for category/launcher.
 # A) Categories/Launchers always use naming scheme 2 (suffixes _thumb, _fanart, ...)
 #
 def assets_get_category_asset_path_noext(asset_kind, asset_dir, base_noext):
@@ -104,30 +105,152 @@ def assets_get_category_asset_path_noext(asset_kind, asset_dir, base_noext):
 #
 # Gets a human readable name string for the default fallback thumb
 #
-def assets_get_thumb_fallback_str(category):
-    default_thumb = category['default_thumb']
-    thumb_str = ''
+def assets_get_thumb_fallback_str(object_dic):
+    default_asset = object_dic['default_thumb']
+    asset_name_str = ''
 
-    if   default_thumb == 's_thumb':  thumb_str = 'Thumb'
-    elif default_thumb == 's_fanart': thumb_str = 'Fanart'
-    elif default_thumb == 's_logo':   thumb_str = 'Logo'
-    elif default_thumb == 's_poster': thumb_str = 'Poster'
+    if   default_asset == 's_title':     asset_name_str = 'Title'
+    elif default_asset == 's_snap':      asset_name_str = 'Snap'
+    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
+    elif default_asset == 's_banner':    asset_name_str = 'Banner'
+    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
+    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
+    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
+    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
+    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
+    elif default_asset == 's_map':       asset_name_str = 'Map'
+    elif default_asset == 's_manual':    asset_name_str = 'Manual'
+    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
+    elif default_asset == 's_thumb':     asset_name_str = 'Thumb'
     else:
-        kody_nofity_warn('')
-        log_error('')
+        kodi_notify_warn('Wrong default_thumb {0}'.format(default_asset))
+        log_error('assets_get_thumb_fallback_str() Wrong default_thumb {0}'.format(default_asset))
     
-    return thumb_str
+    return asset_name_str
 
-def assets_get_fanart_fallback_str(category):
-    default_thumb = category['default_fanart']
-    thumb_str = ''
+def assets_get_fanart_fallback_str(object_dic):
+    default_asset = object_dic['default_fanart']
+    asset_name_str = ''
 
-    if   default_thumb == 's_thumb':  thumb_str = 'Thumb'
-    elif default_thumb == 's_fanart': thumb_str = 'Fanart'
-    elif default_thumb == 's_logo':   thumb_str = 'Logo'
-    elif default_thumb == 's_poster': thumb_str = 'Poster'
+    if   default_asset == 's_title':     asset_name_str = 'Title'
+    elif default_asset == 's_snap':      asset_name_str = 'Snap'
+    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
+    elif default_asset == 's_banner':    asset_name_str = 'Banner'
+    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
+    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
+    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
+    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
+    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
+    elif default_asset == 's_map':       asset_name_str = 'Map'
+    elif default_asset == 's_manual':    asset_name_str = 'Manual'
+    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
+    elif default_asset == 's_thumb':     asset_name_str = 'Thumb'
     else:
-        kody_nofity_warn('')
-        log_error('')
+        kodi_notify_warn('Wrong default_fanart {0}'.format(default_asset))
+        log_error('assets_get_fanart_fallback_str() Wrong default_fanart {0}'.format(default_asset))
     
-    return thumb_str
+    return asset_name_str
+
+# -------------------------------------------------------------------------------------------------
+# Gets all required information about an asset: path, name, etc.
+# Returns an object with all the information
+# -------------------------------------------------------------------------------------------------
+class AssetInfo:
+    dictionary_key = u''
+    name           = u''
+    basename       = u''
+    path_noext     = u''
+
+#
+# Scheme A uses different directories for artwork and no sufixxes.
+#
+def assets_get_info_scheme_A(asset_kind, asset_base_noext, launcher):
+    A = AssetInfo()
+    A.base_noext = asset_base_noext
+        
+    if asset_kind == ASSET_TITLE:
+        A.key = 's_title'
+        A.name = 'Title'
+        A.path_noext = os.path.join(launcher['path_title'], asset_base_noext)
+    elif asset_kind == ASSET_SNAP:
+        A.key = 's_snap'
+        A.name = 'Snap'
+        A.path_noext = os.path.join(launcher['path_snap'], asset_base_noext)
+    elif asset_kind == ASSET_FANART:
+        A.key = 's_fanart'
+        A.name = 'Fanart'
+        A.path_noext = os.path.join(launcher['path_fanart'], asset_base_noext)
+    elif asset_kind == ASSET_BANNER:
+        A.key = 's_banner'
+        A.name = 'Banner'
+        A.path_noext = os.path.join(launcher['path_banner'], asset_base_noext)
+    elif asset_kind == ASSET_CLEARLOGO:
+        A.key = 's_clearlogo'
+        A.name = 'Clearlogo'
+        A.path_noext = os.path.join(launcher['path_clearlogo'], asset_base_noext)
+    elif asset_kind == ASSET_BOXFRONT:
+        A.key = 's_boxfront'
+        A.name = 'Boxfront'
+        A.path_noext = os.path.join(launcher['path_boxfront'], asset_base_noext)
+    elif asset_kind == ASSET_BOXBACK:
+        A.key = 's_boxback'
+        A.name = 'Boxback'
+        A.path_noext = os.path.join(launcher['path_boxback'], asset_base_noext)
+    elif asset_kind == ASSET_CARTRIDGE:
+        A.key = 's_cartridge'
+        A.name = 'Cartridge'
+        A.path_noext = os.path.join(launcher['path_cartridge'], asset_base_noext)
+    elif asset_kind == ASSET_FLYER:
+        A.key = 's_flyer'
+        A.name = 'Flyer'
+        A.path_noext = os.path.join(launcher['path_flyer'], asset_base_noext)
+    elif asset_kind == ASSET_MAP:
+        A.key = 's_map'
+        A.name = 'Title'
+        A.path_noext = os.path.join(launcher['path_map'], asset_base_noext)
+    elif asset_kind == ASSET_MANUAL:
+        A.key = 's_manual'
+        A.name = 'Manual'
+        A.path_noext = os.path.join(launcher['path_manual'], asset_base_noext)
+    elif asset_kind == ASSET_TRAILER:
+        A.key = 's_trailer'
+        A.name = 'Trailer'
+        A.path_noext = os.path.join(launcher['path_trailer'], asset_base_noext)
+    else:
+        log_error('assets_get_info_scheme_A() Wrong asset_kind = {0}'.format(asset_kind))
+
+    # >> Ultra DEBUG
+    # log_debug('assets_get_info_scheme_A() asset_kind   {0}'.format(asset_kind))
+    # log_debug('assets_get_info_scheme_A() A.key        {0}'.format(A.key))
+    # log_debug('assets_get_info_scheme_A() A.name       {0}'.format(A.name))
+    # log_debug('assets_get_info_scheme_A() A.path_noext {0}'.format(A.path_noext))
+
+    return A
+
+#
+# Scheme B uses suffixes for artwork. All artwork are stored in the same directory
+#
+def assets_get_info_scheme_B(asset_kind, asset_basename, asset_directory):
+    A = AssetInfo()
+    A.basename = asset_basename
+
+    if asset_kind == ASSET_THUMB:
+        A.key = 's_thumb'
+        A.name = 'Thumb'
+        A.path_noext = os.path.join(asset_directory, A.basename + '_thumb')
+    elif asset_kind == ASSET_FANART:
+        A.key = 's_fanart'
+        A.name = 'Fanart'
+        A.path_noext = os.path.join(asset_directory, A.basename + '_fanart')
+    elif asset_kind == ASSET_BANNER:
+        A.key = 's_banner'
+        A.name = 'Banner'
+        A.path_noext = os.path.join(asset_directory, A.basename + '_banner')
+    elif asset_kind == ASSET_FLYER:
+        A.key = 's_flyer'
+        A.name = 'Flyer'
+        A.path_noext = os.path.join(asset_directory, A.basename + '_flyer')
+    else:
+        log_error('assets_get_info_scheme_B() Wrong asset_kind = {0}'.format(asset_kind))
+
+    return A

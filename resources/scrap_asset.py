@@ -24,10 +24,10 @@ from scrap_info import *
 # NULL scraper, does nothing, but it's very fast :)
 # Use as base for new scrapers
 # ----------------------------------------------------------------------------- 
-class thumb_NULL(Scraper_Thumb):
+class asset_NULL(Scraper_Asset):
     def __init__(self):
         self.name       = 'NULL'
-        self.fancy_name = 'NULL Thumb scraper'
+        self.fancy_name = 'NULL asset scraper'
 
     def set_options(self, region, imgsize):
         pass
@@ -39,12 +39,12 @@ class thumb_NULL(Scraper_Thumb):
         return []
 
 # -----------------------------------------------------------------------------
-# TheGamesDB thumb scraper
+# TheGamesDB asset scraper
 # ----------------------------------------------------------------------------- 
-class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
+class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
     def __init__(self):
         self.name       = 'TheGamesDB'
-        self.fancy_name = 'TheGamesDB Thumb scraper'
+        self.fancy_name = 'TheGamesDB asset scraper'
 
     def set_options(self, region, imgsize):
         pass
@@ -87,12 +87,12 @@ class thumb_TheGamesDB(Scraper_Thumb, Scraper_TheGamesDB):
         return images
 
 # -----------------------------------------------------------------------------
-# GameFAQs thumb scraper
+# GameFAQs asset scraper
 # ----------------------------------------------------------------------------- 
-class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
+class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def __init__(self):
         self.name       = 'GameFAQs'
-        self.fancy_name = 'GameFAQs Thumb scraper'
+        self.fancy_name = 'GameFAQs asset scraper'
 
     def set_options(self, region, imgsize):
         pass
@@ -161,10 +161,10 @@ class thumb_GameFAQs(Scraper_Thumb, Scraper_GameFAQs):
 # arcadeHITS
 # Site in french, valid only for MAME.
 # ----------------------------------------------------------------------------- 
-class thumb_arcadeHITS(Scraper_Thumb):
+class asset_arcadeHITS(Scraper_Asset):
     def __init__(self):
         self.name       = 'arcadeHITS'
-        self.fancy_name = 'arcadeHITS Thumb scraper'
+        self.fancy_name = 'arcadeHITS asset scraper'
 
     def set_options(self, region, imgsize):
         pass
@@ -194,12 +194,12 @@ class thumb_arcadeHITS(Scraper_Thumb):
             return covers
 
 # -----------------------------------------------------------------------------
-# Google thumb scraper
+# Google asset scraper
 # ----------------------------------------------------------------------------- 
-class thumb_Google(Scraper_Thumb):
+class asset_Google(Scraper_Asset):
     def __init__(self):
         self.name       = 'Google'
-        self.fancy_name = 'Google Thumb scraper'
+        self.fancy_name = 'Google asset scraper'
 
     def set_options(self, region, imgsize):
         pass

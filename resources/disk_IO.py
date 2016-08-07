@@ -42,7 +42,7 @@ except:
 #
 # Tag name in the XML is the same as in the data dictionary.
 def fs_new_category():
-    c = {'categoryID' : u'',
+    c = {'id' : u'',
          'm_name' : u'',
          'm_genre' : u'',
          'm_plot' : u'',
@@ -60,7 +60,7 @@ def fs_new_category():
     return c
 
 def fs_new_launcher():
-    l = {'launcherID' : u'',
+    l = {'id' : u'',
          'm_name' : u'',
          'm_year' : u'', 
          'm_genre' : u'',
@@ -107,7 +107,7 @@ def fs_new_launcher():
 # finished        bool ['True', 'False'] default 'False'
 # nointro_status  string ['Have', 'Miss', 'Unknown', 'None'] default 'None'
 def fs_new_rom():
-    r = {'romID' : u'',
+    r = {'id' : u'',
          'm_name' : u'',
          'm_year' : u'',
          'm_genre' : u'',
@@ -255,12 +255,12 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         str_list.append('</control>\n')
 
         # --- Create Categories XML list ---
-        for categoryID in sorted(categories, key = lambda x : categories[x]['name']):
+        for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
             category = categories[categoryID]
             # Data which is not string must be converted to string
             # XML text returns UFT-8 encoded strings. Dictionary strings are in Unicode!
             str_list.append('<category>\n')
-            str_list.append(XML_text('categoryID', categoryID))
+            str_list.append(XML_text('id', categoryID))
             str_list.append(XML_text('m_name', category['m_name']))
             str_list.append(XML_text('m_genre', category['m_genre']))
             str_list.append(XML_text('m_plot', category['m_plot']))
@@ -276,11 +276,11 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append('</category>\n')
 
         # --- Write launchers ---
-        for launcherID in sorted(launchers, key = lambda x : launchers[x]['name']):
+        for launcherID in sorted(launchers, key = lambda x : launchers[x]['m_name']):
             # Data which is not string must be converted to string
             launcher = launchers[launcherID]
             str_list.append('<launcher>\n')
-            str_list.append(XML_text('launcherID', launcherID))
+            str_list.append(XML_text('id', launcherID))
             str_list.append(XML_text('m_name', launcher['m_name']))
             str_list.append(XML_text('m_year', launcher['m_year']))
             str_list.append(XML_text('m_genre', launcher['m_genre']))
@@ -329,10 +329,10 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         file_obj.close()
     except OSError:
         log_error('Cannot write categories.xml file (OSError)')
-        kodi_notify_warn('AEL Error', 'Cannot write categories.xml file (OSError)')
+        kodi_notify_warn('Cannot write categories.xml file (OSError)')
     except IOError:
         log_error('Cannot write categories.xml file (IOError)')
-        kodi_notify_warn('AEL Error', 'Cannot write categories.xml file (IOError)')
+        kodi_notify_warn('Cannot write categories.xml file (IOError)')
 
 #
 # Loads categories.xml from disk and fills dictionary self.categories
@@ -383,7 +383,7 @@ def fs_load_catfile(categories_file):
                     category[xml_tag] = xml_bool
 
             # Add category to categories dictionary
-            categories[category['categoryID']] = category
+            categories[category['id']] = category
 
         elif category_element.tag == 'launcher':
             # Default values
@@ -407,7 +407,7 @@ def fs_load_catfile(categories_file):
                     launcher[xml_tag] = xml_float
 
             # Add launcher to categories dictionary
-            launchers[launcher['launcherID']] = launcher
+            launchers[launcher['id']] = launcher
 
     return (update_timestamp, categories, launchers)
 
@@ -526,10 +526,10 @@ def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_xml_file))
         log_error('fs_write_ROMs_XML() (OSerror) Cannot write file "{0}"'.format(roms_xml_file))
     except IOError:
-        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_xml_file))
         log_error('fs_write_ROMs_XML() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # --- We are not busy anymore ---
@@ -605,7 +605,7 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         # Print some information in the XML so the user can now which launcher created it.
         # Note that this is ignored when reading the file.
         str_list.append('<launcher>\n')
-        str_list.append(XML_text('romID', launcher['romID']))
+        str_list.append(XML_text('id', launcher['id']))
         str_list.append(XML_text('m_name', launcher['m_name']))
         str_list.append(XML_text('categoryID', launcher['categoryID']))
         str_list.append(XML_text('platform', launcher['platform']))
@@ -619,10 +619,10 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_xml_file))
         log_error('fs_write_ROMs_JSON() (OSerror) Cannot write file "{0}"'.format(roms_xml_file))
     except IOError:
-        log_kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_xml_file))
         log_error('fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # >> Write ROMs JSON dictionary.
@@ -630,9 +630,9 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
           file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
     except OSError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_json_file))
+        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_json_file))
     except IOError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_json_file))
+        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_json_file))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -700,9 +700,9 @@ def fs_write_Favourites_XML(roms_xml_file, roms):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+        kodi_notify('Cannot write {0} file (OSError)'.format(roms_xml_file))
     except IOError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+        kodi_notify('Cannot write {0} file (IOError)'.format(roms_xml_file))
 
 #
 # Loads an XML file containing the favourite ROMs
@@ -751,9 +751,9 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
         with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
           file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
     except OSError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_json_file))
+        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_json_file))
     except IOError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_json_file))
+        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_json_file))
 
 #
 # Loads an JSON file containing the Favourite ROMs
@@ -803,9 +803,9 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+        kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
     except IOError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+        kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
 
 #
 # Loads an XML file containing Virtual Launcher indices
@@ -857,9 +857,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
         with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
           file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
     except OSError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_json_file))
+        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_json_file))
     except IOError:
-        gui_kodi_notify('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_json_file))
+        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_json_file))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -1087,13 +1087,11 @@ def fs_export_ROM_NFO(rom, verbose = True):
         usock.close()
     except:
         if verbose:
-            kodi_notify_warn('Advanced Emulator Launcher',
-                             'Error writing {0}'.format(nfo_file_path))
+            kodi_notify_warn('Error writing {0}'.format(nfo_file_path))
         log_error("fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path))
         return
     if verbose:
-        kodi_notify('Advanced Emulator Launcher',
-                    'Created NFO file {0}'.format(nfo_file_path))
+        kodi_notify('Created NFO file {0}'.format(nfo_file_path))
 
     return
 
@@ -1131,12 +1129,10 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         if len(item_plot) > 0:      roms[romID]['plot']      = text_unescape_XML(item_plot[0])
 
         if verbose:
-            kodi_notify('Advanced Emulator Launcher',
-                        'Imported {0}'.format(nfo_file_path))
+            kodi_notify('Imported {0}'.format(nfo_file_path))
     else:
         if verbose:
-            kodi_notify_warn('Advanced Emulator Launcher',
-                             'NFO file not found {0}'.format(nfo_file_path))
+            kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path))
         log_debug("fs_import_ROM_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
@@ -1199,13 +1195,11 @@ def fs_export_launcher_NFO(nfo_file_path, launcher):
         f.write(full_string)
         f.close()
     except:
-        kodi_notify_warn('Advanced Emulator Launcher',
-                         u'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
+        kodi_notify_warn(u'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
         log_error(u"fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_file_path))
         return False
 
-    kodi_notify('Advanced Emulator Launcher',
-                u'Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
+    kodi_notify(u'Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
     log_debug(u"fs_export_launcher_NFO() Created '{0}'".format(nfo_file_path))
 
     return True
@@ -1232,12 +1226,12 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
             item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
             file.close()
         except:
-            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
+            kodi_notify_warn(u'Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
             log_error(u"fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
             return False
         # log_debug(u"fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
     else:
-        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
+        kodi_notify_warn(u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
         log_info(u"fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
@@ -1258,7 +1252,7 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
     if item_genre:     launchers[launcherID]['genre']  = text_unescape_XML(item_genre[0])
     if item_plot:      launchers[launcherID]['plot']   = text_unescape_XML(item_plot[0])
 
-    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(os.path.basename(nfo_file_path)))
+    kodi_notify(u'Imported {0}'.format(os.path.basename(nfo_file_path)))
     log_verb(u"fs_import_launcher_NFO() Imported '{0}'".format(nfo_file_path))
 
     return True
@@ -1292,13 +1286,11 @@ def fs_export_category_NFO(nfo_file_path, category):
         f.write(full_string)
         f.close()
     except:
-        kodi_notify_warn('Advanced Emulator Launcher',
-                         u'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
+        kodi_notify_warn(u'Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
         log_error(u"fs_export_category_NFO() Exception writing'{0}'".format(nfo_file_path))
         return False
 
-    kodi_notify('Advanced Emulator Launcher',
-                u'Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
+    kodi_notify(u'Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
     log_debug(u"fs_export_category_NFO() Created '{0}'".format(nfo_file_path))
 
     return True
@@ -1314,11 +1306,11 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
             item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
             file.close()
         except:
-            kodi_notify_warn('Advanced Emulator Launcher', u'Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
+            kodi_notify_warn(u'Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
             log_error(u"fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
             return False
     else:
-        kodi_notify_warn('Advanced Emulator Launcher', u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
+        kodi_notify_warn(u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
         log_info(u"fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
@@ -1328,7 +1320,7 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
     if item_genre: categories[categoryID]['genre']        = text_unescape_XML(item_genre[0])
     if item_plot:  categories[categoryID]['description']  = text_unescape_XML(item_plot[0])
 
-    kodi_notify('Advanced Emulator Launcher', u'Imported {0}'.format(os.path.basename(nfo_file_path)))
+    kodi_notify(u'Imported {0}'.format(os.path.basename(nfo_file_path)))
     log_verb(u"fs_import_category_NFO() Imported '{0}'".format(nfo_file_path))
 
     return True

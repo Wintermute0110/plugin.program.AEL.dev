@@ -14,19 +14,18 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # We support online an offline scrapers.
 # Note that this module does not depend on Kodi stuff at all, and can be
 # called externally from console Python scripts for testing of the scrapers.
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 
-# --- "GLOBALS" ---------------------------------------------------------------
+# --- "GLOBALS" -----------------------------------------------------------------------------------
 DEBUG_SCRAPERS = 1
 
-#------------------------------------------------------------------------------
-# Implement scrapers using polymorphism instead of using Angelscry 
-# exec('import ...') hack.
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
+# Implement scrapers using polymorphism instead of using Angelscry exec('import ...') hack.
+#--------------------------------------------------------------------------------------------------
 # Base class for all scrapers
 # A) Offline or online
 # B) Metadata, Thumb or Fanart
@@ -50,7 +49,7 @@ class Scraper:
     def get_search(self, search_string, rom_base_noext, platform):
         raise NotImplementedError('Subclass must implement get_search() abstract method')
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # Metadata scrapers base class
 # All scrapers (offline or online) must implement the abstract methods.
 # Metadata scrapers are for ROMs and standalone launchers (games)
@@ -71,10 +70,10 @@ class Scraper_Metadata(Scraper):
     def get_metadata(self, game):
         raise NotImplementedError('Subclass must implement get_metadata() abstract method')
 
-# --- Thumb scrapers ----------------------------------------------------------
+# --- Asset scrapers ------------------------------------------------------------------------------
 # All thumb scrapers are online scrapers. If user has a local image then he
 # can setup manually using other parts of the GUI.
-class Scraper_Thumb(Scraper):
+class Scraper_Asset(Scraper):
     # If scraper needs additional configuration then call this function.
     def set_options(self, region, imgsize):
         raise NotImplementedError('Subclass must implement set_options() abstract method')
@@ -93,27 +92,13 @@ class Scraper_Thumb(Scraper):
     def get_images(self, game):
         raise NotImplementedError('Subclass must implement get_images() abstract method')
 
-# --- Fanart scrapers ----------------------------------------------------------
-# All fanart scrapers are online scrapers. If user has a local image then he
-# can setup manually using other parts of the GUI.
-class Scraper_Fanart(Scraper):
-    def set_options(self, region, imgsize):
-        raise NotImplementedError('Subclass must implement set_options() abstract method')
-
-    def get_images(self, game):
-        raise NotImplementedError('Subclass must implement get_images() abstract method') 
-
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 # Instantiate scraper objects
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 from scrap_metadata import *
-from scrap_thumb import *
-from scrap_fanart import *
+from scrap_asset import *
 
-#
 # This is the official list of supported scrapers. This list MUST match the
 # settings configuration in settings.xml or bad things will happen.
-#
 scrapers_metadata = [ metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs() ]
-scrapers_thumb    = [ thumb_TheGamesDB(), thumb_GameFAQs() ]
-scrapers_fanart   = [ fanart_TheGamesDB(), fanart_GameFAQs() ]
+scrapers_asset    = [ asset_TheGamesDB(), asset_GameFAQs() ]
