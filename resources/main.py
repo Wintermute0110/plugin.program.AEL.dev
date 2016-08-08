@@ -3728,31 +3728,70 @@ class Main:
         ROM = misc_split_path(romfile)
         romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
 
-        # --- Search for local Thumb/Fanart ---
-        thumb_path  = launcher['thumbpath']
-        fanart_path = launcher['fanartpath']
-        thumb_path_noext  = misc_get_thumb_path_noext(thumb_path, fanart_path, ROM.base_noext)
-        fanart_path_noext = misc_get_fanart_path_noext(thumb_path, fanart_path, ROM.base_noext)
-        local_thumb  = misc_look_for_image(thumb_path_noext, IMG_EXTS)
-        local_fanart = misc_look_for_image(fanart_path_noext, IMG_EXTS)
-        log_verb('Local images set Thumb  "{0}"'.format(local_thumb))
-        log_verb('Local images set Fanart "{0}"'.format(local_fanart))
+        # --- Search for local assets (artwork) ---
+        A_title     = assets_get_info_scheme_A(ASSET_TITLE, ROM.base_noext, launcher)
+        A_snap      = assets_get_info_scheme_A(ASSET_SNAP, ROM.base_noext, launcher)
+        A_fanart    = assets_get_info_scheme_A(ASSET_FANART, ROM.base_noext, launcher)
+        A_banner    = assets_get_info_scheme_A(ASSET_BANNER, ROM.base_noext, launcher)
+        A_clearlogo = assets_get_info_scheme_A(ASSET_CLEARLOGO, ROM.base_noext, launcher)
+        A_boxfront  = assets_get_info_scheme_A(ASSET_BOXFRONT, ROM.base_noext, launcher)
+        A_boxback   = assets_get_info_scheme_A(ASSET_BOXBACK, ROM.base_noext, launcher)
+        A_cartridge = assets_get_info_scheme_A(ASSET_CARTRIDGE, ROM.base_noext, launcher)
+        A_flyer     = assets_get_info_scheme_A(ASSET_FLYER, ROM.base_noext, launcher)
+        A_map       = assets_get_info_scheme_A(ASSET_MAP, ROM.base_noext, launcher)
+        A_manual    = assets_get_info_scheme_A(ASSET_MANUAL, ROM.base_noext, launcher)
+        A_trailer   = assets_get_info_scheme_A(ASSET_TRAILER, ROM.base_noext, launcher)
 
+        local_title     = misc_look_for_file(A_title.path_noext, IMG_EXTS)
+        local_snap      = misc_look_for_file(A_snap.path_noext, IMG_EXTS)
+        local_fanart    = misc_look_for_file(A_fanart.path_noext, IMG_EXTS)
+        local_banner    = misc_look_for_file(A_banner.path_noext, IMG_EXTS)
+        local_clearlogo = misc_look_for_file(A_clearlogo.path_noext, IMG_EXTS)
+        local_boxfront  = misc_look_for_file(A_boxfront.path_noext, IMG_EXTS)
+        local_boxback   = misc_look_for_file(A_boxback.path_noext, IMG_EXTS)
+        local_cartridge = misc_look_for_file(A_cartridge.path_noext, IMG_EXTS)
+        local_flyer     = misc_look_for_file(A_flyer.path_noext, IMG_EXTS)
+        local_map       = misc_look_for_file(A_map.path_noext, IMG_EXTS)
+        local_manual    = misc_look_for_file(A_manual.path_noext, MANUAL_EXTS)
+        local_trailer   = misc_look_for_file(A_trailer.path_noext, IMG_EXTS)
+        
         # --- Create ROM data structure ---
         romdata = fs_new_rom()
         romID = misc_generate_random_SID()
-        romdata['id']       = romID
-        romdata['filename'] = ROM.path
-        romdata['name']     = romname
-        romdata['thumb']    = local_thumb
-        romdata['fanart']   = local_fanart
+        romdata['id']          = romID
+        romdata['filename']    = ROM.path
+        romdata['m_name']      = romname
+        romdata['thumb']       = local_thumb
+        romdata['fanart']      = local_fanart
+        romdata['s_title']     = selected_title
+        romdata['s_snap']      = selected_snap
+        romdata['s_fanart']    = selected_fanart
+        romdata['s_banner']    = selected_banner
+        romdata['s_clearlogo'] = selected_clearlogo
+        romdata['s_boxfront']  = selected_boxfront
+        romdata['s_boxback']   = selected_boxback
+        romdata['s_cartridge'] = selected_cartridge
+        romdata['s_flyer']     = selected_flyer
+        romdata['s_map']       = selected_map
+        romdata['s_manual']    = selected_manual
+        romdata['s_trailer']   = selected_trailer
         roms[romID] = romdata
         log_info('_roms_add_new_rom() Added a new ROM')
-        log_info('_roms_add_new_rom() romID    "{0}"'.format(romdata['id']))
-        log_info('_roms_add_new_rom() filename "{0}"'.format(romdata['filename']))
-        log_info('_roms_add_new_rom() name     "{0}"'.format(romdata['name']))
-        log_info('_roms_add_new_rom() thumb    "{0}"'.format(romdata['thumb']))
-        log_info('_roms_add_new_rom() fanart   "{0}"'.format(romdata['fanart']))
+        log_info('_roms_add_new_rom() romID       "{0}"'.format(romdata['id']))
+        log_info('_roms_add_new_rom() filename    "{0}"'.format(romdata['filename']))
+        log_info('_roms_add_new_rom() m_name      "{0}"'.format(romdata['m_name']))
+        log_verb('_roms_add_new_rom() s_title     "{0}"'.format(romdata['s_title']))
+        log_verb('_roms_add_new_rom() s_snap      "{0}"'.format(romdata['s_snap']))
+        log_verb('_roms_add_new_rom() s_fanart    "{0}"'.format(romdata['s_fanart']))
+        log_verb('_roms_add_new_rom() s_banner    "{0}"'.format(romdata['s_banner']))
+        log_verb('_roms_add_new_rom() s_clearlogo "{0}"'.format(romdata['s_clearlogo']))
+        log_verb('_roms_add_new_rom() s_boxfront  "{0}"'.format(romdata['s_boxfront']))
+        log_verb('_roms_add_new_rom() s_boxback   "{0}"'.format(romdata['s_boxback']))
+        log_verb('_roms_add_new_rom() s_cartridge "{0}"'.format(romdata['s_cartridge']))
+        log_verb('_roms_add_new_rom() s_flyer     "{0}"'.format(romdata['s_flyer']))
+        log_verb('_roms_add_new_rom() s_map       "{0}"'.format(romdata['s_map']))
+        log_verb('_roms_add_new_rom() s_manual    "{0}"'.format(romdata['s_manual']))
+        log_verb('_roms_add_new_rom() s_trailer   "{0}"'.format(romdata['s_trailer']))
 
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
@@ -3996,7 +4035,7 @@ class Main:
         if metadata_action == META_TITLE_ONLY:
             scraper_text = 'Formatting ROM name.'
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-            romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
+            romdata['m_name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
             nfo_file_path = ROM.path_noext + ".nfo"
             scraper_text = 'Reading NFO file {0}'.format(nfo_file_path)
@@ -4006,14 +4045,14 @@ class Main:
                 log_debug('NFO file found. Reading it')
                 nfo_dic = fs_load_NFO_file_scanner(nfo_file_path)
                 # NOTE <platform> is chosen by AEL, never read from NFO files
-                romdata['name']   = nfo_dic['title']     # <title>
-                romdata['genre']  = nfo_dic['genre']     # <genre>
-                romdata['year']   = nfo_dic['year']      # <year>
-                romdata['studio'] = nfo_dic['publisher'] # <publisher>
-                romdata['plot']   = nfo_dic['plot']      # <plot>
+                romdata['m_name']   = nfo_dic['title']     # <title>
+                romdata['m_year']   = nfo_dic['year']      # <year>
+                romdata['m_genre']  = nfo_dic['genre']     # <genre>
+                romdata['m_plot']   = nfo_dic['plot']      # <plot>
+                romdata['m_studio'] = nfo_dic['publisher'] # <publisher>
             else:
                 log_debug('NFO file not found. Only cleaning ROM name.')
-                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
+                romdata['m_name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
         elif metadata_action == META_SCRAPER:
             scraper_text = 'Scraping metadata with {0}. Searching for matching games...'.format(self.scraper_metadata.fancy_name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
@@ -4056,18 +4095,18 @@ class Main:
                 if scan_ignore_scrapped_title:
                     # Ignore scraped title
                     romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
-                    log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['name']))
+                    log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['m_name']))
                 else:
                     # Use scraped title
-                    romdata['name'] = gamedata['title']
-                    log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['name']))
-                romdata['genre']  = gamedata['genre']
-                romdata['year']   = gamedata['year']
-                romdata['studio'] = gamedata['studio']
-                romdata['plot']   = gamedata['plot']
+                    romdata['m_name'] = gamedata['title']
+                    log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
+                romdata['m_year']   = gamedata['year']
+                romdata['m_genre']  = gamedata['genre']
+                romdata['m_plot']   = gamedata['plot']
+                romdata['m_studio'] = gamedata['studio']
             else:
                 log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
-                romdata['name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
+                romdata['m_name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
         else:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
@@ -4095,7 +4134,7 @@ class Main:
         local_cartridge = misc_look_for_file(A_cartridge.path_noext, IMG_EXTS)
         local_flyer     = misc_look_for_file(A_flyer.path_noext, IMG_EXTS)
         local_map       = misc_look_for_file(A_map.path_noext, IMG_EXTS)
-        local_manual    = misc_look_for_file(A_manual.path_noext, IMG_EXTS)
+        local_manual    = misc_look_for_file(A_manual.path_noext, MANUAL_EXTS)
         local_trailer   = misc_look_for_file(A_trailer.path_noext, IMG_EXTS)
         
         log_verb('Local asset scanner found Title     "{0}"'.format(local_title))
@@ -4508,7 +4547,7 @@ class Main:
             launcher = self.launchers[launcherID]
             platform = launcher['platform']
         f_path   = roms[romID]['filename']
-        rom_name = roms[romID]['name']
+        rom_name = roms[romID]['m_name']
         ROM      = misc_split_path(f_path)
         scan_clean_tags            = self.settings['scan_clean_tags']
         scan_ignore_scrapped_title = self.settings['scan_ignore_scrapped_title']
@@ -4557,10 +4596,10 @@ class Main:
         else:
             roms[romID]['name'] = gamedata['title']
             log_debug("User wants scrapped name. Setting name to '{0}'".format(roms[romID]['name']))
-        roms[romID]['genre']  = gamedata['genre']
-        roms[romID]['year']   = gamedata['year']
-        roms[romID]['studio'] = gamedata['studio']
-        roms[romID]['plot']   = gamedata['plot']
+        roms[romID]['m_year']   = gamedata['year']
+        roms[romID]['m_genre']  = gamedata['genre']
+        roms[romID]['m_plot']   = gamedata['plot']
+        roms[romID]['m_studio'] = gamedata['studio']
 
         # >> Changes were made
         kodi_notify('ROM metadata updated')
@@ -4582,7 +4621,7 @@ class Main:
         platform = launcher['platform']
         
         # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]['name'], 'Enter the launcher search string ...')
+        keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_name'], 'Enter the launcher search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
         search_string = keyboard.getText()
@@ -4616,10 +4655,10 @@ class Main:
 
         # --- Put metadata into launcher dictionary ---
         # >> Scraper should not change launcher title
-        self.launchers[launcherID]['genre']  = gamedata['genre']
-        self.launchers[launcherID]['year']   = gamedata['year']
-        self.launchers[launcherID]['studio'] = gamedata['studio']
-        self.launchers[launcherID]['plot']   = gamedata['plot']
+        self.launchers[launcherID]['m_year']   = gamedata['year']
+        self.launchers[launcherID]['m_genre']  = gamedata['genre']
+        self.launchers[launcherID]['m_plot']   = gamedata['plot']
+        self.launchers[launcherID]['m_studio'] = gamedata['studio']
 
         # >> Changes were made
         return True
