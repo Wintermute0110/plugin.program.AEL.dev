@@ -1,3 +1,24 @@
+# listitem.setInfo() overlay values and effects #
+
+`listitem.setInfo('video', {'overlay'  : 4})`
+
+Kodi Krypton Estuary displays a small icon to the left of the listitem title that can be changed
+with the overlay property value. Overlay values are defined in [GUIListItem],
+
+```
+enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
+                      ICON_OVERLAY_RAR,
+                      ICON_OVERLAY_ZIP,
+                      ICON_OVERLAY_LOCKED,
+                      ICON_OVERLAY_UNWATCHED,
+                      ICON_OVERLAY_WATCHED,
+                      ICON_OVERLAY_HD};
+```
+
+[setInfo]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setInfo
+[GUIListItem]: https://github.com/cisco-open-source/kodi/blob/master/xbmc/guilib/GUIListItem.h
+
+
 # Things to change in Advanced Emulator Launcher (AEL) #
 
 *   AL initial load is very slow. Entering a category or launcher is very slow.
