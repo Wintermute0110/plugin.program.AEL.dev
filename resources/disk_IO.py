@@ -147,17 +147,43 @@ def fs_new_rom():
 #                     Note that if the launcher does not exists implies ROM ID does not exist. If launcher
 #                     doesn't exist ROM JSON cannot be loaded.
 # 'Broken'            ROM filename does not exist. ROM is unplayable
-def fs_new_favourite_rom():
-    r = {'id' : u'',          'name' : u'',   'filename' : u'',
-         'thumb' : u'',       'fanart' : u'', 'trailer' : u'', 'custom' : u'',
-         'genre' : u'',       'year' : u'',   'studio' : u'',  'plot' : u'',
-         'altapp' : u'',      'altarg' : u'',
-         'finished' : False,  'nointro_status' : 'None',
-         'launcherID' : u'',  'platform' : u'',
-         'application' : u'', 'args' : u'', 'rompath' : '', 'romext' : '',
-         'minimize' : False,  'fav_status' : u'OK' }
-
-    return r
+# def fs_new_favourite_rom():
+#     r = {'id' : u'',
+#          'm_name' : u'',
+#          'm_year' : u'',
+#          'm_genre' : u'',
+#          'm_plot' : u'',
+#          'm_rating' : u'',         
+#          'filename' : u'',
+#          'altapp' : u'',
+#          'altarg' : u'',
+#          'finished' : False,
+#          'nointro_status' : 'None',
+#          'default_thumb' : 's_title',
+#          'default_fanart' : 's_fanart',         
+#          's_title' : u'',
+#          's_snap' : u'',
+#          's_fanart' : u'',
+#          's_banner' : u'',
+#          's_clearlogo' : u'',
+#          's_boxfront' : u'',
+#          's_boxback' : u'',
+#          's_cartridge' : u'',
+#          's_flyer' : u'',
+#          's_map' : u'',
+#          's_manual' : u'',
+#          's_trailer' : u'',
+#          'launcherID' : u'',
+#          'platform' : u'',
+#          'application' : u'',
+#          'args' : u'',
+#          'rompath' : '',
+#          'romext' : '',
+#          'minimize' : False,
+#          'fav_status' : u'OK'
+#     }
+#
+#     return r
 
 #
 # Note that Virtual Launchers ROMs use the Favourite ROMs data model.
@@ -173,7 +199,7 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     # NOTE keep it!
     # del favourite['nointro_status']
     
-    # >> Copy launcher stuff
+    # >> Copy launcher stuff into Favourite ROM
     favourite['launcherID']  = launcher['id']
     favourite['platform']    = launcher['platform']
     favourite['application'] = launcher['application']
@@ -186,11 +212,17 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     return favourite
 
 def fs_get_ROMs_basename(category_name, launcher_name, launcherID):
-    clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name])
-    clean_launch_title = ''.join([i if i in string.printable else '_' for i in launcher_name])
-    clean_launch_title = clean_launch_title.replace(' ', '_')
+    clean_cat_name = u''.join([i if i in string.printable else '_' for i in category_name]).replace(' ', '_')
+    clean_launch_title = u''.join([i if i in string.printable else '_' for i in launcher_name]).replace(' ', '_')
     roms_base_noext = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:6]
     log_verb('fs_get_ROMs_basename() roms_base_noext "{0}"'.format(roms_base_noext))
+
+    return roms_base_noext
+
+def fs_get_collection_ROMs_basename(collection_name, collectionID):
+    clean_collection_name = u''.join([i if i in string.printable else '_' for i in collection_name]).replace(' ', '_')
+    roms_base_noext = clean_collection_name + '_' + collectionID[0:6]
+    log_verb('fs_get_collection_ROMs_basename() roms_base_noext "{0}"'.format(roms_base_noext))
 
     return roms_base_noext
 
@@ -328,11 +360,11 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        log_error('Cannot write categories.xml file (OSError)')
-        kodi_notify_warn('Cannot write categories.xml file (OSError)')
+        log_error('(OSError) Cannot write categories.xml file')
+        kodi_notify_warn('(OSError) Cannot write categories.xml file')
     except IOError:
-        log_error('Cannot write categories.xml file (IOError)')
-        kodi_notify_warn('Cannot write categories.xml file (IOError)')
+        log_error('(IOError) Cannot write categories.xml file')
+        kodi_notify_warn('(IOError) Cannot write categories.xml file')
 
 #
 # Loads categories.xml from disk and fills dictionary self.categories
@@ -526,11 +558,11 @@ def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_xml_file))
-        log_error('fs_write_ROMs_XML() (OSerror) Cannot write file "{0}"'.format(roms_xml_file))
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_xml_file))
+        log_error(u'fs_write_ROMs_XML() (OSerror) Cannot write file "{0}"'.format(roms_xml_file))
     except IOError:
-        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_xml_file))
-        log_error('fs_write_ROMs_XML() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(roms_xml_file))
+        log_error(u'fs_write_ROMs_XML() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # --- We are not busy anymore ---
     kodi_busydialog_OFF()
@@ -619,20 +651,20 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_xml_file))
-        log_error('fs_write_ROMs_JSON() (OSerror) Cannot write file "{0}"'.format(roms_xml_file))
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_xml_file))
+        log_error(u'fs_write_ROMs_JSON() (OSerror) Cannot write file "{0}"'.format(roms_xml_file))
     except IOError:
-        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_xml_file))
-        log_error('fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(roms_xml_file))
+        log_error(u'fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # >> Write ROMs JSON dictionary.
     try:
         with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
           file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
     except OSError:
-        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_json_file))
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
-        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_json_file))
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(roms_json_file))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -751,9 +783,9 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
         with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
           file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
     except OSError:
-        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_json_file))
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
-        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_json_file))
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(roms_json_file))
 
 #
 # Loads an JSON file containing the Favourite ROMs
@@ -773,14 +805,109 @@ def fs_load_Favourites_JSON(roms_json_file):
     return roms
 
 # -------------------------------------------------------------------------------------------------
-# Virtual Categories
+# ROM Collections
 # -------------------------------------------------------------------------------------------------
-def fs_write_VCategory_XML(roms_xml_file, roms):
-    log_info('fs_write_VCategory_XML() Saving XML file {0}'.format(roms_xml_file))
+def fs_write_Collection_index_XML(collections_xml_file, collections):
+    log_info('fs_write_Collection_index_XML() Saving XML file {0}'.format(collections_xml_file))
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_Virtual_Category version="1.0">\n')
+        str_list.append('<advanced_emulator_launcher_Collection_index version="1">\n')
+
+        # --- Control information ---
+        _t = time.time()
+        str_list.append('<control>\n')
+        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append('</control>\n')
+
+        # --- Virtual Launchers ---
+        for collection_id in sorted(collections, key = lambda x : collections[x]['name']):
+            collection = collections[collection_id]
+            str_list.append('<Collection>\n')
+            str_list.append(XML_text('id', collection['id']))
+            str_list.append(XML_text('name', collection['name']))
+            str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
+            str_list.append('</Collection>\n')
+        str_list.append('</advanced_emulator_launcher_Collection_index>\n')
+        full_string = ''.join(str_list)
+        file_obj = open(collections_xml_file, 'wt')
+        file_obj.write(full_string)
+        file_obj.close()
+    except OSError:
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(collections_xml_file))
+    except IOError:
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(collections_xml_file))
+
+def fs_load_Collection_index_XML(collections_xml_file):
+    __debug_xml_parser = 0
+    update_timestamp = 0.0
+    collections = {}
+
+    # --- If file does not exist return empty dictionary ---
+    if not os.path.isfile(collections_xml_file): return (update_timestamp, collections)
+
+    # --- Parse using cElementTree ---
+    log_verb(u'fs_load_Collection_index_XML() Loading XML file {0}'.format(collections_xml_file))
+    xml_tree = ET.parse(collections_xml_file)
+    xml_root = xml_tree.getroot()
+    for root_element in xml_root:
+        if __debug_xml_parser: log_debug(u'Root child {0}'.format(root_element.tag))
+
+        if root_element.tag == 'control':
+            for control_child in root_element:
+                if control_child.tag == 'update_timestamp':
+                    update_timestamp = float(control_child.text) # Convert Unicode to float
+
+        elif root_element.tag == 'Collection':
+            collection = { 'id' : u'', 'name' : u'', 'roms_base_noext' : u'' }
+            for rom_child in root_element:
+                # By default read strings
+                xml_text = rom_child.text if rom_child.text is not None else ''
+                xml_text = text_unescape_XML(xml_text)
+                xml_tag  = rom_child.tag
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+                collection[xml_tag] = xml_text
+            collections[collection['id']] = collection
+
+    return (update_timestamp, collections)
+
+def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
+    roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
+    log_info('fs_write_Collection_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
+    try:
+        with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
+          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
+    except OSError:
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
+    except IOError:
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(roms_json_file))
+
+#
+# Loads an JSON file containing the Virtual Launcher ROMs
+#
+def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
+    roms = {}
+
+    # --- If file does not exist return empty dictionary ---
+    roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
+    if not os.path.isfile(roms_json_file): return roms
+
+    # --- Parse using cElementTree ---
+    log_verb('fs_load_Collection_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
+    with open(roms_json_file) as file:    
+        roms = json.load(file)
+
+    return roms
+
+# -------------------------------------------------------------------------------------------------
+# Virtual Categories
+# -------------------------------------------------------------------------------------------------
+def fs_write_VCategory_XML(roms_xml_file, roms):
+    log_info(u'fs_write_VCategory_XML() Saving XML file {0}'.format(roms_xml_file))
+    try:
+        str_list = []
+        str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        str_list.append('<advanced_emulator_launcher_Virtual_Category_index version="1">\n')
 
         # --- Control information ---
         _t = time.time()
@@ -797,15 +924,15 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
             str_list.append(XML_text('rom_count', rom['rom_count']))
             str_list.append(XML_text('roms_base_noext', rom['roms_base_noext']))
             str_list.append('</VLauncher>\n')
-        str_list.append('</advanced_emulator_launcher_Virtual_Category>\n')
+        str_list.append('</advanced_emulator_launcher_Virtual_Category_index>\n')
         full_string = ''.join(str_list)
-        file_obj = open(roms_xml_file, 'wt' )
+        file_obj = open(roms_xml_file, 'wt')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (OSError)'.format(roms_xml_file))
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_xml_file))
     except IOError:
-        kodi_notify_warn('Advanced Emulator Launcher - Error', 'Cannot write {0} file (IOError)'.format(roms_xml_file))
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(roms_xml_file))
 
 #
 # Loads an XML file containing Virtual Launcher indices
@@ -817,15 +944,14 @@ def fs_load_VCategory_XML(roms_xml_file):
     VLaunchers = {}
 
     # --- If file does not exist return empty dictionary ---
-    if not os.path.isfile(roms_xml_file):
-        return {}
+    if not os.path.isfile(roms_xml_file): return (update_timestamp, VLaunchers)
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_VCategory_XML() Loading XML file {0}'.format(roms_xml_file))
+    log_verb(u'fs_load_VCategory_XML() Loading XML file {0}'.format(roms_xml_file))
     xml_tree = ET.parse(roms_xml_file)
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
-        if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
+        if __debug_xml_parser: log_debug(u'Root child {0}'.format(root_element.tag))
 
         if root_element.tag == 'control':
             for control_child in root_element:
@@ -857,9 +983,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
         with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
           file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
     except OSError:
-        kodi_notify_warn('Cannot write {0} file (OSError)'.format(roms_json_file))
+        kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
-        kodi_notify_warn('Cannot write {0} file (IOError)'.format(roms_json_file))
+        kodi_notify_warn(u'(IOError) Cannot write {0} file'.format(roms_json_file))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -869,8 +995,7 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 
     # --- If file does not exist return empty dictionary ---
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
-    if not os.path.isfile(roms_json_file):
-        return {}
+    if not os.path.isfile(roms_json_file): return roms
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
@@ -887,8 +1012,7 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 #
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
-    if not os.path.isfile(roms_xml_file):
-        return {}
+    if not os.path.isfile(roms_xml_file): return {}
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_NoIntro_XML_file() Loading XML file {0}'.format(roms_xml_file))
@@ -1087,11 +1211,11 @@ def fs_export_ROM_NFO(rom, verbose = True):
         usock.close()
     except:
         if verbose:
-            kodi_notify_warn('Error writing {0}'.format(nfo_file_path))
-        log_error("fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path))
+            kodi_notify_warn(u'Error writing {0}'.format(nfo_file_path))
+        log_error(u"fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path))
         return
     if verbose:
-        kodi_notify('Created NFO file {0}'.format(nfo_file_path))
+        kodi_notify(u'Created NFO file {0}'.format(nfo_file_path))
 
     return
 
@@ -1129,11 +1253,11 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         if len(item_plot) > 0:      roms[romID]['plot']      = text_unescape_XML(item_plot[0])
 
         if verbose:
-            kodi_notify('Imported {0}'.format(nfo_file_path))
+            kodi_notify(u'Imported {0}'.format(nfo_file_path))
     else:
         if verbose:
-            kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path))
-        log_debug("fs_import_ROM_NFO() NFO file not found '{0}'".format(nfo_file_path))
+            kodi_notify_warn(u'NFO file not found {0}'.format(nfo_file_path))
+        log_debug(u"fs_import_ROM_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
     return True
