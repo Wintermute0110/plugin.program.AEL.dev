@@ -2495,15 +2495,15 @@ class Main:
         
         # --- Load Collection ROMs ---
         collection = collections[launcherID]
-        roms = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
-        if not roms:
+        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
         # --- Display Collection ---
-        for key in sorted(roms, key= lambda x : roms[x]['filename']):
-            self._gui_render_rom_row(categoryID, launcherID, key, roms[key], False)
+        for rom in collection_rom_list:
+            self._gui_render_rom_row(categoryID, launcherID, rom['id'], rom, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -2532,6 +2532,9 @@ class Main:
         log_debug(u'_command_add_collection() id              "{0}"'.format(collection['id']))
         log_debug(u'_command_add_collection() name            "{0}"'.format(collection['name']))
         log_debug(u'_command_add_collection() roms_base_noext "{0}"'.format(collection['roms_base_noext']))
+
+        kodi_dialog_OK('Advanced Emulator Launcher',
+                       "Created new Collection named '{0}'.".format(collection_name))
 
         # --- Save collections XML database ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
@@ -2564,6 +2567,12 @@ class Main:
         # --- Load Collection index ---
         (update_timestamp, collections) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         
+        # --- If no collections so long and thanks for all the fish ---
+        if not collections:
+            kodi_dialog_OK('Advanced Emulator Launcher',
+                           'You have no Collections! Create a collection first before adding ROMs.')
+            return
+
         # --- Ask user which Collection wants to add the ROM to ---
         dialog = xbmcgui.Dialog()
         collections_id = []
@@ -2577,43 +2586,40 @@ class Main:
 
         # --- Load Collection ROMs ---
         collection = collections[collectionID]
-        roms_collection = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
         log_info('Adding ROM to Collection')
         log_info('Collection {0}'.format(collection['name']))
         log_info('romID      {0}'.format(romID))
         log_info('ROM m_name {0}'.format(roms[romID]['m_name']))
 
-        # Check if ROM already in this collection an warn user if so
-        if romID in roms_collection:
-            log_info('Already in collection')
+        # >> Check if ROM already in this collection an warn user if so
+        rom_already_in_collection = False
+        for rom in collection_rom_list:
+            if romID == rom['id']:
+                rom_already_in_collection = True
+                break
+        if rom_already_in_collection:
+            log_info('ROM already in collection')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno(u'Advanced Emulator Launcher',
                                u'ROM {0} is already on Collection {1}. Overwrite it?'.format(roms[romID]['m_name'], collection['name']))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
-        # Confirm if rom should be added
+        # >> Confirm if rom should be added
         else:
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno(u'Advanced Emulator Launcher',
-                               u'ROM {0}. Add this ROM to Collection {1}?'.format(roms[romID]['m_name'], collection['name']))
+                               u"ROM '{0}'. Add this ROM to Collection '{1}'?".format(roms[romID]['m_name'], collection['name']))
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
 
         # --- Add ROM to favourites ROMs and save to disk ---
-        roms_collection[romID] = fs_get_Favourite_from_ROM(roms[romID], launcher)
         # >> Add ROM to the last position in the collection
-        # >> Order is defined in the range 0, 1, ..., N-1
-        num_collection_roms = len(roms_collection)
-        roms_collection[romID]['order'] = num_collection_roms - 1
-        log_info('After addition there are {0} ROM/s'.format(num_collection_roms))
-        log_info('ROM order is {0}'.format(num_collection_roms - 1))
-
-        # >> If thumb is empty then use launcher thum. / If fanart is empty then use launcher fanart.
-        # if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = launcher['thumb']
-        # if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = launcher['fanart']
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], roms_collection)
+        collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
+        collection_rom_list.append(collection_rom)
+        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
         kodi_refresh_container()
 
     #

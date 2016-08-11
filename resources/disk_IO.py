@@ -876,7 +876,7 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_info('fs_write_Collection_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
-          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
+          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 1, separators = (',', ': '))))
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -886,7 +886,7 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
 # Loads an JSON file containing the Virtual Launcher ROMs
 #
 def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
-    roms = {}
+    roms = []
 
     # --- If file does not exist return empty dictionary ---
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
