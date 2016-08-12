@@ -22,7 +22,9 @@
 import xml.etree.ElementTree as ET
 import json
 import io
-import codecs, time
+import codecs
+import time
+import os
 
 # --- AEL packages ---
 from utils import *
@@ -674,13 +676,23 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
 
     # --- If file does not exist return empty dictionary ---
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
-    if not os.path.isfile(roms_json_file):
-        return {}
+    if not os.path.isfile(roms_json_file): return roms
 
     # --- Parse using json module ---
+    # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
+    #    exception exceptions.ValueError and launcher cannot be deleted. Deal
+    #    with this exception so at least launcher can be rescanned.
     log_verb('fs_load_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
-    with open(roms_json_file) as file:    
-        roms = json.load(file)
+    with open(roms_json_file) as file:
+        try:
+            roms = json.load(file)
+        except ValueError:
+            statinfo = os.stat(roms_json_file)
+            log_error('fs_load_ROMs_JSON() ValueError exception in json.load() function')
+            log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir))
+            log_error('fs_load_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
+            log_error('fs_load_ROMs_JSON() Size {0}'.format(statinfo.st_size))
+        file.close()
 
     return roms
 
