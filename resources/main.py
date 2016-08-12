@@ -1540,7 +1540,8 @@ class Main:
             # >> Selection of the item file
             if type2 == 0:
                 filename = roms[romID]['filename']
-                romext   = roms[romID]['romext']
+                launcher = self.launchers[launcherID]
+                romext   = launcher['romext']
                 item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', '.' + romext.replace('|', '|.'),
                                                     False, False, filename)
                 if not item_file: return
