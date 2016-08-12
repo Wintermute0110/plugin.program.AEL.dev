@@ -1378,7 +1378,8 @@ class Main:
             # Selection of the item file
             if type2 == 0:
                 filename = roms[romID]['filename']
-                romext   = roms[romID]['romext']
+                launcher = self.launchers[launcherID]
+                romext   = launcher['romext']
                 item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', '.' + romext.replace('|', '|.'),
                                                     False, False, filename)
                 if not item_file: return
@@ -2648,7 +2649,7 @@ class Main:
             window.getControl(5).setText(info_text)
         except:
             log_error(u'_command_view_Category() Exception rendering INFO window')
-            
+
     def _command_view_Launcher_Report(self, categoryID, launcherID):
         # --- Standalone launchers do not have reports! ---
         category = self.categories[categoryID]
