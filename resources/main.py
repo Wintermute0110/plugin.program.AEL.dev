@@ -186,6 +186,10 @@ class Main:
             self._command_render_collection_ROMs(args['catID'][0], args['launID'][0])
         elif command == 'ADD_COLLECTION':
             self._command_add_collection()
+        elif command == 'MOVE_COL_ROM_UP':
+            self._command_move_collection_rom_up(args['catID'][0], args['launID'][0], args['romID'][0])
+        elif command == 'MOVE_COL_ROM_DOWN':
+            self._command_move_collection_rom_down(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'SHOW_LAUNCHERS':
             self._command_render_launchers(args['catID'][0])
         elif command == 'SHOW_ALL_LAUNCHERS':
@@ -2047,7 +2051,8 @@ class Main:
             commands.append(('Edit ROM in Collection',     self._misc_url_RunPlugin('EDIT_ROM',          VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
             commands.append(('Search Collection',          self._misc_url_RunPlugin('SEARCH_LAUNCHER',   VCATEGORY_COLLECTIONS_ID, launcherID), ))
             commands.append(('Delete ROM from Collection', self._misc_url_RunPlugin('DELETE_ROM',        VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
-        elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
+        elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
+             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
             commands.append(('View Virtual Launcher ROM data', self._misc_url_RunPlugin('VIEW_ROM', categoryID, launcherID, romID), ))
             commands.append(('Add ROM to AEL Favourites',      self._misc_url_RunPlugin('ADD_TO_FAV', categoryID, launcherID, romID), ))
         else:
@@ -2539,6 +2544,91 @@ class Main:
         # --- Save collections XML database ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
 
+    #
+    # This function is called from a context menu and so self.addon_handle = -1. In this case, it is
+    # not necessary to call xbmcplugin.endOfDirectory() if function fails because we are not rendering
+    # a ListItem.
+    #
+    def _command_move_collection_rom_up(self, categoryID, launcherID, romID):
+        # --- Load Collection ROMs ---
+        (update_timestamp, collections) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        collection = collections[launcherID]
+        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        num_roms = len(collection_rom_list)
+        if not collection_rom_list:
+            kodi_notify('Collection is empty. Add ROMs to this collection first')
+            return
+
+        # >> Get position of current ROM in the list
+        current_ROM_position = -1;
+        for i, rom in enumerate(collection_rom_list):
+            if romID == rom['id']:
+                current_ROM_position = i
+                break
+        if current_ROM_position < 0:
+            kodi_notify_warn('ROM not found in list. This is a bug!')
+            return
+        log_verb('_command_move_collection_rom_up() Collection {0} ({1})'.format(collection['name'], collection['id']))
+        log_verb('_command_move_collection_rom_up() Collection has {0} ROMs'.format(num_roms))
+        log_verb('_command_move_collection_rom_up() Moving ROM in position {0} up'.format(current_ROM_position))
+
+        # >> If ROM is first of the list do nothing
+        if current_ROM_position == 0:
+            kodi_dialog_OK('Advanced Emulator Launcher',
+                           'ROM is in first position of the Collection. Cannot be moved up.')
+            return
+
+        # >> Reorder list
+        original_order = range(num_roms)
+        new_order = original_order
+        new_order[current_ROM_position - 1] = current_ROM_position
+        new_order[current_ROM_position]     = current_ROM_position - 1
+        reordered_rom_list = [collection_rom_list[i] for i in new_order]
+
+        # >> Save reordered collection ROMs
+        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], reordered_rom_list)
+        kodi_refresh_container()
+            
+    def _command_move_collection_rom_down(self, categoryID, launcherID, romID):
+        # --- Load Collection ROMs ---
+        (update_timestamp, collections) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        collection = collections[launcherID]
+        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        num_roms = len(collection_rom_list)
+        if not collection_rom_list:
+            kodi_notify('Collection is empty. Add ROMs to this collection first')
+            return
+
+        # >> Get position of current ROM in the list
+        current_ROM_position = -1;
+        for i, rom in enumerate(collection_rom_list):
+            if romID == rom['id']:
+                current_ROM_position = i
+                break
+        if current_ROM_position < 0:
+            kodi_notify_warn('ROM not found in list. This is a bug!')
+            return
+        log_verb('_command_move_collection_rom_down() Collection {0} ({1})'.format(collection['name'], collection['id']))
+        log_verb('_command_move_collection_rom_down() Collection has {0} ROMs'.format(num_roms))
+        log_verb('_command_move_collection_rom_down() Moving ROM in position {0} down'.format(current_ROM_position))
+
+        # >> If ROM is last of the list do nothing
+        if current_ROM_position == num_roms - 1:
+            kodi_dialog_OK('Advanced Emulator Launcher',
+                           'ROM is in last position of the Collection. Cannot be moved down.')
+            return
+
+        # >> Reorder list
+        original_order = range(num_roms)
+        new_order = original_order
+        new_order[current_ROM_position]     = current_ROM_position + 1
+        new_order[current_ROM_position + 1] = current_ROM_position
+        reordered_rom_list = [collection_rom_list[i] for i in new_order]
+
+        # >> Save reordered collection ROMs
+        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], reordered_rom_list)
+        kodi_refresh_container()
+        
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
         # >> ROM in Virtual Launcher
         if categoryID == VCATEGORY_TITLE_ID:
@@ -2857,7 +2947,23 @@ class Main:
             regular_launcher = False
             vlauncher_label = 'Virtual Launcher Studio'
 
-        # ROM in regular launcher
+        # --- ROM in Collection ---
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            log_info('_command_view_ROM() Viewing ROM in Collection...')
+            (update_timestamp, collections) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+            collection = collections[launcherID]
+            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            # >> Locate ROM in Collection
+            rom = {}
+            for rom_temp in collection_rom_list:
+                if romID == rom_temp['id']:
+                    rom = rom_temp
+                    break
+            window_title = u'{0} Collection ROM data'.format(collection['name'])
+            regular_launcher = False
+            vlauncher_label = u'Collection'
+
+        # --- ROM in regular launcher ---
         else:
             log_info('_command_view_ROM() Viewing ROM in Launcher...')
             # Check launcher is OK
