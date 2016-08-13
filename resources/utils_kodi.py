@@ -83,14 +83,17 @@ def log_error(str_text):
 # Kodi notifications and dialogs
 # -----------------------------------------------------------------------------
 #
-# Displays a modal dialog with an OK button.
-# Dialog can have up to 3 rows of text.
+# Displays a modal dialog with an OK button. Dialog can have up to 3 rows of text, however first
+# row is multiline.
+# Call examples:
+#  1) ret = kodi_dialog_OK('Launch ROM?')
+#  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AEL - Launcher')
 #
-def kodi_dialog_OK(title, row1, row2='', row3=''):
+def kodi_dialog_OK(row1, row2='', row3='', title = 'Advanced Emulator Launcher'):
     dialog = xbmcgui.Dialog()
     dialog.ok(title, row1, row2, row3)
 
-def kodi_dialog_yesno(title, row1, row2='', row3=''):
+def kodi_dialog_yesno(row1, row2='', row3='', title = 'Advanced Emulator Launcher'):
     dialog = xbmcgui.Dialog()
     ret = dialog.yesno(title, row1, row2, row3)
 

@@ -38,6 +38,17 @@ ASSET_MANUAL    = 1100
 ASSET_TRAILER   = 1200
 ASSET_THUMB     = 1300 # Only used in Categories/Launchers
 
+category_asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER]
+
+rom_asset_list = [
+    ASSET_TITLE,     ASSET_SNAP,
+    ASSET_FANART,    ASSET_BANNER,
+    ASSET_CLEARLOGO, ASSET_BOXFRONT,
+    ASSET_BOXBACK,   ASSET_CARTRIDGE,
+    ASSET_FLYER,     ASSET_MAP,
+    ASSET_MANUAL,    ASSET_TRAILER
+]
+
 # --- Plugin will search these file extensions for assets ---
 IMAGE_EXTS          = [u'png', u'jpg', u'gif', u'jpeg', u'bmp', u'PNG', u'JPG', u'GIF', u'JPEG', u'BMP']
 MANUAL_EXTS         = [u'pdf', u'PDF']
@@ -172,84 +183,99 @@ class AssetInfo:
     path_noext  = u''
 
 #
-# Scheme A uses different directories for artwork and no sufixxes.
+# Scheme A uses different directories for artwork and no sufixes.
 #
-def assets_get_info_scheme_A(asset_kind, asset_base_noext, launcher):
+def assets_get_path_noext_A(A, asset_base_noext, launcher):
+    # >> Returns asset/artwork path_noext
+    return os.path.join(launcher[A.path_key], asset_base_noext)
+
+def assets_get_info_scheme_A(asset_kind):
     A = AssetInfo()
-    A.base_noext = asset_base_noext
 
     if asset_kind == ASSET_TITLE:
         A.key         = 's_title'
         A.name        = 'Title'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_title'], asset_base_noext)
+        A.path_key    = 'path_title'
     elif asset_kind == ASSET_SNAP:
         A.key         = 's_snap'
         A.name        = 'Snap'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_snap'], asset_base_noext)
+        A.path_key    = 'path_snap'
     elif asset_kind == ASSET_FANART:
         A.key         = 's_fanart'
         A.name        = 'Fanart'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_fanart'], asset_base_noext)
+        A.path_key    = 'path_fanart'
     elif asset_kind == ASSET_BANNER:
         A.key         = 's_banner'
         A.name        = 'Banner'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_banner'], asset_base_noext)
+        A.path_key    = 'path_banner'
     elif asset_kind == ASSET_CLEARLOGO:
         A.key         = 's_clearlogo'
         A.name        = 'Clearlogo'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_clearlogo'], asset_base_noext)
+        A.path_key    = 'path_clearlogo'
     elif asset_kind == ASSET_BOXFRONT:
         A.key        = 's_boxfront'
         A.name       = 'Boxfront'
         A.kind_str   = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext = os.path.join(launcher['path_boxfront'], asset_base_noext)
+        A.path_key    = 'path_boxfront'
     elif asset_kind == ASSET_BOXBACK:
         A.key         = 's_boxback'
         A.name        = 'Boxback'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_boxback'], asset_base_noext)
+        A.path_key    = 'path_boxback'
     elif asset_kind == ASSET_CARTRIDGE:
         A.key         = 's_cartridge'
         A.name        = 'Cartridge'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_cartridge'], asset_base_noext)
+        A.path_key    = 'path_cartridge'
     elif asset_kind == ASSET_FLYER:
         A.key         = 's_flyer'
         A.name        = 'Flyer'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_flyer'], asset_base_noext)
+        A.path_key    = 'path_flyer'
     elif asset_kind == ASSET_MAP:
         A.key         = 's_map'
         A.name        = 'Title'
         A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_map'], asset_base_noext)
+        A.path_key    = 'path_map'
     elif asset_kind == ASSET_MANUAL:
         A.key         = 's_manual'
         A.name        = 'Manual'
         A.kind_str    = 'manual'
+        A.exts        = MANUAL_EXTS
         A.exts_dialog = MANUAL_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_manual'], asset_base_noext)
+        A.path_key    = 'path_manual'
     elif asset_kind == ASSET_TRAILER:
         A.key         = 's_trailer'
         A.name        = 'Trailer'
         A.kind_str    = 'video'
+        A.exts        = TRAILER_EXTS
         A.exts_dialog = TRAILER_EXTS_DIALOG
-        A.path_noext  = os.path.join(launcher['path_trailer'], asset_base_noext)
+        A.path_key    = 'path_trailer'
     else:
         log_error('assets_get_info_scheme_A() Wrong asset_kind = {0}'.format(asset_kind))
 

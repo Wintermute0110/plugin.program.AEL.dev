@@ -33,6 +33,11 @@ try:
 except:
     from utils_kodi_standalone import *
 
+# --- Configure JSON writer ---
+# NOTE More compact JSON files (less blanks) load faster because size is smaller.
+JSON_indent     = 1
+JSON_separators = (',', ':')
+
 # -------------------------------------------------------------------------------------------------
 # Data model used in the plugin
 # Internally all string in the data model are Unicode. They will be encoded to
@@ -47,8 +52,8 @@ def fs_new_category():
     c = {'id' : u'',
          'm_name' : u'',
          'm_genre' : u'',
-         'm_plot' : u'',
          'm_rating' : u'',
+         'm_plot' : u'',
          'finished' : False,
          'default_thumb' : 's_thumb',
          'default_fanart' : 's_fanart',
@@ -66,9 +71,9 @@ def fs_new_launcher():
          'm_name' : u'',
          'm_year' : u'', 
          'm_genre' : u'',
-         'm_plot' : u'',
          'm_studio' : u'',
          'm_rating' : u'',
+         'm_plot' : u'',
          'platform' : u'',
          'categoryID' : u'',
          'application' : u'',
@@ -79,7 +84,8 @@ def fs_new_launcher():
          'minimize' : False,
          'roms_base_noext' : u'',
          'nointro_xml_file' : u'',
-         'report_timestamp' : 0.0 ,
+         'timestamp_launcher' : 0.0,
+         'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
          'default_fanart' : 's_fanart',
          's_thumb' : u'',
@@ -113,9 +119,9 @@ def fs_new_rom():
          'm_name' : u'',
          'm_year' : u'',
          'm_genre' : u'',
-         'm_plot' : u'',
-         'm_studio' : u'',
+         'm_studio' : u'',         
          'm_rating' : u'',
+         'm_plot' : u'',
          'filename' : u'',
          'altapp' : u'',
          'altarg' : u'',
@@ -140,56 +146,15 @@ def fs_new_rom():
     return r
 
 #
-# DO NOT USE THIS FUNCTION TO CREATE FAVOURITES. USE fs_new_favourite_rom() INSTEAD.
-#
-# fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
-# 'OK'                ROM filename exists and launcher exists and ROM id exists
-# 'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
-# 'Unlinked Launcher' ROM filename exists but Launcher ID not found
-#                     Note that if the launcher does not exists implies ROM ID does not exist. If launcher
-#                     doesn't exist ROM JSON cannot be loaded.
-# 'Broken'            ROM filename does not exist. ROM is unplayable
-# def fs_new_favourite_rom():
-#     r = {'id' : u'',
-#          'm_name' : u'',
-#          'm_year' : u'',
-#          'm_genre' : u'',
-#          'm_plot' : u'',
-#          'm_rating' : u'',         
-#          'filename' : u'',
-#          'altapp' : u'',
-#          'altarg' : u'',
-#          'finished' : False,
-#          'nointro_status' : 'None',
-#          'default_thumb' : 's_title',
-#          'default_fanart' : 's_fanart',         
-#          's_title' : u'',
-#          's_snap' : u'',
-#          's_fanart' : u'',
-#          's_banner' : u'',
-#          's_clearlogo' : u'',
-#          's_boxfront' : u'',
-#          's_boxback' : u'',
-#          's_cartridge' : u'',
-#          's_flyer' : u'',
-#          's_map' : u'',
-#          's_manual' : u'',
-#          's_trailer' : u'',
-#          'launcherID' : u'',
-#          'platform' : u'',
-#          'application' : u'',
-#          'args' : u'',
-#          'rompath' : '',
-#          'romext' : '',
-#          'minimize' : False,
-#          'fav_status' : u'OK'
-#     }
-#
-#     return r
-
-#
 # Note that Virtual Launchers ROMs use the Favourite ROMs data model.
 # Missing ROMs are not allowed in Favourites or Virtual Launchers.
+# fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
+#  'OK'                ROM filename exists and launcher exists and ROM id exists
+#  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
+#  'Unlinked Launcher' ROM filename exists but Launcher ID not found
+#                      Note that if the launcher does not exists implies ROM ID does not exist. 
+#                      If launcher doesn't exist ROM JSON cannot be loaded.
+#  'Broken'            ROM filename does not exist. ROM is unplayable
 #
 def fs_get_Favourite_from_ROM(rom, launcher):
     # >> Copy dictionary object
@@ -209,6 +174,8 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['rompath']     = launcher['rompath']
     favourite['romext']      = launcher['romext']
     favourite['minimize']    = launcher['minimize']
+    
+    # >> Favourite ROM unique fields
     favourite['fav_status']  = u'OK'
 
     return favourite
@@ -330,8 +297,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('finished', unicode(launcher['finished'])))
             str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
-            str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
-            str_list.append(XML_text('report_timestamp', unicode(launcher['report_timestamp'])))
+            str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))            
+            str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
+            str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))            
             str_list.append(XML_text('default_thumb', launcher['default_thumb']))
             str_list.append(XML_text('default_fanart', launcher['default_fanart']))
             str_list.append(XML_text('s_thumb', launcher['s_thumb']))
@@ -384,8 +352,7 @@ def fs_load_catfile(categories_file):
         xml_tree = ET.parse(categories_file)
     except:
         log_error('Error parsing XML categories.xml')
-        kodi_dialog_OK('Advanced Emulator Launcher',
-                       'Error reading categories.xml. Maybe XML file is corrupt or contains invalid characters.')
+        kodi_dialog_OK('Error reading categories.xml. Maybe XML file is corrupt or contains invalid characters.')
         return (categories, launchers)
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
@@ -436,7 +403,7 @@ def fs_load_catfile(categories_file):
                 if xml_tag == 'finished' or xml_tag == 'minimize':
                     xml_bool = True if xml_text == 'True' else False
                     launcher[xml_tag] = xml_bool
-                elif xml_tag == 'report_timestamp':
+                elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
                     xml_float = float(xml_text)
                     launcher[xml_tag] = xml_float
 
@@ -660,9 +627,13 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         log_error(u'fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # >> Write ROMs JSON dictionary.
+    # >> See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
     try:
-        with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
-          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
+        with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
+          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                    indent = JSON_indent, separators = JSON_separators)
+          file.write(json_unicode)
+          file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -792,8 +763,11 @@ def fs_load_Favourites_XML(roms_xml_file):
 def fs_write_Favourites_JSON(roms_json_file, roms):
     log_info('fs_write_Favourites_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
-        with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
-          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
+        with io.open(roms_json_file, 'w', encoding='utf-8') as file:
+          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                    indent = JSON_indent, separators = JSON_separators)
+          file.write(json_unicode)
+          file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -806,13 +780,19 @@ def fs_load_Favourites_JSON(roms_json_file):
     roms = {}
 
     # --- If file does not exist return empty dictionary ---
-    if not os.path.isfile(roms_json_file):
-        return {}
+    if not os.path.isfile(roms_json_file): return roms
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_Favourites_JSON() Loading JSON file {0}'.format(roms_json_file))
     with open(roms_json_file) as file:    
-        roms = json.load(file)
+        try:
+            roms = json.load(file)
+        except ValueError:
+            statinfo = os.stat(roms_json_file)
+            log_error('fs_load_Favourites_JSON() ValueError exception in json.load() function')
+            log_error('fs_load_Favourites_JSON() File {0}'.format(roms_json_file))
+            log_error('fs_load_Favourites_JSON() Size {0}'.format(statinfo.st_size))
+        file.close()
 
     return roms
 
@@ -881,14 +861,17 @@ def fs_load_Collection_index_XML(collections_xml_file):
                 collection[xml_tag] = xml_text
             collections[collection['id']] = collection
 
-    return (update_timestamp, collections)
+    return (collections, update_timestamp)
 
 def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
     log_info('fs_write_Collection_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
-        with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
-          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 1, separators = (',', ': '))))
+        with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
+          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                    indent = JSON_indent, separators = JSON_separators)
+          file.write(json_unicode)
+          file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -907,7 +890,15 @@ def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
     # --- Parse using cElementTree ---
     log_verb('fs_load_Collection_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
     with open(roms_json_file) as file:    
-        roms = json.load(file)
+        try:
+            roms = json.load(file)
+        except ValueError:
+            statinfo = os.stat(roms_json_file)
+            log_error('fs_load_Collection_ROMs_JSON() ValueError exception in json.load() function')
+            log_error('fs_load_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
+            log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
+            log_error('fs_load_Collection_ROMs_JSON() Size {0}'.format(statinfo.st_size))
+        file.close()
 
     return roms
 
@@ -992,8 +983,11 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
     log_info('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
-        with io.open(roms_json_file, 'wt', encoding='utf-8') as file:
-          file.write(unicode(json.dumps(roms, ensure_ascii = False, sort_keys = True, indent = 2, separators = (',', ': '))))
+        with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
+          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                    indent = JSON_indent, separators = JSON_separators)
+          file.write(json_unicode)
+          file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -1012,7 +1006,15 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
     with open(roms_json_file) as file:    
-        roms = json.load(file)
+        try:
+            roms = json.load(file)
+        except ValueError:
+            statinfo = os.stat(roms_json_file)
+            log_error('fs_load_VCategory_ROMs_JSON() ValueError exception in json.load() function')
+            log_error('fs_load_VCategory_ROMs_JSON() Dir  {0}'.format(roms_dir))
+            log_error('fs_load_VCategory_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
+            log_error('fs_load_VCategory_ROMs_JSON() Size {0}'.format(statinfo.st_size))
+        file.close()
 
     return roms
 

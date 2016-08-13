@@ -201,14 +201,14 @@ def misc_split_path(f_path):
 #
 def misc_look_for_file(file_path_noext, file_exts):
     file_path = ''
-    log_debug('Testing file_path_noext {0}'.format(file_path_noext))
+    # log_debug('Testing file_path_noext {0}'.format(file_path_noext))
     for ext in file_exts:
         test_file = file_path_noext + '.' + ext
         # log_debug('Testing file "{0}"'.format(test_file))
         if os.path.isfile(test_file):
-            # Optimization Stop loop as soon as an image is found
+            # >> OPTIMIZATION Stop loop as soon as an image is found
             file_path = test_file
-            log_debug('Found file "{0}"'.format(test_file))
+            # log_debug('Found file "{0}"'.format(test_file))
             break
 
     return file_path
