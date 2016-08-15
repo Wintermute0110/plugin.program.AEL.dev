@@ -110,16 +110,26 @@ def assets_create_dir_or_abort(directory):
         os.makedirs(directory)
 
 #
-# Gets asset name for category/launcher.
-# A) Categories/Launchers always use naming scheme 2 (suffixes _thumb, _fanart, ...)
+# Get artwork user configured to be used as thumb. Scheme A is for Categories/Launchers.
 #
-def assets_get_category_asset_path_noext(asset_kind, asset_dir, base_noext):
-    if asset_kind == ASSET_THUMB:
-        path_noext = os.path.join(asset_dir, base_noext + '_thumb')
-    else:
-        log_error('assets_get_category_asset_path_noext() Wrong asset_kind = {0}'.format(asset_kind))
+def asset_get_default_thumb_scheme_A(object_dic, default_thumb):
+    default_asset = object_dic['default_thumb']
+    thumb_path    = object_dic[default_asset] if object_dic[default_asset] else default_thumb
+    log_debug('asset_get_default_thumb_scheme_A() default_asset "{0}"'.format(default_asset))
+    log_debug('asset_get_default_thumb_scheme_A() thumb_path    "{0}"'.format(thumb_path))
 
-    return path_noext
+    return thumb_path
+
+#
+# Same as above, for fanarts
+#
+def asset_get_default_fanart_scheme_A(object_dic):
+    default_asset = object_dic['default_fanart']
+    fanart_path    = object_dic[default_asset]
+    log_debug('asset_get_default_fanart_scheme_A() default_asset "{0}"'.format(default_asset))
+    log_debug('asset_get_default_fanart_scheme_A() fanart_path   "{0}"'.format(fanart_path))
+
+    return fanart_path
 
 #
 # Gets a human readable name string for the default fallback thumb

@@ -526,6 +526,7 @@ class Main:
                 else: return
 
             elif type2 == 6:
+                dialog = xbmcgui.Dialog()
                 type3 = dialog.select(u'Choose default Asset for Fanart',
                                       [u'Thumbnail', u'Fanart', u'Banner', u'Flyer'])
                 if   type3 == 0: self.categories[categoryID]['default_fanart'] = 's_thumb'
@@ -1719,9 +1720,11 @@ class Main:
                                    'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY } )
 
         # --- Set Category artwork ---
-        listitem.setArt({'thumb'  : 'DefaultFolder.png',      'fanart' : category_dic['s_fanart'],
-                         'banner' : category_dic['s_banner'], 'poster' : category_dic['s_flyer'], })
-        if category_dic['s_thumb']: listitem.setArt({'thumb' : category_dic['s_thumb']})
+        # >> Set thumb/fanart based on user preferences
+        thumb_path  = asset_get_default_thumb_scheme_A(category_dic, 'DefaultFolder.png')
+        fanart_path = asset_get_default_fanart_scheme_A(category_dic)
+        listitem.setArt({'thumb' : thumb_path, 'fanart' : fanart_path})
+        listitem.setArt({'banner' : category_dic['s_banner'], 'poster' : category_dic['s_flyer']})
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
