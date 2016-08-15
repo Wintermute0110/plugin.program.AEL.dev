@@ -1212,15 +1212,16 @@ def fs_export_ROM_NFO(rom, verbose = True):
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<game>\n')
-    nfo_content.append(XML_text('title',     rom['name']))
-    nfo_content.append(XML_text('year',      rom['year']))
-    nfo_content.append(XML_text('publisher', rom['studio']))
-    nfo_content.append(XML_text('genre',     rom['genre']))
-    nfo_content.append(XML_text('plot',      rom['plot']))
+    nfo_content.append(XML_text('title',     rom['m_name']))
+    nfo_content.append(XML_text('year',      rom['m_year']))
+    nfo_content.append(XML_text('genre',     rom['m_genre']))
+    nfo_content.append(XML_text('publisher', rom['m_studio']))
+    nfo_content.append(XML_text('rating',    rom['m_rating']))
+    nfo_content.append(XML_text('plot',      rom['m_plot']))
     nfo_content.append('</game>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        usock = open(nfo_file_path, 'wt')
+        usock = open(nfo_file_path, 'w')
         usock.write(full_string)
         usock.close()
     except:
@@ -1256,15 +1257,17 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         # Search for items
         item_title     = re.findall('<title>(.*?)</title>', nfo_str)
         item_year      = re.findall('<year>(.*?)</year>', nfo_str)
-        item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
         item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
+        item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
+        item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
         item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
-        if len(item_title) > 0:     roms[romID]['title']     = text_unescape_XML(item_title[0])
-        if len(item_year) > 0:      roms[romID]['year']      = text_unescape_XML(item_year[0])
-        if len(item_publisher) > 0: roms[romID]['publisher'] = text_unescape_XML(item_publisher[0])
-        if len(item_genre) > 0:     roms[romID]['genre']     = text_unescape_XML(item_genre[0])
-        if len(item_plot) > 0:      roms[romID]['plot']      = text_unescape_XML(item_plot[0])
+        if len(item_title) > 0:     roms[romID]['m_name']   = text_unescape_XML(item_title[0])
+        if len(item_year) > 0:      roms[romID]['m_year']   = text_unescape_XML(item_year[0])
+        if len(item_genre) > 0:     roms[romID]['m_genre']  = text_unescape_XML(item_genre[0])
+        if len(item_publisher) > 0: roms[romID]['m_studio'] = text_unescape_XML(item_publisher[0])
+        if len(item_rating) > 0:    roms[romID]['m_rating'] = text_unescape_XML(item_rating[0])
+        if len(item_plot) > 0:      roms[romID]['m_plot']   = text_unescape_XML(item_plot[0])
 
         if verbose:
             kodi_notify(u'Imported {0}'.format(nfo_file_path))
@@ -1281,8 +1284,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 #
 def fs_load_NFO_file_scanner(nfo_file_path):
-    nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '',
-               'genre' : '', 'plot' : '' }
+    nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'publisher' : '', 'rating' : '', 'plot' : '' }
 
     # >> Read file, put in a string and remove line endings
     file = codecs.open(nfo_file_path, 'r', 'utf-8')
@@ -1291,17 +1293,17 @@ def fs_load_NFO_file_scanner(nfo_file_path):
 
     # Search for items
     item_title     = re.findall('<title>(.*?)</title>', nfo_str)
-    item_platform  = re.findall('<platform>(.*?)</platform>', nfo_str)
     item_year      = re.findall('<year>(.*?)</year>', nfo_str)
-    item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
     item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
+    item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
+    item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
     item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
     if len(item_title) > 0:     nfo_dic['title']     = text_unescape_XML(item_title[0])
-    if len(item_title) > 0:     nfo_dic['platform']  = text_unescape_XML(item_platform[0])
     if len(item_year) > 0:      nfo_dic['year']      = text_unescape_XML(item_year[0])
-    if len(item_publisher) > 0: nfo_dic['publisher'] = text_unescape_XML(item_publisher[0])
     if len(item_genre) > 0:     nfo_dic['genre']     = text_unescape_XML(item_genre[0])
+    if len(item_publisher) > 0: nfo_dic['publisher'] = text_unescape_XML(item_publisher[0])
+    if len(item_rating) > 0:    nfo_dic['rating']    = text_unescape_XML(item_rating[0])
     if len(item_plot) > 0:      nfo_dic['plot']      = text_unescape_XML(item_plot[0])
 
     return nfo_dic
@@ -1322,10 +1324,11 @@ def fs_export_launcher_NFO(nfo_file_path, launcher):
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<launcher>\n')
-    nfo_content.append(XML_text('year',      launcher['year']))
-    nfo_content.append(XML_text('publisher', launcher['studio']))
-    nfo_content.append(XML_text('genre',     launcher['genre']))
-    nfo_content.append(XML_text('plot',      launcher['plot']))
+    nfo_content.append(XML_text('year',      launcher['m_year']))
+    nfo_content.append(XML_text('genre',     launcher['m_genre']))
+    nfo_content.append(XML_text('publisher', launcher['m_studio']))
+    nfo_content.append(XML_text('rating',    launcher['m_rating']))
+    nfo_content.append(XML_text('plot',      launcher['m_plot']))
     nfo_content.append('</launcher>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
@@ -1375,8 +1378,9 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
 
     # Find data
     item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
-    item_publisher = re.findall('<publisher>(.*?)</publisher>', item_nfo)
     item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+    item_publisher = re.findall('<publisher>(.*?)</publisher>', item_nfo)
+    item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
     item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
     # log_debug(u"fs_import_launcher_NFO() item_year      '{0}'".format(item_year[0]))
     # log_debug(u"fs_import_launcher_NFO() item_publisher '{0}'".format(item_publisher[0]))
@@ -1385,10 +1389,11 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
 
     # >> Careful about object mutability! This should modify the dictionary
     # >> passed as argument outside this function.
-    if item_year:      launchers[launcherID]['year']   = text_unescape_XML(item_year[0])
-    if item_publisher: launchers[launcherID]['studio'] = text_unescape_XML(item_publisher[0])
-    if item_genre:     launchers[launcherID]['genre']  = text_unescape_XML(item_genre[0])
-    if item_plot:      launchers[launcherID]['plot']   = text_unescape_XML(item_plot[0])
+    if item_year:      launchers[launcherID]['m_year']   = text_unescape_XML(item_year[0])
+    if item_genre:     launchers[launcherID]['m_genre']  = text_unescape_XML(item_genre[0])
+    if item_publisher: launchers[launcherID]['m_studio'] = text_unescape_XML(item_publisher[0])
+    if item_rating:    launchers[launcherID]['m_rating'] = text_unescape_XML(item_rating[0])
+    if item_plot:      launchers[launcherID]['m_plot']   = text_unescape_XML(item_plot[0])
 
     kodi_notify(u'Imported {0}'.format(os.path.basename(nfo_file_path)))
     log_verb(u"fs_import_launcher_NFO() Imported '{0}'".format(nfo_file_path))
@@ -1415,12 +1420,13 @@ def fs_export_category_NFO(nfo_file_path, category):
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<category>\n')
-    nfo_content.append(XML_text('genre', category['genre']))
-    nfo_content.append(XML_text('plot',  category['description']))
+    nfo_content.append(XML_text('genre',  category['m_genre']))
+    nfo_content.append(XML_text('rating', category['m_rating']))
+    nfo_content.append(XML_text('plot',   category['m_plot']))
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_file_path, 'wt')
+        f = open(nfo_file_path, 'w')
         f.write(full_string)
         f.close()
     except:
@@ -1449,14 +1455,16 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
             return False
     else:
         kodi_notify_warn(u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
-        log_info(u"fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
+        log_error(u"fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
-    item_genre = re.findall('<genre>(.*?)</genre>', item_nfo)
-    item_plot  = re.findall('<plot>(.*?)</plot>',   item_nfo)
+    item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
+    item_rating = re.findall('<rating>(.*?)</rating>', item_nfo)
+    item_plot   = re.findall('<plot>(.*?)</plot>',   item_nfo)
 
-    if item_genre: categories[categoryID]['genre']        = text_unescape_XML(item_genre[0])
-    if item_plot:  categories[categoryID]['description']  = text_unescape_XML(item_plot[0])
+    if item_genre:  categories[categoryID]['m_genre']  = text_unescape_XML(item_genre[0])
+    if item_rating: categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
+    if item_plot:   categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
 
     kodi_notify(u'Imported {0}'.format(os.path.basename(nfo_file_path)))
     log_verb(u"fs_import_category_NFO() Imported '{0}'".format(nfo_file_path))
@@ -1464,8 +1472,8 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
     return True
 
 def fs_get_category_NFO_name(settings, category):
-    category_name = category['name']
-    nfo_dir = settings['categories_nfo_dir']
+    category_name = category['m_name']
+    nfo_dir = settings['categories_asset_dir']
     nfo_file_path = os.path.join(nfo_dir, category_name + u'.nfo')
     log_debug(u"fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
