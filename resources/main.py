@@ -1781,7 +1781,7 @@ class Main:
         commands.append(('Create New Category',   self._misc_url_RunPlugin('ADD_CATEGORY'), ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands)
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_COLLECTIONS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -1831,7 +1831,7 @@ class Main:
         commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL, ))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands)
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -1847,7 +1847,7 @@ class Main:
             if self.launchers[launcher_id]['categoryID'] == categoryID: launcher_IDs.append(launcher_id)
         if not launcher_IDs:
             category_name = self.categories[categoryID]['m_name']
-            kodi_notify('Category {0} has no launchers. Add launchers first'.format(category_name))
+            kodi_notify('Category {0} has no launchers. Add launchers first.'.format(category_name))
             # NOTE If we return at this point Kodi produces and error:
             # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
             # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
@@ -2125,7 +2125,7 @@ class Main:
         # --- Load Favourite ROMs ---
         roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         if not roms:
-            kodi_notify('Favourites is empty. Add ROMs to Favourites first')
+            kodi_notify('Favourites is empty. Add ROMs to Favourites first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
@@ -2197,7 +2197,7 @@ class Main:
             # >> Add Launcher URL to Kodi Favourites (do not know how to do it yet)
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-            listitem.addContextMenuItems(commands)
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
             url_str = self._misc_url('SHOW_ROMS', virtual_categoryID, vlauncher_id)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -2228,7 +2228,7 @@ class Main:
             return
         roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
         if not roms:
-            kodi_notify('Virtual category ROMs XML empty. Add items to favourites first')
+            kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
             return
 
         # --- Load favourites ---
@@ -2480,7 +2480,7 @@ class Main:
 
         # --- If the virtual category has no launchers then render nothing ---
         if not collections:
-            kodi_dialog_OK('No collections in database. Add a collection first.')
+            kodi_notify('No collections in database. Add a collection first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
@@ -2511,7 +2511,7 @@ class Main:
             # >> Add Launcher URL to Kodi Favourites (do not know how to do it yet)
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-            listitem.addContextMenuItems(commands)
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
             # >> Use ROMs renderer to display collection ROMs
             url_str = self._misc_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
@@ -2526,7 +2526,7 @@ class Main:
         collection = collections[launcherID]
         collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
         if not collection_rom_list:
-            kodi_notify('Collection is empty. Add ROMs to this collection first')
+            kodi_notify('Collection is empty. Add ROMs to this collection first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
@@ -2579,7 +2579,7 @@ class Main:
         collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
         num_roms = len(collection_rom_list)
         if not collection_rom_list:
-            kodi_notify('Collection is empty. Add ROMs to this collection first')
+            kodi_notify('Collection is empty. Add ROMs to this collection first.')
             return
 
         # >> Get position of current ROM in the list
@@ -2618,7 +2618,7 @@ class Main:
         collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
         num_roms = len(collection_rom_list)
         if not collection_rom_list:
-            kodi_notify('Collection is empty. Add ROMs to this collection first')
+            kodi_notify('Collection is empty. Add ROMs to this collection first.')
             return
 
         # >> Get position of current ROM in the list
@@ -3235,6 +3235,12 @@ class Main:
     # Updated all virtual categories DB
     #
     def _command_update_virtual_category_db_all(self):
+        # --- Sanity checks ---
+        if len(self.launchers) == 0:
+            kodi_dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
+            return
+
+        # --- Update all virtual launchers ---
         self._command_update_virtual_category_db(VCATEGORY_TITLE_ID)
         self._command_update_virtual_category_db(VCATEGORY_YEARS_ID)
         self._command_update_virtual_category_db(VCATEGORY_GENRE_ID)
@@ -3271,9 +3277,9 @@ class Main:
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
 
-        # Sanity checks
+        # --- Sanity checks ---
         if len(self.launchers) == 0:
-            kodi_dialog_OK('You do not have yet any Launchers. Add a ROMs Launcher first.')
+            kodi_dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
             return
 
         # --- Delete previous hashed database XMLs ---
