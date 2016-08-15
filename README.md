@@ -1,6 +1,19 @@
 # Advanced Emulator Launcher #
 
-Fork of Advanced Launcher.
+Multi-emulator front-end for Kodi scalable to collections of thousands of ROMs. Includes offline 
+scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. 
+ROM auditing for No-Intro ROMs using No-Intro XML DATs. Launching of games and 
+standalone applications is also available.
+
+# WARNING #
+
+On 16/Aug/2016 (commit 2cafa23) AEL has introduced a new storage format that enables many more
+types of artwork. Unfortunately, this new model is incompatible with previous versions of AEL.
+You will notice this if you see menus dissapearing and erratic AEL behaviour. The easiest way to 
+migrate is to delete the `ADDON_DATA_DIR` directory and start from fresh from scratch.
+
+Good news is that AEL now supports a lot more features and the data storage format probably will
+not change for a while.
 
 ## Installation instructions ##
 
@@ -18,11 +31,3 @@ It is important that you follow this instructions or Advanced Emulator Launcher 
      --> `Install from ZIP file`.
 
   6) You are done!
-
-# WARNING #
-
-Advanced Emulator Launcher is in a development stage. Please try and test AEL and report on Github if you 
-find problems. Play with it, but do not do "serious work" with AEL. "Serious work" means spending lot 
-of time configuring metadata. Reason is that AEL is in development, and the format of the plugin 
-ROM storage has not been fixed. If I have to change the ROM storage then you will need to 
-rescan/reimport your launchers. You have been warned! 
