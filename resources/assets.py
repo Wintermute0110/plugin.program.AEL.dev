@@ -115,8 +115,8 @@ def assets_create_dir_or_abort(directory):
 def asset_get_default_thumb_scheme_A(object_dic, default_thumb):
     default_asset = object_dic['default_thumb']
     thumb_path    = object_dic[default_asset] if object_dic[default_asset] else default_thumb
-    log_debug('asset_get_default_thumb_scheme_A() default_asset "{0}"'.format(default_asset))
-    log_debug('asset_get_default_thumb_scheme_A() thumb_path    "{0}"'.format(thumb_path))
+    # log_debug('asset_get_default_thumb_scheme_A() default_asset "{0}"'.format(default_asset))
+    # log_debug('asset_get_default_thumb_scheme_A() thumb_path    "{0}"'.format(thumb_path))
 
     return thumb_path
 
@@ -126,57 +126,48 @@ def asset_get_default_thumb_scheme_A(object_dic, default_thumb):
 def asset_get_default_fanart_scheme_A(object_dic):
     default_asset = object_dic['default_fanart']
     fanart_path    = object_dic[default_asset]
-    log_debug('asset_get_default_fanart_scheme_A() default_asset "{0}"'.format(default_asset))
-    log_debug('asset_get_default_fanart_scheme_A() fanart_path   "{0}"'.format(fanart_path))
+    # log_debug('asset_get_default_fanart_scheme_A() default_asset "{0}"'.format(default_asset))
+    # log_debug('asset_get_default_fanart_scheme_A() fanart_path   "{0}"'.format(fanart_path))
+
+    return fanart_path
+
+#
+# Get ROMs Thumb/Fanart
+#
+def asset_get_default_thumb_scheme_ROM(rom, launcher, default_thumb):
+    default_asset = launcher['roms_default_thumb']
+    thumb_path    = rom[default_asset] if rom[default_asset] else default_thumb
+
+    return thumb_path
+
+def asset_get_default_fanart_scheme_ROM(rom, launcher):
+    default_asset = launcher['roms_default_fanart']
+    fanart_path   = rom[default_asset] if rom[default_asset] else launcher['s_fanart']
 
     return fanart_path
 
 #
 # Gets a human readable name string for the default fallback thumb
 #
-def assets_get_thumb_fallback_str(object_dic):
-    default_asset = object_dic['default_thumb']
-    asset_name_str = ''
+def assets_get_asset_name_str(default_asset):
+    asset_name_str = u''
 
-    if   default_asset == 's_title':     asset_name_str = 'Title'
-    elif default_asset == 's_snap':      asset_name_str = 'Snap'
-    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
-    elif default_asset == 's_banner':    asset_name_str = 'Banner'
-    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
-    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
-    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
-    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
-    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
-    elif default_asset == 's_map':       asset_name_str = 'Map'
-    elif default_asset == 's_manual':    asset_name_str = 'Manual'
-    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
-    elif default_asset == 's_thumb':     asset_name_str = 'Thumb'
+    if   default_asset == 's_title':     asset_name_str = u'Title'
+    elif default_asset == 's_snap':      asset_name_str = u'Snap'
+    elif default_asset == 's_fanart':    asset_name_str = u'Fanart'
+    elif default_asset == 's_banner':    asset_name_str = u'Banner'
+    elif default_asset == 's_clearlogo': asset_name_str = u'Clearlogo'
+    elif default_asset == 's_boxfront':  asset_name_str = u'Boxfront'
+    elif default_asset == 's_boxback':   asset_name_str = u'Boxback'
+    elif default_asset == 's_cartridge': asset_name_str = u'Cartridge'
+    elif default_asset == 's_flyer':     asset_name_str = u'Flyer'
+    elif default_asset == 's_map':       asset_name_str = u'Map'
+    elif default_asset == 's_manual':    asset_name_str = u'Manual'
+    elif default_asset == 's_trailer':   asset_name_str = u'Trailer'
+    elif default_asset == 's_thumb':     asset_name_str = u'Thumb'
     else:
-        kodi_notify_warn('Wrong default_thumb {0}'.format(default_asset))
-        log_error('assets_get_thumb_fallback_str() Wrong default_thumb {0}'.format(default_asset))
-    
-    return asset_name_str
-
-def assets_get_fanart_fallback_str(object_dic):
-    default_asset = object_dic['default_fanart']
-    asset_name_str = ''
-
-    if   default_asset == 's_title':     asset_name_str = 'Title'
-    elif default_asset == 's_snap':      asset_name_str = 'Snap'
-    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
-    elif default_asset == 's_banner':    asset_name_str = 'Banner'
-    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
-    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
-    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
-    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
-    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
-    elif default_asset == 's_map':       asset_name_str = 'Map'
-    elif default_asset == 's_manual':    asset_name_str = 'Manual'
-    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
-    elif default_asset == 's_thumb':     asset_name_str = 'Thumb'
-    else:
-        kodi_notify_warn('Wrong default_fanart {0}'.format(default_asset))
-        log_error('assets_get_fanart_fallback_str() Wrong default_fanart {0}'.format(default_asset))
+        kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
+        log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
     
     return asset_name_str
 

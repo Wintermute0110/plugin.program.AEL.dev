@@ -88,6 +88,8 @@ def fs_new_launcher():
          'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
          'default_fanart' : 's_fanart',
+         'roms_default_thumb' : 's_title',
+         'roms_default_fanart' : 's_fanart',
          's_thumb' : u'',
          's_fanart' : u'',
          's_banner' : u'',
@@ -127,8 +129,6 @@ def fs_new_rom():
          'altarg' : u'',
          'finished' : False,
          'nointro_status' : 'None',
-         'default_thumb' : 's_title',
-         'default_fanart' : 's_fanart',
          's_title' : u'',
          's_snap' : u'',
          's_fanart' : u'',
@@ -302,6 +302,8 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))            
             str_list.append(XML_text('default_thumb', launcher['default_thumb']))
             str_list.append(XML_text('default_fanart', launcher['default_fanart']))
+            str_list.append(XML_text('roms_default_thumb', launcher['roms_default_thumb']))
+            str_list.append(XML_text('roms_default_fanart', launcher['roms_default_fanart']))
             str_list.append(XML_text('s_thumb', launcher['s_thumb']))
             str_list.append(XML_text('s_fanart', launcher['s_fanart']))
             str_list.append(XML_text('s_banner', launcher['s_banner']))
@@ -981,7 +983,7 @@ def fs_load_VCategory_XML(roms_xml_file):
 #
 def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
-    log_info('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
+    log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
           json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
