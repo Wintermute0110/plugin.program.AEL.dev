@@ -258,7 +258,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.path_key    = 'path_flyer'
     elif asset_kind == ASSET_MAP:
         A.key         = 's_map'
-        A.name        = 'Title'
+        A.name        = 'Map'
         A.kind_str    = 'image'
         A.exts        = IMAGE_EXTS
         A.exts_dialog = IMAGE_EXTS_DIALOG

@@ -838,7 +838,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
     collections = {}
 
     # --- If file does not exist return empty dictionary ---
-    if not os.path.isfile(collections_xml_file): return (update_timestamp, collections)
+    if not os.path.isfile(collections_xml_file): return (collections, update_timestamp)
 
     # --- Parse using cElementTree ---
     log_verb(u'fs_load_Collection_index_XML() Loading XML file {0}'.format(collections_xml_file))

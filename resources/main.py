@@ -1012,19 +1012,23 @@ class Main:
                     disabled_asset_name_list = []
                     for i, asset in enumerate(rom_asset_list):
                         A = assets_get_info_scheme_A(asset)
-                        enabled_asset_list[i] = True if launcher[A.path_key] else False
+                        if launcher[A.path_key]:
+                            enabled_asset_list[i] = True
+                        else:
+                            False
+                            log_info('Scanning of asset {0} disabled (no path configured)'.format(A.name))
                         if not enabled_asset_list[i]: disabled_asset_name_list.append(A.name)
                     if disabled_asset_name_list:
                         disable_asset_srt = ', '.join(disabled_asset_name_list)
                         kodi_dialog_OK('Assets paths not set: {0}. '.format(disable_asset_srt) +
                                        'Asset scanner will be disabled for this/those.')
-                    
+
                     # >> Traverse ROM list and check local asset/artwork
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
                     for rom_id in roms:
                         rom = roms[rom_id]
-                        log_info('Checking ROM "{0}"'.format(rom['m_name']))
+                        log_info('Checking ROM "{0}"'.format(rom['filename']))
                         for i, asset in enumerate(rom_asset_list):
                             A = assets_get_info_scheme_A(asset)
                             if not enabled_asset_list[i]: continue
@@ -2627,7 +2631,7 @@ class Main:
         collection['id']              = collection_UUID
         collection['name']            = collection_name
         collection['roms_base_noext'] = collection_base_name
-        collections[collection_UUID]  = collection
+        collections[collection_UUID] = collection
         log_debug(u'_command_add_collection() id              "{0}"'.format(collection['id']))
         log_debug(u'_command_add_collection() name            "{0}"'.format(collection['name']))
         log_debug(u'_command_add_collection() roms_base_noext "{0}"'.format(collection['roms_base_noext']))
@@ -2745,7 +2749,7 @@ class Main:
             return
 
         # --- Load Collection index ---
-        (update_timestamp, collections) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
 
         # --- If no collections so long and thanks for all the fish ---
         if not collections:
