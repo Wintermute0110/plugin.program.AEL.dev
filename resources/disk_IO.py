@@ -1403,8 +1403,8 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
     return True
 
 def fs_get_launcher_NFO_name(settings, launcher):
-    launcher_name = launcher['name']
-    nfo_dir = settings['launchers_nfo_dir']
+    launcher_name = launcher['m_name']
+    nfo_dir = settings['launchers_asset_dir']
     nfo_file_path = os.path.join(nfo_dir, launcher_name + u'.nfo')
     log_debug(u"fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 

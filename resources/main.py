@@ -3184,9 +3184,9 @@ class Main:
         info_text += u"[COLOR violet]m_name[/COLOR]: '{0}'\n".format(launcher['m_name'])
         info_text += u"[COLOR violet]m_year[/COLOR]: '{0}'\n".format(launcher['m_year'])
         info_text += u"[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(launcher['m_genre'])
-        info_text += u"[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(launcher['m_plot'])
         info_text += u"[COLOR violet]m_studio[/COLOR]: '{0}'\n".format(launcher['m_studio'])
         info_text += u"[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(launcher['m_rating'])
+        info_text += u"[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(launcher['m_plot'])
 
         info_text += u"[COLOR violet]platform[/COLOR]: '{0}'\n".format(launcher['platform'])
         info_text += u"[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
@@ -3249,7 +3249,7 @@ class Main:
         category = self.categories[categoryID]
         launcher = self.launchers[launcherID]
         if not launcher['rompath']:
-            kodi_notify_warn('Cannot create report for standalone launcher')
+            kodi_notify_warn(u'Cannot create report for standalone launcher.')
             return
 
         # --- Get report filename ---
@@ -3258,10 +3258,17 @@ class Main:
         window_title = u'Launcher {0} Report'.format(launcher['m_name'])
         log_verb(u'_command_view_Launcher_Report() Report filename "{0}"'.format(report_file_name))
 
+        # --- If no ROMs in launcher do nothing ---
+        launcher = self.launchers[launcherID]
+        roms = fs_load_ROMs(ROMS_DIR, launcher['roms_base_noext'])
+        if not roms:
+            kodi_notify_warn(u'No ROMs in launcher. Report not created.')
+            return
+
         # --- If report doesn't exists create it automatically ---
         if not os.path.isfile(report_file_name):
             kodi_dialog_OK('Report file not found. Will be generated now.')
-            self._roms_create_launcher_report(categoryID, launcherID)
+            self._roms_create_launcher_report(categoryID, launcherID, roms)
             xbmc.sleep(250)
             # >> Update report timestamp
             self.launchers[launcherID]['timestamp_report'] = time.time()
@@ -3271,7 +3278,7 @@ class Main:
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
         
         # --- If report timestamp is older than launchers last modification, recreate it ---
-        if self.launchers[launcherID]['timestamp_report'] < self.launchers[launcherID]['timestamp_launcher']:
+        if self.launchers[launcherID]['timestamp_report'] <= self.launchers[launcherID]['timestamp_launcher']:
             kodi_dialog_OK('Report is outdated. Will be regenerated now.')
             self._roms_create_launcher_report(categoryID, launcherID)
             xbmc.sleep(250)
@@ -3902,7 +3909,7 @@ class Main:
     #  3) Report of ROM artwork
     #  4) If No-Intro file, then No-Intro audit information.
     #
-    def _roms_create_launcher_report(self, categoryID, launcherID):
+    def _roms_create_launcher_report(self, categoryID, launcherID, roms):
         ROM_NAME_LENGHT = 50
 
         # >> Report file name
@@ -3912,10 +3919,6 @@ class Main:
         report_file_name = os.path.join(REPORTS_DIR, roms_base_noext + u'.txt')
         log_verb(u'_roms_create_launcher_report() Report filename "{0}"'.format(report_file_name))
         kodi_notify(u'Creating Launcher report...')
-
-        # >> Load ROMs
-        roms = fs_load_ROMs(ROMS_DIR, launcher['roms_base_noext'])
-        if not roms: return
 
         # >> Step 1: Launcher main statistics
         num_roms = len(roms)
