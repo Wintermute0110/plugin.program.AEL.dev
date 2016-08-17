@@ -14,6 +14,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# --- Python standard library ---
+from __future__ import unicode_literals
+
 # -------------------------------------------------------------------------------------------------
 # We support online an offline scrapers.
 # Note that this module does not depend on Kodi stuff at all, and can be

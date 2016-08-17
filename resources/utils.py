@@ -17,7 +17,12 @@
 #
 # Utility functions which does not depend on Kodi modules (except log_* functions)
 #
+
+# --- Python standard library ---
+from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse, re, string
+
+# --- AEL modules ---
 try:
     from utils_kodi import *
 except:

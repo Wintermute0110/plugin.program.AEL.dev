@@ -18,10 +18,15 @@
 #
 # Utility functions which DEPEND on Kodi modules
 #
+
+# --- Python standard library ---
+from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse
+
+# --- Kodi modules ---
 import xbmc, xbmcgui
 
-# Addon custom modules/packages
+# --- AEL modules ---
 import utils
 import disk_IO
 

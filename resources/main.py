@@ -19,7 +19,8 @@
 # 1) A function with a underline _function() belongs to the Main object, even if not defined in the
 #    main body.
 
-# --- Main imports ---
+# --- Python standard library ---
+from __future__ import unicode_literals
 import sys, os, shutil, fnmatch, string, time
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 
@@ -37,12 +38,12 @@ from assets import *
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
-__addon_id__      = __addon_obj__.getAddonInfo('id')
-__addon_name__    = __addon_obj__.getAddonInfo('name')
-__addon_version__ = __addon_obj__.getAddonInfo('version')
-__addon_author__  = __addon_obj__.getAddonInfo('author')
-__addon_profile__ = __addon_obj__.getAddonInfo('profile')
-__addon_type__    = __addon_obj__.getAddonInfo('type')
+__addon_id__      = __addon_obj__.getAddonInfo('id').decode('utf-8')
+__addon_name__    = __addon_obj__.getAddonInfo('name').decode('utf-8')
+__addon_version__ = __addon_obj__.getAddonInfo('version').decode('utf-8')
+__addon_author__  = __addon_obj__.getAddonInfo('author').decode('utf-8')
+__addon_profile__ = __addon_obj__.getAddonInfo('profile').decode('utf-8')
+__addon_type__    = __addon_obj__.getAddonInfo('type').decode('utf-8')
 
 # --- Addon paths and constant definition ---
 # _FILE_PATH is a filename
@@ -370,8 +371,8 @@ class Main:
 
         category = fs_new_category()
         categoryID = misc_generate_random_SID()
-        category['id']   = categoryID
-        category['m_name'] = keyboard.getText()
+        category['id']     = categoryID
+        category['m_name'] = keyboard.getText().decode('utf-8')
         self.categories[categoryID] = category
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_notify('Category {0} created'.format(category['m_name']))
@@ -413,7 +414,7 @@ class Main:
             elif type2 == 1:
                 # >> Get launcher NFO file
                 # No-Intro reading of files: use Unicode string for u'.dat|.xml'. However, | belongs to ASCII...
-                NFO_file = xbmcgui.Dialog().browse(1, u'Select description file (NFO)', u'files', u'.nfo', False, False)
+                NFO_file = xbmcgui.Dialog().browse(1, u'Select description file (NFO)', u'files', u'.nfo', False, False).decode('utf-8')
                 if not os.path.isfile(NFO_file): return
 
                 # >> Launcher is edited using Python passing by assigment
@@ -425,7 +426,7 @@ class Main:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_name'], 'Edit Title')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
-                    title = keyboard.getText()
+                    title = keyboard.getText().decode('utf-8')
                     if title == '':
                         title = self.categories[categoryID]['m_name']
                     self.categories[categoryID]['m_name'] = title.rstrip()
@@ -438,7 +439,7 @@ class Main:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_genre'], 'Edit Genre')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
-                    self.categories[categoryID]['m_genre'] = keyboard.getText()
+                    self.categories[categoryID]['m_genre'] = keyboard.getText().decode('utf-8')
                 else:
                     kodi_dialog_OK("Category genre '{0}' not changed".format(self.categories[categoryID]['m_genre']))
                     return
@@ -628,29 +629,29 @@ class Main:
 
         # 'Files launcher (game emulator)'
         if type == 0:
-            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
+            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', filter).decode('utf-8')
             if not app: return
 
-            roms_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', "files", "")
+            roms_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', 'files', '').decode('utf-8')
             if not roms_path: return
 
             extensions = emudata_get_program_extensions(os.path.basename(app))
             extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
             extkey.doModal()
             if not extkey.isConfirmed(): return
-            ext = extkey.getText()
+            ext = extkey.getText().decode('utf-8')
 
             default_arguments = emudata_get_program_arguments(os.path.basename(app))
             argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
             argkeyboard.doModal()
             if not argkeyboard.isConfirmed(): return
-            args = argkeyboard.getText()
+            args = argkeyboard.getText().decode('utf-8')
 
             title = os.path.basename(app)
             keyboard = xbmc.Keyboard(title.replace('.' + title.split('.')[-1], '').replace('.', ' '), 'Set the title of the launcher')
             keyboard.doModal()
             if not keyboard.isConfirmed(): return
-            title = keyboard.getText()
+            title = keyboard.getText().decode('utf-8')
             if title == '':
                 title = os.path.basename(app)
                 title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
@@ -665,7 +666,7 @@ class Main:
             # A) User chooses one and only one assets path
             # B) If this path is different from the ROM path then asset naming scheme 1 is used.
             # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
-            assets_path = xbmcgui.Dialog().browse(0, 'Select assets (artwork) path', 'files', '', False, False, roms_path)
+            assets_path = xbmcgui.Dialog().browse(0, 'Select assets (artwork) path', 'files', '', False, False, roms_path).decode('utf-8')
             if not assets_path: return
 
             # --- Create launcher object data, add to dictionary and write XML file ---
@@ -677,66 +678,59 @@ class Main:
 
             # --- Create new launcher. categories.xml is save at the end of this function ---
             launcherdata = fs_new_launcher()
-            launcherdata['launcherID']      = launcherID
-            launcherdata['m_name']          = title
-            launcherdata['platform']        = launcher_platform
-            launcherdata['categoryID']      = categoryID
-            launcherdata['application']     = app
-            launcherdata['args']            = args
-            launcherdata['rompath']         = roms_path
-            launcherdata['romext']          = ext
-            launcherdata['roms_base_noext'] = roms_base_noext
+            launcherdata['id']                 = launcherID
+            launcherdata['m_name']             = title
+            launcherdata['platform']           = launcher_platform
+            launcherdata['categoryID']         = categoryID
+            launcherdata['application']        = app
+            launcherdata['args']               = args
+            launcherdata['rompath']            = roms_path
+            launcherdata['romext']             = ext
+            launcherdata['roms_base_noext']    = roms_base_noext
+            launcherdata['timestamp_launcher'] = time.time()
             # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
             # >> launcher is edited using Python passing by assignment.
             assets_init_asset_dir(assets_path, launcherdata)
             self.launchers[launcherID] = launcherdata
-            kodi_notify('ROM launcher {0} created.'.format(title))
+            kodi_notify(u'ROM launcher {0} created.'.format(title))
 
         # 'Standalone launcher (normal executable)'
         elif type == 1:
-            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter)
+            app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter).decode('utf-8')
             if not app: return
 
             argument = ''
             argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
             argkeyboard.doModal()
-            args = argkeyboard.getText()
+            args = argkeyboard.getText().decode('utf-8')
 
             title = os.path.basename(app)
-            keyboard = xbmc.Keyboard(title.replace('.'+title.split('.')[-1],'').replace('.',' '), 'Set the title of the launcher')
+            title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+            keyboard = xbmc.Keyboard(title_formatted, 'Set the title of the launcher')
             keyboard.doModal()
-            title = keyboard.getText()
-            if title == '':
+            title = keyboard.getText().decode('utf-8')
+            if not title:
                 title = os.path.basename(app)
                 title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
 
-            # Selection of the launcher game system
+            # >> Selection of the launcher game system
             dialog = xbmcgui.Dialog()
             sel_platform = dialog.select('Select the platform', AEL_platform_list)
             if sel_platform < 0: return
             launcher_platform = AEL_platform_list[sel_platform]
 
-            # --- Selection of the thumbnails and fanarts path ---
-            thumb_path  = self.settings['launchers_thumb_dir']
-            fanart_path = self.settings['launchers_fanart_dir']
-
-            # --- Create launcher object data, add to dictionary and write XML file ---
-            if not thumb_path:  thumb_path = ''
-            if not fanart_path: fanart_path = ''
-
-            # add launcher to the launchers dictionary (using name as index)
-            launcherID = misc_generate_random_SID()
+            # >> Add launcher to the launchers dictionary (using name as index)
+            launcherID   = misc_generate_random_SID()
             launcherdata = fs_new_launcher()
-            launcherdata['id']          = launcherID
-            launcherdata['m_name']      = title
-            launcherdata['categoryID']  = categoryID
-            launcherdata['application'] = app
-            launcherdata['args']        = args
-            launcherdata['thumbpath']   = thumb_path
-            launcherdata['fanartpath']  = fanart_path
-            launcherdata['platform']    = launcher_platform
-            self.launchers[launcherID]  = launcherdata
-            kodi_notify('App launcher {0} created.'.format(title))
+            launcherdata['id']                 = launcherID
+            launcherdata['m_name']             = title
+            launcherdata['platform']           = launcher_platform
+            launcherdata['categoryID']         = categoryID
+            launcherdata['application']        = app
+            launcherdata['args']               = args
+            launcherdata['timestamp_launcher'] = time.time()
+            self.launchers[launcherID] = launcherdata
+            kodi_notify(u'Standalone launcher {0} created.'.format(title))
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
@@ -797,7 +791,7 @@ class Main:
             elif type2 == 2:
                 # >> Get launcher NFO file
                 # No-Intro reading of files: use Unicode string for u'.dat|.xml'. However, | belongs to ASCII...
-                NFO_file = xbmcgui.Dialog().browse(1, u'Select description file (NFO)', u'files', u'.nfo', False, False)
+                NFO_file = xbmcgui.Dialog().browse(1, u'Select description file (NFO)', u'files', u'.nfo', False, False).decode('utf-8')
                 if not os.path.isfile(NFO_file): return
                 
                 # >> Launcher is edited using Python passing by assigment
@@ -809,7 +803,7 @@ class Main:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_name'], 'Edit title')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                title = keyboard.getText()
+                title = keyboard.getText().decode('utf-8')
                 if title == '':
                     title = self.launchers[launcherID]['m_name']
                 self.launchers[launcherID]['m_name'] = title.rstrip()
@@ -826,32 +820,32 @@ class Main:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_year'] = keyboard.getText()
+                self.launchers[launcherID]['m_year'] = keyboard.getText().decode('utf-8')
 
             # Edition of the launcher genre
             elif type2 == 6:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_genre'], 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_genre'] = keyboard.getText()
+                self.launchers[launcherID]['m_genre'] = keyboard.getText().decode('utf-8')
 
             # Edition of the launcher studio name
             elif type2 == 7:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_studio'], 'Edit studio')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_studio'] = keyboard.getText()
+                self.launchers[launcherID]['m_studio'] = keyboard.getText().decode('utf-8')
 
             # --- Edit launcher description (plot) ---
             elif type2 == 8:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_plot'], 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_plot'] = keyboard.getText()
+                self.launchers[launcherID]['m_plot'] = keyboard.getText().decode('utf-8')
 
             # --- Import of the launcher descripion (plot) ---
             # elif type2 == 8:
-            #     text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False)
+            #     text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False).decode('utf-8')
             #     if os.path.isfile(text_file) == True:
             #         file_data = self._gui_import_TXT_file(text_file)
             #         self.launchers[launcherID]['plot'] = file_data
@@ -1097,8 +1091,9 @@ class Main:
                         # Browse for No-Intro file
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
                         dialog = xbmcgui.Dialog()
-                        dat_file = dialog.browse(type = 1, heading = u'Select No-Intro XML DAT (XML|DAT)', 
-                                                 s_shares = u'files', mask = u'.xml|.dat', useThumbs = False, treatAsFolder = False)
+                        dat_file = dialog.browse(type = 1, heading = 'Select No-Intro XML DAT (XML|DAT)', 
+                                                 s_shares = 'files', mask = '.xml|.dat', 
+                                                 useThumbs = False, treatAsFolder = False).decode('utf-8')
                         if not os.path.isfile(dat_file): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
@@ -1228,57 +1223,57 @@ class Main:
 
                 if type2 == 0:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Titles path', 'files', '', False, False, launcher['path_title'])
+                    dir_path = dialog.browse(0, 'Select Titles path', 'files', '', False, False, launcher['path_title']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_title'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Snaps path', 'files', '', False, False, launcher['path_snap'])
+                    dir_path = dialog.browse(0, 'Select Snaps path', 'files', '', False, False, launcher['path_snap']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_snap'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Fanarts path', 'files', '', False, False, launcher['path_fanart'])
+                    dir_path = dialog.browse(0, 'Select Fanarts path', 'files', '', False, False, launcher['path_fanart']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_fanart'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Banners path', 'files', '', False, False, launcher['path_banner'])
+                    dir_path = dialog.browse(0, 'Select Banners path', 'files', '', False, False, launcher['path_banner']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_banner'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Boxfronts path', 'files', '', False, False, launcher['path_boxfront'])
+                    dir_path = dialog.browse(0, 'Select Boxfronts path', 'files', '', False, False, launcher['path_boxfront']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_boxfront'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Boxbacks path', 'files', '', False, False, launcher['path_boxback'])
+                    dir_path = dialog.browse(0, 'Select Boxbacks path', 'files', '', False, False, launcher['path_boxback']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_boxback'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Cartridges path', 'files', '', False, False, launcher['path_cartridge'])
+                    dir_path = dialog.browse(0, 'Select Cartridges path', 'files', '', False, False, launcher['path_cartridge']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_cartridge'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Flyers path', 'files', '', False, False, launcher['path_flyer'])
+                    dir_path = dialog.browse(0, 'Select Flyers path', 'files', '', False, False, launcher['path_flyer']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_flyer'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Maps path', 'files', '', False, False, launcher['path_map'])
+                    dir_path = dialog.browse(0, 'Select Maps path', 'files', '', False, False, launcher['path_map']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_map'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Manuals path', 'files', '', False, False, launcher['path_manual'])
+                    dir_path = dialog.browse(0, 'Select Manuals path', 'files', '', False, False, launcher['path_manual']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_manual'] = dir_path
                 elif type2 == 1:
                     dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Trailers path', 'files', '', False, False, launcher['path_trailer'])
+                    dir_path = dialog.browse(0, 'Select Trailers path', 'files', '', False, False, launcher['path_trailer']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_trailer'] = dir_path
                 # >> User canceled select dialog
@@ -1318,14 +1313,14 @@ class Main:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['args'], 'Edit application arguments')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['args'] = keyboard.getText()
+                self.launchers[launcherID]['args'] = keyboard.getText().decode('utf-8')
 
             if self.launchers[launcherID]['rompath'] != '':
                 # Launcher roms path menu option
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
                     rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', 'files', '',
-                                                       False, False, self.launchers[launcherID]['rompath'])
+                                                       False, False, self.launchers[launcherID]['rompath']).decode('utf-8')
                     self.launchers[launcherID]['rompath'] = rom_path
 
                 # Edition of the launcher rom extensions (only for emulator launcher)
@@ -1335,7 +1330,7 @@ class Main:
                                                 'Edit ROM extensions, use &quot;|&quot; as separator. (e.g lnk|cbr)')
                     keyboard.doModal()
                     if not keyboard.isConfirmed(): return
-                    self.launchers[launcherID]['romext'] = keyboard.getText()
+                    self.launchers[launcherID]['romext'] = keyboard.getText().decode('utf-8')
 
             # Launcher minimize state menu option
             type2_nb = type2_nb + 1
@@ -1509,7 +1504,7 @@ class Main:
                 keyboard = xbmc.Keyboard(roms[romID]['m_name'], 'Edit title')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                title = keyboard.getText()
+                title = keyboard.getText().decode('utf-8')
                 if title == '': title = roms[romID]['m_name']
                 roms[romID]['m_name'] = title.rstrip()
 
@@ -1518,28 +1513,28 @@ class Main:
                 keyboard = xbmc.Keyboard(roms[romID]['m_year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                roms[romID]['m_year'] = keyboard.getText()
+                roms[romID]['m_year'] = keyboard.getText().decode('utf-8')
 
             # Edition of the rom studio name
             elif type2 == 4:
                 keyboard = xbmc.Keyboard(roms[romID]['m_studio'], 'Edit studio')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                roms[romID]['m_studio'] = keyboard.getText()
+                roms[romID]['m_studio'] = keyboard.getText().decode('utf-8')
 
             # Edition of the rom game genre
             elif type2 == 5:
                 keyboard = xbmc.Keyboard(roms[romID]['m_genre'], 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                roms[romID]['m_genre'] = keyboard.getText()
+                roms[romID]['m_genre'] = keyboard.getText().decode('utf-8')
 
             # Edit ROM description (plot)
             elif type2 == 6:
                 keyboard = xbmc.Keyboard(roms[romID]['m_plot'], 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                roms[romID]['m_plot'] = keyboard.getText()
+                roms[romID]['m_plot'] = keyboard.getText().decode('utf-8')
 
             # Import of the rom game plot from TXT file
             elif type2 == 7:
@@ -1647,7 +1642,7 @@ class Main:
                 launcher = self.launchers[launcherID]
                 romext   = launcher['romext']
                 item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', '.' + romext.replace('|', '|.'),
-                                                    False, False, filename)
+                                                    False, False, filename).decode('utf-8')
                 if not item_file: return
                 roms[romID]['filename'] = item_file
             # >> Alternative launcher application file path
@@ -1655,7 +1650,7 @@ class Main:
                 filter_str = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
                 altapp = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
                                                  'files', filter_str, 
-                                                 False, False, roms[romID]['altapp'])
+                                                 False, False, roms[romID]['altapp']).decode('utf-8')
                 # Returns empty browse if dialog was canceled.
                 if not altapp: return
                 roms[romID]['altapp'] = altapp
@@ -1664,7 +1659,7 @@ class Main:
                 keyboard = xbmc.Keyboard(roms[romID]['altarg'], 'Edit ROM custom application arguments')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                roms[romID]['altarg'] = keyboard.getText()
+                roms[romID]['altarg'] = keyboard.getText().decode('utf-8')
             # >> User canceled select dialog
             elif type2 < 0:
                 return
@@ -3845,7 +3840,7 @@ class Main:
         else:
             log_verb(u'_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
-        if self.settings['display_launcher_notification']:
+        if self.settings['display_launcher_notify']:
             kodi_notify('Launching {0}'.format(rombasename))
 
         # >> Disable navigation sounds?
@@ -3857,7 +3852,7 @@ class Main:
 
         # >> Pause Kodi execution some time
         start_tempo_ms = self.settings['start_tempo']
-        log_verb('_run_after_execution() Pausing {0} ms'.format(start_tempo_ms))
+        log_verb('_run_before_execution() Pausing {0} ms'.format(start_tempo_ms))
         xbmc.sleep(start_tempo_ms)
 
         return kodi_was_playing_flag
@@ -3928,23 +3923,11 @@ class Main:
         num_roms = len(roms)
 
         # >> Step 2: ROM metadata and fanart
-        missing_m_year   = 0
-        missing_m_genre  = 0
-        missing_m_studio = 0
-        missing_m_rating = 0
-        missing_m_plot   = 0        
-        missing_s_title     = 0
-        missing_s_snap      = 0
-        missing_s_fanart    = 0
-        missing_s_banner    = 0
-        missing_s_clearlogo = 0
-        missing_s_boxfront  = 0
-        missing_s_boxback   = 0
-        missing_s_cartridge = 0
-        missing_s_flyer     = 0
-        missing_s_map       = 0
-        missing_s_manual    = 0
-        missing_s_trailer   = 0
+        missing_m_year      = missing_m_genre = missing_m_studio = missing_m_rating = 0
+        missing_m_plot      = 0
+        missing_s_title     = missing_s_snap     = missing_s_fanart  = missing_s_banner    = 0
+        missing_s_clearlogo = missing_s_boxfront = missing_s_boxback = missing_s_cartridge = 0
+        missing_s_flyer     = missing_s_map      = missing_s_manual  = missing_s_trailer   = 0
         check_list = []
         for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             rom = roms[rom_id]
@@ -4041,9 +4024,9 @@ class Main:
 
         # >> Step 6: Join string and write TXT file
         try:
-            full_string = ''.join(str_list)
+            full_string = ''.join(str_list).encode('utf-8')
             file = open(report_file_name, 'w')
-            file.write(full_string.encode('utf-8'))
+            file.write(full_string)
             file.close()
         except OSError:
             log_error('Cannot write Launcher Report file (OSError)')
@@ -4177,7 +4160,7 @@ class Main:
         # --- Choose ROM file ---
         dialog = xbmcgui.Dialog()
         extensions = '.' + romext.replace('|', '|.')
-        romfile = dialog.browse(1, 'Select the ROM file', 'files', extensions, False, False, rompath)
+        romfile = dialog.browse(1, 'Select the ROM file', 'files', extensions, False, False, rompath).decode('utf-8')
         if not romfile: return
 
         # --- Format title ---
@@ -4803,171 +4786,6 @@ class Main:
         return ret_imagepath
 
     # ---------------------------------------------------------------------------------------------
-    # Launcher/ROM Thumb/Fanart image semiautomatic scrapers.
-    # Function is here because structure is very similar to scanner _roms_scrap_image(). User is
-    # presented with a list of scrapped images and chooses the best one.
-    # Called when editing a Launcher/ROM Thumb/Fanart from context menu.
-    #
-    # objects_dic is changed using Python pass by assigment
-    # Caller is responsible for saving edited launcher/ROM
-    # Be aware that maybe launcherID = '0' if editing a ROM in Favourites
-    #
-    # Returns:
-    #   True   Changes were made to objects_dic. Caller must save XML/refresh container
-    #   False  No changes were made
-    # ---------------------------------------------------------------------------------------------
-    def _gui_scrap_image_semiautomatic(self, image_kind, objects_kind, objects_dic, objectID, launcherID):
-        # _gui_edit_image() already has checked for errors in parameters.
-
-        # --- Configure function depending of image kind ---
-        # Customise function depending of object to edit
-        if image_kind == IMAGE_THUMB:
-            scraper_obj = self.scraper_thumb
-            image_key   = 'thumb'
-            image_name  = 'Thumb'
-            if objects_kind == KIND_LAUNCHER:
-                platform = objects_dic[objectID]['platform']
-                kind_name = 'Launcher'
-                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
-                launchers_fanart_dir = self.settings['launchers_fanart_dir']
-                dest_basename = objects_dic[objectID]['name']
-                rom_base_noext = '' # Used by offline scrapers only
-                image_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
-            elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                # ROM in favourites
-                if launcherID == VLAUNCHER_FAV_ID:
-                    thumb_dir  = self.settings['favourites_thumb_dir']
-                    fanart_dir = self.settings['favourites_fanart_dir']
-                    platform   = objects_dic[objectID]['platform']
-                # ROM in launcher
-                else:
-                    thumb_dir  = self.launchers[launcherID]['thumbpath']
-                    fanart_dir = self.launchers[launcherID]['fanartpath']
-                    platform   = self.launchers[launcherID]['platform']
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                rom_base_noext = ROM.base_noext # Used by offline scrapers only
-                image_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)                
-        elif image_kind == IMAGE_FANART:
-            scraper_obj = self.scraper_fanart
-            image_key   = 'fanart'
-            image_name  = 'Fanart'
-            if objects_kind == KIND_LAUNCHER:
-                platform = objects_dic[objectID]['platform']
-                kind_name = 'Launcher'
-                launchers_thumb_dir  = self.settings['launchers_thumb_dir']
-                launchers_fanart_dir = self.settings['launchers_fanart_dir']
-                dest_basename = objects_dic[objectID]['name']
-                rom_base_noext = '' # Used by offline scrapers only
-                image_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
-            elif objects_kind == KIND_ROM:
-                kind_name = 'ROM'
-                # ROM in favourites
-                if launcherID == VLAUNCHER_FAV_ID:
-                    thumb_dir  = self.settings['favourites_thumb_dir']
-                    fanart_dir = self.settings['favourites_fanart_dir']
-                    platform   = objects_dic[objectID]['platform']
-                # ROM in launcher
-                else:
-                    thumb_dir  = self.launchers[launcherID]['thumbpath']
-                    fanart_dir = self.launchers[launcherID]['fanartpath']
-                    platform   = self.launchers[launcherID]['platform']
-                ROM = misc_split_path(objects_dic[objectID]['filename'])
-                rom_base_noext = ROM.base_noext # Used by offline scrapers only
-                image_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)                
-        log_debug('_gui_scrap_image_semiautomatic() Editing {0} {1}'.format(kind_name, image_name))
-        local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
-
-        # --- Ask user to edit the image search string ---
-        keyboard = xbmc.Keyboard(objects_dic[objectID]['name'], 'Enter the string to search for...')
-        keyboard.doModal()
-        if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText()
-
-        # --- Call scraper and get a list of games ---
-        # IMPORTANT Setting Kodi busy notification prevents the user to control the UI when a dialog with handler -1
-        #           has been called and nothing is displayed.
-        #           THIS PREVENTS THE RACE CONDITIONS THAT CAUSE TROUBLE IN ADVANCED LAUNCHER!!!
-        kodi_busydialog_ON()
-        results = scraper_obj.get_search(search_string, rom_base_noext, platform)
-        kodi_busydialog_OFF()
-        log_debug('{0} scraper found {1} result/s'.format(image_name, len(results)))
-        if not results:
-            kodi_dialog_OK('Scraper found no matches.')
-            log_debug('{0} scraper did not found any game'.format(image_name))
-            return False
-
-        # --- Choose game to download image ---
-        # Display corresponding game list found so user choses
-        dialog = xbmcgui.Dialog()
-        rom_name_list = []
-        for game in results:
-            rom_name_list.append(game['display_name'])
-        selectgame = dialog.select('Select game for {0}'.format(search_string), rom_name_list)
-        if selectgame < 0:
-            # >> User canceled select dialog
-            return False
-
-        # --- Grab list of images for the selected game ---
-        # >> Prevent race conditions
-        kodi_busydialog_ON()
-        image_list = scraper_obj.get_images(results[selectgame])
-        kodi_busydialog_OFF()
-        log_verb('{0} scraper returned {1} images'.format(image_name, len(image_list)))
-        if not image_list:
-            kodi_dialog_OK('Scraper found no images.')
-            return False
-
-        # --- Always do semi-automatic scraping when editing images ---
-        # If there is a local image add it to the list and show it to the user
-        if os.path.isfile(local_image):
-            image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image} )
-
-        # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
-        image_url = gui_show_image_select(image_list)
-        log_debug('{0} dialog returned image_url "{1}"'.format(image_name, image_url))
-        if image_url == '': image_url = image_list[0]['URL']
-
-        # --- If user chose the local image don't download anything ---
-        if image_url != local_image:
-            # ~~~ Download scraped image ~~~
-            # Get Tumb/Fanart name with no extension, then get URL image extension
-            # and make full thumb path. If extension cannot be determined
-            # from URL defaul to '.jpg'
-            img_ext    = text_get_image_URL_extension(image_url) # Includes front dot -> .jpg
-            image_path = image_path_noext + img_ext
-
-            # ~~~ Download image ~~~
-            log_debug('image_path_noext "{0}"'.format(image_path_noext))
-            log_debug('img_ext          "{0}"'.format(img_ext))
-            log_verb('Downloading URL  "{0}"'.format(image_url))
-            log_verb('Into local file  "{0}"'.format(image_path))
-            # >> Prevent race conditions
-            kodi_busydialog_ON()
-            try:
-                net_download_img(image_url, image_path)
-            except socket.timeout:
-                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
-            kodi_busydialog_OFF()
-
-            # ~~~ Update Kodi cache with downloaded image ~~~
-            # Recache only if local image is in the Kodi cache, this function takes care of that.
-            kodi_update_image_cache(image_path)
-        else:
-            log_debug('{0} scraper: user chose local image "{1}"'.format(image_name, local_image))
-            # >> If current image is same as found local image then there is nothing to update
-            if objects_dic[objectID][image_key] == local_image: 
-                log_debug('Local image already in object. Returning False')
-                return False
-            image_path = local_image
-
-        # --- Edit using Python pass by assigment ---
-        # >> Caller is responsible to save launchers/ROMs
-        objects_dic[objectID][image_key] = image_path
-
-        return True
-
-    # ---------------------------------------------------------------------------------------------
     # Metadata scrapers
     # ---------------------------------------------------------------------------------------------
     #
@@ -5228,8 +5046,153 @@ class Main:
         # --- Manual scrape and choose from a list of images ---
         # >> Copy asset scrape code into here and remove function _gui_scrap_image_semiautomatic()
         elif type2 == 2:
-            return self._gui_scrap_image_semiautomatic(image_kind, objects_kind, objects_dic, objectID, launcherID)
 
+            # --- Configure function depending of image kind ---
+            # Customise function depending of object to edit
+            if image_kind == IMAGE_THUMB:
+                scraper_obj = self.scraper_thumb
+                image_key   = 'thumb'
+                image_name  = 'Thumb'
+                if objects_kind == KIND_LAUNCHER:
+                    platform = objects_dic[objectID]['platform']
+                    kind_name = 'Launcher'
+                    launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                    launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                    dest_basename = objects_dic[objectID]['name']
+                    rom_base_noext = '' # Used by offline scrapers only
+                    image_path_noext = misc_get_thumb_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
+                elif objects_kind == KIND_ROM:
+                    kind_name = 'ROM'
+                    # ROM in favourites
+                    if launcherID == VLAUNCHER_FAV_ID:
+                        thumb_dir  = self.settings['favourites_thumb_dir']
+                        fanart_dir = self.settings['favourites_fanart_dir']
+                        platform   = objects_dic[objectID]['platform']
+                    # ROM in launcher
+                    else:
+                        thumb_dir  = self.launchers[launcherID]['thumbpath']
+                        fanart_dir = self.launchers[launcherID]['fanartpath']
+                        platform   = self.launchers[launcherID]['platform']
+                    ROM = misc_split_path(objects_dic[objectID]['filename'])
+                    rom_base_noext = ROM.base_noext # Used by offline scrapers only
+                    image_path_noext = misc_get_thumb_path_noext(thumb_dir, fanart_dir, ROM.base_noext)                
+            elif image_kind == IMAGE_FANART:
+                scraper_obj = self.scraper_fanart
+                image_key   = 'fanart'
+                image_name  = 'Fanart'
+                if objects_kind == KIND_LAUNCHER:
+                    platform = objects_dic[objectID]['platform']
+                    kind_name = 'Launcher'
+                    launchers_thumb_dir  = self.settings['launchers_thumb_dir']
+                    launchers_fanart_dir = self.settings['launchers_fanart_dir']
+                    dest_basename = objects_dic[objectID]['name']
+                    rom_base_noext = '' # Used by offline scrapers only
+                    image_path_noext = misc_get_fanart_path_noext(launchers_thumb_dir, launchers_fanart_dir, dest_basename)
+                elif objects_kind == KIND_ROM:
+                    kind_name = 'ROM'
+                    # ROM in favourites
+                    if launcherID == VLAUNCHER_FAV_ID:
+                        thumb_dir  = self.settings['favourites_thumb_dir']
+                        fanart_dir = self.settings['favourites_fanart_dir']
+                        platform   = objects_dic[objectID]['platform']
+                    # ROM in launcher
+                    else:
+                        thumb_dir  = self.launchers[launcherID]['thumbpath']
+                        fanart_dir = self.launchers[launcherID]['fanartpath']
+                        platform   = self.launchers[launcherID]['platform']
+                    ROM = misc_split_path(objects_dic[objectID]['filename'])
+                    rom_base_noext = ROM.base_noext # Used by offline scrapers only
+                    image_path_noext = misc_get_fanart_path_noext(thumb_dir, fanart_dir, ROM.base_noext)                
+            log_debug('_gui_scrap_image_semiautomatic() Editing {0} {1}'.format(kind_name, image_name))
+            local_image = misc_look_for_image(image_path_noext, IMG_EXTS)
+
+            # --- Ask user to edit the image search string ---
+            keyboard = xbmc.Keyboard(objects_dic[objectID]['name'], 'Enter the string to search for...')
+            keyboard.doModal()
+            if not keyboard.isConfirmed(): return False
+            search_string = keyboard.getText()
+
+            # --- Call scraper and get a list of games ---
+            # IMPORTANT Setting Kodi busy notification prevents the user to control the UI when a dialog with handler -1
+            #           has been called and nothing is displayed.
+            #           THIS PREVENTS THE RACE CONDITIONS THAT CAUSE TROUBLE IN ADVANCED LAUNCHER!!!
+            kodi_busydialog_ON()
+            results = scraper_obj.get_search(search_string, rom_base_noext, platform)
+            kodi_busydialog_OFF()
+            log_debug('{0} scraper found {1} result/s'.format(image_name, len(results)))
+            if not results:
+                kodi_dialog_OK('Scraper found no matches.')
+                log_debug('{0} scraper did not found any game'.format(image_name))
+                return False
+
+            # --- Choose game to download image ---
+            # Display corresponding game list found so user choses
+            dialog = xbmcgui.Dialog()
+            rom_name_list = []
+            for game in results:
+                rom_name_list.append(game['display_name'])
+            selectgame = dialog.select('Select game for {0}'.format(search_string), rom_name_list)
+            if selectgame < 0:
+                # >> User canceled select dialog
+                return False
+
+            # --- Grab list of images for the selected game ---
+            # >> Prevent race conditions
+            kodi_busydialog_ON()
+            image_list = scraper_obj.get_images(results[selectgame])
+            kodi_busydialog_OFF()
+            log_verb('{0} scraper returned {1} images'.format(image_name, len(image_list)))
+            if not image_list:
+                kodi_dialog_OK('Scraper found no images.')
+                return False
+
+            # --- Always do semi-automatic scraping when editing images ---
+            # If there is a local image add it to the list and show it to the user
+            if os.path.isfile(local_image):
+                image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image} )
+
+            # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
+            image_url = gui_show_image_select(image_list)
+            log_debug('{0} dialog returned image_url "{1}"'.format(image_name, image_url))
+            if image_url == '': image_url = image_list[0]['URL']
+
+            # --- If user chose the local image don't download anything ---
+            if image_url != local_image:
+                # ~~~ Download scraped image ~~~
+                # Get Tumb/Fanart name with no extension, then get URL image extension
+                # and make full thumb path. If extension cannot be determined
+                # from URL defaul to '.jpg'
+                img_ext    = text_get_image_URL_extension(image_url) # Includes front dot -> .jpg
+                image_path = image_path_noext + img_ext
+
+                # ~~~ Download image ~~~
+                log_debug('image_path_noext "{0}"'.format(image_path_noext))
+                log_debug('img_ext          "{0}"'.format(img_ext))
+                log_verb('Downloading URL  "{0}"'.format(image_url))
+                log_verb('Into local file  "{0}"'.format(image_path))
+                # >> Prevent race conditions
+                kodi_busydialog_ON()
+                try:
+                    net_download_img(image_url, image_path)
+                except socket.timeout:
+                    kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
+                kodi_busydialog_OFF()
+
+                # ~~~ Update Kodi cache with downloaded image ~~~
+                # Recache only if local image is in the Kodi cache, this function takes care of that.
+                kodi_update_image_cache(image_path)
+            else:
+                log_debug('{0} scraper: user chose local image "{1}"'.format(image_name, local_image))
+                # >> If current image is same as found local image then there is nothing to update
+                if objects_dic[objectID][image_key] == local_image: 
+                    log_debug('Local image already in object. Returning False')
+                    return False
+                image_path = local_image
+
+            # --- Edit using Python pass by assigment ---
+            # >> Caller is responsible to save launchers/ROMs
+            objects_dic[objectID][image_key] = image_path
+            
         # --- User canceled select box ---
         elif type2 < 0:
             return False

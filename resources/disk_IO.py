@@ -14,17 +14,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# --- Pyhton standard library
+from __future__ import unicode_literals
+import json
+import io
+import codecs
+import time
+import os
+
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
 # import xml.etree.cElementTree as ET
 
 # ~~~ Using ElementTree seems to solve the problem
 import xml.etree.ElementTree as ET
-import json
-import io
-import codecs
-import time
-import os
 
 # --- AEL packages ---
 from utils import *
@@ -200,16 +203,12 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # -------------------------------------------------------------------------------------------------
 #
 # Writes a XML text tag line, indented 2 spaces (root sub-child)
-# Both tag_name and tag_text must be Unicode strings. Data will be encoded to UFT-8.
-# Returns an UTF-8 encoded string.
+# Both tag_name and tag_text must be Unicode strings.
+# Returns an Unicode string.
 #
 def XML_text(tag_name, tag_text):
     tag_text = text_escape_XML(tag_text)
-    try:
-        line = '  <{0}>{1}</{2}>\n'.format(tag_name.encode('utf-8'), tag_text.encode('utf-8'), tag_name.encode('utf-8'))
-    except UnicodeEncodeError:
-        log_error('XML_text() Exception UnicodeEncodeError tag_text "{0}"'.format(tag_text.encode('utf-8', 'replace')))
-        line = '  <{0}>{1}</{2}>\n'.format(tag_name.encode('utf-8'), tag_text.encode('utf-8', 'replace'), tag_name.encode('utf-8'))
+    line     = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text, tag_name)
 
     return line
 
@@ -217,10 +216,7 @@ def XML_text(tag_name, tag_text):
 # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
 #
 def get_fs_encoding():
-    try:
-        return sys.getfilesystemencoding()
-    except UnicodeEncodeError, UnicodeDecodeError:
-        return 'utf-8'
+    return sys.getfilesystemencoding()
 
 # -------------------------------------------------------------------------------------------------
 # Categories/Launchers
@@ -325,10 +321,10 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         # End of file
         str_list.append('</advanced_emulator_launcher>\n')
 
-        # Strings in the list are encoded in UTF-8, ready to be written on disk.
+        # Strings in the list are Unicode. Encode to UTF-8
         # Join string, and save categories.xml file
-        full_string = ''.join(str_list)
-        file_obj = open(categories_file, 'wt' )
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(categories_file, 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
@@ -352,10 +348,12 @@ def fs_load_catfile(categories_file):
     # If there are issues in the XML file ET.parse will fail
     try:
         xml_tree = ET.parse(categories_file)
-    except:
-        log_error('Error parsing XML categories.xml')
-        kodi_dialog_OK('Error reading categories.xml. Maybe XML file is corrupt or contains invalid characters.')
-        return (categories, launchers)
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
+                       'Maybe XML file is corrupt or contains invalid characters.')
+        return (update_timestamp, categories, launchers)
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))
@@ -453,7 +451,7 @@ def fs_get_ROMs_file_path(roms_dir, roms_base_noext):
     return roms_file_path
 
 #
-# Write to disk launcher ROMs XML database.
+# Write to disk launcher ROMs XML database (OBSOLETE)
 #
 def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
     # >> Get filename
@@ -524,8 +522,8 @@ def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
         # --- Join string and save categories.xml file ---
-        full_string = ''.join(str_list)
-        file_obj = open(roms_xml_file, 'wt' )
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(roms_xml_file, 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
@@ -547,8 +545,7 @@ def fs_load_ROMs_XML(roms_dir, roms_base_noext):
 
     # --- If file does not exist return empty dictionary ---
     roms_xml_file = os.path.join(roms_dir, roms_base_noext + '.xml')
-    if not os.path.isfile(roms_xml_file):
-        return {}
+    if not os.path.isfile(roms_xml_file): return roms
 
     # --- Notify we are busy doing things ---
     kodi_busydialog_ON()
@@ -558,8 +555,10 @@ def fs_load_ROMs_XML(roms_dir, roms_base_noext):
     # If XML has errors (invalid characters, etc.) this will rais exception 'err'
     try:
         xml_tree = ET.parse(roms_xml_file)
-    except:
-        return {}
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
@@ -617,8 +616,8 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         str_list.append('</launcher>\n')
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
-        full_string = ''.join(str_list)
-        file_obj = open(roms_xml_file, 'wt' )
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(roms_xml_file, 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
@@ -632,10 +631,12 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     # >> See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                    indent = JSON_indent, separators = JSON_separators)
-          file.write(json_unicode)
-          file.close()
+            # >> json_unicode is either str or unicode
+            # >> See https://docs.python.org/2.7/library/json.html#json.dumps
+            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                      indent = JSON_indent, separators = JSON_separators)
+            file.write(json_unicode.encode('utf-8'))
+            file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -712,8 +713,8 @@ def fs_write_Favourites_XML(roms_xml_file, roms):
             str_list.append(XML_text('fav_status', rom['fav_status']))
             str_list.append('</rom>\n')
         str_list.append('</advanced_emulator_launcher_Favourites>\n')
-        full_string = ''.join(str_list)
-        file_obj = open(roms_xml_file, 'wt' )
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(roms_xml_file, 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
@@ -730,12 +731,16 @@ def fs_load_Favourites_XML(roms_xml_file):
     roms = {}
 
     # --- If file does not exist return empty dictionary ---
-    if not os.path.isfile(roms_xml_file):
-        return {}
+    if not os.path.isfile(roms_xml_file): return roms
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_Favourites_XML() Loading XML file {0}'.format(roms_xml_file))
-    xml_tree = ET.parse(roms_xml_file)
+    try:
+        xml_tree = ET.parse(roms_xml_file)
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
@@ -766,10 +771,10 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
     log_info('fs_write_Favourites_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding='utf-8') as file:
-          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                    indent = JSON_indent, separators = JSON_separators)
-          file.write(json_unicode)
-          file.close()
+            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                      indent = JSON_indent, separators = JSON_separators)
+            file.write(json_unicode.encode('utf-8'))
+            file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -823,8 +828,8 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
-        full_string = ''.join(str_list)
-        file_obj = open(collections_xml_file, 'wt')
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(collections_xml_file, 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
@@ -842,7 +847,12 @@ def fs_load_Collection_index_XML(collections_xml_file):
 
     # --- Parse using cElementTree ---
     log_verb(u'fs_load_Collection_index_XML() Loading XML file {0}'.format(collections_xml_file))
-    xml_tree = ET.parse(collections_xml_file)
+    try:
+        xml_tree = ET.parse(collections_xml_file)
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug(u'Root child {0}'.format(root_element.tag))
@@ -870,10 +880,10 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_info('fs_write_Collection_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                    indent = JSON_indent, separators = JSON_separators)
-          file.write(json_unicode)
-          file.close()
+            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                      indent = JSON_indent, separators = JSON_separators)
+            file.write(json_unicode.encode('utf-8'))
+            file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -930,8 +940,8 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
             str_list.append(XML_text('roms_base_noext', rom['roms_base_noext']))
             str_list.append('</VLauncher>\n')
         str_list.append('</advanced_emulator_launcher_Virtual_Category_index>\n')
-        full_string = ''.join(str_list)
-        file_obj = open(roms_xml_file, 'wt')
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(roms_xml_file, 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
@@ -953,7 +963,12 @@ def fs_load_VCategory_XML(roms_xml_file):
 
     # --- Parse using cElementTree ---
     log_verb(u'fs_load_VCategory_XML() Loading XML file {0}'.format(roms_xml_file))
-    xml_tree = ET.parse(roms_xml_file)
+    try:
+        xml_tree = ET.parse(roms_xml_file)
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug(u'Root child {0}'.format(root_element.tag))
@@ -986,10 +1001,10 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-          json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                    indent = JSON_indent, separators = JSON_separators)
-          file.write(json_unicode)
-          file.close()
+            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                      indent = JSON_indent, separators = JSON_separators)
+            file.write(json_unicode.encode('utf-8'))
+            file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
     except IOError:
@@ -1033,7 +1048,12 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- Parse using cElementTree ---
     log_verb('fs_load_NoIntro_XML_file() Loading XML file {0}'.format(roms_xml_file))
     nointro_roms = {}
-    xml_tree = ET.parse(roms_xml_file)
+    try:
+        xml_tree = ET.parse(roms_xml_file)
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if root_element.tag == 'game':
@@ -1057,7 +1077,12 @@ def fs_load_GameInfo_XML(xml_file):
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_GameInfo_XML() Loading "{0}"'.format(xml_file))
-    xml_tree = ET.parse(xml_file)
+    try:
+        xml_tree = ET.parse(xml_file)
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return roms
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser: 
@@ -1100,7 +1125,12 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
 
     # --- Parse using ElementTree ---
     log_verb('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath))
-    xml_tree = ET.parse(AL_launchers_filepath)
+    try:
+        xml_tree = ET.parse(AL_launchers_filepath)
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return roms
     xml_root = xml_tree.getroot()
 
     for root_element in xml_root:
@@ -1334,7 +1364,7 @@ def fs_export_launcher_NFO(nfo_file_path, launcher):
     nfo_content.append('</launcher>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_file_path, 'wt')
+        f = open(nfo_file_path, 'w')
         f.write(full_string)
         f.close()
     except:
@@ -1405,8 +1435,8 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
 def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
     nfo_dir = settings['launchers_asset_dir']
-    nfo_file_path = os.path.join(nfo_dir, launcher_name + u'.nfo')
-    log_debug(u"fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+    nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
+    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
 
@@ -1416,7 +1446,7 @@ def fs_get_launcher_NFO_name(settings, launcher):
 #
 def fs_export_category_NFO(nfo_file_path, category):
     # --- Get NFO file name ---
-    log_debug(u'fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path))
+    log_debug('fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -1436,28 +1466,28 @@ def fs_export_category_NFO(nfo_file_path, category):
         log_error(u"fs_export_category_NFO() Exception writing'{0}'".format(nfo_file_path))
         return False
 
-    kodi_notify(u'Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
-    log_debug(u"fs_export_category_NFO() Created '{0}'".format(nfo_file_path))
+    kodi_notify('Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
+    log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_file_path))
 
     return True
 
 def fs_import_category_NFO(nfo_file_path, categories, categoryID):
     # --- Get NFO file name ---
-    log_debug(u'fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path))
+    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path))
 
     # --- Import data ---
     if os.path.isfile(nfo_file_path):
         try:
             file = codecs.open(nfo_file_path, 'r', 'utf-8')
-            item_nfo = file.read().replace(u'\r', u'').replace(u'\n', u'')
+            item_nfo = file.read().replace('\r', '').replace('\n', '')
             file.close()
         except:
-            kodi_notify_warn(u'Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
-            log_error(u"fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
+            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
             return False
     else:
         kodi_notify_warn(u'NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
-        log_error(u"fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
+        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
         return False
 
     item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
@@ -1468,15 +1498,15 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
     if item_rating: categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
     if item_plot:   categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
 
-    kodi_notify(u'Imported {0}'.format(os.path.basename(nfo_file_path)))
-    log_verb(u"fs_import_category_NFO() Imported '{0}'".format(nfo_file_path))
+    kodi_notify('Imported {0}'.format(os.path.basename(nfo_file_path)))
+    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_file_path))
 
     return True
 
 def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
     nfo_dir = settings['categories_asset_dir']
-    nfo_file_path = os.path.join(nfo_dir, category_name + u'.nfo')
-    log_debug(u"fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+    nfo_file_path = os.path.join(nfo_dir, category_name + '.nfo')
+    log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path

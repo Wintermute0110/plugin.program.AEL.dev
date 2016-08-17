@@ -15,12 +15,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# -----------------------------------------------------------------------------
-# We support online an offline scrapers.
-# Note that this module does not depend on Kodi stuff at all, and can be
-# called externally from console Python scripts for testing of the scrapers.
-# -----------------------------------------------------------------------------
+# --- Python standard library ---
+from __future__ import unicode_literals
 
+# --- AEL modules ---
 from scrap import *
 from scrap_common import *
 from disk_IO import *

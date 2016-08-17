@@ -20,6 +20,9 @@
 # outside Kodi in standard Python.
 #
 
+# --- Python standard library ---
+from __future__ import unicode_literals
+
 def log_debug(str):
     print(str)
 
