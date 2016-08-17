@@ -1,14 +1,14 @@
 # TODO #
 
- 1. Fix scraper in `Edit ROM/Launcher` menus.
+ * Fix scraper in `Edit ROM/Launcher` menus.
 
- 2. Make sure ROM scanner does not search/scrape assets whose directory is not configured.
+ * Make sure ROM scanner does not search/scrape assets whose directory is not configured. (DONE)
 
- 3. Make sure scraper does not scrape assets with unconfigured directories when editing ROMs/Launchers.
+ * Make sure scraper does not scrape assets with unconfigured directories when editing ROMs/Launchers.
  
- 4. Scraper should report which assets it supports.
+ * Scraper should report wheter it supports and asset or not.
  
- 5. Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
+ * Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
 
 # listitem.setInfo() overlay values and effects #
 

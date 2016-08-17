@@ -1037,6 +1037,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Also save categories/launchers to update timestamp
+                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
@@ -1127,6 +1128,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Also save categories/launchers to update timestamp
+                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
@@ -1142,6 +1144,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Also save categories/launchers to update timestamp
+                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
@@ -1161,6 +1164,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Also save categories/launchers to update timestamp
+                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
@@ -1175,6 +1179,7 @@ class Main:
                         fs_import_ROM_NFO(roms, rom_id, verbose = False)
                     # >> Save ROMs XML file
                     # >> Also save categories/launchers to update timestamp
+                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
@@ -4272,7 +4277,11 @@ class Main:
         for i, asset in enumerate(rom_asset_list):
             A = assets_get_info_scheme_A(asset)
             self.enabled_asset_list[i] = True if selectedLauncher[A.path_key] else False
-            if not self.enabled_asset_list[i]: disabled_asset_name_list.append(A.name)
+            if not self.enabled_asset_list[i]: 
+                disabled_asset_name_list.append(A.name)
+                log_verb('Asset directory config: {0:<9} disabled'.format(A.name))
+            else:
+                log_verb('Asset directory config: {0:<9} enabled'.format(A.name))
         if disabled_asset_name_list:
             disable_asset_srt = ', '.join(disabled_asset_name_list)
             kodi_dialog_OK('Assets paths not set: {0}. '.format(disable_asset_srt) +
@@ -4409,22 +4418,23 @@ class Main:
             kodi_dialog_OK('Launcher has {0} ROMs and no new ROMs have been added.'.format(len(roms)))
 
         # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
-        if selectedLauncher['nointro_xml_file'] != '':
-            nointro_xml_file = selectedLauncher['nointro_xml_file']
-            log_info('Auditing ROMs using No-Intro DAT {0}'.format(nointro_xml_file))
+        # >> NOTE disable No-Intro auditing in scanner. User can do the audit in the Edit Launcher menu.
+        # if selectedLauncher['nointro_xml_file'] != '':
+        #     nointro_xml_file = selectedLauncher['nointro_xml_file']
+        #     log_info('Auditing ROMs using No-Intro DAT {0}'.format(nointro_xml_file))
 
-            # --- Update No-Intro status for ROMs ---
-            # Note that roms dictionary is updated using Python pass by assigment.
-            # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
-            (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(roms, nointro_xml_file)
+        #     # --- Update No-Intro status for ROMs ---
+        #     # Note that roms dictionary is updated using Python pass by assigment.
+        #     # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
+        #     (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(roms, nointro_xml_file)
 
-            # Report
-            log_info('***** No-Intro audit finished. Report ******')
-            log_info('No-Intro Have ROMs    {0:6d}'.format(num_have))
-            log_info('No-Intro Miss ROMs    {0:6d}'.format(num_miss))
-            log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
-        else:
-            log_info('No No-Intro DAT configured. No auditing ROMs.')
+        #     # Report
+        #     log_info('***** No-Intro audit finished. Report ******')
+        #     log_info('No-Intro Have ROMs    {0:6d}'.format(num_have))
+        #     log_info('No-Intro Miss ROMs    {0:6d}'.format(num_miss))
+        #     log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
+        # else:
+        #     log_info('No No-Intro DAT configured. No auditing ROMs.')
 
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
@@ -4523,8 +4533,7 @@ class Main:
                     # Display corresponding game list found so user choses
                     dialog = xbmcgui.Dialog()
                     rom_name_list = []
-                    for game in results:
-                        rom_name_list.append(game['display_name'])
+                    for game in results: rom_name_list.append(game['display_name'])
                     selectgame = dialog.select('Select game for ROM {0}'.format(ROM.base_noext), rom_name_list)
                     if selectgame < 0: selectgame = 0
 
@@ -4563,9 +4572,9 @@ class Main:
 
         # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         log_verb('Searching for ROM local assets...')
-        local_asset_list = [u''] * len(rom_asset_list)
-        for i, asset in enumerate(rom_asset_list):
-            A = assets_get_info_scheme_A(asset)
+        local_asset_list = [''] * len(rom_asset_list)
+        for i, asset_kind in enumerate(rom_asset_list):
+            A = assets_get_info_scheme_A(asset_kind)
             if not self.enabled_asset_list[i]:
                 log_verb('Disabled {0:<9}'.format(A.name))
                 continue
@@ -4581,59 +4590,37 @@ class Main:
         scan_asset_policy = self.settings['scan_asset_policy']
         if scan_asset_policy == 0:
             log_verb('Asset policy: local images only | Scraper OFF')
-            selected_title     = local_asset_list[0]
-            selected_snap      = local_asset_list[1]
-            selected_fanart    = local_asset_list[2]
-            selected_banner    = local_asset_list[3]
-            selected_clearlogo = local_asset_list[4]
-            selected_boxfront  = local_asset_list[5]
-            selected_boxback   = local_asset_list[6]
-            selected_cartridge = local_asset_list[7]
-            selected_flyer     = local_asset_list[8]
-            selected_map       = local_asset_list[9]
-            selected_manual    = local_asset_list[10]
-            selected_trailer   = local_asset_list[11]
+            for i, asset_kind in enumerate(rom_asset_list):
+                A = assets_get_info_scheme_A(asset_kind)
+                romdata[A.key] = local_asset_list[i]
+
         elif scan_asset_policy == 1:
             log_verb('Asset policy: if not Local Image then Scraper ON')
-            selected_title     = self._roms_process_asset_policy_2(ASSET_TITLE, local_title, ROM, launcher)
-            selected_snap      = self._roms_process_asset_policy_2(ASSET_SNAP, local_snap, ROM, launcher)
-            selected_fanart    = self._roms_process_asset_policy_2(ASSET_FANART, local_fanart, ROM, launcher)
-            selected_banner    = self._roms_process_asset_policy_2(ASSET_BANNER, local_banner, ROM, launcher)
-            selected_clearlogo = self._roms_process_asset_policy_2(ASSET_CLEARLOGO, local_clearlogo, ROM, launcher)
-            selected_boxfront  = self._roms_process_asset_policy_2(ASSET_BOXFRONT, local_boxfront, ROM, launcher)
-            selected_boxback   = self._roms_process_asset_policy_2(ASSET_BOXBACK, local_boxback, ROM, launcher)
-            selected_cartridge = self._roms_process_asset_policy_2(ASSET_CARTRIDGE, local_cartridge, ROM, launcher)
-            selected_flyer     = self._roms_process_asset_policy_2(ASSET_FLYER, local_flyer, ROM, launcher)
-            selected_map       = self._roms_process_asset_policy_2(ASSET_MAP, local_map, ROM, launcher)
-            selected_manual    = self._roms_process_asset_policy_2(ASSET_MANUAL, local_manual, ROM, launcher)
-            selected_trailer   = self._roms_process_asset_policy_2(ASSET_TRAILER, local_trailer, ROM, launcher)
+            # selected_title = self._roms_process_asset_policy_2(ASSET_TITLE, local_title, ROM, launcher)
+            for i, asset_kind in enumerate(rom_asset_list):
+                A = assets_get_info_scheme_A(asset_kind)
+                if not self.enabled_asset_list[i]: 
+                    romdata[A.key] = ''
+                    log_verb('Skipped {0} (dir not configured)'.format(A.name))
+                else:
+                    if local_asset_list[i]:
+                        log_verb('Asset policy: local {0} FOUND | Scraper OFF'.format(A.name))
+                        romdata[A.key] = local_asset_list[i]
+                    else:
+                        log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
+                        romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM, launcher)
+
         elif scan_asset_policy == 2:
             log_verb('Asset policy: scraper will overwrite local assets | Scraper ON')
-            selected_title     = self._roms_scrap_asset(ASSET_TITLE, local_title, ROM, launcher)
-            selected_snap      = self._roms_scrap_asset(ASSET_SNAP, local_snap, ROM, launcher)
-            selected_fanart    = self._roms_scrap_asset(ASSET_FANART, local_fanart, ROM, launcher)
-            selected_banner    = self._roms_scrap_asset(ASSET_BANNER, local_banner, ROM, launcher)
-            selected_clearlogo = self._roms_scrap_asset(ASSET_CLEARLOGO, local_clearlogo, ROM, launcher)
-            selected_boxfront  = self._roms_scrap_asset(ASSET_BOXFRONT, local_boxfront, ROM, launcher)
-            selected_boxback   = self._roms_scrap_asset(ASSET_BOXBACK, local_boxback, ROM, launcher)
-            selected_cartridge = self._roms_scrap_asset(ASSET_CARTRIDGE, local_cartridge, ROM, launcher)
-            selected_flyer     = self._roms_scrap_asset(ASSET_FLYER, local_flyer, ROM, launcher)
-            selected_map       = self._roms_scrap_asset(ASSET_MAP, local_map, ROM, launcher)
-            selected_manual    = self._roms_scrap_asset(ASSET_MANUAL, local_manual, ROM, launcher)
-            selected_trailer   = self._roms_scrap_asset(ASSET_TRAILER, local_trailer, ROM, launcher)
-
-        romdata['s_title']     = selected_title
-        romdata['s_snap']      = selected_snap
-        romdata['s_fanart']    = selected_fanart
-        romdata['s_banner']    = selected_banner
-        romdata['s_clearlogo'] = selected_clearlogo
-        romdata['s_boxfront']  = selected_boxfront
-        romdata['s_boxback']   = selected_boxback
-        romdata['s_cartridge'] = selected_cartridge
-        romdata['s_flyer']     = selected_flyer
-        romdata['s_map']       = selected_map
-        romdata['s_manual']    = selected_manual
-        romdata['s_trailer']   = selected_trailer
+            # selected_title = self._roms_scrap_asset(ASSET_TITLE, local_title, ROM, launcher)
+            for i, asset_kind in enumerate(rom_asset_list):
+                A = assets_get_info_scheme_A(asset_kind)
+                if not self.enabled_asset_list[i]: 
+                    romdata[A.key] = ''
+                    log_verb('Skipped {0} (dir not configured)'.format(A.name))
+                else:
+                    log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
+                    romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM, launcher)
 
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
@@ -4650,18 +4637,6 @@ class Main:
         
         return romdata
 
-    def _roms_process_asset_policy_2(self, asset_kind, local_asset, ROM, launcher):
-        if local_asset == '':
-            A = assets_get_info_scheme_A(asset_kind, ROM.path_noext, launcher)
-            log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
-            selected_asset = self._roms_scrap_asset(asset_kind, local_asset, ROM, launcher)
-        else:
-            A = assets_get_info_scheme_A(asset_kind, ROM.path_noext, launcher)
-            log_verb('Asset policy: local {0} FOUND | Scraper OFF'.format(A.name))
-            selected_asset = local_asset
-        
-        return selected_asset
-
     #
     # Returns a valid filename of the downloaded scrapped image, filename of local image
     # or empty string if scraper finds nothing or download failed.
@@ -4671,8 +4646,9 @@ class Main:
         ret_asset_path = local_asset_path
 
         # --- Cutomise function depending of image_king ---
+        A = assets_get_info_scheme_A(asset_kind)
         asset_base_noext = ROM.base_noext
-        A = assets_get_info_scheme_A(asset_kind, asset_base_noext, launcher)
+        asset_path_noext = assets_get_path_noext_A(A, asset_base_noext, launcher)
         scraper_obj = self.scraper_asset
         platform = launcher['platform']
 
@@ -4683,8 +4659,7 @@ class Main:
         log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
         log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
         log_debug('_roms_scrap_asset() asset_base_noext "{0}"'.format(asset_base_noext))
-        log_debug('_roms_scrap_asset() A.base_noext     "{0}"'.format(A.base_noext))
-        log_debug('_roms_scrap_asset() A.path_noext     "{0}"'.format(A.path_noext))
+        log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext))
 
         # --- Call scraper and get a list of games ---
         rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
@@ -4692,7 +4667,7 @@ class Main:
         log_debug('{0} scraper found {1} result/s'.format(A.name, len(results)))
         if not results:
             log_debug('{0} scraper did not found any game'.format(A.name))
-            return ret_imagepath
+            return ret_asset_path
 
         # --- Choose game to download image ---
         # settings.xml: id="asset_scraper_mode"  default="0" values="Semi-automatic|Automatic"
@@ -4727,7 +4702,7 @@ class Main:
         log_verb('{0} scraper returned {1} images'.format(A.name, len(image_list)))
         if not image_list:
             log_debug('{0} scraper get_images() returned no images.'.format(A.name))
-            return ret_imagepath
+            return ret_asset_path
 
         # --- Semi-automatic scraping (user choses an image from a list) ---
         if scraping_mode == 0:
@@ -4760,11 +4735,10 @@ class Main:
             # and make full thumb path. If extension cannot be determined
             # from URL defaul to '.jpg'
             img_ext    = text_get_image_URL_extension(image_url) # Includes front dot -> .jpg
-            image_path = A.path_noext + img_ext
+            log_debug('img_ext "{0}"'.format(img_ext))
+            image_path = asset_path_noext + img_ext
 
             # ~~~ Download image ~~~
-            log_debug('image_path_noext "{0}"'.format(A.path_noext))
-            log_debug('img_ext          "{0}"'.format(img_ext))
             log_verb('Downloading URL  "{0}"'.format(image_url))
             log_verb('Into local file  "{0}"'.format(image_path))
             try:
@@ -4777,13 +4751,13 @@ class Main:
             kodi_update_image_cache(image_path)
 
             # --- Return value is downloaded image ---
-            ret_imagepath = image_path
+            ret_asset_path = image_path
         else:
             log_debug('{0} scraper: user chose local image "{1}"'.format(image_name, image_url))
-            ret_imagepath = image_url
+            ret_asset_path = image_url
 
         # --- Returned value ---
-        return ret_imagepath
+        return ret_asset_path
 
     # ---------------------------------------------------------------------------------------------
     # Metadata scrapers

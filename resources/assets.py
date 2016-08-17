@@ -177,12 +177,12 @@ def assets_get_asset_name_str(default_asset):
 # Returns an object with all the information
 # -------------------------------------------------------------------------------------------------
 class AssetInfo:
-    key         = u''
-    name        = u''
-    kind_str    = u''
-    exts_dialog = u''
-    base_noext  = u''
-    path_noext  = u''
+    key         = ''
+    name        = ''
+    kind_str    = ''
+    exts        = []
+    exts_dialog = []
+    path_key    = ''
 
 #
 # Scheme A uses different directories for artwork and no sufixes.
