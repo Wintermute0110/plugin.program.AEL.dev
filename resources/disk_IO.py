@@ -628,14 +628,17 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         log_error(u'fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # >> Write ROMs JSON dictionary.
+    # >> Do note that there is a bug in the json module where the ensure_ascii=False flag can produce 
+    # >> a mix of unicode and str objects. 
     # >> See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
             # >> json_unicode is either str or unicode
             # >> See https://docs.python.org/2.7/library/json.html#json.dumps
-            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                      indent = JSON_indent, separators = JSON_separators)
-            file.write(json_unicode.encode('utf-8'))
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                   indent = JSON_indent, separators = JSON_separators)
+            # unicode(json_data) auto-decodes data to unicode if str
+            file.write(unicode(json_data))
             file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
@@ -771,9 +774,9 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
     log_info('fs_write_Favourites_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding='utf-8') as file:
-            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                      indent = JSON_indent, separators = JSON_separators)
-            file.write(json_unicode.encode('utf-8'))
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                   indent = JSON_indent, separators = JSON_separators)
+            file.write(unicode(json_data))
             file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
@@ -880,9 +883,9 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_info('fs_write_Collection_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                      indent = JSON_indent, separators = JSON_separators)
-            file.write(json_unicode.encode('utf-8'))
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                   indent = JSON_indent, separators = JSON_separators)
+            file.write(unicode(json_data))
             file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
@@ -1001,9 +1004,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-            json_unicode = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                      indent = JSON_indent, separators = JSON_separators)
-            file.write(json_unicode.encode('utf-8'))
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                   indent = JSON_indent, separators = JSON_separators)
+            file.write(unicode(json_data))
             file.close()
     except OSError:
         kodi_notify_warn(u'(OSError) Cannot write {0} file'.format(roms_json_file))
