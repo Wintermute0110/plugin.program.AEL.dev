@@ -1,3 +1,15 @@
+# TODO #
+
+ 1. Fix scraper in `Edit ROM/Launcher` menus.
+
+ 2. Make sure ROM scanner does not search/scrape assets whose directory is not configured.
+
+ 3. Make sure scraper does not scrape assets with unconfigured directories when editing ROMs/Launchers.
+ 
+ 4. Scraper should report which assets it supports.
+ 
+ 5. Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
+
 # listitem.setInfo() overlay values and effects #
 
 `listitem.setInfo('video', {'overlay'  : 4})`
@@ -18,29 +30,6 @@ enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
 [setInfo]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setInfo
 [GUIListItem]: https://github.com/cisco-open-source/kodi/blob/master/xbmc/guilib/GUIListItem.h
 
-
-# Things to change in Advanced Emulator Launcher (AEL) #
-
-*   AL initial load is very slow. Entering a category or launcher is very slow.
- 
-    SOLUTION: Use separate XML files for every launcher instead of one big launchers.xml
-
-
-*   AL translation system is horrible. It is based on numbers!
- 
-    SOLUTION: Remove all languages and use English. I will think of a better translation
-    scheme later.
-
- 
-*   There is no favourites in AL launcher. Favourites can only be added to Kodi favourites.
- 
-    SOLUTION: Create a special AEL favourites category.
-
-
-*   No Tumb/Fanart when ".." is selected in navigation screen.
- 
-    SOLUTION: I do not know at the moment...
-
 # Development environment #
 
     1. Installed the packages `kodi` and `kodi-visualization-spectrum` in Debian.
@@ -51,36 +40,13 @@ enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
 
     4. Once installed, addon code is located in `~/.kodi/addons/plugin.addon.name`
 
-# Kodi addon zip files #
-
-The zipfile must have this structure:
-
-~~~
-plugin.program.advanced.emulator.launcher/addon.xml
-plugin.program.advanced.emulator.launcher/changelog.txt
-plugin.program.advanced.emulator.launcher/default.py
-plugin.program.advanced.emulator.launcher/fanart.jpg
-plugin.program.advanced.emulator.launcher/icon.png
-plugin.program.advanced.emulator.launcher/LICENSE.txt
-plugin.program.advanced.emulator.launcher/README.txt
-~~~
-
-Once the addon has been installed, it can be eddited in place (that is, in the Kodi directory where
-the addon Python files are installed). This will simplify the development a lot!
-
-## Developed environment ##
-
-I created a soft link to the github cloned directory witht the correct name 
-`plugin.program.advanced.emulator.launcher` and then created the zipfile with 
-
-`$ zip -r plugin.program.advanced.emulator.launcher.zip plugin.program.advanced.emulator.launcher/*`
-
-Then, intalled in Kodi with System -- Add-ons -- Install from zip file. It worked well.
+    5. Once installed, addon can be developed in place. A repository can be cloned in
+       `~/.kodi/addons/plugin.addon.name`.
 
 # Installing the addon from github #
 
 It is very important that the addon files are inside the correct directory
-`plugin.program.advanced.emulator.launcher`.
+`~/.kodi/addons/plugin.program.advanced.emulator.launcher`.
 
 To install the plugin from Github, click on `Clone or download` -- `Download ZIP`.
 This will download the repository contents to a ZIP file named
