@@ -1499,7 +1499,7 @@ class Main:
 
             # Import ROM metadata from NFO file
             elif type2 == 1:
-                if launcherID == VLAUNCHER_FAV_ID:
+                if launcherID == VLAUNCHER_FAVOURITES_ID:
                     kodi_dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
                     return
                 if not fs_import_ROM_NFO(roms, romID): return
@@ -1554,7 +1554,7 @@ class Main:
 
             # Export ROM metadata to NFO file
             elif type2 == 8:
-                if launcherID == VLAUNCHER_FAV_ID:
+                if launcherID == VLAUNCHER_FAVOURITES_ID:
                     kodi_dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
                     return
                 fs_export_ROM_NFO(roms[romID])
@@ -1694,7 +1694,7 @@ class Main:
     # If categoryID = launcherID = '0' then delete from Favourites
     #
     def _command_remove_rom(self, categoryID, launcherID, romID):
-        if launcherID == VLAUNCHER_FAV_ID:
+        if launcherID == VLAUNCHER_FAVOURITES_ID:
             # Load Favourite ROMs
             # roms = fs_load_Favourites_XML(FAV_XML_FILE_PATH)
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
@@ -2810,7 +2810,7 @@ class Main:
     #
     def _command_search_launcher(self, categoryID, launcherID):
         # --- Load ROMs ---
-        if launcherID == VLAUNCHER_FAV_ID:
+        if launcherID == VLAUNCHER_FAVOURITES_ID:
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             if not roms:
                 kodi_notify('Favourites XML empty. Add items to Favourites')
@@ -2931,7 +2931,7 @@ class Main:
         elif search_type == 'SEARCH_GENRE'  : rom_search_field = 'm_genre'
 
         # --- Load ROMs ---
-        if launcherID == VLAUNCHER_FAV_ID:
+        if launcherID == VLAUNCHER_FAVOURITES_ID:
             rom_is_in_favourites = True
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             if not roms:
@@ -3674,7 +3674,7 @@ class Main:
     #
     def _command_run_rom(self, categoryID, launcherID, romID):
         # --- ROM in Favourites ---
-        if launcherID == VLAUNCHER_FAV_ID:
+        if launcherID == VLAUNCHER_FAVOURITES_ID:
             log_info('_command_run_rom() Launching ROM in Favourites...')
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             rom  = roms[romID]
@@ -4772,7 +4772,7 @@ class Main:
     def _gui_scrap_rom_metadata(self, roms, romID, launcherID):
         # --- Grab ROM info and metadata scraper settings ---
         # >> ROM in favourites
-        if launcherID == VLAUNCHER_FAV_ID:
+        if launcherID == VLAUNCHER_FAVOURITES_ID:
             platform = roms[romID]['platform']
         else:
             launcher = self.launchers[launcherID]
@@ -4781,7 +4781,8 @@ class Main:
         rom_name = roms[romID]['m_name']
         ROM      = misc_split_path(f_path)
         scan_clean_tags            = self.settings['scan_clean_tags']
-        scan_ignore_scrapped_title = self.settings['scan_ignore_scrapped_title']
+        scan_ignore_scrapped_title = self.settings['scan_ignore_scrap_title']
+        log_info('_gui_scrap_rom_metadata() ROM "{0}"'.format(rom_name))
 
         # --- Ask user to enter ROM metadata search string ---
         keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string...')
@@ -4794,20 +4795,19 @@ class Main:
         kodi_busydialog_ON()
         results = self.scraper_metadata.get_search(search_string, ROM.base_noext, platform)
         kodi_busydialog_OFF()
-        log_debug('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
+        log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
             kodi_notify_warn('Scraper found no matches')
             return False
             
-        # Display corresponding game list found so user choses
+        # --- Display corresponding game list found so user choses ---
         dialog = xbmcgui.Dialog()
         rom_name_list = []
         for game in results:
             rom_name_list.append(game['display_name'])
         selectgame = dialog.select('Select game for ROM {0}'.format(rom_name), rom_name_list)
-        if selectgame < 0: 
-            # >> User canceled select dialog
-            return False
+        if selectgame < 0: return False
+        log_verb('_gui_scrap_rom_metadata() User chose game "{0}"'.format(rom_name_list[selectgame]))
 
         # --- Grab metadata for selected game ---
         # >> Prevent race conditions
@@ -4829,8 +4829,8 @@ class Main:
             log_debug("User wants scrapped name. Setting name to '{0}'".format(roms[romID]['m_name']))
         roms[romID]['m_year']   = gamedata['year']
         roms[romID]['m_genre']  = gamedata['genre']
-        roms[romID]['m_plot']   = gamedata['plot']
         roms[romID]['m_studio'] = gamedata['studio']
+        roms[romID]['m_plot']   = gamedata['plot']
 
         # >> Changes were made
         kodi_notify('ROM metadata updated')
@@ -4872,8 +4872,7 @@ class Main:
         for game in results:
             rom_name_list.append(game['display_name'])
         selectgame = dialog.select('Select game for ROM {0}'.format(rom_name), rom_name_list)
-        if selectgame < 0: 
-            return False
+        if selectgame < 0: return False
 
         # --- Grab metadata for selected game ---
         # >> Prevent race conditions
@@ -4888,8 +4887,8 @@ class Main:
         # >> Scraper should not change launcher title
         self.launchers[launcherID]['m_year']   = gamedata['year']
         self.launchers[launcherID]['m_genre']  = gamedata['genre']
-        self.launchers[launcherID]['m_plot']   = gamedata['plot']
         self.launchers[launcherID]['m_studio'] = gamedata['studio']
+        self.launchers[launcherID]['m_plot']   = gamedata['plot']
 
         # >> Changes were made
         return True

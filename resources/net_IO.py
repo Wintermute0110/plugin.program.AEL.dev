@@ -19,7 +19,7 @@
 from __future__ import unicode_literals
 import sys, random, urllib2
 
-# AEL packages
+# --- AEL packages ---
 try:
     from utils_kodi import *
 except:
@@ -78,32 +78,39 @@ def net_download_img(img_url, file_path):
 
         f = open(file_path, 'wb')
         f.write(urllib2.urlopen(req).read())
-        f.close()                                
-    # Catches all exceptions
-    except:
-        e = sys.exc_info()[0]
-        log_error('net_download_img() Exception {0}'.format(e))
-        kodi_notify_warn('Error downloading image')
+        f.close()
+    except IOError, e:    
+        log_error('(IOError) Exception in net_download_img()')
+        log_error('(IOError) {0}'.format(str(e)))
 
+#
+# Returns a Unicode string.
+#
 def net_get_URL_text(req):
     log_debug('net_get_URL_text() Reading URL "{0}"'.format(req.get_full_url()))
-    page_data = u''
-    num_bytes = 0
-    try:
-        # --- Read data ---
-        f = urllib2.urlopen(req)
-        page_data = f.read()
-        f.close()
-        num_bytes = len(page_data)
+    page_data = ''
 
-        # --- Put all text into one string ---
-        page_data = page_data.replace(u'\r\n', u'')
-        page_data = page_data.replace(u'\n', u'')
-    # Catches all exceptions
-    except:
-        e = sys.exc_info()[0]
-        log_error('net_get_URL_text() Exception {0}'.format(e))
-        kodi_notify_warn('Error downloading URL text page')
+    try:
+        # --- Open network connection (socket) ---
+        f = urllib2.urlopen(req)
+
+        # --- Read data from socket ---
+        encoding = f.headers['content-type'].split('charset=')[-1]
+        log_debug('net_get_URL_text() encoding = "{0}"'.format(encoding))
+        page_bytes = f.read()
+        f.close()
+    except IOError, e:    
+        log_error('(IOError) Exception in net_get_URL_text()')
+        log_error('(IOError) {0}'.format(str(e)))
+        return page_data
+
+    # --- Convert to Unicode ---
+    num_bytes = len(page_bytes)
     log_debug('net_get_URL_text() Read {0} bytes'.format(num_bytes))
+    page_data = unicode(page_bytes, encoding)
+
+    # --- Put all page text into one line ---
+    page_data = page_data.replace('\r\n', '')
+    page_data = page_data.replace('\n', '')
 
     return page_data
