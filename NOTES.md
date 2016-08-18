@@ -1,14 +1,23 @@
 # TODO #
 
- * Fix scraper in `Edit ROM/Launcher` menus.
+ * Make sure Launching of Favourites/Collections/Virtual Launchers works OK.
 
- * Make sure ROM scanner does not search/scrape assets whose directory is not configured. (DONE)
-
- * Make sure scraper does not scrape assets with unconfigured directories when editing ROMs/Launchers.
+ * Command to delete Collections.
  
  * Scraper should report wheter it supports and asset or not.
  
  * Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
+
+
+# DONE # 
+ 
+ * Fix scraper in `Edit ROM/Launcher` menus.
+
+ * Make sure ROM scanner does not search/scrape assets whose directory is not configured.
+
+ * Make sure scraper does not scrape assets with unconfigured directories when editing 
+   Categories/Launchers/ROMs.
+
 
 # listitem.setInfo() overlay values and effects #
 
@@ -30,6 +39,7 @@ enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
 [setInfo]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setInfo
 [GUIListItem]: https://github.com/cisco-open-source/kodi/blob/master/xbmc/guilib/GUIListItem.h
 
+
 # Development environment #
 
     1. Installed the packages `kodi` and `kodi-visualization-spectrum` in Debian.
@@ -42,6 +52,7 @@ enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
 
     5. Once installed, addon can be developed in place. A repository can be cloned in
        `~/.kodi/addons/plugin.addon.name`.
+
 
 # Installing the addon from github #
 

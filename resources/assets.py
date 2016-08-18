@@ -39,9 +39,14 @@ ASSET_MANUAL    = 1100
 ASSET_TRAILER   = 1200
 ASSET_THUMB     = 1300 # Only used in Categories/Launchers
 
-category_asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER]
+#
+# The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
+#
+CATEGORY_ASSET_LIST = [
+    ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER
+]
 
-rom_asset_list = [
+ROM_ASSET_LIST = [
     ASSET_TITLE,     ASSET_SNAP,
     ASSET_FANART,    ASSET_BANNER,
     ASSET_CLEARLOGO, ASSET_BOXFRONT,
@@ -177,6 +182,7 @@ def assets_get_asset_name_str(default_asset):
 # Returns an object with all the information
 # -------------------------------------------------------------------------------------------------
 class AssetInfo:
+    kind        = 0
     key         = ''
     name        = ''
     kind_str    = ''
@@ -184,17 +190,11 @@ class AssetInfo:
     exts_dialog = []
     path_key    = ''
 
-#
-# Scheme A uses different directories for artwork and no sufixes.
-#
-def assets_get_path_noext_A(A, asset_base_noext, launcher):
-    # >> Returns asset/artwork path_noext
-    return os.path.join(launcher[A.path_key], asset_base_noext)
-
-def assets_get_info_scheme_A(asset_kind):
+def assets_get_info_scheme(asset_kind):
     A = AssetInfo()
 
     if asset_kind == ASSET_TITLE:
+        A.kind        = ASSET_TITLE
         A.key         = 's_title'
         A.name        = 'Title'
         A.kind_str    = 'image'
@@ -202,6 +202,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_title'
     elif asset_kind == ASSET_SNAP:
+        A.kind        = ASSET_SNAP
         A.key         = 's_snap'
         A.name        = 'Snap'
         A.kind_str    = 'image'
@@ -209,6 +210,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_snap'
     elif asset_kind == ASSET_FANART:
+        A.kind        = ASSET_FANART
         A.key         = 's_fanart'
         A.name        = 'Fanart'
         A.kind_str    = 'image'
@@ -216,6 +218,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_fanart'
     elif asset_kind == ASSET_BANNER:
+        A.kind        = ASSET_BANNER
         A.key         = 's_banner'
         A.name        = 'Banner'
         A.kind_str    = 'image'
@@ -223,6 +226,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_banner'
     elif asset_kind == ASSET_CLEARLOGO:
+        A.kind        = ASSET_CLEARLOGO
         A.key         = 's_clearlogo'
         A.name        = 'Clearlogo'
         A.kind_str    = 'image'
@@ -230,6 +234,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_clearlogo'
     elif asset_kind == ASSET_BOXFRONT:
+        A.kind        = ASSET_BOXFRONT
         A.key        = 's_boxfront'
         A.name       = 'Boxfront'
         A.kind_str   = 'image'
@@ -237,6 +242,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_boxfront'
     elif asset_kind == ASSET_BOXBACK:
+        A.kind        = ASSET_BOXBACK
         A.key         = 's_boxback'
         A.name        = 'Boxback'
         A.kind_str    = 'image'
@@ -244,6 +250,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_boxback'
     elif asset_kind == ASSET_CARTRIDGE:
+        A.kind        = ASSET_CARTRIDGE
         A.key         = 's_cartridge'
         A.name        = 'Cartridge'
         A.kind_str    = 'image'
@@ -251,6 +258,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_cartridge'
     elif asset_kind == ASSET_FLYER:
+        A.kind        = ASSET_FLYER
         A.key         = 's_flyer'
         A.name        = 'Flyer'
         A.kind_str    = 'image'
@@ -258,6 +266,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_flyer'
     elif asset_kind == ASSET_MAP:
+        A.kind        = ASSET_MAP
         A.key         = 's_map'
         A.name        = 'Map'
         A.kind_str    = 'image'
@@ -265,6 +274,7 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = IMAGE_EXTS_DIALOG
         A.path_key    = 'path_map'
     elif asset_kind == ASSET_MANUAL:
+        A.kind        = ASSET_MANUAL
         A.key         = 's_manual'
         A.name        = 'Manual'
         A.kind_str    = 'manual'
@@ -272,73 +282,63 @@ def assets_get_info_scheme_A(asset_kind):
         A.exts_dialog = MANUAL_EXTS_DIALOG
         A.path_key    = 'path_manual'
     elif asset_kind == ASSET_TRAILER:
+        A.kind        = ASSET_TRAILER
         A.key         = 's_trailer'
         A.name        = 'Trailer'
         A.kind_str    = 'video'
         A.exts        = TRAILER_EXTS
         A.exts_dialog = TRAILER_EXTS_DIALOG
         A.path_key    = 'path_trailer'
+    elif asset_kind == ASSET_THUMB:
+        A.kind        = ASSET_THUMB
+        A.key         = 's_thumb'
+        A.name        = 'Thumb'
+        A.kind_str    = 'image'
+        A.exts        = IMAGE_EXTS
+        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.path_key    = 'path_thumb'
     else:
         log_error('assets_get_info_scheme_A() Wrong asset_kind = {0}'.format(asset_kind))
 
     # --- Ultra DEBUG ---
-    # log_debug('assets_get_info_scheme_A() asset_kind    {0}'.format(asset_kind))
-    # log_debug('assets_get_info_scheme_A() A.key         {0}'.format(A.key))
-    # log_debug('assets_get_info_scheme_A() A.name        {0}'.format(A.name))
-    # log_debug('assets_get_info_scheme_A() A.base_noext  {0}'.format(A.base_noext))
-    # log_debug('assets_get_info_scheme_A() A.kind_str    {0}'.format(A.kind_str))
-    # log_debug('assets_get_info_scheme_A() A.exts_dialog {0}'.format(A.exts_dialog))
-    # log_debug('assets_get_info_scheme_A() A.path_noext  {0}'.format(A.path_noext))
+    # log_debug('assets_get_info_scheme() asset_kind    {0}'.format(asset_kind))
+    # log_debug('assets_get_info_scheme() A.key         {0}'.format(A.key))
+    # log_debug('assets_get_info_scheme() A.name        {0}'.format(A.name))
+    # log_debug('assets_get_info_scheme() A.base_noext  {0}'.format(A.base_noext))
+    # log_debug('assets_get_info_scheme() A.kind_str    {0}'.format(A.kind_str))
+    # log_debug('assets_get_info_scheme() A.exts_dialog {0}'.format(A.exts_dialog))
+    # log_debug('assets_get_info_scheme() A.path_noext  {0}'.format(A.path_noext))
 
     return A
+
+#
+# Scheme A uses different directories for artwork and no sufixes.
+#
+def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
+    # >> Returns asset/artwork path_noext
+    return os.path.join(asset_path, asset_base_noext)
 
 #
 # Scheme B uses suffixes for artwork. All artwork are stored in the same directory
 #
-def assets_get_info_scheme_B(asset_kind, asset_base_noext, asset_directory):
-    A = AssetInfo()
-    A.base_noext = asset_base_noext
-
-    if asset_kind == ASSET_THUMB:
-        A.key         = 's_thumb'
-        A.name        = 'Thumb'
-        A.kind_str    = 'image'
-        A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(asset_directory, asset_base_noext + '_thumb')
-    elif asset_kind == ASSET_FANART:
-        A.key         = 's_fanart'
-        A.name        = 'Fanart'
-        A.kind_str    = 'image'
-        A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(asset_directory, asset_base_noext + '_fanart')
-    elif asset_kind == ASSET_BANNER:
-        A.key         = 's_banner'
-        A.name        = 'Banner'
-        A.kind_str    = 'image'
-        A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(asset_directory, asset_base_noext + '_banner')
-    elif asset_kind == ASSET_FLYER:
-        A.key         = 's_flyer'
-        A.name        = 'Flyer'
-        A.kind_str    = 'image'
-        A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_noext  = os.path.join(asset_directory, asset_base_noext + '_flyer')
-    elif asset_kind == ASSET_TRAILER:
-        A.key         = 's_trailer'
-        A.name        = 'Trailer'
-        A.kind_str    = 'video'
-        A.exts_dialog = TRAILER_EXTS_DIALOG
-        A.path_noext  = os.path.join(asset_directory, asset_base_noext + '_trailer')
+def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext):
+    # >> Returns asset/artwork path_noext
+    asset_path_noext = ''
+    
+    if   Asset.kind == ASSET_TITLE:     asset_path_noext = os.path.join(asset_path, asset_base_noext + '_title')
+    elif Asset.kind == ASSET_SNAP:      asset_path_noext = os.path.join(asset_path, asset_base_noext + '_snap')
+    elif Asset.kind == ASSET_FANART:    asset_path_noext = os.path.join(asset_path, asset_base_noext + '_fanart')
+    elif Asset.kind == ASSET_BANNER:    asset_path_noext = os.path.join(asset_path, asset_base_noext + '_banner')
+    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext = os.path.join(asset_path, asset_base_noext + '_clearlogo')
+    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext = os.path.join(asset_path, asset_base_noext + '_boxfront')
+    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext = os.path.join(asset_path, asset_base_noext + '_boxback')
+    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext = os.path.join(asset_path, asset_base_noext + '_cartridge')
+    elif Asset.kind == ASSET_FLYER:     asset_path_noext = os.path.join(asset_path, asset_base_noext + '_flyer')
+    elif Asset.kind == ASSET_MAP:       asset_path_noext = os.path.join(asset_path, asset_base_noext + '_map')
+    elif Asset.kind == ASSET_MANUAL:    asset_path_noext = os.path.join(asset_path, asset_base_noext + '_manual')
+    elif Asset.kind == ASSET_TRAILER:   asset_path_noext = os.path.join(asset_path, asset_base_noext + '_trailer')
+    elif Asset.kind == ASSET_THUMB:     asset_path_noext = os.path.join(asset_path, asset_base_noext + '_thumb')
     else:
-        log_error('assets_get_info_scheme_B() Wrong asset_kind = {0}'.format(asset_kind))
+        log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
 
-    # --- Ultra DEBUG ---
-    # log_debug('assets_get_info_scheme_B() asset_kind    {0}'.format(asset_kind))
-    # log_debug('assets_get_info_scheme_B() A.key         {0}'.format(A.key))
-    # log_debug('assets_get_info_scheme_B() A.name        {0}'.format(A.name))
-    # log_debug('assets_get_info_scheme_B() A.base_noext  {0}'.format(A.base_noext))
-    # log_debug('assets_get_info_scheme_B() A.kind_str    {0}'.format(A.kind_str))
-    # log_debug('assets_get_info_scheme_B() A.exts_dialog {0}'.format(A.exts_dialog))
-    # log_debug('assets_get_info_scheme_B() A.path_noext  {0}'.format(A.path_noext))
-
-    return A
+    return asset_path_noext

@@ -594,8 +594,9 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     # >> Get file names
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
     roms_xml_file  = os.path.join(roms_dir, roms_base_noext + '.xml')
-    log_info('fs_write_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
-    log_info('fs_write_ROMs_JSON() Saving XML info  {0}'.format(roms_xml_file))
+    log_info('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir))
+    log_info('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
+    log_info('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
 
     # >> JSON files cannot have comments. Write an auxiliar NFO file with same prefix
     # >> to store launcher information for a set of ROMs
