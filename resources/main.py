@@ -113,6 +113,7 @@ class Main:
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
+        log_debug('sys.platform = "{0}"'.format(sys.platform))
         log_debug('Python version ' + sys.version.replace('\n', ''))
         # log_debug('__addon_name__    {0}'.format(__addon_name__))
         # log_debug('__addon_id__      {0}'.format(__addon_id__))
@@ -1690,57 +1691,81 @@ class Main:
         kodi_refresh_container()
 
     #
-    # Deletes a ROM from a launcher.
-    # If categoryID = launcherID = '0' then delete from Favourites
+    # Deletes a ROM from a launcher/Favourites/ROM Collection
     #
     def _command_remove_rom(self, categoryID, launcherID, romID):
-        if launcherID == VLAUNCHER_FAVOURITES_ID:
-            # Load Favourite ROMs
-            # roms = fs_load_Favourites_XML(FAV_XML_FILE_PATH)
+        if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
+            log_info('_command_remove_rom() Deleting ROM from Favourites (id {0})'.format(romID))
+            # --- Load Favourite ROMs ---
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            if not roms:
-                return
+            if not roms: return
 
-            # Confirm deletion
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites',
-                               'ROM: {0}'.format(roms[romID]['m_name']),
-                               'Are you sure you want to delete it from favourites?')
-            if ret:
-                roms.pop(romID)
-                # fs_write_Favourites_XML(FAV_XML_FILE_PATH, roms)
-                fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
-                kodi_notify('Deleted ROM from Favourites')
-                # If Favourites is empty then go to addon root, if not refresh
-                if len(roms) == 0:
-                    # For some reason ReplaceWindow() does not work...
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
-                else:
-                    kodi_refresh_container()
+            # --- Confirm deletion ---
+            ret = kodi_dialog_yesno('ROM {0}. '.format(roms[romID]['m_name']) +
+                                    'Are you sure you want to delete it from favourites?')
+            if not ret: return
+
+            # --- Delete ROM ---
+            roms.pop(romID)
+            fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
+            kodi_notify('Deleted ROM from Favourites')
+            # >> If Favourites is empty then go to addon root, if not refresh
+            if len(roms) == 0:
+                # >> For some reason ReplaceWindow() does not work...
+                xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
+            else:
+                kodi_refresh_container()
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            log_info('_command_remove_rom() Deleting ROM from Collection (id {0})'.format(romID))
+            # --- Load Collection index and roms ---
+            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+            collection = collections[launcherID]
+            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            if not collection_rom_list: return
+
+            # >> Find index of ROM to be deleted
+            rom_index = -1
+            for idx, rom in enumerate(collection_rom_list): 
+                if rom['id'] == romID: 
+                    rom_index = idx
+                    break
+            if rom_index < 0: return # ERROR, ROM not found in list
+
+            ret = kodi_dialog_yesno('Collection {0}, '.format(collection['name']) +
+                                    'ROM {0}. '.format(collection_rom_list[rom_index]['m_name']) +
+                                    'Are you sure you want to delete it from favourites?')
+            if not ret: return
+
+            del collection_rom_list[rom_index]
+            fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
+            kodi_notify('Deleted ROM from Collection')
+            if len(collection_rom_list) == 0:
+                xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
+            else:
+                kodi_refresh_container()
         else:
-            # --- Load ROMs ---
+            log_info('_command_remove_rom() Deleting ROM from Launcher (id {0})'.format(romID))
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-            if not roms:
-                return
+            if not roms: return
 
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher - Delete from Favourites',
-                               'Launcher: {0}'.format(self.launchers[launcherID]['m_name']),
-                               'ROM: {0}'.format(roms[romID]['m_name']),
-                               'Are you sure you want to delete it from launcher?')
-            if ret:
-                roms.pop(romID)
-                launcher = self.launchers[launcherID]
-                # >> Also save categories/launchers to update timestamp
-                roms_base_noext = launcher['roms_base_noext']
-                fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, launcher)
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                kodi_notify('Deleted ROM from launcher')
-                # If launcher is empty then go to addon root, if not refresh
-                if len(roms) == 0:
-                    xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
-                else:
-                    kodi_refresh_container()
+            ret = kodi_dialog_yesno('Launcher {0}, '.format(self.launchers[launcherID]['m_name']) +
+                                    'ROM {0}. '.format(roms[romID]['m_name']) +
+                                    'Are you sure you want to delete it from favourites?')
+            if not ret: return
+
+            roms.pop(romID)
+            launcher = self.launchers[launcherID]
+            roms_base_noext = launcher['roms_base_noext']
+            fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, launcher)
+            # >> Also save categories/launchers to update main timestamp and launcher timestamp
+            self.launchers[launcherID]['timestamp_launcher'] = time.time()
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            kodi_notify('Deleted ROM from launcher')
+            # If launcher is empty then go to addon root, if not refresh
+            if len(roms) == 0:
+                xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
+            else:
+                kodi_refresh_container()
 
     #
     # Former _get_categories()
@@ -2574,15 +2599,8 @@ class Main:
 
             # --- Create context menu ---
             commands = []
-            # launcherID = launcher_dic['id']
-            # categoryID = launcher_dic['categoryID']
-            # commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
-            # commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
-            # >> ROMs launcher
-            # if not launcher_dic['rompath'] == '':
-            #     commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID), ))
-            # commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
-            # >> Add Launcher URL to Kodi Favourites (do not know how to do it yet)
+            commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION'), ))
+            commands.append(('Delete Collection', self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
             listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3700,7 +3718,7 @@ class Main:
             minimize_flag = rom['minimize']
             rom_romext    = rom['romext']
         elif categoryID == VCATEGORY_GENRE_ID:
-            log_info('_command_run_rom() Launching ROM in Gener Virtual Launcher...')
+            log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher...')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
             rom  = roms[romID]
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']

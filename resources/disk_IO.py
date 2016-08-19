@@ -772,7 +772,7 @@ def fs_load_Favourites_XML(roms_xml_file):
     return roms
 
 def fs_write_Favourites_JSON(roms_json_file, roms):
-    log_info('fs_write_Favourites_JSON() Saving JSON file {0}'.format(roms_json_file))
+    log_info('fs_write_Favourites_JSON() File {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding='utf-8') as file:
             json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
@@ -794,7 +794,7 @@ def fs_load_Favourites_JSON(roms_json_file):
     if not os.path.isfile(roms_json_file): return roms
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_Favourites_JSON() Loading JSON file {0}'.format(roms_json_file))
+    log_verb('fs_load_Favourites_JSON() File {0}'.format(roms_json_file))
     with open(roms_json_file) as file:    
         try:
             roms = json.load(file)
@@ -850,7 +850,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
     if not os.path.isfile(collections_xml_file): return (collections, update_timestamp)
 
     # --- Parse using cElementTree ---
-    log_verb(u'fs_load_Collection_index_XML() Loading XML file {0}'.format(collections_xml_file))
+    log_verb('fs_load_Collection_index_XML() Loading {0}'.format(collections_xml_file))
     try:
         xml_tree = ET.parse(collections_xml_file)
     except ET.ParseError, e:
@@ -881,7 +881,8 @@ def fs_load_Collection_index_XML(collections_xml_file):
 
 def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
-    log_info('fs_write_Collection_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
+    log_info('fs_write_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
+    log_info('fs_write_Collection_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
@@ -903,8 +904,10 @@ def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
     if not os.path.isfile(roms_json_file): return roms
 
-    # --- Parse using cElementTree ---
-    log_verb('fs_load_Collection_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
+    # --- Parse using JSON ---
+    log_info('fs_load_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
+    log_info('fs_load_Collection_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
+
     with open(roms_json_file) as file:    
         try:
             roms = json.load(file)
