@@ -23,6 +23,7 @@
 from __future__ import unicode_literals
 import sys, os, shutil, fnmatch, string, time
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
+import subprocess
 
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
@@ -62,6 +63,7 @@ VCAT_TITLE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_title.xml').decode('
 VCAT_YEARS_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_years.xml').decode('utf-8')
 VCAT_GENRE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_genre.xml').decode('utf-8')
 VCAT_STUDIO_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml').decode('utf-8')
+LAUNCH_LOG_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'launcher.log').decode('utf-8')
 
 # --- Artwork and NFO for Categories and Launchers ---
 DEFAULT_CAT_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'category-assets').decode('utf-8')
@@ -3655,12 +3657,14 @@ class Main:
         application = launcher['application']
         app_basename = os.path.basename(launcher['application'])
         arguments = launcher['args'].replace('%apppath%' , apppath).replace('%APPPATH%' , apppath)
+        app_ext = launcher['application'].split('.')[-1]
         log_info('_run_standalone_launcher() categoryID   = {0}'.format(categoryID))
         log_info('_run_standalone_launcher() launcherID   = {0}'.format(launcherID))
         log_info('_run_standalone_launcher() application  = "{0}"'.format(application))
         log_info('_run_standalone_launcher() apppath      = "{0}"'.format(apppath))
         log_info('_run_standalone_launcher() app_basename = "{0}"'.format(app_basename))
         log_info('_run_standalone_launcher() arguments    = "{0}"'.format(arguments))
+        log_info('_run_standalone_launcher() app_ext      = "{0}"'.format(app_ext))
 
         # --- Check for errors and abort if errors found ---
         if not os.path.exists(application):
@@ -3668,35 +3672,9 @@ class Main:
             kodi_notify_warn('App {0} not found.'.format(application))
             return
 
-        # --- Do stuff before execution ---
-        kodi_was_playing_flag = self._run_before_execution(app_basename, minimize_flag)
-
         # ~~~~~ Execute ~~~~~
-        if sys.platform == 'win32':
-            if launcher['application'].split('.')[-1] == 'lnk':
-                os.system('start "" "{0}"'.format(application))
-            else:
-                if application.split('.')[-1] == 'bat':
-                    info = subprocess_hack.STARTUPINFO()
-                    info.dwFlags = 1
-                    if self.settings['show_batch_window']:
-                        info.wShowWindow = 5
-                    else:
-                        info.wShowWindow = 0
-                else:
-                    info = None
-                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
-                startproc.wait()
-        elif sys.platform.startswith('linux'):
-            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
-            os.system('"{0}" {1}'.format(application, arguments))
-            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
-        elif sys.platform.startswith('darwin'):
-            os.system('"{0}" {1}'.format(application, arguments))
-        else:
-            kodi_notify_warn('Cannot determine the running platform')
-
-        # --- Do stuff after execution ---
+        kodi_was_playing_flag = self._run_before_execution(app_basename, minimize_flag)
+        self._run_process(application, arguments, app_ext)
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
@@ -3711,7 +3689,7 @@ class Main:
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
-            rom_romext    = rom['romext']
+            romext        = rom['romext']
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_info('_command_run_rom() Launching ROM in Collection...')
@@ -3729,7 +3707,7 @@ class Main:
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
-            rom_romext    = rom['romext']
+            romext        = rom['romext']
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID:
             log_info('_command_run_rom() Launching ROM in Title Virtual Launcher...')
@@ -3738,7 +3716,7 @@ class Main:
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
-            rom_romext    = rom['romext']
+            romext        = rom['romext']
         elif categoryID == VCATEGORY_YEARS_ID:
             log_info('_command_run_rom() Launching ROM in Year Virtual Launcher...')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
@@ -3746,7 +3724,7 @@ class Main:
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
-            rom_romext    = rom['romext']
+            romext        = rom['romext']
         elif categoryID == VCATEGORY_GENRE_ID:
             log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher...')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
@@ -3754,7 +3732,7 @@ class Main:
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
-            rom_romext    = rom['romext']
+            romext        = rom['romext']
         elif categoryID == VCATEGORY_STUDIO_ID:
             log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher...')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
@@ -3762,7 +3740,7 @@ class Main:
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
-            rom_romext    = rom['romext']
+            romext        = rom['romext']
         # --- ROM in launcher ---
         else:
             log_info('_command_run_rom() Launching ROM in Launcher...')
@@ -3780,7 +3758,7 @@ class Main:
             application   = launcher['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = launcher['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = launcher['minimize']
-            rom_romext    = launcher['romext']
+            romext        = launcher['romext']
 
         # ~~~~~ Launch ROM ~~~~~
         apppath     = os.path.dirname(application)
@@ -3796,6 +3774,7 @@ class Main:
         log_info('_command_run_rom() romfile     = "{0}"'.format(romfile))
         log_info('_command_run_rom() rompath     = "{0}"'.format(rompath))
         log_info('_command_run_rom() rombasename = "{0}"'.format(rombasename))
+        log_info('_command_run_rom() romext      = "{0}"'.format(romext))
 
         # --- Check for errors and abort if found ---
         if not os.path.exists(application):
@@ -3826,13 +3805,19 @@ class Main:
             return
 
         # ~~~~~ Execute external application ~~~~~
-        # Do stuff before execution
         kodi_was_playing_flag = self._run_before_execution(rombasename, minimize_flag)
+        self._run_process(application, arguments, romext)
+        self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
+    #
+    # Launchs a process
+    # For standalone launchers rom_romext is the extension of the application (only used in Windoze)
+    #
+    def _run_process(self, application, arguments, romext):
         # >> Determine platform and launch application
-        # See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+        # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
         if sys.platform == 'win32':
-            if rom_romext == 'lnk':
+            if romext == 'lnk':
                 os.system('start "" "{0}"'.format(arguments))
             else:
                 if application.split('.')[-1] == 'bat':
@@ -3844,21 +3829,33 @@ class Main:
                         info.wShowWindow = 0
                 else:
                     info = None
-                startproc = subprocess_hack.Popen(r'%s %s' % (application, arguments), cwd=apppath, startupinfo=info)
+                startproc = subprocess_hack.Popen(r'%s %s'.format(application, arguments), 
+                                                  cwd = apppath, startupinfo = info)
                 startproc.wait()
         # >> Linux and Android
         elif sys.platform.startswith('linux'):
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
-            os.system('"{0}" {1}'.format(application, arguments))
+
+            # >> Old way of launching child process
+            # os.system('"{0}" {1}'.format(application, arguments))
+
+            # >> Save child process stdout
+            if arguments:
+                if arguments[0] == '"' and arguments[-1] == '"': arguments = arguments[1:-1]
+                with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+                    subprocess.call([application, arguments], stdout = f, stderr = f)
+                    f.close()
+            else:
+                with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+                    subprocess.call(application, stdout = f, stderr = f)
+                    f.close()
+
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
         # OS X
         elif sys.platform.startswith('darwin'):
             os.system('"{0}" {1}'.format(application, arguments))
         else:
             kodi_notify_warn('Cannot determine the running platform')
-
-        # Do stuff after application execution
-        self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
