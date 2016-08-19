@@ -2,8 +2,6 @@
 
  * Make sure Launching from Favourites/Collections/Virtual Launchers works OK.
 
- * Command to delete Collections.
- 
  * Scraper should report wheter it supports and asset or not.
  
  * Scraper should download the correct asset or nothing at all if it does not support and specific
@@ -12,7 +10,7 @@
  * Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
 
  * Current patched subprocess_hack module is from Python 2.4. Current Python in Kodi is 2.7. Should
-   be upgraded soon.
+   be upgraded soon...
 
  * os.system(), os.open(), etc. are deprecated, and the subprocess module should be used instead
    for all platforms.
@@ -22,7 +20,9 @@
 
 
 # DONE # 
- 
+
+ * Command to delete Collections.
+
  * Fix scraper in `Edit ROM/Launcher` menus.
 
  * Make sure ROM scanner does not search/scrape assets whose directory is not configured.
