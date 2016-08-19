@@ -187,6 +187,8 @@ class Main:
             self._command_render_collection_ROMs(args['catID'][0], args['launID'][0])
         elif command == 'ADD_COLLECTION':
             self._command_add_collection()
+        elif command == 'DELETE_COLLECTION':
+            self._command_delete_collection(args['catID'][0], args['launID'][0])
         elif command == 'MOVE_COL_ROM_UP':
             self._command_move_collection_rom_up(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'MOVE_COL_ROM_DOWN':
@@ -1391,43 +1393,35 @@ class Main:
     #
     def _gui_remove_launcher(self, launcherID):
         rompath = self.launchers[launcherID]['rompath']
-        # Standalone launcher
+        # >> Standalone launcher
         if rompath == '':
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" is standalone.'.format(self.launchers[launcherID]['m_name']),
-                               'Are you sure you want to delete it?')
-        # ROMs launcher
+            ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(self.launchers[launcherID]['m_name']) +
+                                    'Are you sure you want to delete it?')
+        # >> ROMs launcher
         else:
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
             num_roms = len(roms)
-            dialog = xbmcgui.Dialog()
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Launcher "{0}" has {1} ROMs'.format(self.launchers[launcherID]['m_name'], num_roms),
-                               'Are you sure you want to delete it?')
-        if ret:
-            # Remove XML file and delete launcher object, only if launcher is not empty
-            roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-            if roms_base_noext == '' or rompath == '':
-                log_debug('Launcher is empty or standalone. No ROMs XML to remove')
-            else:
-                roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
-                log_debug('Removing ROMs XML "{0}"'.format(roms_file_path))
-                try:
-                    if os.path.isfile(roms_file_path): os.remove(roms_file_path)
-                except OSError:
-                    log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_file_path))
-                    kodi_notify_warn('OSError exception deleting ROMs XML')
+            ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs '.format(self.launchers[launcherID]['m_name'], num_roms) +
+                                    'Are you sure you want to delete it?')
+        if not ret: return
+    
+        # --- Remove XML file and delete launcher object, only if launcher is not empty ---
+        roms_base_noext = self.launchers[launcherID]['roms_base_noext']
+        if roms_base_noext == '' or rompath == '':
+            log_debug('Launcher is empty or standalone. No ROMs XML to remove')
+        else:
+            roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
+            log_debug('Removing ROMs XML "{0}"'.format(roms_file_path))
+            try:
+                if os.path.isfile(roms_file_path): os.remove(roms_file_path)
+            except OSError:
+                log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_file_path))
+                kodi_notify_warn('OSError exception deleting ROMs XML')
 
-            categoryID = self.launchers[launcherID]['categoryID']
-            self.launchers.pop(launcherID)
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            if self._cat_is_empty(categoryID):
-                log_error('_gui_remove_launcher() Launcher category empty. Replacing Window')
-                xbmc.executebuiltin('ReplaceWindow(Programs,%s)'.format(self.base_url))
-            else:
-                log_error('_gui_remove_launcher() Launcher category not empty. Container.Refresh()')
-                kodi_refresh_container()
+        categoryID = self.launchers[launcherID]['categoryID']
+        self.launchers.pop(launcherID)
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        kodi_refresh_container()
 
     #
     # Add ROMS to launcher
@@ -1696,11 +1690,7 @@ class Main:
             fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
             kodi_notify('Deleted ROM from Favourites')
             # >> If Favourites is empty then go to addon root, if not refresh
-            if len(roms) == 0:
-                # >> For some reason ReplaceWindow() does not work...
-                xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
-            else:
-                kodi_refresh_container()
+            kodi_refresh_container()
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_info('_command_remove_rom() Deleting ROM from Collection (id {0})'.format(romID))
             # --- Load Collection index and roms ---
@@ -1725,10 +1715,7 @@ class Main:
             del collection_rom_list[rom_index]
             fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
             kodi_notify('Deleted ROM from Collection')
-            if len(collection_rom_list) == 0:
-                xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
-            else:
-                kodi_refresh_container()
+            kodi_refresh_container()
         else:
             log_info('_command_remove_rom() Deleting ROM from Launcher (id {0})'.format(romID))
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
@@ -1747,11 +1734,7 @@ class Main:
             self.launchers[launcherID]['timestamp_launcher'] = time.time()
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Deleted ROM from launcher')
-            # If launcher is empty then go to addon root, if not refresh
-            if len(roms) == 0:
-                xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url))
-            else:
-                kodi_refresh_container()
+            kodi_refresh_container()
 
     #
     # Former _get_categories()
@@ -2207,6 +2190,9 @@ class Main:
     #             to HTML or something like that.
     #
     def _command_render_favourites(self):
+        # >> Content type and sorting method
+        self._misc_set_content_and_all_sorting_methods()
+        
         # --- Load Favourite ROMs ---
         roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         if not roms:
@@ -2223,6 +2209,12 @@ class Main:
     # Render launchers in virtual categories: title, year, genre, studio
     #
     def _command_render_virtual_category(self, virtual_categoryID):
+        # >> Content type and sorting method
+        self._misc_set_content_type()
+        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
+
+        
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
             vcategory_db_filename = VCAT_TITLE_FILE_PATH
@@ -2292,6 +2284,9 @@ class Main:
     # Renders ROMs in a virtual launcher.
     #
     def _command_render_virtual_launcher_roms(self, virtual_categoryID, virtual_launcherID):
+        # >> Content type and sorting method
+        self._misc_set_content_and_all_sorting_methods()
+
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
             vcategory_db_dir = VIRTUAL_CAT_TITLE_DIR
@@ -2560,6 +2555,11 @@ class Main:
     # Renders a listview with all collections
     #
     def _command_render_collections(self):
+        # >> Content type and sorting method
+        self._misc_set_content_type()
+        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
+
         # --- Load collection index ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
 
@@ -2597,10 +2597,8 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _command_render_collection_ROMs(self, categoryID, launcherID):
-        # --- Load Collection index ---
+        # --- Load Collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-        
-        # --- Load Collection ROMs ---
         collection = collections[launcherID]
         collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
         if not collection_rom_list:
@@ -2644,6 +2642,35 @@ class Main:
 
         # --- Save collections XML database ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+
+    #
+    # Deletes a collection and associated ROMs.
+    #
+    def _command_delete_collection(self, categoryID, launcherID):
+        # --- Load collection index and ROMs ---
+        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        collection = collections[launcherID]
+        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+
+        # --- Confirm deletion ---
+        num_roms = len(collection_rom_list)
+        
+        ret = kodi_dialog_yesno('Collection {0} has {1} ROMs. '.format(collection['name'], num_roms) +
+                                'Are you sure you want to delete it?')
+        if not ret: return
+    
+        # --- Remove JSON file and delete collection object ---
+        collection_file_path = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+        log_debug('Removing Collection JSON "{0}"'.format(collection_file_path))
+        try:
+            if os.path.isfile(collection_file_path):
+                os.remove(collection_file_path)
+        except OSError:
+            log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path))
+            kodi_notify_warn('OSError exception deleting collection JSON')
+        collections.pop(launcherID)
+        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        kodi_refresh_container()
 
     #
     # This function is called from a context menu and so self.addon_handle = -1. In this case, it is

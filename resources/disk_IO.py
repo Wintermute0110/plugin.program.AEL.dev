@@ -811,7 +811,7 @@ def fs_load_Favourites_JSON(roms_json_file):
 # ROM Collections
 # -------------------------------------------------------------------------------------------------
 def fs_write_Collection_index_XML(collections_xml_file, collections):
-    log_info('fs_write_Collection_index_XML() Saving XML file {0}'.format(collections_xml_file))
+    log_info('fs_write_Collection_index_XML() File {0}'.format(collections_xml_file))
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
