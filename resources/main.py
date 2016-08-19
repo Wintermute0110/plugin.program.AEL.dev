@@ -563,11 +563,10 @@ class Main:
                 if self.launchers[launcherID]['id'] == categoryID:
                     launcherID_list.append(launcherID)
 
-            dialog = xbmcgui.Dialog()
             if len(launcherID_list) > 0:
-                ret = dialog.yesno('Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
-                                   'Deleting it will also delete related launchers. ' +
-                                   'Are you sure you want to delete "{0}"?'.format(category_name))
+                ret = kodi_dialog_yesno('Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
+                                        'Deleting it will also delete related launchers. ' +
+                                        'Are you sure you want to delete "{0}"?'.format(category_name))
                 if not ret: return
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
                 # Delete launchers and ROM XML associated with them
@@ -587,8 +586,8 @@ class Main:
                 # Delete category and make sure True is returned.
                 self.categories.pop(categoryID)
             else:
-                ret = dialog.yesno('Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
-                                   'Are you sure you want to delete "{0}"?'.format(category_name) )
+                ret = kodi_dialog_yesno('Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
+                                        'Are you sure you want to delete "{0}"?'.format(category_name))
                 if not ret: return
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
                 log_info('Category has no launchers, so no launchers to delete.')
