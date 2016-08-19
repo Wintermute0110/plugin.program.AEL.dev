@@ -27,11 +27,8 @@ from __future__ import unicode_literals
 DEBUG_SCRAPERS = 1
 
 #--------------------------------------------------------------------------------------------------
-# Implement scrapers using polymorphism instead of using Angelscry exec('import ...') hack.
-#--------------------------------------------------------------------------------------------------
 # Base class for all scrapers
-# A) Offline or online
-# B) Metadata, Thumb or Fanart
+#--------------------------------------------------------------------------------------------------
 class Scraper:
     name = ''        # Short name to refer to object in code
     fancy_name = ''  # Fancy name for GUI and logs
@@ -43,8 +40,8 @@ class Scraper:
     #
     # Returns:
     #   results = [game, game, ... ]
-    #   game = {'id' : str,             String that allows to calculate the game URL or the URL itself
-    #           'display_name' : str,
+    #   game = {'id' : str,             String that allows to calculate the game URL (ID number) or the URL itself.
+    #           'display_name' : str,   Scraped name of the ROM/Launcher/Game.
     #            ... }
     #
     #   game dictionary may have more fields depending on the scraper (which are 
@@ -55,8 +52,7 @@ class Scraper:
 # -------------------------------------------------------------------------------------------------
 # Metadata scrapers base class
 # All scrapers (offline or online) must implement the abstract methods.
-# Metadata scrapers are for ROMs and standalone launchers (games)
-# Metadata for machines (consoles, computers) should be different, I guess...
+# -------------------------------------------------------------------------------------------------
 class Scraper_Metadata(Scraper):
     # Offline scrapers need to know plugin installation directory.
     # For offline scrapers just pass.
@@ -68,14 +64,13 @@ class Scraper_Metadata(Scraper):
     # get_game_search() is usually common code for the online scrapers.
     #
     # Mandatory fields returned:
-    #   gamedata = {'title'  : '', 'genre'  : '', 'year'   : '', 
-    #               'studio' : '', 'plot'   : '' }
+    #   gamedata = {'title' : '', 'year' : '', 'genre' : '', 'studio' : '', 'plot' : ''}
     def get_metadata(self, game):
         raise NotImplementedError('Subclass must implement get_metadata() abstract method')
 
 # --- Asset scrapers ------------------------------------------------------------------------------
-# All thumb scrapers are online scrapers. If user has a local image then he
-# can setup manually using other parts of the GUI.
+# All asset scrapers are online scrapers.
+# -------------------------------------------------------------------------------------------------
 class Scraper_Asset(Scraper):
     # If scraper needs additional configuration then call this function.
     def set_options(self, region, imgsize):

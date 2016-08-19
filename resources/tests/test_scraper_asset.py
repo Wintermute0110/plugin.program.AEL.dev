@@ -1,13 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Test AEL thumb scraper
+# Test AEL asset scraper
 #
 
-# Python standard library
+# --- Python standard library ---
+from __future__ import unicode_literals
 import sys, os
 
-# Import scrapers
+# --- AEL modules ---
 if __name__ == "__main__" and __package__ is None:
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from scrap import *
@@ -18,11 +19,11 @@ TEST_THEGAMESDB = True
 TEST_GAMEFAQS   = True
 
 # --- main ----------------------------------------------------------------------------------------
-print_scraper_list(scrapers_thumb)
+print_scraper_list(scrapers_asset)
 
 if TEST_THEGAMESDB:
     print('\n*** Online TheGamesDB *********************************************')
-    GamesDB = thumb_TheGamesDB()
+    GamesDB = asset_TheGamesDB()
 
     # results = GamesDB.get_search('Castlevania', '', 'Nintendo SNES')
     results = GamesDB.get_search('metroid', '', 'Nintendo SNES')
@@ -36,7 +37,7 @@ if TEST_THEGAMESDB:
 
 if TEST_GAMEFAQS:
     print('\n*** Online GameFAQs *********************************************')
-    GameFAQs = thumb_GameFAQs()
+    GameFAQs = asset_GameFAQs()
 
     results = GameFAQs.get_search('Castlevania', '', 'Nintendo SNES')
     # results = GameFAQs.get_search('Metroid', '', 'Nintendo SNES')

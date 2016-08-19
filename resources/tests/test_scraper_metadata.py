@@ -4,19 +4,20 @@
 # Test AEL metadata scraper
 #
 
-# Python standard library
+# --- Python standard library ---
+from __future__ import unicode_literals
 import sys, os
 
-# Import scrapers
+# --- AEL modules ---
 if __name__ == "__main__" and __package__ is None:
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from scrap import *
 from utils import *
 
 # --- Scrapers to test ----------------------------------------------------------------------------
-TEST_OFFLINE    = True
+TEST_OFFLINE    = False
 TEST_THEGAMESDB = False
-TEST_GAMEFAQS   = False
+TEST_GAMEFAQS   = True
 
 # --- main ----------------------------------------------------------------------------------------
 print_scraper_list(scrapers_metadata)
