@@ -193,7 +193,6 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_TheGamesDB::get_search Searching '{0}' '{1}' '{2}'".format(search_string, rom_base_noext, platform))
         return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
 
     # game is dictionary returned by the Scraper_TheGamesDB.get_game_search()
@@ -238,7 +237,6 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_GameFAQs::get_search Searching '{0}' '{1}' '{2}'".format(search_string, rom_base_noext, platform))
         return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
@@ -252,7 +250,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         page_data = net_get_URL_text(req)
 
         # Process metadata
-        gamedata['title'] = game['title']
+        gamedata['title'] = game['display_name']
 
         # <ol class="crumbs">
         # <li class="crumb top-crumb"><a href="/snes">Super Nintendo</a></li>
