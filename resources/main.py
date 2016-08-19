@@ -351,13 +351,17 @@ class Main:
     #
     # Set content type and sorting methods
     #
-    def _misc_set_content_and_sorting_methods(self):
+    def _misc_set_content_type(self):
         # >> Experiment to try to increase the number of views the addon supports. I do not know why
         # >> programs does not support all views movies do.
         # xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
+        pass
+
+    def _misc_set_content_and_all_sorting_methods(self):
+        self._misc_set_content_type()
 
         # >> Adds a sorting method for the media list.
-        # >> This must be calle only if self.addon_handle > 0, otherwise Kodi will complain in the log.
+        # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_VIDEO_YEAR)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_STUDIO)
@@ -549,40 +553,20 @@ class Main:
             self.categories[categoryID]['finished'] = finished
             kodi_dialog_OK('Category "{0}" status is now {1}'.format(self.categories[categoryID]['m_name'], finished_display))
 
-        # --- Remove cateogory ---
+        # --- Remove category. Also removes launchers in that category ---
         elif type == 3:
-            if not self._gui_remove_category(categoryID):
-                return
+            launcherID_list = []
+            category_name = self.categories[categoryID]['m_name']
+            for launcherID in sorted(self.launchers.iterkeys()):
+                if self.launchers[launcherID]['id'] == categoryID:
+                    launcherID_list.append(launcherID)
 
-        # >> User pressed cancel or close dialog
-        elif type < 0:
-            return
-
-        # >> If this point is reached then changes to metadata/images were made.
-        # >> Save categories and update container contents so user sees those changes inmediately.
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_refresh_container()
-
-    #
-    # Removes a category. Also removes all launchers in this category!
-    # Returns:
-    #   True   Changes made, save XML and update container.
-    #   False  No changes made.
-    #
-    def _gui_remove_category(self, categoryID):
-        launcherID_list = []
-        category_name = self.categories[categoryID]['m_name']
-        for launcherID in sorted(self.launchers.iterkeys()):
-            if self.launchers[launcherID]['id'] == categoryID:
-                launcherID_list.append(launcherID)
-
-        dialog = xbmcgui.Dialog()
-        if len(launcherID_list) > 0:
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
-                               'Deleting it will also delete related launchers. ' +
-                               'Are you sure you want to delete "{0}"?'.format(category_name) )
-            if ret:
+            dialog = xbmcgui.Dialog()
+            if len(launcherID_list) > 0:
+                ret = dialog.yesno('Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
+                                   'Deleting it will also delete related launchers. ' +
+                                   'Are you sure you want to delete "{0}"?'.format(category_name))
+                if not ret: return
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
                 # Delete launchers and ROM XML associated with them
                 for launcherID in launcherID_list:
@@ -601,19 +585,21 @@ class Main:
                 # Delete category and make sure True is returned.
                 self.categories.pop(categoryID)
             else:
-                return False
-        else:
-            ret = dialog.yesno('Advanced Emulator Launcher',
-                               'Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
-                               'Are you sure you want to delete "{0}"?'.format(category_name) )
-            if ret:
+                ret = dialog.yesno('Category "{0}" contains {1} launchers. '.format(category_name, len(launcherID_list)) +
+                                   'Are you sure you want to delete "{0}"?'.format(category_name) )
+                if not ret: return
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
                 log_info('Category has no launchers, so no launchers to delete.')
                 self.categories.pop(categoryID)
-            else:
-                return False
 
-        return True
+        # >> User pressed cancel or close dialog
+        elif type < 0:
+            return
+
+        # >> If this point is reached then changes to metadata/images were made.
+        # >> Save categories and update container contents so user sees those changes inmediately.
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        kodi_refresh_container()
 
     def _command_add_new_launcher(self, categoryID):
         # If categoryID not found return to plugin root window.
@@ -1773,7 +1759,7 @@ class Main:
     #
     def _command_render_categories(self):
         # >> Set content type
-        self._misc_set_content_and_sorting_methods()
+        self._misc_set_content_and_all_sorting_methods()
 
         # --- For every category, add it to the listbox. Order alphabetically by name ---
         for key in sorted(self.categories, key= lambda x : self.categories[x]['m_name']):
@@ -1945,7 +1931,7 @@ class Main:
     #
     def _command_render_launchers(self, categoryID):
         # >> Set content type
-        self._misc_set_content_and_sorting_methods()
+        self._misc_set_content_and_all_sorting_methods()
     
         # --- If the category has no launchers then render nothing ---
         launcher_IDs = []
@@ -2073,7 +2059,7 @@ class Main:
         roms_fav_set = set(roms_fav.keys())
 
         # >> Set content type
-        self._misc_set_content_and_sorting_methods()
+        self._misc_set_content_and_all_sorting_methods()
 
         # --- Display ROMs ---
         for key in sorted(roms, key = lambda x : roms[x]['filename']):
@@ -3498,7 +3484,7 @@ class Main:
 
         # --- Write virtual launchers XML file ---
         # >> This file is small, no progress dialog
-        log_verb('_command_update_virtual_category_db() Writing virtual cateogory XML index')
+        log_verb('_command_update_virtual_category_db() Writing virtual category XML index')
         fs_write_VCategory_XML(vcategory_db_filename, vcategory_launchers)
 
     #
