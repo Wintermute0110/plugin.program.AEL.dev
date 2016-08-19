@@ -3704,10 +3704,28 @@ class Main:
     #
     def _command_run_rom(self, categoryID, launcherID, romID):
         # --- ROM in Favourites ---
-        if launcherID == VLAUNCHER_FAVOURITES_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
             log_info('_command_run_rom() Launching ROM in Favourites...')
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             rom  = roms[romID]
+            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
+            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
+            minimize_flag = rom['minimize']
+            rom_romext    = rom['romext']
+        # --- ROM in Collection ---
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            log_info('_command_run_rom() Launching ROM in Collection...')
+            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+            collection = collections[launcherID]
+            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            current_ROM_position = -1;
+            for idx, rom in enumerate(collection_rom_list):
+                if romID == rom['id']:
+                    current_ROM_position = idx
+                    break
+            if current_ROM_position < 0:
+                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                return
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
