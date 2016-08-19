@@ -11,14 +11,14 @@
     <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="true" id="scan_ignore_scrap_title" />
     <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag]" type="bool" default="false" id="scan_clean_tags" />
 </category>
-<category label="ROM scrapping">
+<category label="ROM scraping">
     <setting id="separator" type="lsep" label="Scrapers"/>
     <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="Offline scraper|TheGamesDB|GameFAQs"/>
     <setting label="Asset scraper" type="enum" id="asset_scraper" default="0" values="TheGamesDB|GameFAQs"/>
 
-    <setting id="separator" type="lsep" label="Scrapping mode"/>
-    <setting label="Metadata scrapping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
-    <setting label="Asset scrapping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
+    <setting id="separator" type="lsep" label="Scraping mode"/>
+    <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
+    <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
 </category>
 <category label="Scrapers">
     <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>

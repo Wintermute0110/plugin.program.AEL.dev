@@ -274,7 +274,7 @@ class Main:
         self.settings['scan_ignore_scrap_title'] = True if __addon_obj__.getSetting('scan_ignore_scrap_title') == 'true' else False
         self.settings['scan_clean_tags']         = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
 
-        # --- ROM scrapping ---
+        # --- ROM scraping ---
         self.settings['metadata_scraper']        = int(__addon_obj__.getSetting('metadata_scraper'))
         self.settings['asset_scraper']           = int(__addon_obj__.getSetting('asset_scraper'))
 
@@ -4150,7 +4150,7 @@ class Main:
     #
     # Manually add a new ROM instead of a recursive scan.
     #   A) User chooses a ROM file
-    #   B) Title is formatted. No metadata scrapping.
+    #   B) Title is formatted. No metadata scraping.
     #   C) Thumb and fanart are searched locally only.
     # Later user can edit this ROM if he wants.
     #
@@ -4518,8 +4518,8 @@ class Main:
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
             # --- Do a search and get a list of games ---
-            rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
-            results = self.scraper_metadata.get_search(rom_name_scrapping, ROM.base_noext, platform)
+            rom_name_scraping = text_clean_ROM_name_for_scraping(ROM.base_noext)
+            results = self.scraper_metadata.get_search(rom_name_scraping, ROM.base_noext, platform)
             log_debug('Metadata scraper found {0} result/s'.format(len(results)))
             if results:
                 # id="metadata_scraper_mode" values="Semi-automatic|Automatic"
@@ -4658,8 +4658,8 @@ class Main:
         log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext))
 
         # --- Call scraper and get a list of games ---
-        rom_name_scrapping = text_clean_ROM_name_for_scrapping(ROM.base_noext)
-        results = scraper_obj.get_search(rom_name_scrapping, ROM.base_noext, platform)
+        rom_name_scraping = text_clean_ROM_name_for_scraping(ROM.base_noext)
+        results = scraper_obj.get_search(rom_name_scraping, ROM.base_noext, platform)
         log_debug('{0} scraper found {1} result/s'.format(A.name, len(results)))
         if not results:
             log_debug('{0} scraper did not found any game'.format(A.name))

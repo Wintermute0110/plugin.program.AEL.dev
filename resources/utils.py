@@ -107,7 +107,7 @@ def text_dump_str_to_file(full_string, filename):
 # Cleans ROM tags: [BIOS], (Europe), (Rev A), ...
 # Substitutes some characters by spaces
 #
-def text_clean_ROM_name_for_scrapping(title):
+def text_clean_ROM_name_for_scraping(title):
     title = re.sub('\[.*?\]', '', title)
     title = re.sub('\(.*?\)', '', title)
     title = re.sub('\{.*?\}', '', title)
