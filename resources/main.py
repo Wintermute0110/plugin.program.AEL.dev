@@ -316,6 +316,7 @@ class Main:
         self.settings['media_state']             = int(__addon_obj__.getSetting('media_state'))
         self.settings['lirc_state']              = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
         self.settings['start_tempo']             = int(round(float(__addon_obj__.getSetting('start_tempo'))))
+        self.settings['escape_romfile']          = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
         self.settings['log_level']               = int(__addon_obj__.getSetting('log_level'))
         self.settings['show_batch_window']       = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
 
@@ -4044,8 +4045,11 @@ class Main:
             return
 
         # --- Escape quotes and double quotes in romfile ---
-        romfile = romfile.replace("'", "\\'")
-        romfile = romfile.replace("\"", "\\\"")
+        # >> This maybe useful to Android users with complex command line arguments
+        if self.settings['escape_romfile']:
+            log_info("_command_run_rom Escaping romfile ' and \"")
+            romfile = romfile.replace("'", "\\'")
+            romfile = romfile.replace("\"", "\\\"")
 
         # ~~~~ Argument substitution ~~~~~
         arguments = arguments.replace('%rom%',         romfile).replace('%ROM%',             romfile)
