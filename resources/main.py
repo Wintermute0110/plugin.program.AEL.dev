@@ -1525,7 +1525,9 @@ class Main:
 
             # Import of the rom game plot from TXT file
             elif type2 == 7:
-                text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False)
+                dialog = xbmcgui.Dialog()
+                text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
+                                          'files', '.txt|.dat', False, False).decode('utf-8')
                 if os.path.isfile(text_file):
                     file_data = self._gui_import_TXT_file(text_file)
                     roms[romID]['m_plot'] = file_data
