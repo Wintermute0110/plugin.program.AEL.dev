@@ -2645,8 +2645,7 @@ class Main:
 
     #
     # Check ROMs in favourites and set fav_status field.
-    # Note that categoryID = VCATEGORY_FAV_ID, launcherID = '0'
-    # roms_fav edited by passing by assgiment, dictionaries are mutable.
+    # roms_fav edited by passing by assigment, dictionaries are mutable.
     #
     def _fav_check_favourites(self, roms_fav):
         # Reset fav_status filed for all favourites
@@ -2654,7 +2653,7 @@ class Main:
         for rom_fav_ID in roms_fav:
             roms_fav[rom_fav_ID]['fav_status'] = 'OK'
 
-        # STEP 1: Find missing launchers
+        # STEP 1: Find Favourites with missing launchers
         log_debug('_fav_check_favourites() STEP 1: Search unlinked Launchers')
         for rom_fav_ID in roms_fav:
             if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
@@ -2670,7 +2669,11 @@ class Main:
         # >> Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs that belong to
         # >> that launcher.
         for launcher_id in launchers_fav:
-            # Load launcher ROMs
+            # >> If Favourite does not have launcher skip it. It has been marked as 'Unlinked Launcher'
+            # >> in step 1.
+            if launcher_id not in self.launchers: continue
+
+            # >> Load launcher ROMs
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
 
             # Traverse all favourites and check them if belong to this launcher.
