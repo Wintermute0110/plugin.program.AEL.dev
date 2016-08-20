@@ -93,64 +93,42 @@ def assets_init_asset_dir(asset_path, launcher):
         launcher['path_trailer']   = os.path.join(asset_path, 'trailers').decode('utf-8')
 
         # >> Create asset directories
-        assets_create_dir_or_abort(launcher['path_title'])
-        assets_create_dir_or_abort(launcher['path_snap'])
-        assets_create_dir_or_abort(launcher['path_fanart'])
-        assets_create_dir_or_abort(launcher['path_banner'])
-        assets_create_dir_or_abort(launcher['path_clearlogo'])        
-        assets_create_dir_or_abort(launcher['path_boxfront'])
-        assets_create_dir_or_abort(launcher['path_boxback'])
-        assets_create_dir_or_abort(launcher['path_cartridge'])
-        assets_create_dir_or_abort(launcher['path_flyer'])
-        assets_create_dir_or_abort(launcher['path_map'])
-        assets_create_dir_or_abort(launcher['path_manual'])
-        assets_create_dir_or_abort(launcher['path_trailer'])
+        assets_safe_create_dir(launcher['path_title'])
+        assets_safe_create_dir(launcher['path_snap'])
+        assets_safe_create_dir(launcher['path_fanart'])
+        assets_safe_create_dir(launcher['path_banner'])
+        assets_safe_create_dir(launcher['path_clearlogo'])        
+        assets_safe_create_dir(launcher['path_boxfront'])
+        assets_safe_create_dir(launcher['path_boxback'])
+        assets_safe_create_dir(launcher['path_cartridge'])
+        assets_safe_create_dir(launcher['path_flyer'])
+        assets_safe_create_dir(launcher['path_map'])
+        assets_safe_create_dir(launcher['path_manual'])
+        assets_safe_create_dir(launcher['path_trailer'])
 
     # Asset path is same as ROM path. Use naming sheme 2.
     else:
         log_verb('assets_init_asset_dir() Using naming scheme 2')
 
-def assets_create_dir_or_abort(directory):
-    log_debug('assets_create_dir_or_abort() Creating dir "{0}"'.format(directory))
+def assets_safe_create_dir(directory):
+    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(directory))
     if not os.path.exists(directory): 
         os.makedirs(directory)
 
 #
-# Get artwork user configured to be used as thumb. Scheme A is for Categories/Launchers.
+# Get artwork user configured to be used as thumb/fanart/
 #
-def asset_get_default_thumb_scheme_A(object_dic, default_thumb):
-    default_asset = object_dic['default_thumb']
-    thumb_path    = object_dic[default_asset] if object_dic[default_asset] else default_thumb
-    # log_debug('asset_get_default_thumb_scheme_A() default_asset "{0}"'.format(default_asset))
-    # log_debug('asset_get_default_thumb_scheme_A() thumb_path    "{0}"'.format(thumb_path))
+def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
+    conf_asset_key = object_dic[object_key]
+    thumb_path     = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
 
     return thumb_path
 
-#
-# Same as above, for fanarts
-#
-def asset_get_default_fanart_scheme_A(object_dic):
-    default_asset = object_dic['default_fanart']
-    fanart_path    = object_dic[default_asset]
-    # log_debug('asset_get_default_fanart_scheme_A() default_asset "{0}"'.format(default_asset))
-    # log_debug('asset_get_default_fanart_scheme_A() fanart_path   "{0}"'.format(fanart_path))
-
-    return fanart_path
-
-#
-# Get ROMs Thumb/Fanart
-#
-def asset_get_default_thumb_scheme_ROM(rom, launcher, default_thumb):
-    default_asset = launcher['roms_default_thumb']
-    thumb_path    = rom[default_asset] if rom[default_asset] else default_thumb
+def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
+    conf_asset_key = launcher[object_key]
+    thumb_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
 
     return thumb_path
-
-def asset_get_default_fanart_scheme_ROM(rom, launcher):
-    default_asset = launcher['roms_default_fanart']
-    fanart_path   = rom[default_asset] if rom[default_asset] else launcher['s_fanart']
-
-    return fanart_path
 
 #
 # Gets a human readable name string for the default fallback thumb

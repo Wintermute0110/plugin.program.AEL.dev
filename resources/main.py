@@ -1895,11 +1895,14 @@ class Main:
                                    'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY } )
 
         # --- Set Category artwork ---
-        # >> Set thumb/fanart based on user preferences
-        thumb_path  = asset_get_default_thumb_scheme_A(category_dic, 'DefaultFolder.png')
-        fanart_path = asset_get_default_fanart_scheme_A(category_dic)
-        listitem.setArt({'thumb' : thumb_path, 'fanart' : fanart_path})
-        listitem.setArt({'banner' : category_dic['s_banner'], 'poster' : category_dic['s_flyer']})
+        # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
+        thumb_path      = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
+        thumb_fanart    = asset_get_default_asset_Category(category_dic, 'default_fanart')
+        thumb_banner    = asset_get_default_asset_Category(category_dic, 'default_banner')
+        thumb_poster    = asset_get_default_asset_Category(category_dic, 'default_poster')
+        thumb_clearlogo = asset_get_default_asset_Category(category_dic, 'default_clearlogo')
+        listitem.setArt({'thumb' : thumb_path, 'fanart' : thumb_fanart, 'banner' : thumb_banner, 
+                         'poster' : thumb_poster, 'clearlogo' : thumb_clearlogo })
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
@@ -2077,7 +2080,6 @@ class Main:
             return
 
         # --- Create listitem row ---
-
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
         listitem = xbmcgui.ListItem(launcher_dic['m_name'])
         listitem.setInfo('video', {'title'   : launcher_dic['m_name'],    'year'    : launcher_dic['m_year'], 
@@ -2088,10 +2090,13 @@ class Main:
 
         # --- Set ListItem artwork ---
         kodi_thumb  = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-        thumb_path  = asset_get_default_thumb_scheme_A(launcher_dic, kodi_thumb)
-        fanart_path = asset_get_default_fanart_scheme_A(launcher_dic)
-        listitem.setArt({'thumb' : thumb_path, 'fanart' : fanart_path})
-        listitem.setArt({'banner' : launcher_dic['s_banner'], 'poster' : launcher_dic['s_flyer']})
+        thumb_path      = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
+        thumb_fanart    = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
+        thumb_banner    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
+        thumb_poster    = asset_get_default_asset_Category(launcher_dic, 'default_poster')
+        thumb_clearlogo = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
+        listitem.setArt({'thumb' : thumb_path, 'fanart' : thumb_fanart, 'banner' : thumb_banner, 
+                         'poster' : thumb_poster, 'clearlogo' : thumb_clearlogo })
 
         # --- Create context menu ---
         commands = []
@@ -2168,8 +2173,14 @@ class Main:
         # --- Create listitem row ---
         rom_raw_name = rom['m_name']
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            thumb_path = fanart_path = ''
+            kodi_def_thumb  = 'DefaultProgram.png'
+            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform = rom['platform']
+
             # >> If we are rendering Favourites then mark fav_status            
             if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
             elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
@@ -2177,30 +2188,48 @@ class Main:
             elif rom['fav_status'] == 'Broken':            rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
             else:                                          rom_name = rom_raw_name
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            thumb_path = fanart_path = ''
+            kodi_def_thumb  = 'DefaultProgram.png'
+            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform = rom['platform']
             rom_name = rom_raw_name
         # If rendering a virtual launcher mark nothing
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
-            thumb_path = fanart_path = ''
+            kodi_def_thumb  = 'DefaultProgram.png'
+            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform = rom['platform']
             if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
             elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
             elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
             else:                                    rom_name = rom_raw_name
-            if rom_is_in_favourites:                 rom_name += ' [COLOR violet][Fav][/COLOR]'
+            if rom_is_in_favourites: rom_name += ' [COLOR violet][Fav][/COLOR]'
         # >> If rendering a normal launcher OR virtual launcher then mark nointro_status and rom_is_in_favourites
         else:
             # >> If ROM has no fanart then use launcher fanart
-            thumb_path  = asset_get_default_thumb_scheme_ROM(rom, self.launchers[launcherID], 'DefaultProgram.png')
-            fanart_path = asset_get_default_fanart_scheme_ROM(rom, self.launchers[launcherID])
-            platform = self.launchers[launcherID]['platform']
+            launcher = self.launchers[launcherID]
+            kodi_def_thumb  = 'DefaultProgram.png'
+            kodi_def_fanart = launcher['s_fanart']
+            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
+            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
+            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
+            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
+            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
+            platform = launcher['platform']
+
             # >> Mark No-Intro status
             if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
             elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
             elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
             else:                                    rom_name = rom_raw_name
+
             # >> If listing regular launcher and rom is in favourites, mark it
             if rom_is_in_favourites:
                 # --- Workaround so the alphabetical order is not lost ---
@@ -2225,10 +2254,14 @@ class Main:
         listitem.setProperty('platform', platform)
 
         # --- Set ROM artwork ---
-        listitem.setArt({'title'     : rom['s_title'],     'snap'     : rom['s_snap'],     'banner'  : rom['s_banner'],
-                         'clearlogo' : rom['s_clearlogo'], 'boxfront' : rom['s_boxfront'], 'boxback' : rom['s_boxback'], 
-                         'cartridge' : rom['s_cartridge'], 'poster'   : rom['s_flyer'] })
-        listitem.setArt({'thumb' : thumb_path, 'fanart' : fanart_path})
+        # >> AEL custom artwork fields
+        listitem.setArt({'title'     : rom['s_title'],     'snap'    : rom['s_snap'],
+                         'boxfront'  : rom['s_boxfront'],  'boxback' : rom['s_boxback'], 
+                         'cartridge' : rom['s_cartridge'], 'map'     : rom['s_map'] })
+
+        # >> Kodi official artwork fields
+        listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart,
+                         'banner' : thumb_banner, 'poster' : thumb_poster, 'clearlogo' : thumb_clearlogo })
 
         # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
         # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
@@ -3670,19 +3703,13 @@ class Main:
             # >> Add additional fields to ROM to make a Favourites ROM
             # >> Virtual categories/launchers are like Favourite ROMs that cannot be edited.
             # >> NOTE roms is updated by assigment, dictionaries are mutable
+            fav_roms = {}
             for rom_id in roms:
-                rom = roms[rom_id]
-                rom['launcherID']  = launcher['id']
-                rom['platform']    = launcher['platform']
-                rom['application'] = launcher['application']
-                rom['args']        = launcher['args']
-                rom['rompath']     = launcher['rompath']
-                rom['romext']      = launcher['romext']
-                rom['minimize']    = launcher['minimize']
-                rom['fav_status']  = 'OK'
+                fav_rom = fs_get_Favourite_from_ROM(roms[rom_id], launcher)
+                fav_roms[rom_id] = fav_rom
 
             # >> Update dictionary
-            all_roms.update(roms)
+            all_roms.update(fav_roms)
         pDialog.update(i * 100 / num_launchers)
         pDialog.close()
 
