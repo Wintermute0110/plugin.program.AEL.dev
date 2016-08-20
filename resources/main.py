@@ -3213,6 +3213,11 @@ class Main:
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(rom['minimize'])
         info_text += "[COLOR violet]fav_status[/COLOR]: '{0}'\n".format(rom['fav_status'])
+        info_text += "[COLOR violet]roms_default_thumb[/COLOR]: '{0}'\n".format(rom['roms_default_thumb'])
+        info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(rom['roms_default_fanart'])
+        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
+        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(rom['roms_default_poster'])
+        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(rom['roms_default_clearlogo'])
 
         return info_text
 
@@ -3238,10 +3243,17 @@ class Main:
         info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
         info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
         info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
+
         info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(launcher['default_thumb'])
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher['default_fanart'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(rom['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(rom['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(rom['default_clearlogo'])
         info_text += "[COLOR violet]roms_default_thumb[/COLOR]: '{0}'\n".format(launcher['roms_default_thumb'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(launcher['roms_default_fanart'])
+        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
+        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(rom['roms_default_poster'])
+        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(rom['roms_default_clearlogo'])
 
         info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(launcher['s_thumb'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
@@ -3274,6 +3286,9 @@ class Main:
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])        
         info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(category['default_thumb'])
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(category['default_fanart'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(rom['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(rom['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(rom['default_clearlogo'])
         info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(category['s_thumb'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(category['s_fanart'])
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(category['s_banner'])

@@ -60,6 +60,9 @@ def fs_new_category():
          'finished' : False,
          'default_thumb' : 's_thumb',
          'default_fanart' : 's_fanart',
+         'default_banner' : 's_banner',
+         'default_poster' : 's_flyer',
+         'default_clearlogo' : 's_banner',
          's_thumb' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -91,8 +94,14 @@ def fs_new_launcher():
          'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
          'default_fanart' : 's_fanart',
+         'default_banner' : 's_banner',
+         'default_poster' : 's_flyer',
+         'default_clearlogo' : 's_banner',
          'roms_default_thumb' : 's_title',
          'roms_default_fanart' : 's_fanart',
+         'roms_default_banner' : 's_banner',
+         'roms_default_poster' : 's_flyer',
+         'roms_default_clearlogo' : 's_clearlogo',
          's_thumb' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -170,14 +179,19 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     # del favourite['nointro_status']
     
     # >> Copy launcher stuff into Favourite ROM
-    favourite['launcherID']  = launcher['id']
-    favourite['platform']    = launcher['platform']
-    favourite['application'] = launcher['application']
-    favourite['args']        = launcher['args']
-    favourite['rompath']     = launcher['rompath']
-    favourite['romext']      = launcher['romext']
-    favourite['minimize']    = launcher['minimize']
-    
+    favourite['launcherID']             = launcher['id']
+    favourite['platform']               = launcher['platform']
+    favourite['application']            = launcher['application']
+    favourite['args']                   = launcher['args']
+    favourite['rompath']                = launcher['rompath']
+    favourite['romext']                 = launcher['romext']
+    favourite['minimize']               = launcher['minimize']
+    favourite['roms_default_thumb']     = launcher['roms_default_thumb']
+    favourite['roms_default_fanart']    = launcher['roms_default_fanart']
+    favourite['roms_default_banner']    = launcher['roms_default_banner']
+    favourite['roms_default_poster']    = launcher['roms_default_poster']
+    favourite['roms_default_clearlogo'] = launcher['roms_default_clearlogo']
+
     # >> Favourite ROM unique fields
     favourite['fav_status']  = 'OK'
 
@@ -265,6 +279,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('finished', unicode(category['finished'])))
             str_list.append(XML_text('default_thumb', category['default_thumb']))
             str_list.append(XML_text('default_fanart', category['default_fanart']))
+            str_list.append(XML_text('default_banner', category['default_banner']))
+            str_list.append(XML_text('default_poster', category['default_poster']))
+            str_list.append(XML_text('default_clearlogo', category['default_clearlogo']))
             str_list.append(XML_text('s_thumb', category['s_thumb']))
             str_list.append(XML_text('s_fanart', category['s_fanart']))
             str_list.append(XML_text('s_banner', category['s_banner']))
@@ -298,8 +315,14 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))            
             str_list.append(XML_text('default_thumb', launcher['default_thumb']))
             str_list.append(XML_text('default_fanart', launcher['default_fanart']))
+            str_list.append(XML_text('default_banner', launcher['default_banner']))
+            str_list.append(XML_text('default_poster', launcher['default_poster']))
+            str_list.append(XML_text('default_clearlogo', launcher['default_clearlogo']))
             str_list.append(XML_text('roms_default_thumb', launcher['roms_default_thumb']))
             str_list.append(XML_text('roms_default_fanart', launcher['roms_default_fanart']))
+            str_list.append(XML_text('roms_default_banner', launcher['roms_default_banner']))
+            str_list.append(XML_text('roms_default_poster', launcher['roms_default_poster']))
+            str_list.append(XML_text('roms_default_clearlogo', launcher['roms_default_clearlogo']))
             str_list.append(XML_text('s_thumb', launcher['s_thumb']))
             str_list.append(XML_text('s_fanart', launcher['s_fanart']))
             str_list.append(XML_text('s_banner', launcher['s_banner']))
@@ -451,7 +474,7 @@ def fs_get_ROMs_file_path(roms_dir, roms_base_noext):
     return roms_file_path
 
 #
-# Write to disk launcher ROMs XML database (OBSOLETE)
+# Write to disk launcher ROMs XML database (OBSOLETE FUNCTION)
 #
 def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
     # >> Get filename
@@ -537,7 +560,7 @@ def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
     kodi_busydialog_OFF()
 
 #
-# Loads a launcher XML with the ROMs
+# Loads a launcher XML with the ROMs (OBSOLETE FUNCTION)
 #
 def fs_load_ROMs_XML(roms_dir, roms_base_noext):
     __debug_xml_parser = 0
@@ -678,10 +701,10 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
 # Favourite ROMs
 # -------------------------------------------------------------------------------------------------
 #
-# Write to disk Favourite ROMs in XML
+# Write to disk Favourite ROMs in XML (OBSOLETE FUNCTION)
 #
 def fs_write_Favourites_XML(roms_xml_file, roms):
-    log_info('fs_write_Favourites_XML() Saving XML file {0}'.format(roms_xml_file))
+    log_info('fs_write_Favourites_XML() File {0}'.format(roms_xml_file))
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
@@ -727,7 +750,7 @@ def fs_write_Favourites_XML(roms_xml_file, roms):
         kodi_notify('Cannot write {0} file (IOError)'.format(roms_xml_file))
 
 #
-# Loads an XML file containing the favourite ROMs
+# Loads an XML file containing the favourite ROMs (OBSOLETE FUNCTION)
 # It is basically the same as ROMs, but with some more fields to store launching application data.
 #
 def fs_load_Favourites_XML(roms_xml_file):
@@ -738,7 +761,7 @@ def fs_load_Favourites_XML(roms_xml_file):
     if not os.path.isfile(roms_xml_file): return roms
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_Favourites_XML() Loading XML file {0}'.format(roms_xml_file))
+    log_verb('fs_load_Favourites_XML() File {0}'.format(roms_xml_file))
     try:
         xml_tree = ET.parse(roms_xml_file)
     except ET.ParseError, e:
@@ -793,7 +816,7 @@ def fs_load_Favourites_JSON(roms_json_file):
     # --- If file does not exist return empty dictionary ---
     if not os.path.isfile(roms_json_file): return roms
 
-    # --- Parse using cElementTree ---
+    # --- Parse JSON ---
     log_verb('fs_load_Favourites_JSON() File {0}'.format(roms_json_file))
     with open(roms_json_file) as file:    
         try:
