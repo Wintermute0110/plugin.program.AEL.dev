@@ -1040,7 +1040,7 @@ class Main:
                     launcher = self.launchers[launcherID]
 
                     # >> Make a list of disabled artwork paths
-                    enabled_asset_list = [False] * len(rom_asset_list)
+                    enabled_asset_list = [False] * len(ROM_ASSET_LIST)
                     disabled_asset_name_list = []
                     for i, asset in enumerate(rom_asset_list):
                         A = assets_get_info_scheme(asset)
@@ -1061,7 +1061,7 @@ class Main:
                     for rom_id in roms:
                         rom = roms[rom_id]
                         log_info('Checking ROM "{0}"'.format(rom['filename']))
-                        for i, asset in enumerate(rom_asset_list):
+                        for i, asset in enumerate(ROM_ASSET_LIST):
                             A = assets_get_info_scheme(asset)
                             if not enabled_asset_list[i]: continue
                             ROM = misc_split_path(rom['filename'])
