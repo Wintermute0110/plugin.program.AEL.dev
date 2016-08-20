@@ -4073,15 +4073,12 @@ class Main:
             if romext == 'lnk':
                 os.system('start "" "{0}"'.format(arguments))
             else:
+                info = None
                 if application.split('.')[-1] == 'bat':
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
-                    if self.settings['show_batch']:
-                        info.wShowWindow = 5
-                    else:
-                        info.wShowWindow = 0
-                else:
-                    info = None
+                    if self.settings['show_batch']: info.wShowWindow = 5
+                    else:                           info.wShowWindow = 0
                 startproc = subprocess_hack.Popen(r'%s %s'.format(application, arguments), 
                                                   cwd = apppath, startupinfo = info)
                 startproc.wait()
@@ -4090,18 +4087,18 @@ class Main:
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
 
             # >> Old way of launching child process
-            # os.system('"{0}" {1}'.format(application, arguments))
+            os.system('"{0}" {1}'.format(application, arguments))
 
-            # >> Save child process stdout
-            if arguments:
-                if arguments[0] == '"' and arguments[-1] == '"': arguments = arguments[1:-1]
-                with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
-                    subprocess.call([application, arguments], stdout = f, stderr = f)
-                    f.close()
-            else:
-                with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
-                    subprocess.call(application, stdout = f, stderr = f)
-                    f.close()
+            # >> New way of launching, uses subproces module. Also, save child process stdout.
+            # if arguments:
+            #     if arguments[0] == '"' and arguments[-1] == '"': arguments = arguments[1:-1]
+            #     with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+            #         subprocess.call([application, arguments], stdout = f, stderr = f)
+            #         f.close()
+            # else:
+            #     with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+            #         subprocess.call(application, stdout = f, stderr = f)
+            #         f.close()
 
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
         # OS X
