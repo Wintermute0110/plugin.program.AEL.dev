@@ -66,9 +66,10 @@ VCAT_STUDIO_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml').decode(
 LAUNCH_LOG_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'launcher.log').decode('utf-8')
 
 # --- Artwork and NFO for Categories and Launchers ---
-DEFAULT_CAT_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'category-assets').decode('utf-8')
-DEFAULT_LAUN_ASSET_DIR = os.path.join(PLUGIN_DATA_DIR, 'launcher-assets').decode('utf-8')
-DEFAULT_FAV_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'favourite-assets').decode('utf-8')
+DEFAULT_CAT_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-categories').decode('utf-8')
+DEFAULT_COL_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-collections').decode('utf-8')
+DEFAULT_LAUN_ASSET_DIR = os.path.join(PLUGIN_DATA_DIR, 'asset-launchers').decode('utf-8')
+DEFAULT_FAV_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-favourites').decode('utf-8')
 VIRTUAL_CAT_TITLE_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_title').decode('utf-8')
 VIRTUAL_CAT_YEARS_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_years').decode('utf-8')
 VIRTUAL_CAT_GENRE_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_genre').decode('utf-8')
@@ -78,9 +79,10 @@ COLLECTIONS_DIR        = os.path.join(PLUGIN_DATA_DIR, 'db_Collections').decode(
 REPORTS_DIR            = os.path.join(PLUGIN_DATA_DIR, 'reports').decode('utf-8')
 
 # --- Misc "constants" ---
-KIND_CATEGORY            = 0
-KIND_LAUNCHER            = 1
-KIND_ROM                 = 2
+KIND_CATEGORY            = 1
+KIND_COLLECTION          = 2
+KIND_LAUNCHER            = 3
+KIND_ROM                 = 4
 DESCRIPTION_MAXSIZE      = 40
 VCATEGORY_FAVOURITES_ID  = 'vcat_favourites'
 VCATEGORY_COLLECTIONS_ID = 'vcat_collections'
@@ -131,6 +133,7 @@ class Main:
         # --- Addon data paths creation ---
         if not os.path.isdir(PLUGIN_DATA_DIR):        os.makedirs(PLUGIN_DATA_DIR)
         if not os.path.isdir(DEFAULT_CAT_ASSET_DIR):  os.makedirs(DEFAULT_CAT_ASSET_DIR)
+        if not os.path.isdir(DEFAULT_COL_ASSET_DIR):  os.makedirs(DEFAULT_COL_ASSET_DIR)
         if not os.path.isdir(DEFAULT_LAUN_ASSET_DIR): os.makedirs(DEFAULT_LAUN_ASSET_DIR)
         if not os.path.isdir(DEFAULT_FAV_ASSET_DIR):  os.makedirs(DEFAULT_FAV_ASSET_DIR)
         if not os.path.isdir(VIRTUAL_CAT_TITLE_DIR):  os.makedirs(VIRTUAL_CAT_TITLE_DIR)
@@ -189,6 +192,8 @@ class Main:
             self._command_render_collection_ROMs(args['catID'][0], args['launID'][0])
         elif command == 'ADD_COLLECTION':
             self._command_add_collection()
+        elif command == 'EDIT_COLLECTION':
+            self._command_edit_collection(args['catID'][0], args['launID'][0])
         elif command == 'DELETE_COLLECTION':
             self._command_delete_collection(args['catID'][0], args['launID'][0])
         elif command == 'MOVE_COL_ROM_UP':
@@ -305,6 +310,7 @@ class Main:
         self.settings['categories_asset_dir']    = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
         self.settings['launchers_asset_dir']     = __addon_obj__.getSetting('launchers_asset_dir').decode('utf-8')
         self.settings['favourites_asset_dir']    = __addon_obj__.getSetting('favourites_asset_dir').decode('utf-8')
+        self.settings['collections_asset_dir']   = __addon_obj__.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- Advanced ---
         self.settings['media_state']             = int(__addon_obj__.getSetting('media_state'))
@@ -317,9 +323,10 @@ class Main:
         # self.settings['game_region'] = ['World', 'Europe', 'Japan', 'USA'][int(__addon_obj__.getSetting('game_region'))]
 
         # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
-        if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir'] = DEFAULT_CAT_ASSET_DIR
-        if self.settings['launchers_asset_dir']   == '': self.settings['launchers_asset_dir']  = DEFAULT_LAUN_ASSET_DIR
-        if self.settings['favourites_asset_dir']  == '': self.settings['favourites_asset_dir'] = DEFAULT_FAV_ASSET_DIR
+        if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR
+        if self.settings['launchers_asset_dir']   == '': self.settings['launchers_asset_dir']   = DEFAULT_LAUN_ASSET_DIR
+        if self.settings['favourites_asset_dir']  == '': self.settings['favourites_asset_dir']  = DEFAULT_FAV_ASSET_DIR
+        if self.settings['collections_asset_dir'] == '': self.settings['collections_asset_dir'] = DEFAULT_COL_ASSET_DIR
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
@@ -2631,6 +2638,7 @@ class Main:
             # --- Create context menu ---
             commands = []
             commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION'), ))
+            commands.append(('Edit Collection', self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
             commands.append(('Delete Collection', self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
@@ -2670,7 +2678,7 @@ class Main:
         if not keyboard.isConfirmed(): return
         
         # --- Add new collection to database ---
-        collection = { 'id' : '', 'name' : '', 'roms_base_noext' : '' }
+        collection = fs_new_collection()
         collection_name      = keyboard.getText()
         collection_id_md5    = hashlib.md5(collection_name.encode('utf-8'))
         collection_UUID      = collection_id_md5.hexdigest()
@@ -2678,15 +2686,120 @@ class Main:
         collection['id']              = collection_UUID
         collection['name']            = collection_name
         collection['roms_base_noext'] = collection_base_name
-        collections[collection_UUID] = collection
+        collections[collection_UUID]  = collection
         log_debug('_command_add_collection() id              "{0}"'.format(collection['id']))
         log_debug('_command_add_collection() name            "{0}"'.format(collection['name']))
         log_debug('_command_add_collection() roms_base_noext "{0}"'.format(collection['roms_base_noext']))
-
         kodi_dialog_OK("Created new Collection named '{0}'.".format(collection_name))
 
         # --- Save collections XML database ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+
+    #
+    # Edits collection artwork
+    #
+    def _command_edit_collection(self, categoryID, launcherID):
+        # --- Load collection index ---
+        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        collection = collections[launcherID]
+
+        # --- Shows a select box with the options to edit ---
+        dialog = xbmcgui.Dialog()
+        type = dialog.select('Select action for Collection {0}'.format(collection['name']),
+                             ['Edit Collection name', 
+                              'Edit Assets/Artwork...', 
+                              'Choose default Assets/Artwork...'])
+
+        # --- Change collection name ---
+        if type == 0:
+            keyboard = xbmc.Keyboard(collection['name'], 'Edit Collection name')
+            keyboard.doModal()
+            if keyboard.isConfirmed():
+                collection['name'] = keyboard.getText().decode('utf-8')
+            else:
+                kodi_dialog_OK("Collection '{0}' name not changed".format(collection['name']))
+                return
+
+        # --- Edit artwork ---
+        elif type == 1:
+            status_thumb_str   = 'HAVE' if collection['s_thumb']   else 'MISSING'
+            status_fanart_str  = 'HAVE' if collection['s_fanart']  else 'MISSING'
+            status_banner_str  = 'HAVE' if collection['s_banner']  else 'MISSING'
+            status_flyer_str   = 'HAVE' if collection['s_flyer']   else 'MISSING'
+            status_trailer_str = 'HAVE' if collection['s_trailer'] else 'MISSING'
+            dialog = xbmcgui.Dialog()
+            type2 = dialog.select('Edit Category Assets/Artwork',
+                                  ["Edit Thumbnail ({0})...".format(status_thumb_str),
+                                   "Edit Fanart ({0})...".format(status_fanart_str),
+                                   "Edit Banner ({0})...".format(status_banner_str),
+                                   "Edit Flyer ({0})...".format(status_flyer_str),
+                                   "Edit Trailer ({0})...".format(status_trailer_str)])
+
+            # --- Edit Assets ---
+            # >> _gui_edit_asset() returns True if image was changed
+            # >> Category is changed using Python passign by assigment
+            # >> If this function returns False no changes were made. No need to save categories XML and 
+            # >> update container.
+            if type2 == 0:
+                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_THUMB, collection): return
+            elif type2 == 1:
+                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_FANART, collection): return
+            elif type2 == 2:
+                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_BANNER, collection): return
+            elif type2 == 3:
+                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_FLYER, collection): return
+            elif type2 == 4:
+                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_TRAILER, collection): return
+            # >> User canceled select dialog
+            elif type2 < 0: return
+
+
+        # --- Change default artwork ---
+        elif type == 2:
+            asset_thumb     = assets_get_asset_name_str(collection['default_thumb'])
+            asset_fanart    = assets_get_asset_name_str(collection['default_fanart'])
+            asset_banner    = assets_get_asset_name_str(collection['default_banner'])
+            asset_poster    = assets_get_asset_name_str(collection['default_poster'])
+            asset_clearlogo = assets_get_asset_name_str(collection['default_clearlogo'])
+            dialog = xbmcgui.Dialog()
+            type2 = dialog.select('Edit Category Assets/Artwork',
+                                  ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
+                                   'Choose asset for Fanart (currently {0})'.format(asset_fanart),
+                                   'Choose asset for Banner (currently {0})'.format(asset_banner),
+                                   'Choose asset for Poster (currently {0})'.format(asset_poster),
+                                   'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+
+            if type2 == 0:
+                type3 = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(collection, 'default_thumb', type3)
+
+            elif type2 == 1:
+                type3 = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(collection, 'default_fanart', type3)
+
+            elif type2 == 2:
+                type3 = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(collection, 'default_banner', type3)
+
+            elif type2 == 3:
+                type3 = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(collection, 'default_poster', type3)
+
+            elif type2 == 4:
+                type3 = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(collection, 'default_clearlogo', type3)
+
+        # >> User cancel dialog
+        elif type < 0: return
+
+        # --- Save collection index and refresh view ---
+        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        kodi_refresh_container()
 
     #
     # Deletes a collection and associated ROMs.
@@ -5029,7 +5142,22 @@ class Main:
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
             log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext))
             if not asset_directory:
-                kodi_dialog_OK('Directory to store {0} not configured. '.format(A.name) + \
+                kodi_dialog_OK('Directory to store Category artwork not configured. '
+                               'Configure it before you can edit artwork.')
+                return False
+
+        elif object_kind == KIND_COLLECTION:
+            # --- Grab asset information for editing ---
+            object_name = 'Collection'
+            A = assets_get_info_scheme(asset_kind)
+            asset_directory = self.settings['collections_asset_dir']
+            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['name'])
+            log_info('_gui_edit_asset() Editing Collection "{0}"'.format(A.name))
+            log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
+            log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
+            log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext))
+            if not asset_directory:
+                kodi_dialog_OK('Directory to store Collection artwork not configured. '
                                'Configure it before you can edit artwork.')
                 return False
 
@@ -5044,7 +5172,7 @@ class Main:
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
             log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext))
             if not asset_directory:
-                kodi_dialog_OK('Directory to store {0} not configured. '.format(A.name) + \
+                kodi_dialog_OK('Directory to store Launcher artwork not configured. '
                                'Configure it before you can edit artwork.')
                 return False
 

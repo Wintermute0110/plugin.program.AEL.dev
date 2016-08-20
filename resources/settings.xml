@@ -40,6 +40,7 @@
     <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />
     <setting label="Launcher Asset directory" type="folder" id="launchers_asset_dir" default="" source="" />
     <setting label="Favourites Asset directory" type="folder" id="favourites_asset_dir" default="" source="" />
+    <setting label="Collections Asset directory" type="folder" id="collections_asset_dir" default="" source="" />
 </category>
 <category label="Advanced">
     <setting id="separator" type="lsep" label="Launcher options"/>

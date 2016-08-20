@@ -157,6 +157,24 @@ def fs_new_rom():
 
     return r
 
+def fs_new_collection():
+    c = {'id' : '',
+         'name' : '',
+         'roms_base_noext' : '',
+         'default_thumb' : 's_thumb',
+         'default_fanart' : 's_fanart',
+         'default_banner' : 's_banner',
+         'default_poster' : 's_flyer',
+         'default_clearlogo' : 's_banner',
+         's_thumb' : '',
+         's_fanart' : '',
+         's_banner' : '',
+         's_flyer' : '',
+         's_trailer' : ''
+         }
+
+    return c
+
 #
 # Note that Virtual Launchers ROMs use the Favourite ROMs data model.
 # Missing ROMs are not allowed in Favourites or Virtual Launchers.
@@ -853,6 +871,16 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append(XML_text('id', collection['id']))
             str_list.append(XML_text('name', collection['name']))
             str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
+            str_list.append(XML_text('default_thumb', collection['default_thumb']))
+            str_list.append(XML_text('default_fanart', collection['default_fanart']))
+            str_list.append(XML_text('default_banner', collection['default_banner']))
+            str_list.append(XML_text('default_poster', collection['default_poster']))
+            str_list.append(XML_text('default_clearlogo', collection['default_clearlogo']))
+            str_list.append(XML_text('s_thumb', collection['s_thumb']))
+            str_list.append(XML_text('s_fanart', collection['s_fanart']))
+            str_list.append(XML_text('s_banner', collection['s_banner']))
+            str_list.append(XML_text('s_flyer', collection['s_flyer']))
+            str_list.append(XML_text('s_trailer', collection['s_trailer']))
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
         full_string = ''.join(str_list).encode('utf-8')
@@ -890,7 +918,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
                     update_timestamp = float(control_child.text) # Convert Unicode to float
 
         elif root_element.tag == 'Collection':
-            collection = { 'id' : '', 'name' : '', 'roms_base_noext' : '' }
+            collection = fs_new_collection()
             for rom_child in root_element:
                 # By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
