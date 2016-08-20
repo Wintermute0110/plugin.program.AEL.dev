@@ -396,7 +396,7 @@ class Main:
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]['finished'] == True else 'Status: Unfinished'
         type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['m_name']),
-                             ['Edit Metadata...', 'Edit Assets/Artwork...',
+                             ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
                               finished_display, 'Delete Category'])
 
         # --- Edit category metadata ---
@@ -489,29 +489,26 @@ class Main:
                 return
 
         # --- Edit Category Asstes/Artwork ---
-        # If this function returns False no changes were made. No need to save categories XML and update container.
         elif type == 1:
             category = self.categories[categoryID]
-            status_thumb_str   = 'HAVE' if category['s_thumb'] else 'MISSING'
-            status_fanart_str  = 'HAVE' if category['s_fanart'] else 'MISSING'
-            status_banner_str  = 'HAVE' if category['s_banner'] else 'MISSING'
-            status_flyer_str   = 'HAVE' if category['s_flyer'] else 'MISSING'
+            status_thumb_str   = 'HAVE' if category['s_thumb']   else 'MISSING'
+            status_fanart_str  = 'HAVE' if category['s_fanart']  else 'MISSING'
+            status_banner_str  = 'HAVE' if category['s_banner']  else 'MISSING'
+            status_flyer_str   = 'HAVE' if category['s_flyer']   else 'MISSING'
             status_trailer_str = 'HAVE' if category['s_trailer'] else 'MISSING'
-            asset_thumb  = assets_get_asset_name_str(category['default_thumb'])
-            asset_fanart = assets_get_asset_name_str(category['default_fanart'])
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Assets/Artwork',
                                   ["Edit Thumbnail ({0})...".format(status_thumb_str),
                                    "Edit Fanart ({0})...".format(status_fanart_str),
                                    "Edit Banner ({0})...".format(status_banner_str),
                                    "Edit Flyer ({0})...".format(status_flyer_str),
-                                   "Edit Trailer ({0})...".format(status_trailer_str),
-                                   'Choose asset for Thumb (currently {0})'.format(asset_thumb), 
-                                   'Choose asset for Fanart (currently {0})'.format(asset_fanart)])
+                                   "Edit Trailer ({0})...".format(status_trailer_str)])
 
             # --- Edit Assets ---
             # >> _gui_edit_asset() returns True if image was changed
             # >> Category is changed using Python passign by assigment
+            # >> If this function returns False no changes were made. No need to save categories XML and 
+            # >> update container.
             if type2 == 0:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_THUMB, category): return
             elif type2 == 1:
@@ -522,35 +519,60 @@ class Main:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_FLYER, category): return
             elif type2 == 4:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_TRAILER, category): return
+            # >> User canceled select dialog
+            elif type2 < 0: return
 
-            # >> Choose default thumb/fanart
-            elif type2 == 5:
+        # --- Choose default thumb/fanart ---
+        elif type == 2:
+            category        = self.categories[categoryID]
+            asset_thumb     = assets_get_asset_name_str(category['default_thumb'])
+            asset_fanart    = assets_get_asset_name_str(category['default_fanart'])
+            asset_banner    = assets_get_asset_name_str(category['default_banner'])
+            asset_poster    = assets_get_asset_name_str(category['default_poster'])
+            asset_clearlogo = assets_get_asset_name_str(category['default_clearlogo'])
+            dialog = xbmcgui.Dialog()
+            type2 = dialog.select('Edit Category Assets/Artwork',
+                                  ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
+                                   'Choose asset for Fanart (currently {0})'.format(asset_fanart),
+                                   'Choose asset for Banner (currently {0})'.format(asset_banner),
+                                   'Choose asset for Poster (currently {0})'.format(asset_poster),
+                                   'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+
+            if type2 == 0:
                 dialog = xbmcgui.Dialog()
-                type3 = dialog.select('Choose default Asset for Thumb',
-                                      ['Thumbnail', 'Fanart', 'Banner', 'Flyer'])
+                type3 = dialog.select('Choose default Asset for Thumb', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(category, 'default_thumb', type3)
 
-                if   type3 == 0: self.categories[categoryID]['default_thumb'] = 's_thumb'
-                elif type3 == 1: self.categories[categoryID]['default_thumb'] = 's_fanart'
-                elif type3 == 2: self.categories[categoryID]['default_thumb'] = 's_banner'
-                elif type3 == 3: self.categories[categoryID]['default_thumb'] = 's_flyer'
-                else: return
-
-            elif type2 == 6:
+            elif type2 == 1:
                 dialog = xbmcgui.Dialog()
-                type3 = dialog.select('Choose default Asset for Fanart',
-                                      ['Thumbnail', 'Fanart', 'Banner', 'Flyer'])
-                if   type3 == 0: self.categories[categoryID]['default_fanart'] = 's_thumb'
-                elif type3 == 1: self.categories[categoryID]['default_fanart'] = 's_fanart'
-                elif type3 == 2: self.categories[categoryID]['default_fanart'] = 's_banner'
-                elif type3 == 3: self.categories[categoryID]['default_fanart'] = 's_flyer'
-                else: return
+                type3 = dialog.select('Choose default Asset for Fanart', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(category, 'default_fanart', type3)
+
+            elif type2 == 2:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Choose default Asset for Banner', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(category, 'default_banner', type3)
+
+            elif type2 == 3:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Choose default Asset for Poster', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(category, 'default_poster', type3)
+
+            elif type2 == 4:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Choose default Asset for Clearlogo', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(category, 'default_clearlogo', type3)
 
             # >> User canceled select dialog
-            elif type2 < 0:
-                return
+            elif type2 < 0: return
 
         # --- Category status ---
-        elif type == 2:
+        elif type == 3:
             finished = self.categories[categoryID]['finished']
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
@@ -558,7 +580,7 @@ class Main:
             kodi_dialog_OK('Category "{0}" status is now {1}'.format(self.categories[categoryID]['m_name'], finished_display))
 
         # --- Remove category. Also removes launchers in that category ---
-        elif type == 3:
+        elif type == 4:
             launcherID_list = []
             category_name = self.categories[categoryID]['m_name']
             for launcherID in sorted(self.launchers.iterkeys()):
@@ -596,8 +618,7 @@ class Main:
                 self.categories.pop(categoryID)
 
         # >> User pressed cancel or close dialog
-        elif type < 0:
-            return
+        elif type < 0: return
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
@@ -738,12 +759,12 @@ class Main:
         category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
         if self.launchers[launcherID]['rompath'] == '':
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata...', 'Edit Assets/Artwork...',
+                                 ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
                                   'Change Category: {0}'.format(category_name), finished_display, 
                                   'Advanced Modifications...', 'Delete Launcher'])
         else:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata...', 'Edit Assets/Artwork...',
+                                 ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
                                   'Change Category: {0}'.format(category_name), finished_display, 
                                   'Manage ROM List...', 'Manage ROM Asset directories...',
                                   'Advanced Modifications...', 'Delete Launcher'])
@@ -864,17 +885,13 @@ class Main:
             status_banner_str  = 'HAVE' if launcher['s_banner'] else 'MISSING'
             status_flyer_str   = 'HAVE' if launcher['s_flyer'] else 'MISSING'
             status_trailer_str = 'HAVE' if launcher['s_trailer'] else 'MISSING'
-            asset_thumb  = assets_get_asset_name_str(launcher['default_thumb'])
-            asset_fanart = assets_get_asset_name_str(launcher['default_fanart'])
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Launcher Assets/Artwork',
                                   ["Edit Thumbnail ({0})...".format(status_thumb_str),
                                    "Edit Fanart ({0})...".format(status_fanart_str),
                                    "Edit Banner ({0})...".format(status_banner_str),
                                    "Edit Flyer ({0})...".format(status_flyer_str),
-                                   "Edit Trailer ({0})...".format(status_trailer_str),
-                                   'Choose asset for Thumb (currently {0})'.format(asset_thumb), 
-                                   'Choose asset for Fanart (currently {0})'.format(asset_fanart)])
+                                   "Edit Trailer ({0})...".format(status_trailer_str)])
 
             # --- Edit Assets ---
             # >> _gui_edit_asset() returns True if image was changed
@@ -889,31 +906,58 @@ class Main:
                 if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_FLYER, launcher): return
             elif type2 == 4:
                 if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_TRAILER, launcher): return
+            # >> User canceled select dialog
+            elif type2 < 0: return
 
-            # >> Choose default thumb/fanart
-            elif type2 == 5:
+        # --- Choose default thumb/fanart ---
+        type_nb = type_nb + 1
+        if type == type_nb:
+            launcher        = self.categories[categoryID]
+            asset_thumb     = assets_get_asset_name_str(launcher['default_thumb'])
+            asset_fanart    = assets_get_asset_name_str(launcher['default_fanart'])
+            asset_banner    = assets_get_asset_name_str(launcher['default_banner'])
+            asset_poster    = assets_get_asset_name_str(launcher['default_poster'])
+            asset_clearlogo = assets_get_asset_name_str(launcher['default_clearlogo'])
+            dialog = xbmcgui.Dialog()
+            type2 = dialog.select('Edit Category Assets/Artwork',
+                                  ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
+                                   'Choose asset for Fanart (currently {0})'.format(asset_fanart),
+                                   'Choose asset for Banner (currently {0})'.format(asset_banner),
+                                   'Choose asset for Poster (currently {0})'.format(asset_poster),
+                                   'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+
+            if type2 == 0:
                 dialog = xbmcgui.Dialog()
-                type3 = dialog.select('Choose default Asset for Thumb',
-                                      ['Thumbnail', 'Fanart', 'Banner', 'Flyer'])
+                type3 = dialog.select('Choose default Asset for Thumb', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(launcher, 'default_thumb', type3)
 
-                if   type3 == 0: self.launchers[launcherID]['default_thumb'] = 's_thumb'
-                elif type3 == 1: self.launchers[launcherID]['default_thumb'] = 's_fanart'
-                elif type3 == 2: self.launchers[launcherID]['default_thumb'] = 's_banner'
-                elif type3 == 3: self.launchers[launcherID]['default_thumb'] = 's_flyer'
-                else: return
+            elif type2 == 1:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Choose default Asset for Fanart', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(launcher, 'default_fanart', type3)
 
-            elif type2 == 6:
-                type3 = dialog.select('Choose default Asset for Fanart',
-                                      ['Thumbnail', 'Fanart', 'Banner', 'Flyer'])
-                if   type3 == 0: self.launchers[launcherID]['default_fanart'] = 's_thumb'
-                elif type3 == 1: self.launchers[launcherID]['default_fanart'] = 's_fanart'
-                elif type3 == 2: self.launchers[launcherID]['default_fanart'] = 's_banner'
-                elif type3 == 3: self.launchers[launcherID]['default_fanart'] = 's_flyer'
-                else: return
+            elif type2 == 2:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Choose default Asset for Banner', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(launcher, 'default_banner', type3)
+
+            elif type2 == 3:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Choose default Asset for Poster', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(launcher, 'default_poster', type3)
+
+            elif type2 == 4:
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Choose default Asset for Clearlogo', DEFAULT_CATEGORY_ASSET_LIST)
+                if type3 < 0: return
+                assets_choose_category_artwork(launcher, 'default_clearlogo', type3)
 
             # >> User canceled select dialog
-            elif type2 < 0:
-                return
+            elif type2 < 0: return
 
         # --- Change launcher's Category ---
         type_nb = type_nb + 1
@@ -972,12 +1016,9 @@ class Main:
                     add_delete_NoIntro_str = 'Delete No-Intro DAT: {0}'.format(nointro_xml_file)
                 else:
                     add_delete_NoIntro_str = 'Add No-Intro XML DAT...'
-                ROM_asset_thumb  = assets_get_asset_name_str(launcher['roms_default_thumb'])
-                ROM_asset_fanart = assets_get_asset_name_str(launcher['roms_default_fanart'])
                 type2 = dialog.select('Manage Items List',
                                       ['Rescan local assets/artwork',
-                                       'Choose ROM Asset for Thumb (currently {0})'.format(ROM_asset_thumb),
-                                       'Choose ROM Asset for Fanart (currently {0})'.format(ROM_asset_fanart),
+                                       'Choose ROMs default Assets/Artwork...',
                                        add_delete_NoIntro_str, 
                                        'Audit ROMs using No-Intro XML PClone DAT',
                                        'Clear No-Intro audit status',
@@ -1032,46 +1073,47 @@ class Main:
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
 
-                # --- Choose default ROMs thumb ---
+                # --- Choose default ROMs assets ---
                 elif type2 == 1:
+                    launcher        = self.launchers[launcherID]
+                    asset_thumb     = assets_get_asset_name_str(launcher['roms_default_thumb'])
+                    asset_fanart    = assets_get_asset_name_str(launcher['roms_default_fanart'])
+                    asset_banner    = assets_get_asset_name_str(launcher['roms_default_banner'])
+                    asset_poster    = assets_get_asset_name_str(launcher['roms_default_poster'])
+                    asset_clearlogo = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
                     dialog = xbmcgui.Dialog()
-                    type3 = dialog.select('Choose ROM Asset for Thumb',
-                                          ['Title', 'Snap', 'Fanart', 'Banner', 'Clearlogo',
-                                           'Boxfront', 'Boxback', 'Cartridge', 'Flyer', 'Map'])
+                    type3 = dialog.select('Edit ROMs default Assets/Artwork',
+                                          ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
+                                           'Choose asset for Fanart (currently {0})'.format(asset_fanart),
+                                           'Choose asset for Banner (currently {0})'.format(asset_banner),
+                                           'Choose asset for Poster (currently {0})'.format(asset_poster),
+                                           'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
 
-                    if   type3 == 0: self.launchers[launcherID]['roms_default_thumb'] = 's_title'
-                    elif type3 == 1: self.launchers[launcherID]['roms_default_thumb'] = 's_snap'
-                    elif type3 == 2: self.launchers[launcherID]['roms_default_thumb'] = 's_fanart'
-                    elif type3 == 3: self.launchers[launcherID]['roms_default_thumb'] = 's_banner'
-                    elif type3 == 4: self.launchers[launcherID]['roms_default_thumb'] = 's_clearlogo'
-                    elif type3 == 5: self.launchers[launcherID]['roms_default_thumb'] = 's_boxfront'
-                    elif type3 == 6: self.launchers[launcherID]['roms_default_thumb'] = 's_boxback'
-                    elif type3 == 7: self.launchers[launcherID]['roms_default_thumb'] = 's_cartridge'
-                    elif type3 == 8: self.launchers[launcherID]['roms_default_thumb'] = 's_flyer'
-                    elif type3 == 9: self.launchers[launcherID]['roms_default_thumb'] = 's_map'
-                    else: return
-
-                # --- Choose default ROMs fanart ---
-                elif type2 == 2:
-                    dialog = xbmcgui.Dialog()
-                    type3 = dialog.select('Choose ROM Asset for Fanart',
-                                          ['Title', 'Snap', 'Fanart', 'Banner', 'Clearlogo',
-                                           'Boxfront', 'Boxback', 'Cartridge', 'Flyer', 'Map'])
-
-                    if   type3 == 0: self.launchers[launcherID]['roms_default_fanart'] = 's_title'
-                    elif type3 == 1: self.launchers[launcherID]['roms_default_fanart'] = 's_snap'
-                    elif type3 == 2: self.launchers[launcherID]['roms_default_fanart'] = 's_fanart'
-                    elif type3 == 3: self.launchers[launcherID]['roms_default_fanart'] = 's_banner'
-                    elif type3 == 4: self.launchers[launcherID]['roms_default_fanart'] = 's_clearlogo'
-                    elif type3 == 5: self.launchers[launcherID]['roms_default_fanart'] = 's_boxfront'
-                    elif type3 == 6: self.launchers[launcherID]['roms_default_fanart'] = 's_boxback'
-                    elif type3 == 7: self.launchers[launcherID]['roms_default_fanart'] = 's_cartridge'
-                    elif type3 == 8: self.launchers[launcherID]['roms_default_fanart'] = 's_flyer'
-                    elif type3 == 9: self.launchers[launcherID]['roms_default_fanart'] = 's_map'
-                    else: return
+                    if type3 == 0:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_thumb', type_s)
+                    elif type3 == 1:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_fanart', type_s)
+                    elif type3 == 2:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_banner', type_s)
+                    elif type3 == 3:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_poster', type_s)
+                    elif type3 == 4:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_clearlogo', type_s)
+                    # >> User canceled select dialog
+                    elif type3 < 0: return
 
                 # --- Add/Delete No-Intro XML parent-clone DAT ---
-                elif type2 == 3:
+                elif type2 == 2:
                     if has_NoIntro_DAT:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
@@ -1091,7 +1133,7 @@ class Main:
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
-                elif type2 == 4:
+                elif type2 == 3:
                     # Check if No-Intro XML DAT exists
                     if not has_NoIntro_DAT:
                         kodi_dialog_OK('No-Intro XML DAT not configured. Add one before ROM audit.')
@@ -1124,7 +1166,7 @@ class Main:
                     return
 
                 # --- Reset audit status ---
-                elif type2 == 5:
+                elif type2 == 4:
                     # --- Load ROMs for this launcher ---
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
@@ -1140,7 +1182,7 @@ class Main:
                     return
 
                 # --- Remove dead ROMs ---
-                elif type2 == 6:
+                elif type2 == 5:
                     ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
                     if not ret: return
                     
@@ -1160,7 +1202,7 @@ class Main:
                     return
 
                 # --- Import Items list form NFO files ---
-                elif type2 == 7:
+                elif type2 == 6:
                     # >> Load ROMs, iterate and import NFO files
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
@@ -1175,7 +1217,7 @@ class Main:
                     return
 
                 # --- Export Items list to NFO files ---
-                elif type2 == 8:
+                elif type2 == 7:
                     # >> Load ROMs for current launcher, iterate and write NFO files
                     roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
                     if not roms: return
@@ -1187,7 +1229,7 @@ class Main:
                     return
 
                 # --- Empty Launcher menu option ---
-                elif type2 == 9:
+                elif type2 == 8:
                     self._gui_empty_launcher(launcherID)
                     # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
                     # Container.Refresh at the end of this function and calling the plugin twice.
@@ -3246,14 +3288,14 @@ class Main:
 
         info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(launcher['default_thumb'])
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher['default_fanart'])
-        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(rom['default_banner'])
-        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(rom['default_poster'])
-        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(rom['default_clearlogo'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(launcher['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(launcher['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(launcher['default_clearlogo'])
         info_text += "[COLOR violet]roms_default_thumb[/COLOR]: '{0}'\n".format(launcher['roms_default_thumb'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(launcher['roms_default_fanart'])
-        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
-        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(rom['roms_default_poster'])
-        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(rom['roms_default_clearlogo'])
+        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(launcher['roms_default_banner'])
+        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(launcher['roms_default_poster'])
+        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(launcher['roms_default_clearlogo'])
 
         info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(launcher['s_thumb'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
@@ -3286,9 +3328,9 @@ class Main:
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])        
         info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(category['default_thumb'])
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(category['default_fanart'])
-        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(rom['default_banner'])
-        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(rom['default_poster'])
-        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(rom['default_clearlogo'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(category['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(category['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(category['default_clearlogo'])
         info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(category['s_thumb'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(category['s_fanart'])
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(category['s_banner'])

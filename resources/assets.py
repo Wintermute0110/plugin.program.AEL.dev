@@ -177,6 +177,30 @@ def assets_get_asset_name_str(default_asset):
     
     return asset_name_str
 
+
+DEFAULT_CATEGORY_ASSET_LIST = ['Thumbnail', 'Fanart', 'Banner', 'Flyer']
+
+def assets_choose_category_artwork(dict_object, key, index):
+    if   index == 0: dict_object[key] = 's_thumb'
+    elif index == 1: dict_object[key] = 's_fanart'
+    elif index == 2: dict_object[key] = 's_banner'
+    elif index == 3: dict_object[key] = 's_flyer'
+
+DEFAULT_ROM_ASSET_LIST = ['Title', 'Snap', 'Fanart', 'Banner', 'Clearlogo', 'Boxfront', 
+                          'Boxback', 'Cartridge', 'Flyer', 'Map']
+
+def assets_choose_category_ROM(dict_object, key, index):
+    if   index == 0: dict_object[key] = 's_title'
+    elif index == 1: dict_object[key] = 's_snap'
+    elif index == 2: dict_object[key] = 's_fanart'
+    elif index == 3: dict_object[key] = 's_banner'
+    elif index == 4: dict_object[key] = 's_clearlogo'
+    elif index == 5: dict_object[key] = 's_boxfront'
+    elif index == 6: dict_object[key] = 's_boxback'
+    elif index == 7: dict_object[key] = 's_cartridge'
+    elif index == 8: dict_object[key] = 's_flyer'
+    elif index == 9: dict_object[key] = 's_map'
+
 # -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
 # Returns an object with all the information

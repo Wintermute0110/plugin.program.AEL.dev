@@ -1,26 +1,11 @@
 # TODO #
 
- * Be able to choose thumb/fanart/poster/banner/clearlogo, not only just thumb/fanart. 
-   Reason is that Confluence uses banner instead of thumb if present and other skins
-   may have similar behaviour. In this way, user can choose which artwork to use.
-   Create new fields default_banner/default_poster/default_clearlogo.
-
- * Favourite ROMs should inherit default thumb/fanart/poster/banner/clearlogo from launcher.
+ * Collections should have thumb/fanart/banner/flyer artwork. User should be able to choose default
+   thumb/fanart/banner/poster/clearlogo.
 
  * Favourite ROMs should be able to configure default thumb/fanart/poster/banner/clearlogo on a 
    ROM-per-ROM basis. Create a menu entry in the "Edit ROM from Favourites" for this.
 
- * Add a new menu entry in "Edit Category/Launcher" to choose default artwork.
- 
- * Global searches.
-
- * Collections may be dictionaries returned by search launchers in the future. In that case, 
-   they will be unordered. At loading time, ordered collections (represented by a list
-   in JSON) will be transformed into an OrderedDict, and back to a list when writing
-   the JSON.
- 
- * Search results (Launcher or Globals) can be saved as unordered ROM Collections.
- 
  * Scraper should report wheter it supports and asset or not.
  
  * Scraper should download the correct asset or nothing at all if it does not support and specific
@@ -32,10 +17,22 @@
    be upgraded soon...
 
  * os.system(), os.open(), etc. are deprecated, and the subprocess module should be used instead
-   for all platforms. (ONLY IMPLEMENTED IN UNIX).
+   for all platforms. (ONLY IMPLEMENTED IN UNIX). A parser of arguments must be coded in order to
+   use the subprocess module.
 
 
 # DONE # 
+
+ * Add a new menu entry in "Edit Category/Launcher" to choose default artwork.
+
+ * Add a new menu entry in "Edit Launcher" to choose default artwork for ROMs.
+
+ * Be able to choose thumb/fanart/banner/poster/clearlogo, not only just thumb/fanart. 
+   Reason is that Confluence uses banner instead of thumb if present and other skins
+   may have similar behaviour. In this way, user can choose which artwork to use.
+   Create new fields default_banner/default_poster/default_clearlogo.
+
+ * Favourite ROMs should inherit default thumb/fanart/poster/banner/clearlogo from launcher.
 
  * AEL may record the stdout of the launching program. This could be very useful to solve problems
    with the emulators. (ONLY IMPLEMENTED IN UNIX).
