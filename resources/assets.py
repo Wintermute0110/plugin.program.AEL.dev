@@ -344,3 +344,4 @@ def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext):
         log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
 
     return asset_path_noext
+

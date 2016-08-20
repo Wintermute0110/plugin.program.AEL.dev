@@ -1568,3 +1568,4 @@ def fs_get_category_NFO_name(settings, category):
     log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
+
