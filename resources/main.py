@@ -1042,7 +1042,7 @@ class Main:
                     # >> Make a list of disabled artwork paths
                     enabled_asset_list = [False] * len(ROM_ASSET_LIST)
                     disabled_asset_name_list = []
-                    for i, asset in enumerate(rom_asset_list):
+                    for i, asset in enumerate(ROM_ASSET_LIST):
                         A = assets_get_info_scheme(asset)
                         if launcher[A.path_key]:
                             enabled_asset_list[i] = True
