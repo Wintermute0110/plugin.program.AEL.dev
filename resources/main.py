@@ -4047,7 +4047,7 @@ class Main:
         # --- Escape quotes and double quotes in romfile ---
         # >> This maybe useful to Android users with complex command line arguments
         if self.settings['escape_romfile']:
-            log_info("_command_run_rom Escaping romfile ' and \"")
+            log_info("_command_run_rom() Escaping romfile ' and \"")
             romfile = romfile.replace("'", "\\'")
             romfile = romfile.replace("\"", "\\\"")
 
