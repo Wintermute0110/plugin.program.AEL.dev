@@ -4072,9 +4072,11 @@ class Main:
     def _run_process(self, application, arguments, romext):
         # >> Determine platform and launch application
         # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+
+        # >> Windoze
         if sys.platform == 'win32':
             if romext == 'lnk':
-                os.system('start "" "{0}"'.format(arguments))
+                os.system('start "" "{0}"'.format(arguments).encode('utf-8'))
             else:
                 info = None
                 if application.split('.')[-1] == 'bat':
@@ -4082,15 +4084,15 @@ class Main:
                     info.dwFlags = 1
                     if self.settings['show_batch']: info.wShowWindow = 5
                     else:                           info.wShowWindow = 0
-                startproc = subprocess_hack.Popen(r'%s %s'.format(application, arguments), 
-                                                  cwd = apppath, startupinfo = info)
-                startproc.wait()
+                pr = subprocess_hack.Popen(r'%s %s'.format(application, arguments), cwd = apppath, startupinfo = info)
+                pr.wait()
+
         # >> Linux and Android
         elif sys.platform.startswith('linux'):
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
 
             # >> Old way of launching child process
-            os.system('"{0}" {1}'.format(application, arguments))
+            os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
 
             # >> New way of launching, uses subproces module. Also, save child process stdout.
             # if arguments:
@@ -4104,9 +4106,11 @@ class Main:
             #         f.close()
 
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
-        # OS X
+
+        # >> OS X
         elif sys.platform.startswith('darwin'):
-            os.system('"{0}" {1}'.format(application, arguments))
+            os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
+
         else:
             kodi_notify_warn('Cannot determine the running platform')
 
