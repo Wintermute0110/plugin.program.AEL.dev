@@ -1491,8 +1491,11 @@ class Main:
     #
     def _command_edit_rom(self, categoryID, launcherID, romID):
         # --- Load ROMs ---
-        if launcherID == VLAUNCHER_FAVOURITES_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID:
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            kodi_dialog_OK('Not coded yet. Sorry.')
+            return
         else:
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
             roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
@@ -1505,12 +1508,20 @@ class Main:
         rom_name = roms[romID]['m_name']
         finished_display = 'Status: Finished' if roms[romID]['finished'] == True else 'Status: Unfinished'
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Edit ROM {0}'.format(rom_name),
-                            ['Edit Metadata...', 'Edit Assets/Artwork...',
-                            finished_display, 'Advanced Modifications...'])
+        if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
+            type = dialog.select('Edit ROM {0}'.format(rom_name),
+                                ['Edit Metadata...', 'Edit Assets/Artwork...',
+                                 'Choose default Assets/Artwork...',
+                                 finished_display, 'Advanced Modifications...'])
+        else:
+            type = dialog.select('Edit ROM {0}'.format(rom_name),
+                                ['Edit Metadata...', 'Edit Assets/Artwork...',
+                                 finished_display, 'Advanced Modifications...'])
+
 
         # --- Edit ROM metadata ---
-        if type == 0:
+        type_nb = 0
+        if type == type_nb:
             dialog = xbmcgui.Dialog()
             desc_str = text_limit_string(roms[romID]['m_plot'], DESCRIPTION_MAXSIZE)
             type2 = dialog.select('Modify ROM metadata',
@@ -1599,9 +1610,9 @@ class Main:
                 return
 
         # --- Edit Launcher Assets/Artwork ---
-        elif type == 1:
+        type_nb = type_nb + 1
+        if type == type_nb:
             rom = roms[romID]
-            launcher = self.launchers[launcherID]
             status_title_str     = 'HAVE' if rom['s_title'] else 'MISSING'
             status_snap_str      = 'HAVE' if rom['s_snap'] else 'MISSING'
             status_fanart_str    = 'HAVE' if rom['s_fanart'] else 'MISSING'
@@ -1632,35 +1643,78 @@ class Main:
             # >> _gui_edit_asset() returns True if image was changed
             # >> ROM is changed using Python passign by assigment
             if type2 == 0:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_TITLE, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_TITLE, rom, categoryID, launcherID): return
             elif type2 == 1:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_SNAP, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_SNAP, rom, categoryID, launcherID): return
             elif type2 == 2:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_FANART, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_FANART, rom, categoryID, launcherID): return
             elif type2 == 3:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_BANNER, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_BANNER, rom, categoryID, launcherID): return
             elif type2 == 4:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_CLEARLOGO, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_CLEARLOGO, rom, categoryID, launcherID): return
             elif type2 == 5:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXFRONT, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXFRONT, rom, categoryID, launcherID): return
             elif type2 == 6:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXBACK, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXBACK, rom, categoryID, launcherID): return
             elif type2 == 7:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_CARTRIDGE, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_CARTRIDGE, rom, categoryID, launcherID): return
             elif type2 == 8:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_FLYER, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_FLYER, rom, categoryID, launcherID): return
             elif type2 == 9:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_MAP, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_MAP, rom, categoryID, launcherID): return
             elif type2 == 10:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_MANUAL, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_MANUAL, rom, categoryID, launcherID): return
             elif type2 == 11:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_TRAILER, rom, launcherID): return
+                if not self._gui_edit_asset(KIND_ROM, ASSET_TRAILER, rom, categoryID, launcherID): return
             # >> User canceled select dialog
             elif type2 < 0:
                 return
 
+        # --- Edit default assets ---
+        # >> ONLY for Favourite/Collection ROMs
+        if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
+            type_nb = type_nb + 1
+            if type == type_nb:
+                rom = roms[romID]
+                asset_thumb     = assets_get_asset_name_str(rom['roms_default_thumb'])
+                asset_fanart    = assets_get_asset_name_str(rom['roms_default_fanart'])
+                asset_banner    = assets_get_asset_name_str(rom['roms_default_banner'])
+                asset_poster    = assets_get_asset_name_str(rom['roms_default_poster'])
+                asset_clearlogo = assets_get_asset_name_str(rom['roms_default_clearlogo'])
+                dialog = xbmcgui.Dialog()
+                type3 = dialog.select('Edit ROMs default Assets/Artwork',
+                                      ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
+                                       'Choose asset for Fanart (currently {0})'.format(asset_fanart),
+                                       'Choose asset for Banner (currently {0})'.format(asset_banner),
+                                       'Choose asset for Poster (currently {0})'.format(asset_poster),
+                                       'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+
+                if type3 == 0:
+                    type_s = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_ROM_ASSET_LIST)
+                    if type_s < 0: return
+                    assets_choose_category_ROM(rom, 'roms_default_thumb', type_s)
+                elif type3 == 1:
+                    type_s = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_ROM_ASSET_LIST)
+                    if type_s < 0: return
+                    assets_choose_category_ROM(rom, 'roms_default_fanart', type_s)
+                elif type3 == 2:
+                    type_s = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_ROM_ASSET_LIST)
+                    if type_s < 0: return
+                    assets_choose_category_ROM(rom, 'roms_default_banner', type_s)
+                elif type3 == 3:
+                    type_s = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_ROM_ASSET_LIST)
+                    if type_s < 0: return
+                    assets_choose_category_ROM(rom, 'roms_default_poster', type_s)
+                elif type3 == 4:
+                    type_s = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_ROM_ASSET_LIST)
+                    if type_s < 0: return
+                    assets_choose_category_ROM(rom, 'roms_default_clearlogo', type_s)
+                # >> User canceled select dialog
+                elif type3 < 0: return
+
         # --- Edit status ---
-        elif type == 2:
+        type_nb = type_nb + 1
+        if type == type_nb:
             finished = roms[romID]['finished']
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
@@ -1668,7 +1722,8 @@ class Main:
             kodi_dialog_OK("ROM '{0}' status is now {1}".format(roms[romID]['m_name'], finished_display))
 
         # --- Advanced Modifications ---
-        elif type == 3:
+        type_nb = type_nb + 1
+        if type == type_nb:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Advanced ROM Modifications',
                                   ["Change ROM file: '{0}'".format(roms[romID]['filename']),
@@ -1703,8 +1758,7 @@ class Main:
                 return
 
         # --- User canceled select dialog ---
-        elif type < 0:
-            return
+        if type < 0: return
 
         # --- Save ROMs or Favourites ROMs ---
         # Always save if we reach this point of the function
@@ -5118,14 +5172,14 @@ class Main:
     # NOTE Caller is responsible for saving the Categories/Launchers/ROMs.
     # NOTE if image is changed container should be updated so the user sees new image instantly.
     # NOTE object_dic is edited by assigment.
-    # NOTE A ROM in Favourites has launcherID = VLAUNCHER_FAVOURITES_ID,
-    #      a ROM in a collection xxxxx. Be aware of this.
+    # NOTE A ROM in Favourites has categoryID = VCATEGORY_FAVOURITES_ID.
+    #      a ROM in a collection categoryID = VCATEGORY_COLLECTIONS_ID.
     #
     # Returns:
     #   True   Changes made. Categories/Launchers/ROMs must be saved and container updated
     #   False  No changes were made. No necessary to refresh container
     #
-    def _gui_edit_asset(self, object_kind, asset_kind, object_dic, launcherID = ''):
+    def _gui_edit_asset(self, object_kind, asset_kind, object_dic, categoryID = '', launcherID = ''):
         # --- Get asset object information ---
         # Select/Import require: object_name, A, asset_path_noext
         #
@@ -5180,13 +5234,20 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'ROM'
             ROM = misc_split_path(object_dic['filename'])
-            launcher = self.launchers[launcherID]
-            A = assets_get_info_scheme(asset_kind)
-            asset_directory  = launcher[A.path_key]
-            asset_path_noext = assets_get_path_noext_DIR(A, asset_directory, ROM.base_noext)
+            A   = assets_get_info_scheme(asset_kind)
+            if categoryID == VCATEGORY_FAVOURITES_ID:
+                log_info('_gui_edit_asset() ROM is in Favourites')
+                asset_directory = self.settings['favourites_asset_dir']
+                platform        = object_dic['platform']
+                asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, ROM.base_noext)
+            else:
+                log_info('_gui_edit_asset() ROM is in Launcher (id {0})'.format(launcherID))
+                launcher        = self.launchers[launcherID]
+                asset_directory = launcher[A.path_key]
+                platform        = launcher['platform']
+                asset_path_noext = assets_get_path_noext_DIR(A, asset_directory, ROM.base_noext)
             current_asset_path = object_dic[A.key]
             scraper_obj = self.scraper_asset
-            platform = launcher['platform']
             rom_base_noext = ROM.base_noext
             log_info('_gui_edit_asset() Editing ROM {0}'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))

@@ -1,8 +1,5 @@
 # TODO #
 
- * Collections should have thumb/fanart/banner/flyer artwork. User should be able to choose default
-   thumb/fanart/banner/poster/clearlogo.
-
  * Favourite ROMs should be able to configure default thumb/fanart/poster/banner/clearlogo on a 
    ROM-per-ROM basis. Create a menu entry in the "Edit ROM from Favourites" for this.
 
@@ -22,6 +19,9 @@
 
 
 # DONE # 
+
+ * Collections should have thumb/fanart/banner/flyer artwork. User should be able to choose default
+   thumb/fanart/banner/poster/clearlogo.
 
  * Add a new menu entry in "Edit Category/Launcher" to choose default artwork.
 
