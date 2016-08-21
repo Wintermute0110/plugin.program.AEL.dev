@@ -3931,7 +3931,7 @@ class Main:
 
         # ~~~~~ Execute external application ~~~~~
         kodi_was_playing_flag = self._run_before_execution(app_basename, minimize_flag)
-        self._run_process(application, arguments, apppath, romext)
+        self._run_process(application, arguments, apppath, app_ext)
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
