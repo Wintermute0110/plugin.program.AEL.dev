@@ -3929,9 +3929,9 @@ class Main:
             kodi_notify_warn('App {0} not found.'.format(application))
             return
 
-        # ~~~~~ Execute ~~~~~
+        # ~~~~~ Execute external application ~~~~~
         kodi_was_playing_flag = self._run_before_execution(app_basename, minimize_flag)
-        self._run_process(application, arguments, app_ext)
+        self._run_process(application, arguments, apppath, romext)
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
@@ -4066,14 +4066,14 @@ class Main:
 
         # ~~~~~ Execute external application ~~~~~
         kodi_was_playing_flag = self._run_before_execution(rombasename, minimize_flag)
-        self._run_process(application, arguments, romext)
+        self._run_process(application, arguments, apppath, romext)
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
     # Launchs a process
     # For standalone launchers rom_romext is the extension of the application (only used in Windoze)
     #
-    def _run_process(self, application, arguments, romext):
+    def _run_process(self, application, arguments, apppath, romext):
         # >> Determine platform and launch application
         # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
 
