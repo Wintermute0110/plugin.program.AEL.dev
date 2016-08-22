@@ -7,8 +7,8 @@ standalone applications is also available.
 
 ## Installing the latest released version ##
 
-Follow [this link](https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/releases) and 
-download the ZIP file of the version you want.
+Follow [this link](https://github.com/Wintermute0110/repository.wintermute0110/tree/master/plugin.program.advanced.emulator.launcher) 
+and download the ZIP file of the version you want.
 
 ## Installing the latests development version ##
 
