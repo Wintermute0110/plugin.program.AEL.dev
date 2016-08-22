@@ -4083,12 +4083,20 @@ class Main:
                 os.system('start "" "{0}"'.format(arguments).encode('utf-8'))
             else:
                 info = None
-                if application.split('.')[-1] == 'bat':
+                app_ext = application.split('.')[-1]
+                log_debug('_run_process() (Windows) app_ext = "{0}"'.format(app_ext))
+                log_debug('_run_process() (Windows) apppath = "{0}"'.format(apppath))
+                # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
+                # >> Workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
+                # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
+                if app_ext == 'bat' or app_ext == 'BAT':
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
                     if self.settings['show_batch']: info.wShowWindow = 5
                     else:                           info.wShowWindow = 0
-                pr = subprocess_hack.Popen(r'%s %s'.format(application, arguments), cwd = apppath, startupinfo = info)
+                pr = subprocess_hack.Popen(r'{0} {1}'.format(application, arguments).encode('utf-8'),
+                                           cwd = apppath.encode('utf-8'),
+                                           startupinfo = info)
                 pr.wait()
 
         # >> Linux and Android
