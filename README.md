@@ -5,17 +5,12 @@ scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata
 ROM auditing for No-Intro ROMs using No-Intro XML DATs. Launching of games and 
 standalone applications is also available.
 
-## WARNING ##
+## Installing the latest released version ##
 
-On 16/Aug/2016 (commit 2cafa23) AEL has introduced a new storage format that enables many more
-types of artwork. Unfortunately, this new model is incompatible with previous versions of AEL.
-You will notice this if you see menus dissapearing and erratic AEL behaviour. The easiest way to 
-migrate is to delete the `ADDON_DATA_DIR` directory and start fresh from scratch.
+Follow [this link](https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/releases) and 
+download the ZIP file of the version you want.
 
-Good news is that AEL now supports a lot more features (including ROM collections) and the data storage 
-format probably will not change for a while.
-
-## Installation instructions ##
+## Installing the latests development version ##
 
 It is important that you follow this instructions or Advanced Emulator Launcher won't work well.
 
