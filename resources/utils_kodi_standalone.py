@@ -37,3 +37,9 @@ def log_warning(str):
 
 def log_error(str):
     print(str)
+
+def kodi_notify(text, title = 'Advanced Emulator Launcher', time = 5000):
+    pass
+
+def kodi_notify_warn(text, title = 'Advanced Emulator Launcher warning', time = 7000):
+    pass
