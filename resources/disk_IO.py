@@ -1186,9 +1186,10 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
     try:
         xml_tree = ET.parse(AL_launchers_filepath)
     except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
-        return roms
+        log_error('ParseError exception parsing XML categories.xml')
+        log_error('ParseError: {0}'.format(str(e)))
+        kodi_notify_warn('ParseError exception reading launchers.xml')
+        return
     xml_root = xml_tree.getroot()
 
     for root_element in xml_root:
