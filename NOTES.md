@@ -1,11 +1,94 @@
 # TODO #
 
+ * Thanks for the reply Wintermute but I can't find an option to minimise anywhere. I found the 
+   option to switch to windowed mode in the advanced launcher settings but after switching to 
+   windowed mode the window was still open in the background. I have to manually minimise it to the 
+   task bar before I get full speed. 
+
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2408164#pid2408164
+ 
+ * Add nplayers metadata field?
+ 
+   Will have a look next week in detail. Billyc999 database has nplayers NFO. Will check RetroarchDB 
+   and if that also has nplayers will add a nplayers metadata field. 
+   
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2407055#pid2407055
+
+ * Do you have any plans to add multi-disk support in? I have my roms set up for Advanced Launcher, 
+   which only scanned the first disk in a set and popped up a submenu to select the other disks. It 
+   did this by looking for a "-cdXX" appended to the file name to determine the CD number, and 
+   allowed you to specify what names were shown in the interface with curly brackets (for example 
+   "Chrono Cross {English Disk 2}-cd2.cue" would show up as entry 2 in the submenu as "English Disk 2."). 
+   It was super handy for multi-disk games and hiding mods behind a sub-category.
+
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2406770#pid2406770
+ 
+   I use playlists for emulators that support them, but a lot of emulators (and PC games) don't 
+   support them and the one's that do have pretty minimal interfaces to use playlists, so it's better 
+   from a GUI perspective to be able to handle it on the Kodi side. 
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2407122#pid2407122
+ 
+ * It seems AEL can't work with .ink file shortcuts. Do you plan on working that in or should I 
+   start changing all the paths to my applications/games? 
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2405485#pid2405485
+
+   In addition to some launching some roms, I use the old Advanced Launcher to open a bunch of 
+   couch/controller-friendly Steam games that are all .lnk shortcuts placed in a folder with 
+   their corresponding box and fanart. It has been easy to drop a .lnk shortcut and some art in the 
+   folder and then scan for new additions with Advanced Launcher as I add games (damn Steam sales 
+   making me buy more games).
+   
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2405624#pid2405624
+
+ * Add Libretro artwork scraper.
+ 
+   GitHub may be a place you can consider as a source. The libretro-thumbnails database 
+   is getting respectable 
+
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2404280#pid2404280
+
+ * GameFAQs: detect when web server if blocked.
+ 
+   Blocked IP Address
+   Your IP address has been temporarily blocked due to a large number of HTTP requests. The most 
+   common causes of this issue are:
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2403674#pid2403674
+
+ * I can't see trailers in the file browser when manually adding them.
+ 
+   When scraping trailers are given the jpg filetype. I have videos stored locaaly and havr been 
+   able to viee them by editing the extension in the json but this takes too long.
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2402647#pid2402647
+
+ * Ensure all artwork paths are different! If not, artwork image files will be overwritten!
+
+ * I can't set the directories for the artwork for my roms. If I go to: C (context menu) - Edit Launcher 
+   - Manage Rom Asset Directories ... and then for example "Change Fanarts Path" (which is empty right 
+   now) the context menu is disappearing and I'm back at my collection without a chance to change/add 
+   the directory.
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2400253#pid2400253
+
+ * Issue 21: cannot add roms (release verison 0.9.0)
+
+ * Issue 14: [Feature request] Add the platforn in the gamedb url query.
+
+ * Integrate AL launchers.xml sanitizer in AEL plugin.
+
  * Scraper should report wheter it supports and asset or not.
  
  * Scraper should download the correct asset or nothing at all if it does not support and specific
    asset.
  
  * Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
+
+ * Edition of ROMs in Collections is not working at the moment.
+ 
+ * Not all fields of ROMs in Favourites can be edited.
 
  * Current patched subprocess_hack module is from Python 2.4. Current Python in Kodi is 2.7. Should
    be upgraded soon...
@@ -15,7 +98,7 @@
    use the subprocess module.
 
 
-# DONE # 
+# DONE #
 
  * Favourite ROMs should be able to configure default thumb/fanart/poster/banner/clearlogo on a 
    ROM-per-ROM basis. Create a menu entry in the "Edit ROM from Favourites" for this.
