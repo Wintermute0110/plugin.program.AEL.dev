@@ -701,7 +701,8 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
     # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
     #    exception exceptions.ValueError and launcher cannot be deleted. Deal
     #    with this exception so at least launcher can be rescanned.
-    log_verb('fs_load_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
+    log_info('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir))
+    log_info('fs_load_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     with open(roms_json_file) as file:
         try:
             roms = json.load(file)

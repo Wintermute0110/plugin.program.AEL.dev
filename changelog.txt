@@ -1,3 +1,15 @@
+[B]Advanced Emulator Launcher | version 0.9.1 | 6 September 2016[/B]
+
+FEATURE Check if there are duplicated asset directories. This will avoid overwriting of
+        artwork files!
+
+FIX Changed video supported extensions from [mpg, mpeg, avi] to [mov, divx, xvid, wmv, avi, mpg,
+    mpeg, mp4, mkv, avc].
+
+FIX Fixed issue 21: Crash when adding ROMs using _roms_add_new_rom().
+
+FIX Fixed edition of asset directories in "Edit Launcher" -- "Manage ROM Asset directories..."
+
 [B]Advanced Emulator Launcher | version 0.9.0 | 22 August 2016[/B]
 
 * Initial release.

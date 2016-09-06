@@ -53,12 +53,34 @@ ROM_ASSET_LIST = [
 ]
 
 # --- Plugin will search these file extensions for assets ---
-IMAGE_EXTS          = [u'png', u'jpg', u'gif', u'jpeg', u'bmp', u'PNG', u'JPG', u'GIF', u'JPEG', u'BMP']
-MANUAL_EXTS         = [u'pdf', u'PDF']
-TRAILER_EXTS        = [u'mpg', u'mpeg', u'avi', u'MPG', u'MPEG', u'AVI']
-IMAGE_EXTS_DIALOG   = u'.png|.jpg|.gif|.jpeg|.bmp'
-MANUAL_EXTS_DIALOG  = u'.pdf'
-TRAILER_EXTS_DIALOG = u'.mpg|.mpeg|.avi'
+# >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
+IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'jpeg', 'bmp']
+MANUAL_EXTENSIONS  = ['pdf']
+TRAILER_EXTENSIONS = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
+
+#
+# Get extensions to search for files
+# Input : ['png', 'jpg']
+# Output: ['png', 'jpg', 'PNG', 'JPG']
+def asset_get_filesearch_extension_list(exts):
+    ext_list = list(exts)
+    for ext in exts:
+        ext_list.append(ext.upper())
+
+    return ext_list
+
+#
+# Gets extensions to be used in Kodi file dialog.
+# Input : ['png', 'jpg']
+# Output: '.png|.jpg'
+def asset_get_dialog_extension_list(exts):
+    ext_string = ''
+    for ext in exts:
+        ext_string += '.' + ext + '|'
+    # >> Remove trailing '|' character
+    ext_string = ext_string[:-1]
+
+    return ext_string
 
 # -------------------------------------------------------------------------------------------------
 # Asset functions
@@ -113,7 +135,7 @@ def assets_safe_create_dir(directory):
         os.makedirs(directory)
 
 #
-# Get artwork user configured to be used as thumb/fanart/
+# Get artwork user configured to be used as thumb/fanart/... for Cateogires/Launchers
 #
 def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]
@@ -121,6 +143,9 @@ def asset_get_default_asset_Category(object_dic, object_key, default_asset = '')
 
     return thumb_path
 
+#
+# Same for ROMs
+#
 def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
     conf_asset_key = launcher[object_key]
     thumb_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
@@ -197,105 +222,105 @@ def assets_get_info_scheme(asset_kind):
         A.key         = 's_title'
         A.name        = 'Title'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_title'
     elif asset_kind == ASSET_SNAP:
         A.kind        = ASSET_SNAP
         A.key         = 's_snap'
         A.name        = 'Snap'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_snap'
     elif asset_kind == ASSET_FANART:
         A.kind        = ASSET_FANART
         A.key         = 's_fanart'
         A.name        = 'Fanart'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_fanart'
     elif asset_kind == ASSET_BANNER:
         A.kind        = ASSET_BANNER
         A.key         = 's_banner'
         A.name        = 'Banner'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_banner'
     elif asset_kind == ASSET_CLEARLOGO:
         A.kind        = ASSET_CLEARLOGO
         A.key         = 's_clearlogo'
         A.name        = 'Clearlogo'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_clearlogo'
     elif asset_kind == ASSET_BOXFRONT:
         A.kind        = ASSET_BOXFRONT
         A.key        = 's_boxfront'
         A.name       = 'Boxfront'
         A.kind_str   = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_boxfront'
     elif asset_kind == ASSET_BOXBACK:
         A.kind        = ASSET_BOXBACK
         A.key         = 's_boxback'
         A.name        = 'Boxback'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_boxback'
     elif asset_kind == ASSET_CARTRIDGE:
         A.kind        = ASSET_CARTRIDGE
         A.key         = 's_cartridge'
         A.name        = 'Cartridge'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_cartridge'
     elif asset_kind == ASSET_FLYER:
         A.kind        = ASSET_FLYER
         A.key         = 's_flyer'
         A.name        = 'Flyer'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_flyer'
     elif asset_kind == ASSET_MAP:
         A.kind        = ASSET_MAP
         A.key         = 's_map'
         A.name        = 'Map'
         A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_map'
+    elif asset_kind == ASSET_THUMB:
+        A.kind        = ASSET_THUMB
+        A.key         = 's_thumb'
+        A.name        = 'Thumb'
+        A.kind_str    = 'image'
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
+        A.path_key    = 'path_thumb'
     elif asset_kind == ASSET_MANUAL:
         A.kind        = ASSET_MANUAL
         A.key         = 's_manual'
         A.name        = 'Manual'
         A.kind_str    = 'manual'
-        A.exts        = MANUAL_EXTS
-        A.exts_dialog = MANUAL_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(MANUAL_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(MANUAL_EXTENSIONS)
         A.path_key    = 'path_manual'
     elif asset_kind == ASSET_TRAILER:
         A.kind        = ASSET_TRAILER
         A.key         = 's_trailer'
         A.name        = 'Trailer'
         A.kind_str    = 'video'
-        A.exts        = TRAILER_EXTS
-        A.exts_dialog = TRAILER_EXTS_DIALOG
+        A.exts        = asset_get_filesearch_extension_list(TRAILER_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(TRAILER_EXTENSIONS)
         A.path_key    = 'path_trailer'
-    elif asset_kind == ASSET_THUMB:
-        A.kind        = ASSET_THUMB
-        A.key         = 's_thumb'
-        A.name        = 'Thumb'
-        A.kind_str    = 'image'
-        A.exts        = IMAGE_EXTS
-        A.exts_dialog = IMAGE_EXTS_DIALOG
-        A.path_key    = 'path_thumb'
     else:
         log_error('assets_get_info_scheme_A() Wrong asset_kind = {0}'.format(asset_kind))
 
@@ -342,3 +367,66 @@ def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext):
 
     return asset_path_noext
 
+#
+# Get a list of enabled assets.
+#
+# Returns tuple:
+# configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_LIST
+# unconfigured_name_list  List of disabled asset names
+#
+def asset_get_configured_dir_list(launcher):
+    configured_bool_list   = [False] * len(ROM_ASSET_LIST)
+    unconfigured_name_list = []
+
+    # >> Check if asset paths are configured or not
+    for i, asset in enumerate(ROM_ASSET_LIST):
+        A = assets_get_info_scheme(asset)
+        configured_bool_list[i] = True if launcher[A.path_key] else False
+        if not configured_bool_list[i]: 
+            unconfigured_name_list.append(A.name)
+            log_verb('asset_get_enabled_asset_list() {0:<9} unconfigured'.format(A.name))
+        else:
+            log_debug('asset_get_enabled_asset_list() {0:<9} configured'.format(A.name))
+
+    return (configured_bool_list, unconfigured_name_list)
+
+#
+# Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
+#
+def asset_get_duplicated_dir_list(launcher):
+    duplicated_bool_list   = [False] * len(ROM_ASSET_LIST)
+    duplicated_name_list   = []
+
+    # >> Check for duplicated asset paths
+    for i, asset_i in enumerate(ROM_ASSET_LIST[:-1]):
+        A_i = assets_get_info_scheme(asset_i)
+        for j, asset_j in enumerate(ROM_ASSET_LIST[i+1:]):
+            A_j = assets_get_info_scheme(asset_j)
+            # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
+            if launcher[A_i.path_key] == launcher[A_j.path_key]:
+                duplicated_bool_list[i] = True
+                duplicated_name_list.append('{0} and {1}'.format(A_i.name, A_j.name))
+                log_info('asset_get_duplicated_asset_list() DUPLICATED {0} and {1}'.format(A_i.name, A_j.name))
+
+    return duplicated_name_list
+
+#
+# Search for local assets and put found files into a list. List all has assets as defined 
+# in ROM_ASSET_LIST.
+#
+def assets_search_local_assets(launcher, ROM, enabled_asset_list):
+    log_verb('assets_search_local_assets() Searching for ROM local assets...')
+    local_asset_list = [''] * len(ROM_ASSET_LIST)
+    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+        A = assets_get_info_scheme(asset_kind)
+        if not enabled_asset_list[i]:
+            log_verb('assets_search_local_assets() Disabled {0:<9}'.format(A.name))
+            continue
+        asset_path_noext = os.path.join(launcher[A.path_key], ROM.base_noext)
+        local_asset_list[i] = misc_look_for_file(asset_path_noext, A.exts)
+        if local_asset_list[i]:
+            log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(A.name, local_asset_list[i]))
+        else:
+            log_verb('assets_search_local_assets() Missing  {0:<9}'.format(A.name))
+
+    return local_asset_list

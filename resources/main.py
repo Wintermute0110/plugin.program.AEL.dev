@@ -1040,21 +1040,24 @@ class Main:
                     log_info('_command_edit_launcher() Rescanning local assets...')
                     launcher = self.launchers[launcherID]
 
-                    # >> Make a list of disabled artwork paths
-                    enabled_asset_list = [False] * len(ROM_ASSET_LIST)
-                    disabled_asset_name_list = []
-                    for i, asset in enumerate(ROM_ASSET_LIST):
-                        A = assets_get_info_scheme(asset)
-                        if launcher[A.path_key]:
-                            enabled_asset_list[i] = True
-                        else:
-                            False
-                            log_info('Scanning of asset {0} disabled (no path configured)'.format(A.name))
-                        if not enabled_asset_list[i]: disabled_asset_name_list.append(A.name)
-                    if disabled_asset_name_list:
-                        disable_asset_srt = ', '.join(disabled_asset_name_list)
-                        kodi_dialog_OK('Assets paths not set: {0}. '.format(disable_asset_srt) +
+                    # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
+                    (enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
+                    if unconfigured_name_list:
+                        unconfigure_asset_srt = ', '.join(unconfigured_name_list)
+                        kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigure_asset_srt) +
                                        'Asset scanner will be disabled for this/those.')
+
+                    # ~~~ Ensure there is no duplicate asset dirs ~~~
+                    # >> Cancel scanning if duplicates found
+                    duplicated_name_list = asset_get_duplicated_dir_list(launcher)
+                    if duplicated_name_list:
+                        duplicated_asset_srt = ', '.join(duplicated_name_list)
+                        log_info('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
+                        kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                                       'Change asset directories before continuing.')
+                        return
+                    else:
+                        log_info('No duplicated asset dirs found')
 
                     # >> Traverse ROM list and check local asset/artwork
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
@@ -1276,53 +1279,60 @@ class Main:
                     dir_path = dialog.browse(0, 'Select Snaps path', 'files', '', False, False, launcher['path_snap']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_snap'] = dir_path
-                elif type2 == 1:
+                elif type2 == 2:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Fanarts path', 'files', '', False, False, launcher['path_fanart']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_fanart'] = dir_path
-                elif type2 == 1:
+                elif type2 == 3:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Banners path', 'files', '', False, False, launcher['path_banner']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_banner'] = dir_path
-                elif type2 == 1:
+                elif type2 == 4:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Boxfronts path', 'files', '', False, False, launcher['path_boxfront']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_boxfront'] = dir_path
-                elif type2 == 1:
+                elif type2 == 5:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Boxbacks path', 'files', '', False, False, launcher['path_boxback']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_boxback'] = dir_path
-                elif type2 == 1:
+                elif type2 == 6:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Cartridges path', 'files', '', False, False, launcher['path_cartridge']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_cartridge'] = dir_path
-                elif type2 == 1:
+                elif type2 == 7:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Flyers path', 'files', '', False, False, launcher['path_flyer']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_flyer'] = dir_path
-                elif type2 == 1:
+                elif type2 == 8:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Maps path', 'files', '', False, False, launcher['path_map']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_map'] = dir_path
-                elif type2 == 1:
+                elif type2 == 9:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Manuals path', 'files', '', False, False, launcher['path_manual']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_manual'] = dir_path
-                elif type2 == 1:
+                elif type2 == 10:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Trailers path', 'files', '', False, False, launcher['path_trailer']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_trailer'] = dir_path
                 # >> User canceled select dialog
                 elif type2 < 0: return
+
+                # >> Check for duplicate paths and warn user.
+                duplicated_name_list = asset_get_duplicated_dir_list(self.launchers[launcherID])
+                if duplicated_name_list:
+                    duplicated_asset_srt = ', '.join(duplicated_name_list)
+                    kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                                   'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
@@ -4473,6 +4483,7 @@ class Main:
         launcher = self.launchers[launcherID]
         romext   = launcher['romext']
         rompath  = launcher['rompath']
+        log_verb('_roms_add_new_rom() launcher name "{0}"'.format(launcher['m_name']))
 
         # --- Load ROMs for this launcher ---
         roms = fs_load_ROMs(ROMS_DIR, launcher['roms_base_noext'])
@@ -4482,57 +4493,40 @@ class Main:
         extensions = '.' + romext.replace('|', '|.')
         romfile = dialog.browse(1, 'Select the ROM file', 'files', extensions, False, False, rompath).decode('utf-8')
         if not romfile: return
+        log_verb('_roms_add_new_rom() romfile "{0}"'.format(romfile))
 
         # --- Format title ---
         scan_clean_tags = self.settings['scan_clean_tags']
         ROM = misc_split_path(romfile)
         romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
 
-        # ~~~~~ Check asset paths and disable scanning for unset paths ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # >> Put variable in object memory so can be accesed in helper functions.
-        self.enabled_asset_list = [False] * len(rom_asset_list)
-        disabled_asset_name_list = []
-        for i, asset in enumerate(rom_asset_list):
-            A = assets_get_info_scheme(asset)
-            self.enabled_asset_list[i] = True if selectedLauncher[A.path_key] else False
-            if not self.enabled_asset_list[i]: 
-                disabled_asset_name_list.append(A.name)
-                log_verb('Asset directory config: {0:<9} disabled'.format(A.name))
-            else:
-                log_verb('Asset directory config: {0:<9} enabled'.format(A.name))
-        # >> Do not tell user about disabled assets when adding a single ROM
-        # if disabled_asset_name_list:
-        #     disable_asset_srt = ', '.join(disabled_asset_name_list)
-        #     kodi_dialog_OK('Assets paths not set: {0}. '.format(disable_asset_srt) +
-        #                    'Asset scanner will be disabled for this/those.')
+        # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
+        # >> Do not warn about unconfigured dirs here
+        (enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
 
-        # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        log_verb('Searching for ROM local assets...')
-        local_asset_list = [''] * len(rom_asset_list)
-        for i, asset_kind in enumerate(rom_asset_list):
-            A = assets_get_info_scheme(asset_kind)
-            if not self.enabled_asset_list[i]:
-                log_verb('Disabled {0:<9}'.format(A.name))
-                continue
-            asset_path_noext = os.path.join(launcher[A.path_key], ROM.base_noext)
-            local_asset_list[i] = misc_look_for_file(asset_path_noext, A.exts)
-            if local_asset_list[i]:
-                log_verb('Found    {0:<9} "{1}"'.format(A.name, local_asset_list[i]))
-            else:
-                log_verb('Missing  {0:<9}'.format(A.name))
+        # ~~~ Ensure there is no duplicate asset dirs ~~~
+        duplicated_name_list = asset_get_duplicated_dir_list(launcher)
+        if duplicated_name_list:
+            duplicated_asset_srt = ', '.join(duplicated_name_list)
+            log_debug('_roms_add_new_rom() Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
+            kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                           'Change asset directories before continuing.')
+            return
+        else:
+            log_debug('_roms_add_new_rom() No duplicated asset dirs found')
+
+        # ~~~ Search for local artwork/assets ~~~
+        local_asset_list = assets_search_local_assets(launcher, ROM, enabled_asset_list)
 
         # --- Create ROM data structure ---
         romdata = fs_new_rom()
-        romID = misc_generate_random_SID()
-        romdata['id']          = romID
+        romdata['id']          = misc_generate_random_SID()
         romdata['filename']    = ROM.path
         romdata['m_name']      = romname
-        romdata['thumb']       = local_thumb
-        romdata['fanart']      = local_fanart
-        for i, asset_kind in enumerate(rom_asset_list):
+        for index, asset_kind in enumerate(ROM_ASSET_LIST):
             A = assets_get_info_scheme(asset_kind)
-            romdata[A.key] = local_asset_list[i]
-        roms[romID] = romdata
+            romdata[A.key] = local_asset_list[index]
+        roms[romdata['id']] = romdata
         log_info('_roms_add_new_rom() Added a new ROM')
         log_info('_roms_add_new_rom() romID       "{0}"'.format(romdata['id']))
         log_info('_roms_add_new_rom() filename    "{0}"'.format(romdata['filename']))
@@ -4583,22 +4577,24 @@ class Main:
         self._load_metadata_scraper()
         self._load_asset_scraper()
 
-        # ~~~~~ Check asset paths and disable scanning for unset paths ~~~~~
-        # >> Put variable in object memory so can be accesed in helper functions.
-        self.enabled_asset_list = [False] * len(ROM_ASSET_LIST)
-        disabled_asset_name_list = []
-        for i, asset in enumerate(ROM_ASSET_LIST):
-            A = assets_get_info_scheme(asset)
-            self.enabled_asset_list[i] = True if selectedLauncher[A.path_key] else False
-            if not self.enabled_asset_list[i]: 
-                disabled_asset_name_list.append(A.name)
-                log_verb('Asset directory config: {0:<9} disabled'.format(A.name))
-            else:
-                log_verb('Asset directory config: {0:<9} enabled'.format(A.name))
-        if disabled_asset_name_list:
-            disable_asset_srt = ', '.join(disabled_asset_name_list)
-            kodi_dialog_OK('Assets paths not set: {0}. '.format(disable_asset_srt) +
+        # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
+        (self.enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(selectedLauncher)
+        if unconfigured_name_list:
+            unconfigure_asset_srt = ', '.join(unconfigured_name_list)
+            kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigure_asset_srt) +
                            'Asset scanner will be disabled for this/those.')
+
+        # ~~~ Ensure there is no duplicate asset dirs ~~~
+        # >> Cancel scanning if duplicates found
+        duplicated_name_list = asset_get_duplicated_dir_list(selectedLauncher)
+        if duplicated_name_list:
+            duplicated_asset_srt = ', '.join(duplicated_name_list)
+            log_info('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
+            kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                           'Change asset directories before continuing.')
+            return
+        else:
+            log_info('No duplicated asset dirs found')
 
         # --- Progress dialog ---
         # Put in in object variables so it can be access in helper functions.
@@ -4607,7 +4603,7 @@ class Main:
 
         # ~~~~~ Remove dead entries ~~~~~
         num_removed_roms = 0
-        log_debug('Launcher list contain %s items' % len(roms))
+        log_info('Launcher ROM database contain {0} items'.format(len(roms)))
         if num_roms > 0:
             log_debug('Starting dead items scan')
             i = 0
@@ -4627,7 +4623,7 @@ class Main:
                 kodi_notify('{0} dead ROMs removed successfully'.format(num_removed_roms))
                 log_info('{0} dead ROMs removed successfully'.format(num_removed_roms))
             else:
-                log_info('No dead ROMs found.')
+                log_info('No dead ROMs found')
         else:
             log_info('Launcher is empty. No dead ROM check.')
 
@@ -4652,13 +4648,13 @@ class Main:
 
         # ~~~ Now go processing file by file ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.pDialog.create('AEL - Scanning ROMs', 'Scanning {0}'.format(launcher_path))
-        log_debug('========== Processing ROMs ==========')
+        log_debug('==================== Processing ROMs ====================')
         num_new_roms = 0
         num_files_checked = 0
         for f_path in files:
             # --- Get all file name combinations ---
             ROM = misc_split_path(f_path)
-            log_debug('*** Processing File ***')
+            log_debug('========== Processing File ==========')
             log_debug('ROM.path       "{0}"'.format(ROM.path))
             # log_debug('ROM.path_noext "{0}"'.format(ROM.path_noext))
             # log_debug('ROM.base       "{0}"'.format(ROM.base))
@@ -4680,7 +4676,7 @@ class Main:
             for ext in launcher_exts.split("|"):
                 # Check if filename matchs extension
                 if ROM.ext == '.' + ext:
-                    log_debug("Expected '%s' extension detected".format(ext))
+                    log_debug("Expected '{0}' extension detected".format(ext))
                     processROM = True
             # If file does not match any of the ROM extensions skip it
             if not processROM:
@@ -4884,17 +4880,7 @@ class Main:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
         # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        log_verb('Searching for ROM local assets...')
-        local_asset_list = [''] * len(ROM_ASSET_LIST)
-        for i, asset_kind in enumerate(ROM_ASSET_LIST):
-            A = assets_get_info_scheme(asset_kind)
-            if not self.enabled_asset_list[i]:
-                log_verb('Disabled {0:<9}'.format(A.name))
-                continue
-            asset_path_noext = os.path.join(launcher[A.path_key], ROM.base_noext)
-            local_asset_list[i] = misc_look_for_file(asset_path_noext, A.exts)
-            if local_asset_list[i]: log_verb('Found    {0:<9} "{1}"'.format(A.name, local_asset_list[i]))
-            else:                   log_verb('Missing  {0:<9}'.format(A.name))
+        local_asset_list = assets_search_local_assets(launcher, ROM, self.enabled_asset_list)
 
         # ~~~ Asset scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # settings.xml -> id="scan_asset_policy" default="0" values="Local Assets|Local Assets + Scrapers|Scrapers only"

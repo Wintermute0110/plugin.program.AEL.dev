@@ -1,12 +1,5 @@
 # TODO #
 
- * Thanks for the reply Wintermute but I can't find an option to minimise anywhere. I found the 
-   option to switch to windowed mode in the advanced launcher settings but after switching to 
-   windowed mode the window was still open in the background. I have to manually minimise it to the 
-   task bar before I get full speed. 
-
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2408164#pid2408164
- 
  * Add nplayers metadata field?
  
    Will have a look next week in detail. Billyc999 database has nplayers NFO. Will check RetroarchDB 
@@ -29,7 +22,7 @@
  
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2407122#pid2407122
  
- * It seems AEL can't work with .ink file shortcuts. Do you plan on working that in or should I 
+ * It seems AEL can't work with .lnk file shortcuts. Do you plan on working that in or should I 
    start changing all the paths to my applications/games? 
  
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2405485#pid2405485
@@ -57,24 +50,6 @@
  
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2403674#pid2403674
 
- * I can't see trailers in the file browser when manually adding them.
- 
-   When scraping trailers are given the jpg filetype. I have videos stored locaaly and havr been 
-   able to viee them by editing the extension in the json but this takes too long.
- 
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2402647#pid2402647
-
- * Ensure all artwork paths are different! If not, artwork image files will be overwritten!
-
- * I can't set the directories for the artwork for my roms. If I go to: C (context menu) - Edit Launcher 
-   - Manage Rom Asset Directories ... and then for example "Change Fanarts Path" (which is empty right 
-   now) the context menu is disappearing and I'm back at my collection without a chance to change/add 
-   the directory.
- 
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2400253#pid2400253
-
- * Issue 21: cannot add roms (release verison 0.9.0)
-
  * Issue 14: [Feature request] Add the platforn in the gamedb url query.
 
  * Integrate AL launchers.xml sanitizer in AEL plugin.
@@ -99,6 +74,25 @@
 
 
 # DONE #
+
+ * Ensure all artwork directories are different! If assets have same directory then artwork image 
+   files will be overwritten!
+
+ * I can't see trailers in the file browser when manually adding them.
+ 
+   When scraping trailers are given the jpg filetype. I have videos stored locaaly and havr been 
+   able to viee them by editing the extension in the json but this takes too long.
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2402647#pid2402647
+
+ * Issue 21: cannot add roms (release verison 0.9.0)
+
+ * I can't set the directories for the artwork for my roms. If I go to: C (context menu) - Edit Launcher 
+   - Manage Rom Asset Directories ... and then for example "Change Fanarts Path" (which is empty right 
+   now) the context menu is disappearing and I'm back at my collection without a chance to change/add 
+   the directory.
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2400253#pid2400253
 
  * Favourite ROMs should be able to configure default thumb/fanart/poster/banner/clearlogo on a 
    ROM-per-ROM basis. Create a menu entry in the "Edit ROM from Favourites" for this.
