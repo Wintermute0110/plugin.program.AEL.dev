@@ -3793,22 +3793,25 @@ class Main:
         kodi_notify('Importing AL launchers.xml...')
         AL_DATA_DIR = xbmc.translatePath(os.path.join('special://profile/addon_data',
                                                       'plugin.program.advanced.launcher')).decode('utf-8')
-        LAUNCHERS_FILE_PATH  = os.path.join(AL_DATA_DIR, 'launchers.xml').decode('utf-8')
+        LAUNCHERS_FILE_PATH = os.path.join(AL_DATA_DIR, 'launchers.xml').decode('utf-8')
+        FIXED_LAUNCHERS_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'fixed_launchers.xml').decode('utf-8')
 
         # >> Check that launchers.xml exist
         if not os.path.isfile(LAUNCHERS_FILE_PATH):
             log_error("_command_import_legacy_AL() Cannot find '{0}'".format(LAUNCHERS_FILE_PATH))
             kodi_dialog_OK('launchers.xml not found! Nothing imported.')
             return
+        
+        # >> Try to correct ilegal XML characters in launchers.xml
+        # >> Also copies fixed launchers.xml into AEL data directory.
+        fs_fix_launchers_xml(LAUNCHERS_FILE_PATH, FIXED_LAUNCHERS_FILE_PATH)
 
         # >> Read launchers.xml
         AL_categories = {}
         AL_launchers = {}
         kodi_busydialog_ON()
-        fs_load_legacy_AL_launchers(LAUNCHERS_FILE_PATH, AL_categories, AL_launchers)
+        fs_load_legacy_AL_launchers(FIXED_LAUNCHERS_FILE_PATH, AL_categories, AL_launchers)
         kodi_busydialog_OFF()
-
-        # >> Sanity checks
 
         # >> Traverse AL data and create categories/launchers/ROMs
         num_categories = 0

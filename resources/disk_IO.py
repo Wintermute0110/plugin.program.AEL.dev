@@ -1173,6 +1173,58 @@ def fs_load_GameInfo_XML(xml_file):
     return games
 
 # -------------------------------------------------------------------------------------------------
+# Fixes launchers.xml invalid XML characters, if present.
+# Both argument filenames must be Unicode strings.
+# See tools/read_AL_launchers_XML.py for details of this function/
+# -------------------------------------------------------------------------------------------------
+def fs_fix_launchers_xml(launchers_xml_path, sanitized_xml_path):
+    #    
+    # A) Read launcher.xml line by line
+    # B) Substitute offending/unescaped XML characters
+    # C) Write sanitized output XML
+    #
+    log_info('fs_fix_launchers_xml() Sanitizing AL launchers.xml...')
+    log_info('fs_fix_launchers_xml() Input  {0}'.format(launchers_xml_path))
+    log_info('fs_fix_launchers_xml() Output {0}'.format(sanitized_xml_path))
+    with open(launchers_xml_path) as f_in:
+        lines = f_in.readlines()
+    f_out = open(sanitized_xml_path, 'w')
+    p = re.compile(r'^(\s+)<(.+?)>(.+)</\2>(\s+)')
+    line_counter = 1
+    for line in lines:
+        # >> line is str, convert to Unicode
+        line = line.decode('utf-8')
+
+        # >> Filter lines of type \t\t<tag>text</tag>\n
+        m = p.match(line)
+
+        if m:
+            start_blanks = m.group(1)
+            tag          = m.group(2)
+            string       = m.group(3)
+            end_blanks   = m.group(4)
+
+            # >> Escape standard XML characters
+            # >> Escape common HTML stuff
+            # >> &#xA; is line feed
+            string = string.replace('&', '&amp;')      # Must be done first
+            string = string.replace('<br>', '&#xA;')
+            string = string.replace('<br />', '&#xA;')
+            string = string.replace('"', '&quot;')
+            string = string.replace("'", '&apos;')
+            string = string.replace('<', '&lt;')
+            string = string.replace('>', '&gt;')
+
+            line = '{0}<{1}>{2}</{3}>{4}'.format(start_blanks, tag, string, tag, end_blanks)
+            # log_debug('New line   "{0}"'.format(line.rstrip()))
+
+        # >> Write line
+        f_out.write(line.encode('utf-8'))
+        line_counter += 1
+    f_out.close()
+    log_info('fs_fix_launchers_xml() Processed {0} XML lines'.format(line_counter))
+
+# -------------------------------------------------------------------------------------------------
 # Legacy AL launchers.xml parser
 #
 # Some users have made their own tools to generate launchers.xml. Ensure that all fields in official

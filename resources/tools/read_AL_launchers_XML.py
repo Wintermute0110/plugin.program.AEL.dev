@@ -90,3 +90,4 @@ print('Parsing launchers_fixed.xml with ElementTree...')
 AL_categories = {}
 AL_launchers = {}
 fs_load_legacy_AL_launchers(sanitized_xml_path, AL_categories, AL_launchers)
+
