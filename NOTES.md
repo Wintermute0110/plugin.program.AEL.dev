@@ -52,8 +52,6 @@
 
  * Issue 14: [Feature request] Add the platforn in the gamedb url query.
 
- * Integrate AL launchers.xml sanitizer in AEL plugin.
-
  * Scraper should report wheter it supports and asset or not.
  
  * Scraper should download the correct asset or nothing at all if it does not support and specific
@@ -74,6 +72,8 @@
 
 
 # DONE #
+
+ * Integrate AL launchers.xml sanitizer in AEL plugin.
 
  * Ensure all artwork directories are different! If assets have same directory then artwork image 
    files will be overwritten!

@@ -45,3 +45,4 @@ if __name__ == "__main__":
     plugin = resources.main.Main()
 
     plugin.run_plugin()
+

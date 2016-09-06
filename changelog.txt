@@ -1,5 +1,8 @@
 [B]Advanced Emulator Launcher | version 0.9.1 | 6 September 2016[/B]
 
+FEATURE Invalid characters in launchers.xml are fixed before importing AL legacy launcher/ROMs. A copy of the
+        fixed launchers.xml is placed in AEL ADDON_DATA_DIR.
+
 FEATURE Check if there are duplicated asset directories. This will avoid overwriting of
         artwork files!
 
@@ -13,3 +16,4 @@ FIX Fixed edition of asset directories in "Edit Launcher" -- "Manage ROM Asset d
 [B]Advanced Emulator Launcher | version 0.9.0 | 22 August 2016[/B]
 
 * Initial release.
+
