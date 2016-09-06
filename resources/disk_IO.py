@@ -1235,7 +1235,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
     __debug_xml_parser = True
 
     # --- Parse using ElementTree ---
-    log_verb('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath))
+    log_info('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath))
     try:
         xml_tree = ET.parse(AL_launchers_filepath)
     except ET.ParseError, e:
