@@ -52,6 +52,10 @@ ROM_ASSET_LIST = [
     ASSET_FLYER,     ASSET_MAP,      ASSET_MANUAL,  ASSET_TRAILER
 ]
 
+DEFAULT_CATEGORY_ASSET_LIST = ['Thumbnail', 'Fanart', 'Banner', 'Flyer']
+DEFAULT_ROM_ASSET_LIST      = ['Title', 'Snap', 'Fanart', 'Banner', 'Clearlogo', 'Boxfront', 
+                               'Boxback', 'Cartridge', 'Flyer', 'Map']
+
 # --- Plugin will search these file extensions for assets ---
 # >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
 IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'jpeg', 'bmp']
@@ -158,36 +162,30 @@ def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asse
 def assets_get_asset_name_str(default_asset):
     asset_name_str = u''
 
-    if   default_asset == 's_title':     asset_name_str = u'Title'
-    elif default_asset == 's_snap':      asset_name_str = u'Snap'
-    elif default_asset == 's_fanart':    asset_name_str = u'Fanart'
-    elif default_asset == 's_banner':    asset_name_str = u'Banner'
-    elif default_asset == 's_clearlogo': asset_name_str = u'Clearlogo'
-    elif default_asset == 's_boxfront':  asset_name_str = u'Boxfront'
-    elif default_asset == 's_boxback':   asset_name_str = u'Boxback'
-    elif default_asset == 's_cartridge': asset_name_str = u'Cartridge'
-    elif default_asset == 's_flyer':     asset_name_str = u'Flyer'
-    elif default_asset == 's_map':       asset_name_str = u'Map'
-    elif default_asset == 's_manual':    asset_name_str = u'Manual'
-    elif default_asset == 's_trailer':   asset_name_str = u'Trailer'
-    elif default_asset == 's_thumb':     asset_name_str = u'Thumb'
+    if   default_asset == 's_title':     asset_name_str = 'Title'
+    elif default_asset == 's_snap':      asset_name_str = 'Snap'
+    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
+    elif default_asset == 's_banner':    asset_name_str = 'Banner'
+    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
+    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
+    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
+    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
+    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
+    elif default_asset == 's_map':       asset_name_str = 'Map'
+    elif default_asset == 's_manual':    asset_name_str = 'Manual'
+    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
+    elif default_asset == 's_thumb':     asset_name_str = 'Thumb'
     else:
         kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
         log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
     
     return asset_name_str
 
-
-DEFAULT_CATEGORY_ASSET_LIST = ['Thumbnail', 'Fanart', 'Banner', 'Flyer']
-
 def assets_choose_category_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_thumb'
     elif index == 1: dict_object[key] = 's_fanart'
     elif index == 2: dict_object[key] = 's_banner'
     elif index == 3: dict_object[key] = 's_flyer'
-
-DEFAULT_ROM_ASSET_LIST = ['Title', 'Snap', 'Fanart', 'Banner', 'Clearlogo', 'Boxfront', 
-                          'Boxback', 'Cartridge', 'Flyer', 'Map']
 
 def assets_choose_category_ROM(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_title'

@@ -465,7 +465,7 @@ class Main:
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
                 # >> Rating not set, empty string
-                if rating == 0,
+                if rating == 0:
                     self.categories[categoryID]['m_rating'] = ''
                 elif rating >= 1 and rating <= 11:
                     self.categories[categoryID]['m_rating'] = '{0}'.format(rating - 1)
@@ -874,7 +874,7 @@ class Main:
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
                 # >> Rating not set, empty string
-                if rating == 0,
+                if rating == 0:
                     self.launchers[launcherID]['m_rating'] = ''
                 elif rating >= 1 and rating <= 11:
                     self.launchers[launcherID]['m_rating'] = '{0}'.format(rating - 1)
@@ -1627,7 +1627,7 @@ class Main:
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
                 # >> Rating not set, empty string
-                if rating == 0,
+                if rating == 0:
                     roms[romID]['m_rating'] = ''
                 elif rating >= 1 and rating <= 11:
                     roms[romID]['m_rating'] = '{0}'.format(rating - 1)
