@@ -58,7 +58,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
     def set_options(self, region, imgsize):
         pass
 
-    def supports_asset(asset_kind):
+    def supports_asset(self, asset_kind):
         if asset_kind == ASSET_SNAP     or asset_kind == ASSET_FANART or \
            asset_kind == ASSET_BANNER   or asset_kind == ASSET_CLEARLOGO or \
            asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
@@ -92,7 +92,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
                 images.append({'name'     : 'Screenshot ' + str(index + 1), 
                                'URL'      : 'http://thegamesdb.net/banners/screenshots/' + screenshots[index][1],
                                'disp_URL' : 'http://thegamesdb.net/banners/screenshots/' + screenshots[index][1]})
-        
+
         elif asset_kind == ASSET_FANART:
             fanarts = re.findall('<original (.*?)">fanart/(.*?)</original>', page_data)
             for index, fanart in enumerate(fanarts):
@@ -112,10 +112,10 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         elif asset_kind == ASSET_CLEARLOGO:
             clearlogos = re.findall('<clearlogo (.*?)">(.*?)</clearlogo>', page_data)
             for index, clearlogo in enumerate(clearlogos):
-                log_debug('thumb_TheGamesDB::get_images Adding banner #{0} {1}'.format(str(index + 1), clearlogo[1]))
+                log_debug('thumb_TheGamesDB::get_images Adding clearlogo #{0} {1}'.format(str(index + 1), clearlogo[1]))
                 images.append({'name'     : 'Clearlogo ' + str(index + 1), 
-                               'URL'      : 'http://thegamesdb.net/clearlogo/' + clearlogo[1],
-                               'disp_URL' : 'http://thegamesdb.net/clearlogo/' + clearlogo[1]})
+                               'URL'      : 'http://thegamesdb.net/banners/' + clearlogo[1],
+                               'disp_URL' : 'http://thegamesdb.net/banners/' + clearlogo[1]})
 
         elif asset_kind == ASSET_BOXFRONT:
             boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page_data)
