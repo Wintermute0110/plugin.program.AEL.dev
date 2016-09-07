@@ -5049,7 +5049,7 @@ class Main:
         self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
         # --- Grab list of images for the selected game ---
-        image_list = scraper_obj.get_images(results[selectgame])
+        image_list = scraper_obj.get_images(results[selectgame], asset_kind)
         log_verb('{0} scraper returned {1} images'.format(A.name, len(image_list)))
         if not image_list:
             log_debug('{0} scraper get_images() returned no images.'.format(A.name))
@@ -5338,7 +5338,7 @@ class Main:
             log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory))
             log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext))
             log_debug('_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path))            
-            log_debug('_gui_edit_asset() scraper            "{0}"'.format(scraper_obj.fancy_name))
+            log_debug('_gui_edit_asset() scraper            "{0}"'.format(scraper_obj.name))
             log_debug('_gui_edit_asset() platform           "{0}"'.format(platform))
             log_debug('_gui_edit_asset() rom_base_noext     "{0}"'.format(rom_base_noext))
 
@@ -5353,10 +5353,19 @@ class Main:
             kodi_notify_warn("Unknown object_kind '{0}'".format(object_kind))
             return False
 
+        # --- Only enable scraper if support the asset ---
+        scraper_enabled = False
+        if scraper_obj.supports_asset(asset_kind):
+            scraper_enabled = True
+            log_verb('Scraper {0} support scraping {1}'.format(scraper_obj.name, A.name))
+        else:
+            log_verb('Scraper {0} does not support scraping {1}'.format(scraper_obj.name, A.name))
+            log_verb('Scraper DISABLED')
+
         # --- Show image editing options ---
         # >> Scrape only supported for ROMs (for the moment)
         dialog = xbmcgui.Dialog()
-        if object_kind == KIND_ROM:
+        if object_kind == KIND_ROM and scraper_enabled:
             type2 = dialog.select('Change {0} {1}'.format(A.name, A.kind_str),
                                  ['Select local {0}'.format(A.kind_str, A.kind_str),
                                   'Import local {0} (copy and rename)'.format(A.kind_str),
@@ -5472,7 +5481,7 @@ class Main:
             # --- Grab list of images for the selected game ---
             # >> Prevent race conditions
             kodi_busydialog_ON()
-            image_list = scraper_obj.get_images(results[selectgame])
+            image_list = scraper_obj.get_images(results[selectgame], asset_kind)
             kodi_busydialog_OFF()
             log_verb('{0} scraper returned {1} images'.format(A.name, len(image_list)))
             if not image_list:
