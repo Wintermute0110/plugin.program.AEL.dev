@@ -74,7 +74,7 @@ class Scraper_Asset(Scraper):
         raise NotImplementedError('Subclass must implement set_options() abstract method')
 
     # Returns True if scraper supports the asset, False otherwise.
-    def supports_asset(asset_kind):
+    def supports_asset(self, asset_kind):
         raise NotImplementedError('Subclass must implement supports_asset() abstract method')
         
     # Obtain a set of images of the given kind, based on a previous search with get_search()
@@ -98,3 +98,4 @@ from scrap_asset import *
 # settings configuration in settings.xml or bad things will happen.
 scrapers_metadata = [ metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs() ]
 scrapers_asset    = [ asset_TheGamesDB(), asset_GameFAQs() ]
+

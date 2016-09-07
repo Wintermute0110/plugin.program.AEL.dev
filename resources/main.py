@@ -1672,32 +1672,48 @@ class Main:
         type_nb = type_nb + 1
         if type == type_nb:
             rom = roms[romID]
-            status_title_str     = 'HAVE' if rom['s_title'] else 'MISSING'
-            status_snap_str      = 'HAVE' if rom['s_snap'] else 'MISSING'
-            status_fanart_str    = 'HAVE' if rom['s_fanart'] else 'MISSING'
-            status_banner_str    = 'HAVE' if rom['s_banner'] else 'MISSING'
-            status_clearlogo_str = 'HAVE' if rom['s_clearlogo'] else 'MISSING'
-            status_boxfront_str  = 'HAVE' if rom['s_boxfront'] else 'MISSING'
-            status_boxback_str   = 'HAVE' if rom['s_boxback'] else 'MISSING'
-            status_cartridge_str = 'HAVE' if rom['s_cartridge'] else 'MISSING'
-            status_flyer_str     = 'HAVE' if rom['s_flyer'] else 'MISSING'
-            status_map_str       = 'HAVE' if rom['s_map'] else 'MISSING'
-            status_manual_str    = 'HAVE' if rom['s_manual'] else 'MISSING'
-            status_trailer_str   = 'HAVE' if rom['s_trailer'] else 'MISSING'
+            # >> Artwork status
+            status_title_str     = '[COLOR green]HAVE[/COLOR]' if rom['s_title'] else 'MISSING'
+            status_snap_str      = '[COLOR green]HAVE[/COLOR]' if rom['s_snap'] else 'MISSING'
+            status_fanart_str    = '[COLOR green]HAVE[/COLOR]' if rom['s_fanart'] else 'MISSING'
+            status_banner_str    = '[COLOR green]HAVE[/COLOR]' if rom['s_banner'] else 'MISSING'
+            status_clearlogo_str = '[COLOR green]HAVE[/COLOR]' if rom['s_clearlogo'] else 'MISSING'
+            status_boxfront_str  = '[COLOR green]HAVE[/COLOR]' if rom['s_boxfront'] else 'MISSING'
+            status_boxback_str   = '[COLOR green]HAVE[/COLOR]' if rom['s_boxback'] else 'MISSING'
+            status_cartridge_str = '[COLOR green]HAVE[/COLOR]' if rom['s_cartridge'] else 'MISSING'
+            status_flyer_str     = '[COLOR green]HAVE[/COLOR]' if rom['s_flyer'] else 'MISSING'
+            status_map_str       = '[COLOR green]HAVE[/COLOR]' if rom['s_map'] else 'MISSING'
+            status_manual_str    = '[COLOR green]HAVE[/COLOR]' if rom['s_manual'] else 'MISSING'
+            status_trailer_str   = '[COLOR green]HAVE[/COLOR]' if rom['s_trailer'] else 'MISSING'
+            # >> Scraper artwork support status
+            scraper_obj = self.scraper_asset
+            scraper_title_str     = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_TITLE) else 'NO'
+            scraper_snap_str      = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_SNAP) else 'NO'
+            scraper_fanart_str    = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_FANART) else 'NO'
+            scraper_banner_str    = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_BANNER) else 'NO'
+            scraper_clearlogo_str = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_CLEARLOGO) else 'NO'
+            scraper_boxfront_str  = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_BOXFRONT) else 'NO'
+            scraper_boxback_str   = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_BOXBACK) else 'NO'
+            scraper_cartridge_str = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_CARTRIDGE) else 'NO'
+            scraper_flyer_str     = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_FLYER) else 'NO'
+            scraper_map_str       = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_MAP) else 'NO'
+            scraper_manual_str    = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_MANUAL) else 'NO'
+            scraper_trailer_str   = '[COLOR green]OK[/COLOR]' if scraper_obj.supports_asset(ASSET_TRAILER) else 'NO'
+            # >> Make menu
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Launcher Assets/Artwork',
-                                  ["Edit Title ({0})...".format(status_title_str),
-                                   "Edit Snap ({0})...".format(status_snap_str),
-                                   "Edit Fanart ({0})...".format(status_fanart_str),
-                                   "Edit Banner ({0})...".format(status_banner_str),
-                                   "Edit Clearlogo ({0})...".format(status_clearlogo_str),
-                                   "Edit Boxfront ({0})...".format(status_boxfront_str),
-                                   "Edit Boxback ({0})...".format(status_boxback_str),
-                                   "Edit Cartridge ({0})...".format(status_cartridge_str),
-                                   "Edit Flyer ({0})...".format(status_flyer_str),
-                                   "Edit Map ({0})...".format(status_map_str),
-                                   "Edit Manual ({0})...".format(status_manual_str),
-                                   "Edit Trailer ({0})...".format(status_trailer_str)])
+                                  ["Edit Title <{0}> <Scraper {1}>...".format(status_title_str, scraper_title_str),
+                                   "Edit Snap <{0}> <Scraper {1}>...".format(status_snap_str, scraper_snap_str),
+                                   "Edit Fanart <{0}> <Scraper {1}>...".format(status_fanart_str, scraper_fanart_str),
+                                   "Edit Banner <{0}> <Scraper {1}>...".format(status_banner_str, scraper_banner_str),
+                                   "Edit Clearlogo <{0}> <Scraper {1}>...".format(status_clearlogo_str, scraper_clearlogo_str),
+                                   "Edit Boxfront <{0}> <Scraper {1}>...".format(status_boxfront_str, scraper_boxfront_str),
+                                   "Edit Boxback <{0}> <Scraper {1}>...".format(status_boxback_str, scraper_boxback_str),
+                                   "Edit Cartridge <{0}> <Scraper {1}>...".format(status_cartridge_str, scraper_cartridge_str),
+                                   "Edit Flyer <{0}> <Scraper {1}>...".format(status_flyer_str, scraper_flyer_str),
+                                   "Edit Map <{0}> <Scraper {1}>...".format(status_map_str, scraper_map_str),
+                                   "Edit Manual <{0}> <Scraper {1}>...".format(status_manual_str, scraper_manual_str),
+                                   "Edit Trailer <{0}> <Scraper {1}>...".format(status_trailer_str, scraper_trailer_str)])
             # --- Edit Assets ---
             # >> _gui_edit_asset() returns True if image was changed
             # >> ROM is changed using Python passign by assigment
