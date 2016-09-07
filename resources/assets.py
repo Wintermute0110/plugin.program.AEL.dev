@@ -402,6 +402,8 @@ def asset_get_duplicated_dir_list(launcher):
         A_i = assets_get_info_scheme(asset_i)
         for j, asset_j in enumerate(ROM_ASSET_LIST[i+1:]):
             A_j = assets_get_info_scheme(asset_j)
+            # >> Exclude unconfigured assets (empty strings).
+            if not launcher[A_i.path_key] or not launcher[A_j.path_key]: continue
             # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
             if launcher[A_i.path_key] == launcher[A_j.path_key]:
                 duplicated_bool_list[i] = True

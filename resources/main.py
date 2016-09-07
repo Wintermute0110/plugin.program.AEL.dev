@@ -170,7 +170,7 @@ class Main:
         # If no com parameter display categories. Display categories listbox (addon root directory)
         if 'com' not in args:
             self._command_render_categories()
-            log_debug('AEL exiting after rendering Categories (addon root)')
+            log_debug('Advanced Emulator Launcher exit (addon root)')
             return
 
         # There is a command to process
@@ -320,9 +320,6 @@ class Main:
         self.settings['log_level']               = int(__addon_obj__.getSetting('log_level'))
         self.settings['show_batch_window']       = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
 
-        # --- Example of how to transform a number into string ---
-        # self.settings['game_region'] = ['World', 'Europe', 'Japan', 'USA'][int(__addon_obj__.getSetting('game_region'))]
-
         # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR
         if self.settings['launchers_asset_dir']   == '': self.settings['launchers_asset_dir']   = DEFAULT_LAUN_ASSET_DIR
@@ -416,6 +413,7 @@ class Main:
                                    'Import metadata from NFO (browse NFO)...',
                                    "Edit Title: '{0}'".format(self.categories[categoryID]['m_name']),
                                    "Edit Genre: '{0}'".format(self.categories[categoryID]['m_genre']),
+                                   "Edit Rating: '{0}'".format(self.categories[categoryID]['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
                                    'Save metadata to NFO file'])
             # --- Import launcher metadata from NFO file (automatic) ---
@@ -451,7 +449,7 @@ class Main:
                     kodi_dialog_OK("Category name '{0}' not changed".format(self.categories[categoryID]['m_name']))
                     return
 
-            # Edition of the category genre
+            # --- Edition of the category genre ---
             elif type2 == 3:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_genre'], 'Edit Genre')
                 keyboard.doModal()
@@ -461,8 +459,22 @@ class Main:
                     kodi_dialog_OK("Category genre '{0}' not changed".format(self.categories[categoryID]['m_genre']))
                     return
 
-            # Edition of the plot (description)
+            # --- Edition of the category rating ---
             elif type2 == 4:
+                rating = dialog.select('Edit Category Rating',
+                                      ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
+                                       'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
+                # >> Rating not set, empty string
+                if rating == 0,
+                    self.categories[categoryID]['m_rating'] = ''
+                elif rating >= 1 and rating <= 11:
+                    self.categories[categoryID]['m_rating'] = '{0}'.format(rating - 1)
+                elif rating < 0:
+                    kodi_dialog_OK("Category rating '{0}' not changed".format(self.categories[categoryID]['m_rating']))
+                    return
+
+            # --- Edition of the plot (description) ---
+            elif type2 == 5:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_plot'], 'Edit Plot')
                 keyboard.doModal()
                 if keyboard.isConfirmed():
@@ -486,7 +498,7 @@ class Main:
             #         return
 
             # --- Export launcher metadata to NFO file ---
-            elif type2 == 5:
+            elif type2 == 6:
                 NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
                 fs_export_category_NFO(NFO_file, self.categories[categoryID])
                 # >> No need to save launchers
@@ -791,6 +803,7 @@ class Main:
                                    "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
                                    "Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
                                    "Edit Studio: '{0}'".format(self.launchers[launcherID]['m_studio']),
+                                   "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
                                    "Edit Plot: '{0}'".format(desc_str),
                                    'Save metadata to NFO file'])
             # --- Scrape launcher metadata ---
@@ -827,36 +840,50 @@ class Main:
                     title = self.launchers[launcherID]['m_name']
                 self.launchers[launcherID]['m_name'] = title.rstrip()
 
-            # Selection of the launcher platform from AEL "official" list
+            # --- Selection of the launcher platform from AEL "official" list ---
             elif type2 == 4:
                 dialog = xbmcgui.Dialog()
                 sel_platform = dialog.select('Select the platform', AEL_platform_list)
                 if sel_platform < 0: return
                 self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
 
-            # Edition of the launcher release date (year)
+            # --- Edition of the launcher release date (year) ---
             elif type2 == 5:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['m_year'] = keyboard.getText().decode('utf-8')
 
-            # Edition of the launcher genre
+            # --- Edition of the launcher genre ---
             elif type2 == 6:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_genre'], 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['m_genre'] = keyboard.getText().decode('utf-8')
 
-            # Edition of the launcher studio name
+            # --- Edition of the launcher studio ---
             elif type2 == 7:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_studio'], 'Edit studio')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['m_studio'] = keyboard.getText().decode('utf-8')
 
-            # --- Edit launcher description (plot) ---
+            # --- Edition of the launcher rating ---
             elif type2 == 8:
+                rating = dialog.select('Edit Launcher Rating',
+                                      ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
+                                       'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
+                # >> Rating not set, empty string
+                if rating == 0,
+                    self.launchers[launcherID]['m_rating'] = ''
+                elif rating >= 1 and rating <= 11:
+                    self.launchers[launcherID]['m_rating'] = '{0}'.format(rating - 1)
+                elif rating < 0:
+                    kodi_dialog_OK("Launcher rating '{0}' not changed".format(self.launchers[launcherID]['m_rating']))
+                    return
+
+            # --- Edit launcher description (plot) ---
+            elif type2 == 9:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_plot'], 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
@@ -874,7 +901,7 @@ class Main:
             #         return
 
             # --- Export launcher metadata to NFO file ---
-            elif type2 == 9:
+            elif type2 == 10:
                 NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
                 fs_export_launcher_NFO(NFO_file, self.launchers[launcherID])
                 # >> No need to save launchers
@@ -1261,6 +1288,7 @@ class Main:
                                        "Change Snaps path: '{0}'".format(launcher['path_snap']),
                                        "Change Fanarts path '{0}'".format(launcher['path_fanart']),
                                        "Change Banners path: '{0}'".format(launcher['path_banner']),
+                                       "Change Clearlogos path: '{0}'".format(launcher['path_clearlogo']),
                                        "Change Boxfronts path: '{0}'".format(launcher['path_boxfront']),
                                        "Change Boxbacks path: '{0}'".format(launcher['path_boxback']),
                                        "Change Cartridges path: '{0}'".format(launcher['path_cartridge']),
@@ -1291,35 +1319,40 @@ class Main:
                     self.launchers[launcherID]['path_banner'] = dir_path
                 elif type2 == 4:
                     dialog = xbmcgui.Dialog()
+                    dir_path = dialog.browse(0, 'Select Clearlogos path', 'files', '', False, False, launcher['path_clearlogo']).decode('utf-8')
+                    if not dir_path: return
+                    self.launchers[launcherID]['path_clearlogo'] = dir_path
+                elif type2 == 5:
+                    dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Boxfronts path', 'files', '', False, False, launcher['path_boxfront']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_boxfront'] = dir_path
-                elif type2 == 5:
+                elif type2 == 6:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Boxbacks path', 'files', '', False, False, launcher['path_boxback']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_boxback'] = dir_path
-                elif type2 == 6:
+                elif type2 == 7:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Cartridges path', 'files', '', False, False, launcher['path_cartridge']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_cartridge'] = dir_path
-                elif type2 == 7:
+                elif type2 == 8:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Flyers path', 'files', '', False, False, launcher['path_flyer']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_flyer'] = dir_path
-                elif type2 == 8:
+                elif type2 == 9:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Maps path', 'files', '', False, False, launcher['path_map']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_map'] = dir_path
-                elif type2 == 9:
+                elif type2 == 10:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Manuals path', 'files', '', False, False, launcher['path_manual']).decode('utf-8')
                     if not dir_path: return
                     self.launchers[launcherID]['path_manual'] = dir_path
-                elif type2 == 10:
+                elif type2 == 11:
                     dialog = xbmcgui.Dialog()
                     dir_path = dialog.browse(0, 'Select Trailers path', 'files', '', False, False, launcher['path_trailer']).decode('utf-8')
                     if not dir_path: return
@@ -1540,8 +1573,9 @@ class Main:
                                    'Import metadata from NFO file',
                                    "Edit Title: '{0}'".format(roms[romID]['m_name']),
                                    "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
-                                   "Edit Studio: '{0}'".format(roms[romID]['m_studio']),
                                    "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
+                                   "Edit Studio: '{0}'".format(roms[romID]['m_studio']),
+                                   "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
                                    "Edit Plot: '{0}'".format(desc_str),
                                    'Load Plot from TXT file ...',
                                    'Save metadata to NFO file'])
@@ -1550,14 +1584,14 @@ class Main:
                 # >> If this returns False there were no changes so no need to save ROMs XML.
                 if not self._gui_scrap_rom_metadata(roms, romID, launcherID): return
 
-            # Import ROM metadata from NFO file
+            # --- Import ROM metadata from NFO file ---
             elif type2 == 1:
                 if launcherID == VLAUNCHER_FAVOURITES_ID:
                     kodi_dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
                     return
                 if not fs_import_ROM_NFO(roms, romID): return
 
-            # Edit of the rom title
+            # --- Edit of the rom title ---
             elif type2 == 2:
                 keyboard = xbmc.Keyboard(roms[romID]['m_name'], 'Edit title')
                 keyboard.doModal()
@@ -1566,36 +1600,50 @@ class Main:
                 if title == '': title = roms[romID]['m_name']
                 roms[romID]['m_name'] = title.rstrip()
 
-            # Edition of the rom release year
+            # --- Edition of the rom release year ---
             elif type2 == 3:
                 keyboard = xbmc.Keyboard(roms[romID]['m_year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['m_year'] = keyboard.getText().decode('utf-8')
 
-            # Edition of the rom studio name
+            # --- Edition of the rom game genre ---
             elif type2 == 4:
-                keyboard = xbmc.Keyboard(roms[romID]['m_studio'], 'Edit studio')
-                keyboard.doModal()
-                if not keyboard.isConfirmed(): return
-                roms[romID]['m_studio'] = keyboard.getText().decode('utf-8')
-
-            # Edition of the rom game genre
-            elif type2 == 5:
                 keyboard = xbmc.Keyboard(roms[romID]['m_genre'], 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['m_genre'] = keyboard.getText().decode('utf-8')
 
-            # Edit ROM description (plot)
+            # --- Edition of the rom studio ---
+            elif type2 == 5:
+                keyboard = xbmc.Keyboard(roms[romID]['m_studio'], 'Edit studio')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                roms[romID]['m_studio'] = keyboard.getText().decode('utf-8')
+
+            # --- Edition of the ROM rating ---
             elif type2 == 6:
+                rating = dialog.select('Edit ROM Rating',
+                                      ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
+                                       'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
+                # >> Rating not set, empty string
+                if rating == 0,
+                    roms[romID]['m_rating'] = ''
+                elif rating >= 1 and rating <= 11:
+                    roms[romID]['m_rating'] = '{0}'.format(rating - 1)
+                elif rating < 0:
+                    kodi_dialog_OK("ROM rating '{0}' not changed".format(roms[romID]['m_rating']))
+                    return
+
+            # --- Edit ROM description (plot) ---
+            elif type2 == 7:
                 keyboard = xbmc.Keyboard(roms[romID]['m_plot'], 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['m_plot'] = keyboard.getText().decode('utf-8')
 
-            # Import of the rom game plot from TXT file
-            elif type2 == 7:
+            # --- Import of the rom game plot from TXT file ---
+            elif type2 == 8:
                 dialog = xbmcgui.Dialog()
                 text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
                                           'files', '.txt|.dat', False, False).decode('utf-8')
@@ -1607,8 +1655,8 @@ class Main:
                     kodi_dialog_OK("Launcher plot '{0}' not changed".format(desc_str))
                     return
 
-            # Export ROM metadata to NFO file
-            elif type2 == 8:
+            # --- Export ROM metadata to NFO file ---
+            elif type2 == 9:
                 if launcherID == VLAUNCHER_FAVOURITES_ID:
                     kodi_dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
                     return
