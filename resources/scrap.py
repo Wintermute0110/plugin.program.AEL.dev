@@ -31,7 +31,6 @@ DEBUG_SCRAPERS = 1
 #--------------------------------------------------------------------------------------------------
 class Scraper:
     name = ''        # Short name to refer to object in code
-    fancy_name = ''  # Fancy name for GUI and logs
 
     # This function is called when the user wants to search a whole list of games.
     #   search_string   Online scrapers use this
@@ -43,9 +42,7 @@ class Scraper:
     #   game = {'id' : str,             String that allows to calculate the game URL (ID number) or the URL itself.
     #           'display_name' : str,   Scraped name of the ROM/Launcher/Game.
     #            ... }
-    #
-    #   game dictionary may have more fields depending on the scraper (which are 
-    #   not used outside that scraper)
+    #   game dictionary may have more fields depending on the scraper (which are not used outside that scraper)
     def get_search(self, search_string, rom_base_noext, platform):
         raise NotImplementedError('Subclass must implement get_search() abstract method')
 
@@ -76,10 +73,11 @@ class Scraper_Asset(Scraper):
     def set_options(self, region, imgsize):
         raise NotImplementedError('Subclass must implement set_options() abstract method')
 
-    # This function is called when the user wants to search a whole list of
-    # thumbs. Note that gamesys is AEL official system name, and must be
-    # translated to the scraper system name, which may be different.
-    # Example: AEL name 'Sega MegaDrive' -> Scraper name 'Sega Genesis'
+    # Returns True if scraper supports the asset, False otherwise.
+    def supports_asset(asset_kind):
+        raise NotImplementedError('Subclass must implement supports_asset() abstract method')
+        
+    # Obtain a set of images of the given kind, based on a previous search with get_search()
     #
     # Returns:
     #   images = [image, image, ... ]
@@ -87,7 +85,7 @@ class Scraper_Asset(Scraper):
     #            'URL'      : str,   URL to download image
     #            'disp_URL' : str}   URL of a thumb to display the image. Some websites have small size 
     #                                images for preview.If not available same as URL
-    def get_images(self, game):
+    def get_images(self, game, asset_kind):
         raise NotImplementedError('Subclass must implement get_images() abstract method')
 
 #--------------------------------------------------------------------------------------------------

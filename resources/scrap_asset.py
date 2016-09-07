@@ -22,6 +22,7 @@ import sys, urllib, urllib2, re
 # --- AEL modules ---
 from scrap import *
 from scrap_info import *
+from assets import *
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing, but it's very fast :)
@@ -29,16 +30,18 @@ from scrap_info import *
 # ----------------------------------------------------------------------------- 
 class asset_NULL(Scraper_Asset):
     def __init__(self):
-        self.name       = 'NULL'
-        self.fancy_name = 'NULL asset scraper'
-
-    def set_options(self, region, imgsize):
-        pass
+        self.name = 'NULL'
 
     def get_search(self, search_string, rom_base_noext, platform):
         return []
 
-    def get_images(self, game):
+    def set_options(self, region, imgsize):
+        pass
+
+    def supports_asset(asset_kind):
+        return False
+
+    def get_images(self, game, asset_kind):
         return []
 
 # -----------------------------------------------------------------------------
@@ -47,20 +50,32 @@ class asset_NULL(Scraper_Asset):
 class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
     def __init__(self):
         self.name       = 'TheGamesDB'
-        self.fancy_name = 'TheGamesDB asset scraper'
+
+    # Call scraper shared code in parent class
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
 
     def set_options(self, region, imgsize):
         pass
 
-    # Call common code in parent class
-    def get_search(self, search_string, rom_base_noext, platform):
-        return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
+    def supports_asset(asset_kind):
+        if asset_kind == ASSET_SNAP     or asset_kind == ASSET_FANART or \
+           asset_kind == ASSET_BANNER   or asset_kind == ASSET_CLEARLOGO or \
+           asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
+           return True
 
-    def get_images(self, game):
+        return False
+
+    def get_images(self, game, asset_kind):
+        images = []
+
         # --- Download game page XML data ---
-        # Maybe this is candidate for common code...
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
-        log_debug('thumb_TheGamesDB::get_images game_id_url = {0}'.format(game_id_url))
+        A = assets_get_info_scheme(asset_kind)
+        log_debug('asset_TheGamesDB::get_images game_id_url = {0}'.format(game_id_url))
+        log_debug('asset_TheGamesDB::get_images asset_kind  = {0}'.format(A.name))
+
+        # Maybe this is candidate for common code...
         req = urllib2.Request(game_id_url)
         req.add_unredirected_header('User-Agent', USER_AGENT)
         page_data = net_get_URL_text(req)
@@ -68,24 +83,57 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         # --- Parse game thumb information and make list of images ---
         # The XML returned by GetGame.php has many tags. See an example here:
         # SNES Super Castlevania IV --> http://thegamesdb.net/api/GetGame.php?id=1308
-        # Read front boxes
-        images = []
-        # Read front boxart
-        boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page_data)
-        for index, boxart in enumerate(boxarts):
-            # print(index, boxart)
-            log_debug('thumb_TheGamesDB::get_images Adding boxfront #{0:>2s} {1}'.format(str(index + 1), boxart[1]))
-            images.append({'name'     : "Cover " + str(index + 1),
-                           'URL'      : "http://thegamesdb.net/banners/" + boxart[1],
-                           'disp_URL' : "http://thegamesdb.net/banners/" + boxart[1]})
+        # SNES Super Mario World    --> http://thegamesdb.net/api/GetGame.php?id=136
+        #
+        if asset_kind == ASSET_SNAP:
+            screenshots = re.findall('<original (.*?)">screenshots/(.*?)</original>', page_data)
+            for index, screenshot in enumerate(screenshots):
+                log_debug('thumb_TheGamesDB::get_images Adding fanart #{0} {1}'.format(str(index + 1), screenshot[1]))
+                images.append({'name'     : 'Screenshot ' + str(index + 1), 
+                               'URL'      : 'http://thegamesdb.net/banners/screenshots/' + screenshots[index][1],
+                               'disp_URL' : 'http://thegamesdb.net/banners/screenshots/' + screenshots[index][1]})
+        
+        elif asset_kind == ASSET_FANART:
+            fanarts = re.findall('<original (.*?)">fanart/(.*?)</original>', page_data)
+            for index, fanart in enumerate(fanarts):
+                log_debug('thumb_TheGamesDB::get_images Adding fanart #{0} {1}'.format(str(index + 1), fanart[1]))
+                images.append({'name'     : 'Fanart ' + str(index + 1),
+                               'URL'      : 'http://thegamesdb.net/banners/fanart/' + fanart[1], 
+                               'disp_URL' : 'http://thegamesdb.net/banners/fanart/' + fanart[1].replace('/original/', '/thumb/')})
 
-        # Read banners
-        banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
-        for index, banner in enumerate(banners):
-            log_debug('thumb_TheGamesDB::get_images Adding banner   #{0:>2s} {0}'.format(str(index + 1), banner[1]))
-            images.append({'name'     : "Banner " + str(index + 1), 
-                           'URL'      : "http://thegamesdb.net/banners/" + banner[1],
-                           'disp_URL' : "http://thegamesdb.net/banners/" + banner[1]})
+        elif asset_kind == ASSET_BANNER:
+            banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
+            for index, banner in enumerate(banners):
+                log_debug('thumb_TheGamesDB::get_images Adding banner #{0} {1}'.format(str(index + 1), banner[1]))
+                images.append({'name'     : 'Banner ' + str(index + 1), 
+                               'URL'      : 'http://thegamesdb.net/banners/' + banner[1],
+                               'disp_URL' : 'http://thegamesdb.net/banners/' + banner[1]})
+
+        elif asset_kind == ASSET_CLEARLOGO:
+            clearlogos = re.findall('<clearlogo (.*?)">(.*?)</clearlogo>', page_data)
+            for index, clearlogo in enumerate(clearlogos):
+                log_debug('thumb_TheGamesDB::get_images Adding banner #{0} {1}'.format(str(index + 1), clearlogo[1]))
+                images.append({'name'     : 'Clearlogo ' + str(index + 1), 
+                               'URL'      : 'http://thegamesdb.net/clearlogo/' + clearlogo[1],
+                               'disp_URL' : 'http://thegamesdb.net/clearlogo/' + clearlogo[1]})
+
+        elif asset_kind == ASSET_BOXFRONT:
+            boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page_data)
+            for index, boxart in enumerate(boxarts):
+                # print(index, boxart)
+                log_debug('thumb_TheGamesDB::get_images Adding boxfront #{0} {1}'.format(str(index + 1), boxart[1]))
+                images.append({'name'     : 'Boxfront ' + str(index + 1),
+                               'URL'      : 'http://thegamesdb.net/banners/' + boxart[1],
+                               'disp_URL' : 'http://thegamesdb.net/banners/' + boxart[1]})
+        
+        elif asset_kind == ASSET_BOXBACK:
+            boxarts = re.findall('<boxart side="back" (.*?)">(.*?)</boxart>', page_data)
+            for index, boxart in enumerate(boxarts):
+                # print(index, boxart)
+                log_debug('thumb_TheGamesDB::get_images Adding boxfront #{0} {1}'.format(str(index + 1), boxart[1]))
+                images.append({'name'     : 'Boxback ' + str(index + 1),
+                               'URL'      : 'http://thegamesdb.net/banners/' + boxart[1],
+                               'disp_URL' : 'http://thegamesdb.net/banners/' + boxart[1]})
 
         return images
 
@@ -95,7 +143,6 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def __init__(self):
         self.name       = 'GameFAQs'
-        self.fancy_name = 'GameFAQs asset scraper'
 
     def set_options(self, region, imgsize):
         pass
@@ -161,48 +208,11 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
         return images
 
 # -----------------------------------------------------------------------------
-# arcadeHITS
-# Site in french, valid only for MAME.
-# ----------------------------------------------------------------------------- 
-class asset_arcadeHITS(Scraper_Asset):
-    def __init__(self):
-        self.name       = 'arcadeHITS'
-        self.fancy_name = 'arcadeHITS asset scraper'
-
-    def set_options(self, region, imgsize):
-        pass
-
-    def get_search(self, search_string, rom_base_noext, platform):
-        return []
-
-    # Checks this... I think Google image search API is deprecated.
-    def get_images(self, game):
-        covers = []
-        results = []
-        try:
-            f = urllib.urlopen('http://www.arcadehits.net/page/viewdatfiles.php?show=snap&jeu='+search)
-            page = f.read().replace('\r\n', '').replace('\n', '')
-            results = re.findall('<img src=(.*?).png', page)
-            for index, line in enumerate(results):
-                covers.append(['http://www.arcadehits.net/'+line+'.png','http://www.arcadehits.net/'+line+'.png','Image '+str(index+1)])
-
-            f = urllib.urlopen('http://www.arcadehits.net/page/viewdatfiles.php?show=flyers&jeu='+search)
-            page = f.read().replace('\r\n', '').replace('\n', '')
-            results = re.findall('<img src=(.*?).png', page)
-            for index, line in enumerate(results):
-                covers.append(['http://www.arcadehits.net/'+line+'.png','http://www.arcadehits.net/'+line+'.png','Image '+str(index+1)])
-
-            return covers
-        except:
-            return covers
-
-# -----------------------------------------------------------------------------
 # Google asset scraper
 # ----------------------------------------------------------------------------- 
 class asset_Google(Scraper_Asset):
     def __init__(self):
         self.name       = 'Google'
-        self.fancy_name = 'Google asset scraper'
 
     def set_options(self, region, imgsize):
         pass
@@ -231,3 +241,4 @@ class asset_Google(Scraper_Asset):
           return covers
       except:
           return covers
+
