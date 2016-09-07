@@ -1,10 +1,14 @@
 [B]Advanced Emulator Launcher | version 0.9.2 | xx September 2016[/B]
 
+FEATURE Tell if scrapers support asset or not in "Edit ROM" -- "Edit Assets/Artwork..."
+
+FEATURE TheGamesDB scraper working OK.
+
 FEATURE  Ratings can be edited now for Categories/Launchers/ROMs
 
 FIX  Add Clearlogo to "Edit Launcher" -- "Manage ROM asset directories..." menu.
 
-FIX  When checking for repeated asset directories, do not include empty strings.
+FIX  Do not include empty strings when checking for repeated asset directories.
 
 
 [B]Advanced Emulator Launcher | version 0.9.1 | 6 September 2016[/B]
