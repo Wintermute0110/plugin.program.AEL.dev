@@ -2664,7 +2664,7 @@ class Main:
                                 log_info('_command_manage_favourites() Favourite {0} matched by basename!')
                                 log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
                                 log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
-                            elif:
+                            else:
                                 log_error('_command_manage_favourites() Error in logical condition')
                             filename_found          = True
                             new_rom_fav_ID          = rom_id
