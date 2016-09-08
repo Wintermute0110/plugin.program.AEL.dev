@@ -161,8 +161,12 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def set_options(self, region, imgsize):
         pass
 
+    # >> NOTE In GameFAQS, usually the first screenshoots are the titles for the different ROM regions.
+    # >>      Choose the first image as the Title. Choose a random image after first as snap. This should work
+    # >>      for most games. On the oppositve, in the GamesDB almost no games have Title.
     def supports_asset(self, asset_kind):
-        if asset_kind == ASSET_SNAP or asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
+        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP or \
+           asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
            return True
 
         return False
@@ -181,7 +185,7 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
         page_data = net_get_URL_oneline(game_id_url)
 
         # --- Retrieve assets ---
-        if asset_kind == ASSET_SNAP:
+        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
             # Example: http://www.gamefaqs.com/snes/588741-super-metroid/images
             # <td class="thumb">
             # <a href="/snes/588741-super-metroid/images/21">
@@ -195,10 +199,18 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
                 str_index = str(index + 1)
                 log_debug('asset_GameFAQs::get_images Artwork page #{0} {1}'.format(str_index, boxart[0]))
                 img_pages.append( (boxart[0], boxart[1]) )
-            # For now just pick the first snapshoot.
             images = []
             if not img_pages: return images
-            img_page = img_pages[0]
+            # Title is usually the first or first snapshoots in GameFAQs
+            num_images = len(img_pages)
+            if asset_kind == ASSET_TITLE:
+                img_page = img_pages[0]
+                log_debug('asset_GameFAQs::get_images Title chose image index {0} (of {1})'.format(0, num_images))
+            # For Snap choose a random one
+            else:
+                random_index = random.randint(1, num_images)
+                img_page = img_pages[random_index]
+                log_debug('asset_GameFAQs::get_images Snap chose image index {0} (of {1})'.format(random_index, num_images))
 
             # --- Go to full size page and get thumb ---
             image_url = 'http://www.gamefaqs.com' + img_page[0]
@@ -240,7 +252,7 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
             # --- Choose one full size artwork page based on game region ---
             for index, boxart in enumerate(results):
                 str_index = str(index + 1)
-                log_debug('asset_GameFAQs::get_images Artwork page #{0:>2s} {1}'.format(str_index, boxart[1]))
+                log_debug('asset_GameFAQs::get_images Artwork page #{0} {1}'.format(str_index, boxart[1]))
                 img_pages.append( (boxart[0], boxart[1], boxart[2]) )
 
             # For now just pick the first one
@@ -316,3 +328,4 @@ class asset_Google(Scraper_Asset):
           return covers
       except:
           return covers
+
