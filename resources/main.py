@@ -5479,13 +5479,15 @@ class Main:
             return False
 
         # --- Only enable scraper if support the asset ---
-        scraper_enabled = False
-        if scraper_obj.supports_asset(asset_kind):
-            scraper_enabled = True
-            log_verb('Scraper {0} support scraping {1}'.format(scraper_obj.name, A.name))
-        else:
-            log_verb('Scraper {0} does not support scraping {1}'.format(scraper_obj.name, A.name))
-            log_verb('Scraper DISABLED')
+        # >> Scrapers only loaded if editing a ROM
+        if object_kind == KIND_ROM:
+            scraper_enabled = False
+            if scraper_obj.supports_asset(asset_kind):
+                scraper_enabled = True
+                log_verb('Scraper {0} support scraping {1}'.format(scraper_obj.name, A.name))
+            else:
+                log_verb('Scraper {0} does not support scraping {1}'.format(scraper_obj.name, A.name))
+                log_verb('Scraper DISABLED')
 
         # --- Show image editing options ---
         # >> Scrape only supported for ROMs (for the moment)
