@@ -83,12 +83,14 @@ def net_download_img(img_url, file_path):
         log_error('(IOError) Exception in net_download_img()')
         log_error('(IOError) {0}'.format(str(e)))
 
-#
+# User agent is fixed and defined in global var USER_AGENT
 # Returns a Unicode string.
 #
-def net_get_URL_text(req):
-    log_debug('net_get_URL_text() Reading URL "{0}"'.format(req.get_full_url()))
+def net_get_URL_oneline(url):
     page_data = ''
+    req = urllib2.Request(url)
+    req.add_unredirected_header('User-Agent', USER_AGENT)
+    log_debug('net_get_URL_oneline() Reading URL "{0}"'.format(req.get_full_url()))
 
     try:
         # --- Open network connection (socket) ---
@@ -96,21 +98,48 @@ def net_get_URL_text(req):
 
         # --- Read data from socket ---
         encoding = f.headers['content-type'].split('charset=')[-1]
-        log_debug('net_get_URL_text() encoding = "{0}"'.format(encoding))
+        # >> Fix for wrong encodings...
+        if encoding == 'text/html': encoding = 'utf-8'
+        log_debug('net_get_URL_oneline() encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
     except IOError, e:    
-        log_error('(IOError) Exception in net_get_URL_text()')
+        log_error('(IOError) Exception in net_get_URL_oneline()')
         log_error('(IOError) {0}'.format(str(e)))
         return page_data
 
     # --- Convert to Unicode ---
     num_bytes = len(page_bytes)
-    log_debug('net_get_URL_text() Read {0} bytes'.format(num_bytes))
+    log_debug('net_get_URL_oneline() Read {0} bytes'.format(num_bytes))
     page_data = unicode(page_bytes, encoding)
 
     # --- Put all page text into one line ---
     page_data = page_data.replace('\r\n', '')
     page_data = page_data.replace('\n', '')
+
+    return page_data
+
+def net_get_URL_original(url):
+    page_data = ''
+    req = urllib2.Request(url)
+    req.add_unredirected_header('User-Agent', USER_AGENT)
+    log_debug('net_get_URL_original() Reading URL "{0}"'.format(req.get_full_url()))
+
+    try:
+        f = urllib2.urlopen(req)
+        encoding = f.headers['content-type'].split('charset=')[-1]
+        if encoding == 'text/html': encoding = 'utf-8'
+        log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
+        page_bytes = f.read()
+        f.close()
+    except IOError, e:    
+        log_error('(IOError) Exception in net_get_URL_original()')
+        log_error('(IOError) {0}'.format(str(e)))
+        return page_data
+
+    # --- Convert to Unicode ---
+    num_bytes = len(page_bytes)
+    log_debug('net_get_URL_original() Read {0} bytes'.format(num_bytes))
+    page_data = unicode(page_bytes, encoding)
 
     return page_data

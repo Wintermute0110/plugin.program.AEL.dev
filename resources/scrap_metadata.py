@@ -33,7 +33,6 @@ except:
 class metadata_NULL(Scraper_Metadata):
     def __init__(self):
         self.name       = 'NULL'
-        self.fancy_name = 'NULL Metadata scraper'
 
     def set_addon_dir(self, plugin_dir):
         pass
@@ -55,8 +54,7 @@ class metadata_Offline(Scraper_Metadata):
     addon_dir = ''
 
     def __init__(self):
-        self.name       = 'Offline'
-        self.fancy_name = 'Offline Metadata scraper'
+        self.name = 'AEL/GameDBInfo Offline'
 
     def set_addon_dir(self, plugin_dir):
         self.addon_dir = plugin_dir
@@ -158,9 +156,9 @@ class metadata_Offline(Scraper_Metadata):
         if self.cached_platform == 'MAME':
             key = game['id']
             log_verb("metadata_Offline::get_metadata Mode MAME id = '{0}'".format(key))
-            gamedata['title'] = self.games[key]['description']
-            gamedata['genre'] = self.games[key]['genre']
-            gamedata['year'] = self.games[key]['year']
+            gamedata['title']  = self.games[key]['description']
+            gamedata['genre']  = self.games[key]['genre']
+            gamedata['year']   = self.games[key]['year']
             gamedata['studio'] = self.games[key]['manufacturer']
             # gamedata['plot'] = self.games[key]['plot']
 
@@ -185,8 +183,7 @@ class metadata_Offline(Scraper_Metadata):
 # -----------------------------------------------------------------------------
 class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
     def __init__(self):
-        self.name       = 'TheGamesDB'
-        self.fancy_name = 'TheGamesDB Metadata scraper'
+        self.name = 'TheGamesDB'
 
     def set_addon_dir(self, plugin_dir):
         pass
@@ -200,11 +197,9 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
         gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
 
         # --- TheGamesDB returns an XML file with GetGame.php?id ---
-        game_id = game['id']
-        log_debug('metadata_TheGamesDB::get_metadata Game ID "{0}"'.format(game_id))
-        req = urllib2.Request('http://thegamesdb.net/api/GetGame.php?id=' + game_id)
-        req.add_unredirected_header('User-Agent', USER_AGENT)
-        page_data = net_get_URL_text(req)
+        game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
+        log_debug('metadata_TheGamesDB::get_metadata Game URL "{0}"'.format(game_id_url))
+        page_data = net_get_URL_oneline(game_id_url)
 
         # --- Parse game page data ---
         game_title = ''.join(re.findall('<GameTitle>(.*?)</GameTitle>', page_data))
@@ -229,8 +224,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 # -----------------------------------------------------------------------------
 class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
     def __init__(self):
-        self.name       = 'GameFAQs'
-        self.fancy_name = 'GameFAQs Metadata scraper'
+        self.name = 'GameFAQs'
 
     def set_addon_dir(self, plugin_dir):
         pass
@@ -240,16 +234,13 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
-        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
-        
-        # Get game page
-        game_id = game['id']
-        log_debug('metadata_GameFAQs::get_metadata Game ID "{0}"'.format(game_id))
-        req = urllib2.Request('http://www.gamefaqs.com' + game_id)
-        req.add_unredirected_header('User-Agent', USER_AGENT)
-        page_data = net_get_URL_text(req)
+        # --- Get game page ---
+        game_id_url = 'http://www.gamefaqs.com' + game['id']
+        log_debug('metadata_GameFAQs::get_metadata game_id_url "{0}"'.format(game_id_url))
+        page_data = net_get_URL_oneline(game_id_url)
 
-        # Process metadata
+        # --- Process metadata ---
+        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
         gamedata['title'] = game['display_name']
 
         # <ol class="crumbs">
@@ -259,66 +250,105 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         # <li class="crumb"><a href="/snes/category/86-action-fighting-2d">2D</a></li>
         # </ol>
         game_genre = re.findall('<ol class="crumbs"><li class="crumb top-crumb"><a href="(.*?)">(.*?)</a></li><li class="crumb"><a href="(.*?)">(.*?)</a></li>', page_data)
-        if game_genre:
-            gamedata["genre"] = game_genre[0][3]
+        if game_genre: gamedata['genre'] = game_genre[0][3]
 
         # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 ?</a></li>
         game_release = re.findall('<li><b>Release:</b> <a href="(.*?)">(.*?) &raquo;</a></li>', page_data)
-        if game_release:
-            gamedata["year"] = game_release[0][1][-4:]
+        if game_release: gamedata['year'] = game_release[0][1][-4:]
 
         # <li><a href="/company/2324-capcom">Capcom</a></li>
         game_studio = re.findall('<li><a href="/company/(.*?)">(.*?)</a>', page_data)
         if game_studio:
             p = re.compile(r'<.*?>')
-            gamedata["studio"] = p.sub('', game_studio[0][1])
-            
+            gamedata['studio'] = p.sub('', game_studio[0][1])
+
         game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page_data)
-        if game_plot:
-            gamedata["plot"] = text_unescape_HTML(game_plot[0])
+        if game_plot: gamedata['plot'] = text_unescape_HTML(game_plot[0])
             
-        return gamedata
-
-# -----------------------------------------------------------------------------
-# arcadeHITS
-# Site in French. Valid for MAME.
-# -----------------------------------------------------------------------------
-class metadata_arcadeHITS(Scraper_Metadata):
-    def __init__(self):
-        self.name       = 'arcadeHITS'
-        self.fancy_name = 'arcadeHITS Metadata scraper'
-
-    def set_addon_dir(self, plugin_dir):
-        pass
-
-    def get_search(self, search_string, rom_base_noext, platform):
-        pass
-
-    def get_metadata(self, game_url):
-        gamedata = {'title' : '', 'genre' : '', 'release' : '', 'studio' : '', 'plot' : ''}
-        f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+game_id)
-        page = f.read().replace('\r\n', '').replace('\n', '').replace('\r', '').replace('          ', '')
-        game_genre = re.findall('<span class=mini>Genre: </span></td><td align=left>&nbsp;&nbsp;<strong>(.*?)>(.*?)</a>', page)
-        if game_genre:
-            gamedata["genre"] = game_genre[0][1]
-        game_release = re.findall('<span class=mini>Ann&eacute;e: </span></td><td align=left>&nbsp;&nbsp;<strong>(.*?)>(.*?)</a>', page)
-        if game_release:
-            gamedata["release"] = game_release[0][1]
-        game_studio = re.findall('<span class=mini>Fabricant: </span></td><td align=left>&nbsp;&nbsp;<strong>(.*?)>(.*?)</a>', page)
-        if game_studio:
-            gamedata["studio"] = game_studio[0][1]
-        f = urllib.urlopen('http://www.arcadehits.net/page/viewdatfiles.php?show=history&jeu='+game_id)
-        page = f.read().replace('\r\n', '').replace('\n', '').replace('\r', '')
-        game_plot = re.findall('<br><br>(.*?)<br><br>',page)
-        if game_plot:
-            gamedata["plot"] = unescape(game_plot[0])
-
         return gamedata
 
 # -----------------------------------------------------------------------------
 # MobyGames http://www.mobygames.com
 # -----------------------------------------------------------------------------
+class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
+    def __init__(self):
+        self.name = 'MobyGames'
+
+    def set_addon_dir(self, plugin_dir):
+        pass
+
+    # Call common code in parent class
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_MobyGames.get_search(self, search_string, rom_base_noext, platform)
+
+    def get_metadata(self, game):
+        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
+
+        # --- Get game page ---
+        game_id_url = 'http://www.mobygames.com' + game['id']
+        log_debug('metadata_MobyGames::get_metadata game_id_url "{0}"'.format(game_id_url))
+        page_data = net_get_URL_oneline(game_id_url)
+
+        # --- Process metadata ---
+        # Example: http://www.mobygames.com/game/chakan
+        #
+        # <td width="48%"><div id="coreGameRelease">
+        # <div style="font-size: 100%; font-weight: bold;">Published by</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/company/sega-of-america-inc">SEGA&nbsp;of&nbsp;America,&nbsp;Inc.</a></div>
+        # <div style="font-size: 100%; font-weight: bold;">Developed by</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/company/extended-play">Extended&nbsp;Play</a></div>
+        # <div style="font-size: 100%; font-weight: bold;">Released</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/game/chakan/release-info">1992</a></div>
+        # <div style="font-size: 100%; font-weight: bold;">Platforms</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/game/game-gear/chakan">Game Gear</a>, 
+        # <a href="/game/genesis/chakan">Genesis</a></div></div>
+        # </td>
+        # <td width="48%"><div id="coreGameGenre"><div>
+        # <div style="font-size: 100%; font-weight: bold;">Genre</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/action/">Action</a></div>
+        # <div style="font-size: 100%; font-weight: bold;">Perspective</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/3rd-person-perspective/">3rd-person&nbsp;[DEPRECATED]</a>, 
+        # <a href="/genre/sheet/side-view/">Side&nbsp;view</a></div><div style="font-size: 100%; font-weight: bold;">Gameplay</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/fighting/">Fighting</a>, 
+        # <a href="/genre/sheet/platform/">Platform</a></div><div style="font-size: 100%; font-weight: bold;">Misc</div>
+        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/licensed-title/">Licensed&nbsp;Title</a></div></div></div>
+        # </td>
+        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
+        gamedata['title'] = game['display_name']
+
+        game_genre = re.findall('Genre</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
+        print(game_genre)
+        if game_genre: gamedata['genre'] = text_unescape_HTML(game_genre[0][1])
+
+        game_year = re.findall('Released</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
+        if game_year: gamedata['year'] = text_unescape_HTML(game_year[0][1])
+
+        return gamedata
 
 # -----------------------------------------------------------------------------
-# Giantbomb
-# -----------------------------------------------------------------------------
+# Arcade Database (for MAME) http://adb.arcadeitalia.net/
+# ----------------------------------------------------------------------------- 
+class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
+    def __init__(self):
+        self.name = 'GameFAQs'
+
+    def set_addon_dir(self, plugin_dir):
+        pass
+
+    # Call common code in parent class
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_ArcadeDB.get_search(self, search_string, rom_base_noext, platform)
+
+    def get_metadata(self, game):
+        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
+
+        # --- Get game page ---
+        game_id_url = game['id'] 
+        log_debug('metadata_ArcadeDB::get_metadata game_id_url "{0}"'.format(game_id_url))
+        page_data = net_get_URL_oneline(game_id_url)
+
+        # --- Process metadata ---
+        m_title = re.findall('<div id="game_description" class="invisibile">(.+?)</div>', page_data)
+
+
+        return gamedata

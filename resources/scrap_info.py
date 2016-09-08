@@ -143,6 +143,10 @@ platform_AEL_to_GameFAQs_dic = {
     'Nintendo SNES' : '63'
 }
 
+platform_AEL_to_MobyGames_dic = {
+    'Nintendo SNES' : '15'
+}
+
 def AEL_platform_to_TheGamesDB(platform_AEL):
     platform_TheGamesDB = ''
     try:
@@ -161,3 +165,12 @@ def AEL_platform_to_GameFAQs(AEL_gamesys):
         platform_GameFAQs = '0'
         
     return platform_GameFAQs
+
+def AEL_platform_to_MobyGames(platform_AEL):
+    platform_MobyGames = ''
+    try:
+        platform_MobyGames = platform_AEL_to_MobyGames_dic[platform_AEL]
+    except:
+        platform_MobyGames = ''
+        
+    return platform_MobyGames

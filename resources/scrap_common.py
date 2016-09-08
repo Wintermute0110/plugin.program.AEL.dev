@@ -31,7 +31,6 @@ from utils import *
 class Scraper_TheGamesDB():
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
-        results_ret = []
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         if DEBUG_SCRAPERS:
             log_debug('Scraper_TheGamesDB::get_search search_string        "{0}"'.format(search_string))
@@ -48,11 +47,10 @@ class Scraper_TheGamesDB():
         #     <Platform>Super Nintendo (SNES)</Platform>
         #   </Game>
         # </Data>
-        req = urllib2.Request('http://thegamesdb.net/api/GetGamesList.php?' +
-                              'name=' + urllib.quote_plus(search_string) +
-                              '&platform=' + urllib.quote_plus(scraper_platform))
-        req.add_unredirected_header('User-Agent', USER_AGENT)
-        page_data = net_get_URL_text(req)
+        url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
+              'name=' + urllib.quote_plus(search_string) + \
+              '&platform=' + urllib.quote_plus(scraper_platform)
+        page_data = net_get_URL_oneline(url)
 
         # --- Parse list of games ---
         games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle><ReleaseDate>(.*?)</ReleaseDate><Platform>(.*?)</Platform></Game>", page_data)
@@ -67,9 +65,8 @@ class Scraper_TheGamesDB():
             game_list.append(game)
         # >> Order list based on score
         game_list.sort(key = lambda result: result['order'], reverse = True)
-        results_ret = game_list
 
-        return results_ret
+        return game_list
 
 # -----------------------------------------------------------------------------
 # GameFAQs online metadata scraper
@@ -77,7 +74,6 @@ class Scraper_TheGamesDB():
 class Scraper_GameFAQs():
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
-        results_ret = []
         scraper_platform = AEL_platform_to_GameFAQs(platform)
         if DEBUG_SCRAPERS:
             log_debug('Scraper_GameFAQs::get_search search_string      "{0}"'.format(search_string))
@@ -87,15 +83,13 @@ class Scraper_GameFAQs():
 
         # Example: 'street fighter', 'Nintendo SNES'
         # http://www.gamefaqs.com/search?platform=63&game=street+fighter
-        search_string = search_string.replace(' ','+')
-        req = urllib2.Request('http://www.gamefaqs.com/search/index.html?' +
-                              'platform={0}'.format(scraper_platform) +
-                              '&game=' + search_string + '')
-        req.add_unredirected_header('User-Agent', USER_AGENT)
-        page_data = net_get_URL_text(req)
+        search_string = search_string.replace(' ', '+')
+        url = 'http://www.gamefaqs.com/search/index.html?' + \
+              'platform={0}'.format(scraper_platform) + \
+              '&game=' + search_string + ''
+        page_data = net_get_URL_oneline(url)
 
         # --- Old Parse list of games ---
-        gets = {}
         gets = re.findall('<td class="rtitle">(.*?)<a href="(.*?)"(.*?)class="sevent_(.*?)">(.*?)</a></td>', page_data)
         game_list = []
         for get in gets:
@@ -113,32 +107,8 @@ class Scraper_GameFAQs():
             if title.lower().find(search_string.lower()) != -1: game['order'] += 1
             game_list.append(game)
         game_list.sort(key = lambda result: result['order'], reverse = True)
-        results_ret = game_list
 
-        return results_ret
-
-# -----------------------------------------------------------------------------
-# arcadeHITS
-# ----------------------------------------------------------------------------- 
-class Scraper_arcadeHITS():
-    # Executes a search and returns a list of games found.
-    def get_search(self, search_string, rom_base_noext, platform):
-        results = []
-        display = []
-        try:
-            f = urllib.urlopen('http://www.arcadehits.net/index.php?p=roms&jeu='+search)
-            page = f.read().replace('\r\n', '').replace('\n', '')
-            game = {}
-            romname = ''.join(re.findall('<h4>(.*?)</h4>', page))
-            game["title"] = unescape(romname)
-            game["id"] = search
-            game["gamesys"] = 'Arcade'
-            if game["title"]:
-                results.append(game)
-                display.append(romname + " / " + game["gamesys"])
-            return results,display
-        except:
-            return results,display
+        return game_list
 
 # -----------------------------------------------------------------------------
 # MobyGames (http://www.mobygames.com)
@@ -146,17 +116,15 @@ class Scraper_arcadeHITS():
 # will be needed.
 # ----------------------------------------------------------------------------- 
 class Scraper_MobyGames():
-    # Executes a search and returns a list of games found.
-    #
+    # --- Search with no platform -----------------------------------------------------------------
     # http://www.mobygames.com/search/quick?q=super+mario+world
     #
     # <div class="d90b5a09a3d745cdd81e22d52188f8000">
-    # <div class="searchResult">
-    # <div class="searchNumber">1.</div>
+    # <div class="searchResult"><div class="searchNumber">1.</div>
     # <div class="searchImage">
-    # <a href="/game/super-mario-world">
-    # <img class="searchResultImage" alt="Super Mario World New" src="/images/covers/t/324893-super-mario-world-new-nintendo-3ds-front-cover.jpg" border="0" height="57" width="60">
-    # </a>
+    #  <a href="/game/super-mario-world">
+    #  <img class="searchResultImage" alt="Super Mario World New" src="/images/covers/t/324893-super-mario-world-new-nintendo-3ds-front-cover.jpg" border="0" height="57" width="60">
+    #  </a>
     # </div>
     # <div class="searchData">
     # <div class="searchTitle">Game: <a href="/game/super-mario-world">Super Mario World</a></div>
@@ -169,11 +137,123 @@ class Scraper_MobyGames():
     # </div>
     # </div>
     # </div>
-    # <br clear="all">
+    # <br clear="all"></div>
+    # <div class="d90b5a09a3d745cdd81e22d52188f8000">
+    # <div class="searchResult"><div class="searchNumber">2.</div>
+    # ...
+    #
+    # --- Search with platform --------------------------------------------------------------------
+    # SNES is platform number 15
+    # http://www.mobygames.com/search/quick?q=super+mario+world&p=15
+    #
+    # <h2>Results</h2>
+    # <div id="searchResults">
+    # <div class="searchSubSection">
+    #  <div>Results <b>1</b> - <b>19</b> of <b>19</b> for <b>super mario world</b>
     # </div>
     # <div class="d90b5a09a3d745cdd81e22d52188f8000">
-    # <div class="searchResult">
-    # <div class="searchNumber">2.</div>
-    # ... 
+    # <div class="searchResult"><div class="searchNumber">1.</div>
+    # <div class="searchImage">
+    # <a href="/game/snes/super-mario-world">
+    #  <img class="searchResultImage" alt="Super Mario World SNES Front Cover" border="0" src="/images/covers/t/79892-super-mario-world-snes-front-cover.jpg" height="42" width="60" >
+    # </a>
+    # </div>
+    # <div class="searchData">
+    # <div class="searchTitle">Game: <a href="/game/snes/super-mario-world">Super Mario World</a></div>
+    # <div class="searchDetails">
+    # <span style="white-space: nowrap">SNES (<em>1990</em>)</span>
+    # </div>
+    # </div>
+    # </div>
+    # <br clear="all"></div>
+    # <div class="d90b5a09a3d745cdd81e22d52188f8000">
+    # <div class="searchResult"><div class="searchNumber">2.</div>
+    # ...
     def get_search(self, search_string, rom_base_noext, platform):
-        return []
+        scraper_platform = AEL_platform_to_MobyGames(platform)
+        if DEBUG_SCRAPERS:
+            log_debug('Scraper_MobyGames::get_search search_string      "{0}"'.format(search_string))
+            log_debug('Scraper_MobyGames::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_MobyGames::get_search AEL platform       "{0}"'.format(platform))
+            log_debug('Scraper_MobyGames::get_search MobyGames platform "{0}"'.format(scraper_platform))
+
+        # --- Search for games ---
+        # >> NOTE Search result page is a little bit different if platform used or not!!!
+        # >> Findall returns a list of tuples. Tuples elements are the groups
+        str_tokens = search_string.split(' ')
+        str_mobygames = '+'.join(str_tokens)
+        log_debug('Scraper_MobyGames::get_search str_mobygames = "{0}"'.format(str_mobygames))
+        game_list = []
+        if scraper_platform == '':
+            log_debug('Scraper_MobyGames::get_search NO plaform search')
+            url = 'http://www.mobygames.com/search/quick?q={0}'.format(str_mobygames)
+            page_data = net_get_URL_oneline(url)
+            # Search for: <span style="white-space: nowrap"><a href="/game/arcade/super-mario-world">Arcade</a> (<em>1991</em>)</span>
+            m = re.findall('<span style="white-space: nowrap"><a href="(.+?)">(.+?)</a> \(<em>(.+?)</em>\)</span>', page_data)
+            # print(m)
+            for game_tuple in m:
+                game = {}
+                game_str = game_tuple[0].replace('/game/', '')
+                t = re.findall('(.+)/(.+)', game_str)
+                # print(game_str)
+                # print(t)
+                platform_raw = t[0][0]
+                game_raw = t[0][1]
+                if game_raw[-1] == '_': game_raw = game_raw[:-1]
+                game_tokens = game_raw.split('-')
+                game_tokens = [x.capitalize() for x in game_tokens]
+                game_name   = ' '.join(game_tokens)
+                game['id']           = game_tuple[0]
+                game['display_name'] = game_name + ' / {0}'.format(game_tuple[1])
+                game_list.append(game)
+
+        else:
+            log_debug('Scraper_MobyGames::get_search Search using platform')
+            url = 'http://www.mobygames.com/search/quick?q={0}&p={1}'.format(str_mobygames, scraper_platform)
+            page_data = net_get_URL_oneline(url)
+            # Search for: <div class="searchTitle">Game: <a href="/game/snes/super-mario-world">Super Mario World</a>
+            m = re.findall('<div class="searchTitle">Game: <a href="(.+?)">(.+?)</a>', page_data)
+            # print(m)
+            for game_tuple in m:
+                game = {}
+                game['id']           = game_tuple[0]
+                game['display_name'] = game_tuple[1] + ' / {0}'.format(platform)
+                game_list.append(game)
+
+        return game_list
+
+# -----------------------------------------------------------------------------
+# Arcade Database (for MAME) http://adb.arcadeitalia.net/
+# ----------------------------------------------------------------------------- 
+class Scraper_ArcadeDB():
+    def get_search(self, search_string, rom_base_noext, platform):
+        if DEBUG_SCRAPERS:
+            log_debug('Scraper_ArcadeDB::get_search search_string      "{0}"'.format(search_string))
+            log_debug('Scraper_ArcadeDB::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_ArcadeDB::get_search AEL platform       "{0}"'.format(platform))
+
+        # MAME always uses rom_base_noext and ignores search_string.
+        # Example game search: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino
+        url = 'http://adb.arcadeitalia.net/dettaglio_mame.php?lang=en&game_name={0}'.format(rom_base_noext)
+        page_data = net_get_URL_oneline(url)
+
+        # >> DEBUG
+        # page_data_original = net_get_URL_original(url)
+        # text_dump_str_to_file('arcadedb_search.txt', page_data_original)
+
+        # --- Check if game was found ---
+        game_list = []
+        m = re.findall('<h2>Error: Game not found</h2>', page_data)
+        if m:
+            log_debug('Scraper_ArcadeDB::get_search Game NOT found "{0}"'.format(rom_base_noext))
+        else:
+            # Example URL: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino&lang=en
+            # <div id="game_description" class="invisibile">Cadillacs and Dinosaurs (World 930201)</div>
+            m_title = re.findall('<div id="game_description" class="invisibile">(.+?)</div>', page_data)
+            if not m_title: return game_list
+            game = {}
+            game['id']           = url
+            game['display_name'] = m_title[0]
+            game_list.append(game)
+
+        return game_list

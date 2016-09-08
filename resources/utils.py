@@ -93,9 +93,9 @@ def text_unescape_HTML(s):
 
     return s
 
-def text_dump_str_to_file(full_string, filename):
-    file_obj = open(filename, 'wt')
-    file_obj.write(full_string)
+def text_dump_str_to_file(filename, full_string):
+    file_obj = open(filename, 'w')
+    file_obj.write(full_string.encode('utf-8'))
     file_obj.close()
 
 # -------------------------------------------------------------------------------------------------
@@ -244,10 +244,11 @@ PLOT_LENGTH   = 70
 URL_LENGTH    = 62
 
 def print_scraper_list(scraper_obj_list):
-    print('Short name        Fancy Name')
-    print('----------------  ---------------------------------')
+    print('Scraper name')
+    print('--------------------------------')
     for scraper_obj in scraper_obj_list:
-        print('{0:10s}  {1:}'.format(scraper_obj.name.rjust(16), scraper_obj.fancy_name))
+        print('{0}'.format(scraper_obj.name))
+    print('')
 
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
@@ -261,7 +262,7 @@ def print_games_search(results):
         print("{0} {1}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH)))
     print('')
 
-def print_game_metadata(results, scraperObj):
+def print_game_metadata(scraperObj, results):
     # --- Get metadata of first game ---
     if results:
         metadata = scraperObj.get_metadata(results[0])

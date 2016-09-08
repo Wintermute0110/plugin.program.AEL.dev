@@ -2609,8 +2609,9 @@ class Main:
         # --- Show selection dialog ---
         dialog = xbmcgui.Dialog()
         type = dialog.select('Manage Favourite ROM {0}'.format(name),
-                            ['Check all Favourite ROMs', 
-                             'Repair all Unlinked ROMs', 
+                            ['Check Favourite ROMs',
+                             'Repair Unlinked Launcher/Broken ROMs',
+                             'Repair Unlinked ROMs',
                              'Choose another parent ROM for Favourite ROM...'])
 
         # --- Check Favourite ROMs ---
@@ -2618,19 +2619,99 @@ class Main:
             kodi_notify('Checking Favourite ROMs...')
             self._fav_check_favourites(roms_fav)
 
-        # --- Repair Unliked Favourite ROMs ---
+        # --- Repair all Unlinked Launcher/Broken ROMs ---
         elif type == 1:
+            # 1) Traverse list of Favourites.
+            # 2) For each favourite traverse all Launchers.
+            # 3) Search for a ROM with same filename or same rom_base.
+            #    If found, then replace romID in Favourites with romID of found ROM. Do not copy 
+            #    any metadata because user maybe customised the Favourite ROM.
+            kodi_notify('Repairing Unlinked Launcher/Broken ROMs...')
+
+            # >> Refreshing Favourite status will locate Unlinked ROMs.
+            self._fav_check_favourites(roms_fav)
+
+            # >> Repair Unlinked Launcher ROMs
+            pDialog = xbmcgui.DialogProgress()
+            num_progress_items = len(roms_fav)
+            i = 0
+            pDialog.create('Advanced Emulator Launcher', 'Repairing Unlinked Launcher ROMs...')
+            for rom_fav_ID in roms_fav:
+                pDialog.update(i * 100 / num_progress_items)
+                i += 1
+
+                # >> Only process Unlinked Launcher ROMs
+                if roms_fav[rom_fav_ID]['fav_status'] == 'OK': continue
+                if roms_fav[rom_fav_ID]['fav_status'] == 'Unlinked ROM': continue
+                fav_name = roms_fav[rom_fav_ID]['m_name']
+                log_debug('_command_manage_favourites() Repairing Fav ROM {0}'.format(fav_name))
+                log_debug('_command_manage_favourites() Fav ROM status    {0}'.format(roms_fav[rom_fav_ID]['fav_status']))
+
+                # >> Traverse all launchers and find rom by filename or base name
+                ROM_FAV = misc_split_path(roms_fav[rom_fav_ID]['filename'])
+                filename_found = False
+                for launcher_id in self.launchers:
+                    # >> Load launcher ROMs
+                    roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
+                    for rom_id in roms:
+                        ROM = misc_split_path(roms[rom_id]['filename'])
+                        if roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename'] or ROM_FAV.base == ROM.base:
+                            if roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
+                                log_info('_command_manage_favourites() Favourite {0} matched by filename!')
+                                log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
+                                log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
+                            elif ROM_FAV.base == ROM.base:
+                                log_info('_command_manage_favourites() Favourite {0} matched by basename!')
+                                log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
+                                log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
+                            elif:
+                                log_error('_command_manage_favourites() Error in logical condition')
+                            filename_found          = True
+                            new_rom_fav_ID          = rom_id
+                            new_rom_fav_launcher_ID = launcher_id
+                            break
+                    if filename_found: break
+
+                # >> Relink Favourite ROM
+                if filename_found:
+                    log_debug('_command_manage_favourites() Relinked to {0}'.format(new_rom_fav_ID))
+                    # >> Copy Favourite ROM (actually creates a reference)
+                    rom_temp = roms_fav[rom_fav_ID]
+                    # >> Remove old Favourite before inserting new one!
+                    roms_fav.pop(rom_fav_ID)
+                    rom_temp['id']         = new_rom_fav_ID
+                    rom_temp['launcherID'] = new_rom_fav_launcher_ID
+                    rom_temp['fav_status'] = 'OK'
+                    roms_fav[new_rom_fav_ID] = rom_temp
+                else:
+                    log_debug('_command_manage_favourites() ROM {0} filename not found in any launcher'.format(fav_name))
+            pDialog.update(i * 100 / num_progress_items)
+            pDialog.close()
+
+        # --- Repair Unliked Favourite ROMs ---
+        elif type == 2:
             # 1) Traverse list of Favourites.
             # 2) If romID not found in launcher, then search for a ROM with same filename.
             # 3) If found, then replace romID in Favourites with romID of found ROM. Do not
             #    copy any metadata because user maybe customised Favourite ROM.
-            kodi_notify('Repairing Unlinked Favourite ROMs...')
-            # >> Refreshing Favourite status will locate Unlinked ROMs!
+            kodi_notify('Repairing Unlinked ROMs...')
+
+            # >> Refreshing Favourite status will locate Unlinked ROMs.
             self._fav_check_favourites(roms_fav)
+            
+            # >> Repair Unlinked ROMs
+            pDialog = xbmcgui.DialogProgress()
+            num_progress_items = len(roms_fav)
+            i = 0
+            pDialog.create('Advanced Emulator Launcher', 'Repairing Unlinked Favourite ROMs...')
             for rom_fav_ID in roms_fav:
+                pDialog.update(i * 100 / num_progress_items)
+                i += 1
+
+                # >> Only process Unlinked ROMs
                 if roms_fav[rom_fav_ID]['fav_status'] != 'Unlinked ROM': continue
                 fav_name = roms_fav[rom_fav_ID]['m_name']
-                log_debug('_command_manage_favourites() Relinking Unlinked ROM Fav {0}'.format(fav_name))
+                log_debug('_command_manage_favourites() Repairing Unlinked ROM Fav {0}'.format(fav_name))
 
                 # >> Get ROMs of launcher
                 launcher_id = roms_fav[rom_fav_ID]['launcherID']
@@ -2656,9 +2737,11 @@ class Main:
                     roms_fav[new_rom_fav_ID] = rom_temp
                 else:
                     log_debug('_command_manage_favourites() Filename in launcher not found! This is a BUG.')
+            pDialog.update(i * 100 / num_progress_items)
+            pDialog.close()
 
         # --- Choose another parent ROM for Favourite ---
-        elif type == 2:
+        elif type == 3:
             # STEP 1: select new launcher.
             launcher_IDs = []
             launcher_names = []
@@ -2728,12 +2811,23 @@ class Main:
         for rom_fav_ID in roms_fav:
             roms_fav[rom_fav_ID]['fav_status'] = 'OK'
 
+        # --- Progress dialog ---
+        # >> Important to avoid multithread execution of the plugin and race conditions
+        pDialog = xbmcgui.DialogProgress()
+
         # STEP 1: Find Favourites with missing launchers
         log_debug('_fav_check_favourites() STEP 1: Search unlinked Launchers')
+        num_progress_items = len(roms_fav)
+        i = 0
+        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 1 of 3...')
         for rom_fav_ID in roms_fav:
+            pDialog.update(i * 100 / num_progress_items)
+            i += 1
             if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
                 log_verb('Fav ROM "{0}" Unlinked Launcher because launcherID not in self.launchers'.format(roms_fav[rom_fav_ID]['m_name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked Launcher'
+        pDialog.update(i * 100 / num_progress_items)
+        pDialog.close()
 
         # STEP 2: Find missing ROM ID
         # >> Get a list of launchers Favourite ROMs belong
@@ -2741,9 +2835,15 @@ class Main:
         launchers_fav = set()
         for rom_fav_ID in roms_fav: launchers_fav.add(roms_fav[rom_fav_ID]['launcherID'])
 
-        # >> Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs that belong to
-        # >> that launcher.
+        # >> Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs 
+        # >> that belong to that launcher.
+        num_progress_items = len(launchers_fav)
+        i = 0
+        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 2 of 3...')
         for launcher_id in launchers_fav:
+            pDialog.update(i * 100 / num_progress_items)
+            i += 1
+
             # >> If Favourite does not have launcher skip it. It has been marked as 'Unlinked Launcher'
             # >> in step 1.
             if launcher_id not in self.launchers: continue
@@ -2759,14 +2859,23 @@ class Main:
                     if roms_fav[rom_fav_ID]['id'] not in roms:
                         log_verb('Fav ROM "{0}" Unlinked ROM because romID not in launcher ROMs'.format(roms_fav[rom_fav_ID]['m_name']))
                         roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked ROM'
+        pDialog.update(i * 100 / num_progress_items)
+        pDialog.close()
 
         # STEP 3: Check if file exists. Even if the ROM ID is not there because user
         # deleted ROM or launcher, the file may still be there.
         log_debug('_fav_check_favourites() STEP 3: Search broken ROMs')
+        num_progress_items = len(launchers_fav)
+        i = 0
+        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 3 of 3...')
         for rom_fav_ID in roms_fav:
+            pDialog.update(i * 100 / num_progress_items)
+            i += 1
             if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
                 log_verb('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['m_name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
+        pDialog.update(i * 100 / num_progress_items)
+        pDialog.close()
 
     #
     # Renders a listview with all collections
