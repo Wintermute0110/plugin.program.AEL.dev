@@ -1569,7 +1569,7 @@ class Main:
             dialog = xbmcgui.Dialog()
             desc_str = text_limit_string(roms[romID]['m_plot'], DESCRIPTION_MAXSIZE)
             type2 = dialog.select('Modify ROM metadata',
-                                  ['Scrape from {0}...'.format(self.scraper_metadata.fancy_name),
+                                  ['Scrape from {0}...'.format(self.scraper_metadata.name),
                                    'Import metadata from NFO file',
                                    "Edit Title: '{0}'".format(roms[romID]['m_name']),
                                    "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
@@ -5004,7 +5004,7 @@ class Main:
                 log_debug('NFO file not found. Only cleaning ROM name.')
                 romdata['m_name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
         elif metadata_action == META_SCRAPER:
-            scraper_text = 'Scraping metadata with {0}. Searching for matching games...'.format(self.scraper_metadata.fancy_name)
+            scraper_text = 'Scraping metadata with {0}. Searching for matching games...'.format(self.scraper_metadata.name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
             # --- Do a search and get a list of games ---
@@ -5034,7 +5034,7 @@ class Main:
                 else:
                     log_error('Invalid metadata_scraper_mode {0}'.format(self.settings['metadata_scraper_mode']))
                     selectgame = 0
-                scraper_text = 'Scraping metadata with {0}. Game selected. Getting metadata...'.format(self.scraper_metadata.fancy_name)
+                scraper_text = 'Scraping metadata with {0}. Game selected. Getting metadata...'.format(self.scraper_metadata.name)
                 self.pDialog.update(self.progress_number, self.file_text, scraper_text)
                     
                 # --- Grab metadata for selected game ---
