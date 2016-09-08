@@ -50,7 +50,7 @@ class asset_NULL(Scraper_Asset):
 class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
     # >> Cache page data in get_images()
     cached_game_id = ''
-    cached_game_id_url_data = ''
+    cached_page_data = ''
 
     def __init__(self):
         self.name = 'TheGamesDB'
@@ -73,6 +73,9 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
     def get_images(self, game, asset_kind):
         images = []
 
+        # --- If asset kind not supported return inmediately ---
+        if not self.supports_asset(asset_kind): return images
+
         # --- Download game page XML data ---
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
         A = assets_get_info_scheme(asset_kind)
@@ -83,12 +86,12 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         # >> If cache miss, then update cache.
         if self.cached_game_id == game['id']:
             log_debug('asset_TheGamesDB::get_images Cache HIT')
-            page_data = self.cached_game_id_url_data
+            page_data = self.cached_page_data
         else:
             log_debug('asset_TheGamesDB::get_images Cache MISS. Updating cache')
             page_data = net_get_URL_oneline(game_id_url)
             self.cached_game_id = game['id']
-            self.cached_game_id_url_data = page_data
+            self.cached_page_data = page_data
 
         # --- Parse game thumb information and make list of images ---
         # The XML returned by GetGame.php has many tags. See an example here:
@@ -173,6 +176,9 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 
     def get_images(self, game, asset_kind):
         images = []
+
+        # --- If asset kind not supported return inmediately ---
+        if not self.supports_asset(asset_kind): return images
 
         # --- Download game page data ---
         game_id_url = 'http://www.gamefaqs.com' + game['id'] + '/images'
