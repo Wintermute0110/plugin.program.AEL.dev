@@ -154,12 +154,18 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def __init__(self):
         self.name = 'GameFAQs'
 
-    def set_options(self, region, imgsize):
-        pass
-
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
         return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
+
+    def set_options(self, region, imgsize):
+        pass
+
+    def supports_asset(self, asset_kind):
+        if asset_kind == ASSET_SNAP or asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
+           return True
+
+        return False
 
     def get_images(self, game, asset_kind):
         images = []
@@ -246,22 +252,23 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
             page_data = net_get_URL_oneline(image_url)
             # text_dump_str_to_file(page_data, 'page_data.txt')
 
-            if asset_kind == ASSET_BOXFRONT:
-                # <a href="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg">
-                # <img class="full_boxshot" src="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg" alt="Super Metroid Box Front" />
-                # </a>
-                results = re.findall('<img class="full_boxshot" src="(.+?)" alt="(.+?)" /></a>', page_data)
-                # print(results)
-                for index, boxart in enumerate(results):
-                    str_index = str(index + 1)
-                    log_debug('asset_GameFAQs::get_images Adding thumb #{0} {1}'.format(str_index, boxart[0]))
+            # >> NOTE findall() returns a list of tuples, not a match object!
+            # <a href="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg">
+            # <img class="full_boxshot" src="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg" alt="Super Metroid Box Front" />
+            # </a>
+            results = re.findall('<img class="full_boxshot" src="(.+?)" alt="(.+?)" /></a>', page_data)
+            # print(results)
+            str_index = 1
+            for index, boxart in enumerate(results):
+                art_name = boxart[1]
+                if asset_kind == ASSET_BOXFRONT and art_name.find('Front') >= 0:
+                    log_debug('asset_GameFAQs::get_images Adding Boxfront #{0} {1}'.format(str_index, boxart[0]))
                     images.append({'name' : boxart[1], 'URL' : boxart[0], 'disp_URL' : boxart[0]})
-            elif asset_kind == ASSET_BOXBACK:
-                results = re.findall('<img class="full_boxshot" src="(.+?)" alt="(.+?)" /></a>', page_data)
-                for index, boxart in enumerate(results):
-                    str_index = str(index + 1)
-                    log_debug('asset_GameFAQs::get_images Adding thumb #{0} {1}'.format(str_index, boxart[0]))
+                    str_index += 1
+                elif asset_kind == ASSET_BOXBACK and art_name.find('Back') >= 0:
+                    log_debug('asset_GameFAQs::get_images Adding Boxback #{0} {1}'.format(str_index, boxart[0]))
                     images.append({'name' : boxart[1], 'URL' : boxart[0], 'disp_URL' : boxart[0]})
+                    str_index += 1
 
         return images
 
