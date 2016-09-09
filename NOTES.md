@@ -52,11 +52,6 @@
 
  * Issue 14: [Feature request] Add the platforn in the gamedb url query.
 
- * Scraper should report wheter it supports and asset or not.
- 
- * Scraper should download the correct asset or nothing at all if it does not support and specific
-   asset.
- 
  * Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
 
  * Edition of ROMs in Collections is not working at the moment.
@@ -72,6 +67,11 @@
 
 
 # DONE #
+
+ * Asset scraper should report wheter it supports and asset or not.
+ 
+ * Asset scraper should download the correct asset or nothing at all if it does not support and 
+   specific asset.
 
  * Integrate AL launchers.xml sanitizer in AEL plugin.
 

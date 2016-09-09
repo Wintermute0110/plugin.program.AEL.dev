@@ -36,6 +36,11 @@ try:
 except:
     from utils_kodi_standalone import *
 
+# --- AEL ROM storage version format ---
+# >> An integer number incremented whenever there is a change in the ROM storage format.
+# >> This will allow easy migrations.
+AEL_STORAGE_FORMAT = 1
+
 # --- Configure JSON writer ---
 # NOTE More compact JSON files (less blanks) load faster because size is smaller.
 JSON_indent     = 1
@@ -268,7 +273,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher version="1">\n')
+        str_list.append('<advanced_emulator_launcher version="{0}">\n'.format(AEL_STORAGE_FORMAT))
 
         # --- Control information ---
         # >> time.time() returns a float. Usually precision is much better than a second, but not always.
@@ -385,8 +390,8 @@ def fs_load_catfile(categories_file):
     launchers = {}
 
     # --- Parse using cElementTree ---
+    # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
     log_verb('fs_load_catfile() Loading {0}'.format(categories_file))
-    # If there are issues in the XML file ET.parse will fail
     try:
         xml_tree = ET.parse(categories_file)
     except ET.ParseError, e:
@@ -644,7 +649,7 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_ROMs version="1">\n')
+        str_list.append('<advanced_emulator_launcher_ROMs version="{0}">\n'.format(AEL_STORAGE_FORMAT))
 
         # Print some information in the XML so the user can now which launcher created it.
         # Note that this is ignored when reading the file.
@@ -720,104 +725,24 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
 # Favourite ROMs
 # -------------------------------------------------------------------------------------------------
 #
-# Write to disk Favourite ROMs in XML (OBSOLETE FUNCTION)
+# Save Favourites JSON file
 #
-def fs_write_Favourites_XML(roms_xml_file, roms):
-    log_info('fs_write_Favourites_XML() File {0}'.format(roms_xml_file))
-    try:
-        str_list = []
-        str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_Favourites version="1">\n')
-        # Size optimization: only write in the XML fields which are not ''. This
-        # will save A LOT of disk space and reduce loading times (at a cost of
-        # some writing time, but writing is much less frequent than reading).
-        for romID in sorted(roms, key = lambda x : roms[x]["name"]):
-            rom = roms[romID]
-            str_list.append('<rom>\n')
-            str_list.append(XML_text('id', romID))
-            str_list.append(XML_text('name', rom['name']))
-            if rom['filename']:    str_list.append(XML_text('filename', rom['filename']))
-            if rom['thumb']:       str_list.append(XML_text('thumb', rom['thumb']))
-            if rom['fanart']:      str_list.append(XML_text('fanart', rom['fanart']))
-            if rom['trailer']:     str_list.append(XML_text('trailer', rom['trailer']))
-            if rom['custom']:      str_list.append(XML_text('custom', rom['custom']))
-            if rom['genre']:       str_list.append(XML_text('genre', rom['genre']))
-            if rom['year']:        str_list.append(XML_text('year', rom['year']))
-            if rom['studio']:      str_list.append(XML_text('studio', rom['studio']))
-            if rom['plot']:        str_list.append(XML_text('plot', rom['plot']))
-            if rom['altapp']:      str_list.append(XML_text('altapp', rom['altapp']))
-            if rom['altarg']:      str_list.append(XML_text('altarg', rom['altarg']))
-            str_list.append(XML_text('finished', unicode(rom['finished'])))
-            str_list.append(XML_text('nointro_status', rom['nointro_status']))
-            if rom['launcherID']:  str_list.append(XML_text('launcherID', rom['launcherID']))
-            if rom['platform']:    str_list.append(XML_text('platform', rom['platform']))
-            if rom['application']: str_list.append(XML_text('application', rom['application']))
-            if rom['args']:        str_list.append(XML_text('args', rom['args']))
-            if rom['rompath']:     str_list.append(XML_text('rompath', rom['rompath']))
-            if rom['romext']:      str_list.append(XML_text('romext', rom['romext']))
-            str_list.append(XML_text('minimize', unicode(rom['minimize'])))
-            str_list.append(XML_text('fav_status', rom['fav_status']))
-            str_list.append('</rom>\n')
-        str_list.append('</advanced_emulator_launcher_Favourites>\n')
-        full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(roms_xml_file, 'w')
-        file_obj.write(full_string)
-        file_obj.close()
-    except OSError:
-        kodi_notify('Cannot write {0} file (OSError)'.format(roms_xml_file))
-    except IOError:
-        kodi_notify('Cannot write {0} file (IOError)'.format(roms_xml_file))
-
-#
-# Loads an XML file containing the favourite ROMs (OBSOLETE FUNCTION)
-# It is basically the same as ROMs, but with some more fields to store launching application data.
-#
-def fs_load_Favourites_XML(roms_xml_file):
-    __debug_xml_parser = 0
-    roms = {}
-
-    # --- If file does not exist return empty dictionary ---
-    if not os.path.isfile(roms_xml_file): return roms
-
-    # --- Parse using cElementTree ---
-    log_verb('fs_load_Favourites_XML() File {0}'.format(roms_xml_file))
-    try:
-        xml_tree = ET.parse(roms_xml_file)
-    except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
-        return roms
-    xml_root = xml_tree.getroot()
-    for root_element in xml_root:
-        if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
-
-        if root_element.tag == 'rom':
-            # Default values
-            rom = fs_new_favourite_rom()
-            for rom_child in root_element:
-                # By default read strings
-                xml_text = rom_child.text if rom_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
-                xml_tag  = rom_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
-                rom[xml_tag] = xml_text
-
-                # Now transform data depending on tag name
-                if xml_tag == 'finished' or xml_tag == 'minimize':
-                    xml_bool = True if xml_text == 'True' else False
-                    rom[xml_tag] = xml_bool
-                elif xml_tag == 'fav_status':
-                    xml_string = xml_text if xml_text in ['OK', 'Unlinked', 'Broken'] else 'OK'
-                    rom[xml_tag] = xml_string
-            roms[rom['id']] = rom
-
-    return roms
-
 def fs_write_Favourites_JSON(roms_json_file, roms):
     log_info('fs_write_Favourites_JSON() File {0}'.format(roms_json_file))
+
+    # --- Create JSON data structure, including version number ---
+    control_dic = {
+        'control' : 'Advanced Emulator Launcher Favourite ROMs',
+        'version' : AEL_STORAGE_FORMAT
+    }
+    raw_data = []
+    raw_data.append(control_dic)
+    raw_data.append(roms)
+
+    # --- Write JSON file ---
     try:
         with io.open(roms_json_file, 'w', encoding='utf-8') as file:
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -830,22 +755,25 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
 # Loads an JSON file containing the Favourite ROMs
 #
 def fs_load_Favourites_JSON(roms_json_file):
-    roms = {}
-
     # --- If file does not exist return empty dictionary ---
-    if not os.path.isfile(roms_json_file): return roms
+    log_verb('fs_load_Favourites_JSON() File {0}'.format(roms_json_file))
+    if not os.path.isfile(roms_json_file): return {}
 
     # --- Parse JSON ---
-    log_verb('fs_load_Favourites_JSON() File {0}'.format(roms_json_file))
     with open(roms_json_file) as file:    
         try:
-            roms = json.load(file)
+            raw_data = json.load(file)
         except ValueError:
             statinfo = os.stat(roms_json_file)
             log_error('fs_load_Favourites_JSON() ValueError exception in json.load() function')
             log_error('fs_load_Favourites_JSON() File {0}'.format(roms_json_file))
             log_error('fs_load_Favourites_JSON() Size {0}'.format(statinfo.st_size))
-        file.close()
+            return {}
+
+    # --- Extract roms from JSON data structe and ensure version is correct ---
+    control_str = raw_data[0]['control']
+    version_int = raw_data[0]['version']
+    roms        = raw_data[1]
 
     return roms
 
@@ -857,7 +785,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_Collection_index version="1">\n')
+        str_list.append('<advanced_emulator_launcher_Collection_index version="{0}">\n'.format(AEL_STORAGE_FORMAT))
 
         # --- Control information ---
         _t = time.time()
@@ -935,9 +863,18 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
     log_info('fs_write_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
     log_info('fs_write_Collection_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
+    
+    control_dic = {
+        'control' : 'Advanced Emulator Launcher Collection ROMs',
+        'version' : AEL_STORAGE_FORMAT
+    }
+    raw_data = []
+    raw_data.append(control_dic)
+    raw_data.append(roms)
+    
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -948,13 +885,12 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
+# WARNING Collection ROMs are a list, not a dictionary
 #
 def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
-    roms = []
-
     # --- If file does not exist return empty dictionary ---
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
-    if not os.path.isfile(roms_json_file): return roms
+    if not os.path.isfile(roms_json_file): return []
 
     # --- Parse using JSON ---
     log_info('fs_load_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
@@ -962,16 +898,59 @@ def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
 
     with open(roms_json_file) as file:    
         try:
-            roms = json.load(file)
+            raw_data = json.load(file)
         except ValueError:
             statinfo = os.stat(roms_json_file)
             log_error('fs_load_Collection_ROMs_JSON() ValueError exception in json.load() function')
             log_error('fs_load_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
             log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
             log_error('fs_load_Collection_ROMs_JSON() Size {0}'.format(statinfo.st_size))
-        file.close()
+            return []
+
+    # --- Extract roms from JSON data structe and ensure version is correct ---
+    control_str = raw_data[0]['control']
+    version_int = raw_data[0]['version']
+    roms        = raw_data[1]
 
     return roms
+
+def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
+    log_info('fs_export_ROM_collection() File {0}'.format(output_filename))
+    
+    control_dic = {
+        'control' : 'Advanced Emulator Launcher Collection ROMs',
+        'version' : AEL_STORAGE_FORMAT
+    }
+    collection_dic = {
+        'id'                : collection['id'],
+        'name'              : collection['name'],
+        'default_thumb'     : collection['default_thumb'],
+        'default_fanart'    : collection['default_fanart'],
+        'default_banner'    : collection['default_banner'],
+        'default_poster'    : collection['default_poster'],
+        'default_clearlogo' : collection['default_clearlogo'],
+        's_thumb'           : collection['s_thumb'],
+        's_fanart'          : collection['s_fanart'],
+        's_banner'          : collection['s_banner'],
+        's_flyer'           : collection['s_flyer'],
+        's_trailer'         : collection['s_trailer']
+    }
+    raw_data = []
+    raw_data.append(control_dic)
+    raw_data.append(collection_dic)
+    raw_data.append(collection_rom_list)
+
+    # >> Produce nicely formatted JSON when exporting
+    try:
+        with io.open(output_filename, 'w', encoding = 'utf-8') as file:
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                   indent = 2, separators = (', ', ' : '))
+            file.write(unicode(json_data))
+            file.close()
+    except OSError:
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename))
+    except IOError:
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename))
 
 # -------------------------------------------------------------------------------------------------
 # Virtual Categories
@@ -981,7 +960,7 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_Virtual_Category_index version="1">\n')
+        str_list.append('<advanced_emulator_launcher_Virtual_Category_index version="{0}">\n'.format(AEL_STORAGE_FORMAT))
 
         # --- Control information ---
         _t = time.time()
@@ -1073,11 +1052,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
 # Loads an JSON file containing the Virtual Launcher ROMs
 #
 def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
-    roms = {}
-
     # --- If file does not exist return empty dictionary ---
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
-    if not os.path.isfile(roms_json_file): return roms
+    if not os.path.isfile(roms_json_file): return {}
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
@@ -1090,7 +1067,7 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
             log_error('fs_load_VCategory_ROMs_JSON() Dir  {0}'.format(roms_dir))
             log_error('fs_load_VCategory_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
             log_error('fs_load_VCategory_ROMs_JSON() Size {0}'.format(statinfo.st_size))
-        file.close()
+            return {}
 
     return roms
 

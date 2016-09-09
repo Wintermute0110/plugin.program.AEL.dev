@@ -1,6 +1,13 @@
 [B]Advanced Emulator Launcher | version 0.9.2 | xx September 2016[/B]
 
-WIP  Versioned ROM storage JSON files for Favourites and ROM Collections.
+WIP  ROM Collections can be imported/exported and shared with other people.
+
+FEATURE  Collection ROMs can be repaired/relinked, like Favourite ROMs.
+
+FEATURE  Versioned ROM storage JSON files for Favourites and ROM Collections.
+         NOT COMPATBLE WITH PREVIOUS AEL VERSIONS!
+
+FEATURE  Reorganised context menu in Favourites/Collection ROMs.
 
 FEATURE  Relink Favourite ROMs with Unlinked Launchers or Broken parent ROMs.
 
