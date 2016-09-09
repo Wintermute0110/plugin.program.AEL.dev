@@ -502,7 +502,7 @@ def fs_get_ROMs_file_path(roms_dir, roms_base_noext):
 def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
     # >> Get filename
     roms_xml_file = os.path.join(roms_dir, roms_base_noext + '.xml')
-    log_info('fs_write_ROMs_XML() Saving XML file {0}'.format(roms_xml_file))
+    log_debug('fs_write_ROMs_XML() Saving XML file {0}'.format(roms_xml_file))
 
     # --- Notify we are busy doing things ---
     kodi_busydialog_ON()
@@ -597,7 +597,7 @@ def fs_load_ROMs_XML(roms_dir, roms_base_noext):
     kodi_busydialog_ON()
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_ROMs_XML() Loading XML file {0}'.format(roms_xml_file))
+    log_debug('fs_load_ROMs_XML() Loading XML file {0}'.format(roms_xml_file))
     # If XML has errors (invalid characters, etc.) this will rais exception 'err'
     try:
         xml_tree = ET.parse(roms_xml_file)
@@ -640,9 +640,9 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     # >> Get file names
     roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
     roms_xml_file  = os.path.join(roms_dir, roms_base_noext + '.xml')
-    log_info('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir))
-    log_info('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
-    log_info('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
+    log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir))
+    log_verb('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
+    log_verb('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
 
     # >> JSON files cannot have comments. Write an auxiliar NFO file with same prefix
     # >> to store launcher information for a set of ROMs
@@ -706,8 +706,8 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
     # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
     #    exception exceptions.ValueError and launcher cannot be deleted. Deal
     #    with this exception so at least launcher can be rescanned.
-    log_info('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir))
-    log_info('fs_load_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
+    log_verb('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir))
+    log_verb('fs_load_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     with open(roms_json_file) as file:
         try:
             roms = json.load(file)
