@@ -2662,7 +2662,8 @@ class Main:
         dialog = xbmcgui.Dialog()
         type = dialog.select('Manage Favourite ROMs',
                             ['Check Favourite ROMs',
-                             'Repair Unlinked Launcher/Broken ROMs',
+                             'Repair Unlinked Launcher/Broken ROMs (by filename)',
+                             'Repair Unlinked Launcher/Broken ROMs (by basename)',
                              'Repair Unlinked ROMs' ])
 
         # --- Check Favourite ROMs ---
@@ -2671,13 +2672,15 @@ class Main:
             self._fav_check_favourites(roms_fav)
 
         # --- Repair all Unlinked Launcher/Broken ROMs ---
-        elif type == 1:
+        # type == 1 --> Repair by filename match
+        # type == 2 --> Repair by ROM basename match
+        elif type == 1 or type == 2:
             # 1) Traverse list of Favourites.
             # 2) For each favourite traverse all Launchers.
             # 3) Search for a ROM with same filename or same rom_base.
             #    If found, then replace romID in Favourites with romID of found ROM. Do not copy 
             #    any metadata because user maybe customised the Favourite ROM.
-            kodi_notify('Repairing Unlinked Launcher/Broken ROMs...')
+            log_info('Repairing Unlinked Launcher/Broken ROMs (type = {0}...'.format(type))
 
             # >> Refreshing Favourite status will locate Unlinked ROMs.
             self._fav_check_favourites(roms_fav)
@@ -2686,6 +2689,7 @@ class Main:
             # NOTE Dictionaries cannot change size when iterating them. Make a list of found ROMs
             #      and repair broken Favourites on a second pass
             pDialog = xbmcgui.DialogProgress()
+            xbmc.sleep(100)
             num_progress_items = len(roms_fav)
             i = 0
             pDialog.create('Advanced Emulator Launcher', 'Repairing Unlinked Launcher/Broken ROMs...')
@@ -2694,6 +2698,10 @@ class Main:
             num_repaired_ROMs = 0
             for rom_fav_ID in roms_fav:
                 pDialog.update(i * 100 / num_progress_items)
+                if pDialog.iscanceled():
+                    pDialog.close()
+                    kodi_dialog_OK('Repair cancelled. No changes has been done.')
+                    return
                 i += 1
 
                 # >> Only process Unlinked Launcher ROMs
@@ -2712,21 +2720,21 @@ class Main:
                     roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
                     for rom_id in roms:
                         ROM = misc_split_path(roms[rom_id]['filename'])
-                        if roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename'] or ROM_FAV.base == ROM.base:
-                            if roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
-                                log_info('_command_manage_favourites() Favourite {0} matched by filename!')
-                                log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
-                                log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
-                            elif ROM_FAV.base == ROM.base:
-                                log_info('_command_manage_favourites() Favourite {0} matched by basename!')
-                                log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
-                                log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
-                            else:
-                                log_error('_command_manage_favourites() Error in logical condition')
-                            filename_found          = True
-                            new_fav_rom_ID          = rom_id
-                            new_fav_rom_laun_ID = launcher_id
-                            break
+                        if type == 1 and roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
+                            log_info('_command_manage_favourites() Favourite {0} matched by filename!')
+                            log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
+                            log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
+                        elif type == 2 and ROM_FAV.base == ROM.base:
+                            log_info('_command_manage_favourites() Favourite {0} matched by basename!')
+                            log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
+                            log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
+                        else:
+                            continue
+                        # >> Match found. Break all for loops inmediately.
+                        filename_found      = True
+                        new_fav_rom_ID      = rom_id
+                        new_fav_rom_laun_ID = launcher_id
+                        break
                     if filename_found: break
 
                 # >> Add ROM to the list of ROMs to be repaired.
@@ -2738,7 +2746,7 @@ class Main:
                     repair_rom_list.append(rom_repair)
                 else:
                     log_verb('_command_manage_favourites() ROM {0} filename not found in any launcher'.format(fav_name))
-            log_info('_command_manage_favourites() Step 1 found {0} broken ROMs'.format(num_broken_ROMs))
+            log_info('_command_manage_favourites() Step 1 found {0} unlinked launcher/broken ROMs'.format(num_broken_ROMs))
             log_info('_command_manage_favourites() Step 1 found {0} ROMs to be repaired'.format(len(repair_rom_list)))
             pDialog.update(i * 100 / num_progress_items)
             pDialog.close()
@@ -2765,11 +2773,19 @@ class Main:
             log_debug('_command_manage_favourites() Repaired {0} ROMs'.format(num_repaired_ROMs))          
 
             # >> Show info to user
-            kodi_dialog_OK('Found {0} Unlinked Launcher/Broken ROMs. '.format(num_broken_ROMs) +
-                           'Of those, {0} were repaired.'.format(num_repaired_ROMs))
+            if type == 1:
+                kodi_dialog_OK('Found {0} Unlinked Launcher/Broken ROMs. '.format(num_broken_ROMs) +
+                               'Of those, {0} were repaired by filename match.'.format(num_repaired_ROMs))
+            elif type == 2:
+                kodi_dialog_OK('Found {0} Unlinked Launcher/Broken ROMs. '.format(num_broken_ROMs) +
+                               'Of those, {0} were repaired by rombase match.'.format(num_repaired_ROMs))
+            else:
+                log_error('_command_manage_favourites() type = {0} unknown value!'.format(type))
+                kodi_dialog_OK('Unknown type = {0}. This is a bug, please report it.'.format(type))
+                return
 
         # --- Repair Unliked Favourite ROMs ---
-        elif type == 2:
+        elif type == 3:
             # 1) Traverse list of Favourites.
             # 2) If romID not found in launcher, then search for a ROM with same filename.
             # 3) If found, then replace romID in Favourites with romID of found ROM. Do not
