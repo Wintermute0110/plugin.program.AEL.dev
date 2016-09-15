@@ -25,6 +25,9 @@ FEATURE  Initial implementation of Arcade Database metadata scraper.
 
 FEATURE  Initial implementation of MobyGames metadata scraper.
 
+FIX  Use ROM title instead of rombasename in launcher notification. For standalone launchers use
+     then Launcher title.
+
 FIX  Add Clearlogo to "Edit Launcher" -- "Manage ROM asset directories..." menu.
 
 FIX  Do not include empty strings when checking for repeated asset directories.
@@ -32,8 +35,8 @@ FIX  Do not include empty strings when checking for repeated asset directories.
 
 [B]Advanced Emulator Launcher | version 0.9.1 | 6 September 2016[/B]
 
-FEATURE  Invalid characters in launchers.xml are fixed before importing AL legacy launcher/ROMs. A copy of the
-         fixed launchers.xml is placed in AEL ADDON_DATA_DIR.
+FEATURE  Invalid characters in launchers.xml are fixed before importing AL legacy launcher/ROMs. 
+         A copy of the fixed launchers.xml is placed in AEL ADDON_DATA_DIR.
 
 FEATURE  Check if there are duplicated asset directories. This will avoid overwriting of
          artwork files!

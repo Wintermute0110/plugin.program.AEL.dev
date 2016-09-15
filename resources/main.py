@@ -4195,17 +4195,19 @@ class Main:
             return
 
         # ~~~~~ External application ~~~~~
-        application = launcher['application']
-        app_basename = os.path.basename(launcher['application'])
-        arguments = launcher['args'].replace('%apppath%' , apppath).replace('%APPPATH%' , apppath)
-        app_ext = launcher['application'].split('.')[-1]
-        log_info('_run_standalone_launcher() categoryID   = {0}'.format(categoryID))
-        log_info('_run_standalone_launcher() launcherID   = {0}'.format(launcherID))
-        log_info('_run_standalone_launcher() application  = "{0}"'.format(application))
-        log_info('_run_standalone_launcher() apppath      = "{0}"'.format(apppath))
-        log_info('_run_standalone_launcher() app_basename = "{0}"'.format(app_basename))
-        log_info('_run_standalone_launcher() arguments    = "{0}"'.format(arguments))
-        log_info('_run_standalone_launcher() app_ext      = "{0}"'.format(app_ext))
+        application    = launcher['application']
+        app_basename   = os.path.basename(launcher['application'])
+        arguments      = launcher['args'].replace('%apppath%' , apppath).replace('%APPPATH%' , apppath)
+        app_ext        = launcher['application'].split('.')[-1]
+        launcher_title = launcher['s_title']
+        log_info('_run_standalone_launcher() categoryID     = {0}'.format(categoryID))
+        log_info('_run_standalone_launcher() launcherID     = {0}'.format(launcherID))
+        log_info('_run_standalone_launcher() application    = "{0}"'.format(application))
+        log_info('_run_standalone_launcher() apppath        = "{0}"'.format(apppath))
+        log_info('_run_standalone_launcher() app_basename   = "{0}"'.format(app_basename))
+        log_info('_run_standalone_launcher() arguments      = "{0}"'.format(arguments))
+        log_info('_run_standalone_launcher() app_ext        = "{0}"'.format(app_ext))
+        log_info('_run_standalone_launcher() launcher_title = "{0}"'.format(launcher_title))
 
         # --- Check for errors and abort if errors found ---
         if not os.path.exists(application):
@@ -4214,7 +4216,7 @@ class Main:
             return
 
         # ~~~~~ Execute external application ~~~~~
-        kodi_was_playing_flag = self._run_before_execution(app_basename, minimize_flag)
+        kodi_was_playing_flag = self._run_before_execution(launcher_title, minimize_flag)
         self._run_process(application, arguments, apppath, app_ext)
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
@@ -4307,6 +4309,7 @@ class Main:
         romfile     = ROM.path
         rompath     = ROM.dirname
         rombasename = ROM.base
+        rom_title   = rom['s_title']
         log_info('_command_run_rom() categoryID  = {0}'.format(categoryID))
         log_info('_command_run_rom() launcherID  = {0}'.format(launcherID))
         log_info('_command_run_rom() romID       = {0}'.format(romID))
@@ -4316,6 +4319,7 @@ class Main:
         log_info('_command_run_rom() rompath     = "{0}"'.format(rompath))
         log_info('_command_run_rom() rombasename = "{0}"'.format(rombasename))
         log_info('_command_run_rom() romext      = "{0}"'.format(romext))
+        log_info('_command_run_rom() rom_title   = "{0}"'.format(rom_title))
 
         # --- Check for errors and abort if found ---
         if not os.path.exists(application):
@@ -4349,7 +4353,7 @@ class Main:
             return
 
         # ~~~~~ Execute external application ~~~~~
-        kodi_was_playing_flag = self._run_before_execution(rombasename, minimize_flag)
+        kodi_was_playing_flag = self._run_before_execution(rom_title, minimize_flag)
         self._run_process(application, arguments, apppath, romext)
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
@@ -4413,7 +4417,11 @@ class Main:
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     #
-    def _run_before_execution(self, rombasename, minimize_flag):
+    def _run_before_execution(self, rom_title, minimize_flag):
+        # --- User notification ---
+        if self.settings['display_launcher_notify']:
+            kodi_notify('Launching {0}'.format(rom_title))
+
         # --- Stop/Pause Kodi mediaplayer if requested in settings ---
         kodi_was_playing_flag = False
         # id="media_state" default="0" values="Stop|Pause|Let Play"
@@ -4437,15 +4445,12 @@ class Main:
             # except:
             #     log_verb('_run_before_execution() EXCEPCION calling xbmc.audioSuspend()')
 
-        # --- Minimize Kodi if requested ---
+        # --- Toggle Kodi if requested ---
         if minimize_flag:
             log_verb('_run_before_execution() Toggling Kodi fullscreen')
             kodi_toogle_fullscreen()
         else:
             log_verb('_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
-
-        if self.settings['display_launcher_notify']:
-            kodi_notify('Launching {0}'.format(rombasename))
 
         # >> Disable navigation sounds?
         try:
