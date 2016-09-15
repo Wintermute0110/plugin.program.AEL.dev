@@ -4199,7 +4199,7 @@ class Main:
         app_basename   = os.path.basename(launcher['application'])
         arguments      = launcher['args'].replace('%apppath%' , apppath).replace('%APPPATH%' , apppath)
         app_ext        = launcher['application'].split('.')[-1]
-        launcher_title = launcher['s_title']
+        launcher_title = launcher['m_name']
         log_info('_run_standalone_launcher() categoryID     = {0}'.format(categoryID))
         log_info('_run_standalone_launcher() launcherID     = {0}'.format(launcherID))
         log_info('_run_standalone_launcher() application    = "{0}"'.format(application))
@@ -4309,7 +4309,7 @@ class Main:
         romfile     = ROM.path
         rompath     = ROM.dirname
         rombasename = ROM.base
-        rom_title   = rom['s_title']
+        rom_title   = rom['m_name']
         log_info('_command_run_rom() categoryID  = {0}'.format(categoryID))
         log_info('_command_run_rom() launcherID  = {0}'.format(launcherID))
         log_info('_command_run_rom() romID       = {0}'.format(romID))
