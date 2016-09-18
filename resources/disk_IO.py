@@ -292,7 +292,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
             category = categories[categoryID]
             # Data which is not string must be converted to string
-            # XML text returns UFT-8 encoded strings. Dictionary strings are in Unicode!
+            # XML_text() returns Unicode strings that will be encoded to UTF-8 later.
             str_list.append('<category>\n')
             str_list.append(XML_text('id', categoryID))
             str_list.append(XML_text('m_name', category['m_name']))
