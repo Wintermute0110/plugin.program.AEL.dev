@@ -25,9 +25,8 @@ MobyGames = metadata_MobyGames()
 # results = MobyGames.get_search('Metroid', '', 'Nintendo SNES')
 # results = MobyGames.get_search('Zelda', '', 'Nintendo SNES')
 # results = MobyGames.get_search('Super Mario World', '', 'Nintendo SNES')
-# results = MobyGames.get_search('super street fighter', '', 'Nintendo SNES')
-
-results = MobyGames.get_search('chakan', '', 'Mega Drive')
+results = MobyGames.get_search('super street fighter', '', 'Nintendo SNES')
+# results = MobyGames.get_search('chakan', '', 'Mega Drive')
 
 # --- Print list of fames found ---
 print_games_search(results)

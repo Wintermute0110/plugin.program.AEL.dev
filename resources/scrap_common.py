@@ -218,6 +218,7 @@ class Scraper_MobyGames():
                 game = {}
                 game['id']           = game_tuple[0]
                 game['display_name'] = game_tuple[1] + ' / {0}'.format(platform)
+                game['game_name']    = game_tuple[1]
                 game_list.append(game)
 
         return game_list

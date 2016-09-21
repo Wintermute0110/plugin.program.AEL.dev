@@ -282,8 +282,6 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         return Scraper_MobyGames.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
-        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
-
         # --- Get game page ---
         game_id_url = 'http://www.mobygames.com' + game['id']
         log_debug('metadata_MobyGames::get_metadata game_id_url "{0}"'.format(game_id_url))
@@ -293,36 +291,44 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         # Example: http://www.mobygames.com/game/chakan
         #
         # <td width="48%"><div id="coreGameRelease">
-        # <div style="font-size: 100%; font-weight: bold;">Published by</div>
-        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/company/sega-of-america-inc">SEGA&nbsp;of&nbsp;America,&nbsp;Inc.</a></div>
-        # <div style="font-size: 100%; font-weight: bold;">Developed by</div>
-        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/company/extended-play">Extended&nbsp;Play</a></div>
+        # ...
         # <div style="font-size: 100%; font-weight: bold;">Released</div>
         # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/game/chakan/release-info">1992</a></div>
-        # <div style="font-size: 100%; font-weight: bold;">Platforms</div>
-        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/game/game-gear/chakan">Game Gear</a>, 
-        # <a href="/game/genesis/chakan">Genesis</a></div></div>
-        # </td>
-        # <td width="48%"><div id="coreGameGenre"><div>
-        # <div style="font-size: 100%; font-weight: bold;">Genre</div>
-        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/action/">Action</a></div>
-        # <div style="font-size: 100%; font-weight: bold;">Perspective</div>
-        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/3rd-person-perspective/">3rd-person&nbsp;[DEPRECATED]</a>, 
-        # <a href="/genre/sheet/side-view/">Side&nbsp;view</a></div><div style="font-size: 100%; font-weight: bold;">Gameplay</div>
-        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/fighting/">Fighting</a>, 
-        # <a href="/genre/sheet/platform/">Platform</a></div><div style="font-size: 100%; font-weight: bold;">Misc</div>
-        # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/genre/sheet/licensed-title/">Licensed&nbsp;Title</a></div></div></div>
+        # ...
         # </td>
         gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
-        gamedata['title'] = game['display_name']
+        gamedata['title'] = game['game_name']
 
         game_genre = re.findall('Genre</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
-        print(game_genre)
+        # print(game_genre)
         if game_genre: gamedata['genre'] = text_unescape_HTML(game_genre[0][1])
 
+        # NOTE Year can be
+        #      A) YYYY
+        #      B) MMM, YYYY (MMM is Jan, Feb, ...)
+        #      C) MMM DD, YYYY
         game_year = re.findall('Released</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
-        if game_year: gamedata['year'] = text_unescape_HTML(game_year[0][1])
+        if game_year: 
+            year_str = text_unescape_HTML(game_year[0][1])
+            # print('Year_str = "' + year_str + '"')
+            year_A = re.findall('^([0-9]{4})', year_str)
+            year_B = re.findall('([\w]{3}), ([0-9]{4})', year_str)
+            year_C = re.findall('([\w]{3}) ([0-9]{2}), ([0-9]{4})', year_str)
+            # print('Year_A ' + unicode(year_A))
+            # print('Year_B ' + unicode(year_B))
+            # print('Year_C ' + unicode(year_C))
+            if year_A:   gamedata['year'] = year_A[0]
+            elif year_B: gamedata['year'] = year_B[0][1]
+            elif year_C: gamedata['year'] = year_C[0][2]
 
+        game_studio = re.findall('Published by</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
+        # print(game_studio)
+        if game_studio: gamedata['studio'] = text_unescape_HTML(game_studio[0][1])
+
+        game_description = re.findall('<h2>Description</h2>(.*?)<div class="sideBarLinks">', page_data)
+        # print(game_description)
+        if game_description: gamedata['plot'] = text_unescape_HTML(game_description[0])
+        
         return gamedata
 
 # -----------------------------------------------------------------------------
