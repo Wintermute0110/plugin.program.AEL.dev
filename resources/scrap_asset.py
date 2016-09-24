@@ -293,12 +293,136 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 # -----------------------------------------------------------------------------
 # MobyGames
 # ----------------------------------------------------------------------------- 
+class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
+    def __init__(self):
+        self.name = 'MobyGames'
 
+    # Call common code in parent class
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_MobyGames.get_search(self, search_string, rom_base_noext, platform)
+
+    def set_options(self, region, imgsize):
+        pass
+
+    def supports_asset(self, asset_kind):
+        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP or \
+           asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or asset_kind == ASSET_CARTRIDGE:
+           return True
+
+        return False
+
+    def get_images(self, game, asset_kind):
+        images = []
+        
+        # --- If asset kind not supported return inmediately ---
+        if not self.supports_asset(asset_kind): return images
+
+        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
+            game_id_url = 'http://www.mobygames.com' + game['id'] + '/screenshots'
+            A = assets_get_info_scheme(asset_kind)
+            log_debug('asset_MobyGames::get_images() game_id_url = {0}'.format(game_id_url))
+            log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(A.name))
+
+            # >> Check if URL page data is in cache. If so it's a cache hit.
+            # >> If cache miss, then update cache.
+            page_data = net_get_URL_oneline(game_id_url)
+            # text_dump_str_to_file('MobyGames-screenshots.txt', page_data)
+
+            # NOTE findall() returns a list of tuples, not a match object!
+            # <div class="thumbnail-image-wrapper">
+            # <a href="/game/snes/super-metroid/screenshots/gameShotId,222488/" 
+            #  title="Super Metroid SNES Title screen." class="thumbnail-image" 
+            #  style="background-image:url(/images/shots/s/222488-super-metroid-snes-screenshot-title-screen.jpg);">
+            # </a></div>
+            # <div class="thumbnail-caption"><small>Title screen.</small></div>
+            rlist = re.findall(
+                '<div class="thumbnail-image-wrapper">       ' +
+                '<a href="(.*?)" title="(.*?)" class="thumbnail-image" style="background-image:url\((.*?)\);">' +
+                '</a>      </div>      ' +
+                '<div class="thumbnail-caption">        <small>(.*?)</small>      </div>', page_data)
+            # print('Screenshots rlist = ' + unicode(rlist))
+            cover_index = 1
+            for index, rtuple in enumerate(rlist):
+                art_page_URL = rtuple[0]
+                art_name     = rtuple[1]
+                art_disp_URL = 'www.mobygames.com' + rtuple[2]
+                art_URL      = art_disp_URL.replace('/s/', '/l/')
+                
+                if asset_kind == ASSET_TITLE and art_name.find('Title') >= 0:
+                    log_debug('asset_MobyGames::get_images() Adding Title #{0} {1}'.format(cover_index, art_name))
+                    img_name = 'Adding Title #{0} {1}'.format(cover_index, art_name)
+                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    cover_index += 1
+                elif asset_kind == ASSET_SNAP and not art_name.find('Title') >= 0:
+                    log_debug('asset_MobyGames::get_images() Adding Snap #{0} {1}'.format(cover_index, art_name))
+                    img_name = 'Adding Snap #{0} {1}'.format(cover_index, art_name)
+                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    cover_index += 1
+
+        elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or asset_kind == ASSET_CARTRIDGE:
+            game_id_url = 'http://www.mobygames.com' + game['id'] + '/cover-art'
+            A = assets_get_info_scheme(asset_kind)
+            log_debug('asset_MobyGames::get_images() game_id_url = {0}'.format(game_id_url))
+            log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(A.name))
+            page_data = net_get_URL_oneline(game_id_url)
+            # text_dump_str_to_file('MobyGames-cover-art.txt', page_data)
+
+            # <div class="thumbnail-image-wrapper">
+            # <a href="/game/snes/super-metroid/cover-art/gameCoverId,16501/" 
+            #  title="Super Metroid SNES Front Cover" class="thumbnail-cover" 
+            #  style="background-image:url(/images/covers/s/16501-super-metroid-snes-front-cover.jpg);">
+            # </a></div>
+            rlist = re.findall(
+                '<div class="thumbnail-image-wrapper">       ' +
+                '<a href="(.*?)" title="(.*?)" class="thumbnail-cover" style="background-image:url\((.*?)\);">' +
+                '</a>      </div>', page_data)
+            # print('Cover-Art rlist = ' + unicode(rlist))
+            cover_index = 1
+            for index, rtuple in enumerate(rlist):
+                art_page_URL = rtuple[0]
+                art_name     = rtuple[1]
+                art_disp_URL = 'www.mobygames.com' + rtuple[2]
+                art_URL      = art_disp_URL.replace('/s/', '/l/')
+                
+                if asset_kind == ASSET_BOXFRONT and art_name.find('Front Cover') >= 0:
+                    log_debug('asset_MobyGames::get_images() Adding Boxfront #{0} {1}'.format(cover_index, art_name))
+                    img_name = 'Adding Boxfront #{0} {1}'.format(cover_index, art_name)
+                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    cover_index += 1
+                elif asset_kind == ASSET_BOXBACK and art_name.find('Back Cover') >= 0:
+                    log_debug('asset_MobyGames::get_images() Adding Boxback #{0} {1}'.format(cover_index, art_name))
+                    img_name = 'Adding Boxback #{0} {1}'.format(cover_index, art_name)
+                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    cover_index += 1
+                elif asset_kind == ASSET_CARTRIDGE and art_name.find('Media') >= 0:
+                    log_debug('asset_MobyGames::get_images() Adding Cartridge #{0} {1}'.format(cover_index, art_name))
+                    img_name = 'Adding Cartridge #{0} {1}'.format(cover_index, art_name)
+                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    cover_index += 1
+
+        return images
 
 # -----------------------------------------------------------------------------
 # Arcade Database (for MAME) http://adb.arcadeitalia.net/
 # ----------------------------------------------------------------------------- 
+class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
+    def __init__(self):
+        self.name = 'Arcade Database'
 
+    # Call common code in parent class
+    def get_search(self, search_string, rom_base_noext, platform):
+        return Scraper_ArcadeDB.get_search(self, search_string, rom_base_noext, platform)
+
+    def set_options(self, region, imgsize):
+        pass
+
+    def supports_asset(self, asset_kind):
+        return False
+
+    def get_images(self, game, asset_kind):
+        images = []
+
+        return images
 
 # -----------------------------------------------------------------------------
 # Google asset scraper
