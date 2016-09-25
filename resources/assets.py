@@ -97,41 +97,33 @@ def assets_init_asset_dir(asset_path, launcher):
     log_verb('assets_init_asset_dir() rom_path   "{0}"'.format(rom_path))
     log_verb('assets_init_asset_dir() asset_path "{0}"'.format(asset_path))
 
-    # Asset path is different from ROM path. Use naming sheme 1.
-    if asset_path != rom_path:
-        log_verb('assets_init_asset_dir() Using naming scheme 1')
+    # >> Fill in launcher fields
+    launcher['path_title']     = os.path.join(asset_path, 'titles').decode('utf-8')        
+    launcher['path_snap']      = os.path.join(asset_path, 'snaps').decode('utf-8')
+    launcher['path_fanart']    = os.path.join(asset_path, 'fanarts').decode('utf-8')
+    launcher['path_banner']    = os.path.join(asset_path, 'banners').decode('utf-8')
+    launcher['path_clearlogo'] = os.path.join(asset_path, 'clearlogos').decode('utf-8')
+    launcher['path_boxfront']  = os.path.join(asset_path, 'boxfront').decode('utf-8')
+    launcher['path_boxback']   = os.path.join(asset_path, 'boxback').decode('utf-8')
+    launcher['path_cartridge'] = os.path.join(asset_path, 'cartridges').decode('utf-8')
+    launcher['path_flyer']     = os.path.join(asset_path, 'flyers').decode('utf-8')
+    launcher['path_map']       = os.path.join(asset_path, 'maps').decode('utf-8')
+    launcher['path_manual']    = os.path.join(asset_path, 'manuals').decode('utf-8')
+    launcher['path_trailer']   = os.path.join(asset_path, 'trailers').decode('utf-8')
 
-        # >> Fill in launcher fields
-        launcher['path_title']     = os.path.join(asset_path, 'titles').decode('utf-8')        
-        launcher['path_snap']      = os.path.join(asset_path, 'snaps').decode('utf-8')
-        launcher['path_fanart']    = os.path.join(asset_path, 'fanarts').decode('utf-8')
-        launcher['path_banner']    = os.path.join(asset_path, 'banners').decode('utf-8')
-        launcher['path_clearlogo'] = os.path.join(asset_path, 'clearlogos').decode('utf-8')
-        launcher['path_boxfront']  = os.path.join(asset_path, 'boxfront').decode('utf-8')
-        launcher['path_boxback']   = os.path.join(asset_path, 'boxback').decode('utf-8')
-        launcher['path_cartridge'] = os.path.join(asset_path, 'cartridges').decode('utf-8')
-        launcher['path_flyer']     = os.path.join(asset_path, 'flyers').decode('utf-8')
-        launcher['path_map']       = os.path.join(asset_path, 'maps').decode('utf-8')
-        launcher['path_manual']    = os.path.join(asset_path, 'manuals').decode('utf-8')
-        launcher['path_trailer']   = os.path.join(asset_path, 'trailers').decode('utf-8')
-
-        # >> Create asset directories
-        assets_safe_create_dir(launcher['path_title'])
-        assets_safe_create_dir(launcher['path_snap'])
-        assets_safe_create_dir(launcher['path_fanart'])
-        assets_safe_create_dir(launcher['path_banner'])
-        assets_safe_create_dir(launcher['path_clearlogo'])        
-        assets_safe_create_dir(launcher['path_boxfront'])
-        assets_safe_create_dir(launcher['path_boxback'])
-        assets_safe_create_dir(launcher['path_cartridge'])
-        assets_safe_create_dir(launcher['path_flyer'])
-        assets_safe_create_dir(launcher['path_map'])
-        assets_safe_create_dir(launcher['path_manual'])
-        assets_safe_create_dir(launcher['path_trailer'])
-
-    # Asset path is same as ROM path. Use naming sheme 2.
-    else:
-        log_verb('assets_init_asset_dir() Using naming scheme 2')
+    # >> Create asset directories
+    assets_safe_create_dir(launcher['path_title'])
+    assets_safe_create_dir(launcher['path_snap'])
+    assets_safe_create_dir(launcher['path_fanart'])
+    assets_safe_create_dir(launcher['path_banner'])
+    assets_safe_create_dir(launcher['path_clearlogo'])        
+    assets_safe_create_dir(launcher['path_boxfront'])
+    assets_safe_create_dir(launcher['path_boxback'])
+    assets_safe_create_dir(launcher['path_cartridge'])
+    assets_safe_create_dir(launcher['path_flyer'])
+    assets_safe_create_dir(launcher['path_map'])
+    assets_safe_create_dir(launcher['path_manual'])
+    assets_safe_create_dir(launcher['path_trailer'])
 
 def assets_safe_create_dir(directory):
     log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(directory))
