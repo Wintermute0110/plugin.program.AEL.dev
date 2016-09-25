@@ -5285,7 +5285,7 @@ class Main:
         # >> By default always use local image in case scraper fails
         ret_asset_path = local_asset_path
 
-        # --- Cutomise function depending of image_king ---
+        # --- Customise function depending of image_king ---
         A = assets_get_info_scheme(asset_kind)
         asset_directory  = launcher[A.path_key]
         asset_path_noext = assets_get_path_noext_DIR(A, asset_directory, ROM.base_noext)
@@ -5299,6 +5299,12 @@ class Main:
         log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
         log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
         log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext))
+
+        # --- If scraper does not support particular asset return inmediately ---
+        if not scraper_obj.supports_asset(asset_kind):
+            log_debug('_roms_scrap_asset() Scraper {0} does not support asset {1}. ' +
+                      'Skipping.'.format(scraper_obj.name, A.name))
+            return ret_asset_path
 
         # --- Call scraper and get a list of games ---
         rom_name_scraping = text_clean_ROM_name_for_scraping(ROM.base_noext)
