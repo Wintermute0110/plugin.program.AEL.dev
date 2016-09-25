@@ -5352,9 +5352,7 @@ class Main:
             # If there is a local image add it to the list and show it to the user
             if os.path.isfile(local_image):
                 image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image} )
-
-            # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
-            image_url = gui_show_image_select(image_list)
+            image_url = gui_show_image_select('Select image', image_list)
             log_debug('{0} dialog returned image_url "{1}"'.format(A.name, image_url))
             if image_url == '': image_url = image_list[0]['URL']
 
@@ -5785,7 +5783,7 @@ class Main:
                                       'URL' : current_asset_path, 'disp_URL' : current_asset_path })
 
             # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
-            image_url = gui_show_image_select(image_list)
+            image_url = gui_show_image_select('Select image', image_list)
             log_debug('{0} dialog returned image_url "{1}"'.format(A.name, image_url))
             if image_url == '': image_url = image_list[0]['URL']
 
