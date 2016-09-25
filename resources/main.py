@@ -515,9 +515,9 @@ class Main:
 
         # --- Edit Category Asstes/Artwork ---
         elif type == 1:
+            category = self.categories[categoryID]
             # >> OLD code
             if None:
-                category = self.categories[categoryID]
                 status_thumb_str   = 'HAVE' if category['s_thumb']   else 'MISSING'
                 status_fanart_str  = 'HAVE' if category['s_fanart']  else 'MISSING'
                 status_banner_str  = 'HAVE' if category['s_banner']  else 'MISSING'
@@ -532,7 +532,6 @@ class Main:
                                        "Edit Trailer ({0})...".format(status_trailer_str)])
             # >> New code that uses ImgSelectDialog() class
             else:
-                category = self.categories[categoryID]
                 thumb_img   = category['s_thumb']   if category['s_thumb']   else 'DefaultAddonNone.png'
                 fanart_img  = category['s_fanart']  if category['s_fanart']  else 'DefaultAddonNone.png'
                 banner_img  = category['s_banner']  if category['s_banner']  else 'DefaultAddonNone.png'
@@ -937,18 +936,34 @@ class Main:
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
-            status_thumb_str   = 'HAVE' if launcher['s_thumb'] else 'MISSING'
-            status_fanart_str  = 'HAVE' if launcher['s_fanart'] else 'MISSING'
-            status_banner_str  = 'HAVE' if launcher['s_banner'] else 'MISSING'
-            status_flyer_str   = 'HAVE' if launcher['s_flyer'] else 'MISSING'
-            status_trailer_str = 'HAVE' if launcher['s_trailer'] else 'MISSING'
-            dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Edit Launcher Assets/Artwork',
-                                  ["Edit Thumbnail ({0})...".format(status_thumb_str),
-                                   "Edit Fanart ({0})...".format(status_fanart_str),
-                                   "Edit Banner ({0})...".format(status_banner_str),
-                                   "Edit Flyer ({0})...".format(status_flyer_str),
-                                   "Edit Trailer ({0})...".format(status_trailer_str)])
+            # >> OLD code
+            if None:
+                status_thumb_str   = 'HAVE' if launcher['s_thumb'] else 'MISSING'
+                status_fanart_str  = 'HAVE' if launcher['s_fanart'] else 'MISSING'
+                status_banner_str  = 'HAVE' if launcher['s_banner'] else 'MISSING'
+                status_flyer_str   = 'HAVE' if launcher['s_flyer'] else 'MISSING'
+                status_trailer_str = 'HAVE' if launcher['s_trailer'] else 'MISSING'
+                dialog = xbmcgui.Dialog()
+                type2 = dialog.select('Edit Launcher Assets/Artwork',
+                                    ["Edit Thumbnail ({0})...".format(status_thumb_str),
+                                    "Edit Fanart ({0})...".format(status_fanart_str),
+                                    "Edit Banner ({0})...".format(status_banner_str),
+                                    "Edit Flyer ({0})...".format(status_flyer_str),
+                                    "Edit Trailer ({0})...".format(status_trailer_str)])
+            else:
+                thumb_img   = launcher['s_thumb']   if launcher['s_thumb']   else 'DefaultAddonNone.png'
+                fanart_img  = launcher['s_fanart']  if launcher['s_fanart']  else 'DefaultAddonNone.png'
+                banner_img  = launcher['s_banner']  if launcher['s_banner']  else 'DefaultAddonNone.png'
+                flyer_img   = launcher['s_flyer']   if launcher['s_flyer']   else 'DefaultAddonNone.png'
+                trailer_img = launcher['s_trailer'] if launcher['s_trailer'] else 'DefaultAddonNone.png'
+                img_list = [
+                    {'name' : 'Edit Thumbnail...', 'disp_URL' : thumb_img,   'URL' : 0},
+                    {'name' : 'Edit Fanart...',    'disp_URL' : fanart_img,  'URL' : 1},
+                    {'name' : 'Edit Banner...',    'disp_URL' : banner_img,  'URL' : 2},
+                    {'name' : 'Edit Flyer...',     'disp_URL' : flyer_img,   'URL' : 3},
+                    {'name' : 'Edit Trailer...',   'disp_URL' : trailer_img, 'URL' : 4}
+                ]
+                type2 = gui_show_image_select('Edit Launcher Assets/Artwork', img_list)
 
             # --- Edit Assets ---
             # >> _gui_edit_asset() returns True if image was changed
