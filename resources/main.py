@@ -5562,7 +5562,7 @@ class Main:
             object_name = 'Category'
             A = assets_get_info_scheme(asset_kind)
             asset_directory = self.settings['categories_asset_dir']
-            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'])
+            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Category "{0}"'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
@@ -5577,7 +5577,7 @@ class Main:
             object_name = 'Collection'
             A = assets_get_info_scheme(asset_kind)
             asset_directory = self.settings['collections_asset_dir']
-            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['name'])
+            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Collection "{0}"'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
@@ -5592,7 +5592,7 @@ class Main:
             object_name = 'Launcher'
             A = assets_get_info_scheme(asset_kind)
             asset_directory = self.settings['launchers_asset_dir']
-            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'])
+            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Launcher "{0}"'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
@@ -5611,7 +5611,7 @@ class Main:
                 log_info('_gui_edit_asset() ROM is in Favourites')
                 asset_directory = self.settings['favourites_asset_dir']
                 platform        = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, ROM.base_noext)
+                asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, ROM.base_noext, object_dic['id'])
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher (id {0})'.format(launcherID))
                 launcher        = self.launchers[launcherID]

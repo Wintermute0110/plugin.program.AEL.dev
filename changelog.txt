@@ -29,6 +29,9 @@ FEATURE  Ratings can be edited now for Categories/Launchers/ROMs.
 
 FEATURE  Improved URL page data retrieve function.
 
+FIX  Include 3 characters of the object ID in artwork directories. This avoids overwriting of
+     images in Favourites if there are 2 ROMs with same name from 2 different launchers.
+
 FIX  Use ROM title instead of rombasename in launcher notification. For standalone launchers use
      then Launcher title.
 

@@ -334,32 +334,35 @@ def assets_get_info_scheme(asset_kind):
     return A
 
 #
-# Scheme A uses different directories for artwork and no sufixes.
+# Scheme DIR uses different directories for artwork and no sufixes.
 #
 def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
     # >> Returns asset/artwork path_noext
     return os.path.join(asset_path, asset_base_noext)
 
 #
-# Scheme B uses suffixes for artwork. All artwork are stored in the same directory
-#
-def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext):
+# Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
+# Name example: "Sonic The Hedgehog (Europe)_a3e_title"
+# First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
+# Favourites special category there could be ROMs with the same name for different systems.
+def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext, objectID = '000'):
     # >> Returns asset/artwork path_noext
     asset_path_noext = ''
-    
-    if   Asset.kind == ASSET_TITLE:     asset_path_noext = os.path.join(asset_path, asset_base_noext + '_title')
-    elif Asset.kind == ASSET_SNAP:      asset_path_noext = os.path.join(asset_path, asset_base_noext + '_snap')
-    elif Asset.kind == ASSET_FANART:    asset_path_noext = os.path.join(asset_path, asset_base_noext + '_fanart')
-    elif Asset.kind == ASSET_BANNER:    asset_path_noext = os.path.join(asset_path, asset_base_noext + '_banner')
-    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext = os.path.join(asset_path, asset_base_noext + '_clearlogo')
-    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext = os.path.join(asset_path, asset_base_noext + '_boxfront')
-    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext = os.path.join(asset_path, asset_base_noext + '_boxback')
-    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext = os.path.join(asset_path, asset_base_noext + '_cartridge')
-    elif Asset.kind == ASSET_FLYER:     asset_path_noext = os.path.join(asset_path, asset_base_noext + '_flyer')
-    elif Asset.kind == ASSET_MAP:       asset_path_noext = os.path.join(asset_path, asset_base_noext + '_map')
-    elif Asset.kind == ASSET_MANUAL:    asset_path_noext = os.path.join(asset_path, asset_base_noext + '_manual')
-    elif Asset.kind == ASSET_TRAILER:   asset_path_noext = os.path.join(asset_path, asset_base_noext + '_trailer')
-    elif Asset.kind == ASSET_THUMB:     asset_path_noext = os.path.join(asset_path, asset_base_noext + '_thumb')
+    objectID_str = '_' + objectID[0:3]
+
+    if   Asset.kind == ASSET_TITLE:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_title')
+    elif Asset.kind == ASSET_SNAP:      asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_snap')
+    elif Asset.kind == ASSET_FANART:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_fanart')
+    elif Asset.kind == ASSET_BANNER:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_banner')
+    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_clearlogo')
+    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_boxfront')
+    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_boxback')
+    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_cartridge')
+    elif Asset.kind == ASSET_FLYER:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_flyer')
+    elif Asset.kind == ASSET_MAP:       asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_map')
+    elif Asset.kind == ASSET_MANUAL:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_manual')
+    elif Asset.kind == ASSET_TRAILER:   asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_trailer')
+    elif Asset.kind == ASSET_THUMB:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_thumb')
     else:
         log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
 
