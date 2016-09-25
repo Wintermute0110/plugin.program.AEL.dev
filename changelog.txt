@@ -2,6 +2,8 @@
 
 WIP  ROM Collections can be imported/exported and shared with other people.
 
+FEATURE  Display assets when editing ROMs using the ImgSelectDialog class.
+
 FEATURE  Collection ROMs can be repaired/relinked, like Favourite ROMs.
 
 FEATURE  Versioned ROM storage JSON files for Favourites and ROM Collections.
@@ -17,13 +19,15 @@ FEATURE  TheGamesDB asset scraper working OK.
 
 FEATURE  GameFAQs asset scraper working OK.
 
-FEATURE  Ratings can be edited now for Categories/Launchers/ROMs.
+FEATURE  MobyGames metadata scraper.
 
-FEATURE  Improved URL page data retrieve function.
+FEATURE  MobyGames asset scraper.
 
 FEATURE  Initial implementation of Arcade Database metadata scraper.
 
-FEATURE  Initial implementation of MobyGames metadata scraper.
+FEATURE  Ratings can be edited now for Categories/Launchers/ROMs.
+
+FEATURE  Improved URL page data retrieve function.
 
 FIX  Use ROM title instead of rombasename in launcher notification. For standalone launchers use
      then Launcher title.
