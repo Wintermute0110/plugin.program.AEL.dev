@@ -4418,8 +4418,8 @@ class Main:
         self._run_after_execution(kodi_was_playing_flag, minimize_flag)
 
     #
-    # Launchs a process
-    # For standalone launchers rom_romext is the extension of the application (only used in Windoze)
+    # Launchs a ROM launcher or standalone launcher
+    # For standalone launchers romext is the extension of the application (only used in Windoze)
     #
     def _run_process(self, application, arguments, apppath, romext):
         # >> Determine platform and launch application
@@ -4427,13 +4427,17 @@ class Main:
 
         # >> Windoze
         if sys.platform == 'win32':
+            app_ext = application.split('.')[-1]
+            log_debug('_run_process() (Windows) app_ext = "{0}"'.format(app_ext))
+            log_debug('_run_process() (Windows) apppath = "{0}"'.format(apppath))
+            # >> ROM launchers where ROMs are LNK files
             if romext == 'lnk':
                 os.system('start "" "{0}"'.format(arguments).encode('utf-8'))
+            # >> Standalone launcher where application is a LNK file
+            elif app_ext == 'lnk' or app_ext == 'LNK':
+                os.system('start "" "{0}"'.format(application).encode('utf-8'))
             else:
                 info = None
-                app_ext = application.split('.')[-1]
-                log_debug('_run_process() (Windows) app_ext = "{0}"'.format(app_ext))
-                log_debug('_run_process() (Windows) apppath = "{0}"'.format(apppath))
                 # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
                 # >> Workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
                 # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
