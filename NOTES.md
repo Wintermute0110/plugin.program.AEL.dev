@@ -50,8 +50,6 @@
  
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2403674#pid2403674
 
- * Issue 14: [Feature request] Add the platforn in the gamedb url query.
-
  * Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
 
  * Edition of ROMs in Collections is not working at the moment.
@@ -67,6 +65,8 @@
 
 
 # DONE #
+
+ * Issue 14: [Feature request] Add the platforn in the gamedb url query.
 
  * Asset scraper should report wheter it supports and asset or not.
  

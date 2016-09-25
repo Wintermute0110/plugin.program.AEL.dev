@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.2 | xx September 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.2 | 26 September 2016[/B]
 
 WIP  ROM Collections can be imported/exported and shared with other people.
 
