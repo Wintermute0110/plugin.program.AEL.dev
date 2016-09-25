@@ -252,7 +252,8 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
             #  <div class="region">JP 03/19/94</div>
             # </div>
             img_pages = []
-            results = re.findall('<div class="img boxshot"><a href="(.+?)"><img class="img100 imgboxart" src="(.+?)" alt="(.+?)" /></a>', page_data)
+            results = re.findall('<div class="img boxshot"><a href="(.+?)">' +
+                                 '<img class="img100 imgboxart" src="(.+?)" alt="(.+?)" /></a>', page_data)
             # print(results)
 
             # --- Choose one full size artwork page based on game region ---
@@ -268,7 +269,7 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
             # --- Go to full size page and get thumb ---
             image_url = 'http://www.gamefaqs.com' + img_page[0]
             page_data = net_get_URL_oneline(image_url)
-            # text_dump_str_to_file(page_data, 'page_data.txt')
+            # text_dump_str_to_file('GameFAQs-images.txt', page_data)
 
             # >> NOTE findall() returns a list of tuples, not a match object!
             # <a href="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg">
@@ -345,7 +346,7 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             for index, rtuple in enumerate(rlist):
                 art_page_URL = rtuple[0]
                 art_name     = rtuple[1]
-                art_disp_URL = 'www.mobygames.com' + rtuple[2]
+                art_disp_URL = 'http://www.mobygames.com' + rtuple[2]
                 art_URL      = art_disp_URL.replace('/s/', '/l/')
                 
                 if asset_kind == ASSET_TITLE and art_name.find('Title') >= 0:
@@ -381,7 +382,7 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             for index, rtuple in enumerate(rlist):
                 art_page_URL = rtuple[0]
                 art_name     = rtuple[1]
-                art_disp_URL = 'www.mobygames.com' + rtuple[2]
+                art_disp_URL = 'http://www.mobygames.com' + rtuple[2]
                 art_URL      = art_disp_URL.replace('/s/', '/l/')
                 
                 if asset_kind == ASSET_BOXFRONT and art_name.find('Front Cover') >= 0:
@@ -458,4 +459,3 @@ class asset_Google(Scraper_Asset):
           return covers
       except:
           return covers
-
