@@ -5704,7 +5704,7 @@ class Main:
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
-            dest_path = A.path_noext + F.ext
+            dest_path = asset_path_noext + F.ext
             log_debug('_gui_edit_asset() image_file   "{0}"'.format(image_file))
             log_debug('_gui_edit_asset() img_ext      "{0}"'.format(F.ext))
             log_debug('_gui_edit_asset() dest_path    "{0}"'.format(dest_path))
