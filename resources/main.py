@@ -515,19 +515,37 @@ class Main:
 
         # --- Edit Category Asstes/Artwork ---
         elif type == 1:
-            category = self.categories[categoryID]
-            status_thumb_str   = 'HAVE' if category['s_thumb']   else 'MISSING'
-            status_fanart_str  = 'HAVE' if category['s_fanart']  else 'MISSING'
-            status_banner_str  = 'HAVE' if category['s_banner']  else 'MISSING'
-            status_flyer_str   = 'HAVE' if category['s_flyer']   else 'MISSING'
-            status_trailer_str = 'HAVE' if category['s_trailer'] else 'MISSING'
-            dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Edit Category Assets/Artwork',
-                                  ["Edit Thumbnail ({0})...".format(status_thumb_str),
-                                   "Edit Fanart ({0})...".format(status_fanart_str),
-                                   "Edit Banner ({0})...".format(status_banner_str),
-                                   "Edit Flyer ({0})...".format(status_flyer_str),
-                                   "Edit Trailer ({0})...".format(status_trailer_str)])
+            # >> OLD code
+            if None:
+                category = self.categories[categoryID]
+                status_thumb_str   = 'HAVE' if category['s_thumb']   else 'MISSING'
+                status_fanart_str  = 'HAVE' if category['s_fanart']  else 'MISSING'
+                status_banner_str  = 'HAVE' if category['s_banner']  else 'MISSING'
+                status_flyer_str   = 'HAVE' if category['s_flyer']   else 'MISSING'
+                status_trailer_str = 'HAVE' if category['s_trailer'] else 'MISSING'
+                dialog = xbmcgui.Dialog()
+                type2 = dialog.select('Edit Category Assets/Artwork',
+                                      ["Edit Thumbnail ({0})...".format(status_thumb_str),
+                                       "Edit Fanart ({0})...".format(status_fanart_str),
+                                       "Edit Banner ({0})...".format(status_banner_str),
+                                       "Edit Flyer ({0})...".format(status_flyer_str),
+                                       "Edit Trailer ({0})...".format(status_trailer_str)])
+            # >> New code that uses ImgSelectDialog() class
+            else:
+                category = self.categories[categoryID]
+                thumb_img   = category['s_thumb']   if category['s_thumb']   else 'DefaultAddonNone.png'
+                fanart_img  = category['s_fanart']  if category['s_fanart']  else 'DefaultAddonNone.png'
+                banner_img  = category['s_banner']  if category['s_banner']  else 'DefaultAddonNone.png'
+                flyer_img   = category['s_flyer']   if category['s_flyer']   else 'DefaultAddonNone.png'
+                trailer_img = category['s_trailer'] if category['s_trailer'] else 'DefaultAddonNone.png'
+                img_list = [
+                    {'name' : 'Edit Thumbnail...', 'disp_URL' : thumb_img,   'URL' : 0},
+                    {'name' : 'Edit Fanart...',    'disp_URL' : fanart_img,  'URL' : 1},
+                    {'name' : 'Edit Banner...',    'disp_URL' : banner_img,  'URL' : 2},
+                    {'name' : 'Edit Flyer...',     'disp_URL' : flyer_img,   'URL' : 3},
+                    {'name' : 'Edit Trailer...',   'disp_URL' : trailer_img, 'URL' : 4}
+                ]
+                type2 = gui_show_image_select('Edit Category Assets/Artwork', img_list)
 
             # --- Edit Assets ---
             # >> _gui_edit_asset() returns True if image was changed
@@ -544,9 +562,8 @@ class Main:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_FLYER, category): return
             elif type2 == 4:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_TRAILER, category): return
-            # >> User canceled select dialog
             elif type2 < 0: return
-
+            
         # --- Choose default thumb/fanart ---
         elif type == 2:
             category        = self.categories[categoryID]
@@ -5872,6 +5889,7 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
 
         # >> Custom stuff
         self.listing = kwargs.get('listing')
+        self.window_title = kwargs.get('title')
         self.selected_url = ''
 
     def onInit(self):
@@ -5880,7 +5898,7 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
         self.container.controlLeft(self.container)
         self.container.controlRight(self.container)
 
-        # >> NOTE The mysterious control 7 is new in Kodi Krypton!
+        # >> The mysterious control 7 is new in Kodi Krypton!
         # >> See http://forum.kodi.tv/showthread.php?tid=250936&pid=2246458#pid2246458
         # self.cancel = self.getControl(7) # Produces an error "RuntimeError: Non-Existent Control 7"
         # self.cancel.setLabel('Ajo')
@@ -5888,7 +5906,7 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
         # >> Another container which I don't understand...
         self.getControl(3).setVisible(False)
         # >> Window title on top
-        self.getControl(1).setLabel('Choose item')
+        self.getControl(1).setLabel(self.window_title)
         # >> OK button
         self.button = self.getControl(5)
         self.button.setVisible(False)
@@ -5928,11 +5946,11 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
     def onFocus(self, controlID):
         pass
 
-def gui_show_image_select(img_list):
+def gui_show_image_select(window_title, img_list):
     # The xml file needs to be part of your addon, or included in the skin you use.
     # Yes, DialogSelect.xml is defined in Confluence here
     # https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
-    w = ImgSelectDialog('DialogSelect.xml', BASE_DIR, listing = img_list)
+    w = ImgSelectDialog('DialogSelect.xml', BASE_DIR, title = window_title, listing = img_list)
 
     # Execute dialog
     w.doModal()
@@ -5940,4 +5958,3 @@ def gui_show_image_select(img_list):
     del w
 
     return selected_url
-
