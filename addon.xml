@@ -15,7 +15,6 @@
   </extension>
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
-    <disclaimer>Developed in Kodi Jarvis.</disclaimer>
     <summary lang="en">Start any emulators/apps from Kodi.</summary>
     <description lang="en">Multi-emulator front-end for Kodi scalable to collections of thousands of ROMs. Includes offline scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. ROM auditing for No-Intro ROMs using No-Intro XML DATs. Launching of games and standalone applications is also available.</description>
   </extension>
