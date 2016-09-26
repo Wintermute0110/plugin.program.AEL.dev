@@ -952,6 +952,34 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
     except IOError:
         kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename))
 
+# See fs_export_ROM_collection() function.
+# Returns a tuple (control_dic, collection_dic, collection_rom_list)
+#
+def fs_import_ROM_Collection(input_filename):
+    if not os.path.isfile(input_filename): return ({}, {}, [])
+
+    # --- Parse using JSON ---
+    log_info('fs_import_ROM_Collection() Loading {0}'.format(input_filename))
+
+    with open(input_filename) as file:    
+        try:
+            raw_data = json.load(file)
+        except ValueError:
+            statinfo = os.stat(input_filename)
+            log_error('fs_load_Collection_ROMs_JSON() ValueError exception in json.load() function')
+            log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(input_filename))
+            log_error('fs_load_Collection_ROMs_JSON() Size {0}'.format(statinfo.st_size))
+            return ({}, {}, [])
+
+    # --- Extract roms from JSON data structe and ensure version is correct ---
+    control_dic         = raw_data[0]
+    collection_dic      = raw_data[1]
+    collection_rom_list = raw_data[2]
+    control_str         = control_dic['control']
+    version_int         = control_dic['version']
+
+    return (control_dic, collection_dic, collection_rom_list)
+
 # -------------------------------------------------------------------------------------------------
 # Virtual Categories
 # -------------------------------------------------------------------------------------------------

@@ -201,10 +201,6 @@ class Main:
             self._command_import_collection()
         elif command == 'EXPORT_COLLECTION':
             self._command_export_collection(args['catID'][0], args['launID'][0])
-        elif command == 'MOVE_COL_ROM_UP':
-            self._command_move_collection_rom_up(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'MOVE_COL_ROM_DOWN':
-            self._command_move_collection_rom_down(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'SHOW_LAUNCHERS':
             self._command_render_launchers(args['catID'][0])
         elif command == 'SHOW_ALL_LAUNCHERS':
@@ -338,7 +334,8 @@ class Main:
         # log_debug('Settings dump END')
 
     #
-    # Load scrapers based on the user settings.
+    # Load scrapers based on the user settings. This couple of functions are only used in the ROM
+    # scanner. Edit Categories/Launchers/ROMs initialise scrapers on demand.
     # Pass settings to the scraper objects based on user preferences.
     # Scrapers are loaded when needed, no always at main() as before. This will make the plugin
     # a little bit faster.
@@ -398,10 +395,6 @@ class Main:
         kodi_refresh_container()
 
     def _command_edit_category(self, categoryID):
-        # --- Load scrapers ---
-        self._load_metadata_scraper()
-        self._load_asset_scraper()
-
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]['finished'] == True else 'Status: Unfinished'
@@ -790,10 +783,6 @@ class Main:
         kodi_refresh_container()
 
     def _command_edit_launcher(self, categoryID, launcherID):
-        # --- Load scrapers ---
-        self._load_metadata_scraper()
-        self._load_asset_scraper()
-
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
         finished_display = 'Status : Finished' if self.launchers[launcherID]['finished'] == True else 'Status : Unfinished'
@@ -1573,28 +1562,41 @@ class Main:
     def _command_edit_rom(self, categoryID, launcherID, romID):
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
+            log_debug('_command_edit_rom() Editing Favourite ROM')
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            kodi_dialog_OK('Not coded yet. Sorry.')
-            return
+            log_debug('_command_edit_rom() Editing Collection ROM')
+            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+            collection = collections[launcherID]
+            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
+            #      a dictionary. Convert the Collection list into an ordered dictionary and then
+            #      converted back the ordered dictionary into a list before saving the collection.
+            roms = OrderedDict()
+            for collection_rom in collection_rom_list:
+                roms[collection_rom['id']] = collection_rom
         else:
+            log_debug('_command_edit_rom() Editing ROM in Launcher')
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
             roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
-
-        # --- Load scrapers ---
-        self._load_metadata_scraper()
-        self._load_asset_scraper()
 
         # --- Show a dialog with ROM editing options ---
         rom_name = roms[romID]['m_name']
         finished_display = 'Status: Finished' if roms[romID]['finished'] == True else 'Status: Unfinished'
         dialog = xbmcgui.Dialog()
-        if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
                                 ['Edit Metadata...', 'Edit Assets/Artwork...',
                                  finished_display, 'Advanced Modifications...',
                                  'Choose Favourite ROM default Assets/Artwork...',
                                  'Choose another parent for Favourite ROM...'])
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            type = dialog.select('Edit ROM {0}'.format(rom_name),
+                                ['Edit Metadata...', 'Edit Assets/Artwork...',
+                                 finished_display, 'Advanced Modifications...',
+                                 'Choose Collection ROM default Assets/Artwork...',
+                                 'Choose another parent for Collection ROM...',
+                                 'Move ROM up', 'Move ROM down', 'Choose ROM order...'])
         else:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
                                 ['Edit Metadata...', 'Edit Assets/Artwork...',
@@ -1602,33 +1604,30 @@ class Main:
 
         # --- Edit ROM metadata ---
         if type == 0:
+            # >> Make a list of available metadata scrapers
+            scraper_obj_list  = []
+            scraper_menu_list = []
+            for scrap_obj in scrapers_metadata:
+                scraper_obj_list.append(scrap_obj)
+                scraper_menu_list.append('Scrape metadata from {0}...'.format(scrap_obj.name))
+                log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
+
+            # >> Metadata edit dialog
             dialog = xbmcgui.Dialog()
             desc_str = text_limit_string(roms[romID]['m_plot'], DESCRIPTION_MAXSIZE)
-            type2 = dialog.select('Modify ROM metadata',
-                                  ['Scrape from {0}...'.format(self.scraper_metadata.name),
-                                   'Import metadata from NFO file',
-                                   "Edit Title: '{0}'".format(roms[romID]['m_name']),
-                                   "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
-                                   "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
-                                   "Edit Studio: '{0}'".format(roms[romID]['m_studio']),
-                                   "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
-                                   "Edit Plot: '{0}'".format(desc_str),
-                                   'Load Plot from TXT file ...',
-                                   'Save metadata to NFO file'])
-            # --- Scrap rom metadata ---
-            if type2 == 0:
-                # >> If this returns False there were no changes so no need to save ROMs XML.
-                if not self._gui_scrap_rom_metadata(roms, romID, launcherID): return
-
-            # --- Import ROM metadata from NFO file ---
-            elif type2 == 1:
-                if launcherID == VLAUNCHER_FAVOURITES_ID:
-                    kodi_dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
-                    return
-                if not fs_import_ROM_NFO(roms, romID): return
+            menu_list = ["Edit Title: '{0}'".format(roms[romID]['m_name']),
+                         "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
+                         "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
+                         "Edit Studio: '{0}'".format(roms[romID]['m_studio']),
+                         "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
+                         "Edit Plot: '{0}'".format(desc_str),
+                         'Load Plot from TXT file ...',
+                         'Import metadata from NFO file...',
+                         'Save metadata to NFO file']
+            type2 = dialog.select('Modify ROM metadata', menu_list + scraper_menu_list)
 
             # --- Edit of the rom title ---
-            elif type2 == 2:
+            if type2 == 0:
                 keyboard = xbmc.Keyboard(roms[romID]['m_name'], 'Edit title')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
@@ -1637,28 +1636,28 @@ class Main:
                 roms[romID]['m_name'] = title.rstrip()
 
             # --- Edition of the rom release year ---
-            elif type2 == 3:
+            elif type2 == 1:
                 keyboard = xbmc.Keyboard(roms[romID]['m_year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['m_year'] = keyboard.getText().decode('utf-8')
 
             # --- Edition of the rom game genre ---
-            elif type2 == 4:
+            elif type2 == 2:
                 keyboard = xbmc.Keyboard(roms[romID]['m_genre'], 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['m_genre'] = keyboard.getText().decode('utf-8')
 
             # --- Edition of the rom studio ---
-            elif type2 == 5:
+            elif type2 == 3:
                 keyboard = xbmc.Keyboard(roms[romID]['m_studio'], 'Edit studio')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['m_studio'] = keyboard.getText().decode('utf-8')
 
             # --- Edition of the ROM rating ---
-            elif type2 == 6:
+            elif type2 == 4:
                 rating = dialog.select('Edit ROM Rating',
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
@@ -1672,14 +1671,14 @@ class Main:
                     return
 
             # --- Edit ROM description (plot) ---
-            elif type2 == 7:
+            elif type2 == 5:
                 keyboard = xbmc.Keyboard(roms[romID]['m_plot'], 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['m_plot'] = keyboard.getText().decode('utf-8')
 
             # --- Import of the rom game plot from TXT file ---
-            elif type2 == 8:
+            elif type2 == 6:
                 dialog = xbmcgui.Dialog()
                 text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
                                           'files', '.txt|.dat', False, False).decode('utf-8')
@@ -1691,8 +1690,15 @@ class Main:
                     kodi_dialog_OK("Launcher plot '{0}' not changed".format(desc_str))
                     return
 
+            # --- Import ROM metadata from NFO file ---
+            elif type2 == 7:
+                if launcherID == VLAUNCHER_FAVOURITES_ID:
+                    kodi_dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
+                    return
+                if not fs_import_ROM_NFO(roms, romID): return
+
             # --- Export ROM metadata to NFO file ---
-            elif type2 == 9:
+            elif type2 == 8:
                 if launcherID == VLAUNCHER_FAVOURITES_ID:
                     kodi_dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
                     return
@@ -1700,9 +1706,23 @@ class Main:
                 # >> No need to save ROMs
                 return
 
+            # --- Scrap ROM metadata ---
+            elif type2 >= 9:
+                # --- Use the scraper chosen by user ---
+                scraper_index = type2 - 9
+                scraper_obj   = scraper_obj_list[scraper_index]
+                log_debug('_command_edit_rom() Scraper index {0}'.format(scraper_index))
+                log_debug('_command_edit_rom() User chose scraper "{0}"'.format(scraper_obj.name))
+
+                # --- Initialise asset scraper ---
+                scraper_obj.set_addon_dir(CURRENT_ADDON_DIR)
+                log_debug('_command_edit_rom() Initialised scraper "{0}"'.format(scraper_obj.name))
+
+                # >> If this returns False there were no changes so no need to save ROMs JSON.
+                if not self._gui_scrap_rom_metadata(categoryID, launcherID, romID, roms, scraper_obj): return
+
             # >> User canceled select dialog
-            elif type2 < 0:
-                return
+            elif type2 < 0: return
 
         # --- Edit Launcher Assets/Artwork ---
         elif type == 1:
@@ -1941,6 +1961,110 @@ class Main:
             launcher = self.launchers[launcher_id]
             roms[launcher_rom_id] = fs_get_Favourite_from_ROM(current_rom, launcher)
 
+        # --- Move ROM up (ONLY for Collection ROMs) ---
+        elif type == 6:
+            if not roms:
+                kodi_notify('Collection is empty. Add ROMs to this collection first.')
+                return
+
+            # >> Get position of current ROM in the list
+            num_roms = len(roms)
+            current_ROM_position = roms.keys().index(romID)
+            if current_ROM_position < 0:
+                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
+                return
+            log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['name'], collection['id']))
+            log_verb('_command_edit_rom() Collection has {0} ROMs'.format(num_roms))
+            log_verb('_command_edit_rom() Moving ROM in position {0} up'.format(current_ROM_position))
+
+            # >> If ROM is first of the list do nothing
+            if current_ROM_position == 0:
+                kodi_dialog_OK('ROM is in first position of the Collection. Cannot be moved up.')
+                return
+
+            # >> Reorder OrderedDict
+            new_order                           = range(num_roms)
+            new_order[current_ROM_position - 1] = current_ROM_position
+            new_order[current_ROM_position]     = current_ROM_position - 1
+            new_roms = OrderedDict()
+            # >> http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
+            for order_idx in new_order:
+                key_value_tuple = roms.items()[order_idx]
+                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
+            roms = new_roms
+
+        # --- Move ROM down (ONLY for Collection ROMs) ---
+        elif type == 7:
+            if not roms:
+                kodi_notify('Collection is empty. Add ROMs to this collection first.')
+                return
+
+            # >> Get position of current ROM in the list
+            num_roms = len(roms)
+            current_ROM_position = roms.keys().index(romID)
+            if current_ROM_position < 0:
+                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
+                return
+            log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['name'], collection['id']))
+            log_verb('_command_edit_rom() Collection has {0} ROMs'.format(num_roms))
+            log_verb('_command_edit_rom() Moving ROM in position {0} down'.format(current_ROM_position))
+
+            # >> If ROM is first of the list do nothing
+            if current_ROM_position == num_roms - 1:
+                kodi_dialog_OK('ROM is in last position of the Collection. Cannot be moved down.')
+                return
+
+            # >> Reorder OrderedDict
+            new_order                           = range(num_roms)
+            new_order[current_ROM_position]     = current_ROM_position + 1
+            new_order[current_ROM_position + 1] = current_ROM_position
+            new_roms = OrderedDict()
+            # >> http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
+            for order_idx in new_order:
+                key_value_tuple = roms.items()[order_idx]
+                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
+            roms = new_roms
+
+        # --- Choose ROM order (ONLY for Collection ROMs) ---
+        elif type == 8:
+            # >> Get position of current ROM in the list
+            num_roms = len(roms)
+            current_ROM_position = roms.keys().index(romID)
+            if current_ROM_position < 0:
+                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
+                return
+            log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['name'], collection['id']))
+            log_verb('_command_edit_rom() Collection has {0} ROMs'.format(num_roms))
+
+            # --- Show a select dialog ---
+            rom_menu_list = []
+            for key in roms:
+                if key == romID: continue
+                rom_menu_list.append(roms[key]['m_name'])
+            rom_menu_list.append('Last')
+            type2 = dialog.select('Choose position for ROM {0}'.format(roms[romID]['m_name']), 
+                                  rom_menu_list)
+            if type2 < 0: return
+            new_pos_index = type2
+            log_verb('_command_edit_rom() new_pos_index = {0}'.format(new_pos_index))
+
+            # --- Reorder Collection OrderedDict ---
+            # >> new_oder = [0, 1, ..., num_roms-1]
+            new_order = range(num_roms)
+            # >> Delete current element
+            del new_order[current_ROM_position]
+            # >> Insert current element at selected position
+            new_order.insert(new_pos_index, current_ROM_position)
+            log_verb('_command_edit_rom() old_order = {0}'.format(unicode(range(num_roms))))
+            log_verb('_command_edit_rom() new_order = {0}'.format(unicode(new_order)))
+
+            # >> Reorder ROMs
+            new_roms = OrderedDict()
+            for order_idx in new_order:
+                key_value_tuple = roms.items()[order_idx]
+                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
+            roms = new_roms
+
         # --- User canceled main select dialog ---
         elif type < 0: return
 
@@ -1948,6 +2072,12 @@ class Main:
         # Always save if we reach this point of the function
         if launcherID == VLAUNCHER_FAVOURITES_ID:
             fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            # >> Convert back the OrderedDict into a list and save Collection
+            collection_rom_list = []
+            for key in roms:
+                collection_rom_list.append(roms[key])
+            fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
         else:
             # >> Also save categories/launchers to update timestamp
             # >> Also update changed launcher timestamp
@@ -2466,8 +2596,6 @@ class Main:
             commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM',      VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             commands.append(('View Collection ROM data',   self._misc_url_RunPlugin('VIEW_ROM',          VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
-            commands.append(('Move ROM up',                self._misc_url_RunPlugin('MOVE_COL_ROM_UP',   VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
-            commands.append(('Move ROM down',              self._misc_url_RunPlugin('MOVE_COL_ROM_DOWN', VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
             commands.append(('Manage Collection ROMs',     self._misc_url_RunPlugin('MANAGE_FAV',        VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
             commands.append(('Edit ROM in Collection',     self._misc_url_RunPlugin('EDIT_ROM',          VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
             commands.append(('Delete ROM from Collection', self._misc_url_RunPlugin('DELETE_ROM',        VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
@@ -2720,17 +2848,36 @@ class Main:
 
         # --- Show selection dialog ---
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Manage Favourite ROMs',
-                            ['Check Favourite ROMs',
-                             'Repair Unlinked Launcher/Broken ROMs (by filename)',
-                             'Repair Unlinked Launcher/Broken ROMs (by basename)',
-                             'Repair Unlinked ROMs' ])
+        if categoryID == VCATEGORY_FAVOURITES_ID:
+            type = dialog.select('Manage Favourite ROMs',
+                                ['Check Favourite ROMs',
+                                 'Repair Unlinked Launcher/Broken ROMs (by filename)',
+                                 'Repair Unlinked Launcher/Broken ROMs (by basename)',
+                                 'Repair Unlinked ROMs' ])
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            type = dialog.select('Manage Collection ROMs',
+                                ['Check Collection ROMs',
+                                 'Repair Unlinked Launcher/Broken ROMs (by filename)',
+                                 'Repair Unlinked Launcher/Broken ROMs (by basename)',
+                                 'Repair Unlinked ROMs' ])
 
         # --- Check Favourite ROMs ---
         if type == 0:
-            kodi_notify('Checking Favourite ROMs...')
+            # >> This function opens a progress window to notify activity
             self._fav_check_favourites(roms_fav)
 
+            # --- Print a report of issues found ---
+            if categoryID == VCATEGORY_FAVOURITES_ID:
+                kodi_dialog_OK('You have {0} ROMs in Favourites. '.format(self.num_fav_roms) +
+                               '{0} have an unlinked launcher, '.format(self.num_fav_ulauncher) +
+                               '{0} have an unliked ROM and '.format(self.num_fav_urom) +
+                               '{0} are broken.'.format(self.num_fav_broken))
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                kodi_dialog_OK('You have {0} ROMs in Collection "{1}". '.format(self.num_fav_roms, collection['name']) +
+                               '{0} have an unlinked launcher, '.format(self.num_fav_ulauncher) +
+                               '{0} have an unliked ROM and '.format(self.num_fav_urom) +
+                               '{0} are broken.'.format(self.num_fav_broken))
+        
         # --- Repair all Unlinked Launcher/Broken ROMs ---
         # type == 1 --> Repair by filename match
         # type == 2 --> Repair by ROM basename match
@@ -2850,7 +2997,6 @@ class Main:
             # 2) If romID not found in launcher, then search for a ROM with same filename.
             # 3) If found, then replace romID in Favourites with romID of found ROM. Do not
             #    copy any metadata because user maybe customised Favourite ROM.
-            kodi_notify('Repairing Unlinked ROMs...')
 
             # >> Refreshing Favourite status will locate Unlinked ROMs.
             self._fav_check_favourites(roms_fav)
@@ -2924,7 +3070,13 @@ class Main:
     # roms_fav edited by passing by assigment, dictionaries are mutable.
     #
     def _fav_check_favourites(self, roms_fav):
-        # Reset fav_status filed for all favourites
+        # --- Statistics ---
+        self.num_fav_roms = len(roms_fav)
+        self.num_fav_ulauncher = 0
+        self.num_fav_urom      = 0
+        self.num_fav_broken    = 0
+
+        # --- Reset fav_status filed for all favourites ---
         log_debug('_fav_check_favourites() STEP 0: Reset status')
         for rom_fav_ID in roms_fav:
             roms_fav[rom_fav_ID]['fav_status'] = 'OK'
@@ -2944,6 +3096,7 @@ class Main:
             if roms_fav[rom_fav_ID]['launcherID'] not in self.launchers:
                 log_verb('Fav ROM "{0}" Unlinked Launcher because launcherID not in self.launchers'.format(roms_fav[rom_fav_ID]['m_name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked Launcher'
+                self.num_fav_ulauncher += 1
         pDialog.update(i * 100 / num_progress_items)
         pDialog.close()
 
@@ -2977,6 +3130,7 @@ class Main:
                     if roms_fav[rom_fav_ID]['id'] not in roms:
                         log_verb('Fav ROM "{0}" Unlinked ROM because romID not in launcher ROMs'.format(roms_fav[rom_fav_ID]['m_name']))
                         roms_fav[rom_fav_ID]['fav_status'] = 'Unlinked ROM'
+                        self.num_fav_urom += 1
         pDialog.update(i * 100 / num_progress_items)
         pDialog.close()
 
@@ -2992,6 +3146,7 @@ class Main:
             if not os.path.isfile(roms_fav[rom_fav_ID]['filename']):
                 log_verb('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['m_name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
+                self.num_fav_broken += 1
         pDialog.update(i * 100 / num_progress_items)
         pDialog.close()
 
@@ -3228,14 +3383,39 @@ class Main:
     def _command_import_collection(self):
         # --- Choose collection to import ---
         dialog = xbmcgui.Dialog()
-        collection_file = dialog.browse(1, 'Select the ROM file', 'files', '.json', False, False).decode('utf-8')
+        collection_file = dialog.browse(1, 'Select the ROM Collection file', 'files', '.json', False, False).decode('utf-8')
         if not collection_file: return
 
         # --- Load collection file ---
-        kodi_dialog_OK('Implement collection import!')
+        control_dic, collection_dic, collection_rom_list = fs_import_ROM_Collection(collection_file)
+        if not collection_dic:
+            kodi_dialog_OK('Error reading Collection JSON file.')
+            return
+        if not collection_rom_list:
+            kodi_dialog_OK('Collection is empty.')
+            return
+        
+        # --- Load collection indices ---
+        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+
+        # --- If collectionID already on index warn the user ---
+        if collection_dic['id'] in collections:
+            log_info('_command_import_collection() Collection {0} already in index'.format(collection_dic['id']))
+            ret = kodi_dialog_yesno('A Collection with same ID exists. Overwrite?')
+            if not ret: return
 
         # --- Add Collection to AEL storage ---
-        
+        collection_id_md5    = hashlib.md5(collection_dic['name'].encode('utf-8'))
+        collection_UUID      = collection_id_md5.hexdigest()
+        collection_base_name = fs_get_collection_ROMs_basename(collection_dic['name'], collection_UUID)
+        collection_dic['roms_base_noext'] = collection_base_name
+        collections[collection_dic['id']] = collection_dic
+        log_info('_command_import_collection() Importing Collection "{0}" ({1})'.format(collection_dic['name'], collection_dic['id']))
+        log_info('_command_import_collection() roms_base_noext "{0}"'.format(collection_dic['roms_base_noext']))
+        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection_dic['roms_base_noext'], collection_rom_list)
+        kodi_dialog_OK('Imported ROM Collection "{0}"'.format(collection_dic['name']))
+
     #
     # Exports a ROM Collection
     #
@@ -3257,90 +3437,8 @@ class Main:
         # --- Export collection ROMs ---
         output_filename = os.path.join(output_dir, collection['name'] + '.json')
         fs_export_ROM_collection(output_filename, collection, collection_rom_list)
+        kodi_dialog_OK('Exported ROM Collection {0}'.format(output_filename))
 
-    #
-    # This function is called from a context menu and so self.addon_handle = -1. In this case, it is
-    # not necessary to call xbmcplugin.endOfDirectory() if function fails because we are not rendering
-    # a ListItem.
-    #
-    def _command_move_collection_rom_up(self, categoryID, launcherID, romID):
-        # --- Load Collection ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
-        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
-        num_roms = len(collection_rom_list)
-        if not collection_rom_list:
-            kodi_notify('Collection is empty. Add ROMs to this collection first.')
-            return
-
-        # >> Get position of current ROM in the list
-        current_ROM_position = -1;
-        for i, rom in enumerate(collection_rom_list):
-            if romID == rom['id']:
-                current_ROM_position = i
-                break
-        if current_ROM_position < 0:
-            kodi_notify_warn('ROM not found in list. This is a bug!')
-            return
-        log_verb('_command_move_collection_rom_up() Collection {0} ({1})'.format(collection['name'], collection['id']))
-        log_verb('_command_move_collection_rom_up() Collection has {0} ROMs'.format(num_roms))
-        log_verb('_command_move_collection_rom_up() Moving ROM in position {0} up'.format(current_ROM_position))
-
-        # >> If ROM is first of the list do nothing
-        if current_ROM_position == 0:
-            kodi_dialog_OK('ROM is in first position of the Collection. Cannot be moved up.')
-            return
-
-        # >> Reorder list
-        original_order = range(num_roms)
-        new_order = original_order
-        new_order[current_ROM_position - 1] = current_ROM_position
-        new_order[current_ROM_position]     = current_ROM_position - 1
-        reordered_rom_list = [collection_rom_list[i] for i in new_order]
-
-        # >> Save reordered collection ROMs
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], reordered_rom_list)
-        kodi_refresh_container()
-            
-    def _command_move_collection_rom_down(self, categoryID, launcherID, romID):
-        # --- Load Collection ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
-        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
-        num_roms = len(collection_rom_list)
-        if not collection_rom_list:
-            kodi_notify('Collection is empty. Add ROMs to this collection first.')
-            return
-
-        # >> Get position of current ROM in the list
-        current_ROM_position = -1;
-        for i, rom in enumerate(collection_rom_list):
-            if romID == rom['id']:
-                current_ROM_position = i
-                break
-        if current_ROM_position < 0:
-            kodi_notify_warn('ROM not found in list. This is a bug!')
-            return
-        log_verb('_command_move_collection_rom_down() Collection {0} ({1})'.format(collection['name'], collection['id']))
-        log_verb('_command_move_collection_rom_down() Collection has {0} ROMs'.format(num_roms))
-        log_verb('_command_move_collection_rom_down() Moving ROM in position {0} down'.format(current_ROM_position))
-
-        # >> If ROM is last of the list do nothing
-        if current_ROM_position == num_roms - 1:
-            kodi_dialog_OK('ROM is in last position of the Collection. Cannot be moved down.')
-            return
-
-        # >> Reorder list
-        original_order = range(num_roms)
-        new_order = original_order
-        new_order[current_ROM_position]     = current_ROM_position + 1
-        new_order[current_ROM_position + 1] = current_ROM_position
-        reordered_rom_list = [collection_rom_list[i] for i in new_order]
-
-        # >> Save reordered collection ROMs
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], reordered_rom_list)
-        kodi_refresh_container()
-        
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
         # >> ROM in Virtual Launcher
         if categoryID == VCATEGORY_TITLE_ID:
@@ -4428,24 +4526,33 @@ class Main:
         # >> Windoze
         if sys.platform == 'win32':
             app_ext = application.split('.')[-1]
-            log_debug('_run_process() (Windows) app_ext = "{0}"'.format(app_ext))
-            log_debug('_run_process() (Windows) apppath = "{0}"'.format(apppath))
-            # >> ROM launchers where ROMs are LNK files
-            if romext == 'lnk':
-                os.system('start "" "{0}"'.format(arguments).encode('utf-8'))
+            log_debug('_run_process() (Windows) application = "{0}"'.format(application))
+            log_debug('_run_process() (Windows) arguments   = "{0}"'.format(arguments))
+            log_debug('_run_process() (Windows) apppath     = "{0}"'.format(apppath))
+            log_debug('_run_process() (Windows) romext      = "{0}"'.format(romext))
+            log_debug('_run_process() (Windows) app_ext     = "{0}"'.format(app_ext))
             # >> Standalone launcher where application is a LNK file
-            elif app_ext == 'lnk' or app_ext == 'LNK':
-                os.system('start "" "{0}"'.format(application).encode('utf-8'))
+            if app_ext == 'lnk' or app_ext == 'LNK':
+                log_debug('_run_process() (Windows) Launching LNK application')
+                os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
+            # >> ROM launchers where ROMs are LNK files
+            elif romext == 'lnk' or romext == 'LNK':
+                log_debug('_run_process() (Windows) Launching LNK ROM')
+                os.system('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'))
             else:
                 info = None
                 # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
                 # >> Workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
                 # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
                 if app_ext == 'bat' or app_ext == 'BAT':
+                    log_debug('_run_process() (Windows) Launching BAT application')
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
                     if self.settings['show_batch']: info.wShowWindow = 5
                     else:                           info.wShowWindow = 0
+                else:
+                    log_debug('_run_process() (Windows) Launching regular application (not BAT)')
+                log_debug('_run_process() (Windows) Calling popen()')
                 pr = subprocess_hack.Popen(r'{0} {1}'.format(application, arguments).encode('utf-8'),
                                            cwd = apppath.encode('utf-8'),
                                            startupinfo = info)
@@ -5416,10 +5523,12 @@ class Main:
     #   True   Changes were made.
     #   False  Changes not made. No need to save ROMs XML/Update container
     #
-    def _gui_scrap_rom_metadata(self, roms, romID, launcherID):
+    def _gui_scrap_rom_metadata(self, categoryID, launcherID, romID, roms, scraper_obj):
         # --- Grab ROM info and metadata scraper settings ---
         # >> ROM in favourites
-        if launcherID == VLAUNCHER_FAVOURITES_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID:
+            platform = roms[romID]['platform']
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
             platform = roms[romID]['platform']
         else:
             launcher = self.launchers[launcherID]
@@ -5440,7 +5549,7 @@ class Main:
         # --- Do a search and get a list of games ---
         # >> Prevent race conditions
         kodi_busydialog_ON()
-        results = self.scraper_metadata.get_search(search_string, ROM.base_noext, platform)
+        results = scraper_obj.get_search(search_string, ROM.base_noext, platform)
         kodi_busydialog_OFF()
         log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
@@ -5450,8 +5559,7 @@ class Main:
         # --- Display corresponding game list found so user choses ---
         dialog = xbmcgui.Dialog()
         rom_name_list = []
-        for game in results:
-            rom_name_list.append(game['display_name'])
+        for game in results: rom_name_list.append(game['display_name'])
         selectgame = dialog.select('Select game for ROM {0}'.format(rom_name), rom_name_list)
         if selectgame < 0: return False
         log_verb('_gui_scrap_rom_metadata() User chose game "{0}"'.format(rom_name_list[selectgame]))
@@ -5459,7 +5567,7 @@ class Main:
         # --- Grab metadata for selected game ---
         # >> Prevent race conditions
         kodi_busydialog_ON()
-        gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+        gamedata = scraper_obj.get_metadata(results[selectgame])
         kodi_busydialog_OFF()
         if not gamedata:
             kodi_notify_warn('Cannot download game metadata.')
@@ -5613,24 +5721,27 @@ class Main:
             A   = assets_get_info_scheme(asset_kind)
             if categoryID == VCATEGORY_FAVOURITES_ID:
                 log_info('_gui_edit_asset() ROM is in Favourites')
-                asset_directory = self.settings['favourites_asset_dir']
-                platform        = object_dic['platform']
+                asset_directory  = self.settings['favourites_asset_dir']
+                platform         = object_dic['platform']
+                asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, ROM.base_noext, object_dic['id'])
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                log_info('_gui_edit_asset() ROM is in Collection')
+                asset_directory  = self.settings['collections_asset_dir']
+                platform         = object_dic['platform']
                 asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, ROM.base_noext, object_dic['id'])
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher (id {0})'.format(launcherID))
-                launcher        = self.launchers[launcherID]
-                asset_directory = launcher[A.path_key]
-                platform        = launcher['platform']
+                launcher         = self.launchers[launcherID]
+                asset_directory  = launcher[A.path_key]
+                platform         = launcher['platform']
                 asset_path_noext = assets_get_path_noext_DIR(A, asset_directory, ROM.base_noext)
             current_asset_path = object_dic[A.key]
-            scraper_obj = self.scraper_asset
             rom_base_noext = ROM.base_noext
             log_info('_gui_edit_asset() Editing ROM {0}'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory))
             log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext))
             log_debug('_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path))            
-            log_debug('_gui_edit_asset() scraper            "{0}"'.format(scraper_obj.name))
             log_debug('_gui_edit_asset() platform           "{0}"'.format(platform))
             log_debug('_gui_edit_asset() rom_base_noext     "{0}"'.format(rom_base_noext))
 
@@ -5648,26 +5759,27 @@ class Main:
         # --- Only enable scraper if support the asset ---
         # >> Scrapers only loaded if editing a ROM
         if object_kind == KIND_ROM:
-            scraper_enabled = False
-            if scraper_obj.supports_asset(asset_kind):
-                scraper_enabled = True
-                log_verb('Scraper {0} support scraping {1}'.format(scraper_obj.name, A.name))
-            else:
-                log_verb('Scraper {0} does not support scraping {1}'.format(scraper_obj.name, A.name))
-                log_verb('Scraper DISABLED')
+            scraper_obj_list  = []
+            scraper_menu_list = []
+            for scrap_obj in scrapers_asset:
+                if scrap_obj.supports_asset(asset_kind):
+                    scraper_obj_list.append(scrap_obj)
+                    scraper_menu_list.append('Scrape {0} from {1}'.format(A.name, scrap_obj.name))
+                    log_verb('Scraper {0} support scraping {1}'.format(scrap_obj.name, A.name))
+                else:
+                    log_verb('Scraper {0} does not support scraping {1}'.format(scrap_obj.name, A.name))
+                    log_verb('Scraper DISABLED')
 
         # --- Show image editing options ---
         # >> Scrape only supported for ROMs (for the moment)
         dialog = xbmcgui.Dialog()
-        if object_kind == KIND_ROM and scraper_enabled:
+        common_menu_list = ['Select local {0}'.format(A.kind_str, A.kind_str),
+                            'Import local {0} (copy and rename)'.format(A.kind_str)]
+        if object_kind == KIND_ROM:
             type2 = dialog.select('Change {0} {1}'.format(A.name, A.kind_str),
-                                 ['Select local {0}'.format(A.kind_str, A.kind_str),
-                                  'Import local {0} (copy and rename)'.format(A.kind_str),
-                                  'Scrape {0} from {1}'.format(A.name, scraper_obj.name)])
+                                  common_menu_list + scraper_menu_list)
         else:
-            type2 = dialog.select('Change {0} {1}'.format(A.name, A.kind_str),
-                                 ['Select local {0}'.format(A.kind_str, A.kind_str),
-                                  'Import local {0} (copy and rename)'.format(A.kind_str)])
+            type2 = dialog.select('Change {0} {1}'.format(A.name, A.kind_str), common_menu_list)
 
         # --- Link to a local image ---
         if type2 == 0:
@@ -5743,7 +5855,19 @@ class Main:
 
         # --- Manual scrape and choose from a list of images ---
         # >> Copy asset scrape code into here and remove function _gui_scrap_image_semiautomatic()
-        elif type2 == 2:
+        elif type2 >= 2:
+            # --- Use the scraper chosen by user ---
+            scraper_index = type2 - 2
+            scraper_obj   = scraper_obj_list[scraper_index]
+            log_debug('_gui_edit_asset() Scraper index {0}'.format(scraper_index))
+            log_debug('_gui_edit_asset() User chose scraper "{0}"'.format(scraper_obj.name))
+
+            # --- Initialise asset scraper ---
+            region        = self.settings['scraper_region']
+            thumb_imgsize = self.settings['scraper_thumb_size']
+            scraper_obj.set_options(region, thumb_imgsize)
+            log_debug('_gui_edit_asset() Initialised scraper "{0}"'.format(scraper_obj.name))
+
             # --- Ask user to edit the image search string ---
             keyboard = xbmc.Keyboard(object_dic['m_name'], 'Enter the string to search for...')
             keyboard.doModal()

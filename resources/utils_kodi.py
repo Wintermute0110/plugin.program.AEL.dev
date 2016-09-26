@@ -98,6 +98,8 @@ def kodi_dialog_OK(row1, row2='', row3='', title = 'Advanced Emulator Launcher')
     dialog = xbmcgui.Dialog()
     dialog.ok(title, row1, row2, row3)
 
+#
+# Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
 def kodi_dialog_yesno(row1, row2='', row3='', title = 'Advanced Emulator Launcher'):
     dialog = xbmcgui.Dialog()
     ret = dialog.yesno(title, row1, row2, row3)
