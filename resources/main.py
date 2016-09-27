@@ -300,12 +300,19 @@ class Main:
         self.settings['scraper_fanart_order']    = int(__addon_obj__.getSetting('scraper_fanart_order'))
 
         # --- Display ---
-        self.settings['display_launcher_notify'] = True if __addon_obj__.getSetting('display_launcher_notify') == 'true' else False
-        self.settings['display_hide_finished']   = True if __addon_obj__.getSetting('display_hide_finished') == 'true' else False
-        self.settings['display_hide_title']      = True if __addon_obj__.getSetting('display_hide_title') == 'true' else False
-        self.settings['display_hide_year']       = True if __addon_obj__.getSetting('display_hide_year') == 'true' else False
-        self.settings['display_hide_genre']      = True if __addon_obj__.getSetting('display_hide_genre') == 'true' else False
-        self.settings['display_hide_studio']     = True if __addon_obj__.getSetting('display_hide_studio') == 'true' else False
+        self.settings['display_launcher_notify']  = True if __addon_obj__.getSetting('display_launcher_notify') == 'true' else False
+        self.settings['display_hide_finished']    = True if __addon_obj__.getSetting('display_hide_finished') == 'true' else False
+
+        self.settings['display_rom_in_fav']       = True if __addon_obj__.getSetting('display_rom_in_fav') == 'true' else False
+        self.settings['display_nointro_stat']     = True if __addon_obj__.getSetting('display_nointro_stat') == 'true' else False
+        self.settings['display_fav_status']       = True if __addon_obj__.getSetting('display_fav_status') == 'true' else False        
+
+        self.settings['display_hide_favs']        = True if __addon_obj__.getSetting('display_hide_favs') == 'true' else False
+        self.settings['display_hide_collections'] = True if __addon_obj__.getSetting('display_hide_collections') == 'true' else False
+        self.settings['display_hide_title']       = True if __addon_obj__.getSetting('display_hide_title') == 'true' else False
+        self.settings['display_hide_year']        = True if __addon_obj__.getSetting('display_hide_year') == 'true' else False
+        self.settings['display_hide_genre']       = True if __addon_obj__.getSetting('display_hide_genre') == 'true' else False
+        self.settings['display_hide_studio']      = True if __addon_obj__.getSetting('display_hide_studio') == 'true' else False
 
         # --- Paths ---
         self.settings['categories_asset_dir']    = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
@@ -531,11 +538,11 @@ class Main:
                 flyer_img   = category['s_flyer']   if category['s_flyer']   else 'DefaultAddonNone.png'
                 trailer_img = category['s_trailer'] if category['s_trailer'] else 'DefaultAddonNone.png'
                 img_list = [
-                    {'name' : 'Edit Thumbnail...', 'disp_URL' : thumb_img,   'URL' : 0},
-                    {'name' : 'Edit Fanart...',    'disp_URL' : fanart_img,  'URL' : 1},
-                    {'name' : 'Edit Banner...',    'disp_URL' : banner_img,  'URL' : 2},
-                    {'name' : 'Edit Flyer...',     'disp_URL' : flyer_img,   'URL' : 3},
-                    {'name' : 'Edit Trailer...',   'disp_URL' : trailer_img, 'URL' : 4}
+                    {'name' : 'Edit Thumbnail...', 'label2' : thumb_img,   'icon' : thumb_img},
+                    {'name' : 'Edit Fanart...',    'label2' : fanart_img,  'icon' : fanart_img},
+                    {'name' : 'Edit Banner...',    'label2' : banner_img,  'icon' : banner_img},
+                    {'name' : 'Edit Flyer...',     'label2' : flyer_img,   'icon' : flyer_img},
+                    {'name' : 'Edit Trailer...',   'label2' : trailer_img, 'icon' : trailer_img}
                 ]
                 type2 = gui_show_image_select('Edit Category Assets/Artwork', img_list)
 
@@ -946,11 +953,11 @@ class Main:
                 flyer_img   = launcher['s_flyer']   if launcher['s_flyer']   else 'DefaultAddonNone.png'
                 trailer_img = launcher['s_trailer'] if launcher['s_trailer'] else 'DefaultAddonNone.png'
                 img_list = [
-                    {'name' : 'Edit Thumbnail...', 'disp_URL' : thumb_img,   'URL' : 0},
-                    {'name' : 'Edit Fanart...',    'disp_URL' : fanart_img,  'URL' : 1},
-                    {'name' : 'Edit Banner...',    'disp_URL' : banner_img,  'URL' : 2},
-                    {'name' : 'Edit Flyer...',     'disp_URL' : flyer_img,   'URL' : 3},
-                    {'name' : 'Edit Trailer...',   'disp_URL' : trailer_img, 'URL' : 4}
+                    {'name' : 'Edit Thumbnail...', 'label2' : thumb_img,   'icon' : thumb_img},
+                    {'name' : 'Edit Fanart...',    'label2' : fanart_img,  'icon' : fanart_img},
+                    {'name' : 'Edit Banner...',    'label2' : banner_img,  'icon' : banner_img},
+                    {'name' : 'Edit Flyer...',     'label2' : flyer_img,   'icon' : flyer_img},
+                    {'name' : 'Edit Trailer...',   'label2' : trailer_img, 'icon' : trailer_img}
                 ]
                 type2 = gui_show_image_select('Edit Launcher Assets/Artwork', img_list)
 
@@ -1784,21 +1791,21 @@ class Main:
                 manual_img    = 'DefaultAddonImages.png' if rom['s_manual']    else 'DefaultAddonNone.png'
                 trailer_img   = 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'
                 img_list = [
-                    {'name' : 'Edit Title...',     'disp_URL' : title_img,     'URL' : 0},
-                    {'name' : 'Edit Snap...',      'disp_URL' : snap_img,      'URL' : 1},
-                    {'name' : 'Edit Fanart...',    'disp_URL' : fanart_img,    'URL' : 2},
-                    {'name' : 'Edit Banner...',    'disp_URL' : banner_img,    'URL' : 3},
-                    {'name' : 'Edit Clearlogo...', 'disp_URL' : clearlogo_img, 'URL' : 4},
-                    {'name' : 'Edit Boxfront...',  'disp_URL' : boxfront_img,  'URL' : 5},
-                    {'name' : 'Edit Boxback...',   'disp_URL' : boxback_img,   'URL' : 6},
-                    {'name' : 'Edit Cartridge...', 'disp_URL' : cartridge_img, 'URL' : 7},
-                    {'name' : 'Edit Flyer...',     'disp_URL' : flyer_img,     'URL' : 8},
-                    {'name' : 'Edit Map...',       'disp_URL' : map_img,       'URL' : 9},
-                    {'name' : 'Edit Manual...',    'disp_URL' : manual_img,    'URL' : 10},
-                    {'name' : 'Edit Trailer...',   'disp_URL' : trailer_img,   'URL' : 11}
+                    {'name' : 'Edit Title...',     'label2' : title_img,     'icon' : title_img},
+                    {'name' : 'Edit Snap...',      'label2' : snap_img,      'icon' : snap_img},
+                    {'name' : 'Edit Fanart...',    'label2' : fanart_img,    'icon' : fanart_img},
+                    {'name' : 'Edit Banner...',    'label2' : banner_img,    'icon' : banner_img},
+                    {'name' : 'Edit Clearlogo...', 'label2' : clearlogo_img, 'icon' : clearlogo_img},
+                    {'name' : 'Edit Boxfront...',  'label2' : boxfront_img,  'icon' : boxfront_img},
+                    {'name' : 'Edit Boxback...',   'label2' : boxback_img,   'icon' : boxback_img},
+                    {'name' : 'Edit Cartridge...', 'label2' : cartridge_img, 'icon' : cartridge_img},
+                    {'name' : 'Edit Flyer...',     'label2' : flyer_img,     'icon' : flyer_img},
+                    {'name' : 'Edit Map...',       'label2' : map_img,       'icon' : map_img},
+                    {'name' : 'Edit Manual...',    'label2' : manual_img,    'icon' : manual_img},
+                    {'name' : 'Edit Trailer...',   'label2' : trailer_img,   'icon' : trailer_img}
                 ]
                 type2 = gui_show_image_select('Edit ROM Assets/Artwork', img_list)
-                
+
             # --- Edit Assets ---
             # >> _gui_edit_asset() returns True if image was changed
             # >> ROM is changed using Python passign by assigment
@@ -2102,7 +2109,7 @@ class Main:
 
             # --- Confirm deletion ---
             ret = kodi_dialog_yesno('ROM {0}. '.format(roms[romID]['m_name']) +
-                                    'Are you sure you want to delete it from favourites?')
+                                    'Are you sure you want to delete it from Favourites?')
             if not ret: return
 
             # --- Delete ROM ---
@@ -2129,7 +2136,7 @@ class Main:
 
             ret = kodi_dialog_yesno('Collection {0}, '.format(collection['name']) +
                                     'ROM {0}. '.format(collection_rom_list[rom_index]['m_name']) +
-                                    'Are you sure you want to delete it from favourites?')
+                                    'Are you sure you want to delete it from Collection {0}?'.format(collection['name']))
             if not ret: return
 
             del collection_rom_list[rom_index]
@@ -2138,16 +2145,16 @@ class Main:
             kodi_refresh_container()
         else:
             log_info('_command_remove_rom() Deleting ROM from Launcher (id {0})'.format(romID))
-            roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+            launcher = self.launchers[launcherID]
+            roms = fs_load_ROMs(ROMS_DIR, launcher['roms_base_noext'])
             if not roms: return
 
-            ret = kodi_dialog_yesno('Launcher {0}, '.format(self.launchers[launcherID]['m_name']) +
+            ret = kodi_dialog_yesno('Launcher {0}, '.format(launcher['m_name']) +
                                     'ROM {0}. '.format(roms[romID]['m_name']) +
-                                    'Are you sure you want to delete it from favourites?')
+                                    'Are you sure you want to delete it from launcher?')
             if not ret: return
 
             roms.pop(romID)
-            launcher = self.launchers[launcherID]
             roms_base_noext = launcher['roms_base_noext']
             fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, launcher)
             # >> Also save categories/launchers to update main timestamp and launcher timestamp
@@ -2169,10 +2176,12 @@ class Main:
             self._gui_render_category_row(self.categories[key], key)
 
         # --- AEL Favourites special category ---
-        self._gui_render_category_favourites_row()
+        if not self.settings['display_hide_favs']:
+            self._gui_render_category_favourites_row()
 
         # --- AEL Collections special category ---
-        self._gui_render_category_collections_row()
+        if not self.settings['display_hide_collections']:
+            self._gui_render_category_collections_row()
 
         # --- AEL Virtual Categories ---
         if not self.settings['display_hide_title']:  self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
@@ -2404,7 +2413,7 @@ class Main:
         listitem.setProperty('platform', launcher_dic['platform'])
 
         # --- Set ListItem artwork ---
-        kodi_thumb  = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
+        kodi_thumb      = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
         thumb_path      = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
         thumb_fanart    = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
         thumb_banner    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
@@ -2493,13 +2502,17 @@ class Main:
             thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform = rom['platform']
-            # >> If we are rendering Favourites then mark fav_status            
-            if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
-            elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
-            elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{0} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
-            elif rom['fav_status'] == 'Broken':            rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
-            else:                                          rom_name = rom_raw_name
+            platform        = rom['platform']
+
+            # >> If we are rendering Favourites then mark fav_status
+            if self.settings['display_fav_status']:
+                if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{0} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Broken':            rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
+                else:                                          rom_name = rom_raw_name
+            else:
+                rom_name = rom_raw_name
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
             thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
@@ -2507,13 +2520,17 @@ class Main:
             thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform = rom['platform']
+            platform        = rom['platform']
+            
             # >> If we are rendering Collections then mark fav_status
-            if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
-            elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
-            elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{0} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
-            elif rom['fav_status'] == 'Broken':            rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
-            else:                                          rom_name = rom_raw_name
+            if self.settings['display_fav_status']:
+                if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{0} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Broken':            rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
+                else:                                          rom_name = rom_raw_name
+            else:
+                rom_name = rom_raw_name
         # If rendering a virtual launcher mark nothing
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
@@ -2523,12 +2540,20 @@ class Main:
             thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform = rom['platform']
-            if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-            elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
-            elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-            else:                                    rom_name = rom_raw_name
-            if rom_is_in_favourites: rom_name += ' [COLOR violet][Fav][/COLOR]'
+            platform        = rom['platform']
+
+            # >> Mark No-Intro status
+            if self.settings['display_nointro_stat']:
+                if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
+                elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                else:                                    rom_name = rom_raw_name
+            else:
+                rom_name = rom_raw_name
+
+            # >> Mark if ROM is in Favourites
+            if self.settings['display_rom_in_fav'] and rom_is_in_favourites:
+                rom_name += ' [COLOR violet][Fav][/COLOR]'
         else:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
@@ -2539,16 +2564,20 @@ class Main:
             thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
             thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
-            platform = launcher['platform']
+            platform        = launcher['platform']
 
             # >> Mark No-Intro status
-            if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-            elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
-            elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-            else:                                    rom_name = rom_raw_name
+            if self.settings['display_nointro_stat']:
+                if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
+                elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                else:                                    rom_name = rom_raw_name
+            else:
+                rom_name = rom_raw_name
 
             # >> If listing regular launcher and rom is in favourites, mark it
-            if rom_is_in_favourites: rom_name += ' [COLOR violet][Fav][/COLOR]'
+            if self.settings['display_rom_in_fav'] and rom_is_in_favourites:
+                rom_name += ' [COLOR violet][Fav][/COLOR]'
 
         # --- Add ROM to lisitem ---
         ICON_OVERLAY = 5 if rom['finished'] else 4
@@ -2590,15 +2619,15 @@ class Main:
         # --- Create context menu ---
         commands = []
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            commands.append(('View Favourite ROM data',    self._misc_url_RunPlugin('VIEW_ROM',        VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
-            commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV',      VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
-            commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM',        VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
-            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM',      VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
+            commands.append(('View Favourite ROM data',    self._misc_url_RunPlugin('VIEW_ROM',   VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
+            commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV', VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
+            commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM',   VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
+            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM', VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, romID), ))
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            commands.append(('View Collection ROM data',   self._misc_url_RunPlugin('VIEW_ROM',          VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
-            commands.append(('Manage Collection ROMs',     self._misc_url_RunPlugin('MANAGE_FAV',        VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
-            commands.append(('Edit ROM in Collection',     self._misc_url_RunPlugin('EDIT_ROM',          VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
-            commands.append(('Delete ROM from Collection', self._misc_url_RunPlugin('DELETE_ROM',        VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
+            commands.append(('View Collection ROM data',   self._misc_url_RunPlugin('VIEW_ROM',   VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
+            commands.append(('Manage Collection ROMs',     self._misc_url_RunPlugin('MANAGE_FAV', VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
+            commands.append(('Edit ROM in Collection',     self._misc_url_RunPlugin('EDIT_ROM',   VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
+            commands.append(('Delete ROM from Collection', self._misc_url_RunPlugin('DELETE_ROM', VCATEGORY_COLLECTIONS_ID, launcherID, romID), ))
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
             commands.append(('View Virtual Launcher ROM data', self._misc_url_RunPlugin('VIEW_ROM',   categoryID, launcherID, romID), ))
@@ -2877,7 +2906,7 @@ class Main:
                                '{0} have an unlinked launcher, '.format(self.num_fav_ulauncher) +
                                '{0} have an unliked ROM and '.format(self.num_fav_urom) +
                                '{0} are broken.'.format(self.num_fav_broken))
-        
+
         # --- Repair all Unlinked Launcher/Broken ROMs ---
         # type == 1 --> Repair by filename match
         # type == 2 --> Repair by ROM basename match
@@ -5464,10 +5493,18 @@ class Main:
 
             # If there is a local image add it to the list and show it to the user
             if os.path.isfile(local_image):
-                image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image} )
-            image_url = gui_show_image_select('Select image', image_list)
-            log_debug('{0} dialog returned image_url "{1}"'.format(A.name, image_url))
-            if image_url == '': image_url = image_list[0]['URL']
+                image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image})
+
+            # Convert list returned by scraper into a list the select window uses
+            img_dialog_list = []
+            for item in image_list:
+                item_dic = {'name' : item['name'], 'label2' : item['disp_URL'], 'icon' : item['disp_URL']}
+                img_dialog_list.append(item_dic)
+            image_selected_index = gui_show_image_select('Select image', img_dialog_list)
+            log_debug('{0} dialog returned index {1}'.format(A.name, image_selected_index))
+            if image_selected_index < 0: image_selected_index = 0
+            image_url = image_list[image_selected_index]['URL']
+            log_debug('Selected image URL "{1}"'.format(A.name, image_url))
 
             # Reopen progress dialog
             scraper_text = 'Scraping {0} with {1}. Downloading image...'.format(A.name, scraper_obj.name)
@@ -5910,12 +5947,19 @@ class Main:
             # If there is a local image add it to the list and show it to the user
             if os.path.isfile(current_asset_path):
                 image_list.insert(0, {'name' : 'Current local image', 
-                                      'URL' : current_asset_path, 'disp_URL' : current_asset_path })
+                                      'URL' : current_asset_path, 
+                                      'disp_URL' : current_asset_path })
 
-            # Returns a list of dictionaries {'name', 'URL', 'disp_URL'}
-            image_url = gui_show_image_select('Select image', image_list)
-            log_debug('{0} dialog returned image_url "{1}"'.format(A.name, image_url))
-            if image_url == '': image_url = image_list[0]['URL']
+            # Convert list returned by scraper into a list the select window uses
+            img_dialog_list = []
+            for item in image_list:
+                item_dic = {'name' : item['name'], 'label2' : item['disp_URL'], 'icon' : item['disp_URL']}
+                img_dialog_list.append(item_dic)
+            image_selected_index = gui_show_image_select('Select image', img_dialog_list)
+            log_debug('{0} dialog returned index {1}'.format(A.name, image_selected_index))
+            if image_selected_index < 0: image_selected_index = 0
+            image_url = image_list[image_selected_index]['URL']
+            log_debug('Selected image URL "{1}"'.format(A.name, image_url))
 
             # --- If user chose the local image don't download anything ---
             if image_url != current_asset_path:
@@ -6039,23 +6083,20 @@ class Main:
 # -------------------------------------------------------------------------------------------------
 # Custom class dialog for an image selection window
 # -------------------------------------------------------------------------------------------------
-# NOTE Found another example of a custom listitem dialog in the Favourites script
-#      ~/.kodi/addons/script.favourites
-#
 # Release - Image Resource selection script (NOTE is a script, not an addon!)
 # See http://forum.kodi.tv/showthread.php?tid=239558
 # See https://github.com/ronie/script.image.resource.select/blob/master/default.py
 #
-# >> From DialogSelect.xml in Confluence (Kodi Krypton taken from Github master)
-# >> https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
-# >> Controls 5 and 7 are grouped
+# From DialogSelect.xml in Confluence (Kodi Krypton taken from Github master)
+# https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
+# Controls 5 and 7 are grouped
 #
 # <control type="label"  id="1"> | <description>header label</description>      | Window title on top
 # control 2 does not exist
-# <control type="list"   id="3"> |                                              | Another container which I don't understand...
+# <control type="list"   id="3"> |                                              | Listbox for TEXT
 # <control type="label"  id="4"> | <description>No Settings Label</description>
+# <control type="list"   id="6"> |                                              | Listbox for IMAGES
 # <control type="button" id="5"> | <description>Manual button</description>     | OK button
-# <control type="list"   id="6"> |                                              | Listbox
 # <control type="button" id="7"> | <description>Cancel button</description>     | New Krypton cancel button
 #
 class ImgSelectDialog(xbmcgui.WindowXMLDialog):
@@ -6063,73 +6104,112 @@ class ImgSelectDialog(xbmcgui.WindowXMLDialog):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
 
         # >> Custom stuff
-        self.listing = kwargs.get('listing')
-        self.window_title = kwargs.get('title')
-        self.selected_url = ''
+        self.listing       = kwargs.get('listing')
+        self.window_title  = kwargs.get('title')
+        self.selected_item = -1
 
     def onInit(self):
+        # --- This control is a listitem that only displays text and label_1 ---
+        # >> It is not used, make it invisible
+        self.getControl(3).setVisible(False)
+ 
+        # --- Container that displays icon, label_1 and label_2 for each listview item ---
         self.container = self.getControl(6)
+
+        # --- Scrollbar ---
+        # >> In Krypton produces and exception RuntimeError: Unknown control type for python
+        # self.scrollbar = self.getControl(61)
+
+        # --- OK button ---
+        self.button_OK = self.getControl(5)
+        self.button_OK.setVisible(False)
+        # self.button_OK.setLabel('OK')
+        # >> Set navigation rules
+        # self.button_OK.controlLeft(self.scrollbar)
+        # self.button_OK.controlRight(self.container)
         # >> Disables movement left-right in image listbox
-        self.container.controlLeft(self.container)
-        self.container.controlRight(self.container)
+        # self.container.controlLeft(self.container)
+        # self.container.controlRight(self.container)
 
         # >> The mysterious control 7 is new in Kodi Krypton!
         # >> See http://forum.kodi.tv/showthread.php?tid=250936&pid=2246458#pid2246458
-        # self.cancel = self.getControl(7) # Produces an error "RuntimeError: Non-Existent Control 7"
-        # self.cancel.setLabel('Ajo')
+        try:
+            # Produces an error "RuntimeError: Non-Existent Control 7" in Jarvis
+            self.button_cancel = self.getControl(7)
+            self.button_cancel.setVisible(False)
+            # self.button_cancel.setLabel('Cancel')
+            # self.button_cancel.controlLeft(self.scrollbar)
+            # self.button_cancel.controlRight(self.container)
+        except:
+            pass
 
-        # >> Another container which I don't understand...
-        self.getControl(3).setVisible(False)
         # >> Window title on top
         self.getControl(1).setLabel(self.window_title)
-        # >> OK button
-        self.button = self.getControl(5)
-        self.button.setVisible(False)
-        # self.button.setLabel('Ar')
 
         # >> Add items to list
         listitems = []
         for index, item in enumerate(self.listing):
-            name_str = item['name']
-            URL_str  = item['disp_URL']
-            listitem = xbmcgui.ListItem(label=name_str, label2=URL_str)
-            listitem.setArt({'icon': 'DefaultAddonImages.png', 'thumb': URL_str})
+            listitem = xbmcgui.ListItem(label = item['name'], label2 = item['label2'])
+            listitem.setArt({'icon' : 'DefaultAddonImages.png', 'thumb' : item['icon']})
             listitems.append(listitem)
         self.container.addItems(listitems)
+
+        # >> Set the focus on the ListItem
         self.setFocus(self.container)
 
+    #
+    # Action object docs: http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmcgui.html#Action
+    #
     def onAction(self, action):
+        # focused_control = self.getFocus()
+        # log_debug('ImgSelectDialog::onAction() action.getId()     = {0}'.format(action.getId()))
+        # log_debug('ImgSelectDialog::onAction() Focused control Id = {0}'.format(focused_control.getId()))
+
+        # >> Close dialog
         if action.getId() in (9, 10, 92, 216, 247, 257, 275, 61467, 61448):
             self.close()
 
     def onClick(self, controlID):
+        # log_debug('ImgSelectDialog::onAction() controlID = {0}'.format(controlID))
+        
+        # >> User clicked on a ListItem item
         if controlID == 6:
-            # self.selected_url = self.container.getSelectedItem().getLabel2()
-            num = self.container.getSelectedPosition()
-            self.selected_url = self.listing[num]['URL']
-            xbmc.sleep(100)
+            # xbmc.sleep(100)
+            self.selected_item = self.container.getSelectedPosition()
             self.close()
 
+        # >> User clicked on OK button
         elif controlID == 5:
-            # xbmc.executebuiltin('ActivateWindow(AddonBrowser, addons://repository.xbmc.org/kodi.resource.images/,return)')
-            xbmc.sleep(100)
+            # xbmc.sleep(25)
             self.close()
 
+        # >> User clicked on Cancel button
         elif controlID == 7:
+            self.selected_item = -1
             self.close()
 
     def onFocus(self, controlID):
+        # log_debug('ImgSelectDialog::onFocus() controlID = {0}'.format(controlID))
         pass
 
-def gui_show_image_select(window_title, img_list):
+#
+# NOTE: not all skins display label2. Confluence does
+#
+# item_list = [ {name : '', label2 : '', icon : '', }, {}, ...]
+#
+# Returns:
+# -1         Dialog was cancelled or closed without selecting
+# 0, 1, ...  Index of the item selected
+#
+def gui_show_image_select(window_title, item_list):
     # The xml file needs to be part of your addon, or included in the skin you use.
-    # Yes, DialogSelect.xml is defined in Confluence here
+    # DialogSelect.xml is defined in Confluence here
     # https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
-    w = ImgSelectDialog('DialogSelect.xml', BASE_DIR, title = window_title, listing = img_list)
+    w = ImgSelectDialog('DialogSelect.xml', BASE_DIR, title = window_title, listing = item_list)
 
-    # Execute dialog
+    # --- Execute dialog ---
     w.doModal()
-    selected_url = w.selected_url
+    selected_item = w.selected_item
     del w
 
-    return selected_url
+    return selected_item

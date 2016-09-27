@@ -22,19 +22,6 @@
  
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2407122#pid2407122
  
- * It seems AEL can't work with .lnk file shortcuts. Do you plan on working that in or should I 
-   start changing all the paths to my applications/games? 
- 
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2405485#pid2405485
-
-   In addition to some launching some roms, I use the old Advanced Launcher to open a bunch of 
-   couch/controller-friendly Steam games that are all .lnk shortcuts placed in a folder with 
-   their corresponding box and fanart. It has been easy to drop a .lnk shortcut and some art in the 
-   folder and then scan for new additions with Advanced Launcher as I add games (damn Steam sales 
-   making me buy more games).
-   
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2405624#pid2405624
-
  * Add Libretro artwork scraper.
  
    GitHub may be a place you can consider as a source. The libretro-thumbnails database 
@@ -52,8 +39,6 @@
 
  * Scraper should cache web pages between searches to reduce bandwidth usage and increase speed.
 
- * Edition of ROMs in Collections is not working at the moment.
- 
  * Not all fields of ROMs in Favourites can be edited.
 
  * Current patched subprocess_hack module is from Python 2.4. Current Python in Kodi is 2.7. Should
@@ -65,6 +50,21 @@
 
 
 # DONE #
+
+ * Edition of ROMs in Collections is not working at the moment.
+
+ * It seems AEL can't work with .lnk file shortcuts. Do you plan on working that in or should I 
+   start changing all the paths to my applications/games? 
+ 
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2405485#pid2405485
+
+   In addition to some launching some roms, I use the old Advanced Launcher to open a bunch of 
+   couch/controller-friendly Steam games that are all .lnk shortcuts placed in a folder with 
+   their corresponding box and fanart. It has been easy to drop a .lnk shortcut and some art in the 
+   folder and then scan for new additions with Advanced Launcher as I add games (damn Steam sales 
+   making me buy more games).
+   
+   http://forum.kodi.tv/showthread.php?tid=287826&pid=2405624#pid2405624
 
  * Issue 14: [Feature request] Add the platforn in the gamedb url query.
 
