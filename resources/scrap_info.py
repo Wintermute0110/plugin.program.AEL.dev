@@ -237,7 +237,7 @@ platform_AEL_to_TheGamesDB_dic = {
     'Sega Dreamcast'              : 'sega-dreamcast',
     'Sinclair ZX Spectrum'        : 'sinclair-zx-spectrum',
     'SNK Neo-Geo Pocket'          : 'neo-geo-pocket',
-    'SNK Neo-Geo Pocket Color'    : 'neo-geo-pocket-color'
+    'SNK Neo-Geo Pocket Color'    : 'neo-geo-pocket-color',
     'Sony PlayStation'            : 'sony-playstation',
     'Sony PlayStation 2'          : 'sony-playstation-2',
     'Sony PlayStation Portable'   : 'sony-psp',
@@ -295,7 +295,7 @@ platform_AEL_to_GameFAQs_dic = {
     'Sega Dreamcast'              : '67',  # <option label="Dreamcast" value="67">Dreamcast</option>
     'Sinclair ZX Spectrum'        : '35',  # <option label="Sinclair ZX81/Spectrum" value="35">Sinclair ZX81/Spectrum</option>
     'SNK Neo-Geo Pocket'          : '0',   # Not found in GameFAQs
-    'SNK Neo-Geo Pocket Color'    : '89'   # <option label="NeoGeo Pocket Color" value="89">NeoGeo Pocket Color</option>
+    'SNK Neo-Geo Pocket Color'    : '89',  # <option label="NeoGeo Pocket Color" value="89">NeoGeo Pocket Color</option>
     'Sony PlayStation'            : '78',  # <option label="PlayStation" value="78">PlayStation</option>
     'Sony PlayStation 2'          : '94',  # <option label="PlayStation 2" value="94">PlayStation 2</option>
     'Sony PlayStation Portable'   : '109', # <option label="PSP" value="109">PSP</option>
