@@ -809,46 +809,31 @@ class Main:
         # --- Edition of the launcher metadata ---
         type_nb = 0
         if type == type_nb:
+            # >> Make a list of available metadata scrapers
+            scraper_obj_list  = []
+            scraper_menu_list = []
+            for scrap_obj in scrapers_metadata:
+                scraper_obj_list.append(scrap_obj)
+                scraper_menu_list.append('Scrape metadata from {0}...'.format(scrap_obj.name))
+                log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
+
+            # >> Metadata edit dialog
             dialog = xbmcgui.Dialog()
             desc_str = text_limit_string(self.launchers[launcherID]['m_plot'], DESCRIPTION_MAXSIZE)
-            type2 = dialog.select('Edit Launcher Metadata',
-                                  ['Scrape from {0}...'.format(self.scraper_metadata.name),
-                                   'Import metadata from NFO (automatic)',
-                                   'Import metadata from NFO (browse NFO)...',
-                                   "Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
-                                   "Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
-                                   "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
-                                   "Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
-                                   "Edit Studio: '{0}'".format(self.launchers[launcherID]['m_studio']),
-                                   "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
-                                   "Edit Plot: '{0}'".format(desc_str),
-                                   'Save metadata to NFO file'])
-            # --- Scrape launcher metadata ---
-            if type2 == 0:
-                if not self._gui_scrap_launcher_metadata(launcherID): return
-
-            # --- Import launcher metadata from NFO file (automatic) ---
-            elif type2 == 1:
-                # >> Get NFO file name for launcher
-                NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
-                
-                # >> Launcher is edited using Python passing by assigment
-                # >> Returns True if changes were made
-                if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
-
-            # --- Browse for NFO file ---
-            elif type2 == 2:
-                # >> Get launcher NFO file
-                # No-Intro reading of files: use Unicode string for '.dat|.xml'. However, | belongs to ASCII...
-                NFO_file = xbmcgui.Dialog().browse(1, 'Select description file (NFO)', 'files', '.nfo', False, False).decode('utf-8')
-                if not os.path.isfile(NFO_file): return
-                
-                # >> Launcher is edited using Python passing by assigment
-                # >> Returns True if changes were made
-                if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
+            menu_list = ["Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
+                         "Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
+                         "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
+                         "Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
+                         "Edit Studio: '{0}'".format(self.launchers[launcherID]['m_studio']),
+                         "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
+                         "Edit Plot: '{0}'".format(desc_str),
+                         'Import metadata from NFO (automatic)',
+                         'Import metadata from NFO (browse NFO)...',
+                         'Save metadata to NFO file']
+            type2 = dialog.select('Edit Launcher Metadata', menu_list + scraper_menu_list)
 
             # --- Edition of the launcher name ---
-            elif type2 == 3:
+            if type2 == 0:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_name'], 'Edit title')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
@@ -858,35 +843,35 @@ class Main:
                 self.launchers[launcherID]['m_name'] = title.rstrip()
 
             # --- Selection of the launcher platform from AEL "official" list ---
-            elif type2 == 4:
+            elif type2 == 1:
                 dialog = xbmcgui.Dialog()
                 sel_platform = dialog.select('Select the platform', AEL_platform_list)
                 if sel_platform < 0: return
                 self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
 
             # --- Edition of the launcher release date (year) ---
-            elif type2 == 5:
+            elif type2 == 2:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_year'], 'Edit release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['m_year'] = keyboard.getText().decode('utf-8')
 
             # --- Edition of the launcher genre ---
-            elif type2 == 6:
+            elif type2 == 3:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_genre'], 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['m_genre'] = keyboard.getText().decode('utf-8')
 
             # --- Edition of the launcher studio ---
-            elif type2 == 7:
+            elif type2 == 4:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_studio'], 'Edit studio')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['m_studio'] = keyboard.getText().decode('utf-8')
 
             # --- Edition of the launcher rating ---
-            elif type2 == 8:
+            elif type2 == 5:
                 rating = dialog.select('Edit Launcher Rating',
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
@@ -900,7 +885,7 @@ class Main:
                     return
 
             # --- Edit launcher description (plot) ---
-            elif type2 == 9:
+            elif type2 == 6:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_plot'], 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
@@ -917,16 +902,50 @@ class Main:
             #         kodi_dialog_OK("Launcher plot '{0}' not changed".format(desc_str))
             #         return
 
+            # --- Import launcher metadata from NFO file (automatic) ---
+            elif type2 == 7:
+                # >> Get NFO file name for launcher
+                NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
+                
+                # >> Launcher is edited using Python passing by assigment
+                # >> Returns True if changes were made
+                if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
+
+            # --- Browse for NFO file ---
+            elif type2 == 8:
+                # >> Get launcher NFO file
+                # No-Intro reading of files: use Unicode string for '.dat|.xml'. However, | belongs to ASCII...
+                NFO_file = xbmcgui.Dialog().browse(1, 'Select description file (NFO)', 'files', '.nfo', False, False).decode('utf-8')
+                if not os.path.isfile(NFO_file): return
+                
+                # >> Launcher is edited using Python passing by assigment
+                # >> Returns True if changes were made
+                if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
+
             # --- Export launcher metadata to NFO file ---
-            elif type2 == 10:
+            elif type2 == 9:
                 NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
                 fs_export_launcher_NFO(NFO_file, self.launchers[launcherID])
                 # >> No need to save launchers
                 return
 
+            # --- Scrape launcher metadata ---
+            elif type2 >= 10:
+                # --- Use the scraper chosen by user ---
+                scraper_index = type2 - 10
+                scraper_obj   = scraper_obj_list[scraper_index]
+                log_debug('_command_edit_launcher() Scraper index {0}'.format(scraper_index))
+                log_debug('_command_edit_launcher() User chose scraper "{0}"'.format(scraper_obj.name))
+
+                # --- Initialise asset scraper ---
+                scraper_obj.set_addon_dir(CURRENT_ADDON_DIR)
+                log_debug('_command_edit_launcher() Initialised scraper "{0}"'.format(scraper_obj.name))
+
+                # >> If this returns False there were no changes so no need to save categories.xml
+                if not self._gui_scrap_launcher_metadata(launcherID, scraper_obj): return
+
             # >> User canceled select dialog
-            elif type2 < 0:
-                return
+            elif type2 < 0: return
 
         # --- Edit Launcher Assets/Artwork ---
         type_nb = type_nb + 1
@@ -5639,19 +5658,20 @@ class Main:
     #   True   Changes were made.
     #   False  Changes not made. No need to save ROMs XML/Update container
     #
-    def _gui_scrap_launcher_metadata(self, launcherID):
+    def _gui_scrap_launcher_metadata(self, launcherID, scraper_obj):
         launcher = self.launchers[launcherID]
+        launcher_name = launcher['m_name']
         platform = launcher['platform']
         
         # Edition of the launcher name
-        keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_name'], 'Enter the launcher search string ...')
+        keyboard = xbmc.Keyboard(launcher_name, 'Enter the launcher search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
         search_string = keyboard.getText()
 
         # Scrap and get a list of matches
         kodi_busydialog_ON()
-        results = self.scraper_metadata.get_search(search_string, '', platform)
+        results = scraper_obj.get_search(search_string, '', platform)
         kodi_busydialog_OFF()
         log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
@@ -5663,13 +5683,13 @@ class Main:
         rom_name_list = []
         for game in results:
             rom_name_list.append(game['display_name'])
-        selectgame = dialog.select('Select game for ROM {0}'.format(rom_name), rom_name_list)
+        selectgame = dialog.select('Select item for Launcher {0}'.format(launcher_name), rom_name_list)
         if selectgame < 0: return False
 
         # --- Grab metadata for selected game ---
         # >> Prevent race conditions
         kodi_busydialog_ON()
-        gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+        gamedata = scraper_obj.get_metadata(results[selectgame])
         kodi_busydialog_OFF()
         if not gamedata:
             kodi_notify_warn('Cannot download game metadata.')

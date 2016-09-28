@@ -1,5 +1,7 @@
 [B]Advanced Emulator Launcher | version 0.9.3 | XX September 2016[/B]
 
+FEATURE  Increased the number of platforms.
+
 FEATURE  Setting options to hide [Fav] and [OK] labels in Launcher/Collection/Favourite ROMs.
 
 FEATURE  Setting options to hide Favourites and ROM Collections.
@@ -27,6 +29,10 @@ FIX      Fixed launching of ROM launchers having LNK files as ROMs in Windows. A
          be chosen as the launcher program (it will be ignored), expect an LNK file.
 
 FIX      Fix information dialogs in _command_remove_rom() (shown when deleting a ROM).
+
+FIX      Fixed scraping of launchers in context menu Edit Launcher -- Edit Metadata. Now user is
+         able to choose scraper.
+
 
 [B]Advanced Emulator Launcher | version 0.9.2 | 26 September 2016[/B]
 
