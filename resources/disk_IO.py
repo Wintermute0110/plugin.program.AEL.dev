@@ -102,7 +102,7 @@ def fs_new_launcher():
          'default_banner' : 's_banner',
          'default_poster' : 's_flyer',
          'default_clearlogo' : 's_banner',
-         'roms_default_thumb' : 's_title',
+         'roms_default_thumb' : 's_boxfront',
          'roms_default_fanart' : 's_fanart',
          'roms_default_banner' : 's_banner',
          'roms_default_poster' : 's_flyer',
