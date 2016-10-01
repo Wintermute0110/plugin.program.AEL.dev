@@ -2816,6 +2816,11 @@ class Main:
         listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart,
                          'banner' : thumb_banner, 'poster' : thumb_poster, 'clearlogo' : thumb_clearlogo })
 
+        # --- ROM extrafanart ---
+        # >> Build extrafanart dictionary
+        # extrafanart_dic = {}
+        # listitem.setArt(extrafanart_dic)
+
         # http://forum.kodi.tv/showthread.php?tid=221690&pid=1960874#pid1960874
         # This appears to be a common area of confusion with many addon developers, isPlayable doesn't
         # really mean the item is a playable, it only means Kodi will wait for a call to
