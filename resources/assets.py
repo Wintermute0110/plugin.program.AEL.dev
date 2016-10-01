@@ -152,7 +152,7 @@ def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asse
 # Gets a human readable name string for the default fallback thumb
 #
 def assets_get_asset_name_str(default_asset):
-    asset_name_str = u''
+    asset_name_str = ''
 
     if   default_asset == 's_title':     asset_name_str = 'Title'
     elif default_asset == 's_snap':      asset_name_str = 'Snap'

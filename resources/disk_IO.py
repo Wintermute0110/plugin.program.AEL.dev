@@ -67,7 +67,6 @@ def fs_new_category():
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
          'default_poster' : 's_flyer',
-         'default_clearlogo' : 's_banner',
          's_thumb' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -101,7 +100,6 @@ def fs_new_launcher():
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
          'default_poster' : 's_flyer',
-         'default_clearlogo' : 's_banner',
          'roms_default_thumb' : 's_boxfront',
          'roms_default_fanart' : 's_fanart',
          'roms_default_banner' : 's_banner',
@@ -181,8 +179,9 @@ def fs_new_collection():
     return c
 
 #
-# Note that Virtual Launchers ROMs use the Favourite ROMs data model.
-# Missing ROMs are not allowed in Favourites or Virtual Launchers.
+# Creates a new Favourite ROM dictionary from parent ROM and Launcher.
+#
+# No-Intro Missing ROMs are not allowed in Favourites or Virtual Launchers.
 # fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
 #  'OK'                ROM filename exists and launcher exists and ROM id exists
 #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
@@ -200,8 +199,8 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
     # NOTE keep it!
     # del favourite['nointro_status']
-    
-    # >> Copy launcher stuff into Favourite ROM
+
+    # >> Copy parent launcher fields into Favourite ROM
     favourite['launcherID']             = launcher['id']
     favourite['platform']               = launcher['platform']
     favourite['application']            = launcher['application']
@@ -214,6 +213,33 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['roms_default_banner']    = launcher['roms_default_banner']
     favourite['roms_default_poster']    = launcher['roms_default_poster']
     favourite['roms_default_clearlogo'] = launcher['roms_default_clearlogo']
+
+    # >> Favourite ROM unique fields
+    favourite['fav_status'] = 'OK'
+
+    return favourite
+
+#
+# Creates a new Favourite ROM from old Favourite, parent ROM and parent Launcher.
+# 1) Metadata/Assets are from old Favourite ROM.
+# 2) ROM filename is from parent ROM.
+# 3) Launcher files are from parent Launcher.
+# 4) Default assets/artwork from launcher NOT updated.
+#
+def fs_get_Favourite_from_old_Fav_and_ROM(old_favourite_rom, new_standard_rom, launcher):
+    favourite = dict(old_favourite_rom)
+    
+    # >> Update launcher files from parent launcher but no default assets/artwork.
+    favourite['launcherID']  = launcher['id']
+    favourite['platform']    = launcher['platform']
+    favourite['application'] = launcher['application']
+    favourite['args']        = launcher['args']
+    favourite['rompath']     = launcher['rompath']
+    favourite['romext']      = launcher['romext']
+    favourite['minimize']    = launcher['minimize']
+
+    # >> Update filename with parent ROM filename.
+    favourite['filename']    = new_standard_rom['filename']
 
     # >> Favourite ROM unique fields
     favourite['fav_status']  = 'OK'
@@ -304,7 +330,6 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('default_fanart', category['default_fanart']))
             str_list.append(XML_text('default_banner', category['default_banner']))
             str_list.append(XML_text('default_poster', category['default_poster']))
-            str_list.append(XML_text('default_clearlogo', category['default_clearlogo']))
             str_list.append(XML_text('s_thumb', category['s_thumb']))
             str_list.append(XML_text('s_fanart', category['s_fanart']))
             str_list.append(XML_text('s_banner', category['s_banner']))
@@ -340,7 +365,6 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('default_fanart', launcher['default_fanart']))
             str_list.append(XML_text('default_banner', launcher['default_banner']))
             str_list.append(XML_text('default_poster', launcher['default_poster']))
-            str_list.append(XML_text('default_clearlogo', launcher['default_clearlogo']))
             str_list.append(XML_text('roms_default_thumb', launcher['roms_default_thumb']))
             str_list.append(XML_text('roms_default_fanart', launcher['roms_default_fanart']))
             str_list.append(XML_text('roms_default_banner', launcher['roms_default_banner']))
