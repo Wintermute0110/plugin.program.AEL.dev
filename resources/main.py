@@ -676,10 +676,12 @@ class Main:
             type = dialog.select('Create New Launcher',
                                  ['Standalone launcher (Game/Application)', 
                                   'ROM launcher (Emulator)',
+                                  'Parent/Clone No-Intro ROM launcher (Emulator)',
                                   'LNK launcher (Windows only)'])
         else:
             type = dialog.select('Create New Launcher',
-                                 ['Standalone launcher (Game/Application)', 
+                                 ['Standalone launcher (Game/Application)',
+                                  'Parent/Clone No-Intro ROM launcher (Emulator)',
                                   'ROM launcher (Emulator)'])
 
         log_info('_command_add_new_launcher() New launcher type = {0}'.format(type))
@@ -723,34 +725,47 @@ class Main:
             self.launchers[launcherID] = launcherdata
             kodi_notify('Created standalone launcher {0}'.format(title))
 
-        # --- ROM Launcher / LNK launcher (Windows only) ---
-        elif type == 1 or type == 2:
+        #
+        # 1) ROM Launcher 
+        # 2) No-Intro Parent/Clone launcher
+        # 3) LNK launcher (Windows only)
+        #
+        elif type == 1 or type == 2 or type == 3:
+            # --- Select No-Intro PClone DAT XML file ---
+            if type == 2:
+                kodi_dialog_OK('No-Intro Parent/Clone launcher functionality not coded yet. Sorry. '
+                               'For now just create a standard ROM launcher.')
+                return
+            if type == 2:
+                dat_file = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '.xml').decode('utf-8')
+                if not dat_file: return
+
             # --- Launcher application ---
-            if type == 1:
+            if type == 1 or type == 2:
                 app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', filter).decode('utf-8')
                 if not app: return
-            elif type == 2:
+            elif type == 3:
                 app = 'lnk_launcher_app'
 
             # --- ROM path ---
-            if type == 1:
+            if type == 1  or type == 2:
                 roms_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', 'files', '').decode('utf-8')
-            elif type == 2:
+            elif type == 3:
                 roms_path = xbmcgui.Dialog().browse(0, 'Select the LNKs path', 'files', '').decode('utf-8')
             if not roms_path: return
 
             # --- ROM extensions ---
-            if type == 1:
+            if type == 1 or type == 2:
                 extensions = emudata_get_program_extensions(os.path.basename(app))
                 extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
                 extkey.doModal()
                 if not extkey.isConfirmed(): return
                 ext = extkey.getText().decode('utf-8')
-            elif type == 2:
+            elif type == 3:
                 ext = 'lnk'
 
             # --- Launcher arguments ---
-            if type == 1:
+            if type == 1 or type == 2:
                 default_arguments = emudata_get_program_arguments(os.path.basename(app))
                 argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
                 argkeyboard.doModal()
@@ -801,12 +816,25 @@ class Main:
             launcherdata['romext']             = ext
             launcherdata['roms_base_noext']    = roms_base_noext
             launcherdata['timestamp_launcher'] = time.time()
+
             # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
             # >> launcher is edited using Python passing by assignment.
             assets_init_asset_dir(assets_path, launcherdata)
             self.launchers[launcherID] = launcherdata
+            
+            # >> If No-Intro Parent/Clone launcher, then:
+            #    1) Create the main PClone list from DAT.
+            #    2) Populate the launcher ROMs from the DAT
+            #    3) Later, user will use the scanner to determine which ROMs has or not and to
+            #       set metadata/artwork.
+            #
+            if type == 2:
+                self._roms_create_pclone_launcher_data()
+
+            # >> Notify user
             if type == 1:   kodi_notify('Created ROM launcher {0}'.format(title))
-            elif type == 2: kodi_notify('Created LNK launcher {0}'.format(title))
+            elif type == 2: kodi_notify('Created No-Intro Parent/Clone launcher {0}'.format(title))
+            elif type == 3: kodi_notify('Created LNK launcher {0}'.format(title))
 
         # >> User cancelled dialog
         else: return
@@ -1647,7 +1675,7 @@ class Main:
     #
     def _command_add_roms(self, launcher):
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Add/Update Items', ['Scan for New Items', 'Manually Add Item'])
+        type = dialog.select('Add/Update ROMs to Launcher', ['Scan for New ROMs', 'Manually Add ROM'])
         if type == 0:
             self._roms_import_roms(launcher)
         elif type == 1:
@@ -4175,6 +4203,7 @@ class Main:
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
         info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
         info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
+        info_text += "[COLOR skyblue]pclone_launcher[/COLOR]: {0}\n".format(launcher['pclone_launcher'])
         info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
         info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
 
@@ -5131,7 +5160,7 @@ class Main:
             log_warn('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_file))
             return (0, 0, 0)
 
-        # Put ROM names in a set. Set is the fastes Python container for searching
+        # Put ROM names in a set. Set is the fastest Python container for searching
         # elements (implements hashed search).
         roms_nointro_set = set(roms_nointro.keys())
         roms_set = set()
@@ -5171,6 +5200,12 @@ class Main:
 
         # Return statistics
         return (num_have, num_miss, num_unknown)
+
+    #
+    # Populates a launcher with a No-Intro PClone DAT file
+    #   
+    def _roms_create_pclone_launcher_data(self):
+        pass
 
     #
     # Manually add a new ROM instead of a recursive scan.

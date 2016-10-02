@@ -94,6 +94,7 @@ def fs_new_launcher():
          'minimize' : False,
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
+         'pclone_launcher' : False,
          'timestamp_launcher' : 0.0,
          'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
@@ -1127,7 +1128,11 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 # No-Intro and Offline scrapers
 # -------------------------------------------------------------------------------------------------
 #
-# Loads a No-Intro Parent-Clone XML DAT file
+# Loads a No-Intro Parent-Clone XML DAT file. Creates a data structure like
+# roms = {
+#   'rom_name_A' : { 'name' : 'rom_name_A'},
+#   'rom_name_B' : { 'name' : 'rom_name_B'},
+# }
 #
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
@@ -1150,6 +1155,24 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
             nointro_roms[rom_name] = nointro_rom
 
     return nointro_roms
+
+#
+# Loads a No-Intro Parent/Clone XML DAT file. Creates a PClone data index like this:
+#
+# roms = { Standard AEL roms data dictionary }
+#
+# rom_parents = { Standard AEL roms data dictionary with parents only }
+#
+# roms_pclone_index = {
+#   'parent_id_1' : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#   'parent_id_2' : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+# }
+#
+# A) rom_parents is then used to render the launcher parents.
+# B) Having parent ID, the roms and roms_pclone_index is use to make the clone list in clone viewer.
+#
+def fs_load_NoIntro_XML_file():
+    pass
 
 #
 # Loads offline scraper information XML file.
