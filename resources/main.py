@@ -35,6 +35,7 @@ from disk_IO import *
 from net_IO import *
 from utils import *
 from utils_kodi import *
+from utils_shortcuts import *
 from scrap import *
 from assets import *
 
@@ -144,7 +145,7 @@ class Main:
         if not os.path.isdir(ROMS_DIR):               os.makedirs(ROMS_DIR)
         if not os.path.isdir(COLLECTIONS_DIR):        os.makedirs(COLLECTIONS_DIR)
         if not os.path.isdir(REPORTS_DIR):            os.makedirs(REPORTS_DIR)
-
+        
         # ~~~~~ Process URL ~~~~~
         self.base_url = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
@@ -167,7 +168,7 @@ class Main:
 
         # --- Load categories.xml and fill categories and launchers dictionaries ---
         (self.update_timestamp, self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
-
+        
         # If no com parameter display categories. Display categories listbox (addon root directory)
         if 'com' not in args:
             self._command_render_categories()
@@ -269,6 +270,9 @@ class Main:
             self._command_update_virtual_category_db_all()
         elif command == 'IMPORT_AL_LAUNCHERS':
             self._command_import_legacy_AL()
+        # command to build/fill the menu with categories or launcher using skinshortcuts
+        elif command == 'BUILD_GAMES_MENU':
+            self.buildMenu()
         else:
             kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
 
@@ -5843,6 +5847,117 @@ class Main:
     def _misc_url_search(self, command, categoryID, launcherID, search_type, search_string):
         return '{0}?com={1}&catID={2}&launID={3}&search_type={4}&search_string={5}'.format(
             self.base_url, command, categoryID, launcherID, search_type, search_string)
+
+    def buildMenu(self):
+
+        startToBuildDialog = xbmcgui.Dialog()
+        startToBuild = startToBuildDialog.yesno('Games menu', 'Want to automatically fill the menu?')
+
+        if startToBuild == False:
+            return
+
+        spi = xbmcaddon.Addon('script.skinshortcuts')
+        path = spi.getAddonInfo('path')
+        path = path.decode("utf-8")
+
+        import xmlfunctions
+        from xmlfunctions import XMLFunctions
+        from datafunctions import DataFunctions
+        from gui import GUI
+        menuStore = DataFunctions()
+        ui = GUI( "script-skinshortcuts.xml", path, "default", group="mainmenu", defaultGroup=None, nolabels="false", groupname="" )
+        ui.currentWindow = xbmcgui.Window()
+
+        mainMenuItems = []
+        mainMenuItemLabels = []
+        shortcuts = menuStore._get_shortcuts( "mainmenu", defaultGroup =None )
+        for shortcut in shortcuts.getroot().findall( "shortcut" ):
+            item = ui._parse_shortcut( shortcut )
+            mainMenuItemLabels.append(item[1].getLabel())
+            mainMenuItems.append(item[1])
+
+        selectMenuToFillDialog = xbmcgui.Dialog()
+        selectedMenuIndex = selectMenuToFillDialog.select("Select menu", mainMenuItemLabels)
+        
+        selectedMenuItem = mainMenuItems[selectedMenuIndex]
+
+        typeOfContentsDialog = xbmcgui.Dialog()
+        typeOfContent = typeOfContentsDialog.select("Select content to create in %s" % selectedMenuItem.getLabel(), ['Categories', 'Launchers'])
+        
+        selectedMenuID = selectedMenuItem.getProperty("labelID")
+        selectedMenuItems = []
+
+        selectedMenuItemsFromStore = menuStore._get_shortcuts(selectedMenuID, defaultGroup =None )
+        amount = len(selectedMenuItemsFromStore.getroot().findall( "shortcut" ))
+        
+        if amount < 1:
+            selectedDefaultID = selectedMenuItem.getProperty("defaultID")
+            selectedMenuItemsFromStore = menuStore._get_shortcuts(selectedDefaultID, defaultGroup =None )
+
+        for shortcut in selectedMenuItemsFromStore.getroot().findall( "shortcut" ):
+            item = ui._parse_shortcut( shortcut )
+            selectedMenuItems.append(item[1])
+            
+        ui.group = selectedMenuID
+        count = len(selectedMenuItems)
+
+        if typeOfContent == 0:
+            for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
+                category_dic = self.categories[key]
+                name = category_dic['m_name']
+                url_str =  "ActivateWindow(Programs,\"%s\",return)" % self._misc_url('SHOW_LAUNCHERS', key)
+                fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
+                thumb = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
+                
+                listitem = xbmcgui.ListItem(name)
+                listitem.setProperty( "defaultID", key)
+                listitem.setProperty( "Path", url_str )
+                listitem.setProperty( "displayPath", url_str )
+                listitem.setProperty( "icon", thumb )
+                listitem.setProperty( "skinshortcuts-orderindex", str( count ) )
+                listitem.setProperty( "additionalListItemProperties", "[]" )
+                ui._add_additional_properties( listitem )
+                ui._add_additionalproperty( listitem, "background", fanart )
+                ui._add_additionalproperty( listitem, "backgroundName", fanart )
+
+                selectedMenuItems.append(listitem)
+
+        if typeOfContent == 1:
+            for key in sorted(self.launchers, key = lambda x : self.launchers[x]['application']):
+                launcher_dic = self.launchers[key]
+                name = launcher_dic['m_name']
+                launcherID = launcher_dic['id']
+                categoryID = launcher_dic['categoryID']
+                url_str =  "ActivateWindow(Programs,\"%s\",return)" % self._misc_url('SHOW_ROMS', categoryID, launcherID)
+                fanart = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
+                thumb = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
+                
+                listitem = xbmcgui.ListItem(name)
+                listitem.setProperty( "defaultID", key)
+                listitem.setProperty( "Path", url_str )
+                listitem.setProperty( "displayPath", url_str )
+                listitem.setProperty( "icon", thumb )
+                listitem.setProperty( "skinshortcuts-orderindex", str( count ) )
+                listitem.setProperty( "additionalListItemProperties", "[]" )
+                ui._add_additional_properties( listitem )
+                ui._add_additionalproperty( listitem, "background", fanart )
+                ui._add_additionalproperty( listitem, "backgroundName", fanart )
+
+                selectedMenuItems.append(listitem)
+                
+        ui.changeMade = True
+        ui.allListItems = selectedMenuItems
+        ui._save_shortcuts()
+        ui.close()
+        log_info("Saved shortcuts for AEL")
+        notifyDialog = xbmcgui.Dialog()
+        notifyDialog.notification('Done building', 'The menu is updated with AEL content', xbmcgui.NOTIFICATION_INFO, 5000)
+        #xmlfunctions.ADDON = xbmcaddon.Addon('script.skinshortcuts')
+        #xmlfunctions.ADDONVERSION = xmlfunctions.ADDON.getAddonInfo('version')
+        #xmlfunctions.LANGUAGE = xmlfunctions.ADDON.getLocalizedString
+        #xml = XMLFunctions()
+        #xml.buildMenu("9000","","0",None,"","0")
+        #log_info("Done building menu for AEL")
 
 # -------------------------------------------------------------------------------------------------
 # Custom class dialog for an image selection window

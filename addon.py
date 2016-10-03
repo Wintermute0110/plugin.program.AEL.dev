@@ -18,8 +18,29 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 
+import sys, os
+import xbmc, xbmcaddon
+
 # --- Modules/packages in this plugin ---
 import resources.main
+
+ADDON        = xbmcaddon.Addon('script.skinshortcuts')
+ADDONID      = ADDON.getAddonInfo('id').decode( 'utf-8' )
+ADDONVERSION = ADDON.getAddonInfo('version')
+LANGUAGE     = ADDON.getLocalizedString
+CWD          = ADDON.getAddonInfo('path').decode("utf-8")
+ADDONNAME    = ADDON.getAddonInfo('name').decode("utf-8")
+RESOURCE     = xbmc.translatePath( os.path.join( CWD, 'resources', 'lib' ) ).decode("utf-8")
+DATAPATH     = os.path.join( xbmc.translatePath( "special://profile/" ).decode( 'utf-8' ), "addon_data", ADDONID )
+MASTERPATH   = os.path.join( xbmc.translatePath( "special://masterprofile/" ).decode( 'utf-8' ), "addon_data", ADDONID )
+
+libPath = xbmc.translatePath(os.path.join(CWD, 'resources','lib')).decode("utf-8")
+sys.path.append(libPath)
+smu = xbmcaddon.Addon('script.module.unidecode')
+smupath = smu.getAddonInfo('path')
+smupath = xbmc.translatePath(os.path.join(smupath, 'lib')).decode("utf-8")
+sys.path.append(smupath)
+
 
 # -------------------------------------------------------------------------------------------------
 # Hacks and tests
