@@ -21,7 +21,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, os, shutil, fnmatch, string, time
+import sys, os, shutil, fnmatch, string, time, traceback
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 import subprocess
 from collections import OrderedDict
@@ -35,7 +35,6 @@ from disk_IO import *
 from net_IO import *
 from utils import *
 from utils_kodi import *
-from utils_shortcuts import *
 from scrap import *
 from assets import *
 
@@ -5850,22 +5849,49 @@ class Main:
 
     def buildMenu(self):
 
+        hasSkinshortcuts = xbmc.getCondVisibility('System.HasAddon(script.skinshortcuts)') == 1
+        if hasSkinshortcuts == False:
+            log_warning("Addon skinshortcuts is not installed, cannot build games menu")
+            warnAddonMissingDialog = xbmcgui.Dialog()
+            warnAddonMissingDialog.notification('Missing addon', 'Addon skinshortcuts is not installed', xbmcgui.NOTIFICATION_WARNING, 5000)
+            return
+
+        path = ""
+        try:
+            skinshortcutsAddon = xbmcaddon.Addon('script.skinshortcuts')
+            path = skinshortcutsAddon.getAddonInfo('path')
+            path = path.decode("utf-8")
+
+            libPath = xbmc.translatePath(os.path.join(path, 'resources','lib')).decode("utf-8")
+            sys.path.append(libPath)
+
+            unidecodeModule = xbmcaddon.Addon('script.module.unidecode')
+            libPath = unidecodeModule.getAddonInfo('path')
+            libPath = xbmc.translatePath(os.path.join(libPath, 'lib')).decode("utf-8")
+            sys.path.append(libPath)
+
+            sys.modules[ "__main__" ].ADDON		= skinshortcutsAddon
+            sys.modules[ "__main__" ].ADDONID	= skinshortcutsAddon.getAddonInfo('id').decode( 'utf-8' )
+            sys.modules[ "__main__" ].CWD		= path
+            sys.modules[ "__main__" ].LANGUAGE	= skinshortcutsAddon.getLocalizedString
+
+            import gui, datafunctions
+
+        except Exception as ex:
+            log_error("Failed to load skinshortcuts addon: %s" %  ex)
+            traceback.print_exc()
+            warnAddonMissingDialog = xbmcgui.Dialog()
+            warnAddonMissingDialog.notification('Failure', 'Could not load skinshortcuts addon', xbmcgui.NOTIFICATION_WARNING, 5000)
+            return
+
         startToBuildDialog = xbmcgui.Dialog()
         startToBuild = startToBuildDialog.yesno('Games menu', 'Want to automatically fill the menu?')
 
         if startToBuild == False:
             return
 
-        spi = xbmcaddon.Addon('script.skinshortcuts')
-        path = spi.getAddonInfo('path')
-        path = path.decode("utf-8")
-
-        import xmlfunctions
-        from xmlfunctions import XMLFunctions
-        from datafunctions import DataFunctions
-        from gui import GUI
-        menuStore = DataFunctions()
-        ui = GUI( "script-skinshortcuts.xml", path, "default", group="mainmenu", defaultGroup=None, nolabels="false", groupname="" )
+        menuStore = datafunctions.DataFunctions()
+        ui = gui.GUI( "script-skinshortcuts.xml", path, "default", group="mainmenu", defaultGroup=None, nolabels="false", groupname="" )
         ui.currentWindow = xbmcgui.Window()
 
         mainMenuItems = []
