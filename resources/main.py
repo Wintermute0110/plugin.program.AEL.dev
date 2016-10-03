@@ -5935,17 +5935,7 @@ class Main:
                 fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
                 
-                listitem = xbmcgui.ListItem(name)
-                listitem.setProperty( "defaultID", key)
-                listitem.setProperty( "Path", url_str )
-                listitem.setProperty( "displayPath", url_str )
-                listitem.setProperty( "icon", thumb )
-                listitem.setProperty( "skinshortcuts-orderindex", str( count ) )
-                listitem.setProperty( "additionalListItemProperties", "[]" )
-                ui._add_additional_properties( listitem )
-                ui._add_additionalproperty( listitem, "background", fanart )
-                ui._add_additionalproperty( listitem, "backgroundName", fanart )
-
+                listitem = self.buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
 
         if typeOfContent == 1:
@@ -5958,17 +5948,7 @@ class Main:
                 fanart = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
                 
-                listitem = xbmcgui.ListItem(name)
-                listitem.setProperty( "defaultID", key)
-                listitem.setProperty( "Path", url_str )
-                listitem.setProperty( "displayPath", url_str )
-                listitem.setProperty( "icon", thumb )
-                listitem.setProperty( "skinshortcuts-orderindex", str( count ) )
-                listitem.setProperty( "additionalListItemProperties", "[]" )
-                ui._add_additional_properties( listitem )
-                ui._add_additionalproperty( listitem, "background", fanart )
-                ui._add_additionalproperty( listitem, "backgroundName", fanart )
-
+                listitem = self.buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
                 
         ui.changeMade = True
@@ -5984,6 +5964,21 @@ class Main:
         #xml = XMLFunctions()
         #xml.buildMenu("9000","","0",None,"","0")
         #log_info("Done building menu for AEL")
+
+    def buildMenuItem(self, key, name, action, thumb, fanart, count, ui):
+    
+        listitem = xbmcgui.ListItem(name)
+        listitem.setProperty( "defaultID", key)
+        listitem.setProperty( "Path", action )
+        listitem.setProperty( "displayPath", action )
+        listitem.setProperty( "icon", thumb )
+        listitem.setProperty( "skinshortcuts-orderindex", str( count ) )
+        listitem.setProperty( "additionalListItemProperties", "[]" )
+        ui._add_additional_properties( listitem )
+        ui._add_additionalproperty( listitem, "background", fanart )
+        ui._add_additionalproperty( listitem, "backgroundName", fanart )
+
+        return listitem
 
 # -------------------------------------------------------------------------------------------------
 # Custom class dialog for an image selection window
