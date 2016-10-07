@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.3 | XX October 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.3 | 8 October 2016[/B]
 
 FEATURE  LNK ROMs Launcher in Windows.
 
