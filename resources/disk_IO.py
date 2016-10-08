@@ -1171,7 +1171,7 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
 # A) rom_parents is then used to render the launcher parents.
 # B) Having parent ID, the roms and roms_pclone_index is use to make the clone list in clone viewer.
 #
-def fs_load_NoIntro_XML_file():
+def fs_load_NoIntro_XML_file_get_PClone():
     pass
 
 #

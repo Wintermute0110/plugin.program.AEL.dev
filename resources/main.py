@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Advanced Emulator Launcher main script file
 #
@@ -1318,9 +1318,7 @@ class Main:
                         # Browse for No-Intro file
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
                         dialog = xbmcgui.Dialog()
-                        dat_file = dialog.browse(type = 1, heading = 'Select No-Intro XML DAT (XML|DAT)', 
-                                                 s_shares = 'files', mask = '.xml|.dat', 
-                                                 useThumbs = False, treatAsFolder = False).decode('utf-8')
+                        dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
                         if not os.path.isfile(dat_file): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
@@ -5136,7 +5134,7 @@ class Main:
         num_roms = len(roms)
         log_info('_roms_reset_NoIntro_status() Launcher DB contain {0} items'.format(num_roms))
         if num_roms > 0:
-            log_verb('_roms_reset_NoIntro_status() Starting dead items scan')
+            log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
             for rom_id in sorted(roms.iterkeys()):
                 roms[rom_id]['nointro_status'] = 'None'
         else:
