@@ -12,6 +12,8 @@ FIX      Fixed loading of No-Intro files.
 
 FIX      Fixed "Edit Launcher" >> "Choose default Assets/Artwork..."
 
+FIX      Fixed "Add new Launcher" context menu in non-Windows platforms.
+
 
 [B]Advanced Emulator Launcher | version 0.9.3 | 8 October 2016[/B]
 

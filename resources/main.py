@@ -684,8 +684,8 @@ class Main:
         else:
             type = dialog.select('Create New Launcher',
                                  ['Standalone launcher (Game/Application)',
-                                  'Parent/Clone No-Intro ROM launcher (Emulator)',
-                                  'ROM launcher (Emulator)'])
+                                  'ROM launcher (Emulator)',
+                                  'Parent/Clone No-Intro ROM launcher (Emulator)'])
 
         log_info('_command_add_new_launcher() New launcher type = {0}'.format(type))
         filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
@@ -740,7 +740,7 @@ class Main:
                                'For now just create a standard ROM launcher.')
                 return
             if type == 2:
-                dat_file = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '.xml').decode('utf-8')
+                dat_file = xbmcgui.Dialog().browse(1, 'Select the No-Intro PClone XML file', 'files', '.xml').decode('utf-8')
                 if not dat_file: return
 
             # --- Launcher application ---
