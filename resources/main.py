@@ -1089,8 +1089,8 @@ class Main:
         # --- Choose default thumb/fanart ---
         type_nb = type_nb + 1
         if type == type_nb:
-            launcher        = self.categories[categoryID]
-            
+            launcher = self.launchers[launcherID]
+
             asset_thumb_srt  = assets_get_asset_name_str(launcher['default_thumb'])
             asset_fanart_srt = assets_get_asset_name_str(launcher['default_fanart'])
             asset_banner_srt = assets_get_asset_name_str(launcher['default_banner'])

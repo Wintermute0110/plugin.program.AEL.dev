@@ -8,6 +8,10 @@ WIP      [Most played ROMs] Virtual Launcher. Histogram of how many times a ROM 
 
 WIP      Extranafart for Categories/Launchers/ROMs.
 
+FIX      Fixed loading of No-Intro files.
+
+FIX      Fixed "Edit Launcher" >> "Choose default Assets/Artwork..."
+
 
 [B]Advanced Emulator Launcher | version 0.9.3 | 8 October 2016[/B]
 
