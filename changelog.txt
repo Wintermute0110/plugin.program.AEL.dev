@@ -1,5 +1,10 @@
 [B]Advanced Emulator Launcher | version 0.9.4 | XX October 2016[/B]
 
+WIP      Improve the repairing for Favourite/Collection ROMs once and for all. For example, what
+         information is copied from parent to Fav ROM when doing automatic linking?
+
+WIP      Parent/Clone launcher display option when using No-Intro DATs.
+
 WIP      [Recently played ROMs] Virtual Launcher. List of ROMs played in reverse chronological
          order.
 
