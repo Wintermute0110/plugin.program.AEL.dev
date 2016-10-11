@@ -2679,8 +2679,8 @@ class Main:
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
-        # >> Render all launchers (sort by application? Is not better to sort by name alphabetically?)
-        for key in sorted(self.launchers, key = lambda x : self.launchers[x]['application']):
+        # >> Render all launchers
+        for key in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -2770,7 +2770,7 @@ class Main:
         self._misc_set_content_and_all_sorting_methods()
 
         # --- Display ROMs ---
-        for key in sorted(roms, key = lambda x : roms[x]['filename']):
+        for key in sorted(roms, key = lambda x : roms[x]['m_name']):
             self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -2979,7 +2979,7 @@ class Main:
             return
 
         # --- Display Favourites ---
-        for key in sorted(roms, key= lambda x : roms[x]['filename']):
+        for key in sorted(roms, key= lambda x : roms[x]['m_name']):
             self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, key, roms[key], False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3087,7 +3087,7 @@ class Main:
         roms_fav_set = set(roms_fav.keys())
 
         # --- Display Favourites ---
-        for key in sorted(roms, key= lambda x : roms[x]['filename']):
+        for key in sorted(roms, key= lambda x : roms[x]['m_name']):
             self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, key, roms[key], key in roms_fav_set)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3096,36 +3096,36 @@ class Main:
     #
     def _command_render_recently_played(self):
         # >> Content type and sorting method
-        self._misc_set_content_and_all_sorting_methods()
-        
-        # --- Load Recently Played favourite ROMs ---
-        roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-        if not roms:
+        # self._misc_set_content_and_all_sorting_methods()
+
+        # --- Load Recently Played favourite ROM list and create and OrderedDict ---
+        rom_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)        
+        if not rom_list:
             kodi_notify('Recently played list is empty. Play some ROMs first!')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
-        # --- Display Favourites ---
-        for key in sorted(roms, key = lambda x : roms[x]['filename']):
-            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, key, roms[key], False)
+        # --- Display recently player ROM list ---
+        for rom in rom_list:
+            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, rom['id'], rom, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _command_render_most_played(self):
         # >> Content type and sorting method
-        self._misc_set_content_and_all_sorting_methods()
-        
+        # self._misc_set_content_and_all_sorting_methods()
+
         # --- Load Most Played favourite ROMs ---
-        roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
         if not roms:
             kodi_notify('Most played ROMs list  is empty. Play some ROMs first!.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
-        # --- Display Favourites ---
-        for key in sorted(roms, key = lambda x : roms[x]['filename']):
+        # --- Display most played ROMs, order by number of launchs ---
+        for key in sorted(roms, key = lambda x : roms[x]['launch_count']):
             self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, key, roms[key], False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-        
+
     #
     # Adds ROM to favourites
     #
