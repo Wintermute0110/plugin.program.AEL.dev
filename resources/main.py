@@ -93,7 +93,11 @@ VCATEGORY_TITLE_ID       = 'vcat_title'
 VCATEGORY_YEARS_ID       = 'vcat_years'
 VCATEGORY_GENRE_ID       = 'vcat_genre'
 VCATEGORY_STUDIO_ID      = 'vcat_studio'
+VCATEGORY_RECENT_ID      = 'vcat_recent'
+VCATEGORY_MOST_PLAYED_ID = 'vcat_most_played'
 VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
+VLAUNCHER_RECENT_ID      = 'vcat_recent'
+VLAUNCHER_MOST_PLAYED_ID = 'vcat_most_played'
 
 # --- Main code ---
 class Main:
@@ -2823,7 +2827,25 @@ class Main:
                 else:                                          rom_name = rom_raw_name
             else:
                 rom_name = rom_raw_name
-        # If rendering a virtual launcher mark nothing
+        elif categoryID == VCATEGORY_RECENT_ID:
+            kodi_def_thumb  = 'DefaultProgram.png'
+            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            platform        = rom['platform']
+            rom_name = rom_raw_name
+        elif categoryID == VCATEGORY_MOST_PLAYED_ID:
+            kodi_def_thumb  = 'DefaultProgram.png'
+            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            platform        = rom['platform']
+            # >> Render number of number the ROM has been launched
+            rom_name = '{0} (Launcher {1} times)'.format(rom_raw_name, rom['launch_count'])
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
@@ -2916,32 +2938,34 @@ class Main:
         # --- Create context menu ---
         commands = []
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            commands.append(('View Favourite ROM data',        self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Favourites',         self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM from Favourites',     self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',          self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Favourites',      self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('Manage Favourite ROMs',          self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+            commands.append(('View Favourite ROM data',         self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Edit ROM in Favourites',          self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Delete ROM from Favourites',      self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+            commands.append(('Search ROMs in Favourites',       self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+            commands.append(('Manage Favourite ROMs',           self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            commands.append(('View Collection ROM data',       self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Collection',         self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM from Collection',     self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites',      self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Collection',      self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('Manage Collection ROMs',         self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+            commands.append(('View Collection ROM data',        self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Edit ROM in Collection',          self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Delete ROM from Collection',      self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
+            commands.append(('Search ROMs in Collection',       self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+            commands.append(('Manage Collection ROMs',          self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+        elif categoryID == VCATEGORY_RECENT_ID or categoryID == VCATEGORY_MOST_PLAYED_ID:
+            commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
-            commands.append(('View Virtual Launcher ROM data', self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites',      self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',          self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Favourites',      self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+            commands.append(('View Virtual Launcher ROM data',  self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+            commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
         else:
-            commands.append(('View ROM data',                  self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Edit ROM',                       self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM',                     self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites',      self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',          self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Launcher',        self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+            commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Edit ROM',                        self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Delete ROM',                      self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+            commands.append(('Search ROMs in Launcher',         self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3109,7 +3133,7 @@ class Main:
 
         # --- Display recently player ROM list ---
         for rom in rom_list:
-            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, rom['id'], rom, False)
+            self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom['id'], rom, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _command_render_most_played(self):
@@ -3125,7 +3149,7 @@ class Main:
 
         # --- Display most played ROMs, order by number of launchs ---
         for key in sorted(roms, key = lambda x : roms[x]['launch_count']):
-            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, key, roms[key], False)
+            self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, key, roms[key], False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
