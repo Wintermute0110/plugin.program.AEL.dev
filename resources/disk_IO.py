@@ -991,9 +991,9 @@ def fs_import_ROM_Collection(input_filename):
             raw_data = json.load(file)
         except ValueError:
             statinfo = os.stat(input_filename)
-            log_error('fs_load_Collection_ROMs_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(input_filename))
-            log_error('fs_load_Collection_ROMs_JSON() Size {0}'.format(statinfo.st_size))
+            log_error('fs_import_ROM_Collection() ValueError exception in json.load() function')
+            log_error('fs_import_ROM_Collection() File {0}'.format(input_filename))
+            log_error('fs_import_ROM_Collection() Size {0}'.format(statinfo.st_size))
             return ({}, {}, [])
 
     # --- Extract roms from JSON data structe and ensure version is correct ---

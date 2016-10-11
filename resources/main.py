@@ -65,6 +65,8 @@ VCAT_YEARS_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_years.xml').decode('
 VCAT_GENRE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_genre.xml').decode('utf-8')
 VCAT_STUDIO_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml').decode('utf-8')
 LAUNCH_LOG_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'launcher.log').decode('utf-8')
+RECENT_PLAYED_NOEXT   = 'history'
+MOST_PLAYED_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'most_played.json').decode('utf-8')
 
 # --- Artwork and NFO for Categories and Launchers ---
 DEFAULT_CAT_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-categories').decode('utf-8')
@@ -174,8 +176,7 @@ class Main:
             log_debug('Advanced Emulator Launcher exit (addon root)')
             return
 
-        # There is a command to process
-        # For some reason args['com'] is a list, so get first element of the list (a string)
+        # Process comand. args['com'] is a list, so get first element of the list (a string)
         command = args['com'][0]
         if command == 'SHOW_ALL_CATEGORIES':
             self._command_render_all_categories()
@@ -187,6 +188,10 @@ class Main:
             self._command_render_favourites()
         elif command == 'SHOW_VIRTUAL_CATEGORY':
             self._command_render_virtual_category(args['catID'][0])
+        elif command == 'SHOW_RECENTLY_PLAYED':
+            self._command_render_recently_played()
+        elif command == 'SHOW_MOST_PLAYED':
+            self._command_render_most_played()
         elif command == 'SHOW_COLLECTIONS':
             self._command_render_collections()
         elif command == 'SHOW_COLLECTION_ROMS':
@@ -281,55 +286,55 @@ class Main:
         self.settings = {}
 
         # --- ROM Scanner settings ---
-        self.settings['scan_recursive']          = True if __addon_obj__.getSetting('scan_recursive') == 'true' else False
-        self.settings['scan_ignore_bios']        = True if __addon_obj__.getSetting('scan_ignore_bios') == 'true' else False
-        self.settings['scan_metadata_policy']    = int(__addon_obj__.getSetting('scan_metadata_policy'))
-        self.settings['scan_asset_policy']       = int(__addon_obj__.getSetting('scan_asset_policy'))
-        self.settings['scan_ignore_scrap_title'] = True if __addon_obj__.getSetting('scan_ignore_scrap_title') == 'true' else False
-        self.settings['scan_clean_tags']         = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
+        self.settings['scan_recursive']           = True if __addon_obj__.getSetting('scan_recursive') == 'true' else False
+        self.settings['scan_ignore_bios']         = True if __addon_obj__.getSetting('scan_ignore_bios') == 'true' else False
+        self.settings['scan_metadata_policy']     = int(__addon_obj__.getSetting('scan_metadata_policy'))
+        self.settings['scan_asset_policy']        = int(__addon_obj__.getSetting('scan_asset_policy'))
+        self.settings['scan_ignore_scrap_title']  = True if __addon_obj__.getSetting('scan_ignore_scrap_title') == 'true' else False
+        self.settings['scan_clean_tags']          = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
 
         # --- ROM scraping ---
-        self.settings['metadata_scraper']        = int(__addon_obj__.getSetting('metadata_scraper'))
-        self.settings['asset_scraper']           = int(__addon_obj__.getSetting('asset_scraper'))
+        self.settings['metadata_scraper']         = int(__addon_obj__.getSetting('metadata_scraper'))
+        self.settings['asset_scraper']            = int(__addon_obj__.getSetting('asset_scraper'))
 
-        self.settings['metadata_scraper_mode']   = int(__addon_obj__.getSetting('metadata_scraper_mode'))
-        self.settings['asset_scraper_mode']      = int(__addon_obj__.getSetting('asset_scraper_mode'))
+        self.settings['metadata_scraper_mode']    = int(__addon_obj__.getSetting('metadata_scraper_mode'))
+        self.settings['asset_scraper_mode']       = int(__addon_obj__.getSetting('asset_scraper_mode'))
 
         # --- Scrapers ---
-        self.settings['scraper_region']          = int(__addon_obj__.getSetting('scraper_region'))
-        self.settings['scraper_thumb_size']      = int(__addon_obj__.getSetting('scraper_thumb_size'))
-        self.settings['scraper_fanart_size']     = int(__addon_obj__.getSetting('scraper_fanart_size'))
-        self.settings['scraper_image_type']      = int(__addon_obj__.getSetting('scraper_image_type'))
-        self.settings['scraper_fanart_order']    = int(__addon_obj__.getSetting('scraper_fanart_order'))
+        self.settings['scraper_region']           = int(__addon_obj__.getSetting('scraper_region'))
+        self.settings['scraper_thumb_size']       = int(__addon_obj__.getSetting('scraper_thumb_size'))
+        self.settings['scraper_fanart_size']      = int(__addon_obj__.getSetting('scraper_fanart_size'))
+        self.settings['scraper_image_type']       = int(__addon_obj__.getSetting('scraper_image_type'))
+        self.settings['scraper_fanart_order']     = int(__addon_obj__.getSetting('scraper_fanart_order'))
 
         # --- Display ---
         self.settings['display_launcher_notify']  = True if __addon_obj__.getSetting('display_launcher_notify') == 'true' else False
         self.settings['display_hide_finished']    = True if __addon_obj__.getSetting('display_hide_finished') == 'true' else False
-
         self.settings['display_rom_in_fav']       = True if __addon_obj__.getSetting('display_rom_in_fav') == 'true' else False
         self.settings['display_nointro_stat']     = True if __addon_obj__.getSetting('display_nointro_stat') == 'true' else False
-        self.settings['display_fav_status']       = True if __addon_obj__.getSetting('display_fav_status') == 'true' else False        
-
+        self.settings['display_fav_status']       = True if __addon_obj__.getSetting('display_fav_status') == 'true' else False
         self.settings['display_hide_favs']        = True if __addon_obj__.getSetting('display_hide_favs') == 'true' else False
         self.settings['display_hide_collections'] = True if __addon_obj__.getSetting('display_hide_collections') == 'true' else False
         self.settings['display_hide_title']       = True if __addon_obj__.getSetting('display_hide_title') == 'true' else False
         self.settings['display_hide_year']        = True if __addon_obj__.getSetting('display_hide_year') == 'true' else False
         self.settings['display_hide_genre']       = True if __addon_obj__.getSetting('display_hide_genre') == 'true' else False
         self.settings['display_hide_studio']      = True if __addon_obj__.getSetting('display_hide_studio') == 'true' else False
+        self.settings['display_hide_recent']      = True if __addon_obj__.getSetting('display_hide_recent') == 'true' else False
+        self.settings['display_hide_mostplayed']  = True if __addon_obj__.getSetting('display_hide_mostplayed') == 'true' else False
 
         # --- Paths ---
-        self.settings['categories_asset_dir']    = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
-        self.settings['launchers_asset_dir']     = __addon_obj__.getSetting('launchers_asset_dir').decode('utf-8')
-        self.settings['favourites_asset_dir']    = __addon_obj__.getSetting('favourites_asset_dir').decode('utf-8')
-        self.settings['collections_asset_dir']   = __addon_obj__.getSetting('collections_asset_dir').decode('utf-8')
+        self.settings['categories_asset_dir']     = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
+        self.settings['launchers_asset_dir']      = __addon_obj__.getSetting('launchers_asset_dir').decode('utf-8')
+        self.settings['favourites_asset_dir']     = __addon_obj__.getSetting('favourites_asset_dir').decode('utf-8')
+        self.settings['collections_asset_dir']    = __addon_obj__.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- Advanced ---
-        self.settings['media_state']             = int(__addon_obj__.getSetting('media_state'))
-        self.settings['lirc_state']              = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
-        self.settings['start_tempo']             = int(round(float(__addon_obj__.getSetting('start_tempo'))))
-        self.settings['escape_romfile']          = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
-        self.settings['log_level']               = int(__addon_obj__.getSetting('log_level'))
-        self.settings['show_batch_window']       = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
+        self.settings['media_state']              = int(__addon_obj__.getSetting('media_state'))
+        self.settings['lirc_state']               = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
+        self.settings['start_tempo']              = int(round(float(__addon_obj__.getSetting('start_tempo'))))
+        self.settings['escape_romfile']           = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
+        self.settings['log_level']                = int(__addon_obj__.getSetting('log_level'))
+        self.settings['show_batch_window']        = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
 
         # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR
@@ -2416,22 +2421,25 @@ class Main:
             self._gui_render_category_row(self.categories[key], key)
 
         # --- AEL Favourites special category ---
-        if not self.settings['display_hide_favs']:
-            self._gui_render_category_favourites_row()
+        if not self.settings['display_hide_favs']: self._gui_render_category_favourites_row()
 
         # --- AEL Collections special category ---
-        if not self.settings['display_hide_collections']:
-            self._gui_render_category_collections_row()
+        if not self.settings['display_hide_collections']: self._gui_render_category_collections_row()
 
         # --- AEL Virtual Categories ---
         if not self.settings['display_hide_title']:  self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         if not self.settings['display_hide_year']:   self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
         if not self.settings['display_hide_genre']:  self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
         if not self.settings['display_hide_studio']: self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
+        
+        # --- Recently played and most played ROMs  ---
+        if not self.settings['display_hide_recent']:     self._gui_render_category_recently_played_row()
+        if not self.settings['display_hide_mostplayed']: self._gui_render_category_most_played_row()
+
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
-    # Renders all categories withouth Favourites, VLaunchers, etc.
+    # Renders all categories without Favourites, Collections, virtual categories, etc.
     # This function is called by skins.
     #
     def _command_render_all_categories(self):
@@ -2577,6 +2585,46 @@ class Main:
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_category_recently_played_row(self):
+        fav_name = '[Recently played ROMs]'
+        fav_thumb = 'DefaultFolder.png'
+        fav_fanart = ''
+        fav_banner = ''
+        fav_flyer = ''
+        listitem = xbmcgui.ListItem(fav_name)
+        listitem.setInfo('video', {'title': fav_name,             'genre' : 'AEL Favourites',
+                                   'plot' : 'AEL Favourite ROMs', 'overlay' : 4 } )
+        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
+
+        commands = []
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        url_str = self._misc_url('SHOW_RECENTLY_PLAYED')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_category_most_played_row(self):
+        fav_name = '[Most played ROMs]'
+        fav_thumb = 'DefaultFolder.png'
+        fav_fanart = ''
+        fav_banner = ''
+        fav_flyer = ''
+        listitem = xbmcgui.ListItem(fav_name)
+        listitem.setInfo('video', {'title': fav_name,             'genre' : 'AEL Favourites',
+                                   'plot' : 'AEL Favourite ROMs', 'overlay' : 4 } )
+        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
+
+        commands = []
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        url_str = self._misc_url('SHOW_MOST_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     #
@@ -3043,6 +3091,41 @@ class Main:
             self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, key, roms[key], key in roms_fav_set)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
+    #
+    # Render the Recently played and Most Played virtual launchers.
+    #
+    def _command_render_recently_played(self):
+        # >> Content type and sorting method
+        self._misc_set_content_and_all_sorting_methods()
+        
+        # --- Load Recently Played favourite ROMs ---
+        roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        if not roms:
+            kodi_notify('Recently played list is empty. Play some ROMs first!')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        # --- Display Favourites ---
+        for key in sorted(roms, key = lambda x : roms[x]['filename']):
+            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, key, roms[key], False)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    def _command_render_most_played(self):
+        # >> Content type and sorting method
+        self._misc_set_content_and_all_sorting_methods()
+        
+        # --- Load Most Played favourite ROMs ---
+        roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        if not roms:
+            kodi_notify('Most played ROMs list  is empty. Play some ROMs first!.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        # --- Display Favourites ---
+        for key in sorted(roms, key = lambda x : roms[x]['filename']):
+            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, key, roms[key], False)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        
     #
     # Adds ROM to favourites
     #
@@ -4667,7 +4750,8 @@ class Main:
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
             log_info('_command_run_rom() Launching ROM in Favourites...')
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            rom  = roms[romID]
+            rom           = roms[romID]
+            recent_rom    = rom
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
@@ -4686,39 +4770,29 @@ class Main:
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
                 return
+            recent_rom    = rom
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
             romext        = rom['romext']
         # --- ROM in Virtual Launcher ---
-        elif categoryID == VCATEGORY_TITLE_ID:
-            log_info('_command_run_rom() Launching ROM in Title Virtual Launcher...')
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-            rom  = roms[romID]
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-        elif categoryID == VCATEGORY_YEARS_ID:
-            log_info('_command_run_rom() Launching ROM in Year Virtual Launcher...')
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-            rom  = roms[romID]
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-        elif categoryID == VCATEGORY_GENRE_ID:
-            log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher...')
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-            rom  = roms[romID]
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher...')
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-            rom  = roms[romID]
+        elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
+             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
+            if categoryID == VCATEGORY_TITLE_ID:
+                log_info('_command_run_rom() Launching ROM in Virtual Launcher...')
+                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+            elif categoryID == VCATEGORY_YEARS_ID:
+                log_info('_command_run_rom() Launching ROM in Year Virtual Launcher...')
+                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+            elif categoryID == VCATEGORY_GENRE_ID:
+                log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher...')
+                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+            elif categoryID == VCATEGORY_STUDIO_ID:
+                log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher...')
+                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+
+            rom           = roms[romID]
+            recent_rom    = rom
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
@@ -4736,7 +4810,8 @@ class Main:
             if romID not in roms:
                 kodi_dialog_OK('romID not in roms dictionary')
                 return
-            rom = roms[romID]
+            rom           = roms[romID]
+            recent_rom    = fs_get_Favourite_from_ROM(rom, launcher)
             application   = launcher['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = launcher['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = launcher['minimize']
@@ -4786,7 +4861,24 @@ class Main:
         arguments = arguments.replace('%romtitle%',    rom['m_name']).replace('%ROMTITLE%',  rom['m_name'])
         log_info('_command_run_rom() arguments   = "{0}"'.format(arguments))
 
-        # Execute Kodi internal function (RetroPlayer?)
+        # --- Compute ROM recently played list ---
+        recent_roms = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
+        recent_roms.insert(0, recent_rom)
+        if len(recent_roms) > 100: recent_roms = recent_roms[:10]
+        fs_write_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT, recent_roms)
+
+        # --- Compute most played ROM statistics ---
+        most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+        if recent_rom['id'] in most_played_roms:
+            rom_id = recent_rom['id']
+            most_played_roms[rom_id]['launch_count'] += 1
+        else:
+            # >> Add field launch_count to recent_rom to count how many times have been launched.
+            recent_rom['launch_count'] = 1
+            most_played_roms[recent_rom['id']] = recent_rom
+        fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+
+        # --- Execute Kodi internal function (RetroPlayer?) ---
         if os.path.basename(application).lower().replace('.exe', '') == 'xbmc':
             xbmc.executebuiltin('XBMC.' + arguments)
             return
