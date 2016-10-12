@@ -1,5 +1,10 @@
 # TODO #
 
+ * Add a search engine for the scrapers based on the Levenshtein Distance. There is a Python
+   implementation here,
+ 
+   https://github.com/seatgeek/fuzzywuzzy
+
  * Add nplayers metadata field?
  
    Will have a look next week in detail. Billyc999 database has nplayers NFO. Will check RetroarchDB 

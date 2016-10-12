@@ -5,10 +5,10 @@ WIP      Improve the repairing for Favourite/Collection ROMs once and for all. F
 
 WIP      Parent/Clone launcher display option when using No-Intro DATs.
 
-WIP      [Recently played ROMs] Virtual Launcher. List of ROMs played in reverse chronological
+FEATURE  [Recently played ROMs] Virtual Launcher. List of ROMs played in reverse chronological
          order.
 
-WIP      [Most played ROMs] Virtual Launcher. Histogram of how many times a ROM has been played,
+FEATURE  [Most played ROMs] Virtual Launcher. Histogram of how many times a ROM has been played,
          ordered by the number of times a ROM has been played.
 
 WIP      Extranafart for Categories/Launchers/ROMs.
