@@ -3148,7 +3148,7 @@ class Main:
             return
 
         # --- Display most played ROMs, order by number of launchs ---
-        for key in sorted(roms, key = lambda x : roms[x]['launch_count']):
+        for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
             self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, key, roms[key], False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
