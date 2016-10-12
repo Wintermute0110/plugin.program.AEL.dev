@@ -4480,25 +4480,25 @@ class Main:
             vcategory_db_directory = VIRTUAL_CAT_TITLE_DIR
             vcategory_db_filename  = VCAT_TITLE_FILE_PATH
             vcategory_field_name   = 'm_name'
-            vcategory_name         = 'Name'
+            vcategory_name         = 'Titles'
         elif virtual_categoryID == VCATEGORY_YEARS_ID:
             log_info('_command_update_virtual_category_db() Updating Years DB')
             vcategory_db_directory = VIRTUAL_CAT_YEARS_DIR
             vcategory_db_filename  = VCAT_YEARS_FILE_PATH
             vcategory_field_name   = 'm_year'
-            vcategory_name         = 'Year'
+            vcategory_name         = 'Years'
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
             log_info('_command_update_virtual_category_db() Updating Genres DB')
             vcategory_db_directory = VIRTUAL_CAT_GENRE_DIR
             vcategory_db_filename  = VCAT_GENRE_FILE_PATH
             vcategory_field_name   = 'm_genre'
-            vcategory_name         = 'Genre'
+            vcategory_name         = 'Genres'
         elif virtual_categoryID == VCATEGORY_STUDIO_ID:
             log_info('_command_update_virtual_category_db() Updating Studios DB')
             vcategory_db_directory = VIRTUAL_CAT_STUDIO_DIR
             vcategory_db_filename  = VCAT_STUDIO_FILE_PATH
             vcategory_field_name   = 'm_studio'
-            vcategory_name         = 'Studio'
+            vcategory_name         = 'Studios'
         else:
             log_error('_command_update_virtual_category_db() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
@@ -4591,7 +4591,7 @@ class Main:
         vcategory_launchers = {}
         num_vlaunchers = len(virtual_launchers)
         i = 0
-        pDialog.create('Advanced Emulator Launcher', 'Writing {0} VLaunchers hashed database...'.format(vcategory_name))
+        pDialog.create('Advanced Emulator Launcher', 'Writing {0} hashed database...'.format(vcategory_name))
         for vlauncher_id in virtual_launchers:
             # >> Update progress dialog
             pDialog.update(i * 100 / num_vlaunchers)
