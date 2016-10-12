@@ -4092,6 +4092,26 @@ class Main:
             regular_launcher = False
             vlauncher_label = 'Favourite'
 
+        elif categoryID == VCATEGORY_MOST_PLAYED_ID:
+            log_info('_command_view_ROM() Viewing ROM in Recently played ROMs list...')
+            recent_roms_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
+            current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
+            if current_ROM_position < 0:
+                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                return
+            rom = recent_roms_list[current_ROM_position]
+            window_title = 'Most Played ROM data'
+            regular_launcher = False
+            vlauncher_label = 'Most Played ROM'
+
+        elif categoryID == VCATEGORY_RECENT_ID:
+            log_info('_command_view_ROM() Viewing ROM in Most played ROMs...')
+            most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+            rom = most_played_roms[romID]
+            window_title = 'Recently launched ROM data'
+            regular_launcher = False
+            vlauncher_label = 'Recently launched ROM'
+
         elif categoryID == VCATEGORY_TITLE_ID:
             log_info('_command_view_ROM() Viewing ROM in Virtual Launcher Title...')
             hashed_db_filename = os.path.join(VIRTUAL_CAT_TITLE_DIR, launcherID + '.json')
@@ -4150,12 +4170,11 @@ class Main:
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
             collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
-            # >> Locate ROM in Collection
-            rom = {}
-            for rom_temp in collection_rom_list:
-                if romID == rom_temp['id']:
-                    rom = rom_temp
-                    break
+            current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
+            if current_ROM_position < 0:
+                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                return
+            rom = collection_rom_list[current_ROM_position]
             window_title = '{0} Collection ROM data'.format(collection['name'])
             regular_launcher = False
             vlauncher_label = 'Collection'
@@ -4290,6 +4309,8 @@ class Main:
         info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
         info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(rom['roms_default_poster'])
         info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(rom['roms_default_clearlogo'])
+        if 'launch_count' in rom:
+            info_text += "[COLOR skyblue]launch_count[/COLOR]: {0}\n".format(rom['launch_count'])
 
         return info_text
 
