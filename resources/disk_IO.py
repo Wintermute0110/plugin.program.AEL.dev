@@ -1005,6 +1005,20 @@ def fs_import_ROM_Collection(input_filename):
 
     return (control_dic, collection_dic, collection_rom_list)
 
+#
+# Returns:
+# -1    ROM not found in list
+# >= 0  ROM index in list
+#
+def fs_collection_ROM_index_by_romID(romID, collection_rom_list):
+    current_ROM_position = -1
+    for idx, rom in enumerate(collection_rom_list):
+        if romID == rom['id']:
+            current_ROM_position = idx
+            break
+
+    return current_ROM_position
+
 # -------------------------------------------------------------------------------------------------
 # Virtual Categories
 # -------------------------------------------------------------------------------------------------

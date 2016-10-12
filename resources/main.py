@@ -4775,8 +4775,33 @@ class Main:
         # --- ROM in Favourites ---
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
             log_info('_command_run_rom() Launching ROM in Favourites...')
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            roms          = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             rom           = roms[romID]
+            recent_rom    = rom
+            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
+            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
+            minimize_flag = rom['minimize']
+            romext        = rom['romext']
+            
+        # --- ROM in Recently played ROMs list ---
+        elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
+            log_info('_command_run_rom() Launching ROM in Recently Played ROMs...')
+            recent_roms_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
+            current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
+            if current_ROM_position < 0:
+                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                return
+            rom           = recent_roms_list[current_ROM_position]
+            recent_rom    = rom
+            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
+            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
+            minimize_flag = rom['minimize']
+            romext        = rom['romext']
+        # --- ROM in Most played ROMs ---
+        elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
+            log_info('_command_run_rom() Launching ROM in Most played ROMs...')
+            most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+            rom           = most_played_roms[romID]
             recent_rom    = rom
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
@@ -4788,14 +4813,11 @@ class Main:
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
             collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
-            current_ROM_position = -1;
-            for idx, rom in enumerate(collection_rom_list):
-                if romID == rom['id']:
-                    current_ROM_position = idx
-                    break
+            current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
                 return
+            rom           = collection_rom_list[current_ROM_position]
             recent_rom    = rom
             application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
             arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
@@ -4888,10 +4910,10 @@ class Main:
         log_info('_command_run_rom() arguments   = "{0}"'.format(arguments))
 
         # --- Compute ROM recently played list ---
-        recent_roms = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
-        recent_roms.insert(0, recent_rom)
-        if len(recent_roms) > 100: recent_roms = recent_roms[:10]
-        fs_write_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT, recent_roms)
+        recent_roms_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
+        recent_roms_list.insert(0, recent_rom)
+        if len(recent_roms_list) > 100: recent_roms_list = recent_roms_list[:10]
+        fs_write_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT, recent_roms_list)
 
         # --- Compute most played ROM statistics ---
         most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
