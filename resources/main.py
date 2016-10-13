@@ -1224,7 +1224,7 @@ class Main:
                                        'Manage ROM asset directories...',
                                        'Rescan ROM local assets/artwork',
                                        add_delete_NoIntro_str,
-                                       'Change launcher view mode: {0}'.format(launcher_mode_str),
+                                       'Change launcher view mode (Now {0})'.format(launcher_mode_str),
                                        'Audit ROMs using No-Intro XML PClone DAT',
                                        'Clear No-Intro audit status',
                                        'Remove missing/dead ROMs',                                       
@@ -1408,7 +1408,6 @@ class Main:
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
 
-
                 # --- Add/Delete No-Intro XML parent-clone DAT ---
                 elif type2 == 3:
                     if has_NoIntro_DAT:
@@ -1428,8 +1427,18 @@ class Main:
 
                 # --- Change launcher view mode ---
                 elif type2 == 4:
-                    kodi_dialog_OK('Implement me!')
-                    return
+                    pclone_launcher = self.launchers[launcherID]['pclone_launcher']
+                    if pclone_launcher: item_list = ['Normal mode', 'PClone mode [Current]']
+                    else:               item_list = ['Normal mode [Current]', 'PClone mode']
+                    type_temp = dialog.select('Manage Items List', item_list)
+                    if type_temp < 0: return
+
+                    if type_temp == 0:   
+                        self.launchers[launcherID]['pclone_launcher'] = False
+                        log_debug('_command_edit_launcher() pclone_launcher = False')
+                    elif type_temp == 1:
+                        self.launchers[launcherID]['pclone_launcher'] = True
+                        log_debug('_command_edit_launcher() pclone_launcher = True')
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
@@ -1460,11 +1469,8 @@ class Main:
                     kodi_notify('Audit finished. Have {0}/Miss {1}/Unknown {2}'.format(num_have, num_miss, num_unknown))
 
                     # ~~~ Save ROMs XML file ~~~
-                    # >> Also save categories/launchers to update timestamp
-                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
+                    # >> Categories/launchers will be saved at the end of the function.
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                    return
 
                 # --- Reset audit status ---
                 elif type2 == 6:
