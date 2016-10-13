@@ -125,8 +125,8 @@ class Main:
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
         log_debug('sys.platform = "{0}"'.format(sys.platform))
-        log_debug('getCurrentWindowId                       = "{0}"'.format(xbmcgui.getCurrentWindowId()))
-        log_debug('getInfoLabel("Window.Property(xmlfile)") = "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
+        log_debug('getCurrentWindowId                       "{0}"'.format(xbmcgui.getCurrentWindowId()))
+        log_debug('getInfoLabel("Window.Property(xmlfile)") "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
         log_debug('Python version ' + sys.version.replace('\n', ''))
         # log_debug('__addon_name__    {0}'.format(__addon_name__))
         # log_debug('__addon_id__      {0}'.format(__addon_id__))
