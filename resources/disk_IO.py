@@ -484,6 +484,50 @@ def fs_load_catfile(categories_file):
     return (update_timestamp, categories, launchers)
 
 # -------------------------------------------------------------------------------------------------
+# Generic JSON loader/writer
+# -------------------------------------------------------------------------------------------------
+# Look at the ROMs JSON code for reference/comments to these functions.
+def fs_write_JSON_file(file_dir, file_base_noext, data):
+    # >> Get file names
+    json_file = os.path.join(file_dir, file_base_noext + '.json')
+    log_verb('fs_write_JSON_file() Dir  {0}'.format(file_dir))
+    log_verb('fs_write_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
+
+    try:
+        with io.open(json_file, 'w', encoding = 'utf-8') as file:
+            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
+                                   indent = JSON_indent, separators = JSON_separators)
+            file.write(unicode(json_data))
+            file.close()
+    except OSError:
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(json_file))
+    except IOError:
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(json_file))
+
+def fs_load_JSON_file(file_dir, file_base_noext):
+    data = {}
+
+    # --- If file does not exist return empty dictionary ---
+    json_file = os.path.join(file_dir, file_base_noext + '.json')
+    if not os.path.isfile(json_file): return data
+
+    # --- Parse using json module ---
+    log_verb('fs_load_JSON_file() Dir  {0}'.format(file_dir))
+    log_verb('fs_load_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
+    with open(json_file) as file:
+        try:
+            data = json.load(file)
+        except ValueError:
+            statinfo = os.stat(json_file)
+            log_error('fs_load_JSON_file() ValueError exception in json.load() function')
+            log_error('fs_load_JSON_file() Dir  {0}'.format(file_dir))
+            log_error('fs_load_JSON_file() File {0}'.format(file_base_noext + '.json'))
+            log_error('fs_load_JSON_file() Size {0}'.format(statinfo.st_size))
+        file.close()
+
+    return data
+
+# -------------------------------------------------------------------------------------------------
 # Standard ROMs
 # -------------------------------------------------------------------------------------------------
 # >> Use XML or JSON transparently
@@ -1143,9 +1187,9 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 # -------------------------------------------------------------------------------------------------
 #
 # Loads a No-Intro Parent-Clone XML DAT file. Creates a data structure like
-# roms = {
-#   'rom_name_A' : { 'name' : 'rom_name_A'},
-#   'rom_name_B' : { 'name' : 'rom_name_B'},
+# roms_nointro = {
+#   'rom_name_A' : { 'name' : 'rom_name_A', 'cloneof' : '' | 'rom_name_parent},
+#   'rom_name_B' : { 'name' : 'rom_name_B', 'cloneof' : '' | 'rom_name_parent},
 # }
 #
 def fs_load_NoIntro_XML_file(roms_xml_file):
@@ -1164,29 +1208,95 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if root_element.tag == 'game':
+            nointro_rom = {'name' : '', 'cloneof' : ''}
             rom_name = root_element.attrib['name']
-            nointro_rom = {'name' : rom_name}
+            nointro_rom['name'] = rom_name
+            if 'cloneof' in root_element.attrib: 
+                nointro_rom['cloneof'] = root_element.attrib['cloneof']
             nointro_roms[rom_name] = nointro_rom
 
     return nointro_roms
 
 #
-# Loads a No-Intro Parent/Clone XML DAT file. Creates a PClone data index like this:
-#
-# roms = { Standard AEL roms data dictionary }
-#
-# rom_parents = { Standard AEL roms data dictionary with parents only }
+# Creates a Parent/Clone dictionary.
 #
 # roms_pclone_index = {
-#   'parent_id_1' : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#   'parent_id_2' : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#   'parent_id_1'  : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#   'parent_id_2'  : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#    ... ,
+#   'Unknown ROMs' : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
 # }
 #
-# A) rom_parents is then used to render the launcher parents.
-# B) Having parent ID, the roms and roms_pclone_index is use to make the clone list in clone viewer.
+def fs_generate_PClone_index(roms, roms_nointro):
+    # roms_pclone_index_by_name = {}
+    roms_pclone_index_by_id = {}
+
+    # --- Create a dictionary to convert ROM names into IDs ---
+    names_to_ids_dic = {}
+    for rom_id in roms:
+        rom = roms[rom_id]
+        if rom['nointro_status'] == 'Miss':
+            rom_name = rom['m_name']
+        else:
+            F = misc_split_path(rom['filename'])
+            rom_name = F.base_noext
+        # log_debug('{0} --> {1}'.format(rom_name, rom_id))
+        # log_debug('{0}'.format(rom))
+        names_to_ids_dic[rom_name] = rom_id
+
+    # --- Build PClone dictionary using ROM base_noext names ---
+    for rom_id in roms:
+        rom = roms[rom_id]
+        F = misc_split_path(rom['filename'])
+        # log_debug('rom_id {0}'.format(rom_id))
+        # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
+        # log_debug('  filename         "{0}"'.format(rom['filename']))
+        # log_debug('  F.base_noext     "{0}"'.format(F.base_noext))
+
+        if rom['nointro_status'] == 'Unknown':
+            clone_id = rom['id']
+            if 'Unknown ROMs' not in roms_pclone_index_by_id:
+                roms_pclone_index_by_id['Unknown ROMs'] = []
+                roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
+            else:
+                roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
+        # If status is Have or Miss then ROM is guaranteed to be in the No-Intro file, so
+        # Parent/Clone data is available.
+        else:
+            if rom['nointro_status'] == 'Miss': rom_nointro_name = rom['m_name']
+            else:                               rom_nointro_name = F.base_noext
+            # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
+            nointro_rom = roms_nointro[rom_nointro_name]
+
+            # >> ROM is a parent
+            if nointro_rom['cloneof'] == '':
+                parent_id = rom['id']
+                if parent_id not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[parent_id] = []
+            # >> ROM is a clone 
+            else:
+                parent_name = nointro_rom['cloneof']
+                parent_id = names_to_ids_dic[parent_name]
+                clone_id = rom['id']
+                if parent_id in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[parent_id].append(clone_id)
+                else:
+                    roms_pclone_index_by_id[parent_id] = []
+                    roms_pclone_index_by_id[parent_id].append(clone_id)
+
+    return roms_pclone_index_by_id
+
 #
-def fs_load_NoIntro_XML_file_get_PClone():
-    pass
+# parent_roms = { AEL ROM dictionary having parents only }
+#
+def fs_generate_parent_ROMs(roms, roms_pclone_index_by_id):
+    parent_roms = {}
+    
+    for rom_id in roms_pclone_index_by_id:
+        if rom_id == 'Unknown ROMs': parent_roms[rom_id] = list()
+        else:                        parent_roms[rom_id] = roms[rom_id]
+
+    return parent_roms
 
 #
 # Loads offline scraper information XML file.

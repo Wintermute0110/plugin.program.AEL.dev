@@ -152,7 +152,7 @@ class Main:
         if not os.path.isdir(ROMS_DIR):               os.makedirs(ROMS_DIR)
         if not os.path.isdir(COLLECTIONS_DIR):        os.makedirs(COLLECTIONS_DIR)
         if not os.path.isdir(REPORTS_DIR):            os.makedirs(REPORTS_DIR)
-        
+
         # ~~~~~ Process URL ~~~~~
         self.base_url = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
@@ -1343,7 +1343,8 @@ class Main:
                         return
 
                     # --- Load ROMs for this launcher ---
-                    roms_base_noext = self.launchers[launcherID]['roms_base_noext']
+                    launcher = self.launchers[launcherID]
+                    roms_base_noext = launcher['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
 
                     # --- Load No-Intro DAT and audit ROMs ---
@@ -1352,7 +1353,7 @@ class Main:
                     # --- Update No-Intro status for ROMs ---
                     # Note that roms dictionary is updated using Python pass by assigment.
                     # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
-                    (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(roms, nointro_xml_file)
+                    (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(launcher, roms, nointro_xml_file)
 
                     # --- Report ---
                     log_info('***** No-Intro audit finished. Report ******')
@@ -5304,8 +5305,11 @@ class Main:
     #
     # Helper function to update ROMs No-Intro status if user configured a No-Intro DAT file.
     # Dictionaries are mutable, so roms can be changed because passed by assigment.
+    # This function also creates the Parent/Clone indices:
+    #  1) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_index.json
+    #  2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_parents.json
     #
-    def _roms_update_NoIntro_status(self, roms, nointro_xml_file):
+    def _roms_update_NoIntro_status(self, launcher, roms, nointro_xml_file):
         # --- Reset the No-Intro status ---
         self._roms_reset_NoIntro_status(roms)
 
@@ -5322,14 +5326,13 @@ class Main:
             log_warn('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_file))
             return (0, 0, 0)
 
-        # Put ROM names in a set. Set is the fastest Python container for searching
-        # elements (implements hashed search).
+        # --- Put No-Intro ROM names in a set ---
+        # Set is the fastest Python container for searching elements (implements hashed search).
         roms_nointro_set = set(roms_nointro.keys())
         roms_set = set()
-        for rom_id in roms:
-            roms_set.add(roms[rom_id]['m_name'])
+        for rom_id in roms: roms_set.add(roms[rom_id]['m_name'])
 
-        # Traverse ROMs and check they are in the DAT
+        # --- Traverse ROMs and check they are in the DAT ---
         num_have = num_miss = num_unknown = 0
         for rom_id in roms:
             if roms[rom_id]['m_name'] in roms_nointro_set:
@@ -5339,7 +5342,7 @@ class Main:
                 roms[rom_id]['nointro_status'] = 'Unknown'
                 num_unknown += 1
 
-        # Mark dead ROMs as missing
+        # --- Mark dead ROMs as missing ---
         for rom_id in roms:
             name     = roms[rom_id]['m_name']
             filename = roms[rom_id]['filename']
@@ -5348,7 +5351,8 @@ class Main:
                 log_debug('_roms_update_NoIntro_status() Not found {0}'.format(name))
                 roms[rom_id]['nointro_status'] = 'Miss'
 
-        # Now add missing ROMs. Traverse the nointro set and add the ROM if it's not there.
+        # --- Now add missing ROMs ---
+        # Traverse the nointro set and add the ROM if it's not there.
         for nointro_rom in roms_nointro_set:
             if nointro_rom not in roms_set:
                 # Add new "fake" missing ROM. This ROM cannot be launched!
@@ -5360,7 +5364,19 @@ class Main:
                 roms[rom_id] = rom
                 num_miss += 1
 
-        # Return statistics
+        # --- Make a Parent/Clone list based on romID ---
+        roms_pclone_index = fs_generate_PClone_index(roms, roms_nointro)
+        parent_roms       = fs_generate_parent_ROMs(roms, roms_pclone_index)
+
+        # --- Save PClone index and parent list ---
+        roms_base_noext         = launcher['roms_base_noext']
+        index_roms_base_noext   = roms_base_noext + '_PClone_index'
+        parents_roms_base_noext = roms_base_noext + '_PClone_parents'
+
+        fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
+        fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
+
+        # --- Return statistics ---
         return (num_have, num_miss, num_unknown)
 
     #
