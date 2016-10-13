@@ -872,7 +872,7 @@ class Main:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
                                   'Change Category: {0}'.format(category_name), finished_display, 
-                                  'Manage ROM List...', 'Manage ROM Asset directories...',
+                                  'Manage ROM List...',
                                   'Advanced Modifications...', 'Delete Launcher'])
 
         # --- Edition of the launcher metadata ---
@@ -1218,10 +1218,13 @@ class Main:
                     add_delete_NoIntro_str = 'Delete No-Intro DAT: {0}'.format(nointro_xml_file)
                 else:
                     add_delete_NoIntro_str = 'Add No-Intro XML DAT...'
+                launcher_mode_str = 'PClone mode' if launcher['pclone_launcher'] else 'Normal mode'
                 type2 = dialog.select('Manage Items List',
-                                      ['Rescan local assets/artwork',
-                                       'Choose ROMs default Assets/Artwork...',
-                                       add_delete_NoIntro_str, 
+                                      ['Choose ROM default assets/artwork...',
+                                       'Manage ROM asset directories...',
+                                       'Rescan ROM local assets/artwork',
+                                       add_delete_NoIntro_str,
+                                       'Change launcher view mode: {0}'.format(launcher_mode_str),
                                        'Audit ROMs using No-Intro XML PClone DAT',
                                        'Clear No-Intro audit status',
                                        'Remove missing/dead ROMs',                                       
@@ -1229,8 +1232,135 @@ class Main:
                                        'Export ROMs metadata to NFO files',
                                        'Clear ROMs from launcher' ])
 
-                # --- Rescan local assets/artwork ---
+                # --- Choose default ROMs assets/artwork ---
                 if type2 == 0:
+                    launcher        = self.launchers[launcherID]
+                    asset_thumb     = assets_get_asset_name_str(launcher['roms_default_thumb'])
+                    asset_fanart    = assets_get_asset_name_str(launcher['roms_default_fanart'])
+                    asset_banner    = assets_get_asset_name_str(launcher['roms_default_banner'])
+                    asset_poster    = assets_get_asset_name_str(launcher['roms_default_poster'])
+                    asset_clearlogo = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
+                    dialog = xbmcgui.Dialog()
+                    type3 = dialog.select('Edit ROMs default Assets/Artwork',
+                                          ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
+                                           'Choose asset for Fanart (currently {0})'.format(asset_fanart),
+                                           'Choose asset for Banner (currently {0})'.format(asset_banner),
+                                           'Choose asset for Poster (currently {0})'.format(asset_poster),
+                                           'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+
+                    if type3 == 0:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_thumb', type_s)
+                    elif type3 == 1:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_fanart', type_s)
+                    elif type3 == 2:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_banner', type_s)
+                    elif type3 == 3:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_poster', type_s)
+                    elif type3 == 4:
+                        type_s = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_ROM_ASSET_LIST)
+                        if type_s < 0: return
+                        assets_choose_category_ROM(launcher, 'roms_default_clearlogo', type_s)
+                    # >> User canceled select dialog
+                    elif type3 < 0: return
+
+                # --- Manage ROM Asset directories ---
+                elif type2 == 1:
+                    launcher = self.launchers[launcherID]
+                    dialog = xbmcgui.Dialog()
+                    type3 = dialog.select('ROM Asset directories ',
+                                          ["Change Titles path: '{0}'".format(launcher['path_title']),
+                                           "Change Snaps path: '{0}'".format(launcher['path_snap']),
+                                           "Change Fanarts path '{0}'".format(launcher['path_fanart']),
+                                           "Change Banners path: '{0}'".format(launcher['path_banner']),
+                                           "Change Clearlogos path: '{0}'".format(launcher['path_clearlogo']),
+                                           "Change Boxfronts path: '{0}'".format(launcher['path_boxfront']),
+                                           "Change Boxbacks path: '{0}'".format(launcher['path_boxback']),
+                                           "Change Cartridges path: '{0}'".format(launcher['path_cartridge']),
+                                           "Change Flyers path: '{0}'".format(launcher['path_flyer']),
+                                           "Change Maps path: '{0}'".format(launcher['path_map']),
+                                           "Change Manuals path: '{0}'".format(launcher['path_manual']),
+                                           "Change Trailers path: '{0}'".format(launcher['path_trailer']) ])
+
+                    if type3 == 0:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Titles path', 'files', '', False, False, launcher['path_title']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_title'] = dir_path
+                    elif type3 == 1:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Snaps path', 'files', '', False, False, launcher['path_snap']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_snap'] = dir_path
+                    elif type3 == 2:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Fanarts path', 'files', '', False, False, launcher['path_fanart']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_fanart'] = dir_path
+                    elif type3 == 3:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Banners path', 'files', '', False, False, launcher['path_banner']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_banner'] = dir_path
+                    elif type3 == 4:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Clearlogos path', 'files', '', False, False, launcher['path_clearlogo']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_clearlogo'] = dir_path
+                    elif type3 == 5:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Boxfronts path', 'files', '', False, False, launcher['path_boxfront']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_boxfront'] = dir_path
+                    elif type3 == 6:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Boxbacks path', 'files', '', False, False, launcher['path_boxback']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_boxback'] = dir_path
+                    elif type3 == 7:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Cartridges path', 'files', '', False, False, launcher['path_cartridge']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_cartridge'] = dir_path
+                    elif type3 == 8:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Flyers path', 'files', '', False, False, launcher['path_flyer']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_flyer'] = dir_path
+                    elif type3 == 9:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Maps path', 'files', '', False, False, launcher['path_map']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_map'] = dir_path
+                    elif type3 == 10:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Manuals path', 'files', '', False, False, launcher['path_manual']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_manual'] = dir_path
+                    elif type3 == 11:
+                        dialog = xbmcgui.Dialog()
+                        dir_path = dialog.browse(0, 'Select Trailers path', 'files', '', False, False, launcher['path_trailer']).decode('utf-8')
+                        if not dir_path: return
+                        self.launchers[launcherID]['path_trailer'] = dir_path
+                    # >> User canceled select dialog
+                    elif type3 < 0: return
+
+                    # >> Check for duplicate paths and warn user.
+                    duplicated_name_list = asset_get_duplicated_dir_list(self.launchers[launcherID])
+                    if duplicated_name_list:
+                        duplicated_asset_srt = ', '.join(duplicated_name_list)
+                        kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                                       'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
+
+                # --- Rescan local assets/artwork ---
+                elif type2 == 2:
                     log_info('_command_edit_launcher() Rescanning local assets...')
                     launcher = self.launchers[launcherID]
 
@@ -1278,47 +1408,9 @@ class Main:
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
 
-                # --- Choose default ROMs assets ---
-                elif type2 == 1:
-                    launcher        = self.launchers[launcherID]
-                    asset_thumb     = assets_get_asset_name_str(launcher['roms_default_thumb'])
-                    asset_fanart    = assets_get_asset_name_str(launcher['roms_default_fanart'])
-                    asset_banner    = assets_get_asset_name_str(launcher['roms_default_banner'])
-                    asset_poster    = assets_get_asset_name_str(launcher['roms_default_poster'])
-                    asset_clearlogo = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
-                    dialog = xbmcgui.Dialog()
-                    type3 = dialog.select('Edit ROMs default Assets/Artwork',
-                                          ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
-                                           'Choose asset for Fanart (currently {0})'.format(asset_fanart),
-                                           'Choose asset for Banner (currently {0})'.format(asset_banner),
-                                           'Choose asset for Poster (currently {0})'.format(asset_poster),
-                                           'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
-
-                    if type3 == 0:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_ROM_ASSET_LIST)
-                        if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_thumb', type_s)
-                    elif type3 == 1:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_ROM_ASSET_LIST)
-                        if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_fanart', type_s)
-                    elif type3 == 2:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_ROM_ASSET_LIST)
-                        if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_banner', type_s)
-                    elif type3 == 3:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_ROM_ASSET_LIST)
-                        if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_poster', type_s)
-                    elif type3 == 4:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_ROM_ASSET_LIST)
-                        if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_clearlogo', type_s)
-                    # >> User canceled select dialog
-                    elif type3 < 0: return
 
                 # --- Add/Delete No-Intro XML parent-clone DAT ---
-                elif type2 == 2:
+                elif type2 == 3:
                     if has_NoIntro_DAT:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
@@ -1334,9 +1426,14 @@ class Main:
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
 
+                # --- Change launcher view mode ---
+                elif type2 == 4:
+                    kodi_dialog_OK('Implement me!')
+                    return
+
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
-                elif type2 == 3:
+                elif type2 == 5:
                     # Check if No-Intro XML DAT exists
                     if not has_NoIntro_DAT:
                         kodi_dialog_OK('No-Intro XML DAT not configured. Add one before ROM audit.')
@@ -1370,7 +1467,7 @@ class Main:
                     return
 
                 # --- Reset audit status ---
-                elif type2 == 4:
+                elif type2 == 6:
                     # --- Load ROMs for this launcher ---
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
@@ -1386,7 +1483,7 @@ class Main:
                     return
 
                 # --- Remove dead ROMs ---
-                elif type2 == 5:
+                elif type2 == 7:
                     ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
                     if not ret: return
                     
@@ -1406,7 +1503,7 @@ class Main:
                     return
 
                 # --- Import Items list form NFO files ---
-                elif type2 == 6:
+                elif type2 == 8:
                     # >> Load ROMs, iterate and import NFO files
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs(ROMS_DIR, roms_base_noext)
@@ -1421,7 +1518,7 @@ class Main:
                     return
 
                 # --- Export Items list to NFO files ---
-                elif type2 == 7:
+                elif type2 == 9:
                     # >> Load ROMs for current launcher, iterate and write NFO files
                     roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
                     if not roms: return
@@ -1433,7 +1530,7 @@ class Main:
                     return
 
                 # --- Empty Launcher menu option ---
-                elif type2 == 8:
+                elif type2 == 10:
                     self._gui_empty_launcher(launcherID)
                     # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
                     # Container.Refresh at the end of this function and calling the plugin twice.
@@ -1441,97 +1538,6 @@ class Main:
                     
                 # >> User canceled select dialog
                 elif type2 < 0: return
-
-        # --- Manage ROM Asset directories ---
-        # ONLY for ROM launchers, not for standalone launchers
-        if self.launchers[launcherID]['rompath'] != '':
-            type_nb = type_nb + 1
-            if type == type_nb:
-                launcher = self.launchers[launcherID]
-                dialog = xbmcgui.Dialog()
-                type2 = dialog.select('ROM Asset directories ',
-                                      ["Change Titles path: '{0}'".format(launcher['path_title']),
-                                       "Change Snaps path: '{0}'".format(launcher['path_snap']),
-                                       "Change Fanarts path '{0}'".format(launcher['path_fanart']),
-                                       "Change Banners path: '{0}'".format(launcher['path_banner']),
-                                       "Change Clearlogos path: '{0}'".format(launcher['path_clearlogo']),
-                                       "Change Boxfronts path: '{0}'".format(launcher['path_boxfront']),
-                                       "Change Boxbacks path: '{0}'".format(launcher['path_boxback']),
-                                       "Change Cartridges path: '{0}'".format(launcher['path_cartridge']),
-                                       "Change Flyers path: '{0}'".format(launcher['path_flyer']),
-                                       "Change Maps path: '{0}'".format(launcher['path_map']),
-                                       "Change Manuals path: '{0}'".format(launcher['path_manual']),
-                                       "Change Trailers path: '{0}'".format(launcher['path_trailer']) ])
-
-                if type2 == 0:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Titles path', 'files', '', False, False, launcher['path_title']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_title'] = dir_path
-                elif type2 == 1:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Snaps path', 'files', '', False, False, launcher['path_snap']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_snap'] = dir_path
-                elif type2 == 2:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Fanarts path', 'files', '', False, False, launcher['path_fanart']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_fanart'] = dir_path
-                elif type2 == 3:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Banners path', 'files', '', False, False, launcher['path_banner']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_banner'] = dir_path
-                elif type2 == 4:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Clearlogos path', 'files', '', False, False, launcher['path_clearlogo']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_clearlogo'] = dir_path
-                elif type2 == 5:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Boxfronts path', 'files', '', False, False, launcher['path_boxfront']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_boxfront'] = dir_path
-                elif type2 == 6:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Boxbacks path', 'files', '', False, False, launcher['path_boxback']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_boxback'] = dir_path
-                elif type2 == 7:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Cartridges path', 'files', '', False, False, launcher['path_cartridge']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_cartridge'] = dir_path
-                elif type2 == 8:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Flyers path', 'files', '', False, False, launcher['path_flyer']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_flyer'] = dir_path
-                elif type2 == 9:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Maps path', 'files', '', False, False, launcher['path_map']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_map'] = dir_path
-                elif type2 == 10:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Manuals path', 'files', '', False, False, launcher['path_manual']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_manual'] = dir_path
-                elif type2 == 11:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Trailers path', 'files', '', False, False, launcher['path_trailer']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_trailer'] = dir_path
-                # >> User canceled select dialog
-                elif type2 < 0: return
-
-                # >> Check for duplicate paths and warn user.
-                duplicated_name_list = asset_get_duplicated_dir_list(self.launchers[launcherID])
-                if duplicated_name_list:
-                    duplicated_asset_srt = ', '.join(duplicated_name_list)
-                    kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                                   'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
