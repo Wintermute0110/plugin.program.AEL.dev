@@ -471,10 +471,11 @@ def fs_load_catfile(categories_file):
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
                 launcher[xml_tag] = xml_text
 
-                # Now transform data type depending on tag name
-                if xml_tag == 'finished' or xml_tag == 'minimize':
+                # Transform Bool datatype
+                if xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
                     xml_bool = True if xml_text == 'True' else False
                     launcher[xml_tag] = xml_bool
+                # Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
                     xml_float = float(xml_text)
                     launcher[xml_tag] = xml_float
@@ -1294,8 +1295,19 @@ def fs_generate_parent_ROMs(roms, roms_pclone_index_by_id):
     parent_roms = {}
     
     for rom_id in roms_pclone_index_by_id:
-        if rom_id == 'Unknown ROMs': parent_roms[rom_id] = list()
-        else:                        parent_roms[rom_id] = roms[rom_id]
+        if rom_id == 'Unknown ROMs':
+            parent_roms[rom_id] = {
+                'id' : 'Unknown ROMs', 
+                'm_name' : '[Unknown ROMs]',
+                'finished' : False,
+                'nointro_status' : 'Have',
+                'm_year' : '2016', 'm_genre' : 'Special genre', 'm_plot' : '',
+                'm_studio' : 'Various', 'm_rating' : '',
+                's_title' : '', 's_snap' : '', 's_boxfront' : '', 's_boxback' : '',
+                's_cartridge' : '', 's_map' : '', 's_trailer' : ''
+            }
+        else:
+            parent_roms[rom_id] = roms[rom_id]
 
     return parent_roms
 

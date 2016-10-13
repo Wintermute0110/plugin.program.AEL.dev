@@ -236,6 +236,8 @@ class Main:
             else:
                 log_debug('SHOW_ROMS | Calling _command_render_roms()')
                 self._command_render_roms(args['catID'][0], args['launID'][0])
+        elif command == 'SHOW_CLONE_ROMS':
+            self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
         # Edit ROM from launcher or Favourites
@@ -2753,32 +2755,108 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = folder_flag)
 
     #
-    # Former  _get_roms
+    # Render clone ROMs. romID is the parent ROM.
+    # This is only called in PClone display mode.
+    #
+    def _command_render_clone_roms(self, categoryID, launcherID, romID):
+        # --- Check for errors ---
+        if launcherID not in self.launchers:
+            log_error('_command_render_clone_roms() Launcher ID not found in self.launchers')
+            kodi_dialog_OK('_command_render_clone_roms(): Launcher ID not found in self.launchers. Report this bug.')
+            return
+        selectedLauncher = self.launchers[launcherID]
+
+        # --- Load ROMs for this launcher ---
+        roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
+        if not os.path.isfile(roms_file_path):
+            kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+        all_roms = fs_load_ROMs(ROMS_DIR, selectedLauncher['roms_base_noext'])
+        if not all_roms:
+            kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        # --- Load parent/clone index ---
+        roms_base_noext         = selectedLauncher['roms_base_noext']
+        index_base_noext = roms_base_noext + '_PClone_index'
+        index_file_path = os.path.join(ROMS_DIR, index_base_noext + '.json')
+        if not os.path.isfile(index_file_path):
+            kodi_notify('Parent list JSON not found.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+        pclone_index = fs_load_JSON_file(ROMS_DIR, index_base_noext)
+        if not pclone_index:
+            kodi_notify('Parent list is empty.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        # --- Build clone dictionary of ROMs ---
+        roms = {}
+        # >> Add parent ROM
+        roms[romID] = all_roms[romID]
+        # >> Add clones, if any
+        for rom_id in pclone_index[romID]:
+            roms[rom_id] = all_roms[rom_id]
+        log_verb('_command_render_clone_roms() Parent ID {0}'.format(romID))
+        log_verb('_command_render_clone_roms() Number of clone ROMs = {0}'.format(len(roms)))
+        # for key in roms:
+        #     log_debug('key   = {0}'.format(key))
+        #     log_debug('value = {0}'.format(roms[key]))
+
+        # --- Render ROMs ---
+        self._misc_set_content_and_all_sorting_methods()
+        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms_fav_set = set(roms_fav.keys())
+        for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+            self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set, False)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    #
     # Renders the roms listbox for a given launcher
     #
     def _command_render_roms(self, categoryID, launcherID):
+        # --- Check for errors ---
         if launcherID not in self.launchers:
-            log_error('_command_render_roms() Launcher hash not found.')
-            kodi_dialog_OK('@_command_render_roms(): Launcher hash not found. Report this bug.')
+            log_error('_command_render_roms() Launcher ID not found in self.launchers')
+            kodi_dialog_OK('_command_render_roms(): Launcher ID not found in self.launchers. Report this bug.')
             return
-
-        # Load ROMs for this launcher and display them
         selectedLauncher = self.launchers[launcherID]
-        roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
 
-        # Check if XML file with ROMs exist
-        if not os.path.isfile(roms_file_path):
-            kodi_notify('Launcher XML/JSON missing. Add items to launcher.')
-            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-            return
-
-        # --- Load ROMs ---
-        roms = fs_load_ROMs(ROMS_DIR, selectedLauncher['roms_base_noext'])
-        if not roms:
-            kodi_notify('Launcher XML/JSON empty. Add items to launcher.')
-            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-            return
-
+        # --- Render in normal mode (all ROMs) or Parent/Clone mode---
+        if selectedLauncher['pclone_launcher']:
+            # --- Load parent ROMs ---
+            roms_base_noext         = selectedLauncher['roms_base_noext']
+            parents_roms_base_noext = roms_base_noext + '_PClone_parents'
+            parents_file_path = os.path.join(ROMS_DIR, parents_roms_base_noext + '.json')
+            if not os.path.isfile(parents_file_path):
+                kodi_notify('Parent list JSON not found.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
+            if not roms:
+                kodi_notify('Parent list is empty.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+        else:
+            # --- Load ROMs for this launcher ---
+            roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
+            if not os.path.isfile(roms_file_path):
+                kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            roms = fs_load_ROMs(ROMS_DIR, selectedLauncher['roms_base_noext'])
+            if not roms:
+                kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+        # log_debug('type(roms) = {0}'.format(type(roms)))
+        # log_debug('roms = {0}'.format(roms))
+        # for key in roms:
+            # log_debug('key   = {0}'.format(key))
+            # log_debug('value = {0}'.format(roms[key]))
+        
         # --- Load favourites ---
         # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
         #    when checking if an element exists.
@@ -2789,8 +2867,12 @@ class Main:
         self._misc_set_content_and_all_sorting_methods()
 
         # --- Display ROMs ---
-        for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-            self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set)
+        if selectedLauncher['pclone_launcher']:
+            for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+                self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set, True)
+        else:
+            for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+                self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -2798,7 +2880,7 @@ class Main:
     # Note that if we are rendering favourites, categoryID = VCATEGORY_FAVOURITES_ID
     # Note that if we are rendering virtual launchers, categoryID = VCATEGORY_*_ID
     #
-    def _gui_render_rom_row(self, categoryID, launcherID, romID, rom, rom_is_in_favourites):
+    def _gui_render_rom_row(self, categoryID, launcherID, romID, rom, rom_is_in_favourites, parent_launcher = False):
         # --- Do not render row if ROM is finished ---
         if rom['finished'] and self.settings['display_hide_finished']: return
 
@@ -2886,21 +2968,29 @@ class Main:
             launcher = self.launchers[launcherID]
             kodi_def_thumb  = 'DefaultProgram.png'
             kodi_def_fanart = launcher['s_fanart']
-            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
-            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
-            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
-            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
-            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
             platform        = launcher['platform']
-
-            # >> Mark No-Intro status
-            if self.settings['display_nointro_stat']:
-                if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
-                elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-                else:                                    rom_name = rom_raw_name
-            else:
+            if parent_launcher:
+                thumb_path      = kodi_def_thumb
+                thumb_fanart    = kodi_def_fanart
+                thumb_banner    = ''
+                thumb_poster    = ''
+                thumb_clearlogo = ''
                 rom_name = rom_raw_name
+            else:
+                thumb_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
+                thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
+                thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
+                thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
+                thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
+
+                # >> Mark No-Intro status
+                if self.settings['display_nointro_stat']:
+                    if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                    elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
+                    elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                    else:                                    rom_name = rom_raw_name
+                else:
+                    rom_name = rom_raw_name
 
             # >> If listing regular launcher and rom is in favourites, mark it
             if self.settings['display_rom_in_fav'] and rom_is_in_favourites:
@@ -2985,8 +3075,12 @@ class Main:
         # --- Add row ---
         # URLs must be different depending on the content type. If not, lot of 
         # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
-        url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        if parent_launcher: 
+            url_str = self._misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
+            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        else:
+            url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
+            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     #
     # Renders the special category favourites, which is actually very similar to a ROM launcher
