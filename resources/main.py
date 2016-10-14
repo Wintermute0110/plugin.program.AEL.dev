@@ -124,9 +124,9 @@ class Main:
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL addon.py Main() constructor ----------')
-        log_debug('sys.platform = "{0}"'.format(sys.platform))
-        log_debug('getCurrentWindowId                       "{0}"'.format(xbmcgui.getCurrentWindowId()))
-        log_debug('getInfoLabel("Window.Property(xmlfile)") "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
+        log_debug('sys.platform   {0}'.format(sys.platform))
+        # log_debug('WindowId       {0}'.format(xbmcgui.getCurrentWindowId()))
+        # log_debug('WindowName     {0}'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
         log_debug('Python version ' + sys.version.replace('\n', ''))
         # log_debug('__addon_name__    {0}'.format(__addon_name__))
         # log_debug('__addon_id__      {0}'.format(__addon_id__))
@@ -176,13 +176,13 @@ class Main:
         # --- Load categories.xml and fill categories and launchers dictionaries ---
         (self.update_timestamp, self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
         
-        # If no com parameter display categories. Display categories listbox (addon root directory)
+        # --- If no com parameter display addon root directory ---
         if 'com' not in args:
             self._command_render_categories()
             log_debug('Advanced Emulator Launcher exit (addon root)')
             return
 
-        # Process comand. args['com'] is a list, so get first element of the list (a string)
+        # --- Process command ---
         command = args['com'][0]
         if command == 'SHOW_ALL_CATEGORIES':
             self._command_render_all_categories()
@@ -220,16 +220,13 @@ class Main:
             self._command_add_new_launcher(args['catID'][0])
         elif command == 'EDIT_LAUNCHER':
             self._command_edit_launcher(args['catID'][0], args['launID'][0])
-
         # --- Show ROMs in launcher/virtual launcher ---
         elif command == 'SHOW_ROMS':
             self._command_render_roms(args['catID'][0], args['launID'][0])
-            
         elif command == 'SHOW_VLAUNCHER_ROMS':
             self._command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
         elif command == 'SHOW_CLONE_ROMS':
             self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
-
         # >> Add/Edit/Delete ROMs in launcher, Favourites or ROM Collections <<
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
@@ -237,13 +234,11 @@ class Main:
             self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'DELETE_ROM':
              self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-
         # --- Launch ROM or standalone launcher ---
         elif command == 'LAUNCH_ROM':
             self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'LAUNCH_STANDALONE':
             self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
-            
         elif command == 'ADD_TO_FAV':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'ADD_TO_COLLECTION':
@@ -2420,16 +2415,22 @@ class Main:
             kodi_refresh_container()
 
     #
-    # Former _get_categories()
-    # Renders the categories (addon root window)
+    # Renders the addon Root window. Categories, categoryless launchers, Favourites, etc.
     #
     def _command_render_categories(self):
-        # >> Set content type
         self._misc_set_content_and_all_sorting_methods()
 
         # --- For every category, add it to the listbox. Order alphabetically by name ---
-        for key in sorted(self.categories, key= lambda x : self.categories[x]['m_name']):
+        for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
             self._gui_render_category_row(self.categories[key], key)
+
+        # --- Render categoryless launchers. Order alphabetically by name ---
+        catless_launchers = {}
+        for launcher_id, launcher in self.launchers.iteritems():
+            if launcher['categoryID'] == 'root_category':
+                catless_launchers[launcher_id] = launcher
+        for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
+            self._gui_render_launcher_row(catless_launchers[launcher_id])
 
         # --- AEL Favourites special category ---
         if not self.settings['display_hide_favs']: self._gui_render_category_favourites_row()
@@ -2451,7 +2452,7 @@ class Main:
 
     #
     # Renders all categories without Favourites, Collections, virtual categories, etc.
-    # This function is called by skins.
+    # This function is called by skins tu build menu.
     #
     def _command_render_all_categories(self):
         # >> If no categories render nothing
@@ -2711,7 +2712,7 @@ class Main:
 
         # --- Set ListItem artwork ---
         kodi_thumb      = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-        thumb_path      = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
+        thumb_path      = asset_get_default_asset_Category(launcher_dic, 'default_thumb', kodi_thumb)
         thumb_fanart    = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
         thumb_banner    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
         thumb_poster    = asset_get_default_asset_Category(launcher_dic, 'default_poster')
@@ -2731,7 +2732,8 @@ class Main:
         commands.append(('View Launcher data',   self._misc_url_RunPlugin('VIEW_LAUNCHER', categoryID, launcherID), ))
         commands.append(('View Launcher report', self._misc_url_RunPlugin('VIEW_LAUNCHER_REPORT', categoryID, launcherID), ))
         commands.append(('Edit Launcher',        self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
-        if launcher_dic['rompath']: # ONLY for ROM launchers
+        # >> ONLY for ROM launchers
+        if launcher_dic['rompath']:
             commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID), ))
         commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
         commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
@@ -2739,9 +2741,13 @@ class Main:
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-        # --- Add row to ListItem ---
-        url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
-        folder_flag = True if launcher_dic['rompath'] else False
+        # --- Add Launcher row to ListItem ---
+        if launcher_dic['rompath']:
+            url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
+            folder_flag = True
+        else:
+            url_str = self._misc_url('LAUNCH_STANDALONE', categoryID, launcherID)
+            folder_flag = False
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = folder_flag)
 
     #
