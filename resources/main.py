@@ -2817,6 +2817,7 @@ class Main:
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+            if key != romID: roms[key]['isClone'] = True
             self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3018,6 +3019,9 @@ class Main:
                     else:                                    rom_name = rom_raw_name
                 else:
                     rom_name = rom_raw_name
+
+                # >> Mark clone ROMs
+                if 'isClone' in rom: rom_name += ' [COLOR orange][Clo][/COLOR]'
 
             # >> If listing regular launcher and rom is in favourites, mark it
             if self.settings['display_rom_in_fav'] and rom_in_fav:
