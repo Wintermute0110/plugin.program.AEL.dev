@@ -2787,8 +2787,7 @@ class Main:
             return
 
         # --- Load parent/clone index ---
-        roms_base_noext         = selectedLauncher['roms_base_noext']
-        index_base_noext = roms_base_noext + '_PClone_index'
+        index_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_index'
         index_file_path = os.path.join(ROMS_DIR, index_base_noext + '.json')
         if not os.path.isfile(index_file_path):
             kodi_notify('Parent list JSON not found.')
@@ -2818,7 +2817,7 @@ class Main:
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-            self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set, False)
+            self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -2833,10 +2832,10 @@ class Main:
         selectedLauncher = self.launchers[launcherID]
 
         # --- Render in normal mode (all ROMs) or Parent/Clone mode---
+        loading_ticks_start = time.time()
         if selectedLauncher['pclone_launcher']:
             # --- Load parent ROMs ---
-            roms_base_noext         = selectedLauncher['roms_base_noext']
-            parents_roms_base_noext = roms_base_noext + '_PClone_parents'
+            parents_roms_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_parents'
             parents_file_path = os.path.join(ROMS_DIR, parents_roms_base_noext + '.json')
             if not os.path.isfile(parents_file_path):
                 kodi_notify('Parent list JSON not found.')
@@ -2844,6 +2843,18 @@ class Main:
                 return
             roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
             if not roms:
+                kodi_notify('Parent list is empty.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            # --- Load parent/clone index ---
+            index_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_index'
+            index_file_path = os.path.join(ROMS_DIR, index_base_noext + '.json')
+            if not os.path.isfile(index_file_path):
+                kodi_notify('Parent list JSON not found.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            pclone_index = fs_load_JSON_file(ROMS_DIR, index_base_noext)
+            if not pclone_index:
                 kodi_notify('Parent list is empty.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
@@ -2870,25 +2881,32 @@ class Main:
         #    when checking if an element exists.
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
+        loading_ticks_end = time.time()
 
         # >> Set content type
         self._misc_set_content_and_all_sorting_methods()
 
         # --- Display ROMs ---
+        rendering_ticks_start = time.time()
         if selectedLauncher['pclone_launcher']:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-                self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set, True)
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, True)
         else:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-                self._gui_render_rom_row(categoryID, launcherID, key, roms[key], key in roms_fav_set, False)
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        rendering_ticks_end = time.time()
+
+        # DEBUG Data loading/rendering statistics
+        log_debug('Loading seconds   {0}'.format(loading_ticks_end - loading_ticks_start))
+        log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
 
     #
     # Former  _add_rom()
     # Note that if we are rendering favourites, categoryID = VCATEGORY_FAVOURITES_ID
     # Note that if we are rendering virtual launchers, categoryID = VCATEGORY_*_ID
     #
-    def _gui_render_rom_row(self, categoryID, launcherID, romID, rom, rom_is_in_favourites, parent_launcher = False):
+    def _gui_render_rom_row(self, categoryID, launcherID, rom, rom_in_fav, parent_launcher = False):
         # --- Do not render row if ROM is finished ---
         if rom['finished'] and self.settings['display_hide_finished']: return
 
@@ -2969,7 +2987,7 @@ class Main:
                 rom_name = rom_raw_name
 
             # >> Mark if ROM is in Favourites
-            if self.settings['display_rom_in_fav'] and rom_is_in_favourites:
+            if self.settings['display_rom_in_fav'] and rom_in_fav:
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
         else:
             # >> If ROM has no fanart then use launcher fanart
@@ -2983,7 +3001,8 @@ class Main:
                 thumb_banner    = ''
                 thumb_poster    = ''
                 thumb_clearlogo = ''
-                rom_name = rom_raw_name
+                # rom_name        = rom_raw_name
+                rom_name        = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(rom['num_clones_str'])
             else:
                 thumb_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
                 thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
@@ -3001,7 +3020,7 @@ class Main:
                     rom_name = rom_raw_name
 
             # >> If listing regular launcher and rom is in favourites, mark it
-            if self.settings['display_rom_in_fav'] and rom_is_in_favourites:
+            if self.settings['display_rom_in_fav'] and rom_in_fav:
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
 
         # --- Add ROM to lisitem ---
@@ -3047,6 +3066,7 @@ class Main:
         # log_debug('Item Row IsPlayable false')
 
         # --- Create context menu ---
+        romID = rom['id']
         commands = []
         if categoryID == VCATEGORY_FAVOURITES_ID:
             commands.append(('View Favourite ROM data',         self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
@@ -3081,7 +3101,7 @@ class Main:
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
-        # URLs must be different depending on the content type. If not, lot of 
+        # URLs must be different depending on the content type. If not Kodi log will be filled with:
         # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
         if parent_launcher: 
             url_str = self._misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
@@ -3229,7 +3249,7 @@ class Main:
 
         # --- Display Favourites ---
         for key in sorted(roms, key= lambda x : roms[x]['m_name']):
-            self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, key, roms[key], key in roms_fav_set)
+            self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, roms[key], key in roms_fav_set)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -3248,7 +3268,7 @@ class Main:
 
         # --- Display recently player ROM list ---
         for rom in rom_list:
-            self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom['id'], rom, False)
+            self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _command_render_most_played(self):
@@ -3264,7 +3284,7 @@ class Main:
 
         # --- Display most played ROMs, order by number of launchs ---
         for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
-            self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, key, roms[key], False)
+            self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key], False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #

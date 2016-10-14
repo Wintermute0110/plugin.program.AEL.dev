@@ -1291,10 +1291,10 @@ def fs_generate_PClone_index(roms, roms_nointro):
 #
 # parent_roms = { AEL ROM dictionary having parents only }
 #
-def fs_generate_parent_ROMs(roms, roms_pclone_index_by_id):
+def fs_generate_parent_ROMs(roms, roms_pclone_index):
     parent_roms = {}
     
-    for rom_id in roms_pclone_index_by_id:
+    for rom_id in roms_pclone_index:
         if rom_id == 'Unknown ROMs':
             parent_roms[rom_id] = {
                 'id' : 'Unknown ROMs', 
@@ -1304,10 +1304,12 @@ def fs_generate_parent_ROMs(roms, roms_pclone_index_by_id):
                 'm_year' : '2016', 'm_genre' : 'Special genre', 'm_plot' : '',
                 'm_studio' : 'Various', 'm_rating' : '',
                 's_title' : '', 's_snap' : '', 's_boxfront' : '', 's_boxback' : '',
-                's_cartridge' : '', 's_map' : '', 's_trailer' : ''
+                's_cartridge' : '', 's_map' : '', 's_trailer' : '',
+                'num_clones_str' : unicode(len(roms_pclone_index[rom_id]))
             }
         else:
             parent_roms[rom_id] = roms[rom_id]
+            parent_roms[rom_id]['num_clones_str'] = unicode(len(roms_pclone_index[rom_id]))
 
     return parent_roms
 
