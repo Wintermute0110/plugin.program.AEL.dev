@@ -903,17 +903,19 @@ class Main:
                 if old_launcher_name == new_launcher_name: return
 
                 # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-                old_roms_base_noext = launcher['roms_base_noext']
-                old_roms_file_json  = os.path.join(ROMS_DIR, old_roms_base_noext + '.json')
-                old_roms_file_xml   = os.path.join(ROMS_DIR, old_roms_base_noext + '.xml')
+                old_roms_base_noext          = launcher['roms_base_noext']
+                old_roms_file_json           = os.path.join(ROMS_DIR, old_roms_base_noext + '.json')
+                old_roms_file_xml            = os.path.join(ROMS_DIR, old_roms_base_noext + '.xml')
+                old_PClone_index_file_json   = os.path.join(ROMS_DIR, old_roms_base_noext + '_PClone_index.json')
+                old_PClone_parents_file_json = os.path.join(ROMS_DIR, old_roms_base_noext + '_PClone_parents.json')
                 if os.path.isfile(old_roms_file_json):
                     log_debug('_command_edit_launcher() Edit Title: ROM JSON found')
-                    category_name = self.categories[categoryID]['m_name']
-                    new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-                    new_roms_file_json  = os.path.join(ROMS_DIR, new_roms_base_noext + '.json')
-                    new_roms_file_xml   = os.path.join(ROMS_DIR, new_roms_base_noext + '.xml')
-                    log_debug('_command_edit_launcher() Edit Title: old_roms_base_noext = {0}'.format(old_roms_base_noext))
-                    log_debug('_command_edit_launcher() Edit Title: new_roms_base_noext = {0}'.format(new_roms_base_noext))
+                    category_name                = self.categories[categoryID]['m_name']
+                    new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
+                    new_roms_file_json           = os.path.join(ROMS_DIR, new_roms_base_noext + '.json')
+                    new_roms_file_xml            = os.path.join(ROMS_DIR, new_roms_base_noext + '.xml')
+                    new_PClone_index_file_json   = os.path.join(ROMS_DIR, new_roms_base_noext + '_PClone_index.json')
+                    new_PClone_parents_file_json = os.path.join(ROMS_DIR, new_roms_base_noext + '_PClone_parents.json')
 
                     # >> Rename ROMS JSON/XML
                     os.rename(old_roms_file_json, new_roms_file_json)
@@ -922,6 +924,16 @@ class Main:
                     os.rename(old_roms_file_xml, new_roms_file_xml)
                     log_debug('_command_edit_launcher() RENAMED {0}'.format(old_roms_file_xml))
                     log_debug('_command_edit_launcher()    into {0}'.format(new_roms_file_xml))
+
+                    # >> Renamed PClone files if found
+                    if os.path.isfile(old_PClone_index_file_json):
+                        os.rename(old_PClone_index_file_json, new_PClone_index_file_json)
+                        log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_index_file_json))
+                        log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_index_file_json))
+                    if os.path.isfile(old_PClone_parents_file_json):
+                        os.rename(old_PClone_parents_file_json, new_PClone_parents_file_json)
+                        log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_parents_file_json))
+                        log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_parents_file_json))
 
                     # >> Update launcher roms_base_noext
                     launcher['roms_base_noext'] = new_roms_base_noext
@@ -5448,9 +5460,9 @@ class Main:
         for rom_id in roms:
             name     = roms[rom_id]['m_name']
             filename = roms[rom_id]['filename']
-            log_debug('_roms_update_NoIntro_status() Testing {0}'.format(name))
+            # log_debug('_roms_update_NoIntro_status() Testing {0}'.format(name))
             if not os.path.isfile(filename):
-                log_debug('_roms_update_NoIntro_status() Not found {0}'.format(name))
+                # log_debug('_roms_update_NoIntro_status() Not found {0}'.format(name))
                 roms[rom_id]['nointro_status'] = 'Miss'
 
         # --- Now add missing ROMs ---
