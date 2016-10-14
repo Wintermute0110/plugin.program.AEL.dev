@@ -3172,7 +3172,7 @@ class Main:
 
         # --- Display Favourites ---
         for key in sorted(roms, key= lambda x : roms[x]['m_name']):
-            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, key, roms[key], False)
+            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, roms[key], False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
