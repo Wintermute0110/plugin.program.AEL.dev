@@ -220,34 +220,30 @@ class Main:
             self._command_add_new_launcher(args['catID'][0])
         elif command == 'EDIT_LAUNCHER':
             self._command_edit_launcher(args['catID'][0], args['launID'][0])
-        # User clicked on a launcher. For standalone launchers run the executable.
-        # For emulator launchers show roms.
+
+        # --- Show ROMs in launcher/virtual launcher ---
         elif command == 'SHOW_ROMS':
-            launcherID = args['launID'][0]
-            # >> Virtual launcher in virtual category (title/year/genre/studio), favourite ROMs or Collection
-            if launcherID not in self.launchers:
-                log_debug('SHOW_ROMS | Virtual launcher = {0}'.format(args['catID'][0]))
-                log_debug('SHOW_ROMS | Calling _command_render_virtual_launcher_roms()')
-                self._command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
-            elif self.launchers[launcherID]['rompath'] == '':
-                log_debug('SHOW_ROMS | Launcher rompath is empty. Assuming launcher is standalone.')
-                log_debug('SHOW_ROMS | Calling _command_run_standalone_launcher()')
-                self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
-            else:
-                log_debug('SHOW_ROMS | Calling _command_render_roms()')
-                self._command_render_roms(args['catID'][0], args['launID'][0])
+            self._command_render_roms(args['catID'][0], args['launID'][0])
+            
+        elif command == 'SHOW_VLAUNCHER_ROMS':
+            self._command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
         elif command == 'SHOW_CLONE_ROMS':
             self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
+
+        # >> Add/Edit/Delete ROMs in launcher, Favourites or ROM Collections <<
         elif command == 'ADD_ROMS':
             self._command_add_roms(args['launID'][0])
-        # Edit ROM from launcher or Favourites
         elif command == 'EDIT_ROM':
             self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-        # Delete ROM for launcher or Favourites
         elif command == 'DELETE_ROM':
              self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+
+        # --- Launch ROM or standalone launcher ---
         elif command == 'LAUNCH_ROM':
             self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+        elif command == 'LAUNCH_STANDALONE':
+            self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
+            
         elif command == 'ADD_TO_FAV':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'ADD_TO_COLLECTION':
@@ -683,22 +679,36 @@ class Main:
     def _command_add_new_launcher(self, categoryID):
         # If categoryID not found return to plugin root window.
         if categoryID not in self.categories:
-            kodi_notify_warn('Category ID not found.')
+            kodi_notify_warn('Category ID not found. Report this bug.')
             return
 
-        # Show "Create New Launcher" dialog
+        # --- Ask user if launcher is created on selected category or on root menu ---
+        category_name = self.categories[categoryID]['m_name']
+        dialog = xbmcgui.Dialog()
+        type = dialog.select('Choose Launcher category',
+                             ['Create Launcher in "{0}" category'.format(category_name),
+                              'Create Launcher in addon root']) 
+        if type < 0:
+            return
+        elif type == 0:
+            launcher_categoryID = categoryID
+        elif type == 1:
+            launcher_categoryID = 'root_category'
+        else:
+            kodi_notify_warn('_command_add_new_launcher() Wring type value. Report this bug.')
+            return
+
+        # --- Show "Create New Launcher" dialog ---
         dialog = xbmcgui.Dialog()
         if sys.platform == 'win32':
             type = dialog.select('Create New Launcher',
                                  ['Standalone launcher (Game/Application)', 
                                   'ROM launcher (Emulator)',
-                                  'Parent/Clone No-Intro ROM launcher (Emulator)',
                                   'LNK launcher (Windows only)'])
         else:
             type = dialog.select('Create New Launcher',
                                  ['Standalone launcher (Game/Application)',
-                                  'ROM launcher (Emulator)',
-                                  'Parent/Clone No-Intro ROM launcher (Emulator)'])
+                                  'ROM launcher (Emulator)'])
 
         log_info('_command_add_new_launcher() New launcher type = {0}'.format(type))
         filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
@@ -734,7 +744,7 @@ class Main:
             launcherdata['id']                 = launcherID
             launcherdata['m_name']             = title
             launcherdata['platform']           = launcher_platform
-            launcherdata['categoryID']         = categoryID
+            launcherdata['categoryID']         = launcher_categoryID
             launcherdata['application']        = app
             launcherdata['args']               = args
             launcherdata['timestamp_launcher'] = time.time()
@@ -743,45 +753,35 @@ class Main:
 
         #
         # 1) ROM Launcher 
-        # 2) No-Intro Parent/Clone launcher
-        # 3) LNK launcher (Windows only)
+        # 2) LNK launcher (Windows only)
         #
-        elif type == 1 or type == 2 or type == 3:
-            # --- Select No-Intro PClone DAT XML file ---
-            if type == 2:
-                kodi_dialog_OK('No-Intro Parent/Clone launcher functionality not coded yet. Sorry. '
-                               'For now just create a standard ROM launcher.')
-                return
-            if type == 2:
-                dat_file = xbmcgui.Dialog().browse(1, 'Select the No-Intro PClone XML file', 'files', '.xml').decode('utf-8')
-                if not dat_file: return
-
+        elif type == 1 or type == 2:
             # --- Launcher application ---
-            if type == 1 or type == 2:
+            if type == 1:
                 app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', filter).decode('utf-8')
                 if not app: return
-            elif type == 3:
+            elif type == 2:
                 app = 'lnk_launcher_app'
 
             # --- ROM path ---
-            if type == 1  or type == 2:
+            if type == 1:
                 roms_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', 'files', '').decode('utf-8')
-            elif type == 3:
+            elif type == 2:
                 roms_path = xbmcgui.Dialog().browse(0, 'Select the LNKs path', 'files', '').decode('utf-8')
             if not roms_path: return
 
             # --- ROM extensions ---
-            if type == 1 or type == 2:
+            if type == 1:
                 extensions = emudata_get_program_extensions(os.path.basename(app))
                 extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
                 extkey.doModal()
                 if not extkey.isConfirmed(): return
                 ext = extkey.getText().decode('utf-8')
-            elif type == 3:
+            elif type == 2:
                 ext = 'lnk'
 
             # --- Launcher arguments ---
-            if type == 1 or type == 2:
+            if type == 1:
                 default_arguments = emudata_get_program_arguments(os.path.basename(app))
                 argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
                 argkeyboard.doModal()
@@ -825,7 +825,7 @@ class Main:
             launcherdata['id']                 = launcherID
             launcherdata['m_name']             = title
             launcherdata['platform']           = launcher_platform
-            launcherdata['categoryID']         = categoryID
+            launcherdata['categoryID']         = launcher_categoryID
             launcherdata['application']        = app
             launcherdata['args']               = args
             launcherdata['rompath']            = roms_path
@@ -837,20 +837,10 @@ class Main:
             # >> launcher is edited using Python passing by assignment.
             assets_init_asset_dir(assets_path, launcherdata)
             self.launchers[launcherID] = launcherdata
-            
-            # >> If No-Intro Parent/Clone launcher, then:
-            #    1) Create the main PClone list from DAT.
-            #    2) Populate the launcher ROMs from the DAT
-            #    3) Later, user will use the scanner to determine which ROMs has or not and to
-            #       set metadata/artwork.
-            #
-            if type == 2:
-                self._roms_create_pclone_launcher_data()
 
             # >> Notify user
-            if type == 1:   kodi_notify('Created ROM launcher {0}'.format(title))
-            elif type == 2: kodi_notify('Created No-Intro Parent/Clone launcher {0}'.format(title))
-            elif type == 3: kodi_notify('Created LNK launcher {0}'.format(title))
+            if   type == 1: kodi_notify('Created ROM launcher {0}'.format(title))
+            elif type == 2: kodi_notify('Created LNK launcher {0}'.format(title))
 
         # >> User cancelled dialog
         else: return
@@ -5484,12 +5474,6 @@ class Main:
 
         # --- Return statistics ---
         return (num_have, num_miss, num_unknown)
-
-    #
-    # Populates a launcher with a No-Intro PClone DAT file
-    #   
-    def _roms_create_pclone_launcher_data(self):
-        pass
 
     #
     # Manually add a new ROM instead of a recursive scan.
