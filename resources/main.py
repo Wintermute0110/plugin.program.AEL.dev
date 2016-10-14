@@ -1219,16 +1219,17 @@ class Main:
                     add_delete_NoIntro_str = 'Add No-Intro XML DAT...'
                 launcher_mode_str = 'PClone mode' if launcher['pclone_launcher'] else 'Normal mode'
                 type2 = dialog.select('Manage Items List',
-                                      ['Choose ROM default assets/artwork...',
-                                       'Manage ROM asset directories...',
-                                       'Rescan ROM local assets/artwork',
-                                       add_delete_NoIntro_str,
+                                      ['Choose ROMs default assets/artwork...',
+                                       'Manage ROMs asset directories...',
+                                       'Rescan ROMs local assets/artwork',
                                        'Change launcher view mode (Now {0})'.format(launcher_mode_str),
+                                       add_delete_NoIntro_str,
                                        'Audit ROMs using No-Intro XML PClone DAT',
                                        'Clear No-Intro audit status',
                                        'Remove missing/dead ROMs',                                       
                                        'Import ROMs metadata from NFO files',
                                        'Export ROMs metadata to NFO files',
+                                       'Delete ROMs metadata NFO files',
                                        'Clear ROMs from launcher' ])
 
                 # --- Choose default ROMs assets/artwork ---
@@ -1407,8 +1408,23 @@ class Main:
                     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                     return
 
-                # --- Add/Delete No-Intro XML parent-clone DAT ---
+                # --- Change launcher view mode ---
                 elif type2 == 3:
+                    pclone_launcher = self.launchers[launcherID]['pclone_launcher']
+                    if pclone_launcher: item_list = ['Normal mode', 'PClone mode [Current]']
+                    else:               item_list = ['Normal mode [Current]', 'PClone mode']
+                    type_temp = dialog.select('Manage Items List', item_list)
+                    if type_temp < 0: return
+
+                    if type_temp == 0:   
+                        self.launchers[launcherID]['pclone_launcher'] = False
+                        log_debug('_command_edit_launcher() pclone_launcher = False')
+                    elif type_temp == 1:
+                        self.launchers[launcherID]['pclone_launcher'] = True
+                        log_debug('_command_edit_launcher() pclone_launcher = True')
+
+                # --- Add/Delete No-Intro XML parent-clone DAT ---
+                elif type2 == 4:
                     if has_NoIntro_DAT:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
@@ -1423,21 +1439,6 @@ class Main:
                         if not os.path.isfile(dat_file): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
-
-                # --- Change launcher view mode ---
-                elif type2 == 4:
-                    pclone_launcher = self.launchers[launcherID]['pclone_launcher']
-                    if pclone_launcher: item_list = ['Normal mode', 'PClone mode [Current]']
-                    else:               item_list = ['Normal mode [Current]', 'PClone mode']
-                    type_temp = dialog.select('Manage Items List', item_list)
-                    if type_temp < 0: return
-
-                    if type_temp == 0:   
-                        self.launchers[launcherID]['pclone_launcher'] = False
-                        log_debug('_command_edit_launcher() pclone_launcher = False')
-                    elif type_temp == 1:
-                        self.launchers[launcherID]['pclone_launcher'] = True
-                        log_debug('_command_edit_launcher() pclone_launcher = True')
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
@@ -1458,17 +1459,18 @@ class Main:
                     # --- Update No-Intro status for ROMs ---
                     # Note that roms dictionary is updated using Python pass by assigment.
                     # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
-                    (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(launcher, roms, nointro_xml_file)
+                    self._roms_update_NoIntro_status(launcher, roms, nointro_xml_file)
 
                     # --- Report ---
                     log_info('***** No-Intro audit finished. Report ******')
-                    log_info('No-Intro Have ROMs    {0:6d}'.format(num_have))
-                    log_info('No-Intro Miss ROMs    {0:6d}'.format(num_miss))
-                    log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
-                    kodi_notify('Audit finished. Have {0}/Miss {1}/Unknown {2}'.format(num_have, num_miss, num_unknown))
+                    log_info('No-Intro Have ROMs    {0:6d}'.format(self.audit_have))
+                    log_info('No-Intro Miss ROMs    {0:6d}'.format(self.audit_miss))
+                    log_info('No-Intro Unknown ROMs {0:6d}'.format(self.audit_unknown))
+                    kodi_notify('Audit finished. '
+                                'Have {0}/Miss {1}/Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
 
                     # ~~~ Save ROMs XML file ~~~
-                    # >> Categories/launchers will be saved at the end of the function.
+                    # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
 
                 # --- Reset audit status ---
@@ -1481,11 +1483,8 @@ class Main:
                     kodi_notify('No-Intro status reset')
 
                     # ~~~ Save ROMs XML file ~~~
-                    # >> Also save categories/launchers to update timestamp
-                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
+                    # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                    return
 
                 # --- Remove dead ROMs ---
                 elif type2 == 7:
@@ -1501,11 +1500,8 @@ class Main:
                     kodi_notify('Reset No-Intro status. Removed {0} missing ROMs'.format(num_removed_roms))
 
                     # ~~~ Save ROMs XML file ~~~
-                    # >> Also save categories/launchers to update timestamp
-                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
+                    # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                    return
 
                 # --- Import Items list form NFO files ---
                 elif type2 == 8:
@@ -1515,12 +1511,9 @@ class Main:
                     # >> Iterating dictionaries gives the key.
                     for rom_id in roms:
                         fs_import_ROM_NFO(roms, rom_id, verbose = False)
-                    # >> Save ROMs XML file
+                    # >> Save ROMs XML file / Launcher saved at the end of function
                     # >> Also save categories/launchers to update timestamp
-                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                    return
 
                 # --- Export Items list to NFO files ---
                 elif type2 == 9:
@@ -1534,8 +1527,34 @@ class Main:
                     # >> No need to save launchers XML / Update container
                     return
 
-                # --- Empty Launcher menu option ---
+                # --- Delete ROMs metadat NFO files ---
                 elif type2 == 10:
+                    # --- Get list of NFO files ---
+                    nfo_dirname = self.launchers[launcherID]['rompath']
+                    log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(nfo_dirname))
+                    nfo_file_list = []
+                    for root, dirs, files in os.walk(nfo_dirname):
+                        for filename in fnmatch.filter(files, '*.nfo'):
+                            full_path = os.path.join(root, filename)
+                            log_verb('_command_edit_launcher() Adding NFO file "{0}"'.format(full_path))
+                            nfo_file_list.append(full_path)
+                    if len(nfo_file_list) > 0:
+                        ret = kodi_dialog_yesno('Found {0} NFO files. Delete them?'.format(len(nfo_file_list)))
+                        if not ret: return
+                    else:
+                        kodi_dialog_OK('No NFO files found. Nothing to delete.')
+                        return
+
+                    # --- Delete NFO files ---
+                    for file in nfo_file_list:
+                        log_verb('_command_edit_launcher() RM "{0}"'.format(file))
+                        os.remove(file)
+
+                    # >> No need to save launchers XML / Update container
+                    return
+
+                # --- Empty Launcher menu option ---
+                elif type2 == 11:
                     self._gui_empty_launcher(launcherID)
                     # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
                     # Container.Refresh at the end of this function and calling the plugin twice.
