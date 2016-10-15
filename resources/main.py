@@ -87,6 +87,7 @@ KIND_COLLECTION          = 2
 KIND_LAUNCHER            = 3
 KIND_ROM                 = 4
 DESCRIPTION_MAXSIZE      = 40
+VCATEGORY_ADDONROOT_ID   = 'root_category'
 VCATEGORY_FAVOURITES_ID  = 'vcat_favourites'
 VCATEGORY_COLLECTIONS_ID = 'vcat_collections'
 VCATEGORY_TITLE_ID       = 'vcat_title'
@@ -1173,35 +1174,35 @@ class Main:
                 kodi_dialog_OK('There is only one category. Nothing to change.')
                 return
             dialog = xbmcgui.Dialog()
-            categories_id   = ['root_category']
+            # Add special root cateogory at the beginning
+            categories_id   = [VCATEGORY_ADDONROOT_ID]
             categories_name = ['Addon root (no category)']
             for key in self.categories:
                 categories_id.append(self.categories[key]['id'])
                 categories_name.append(self.categories[key]['m_name'])
             selected_cat = dialog.select('Select the category', categories_name)
             if selected_cat < 0: return
-            self.launchers[launcherID]['categoryID'] = categories_id[selected_cat]
+            new_categoryID = categories_id[selected_cat]
+            self.launchers[launcherID]['categoryID'] = new_categoryID
             log_debug('_command_edit_launcher() current category "{0}"'.format(current_category_ID))
-            log_debug('_command_edit_launcher() new     category "{0}"'.format(categories_id[selected_cat]))
+            log_debug('_command_edit_launcher() new     category "{0}"'.format(new_categoryID))
 
-            # >> If the former category is empty after editing (no launchers) then replace 
-            # >> category window with addon root.
-            if current_category_ID != 'root_category':
-                num_launchers_current_cat = 0
-                for laun_id, launcher in self.launchers.iteritems():
-                    if launcher['categoryID'] == current_category_ID: num_launchers_current_cat += 1
-                log_debug('_command_edit_launcher() num_launchers_current_cat = {0}'.format(num_launchers_current_cat))
-                if not num_launchers_current_cat:
-                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                    log_debug('_command_edit_launcher() Current category is empty.')
-                    log_debug('_command_edit_launcher() Replacing launcher window with root.')
-                    # For some reason this does not work... Kodi ignores ReplaceWindow() and does not
-                    # go to the addon root (display of categories).
-                    exec_str = 'ReplaceWindow(Programs,"{0}")'.format(self.base_url)
-                    log_debug('_command_edit_launcher() exec string "{0}"'.format(exec_str))
-                    xbmc.executebuiltin(exec_str)
-                    return
+            # >> Save cateogires/launchers
+            self.launchers[launcherID]['timestamp_launcher'] = time.time()
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+            # >> Display new category where launcher has moved
+            # For some reason ReplaceWindow() does not work, bu Container.Update() does.
+            # See http://forum.kodi.tv/showthread.php?tid=293844
+            if new_categoryID == VCATEGORY_ADDONROOT_ID:
+                plugin_url = self.base_url
+            else:
+                plugin_url = '{0}?com=SHOW_LAUNCHERS&amp;catID={1}'.format(self.base_url, new_categoryID)
+            exec_str = 'Container.Update({0},replace)'.format(plugin_url)
+            log_debug('_command_edit_launcher() Plugin URL     "{0}"'.format(plugin_url))
+            log_debug('_command_edit_launcher() Executebuiltin "{0}"'.format(exec_str))
+            xbmc.executebuiltin(exec_str)
+            return
 
         # --- Launcher status (finished [bool]) ---
         type_nb = type_nb + 1
