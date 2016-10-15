@@ -6814,7 +6814,7 @@ class Main:
                 thumb = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
                 
                 log_debug('_command_buildMenu() Adding Category "{0}"'.format(name))
-                listitem = self.buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
+                listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
 
         if typeOfContent == 1:
@@ -6830,7 +6830,7 @@ class Main:
                 log_debug('_command_buildMenu() Adding Launcher "{0}"'.format(name))
                 listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
-                
+
         ui.changeMade = True
         ui.allListItems = selectedMenuItems
         ui._save_shortcuts()
