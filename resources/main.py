@@ -5540,12 +5540,13 @@ class Main:
     #
     def _roms_update_NoIntro_status(self, launcher, roms, nointro_xml_file):
         # --- Reset the No-Intro status ---
+        self.audit_have = self.audit_miss = self.audit_unknown = 0
         self._roms_reset_NoIntro_status(roms)
 
         # --- Check if DAT file exists ---
         if not os.path.isfile(nointro_xml_file):
             log_warn('_roms_update_NoIntro_status Not found {0}'.format(nointro_xml_file))
-            return (0, 0, 0)
+            return
 
         # --- Load No-Intro DAT ---
         roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file)
@@ -5553,7 +5554,7 @@ class Main:
         # --- Check for errors ---
         if not roms_nointro:
             log_warn('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_file))
-            return (0, 0, 0)
+            return
 
         # --- Put No-Intro ROM names in a set ---
         # Set is the fastest Python container for searching elements (implements hashed search).
@@ -5562,14 +5563,13 @@ class Main:
         for rom_id in roms: roms_set.add(roms[rom_id]['m_name'])
 
         # --- Traverse ROMs and check they are in the DAT ---
-        num_have = num_miss = num_unknown = 0
         for rom_id in roms:
             if roms[rom_id]['m_name'] in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = 'Have'
-                num_have += 1
+                self.audit_have += 1
             else:
                 roms[rom_id]['nointro_status'] = 'Unknown'
-                num_unknown += 1
+                self.audit_unknown += 1
 
         # --- Mark dead ROMs as missing ---
         for rom_id in roms:
@@ -5590,8 +5590,8 @@ class Main:
                 rom['id'] = rom_id
                 rom['m_name'] = nointro_rom
                 rom['nointro_status'] = 'Miss'
+                self.audit_miss += 1
                 roms[rom_id] = rom
-                num_miss += 1
 
         # --- Make a Parent/Clone list based on romID ---
         roms_pclone_index = fs_generate_PClone_index(roms, roms_nointro)
@@ -5601,12 +5601,8 @@ class Main:
         roms_base_noext         = launcher['roms_base_noext']
         index_roms_base_noext   = roms_base_noext + '_PClone_index'
         parents_roms_base_noext = roms_base_noext + '_PClone_parents'
-
         fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
         fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
-
-        # --- Return statistics ---
-        return (num_have, num_miss, num_unknown)
 
     #
     # Manually add a new ROM instead of a recursive scan.
