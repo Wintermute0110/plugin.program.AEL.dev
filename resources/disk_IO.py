@@ -237,7 +237,10 @@ def fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launche
     new_fav_rom = dict(old_fav_rom)
 
     # --- Step 0 is always done in any Favourite/Collection repair ---
-    log_debug('fs_repair_Favourite_ROM() Relinking ROM and launcher (common)')
+    log_info('fs_repair_Favourite_ROM() Relinking ROM and launcher (common stuff)')
+    log_info('fs_repair_Favourite_ROM() Old ROM name "{0}"'.format(old_fav_rom['m_name']))
+    log_info('fs_repair_Favourite_ROM() New ROM name "{0}"'.format(parent_rom['m_name']))
+    log_info('fs_repair_Favourite_ROM() New launcher "{0}"'.format(parent_launcher['m_name']))
 
     # >> Main stuff
     fs_aux_copy_ROM_main_stuff(parent_launcher, parent_rom, new_fav_rom)

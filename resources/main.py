@@ -1580,13 +1580,13 @@ class Main:
 
             # --- ROMS launcher -------------------------------------------------------------------
             if self.launchers[launcherID]['rompath'] == '':
-                type2 = dialog.select('Launcher Advanced Modification',
+                type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
             # --- Standalone launcher -------------------------------------------------------------
             else:
-                type2 = dialog.select('Launcher Advanced Modification',
+                type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Change ROM Path: '{0}'".format(self.launchers[launcherID]['rompath']),
@@ -1637,7 +1637,7 @@ class Main:
                 # User canceled select dialog
                 if type3 < 0: return
                 self.launchers[launcherID]['minimize'] = True if type3 == 1 else False
-                kodi_notify('Minimize is {0}'.format('ON' if self.launchers[launcherID]['minimize'] else 'OFF'))
+                kodi_notify('Launcher minimize is {0}'.format('ON' if self.launchers[launcherID]['minimize'] else 'OFF'))
 
         # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
@@ -2093,13 +2093,21 @@ class Main:
                     return
 
                 # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
-                if type2 == 0:   new_fav_rom = fs_repair_Favourite_ROM(0, old_fav_rom, parent_rom, parent_launcher)
-                elif type2 == 1: new_fav_rom = fs_repair_Favourite_ROM(3, old_fav_rom, parent_rom, parent_launcher)
+                if type2 == 0:   
+                    log_info('_command_edit_ROM() Relinking ROM (launcher info only)')
+                    new_fav_rom = fs_repair_Favourite_ROM(0, old_fav_rom, parent_rom, parent_launcher)
+                elif type2 == 1:
+                    log_info('_command_edit_ROM() Relinking ROM (update all)')
+                    new_fav_rom = fs_repair_Favourite_ROM(3, old_fav_rom, parent_rom, parent_launcher)
                 else:
                     kodi_dialog_OK('Manage ROM object, relink, wrong type2 = {0}. Please report this bug.'.format(type2))
                     return
                 roms.pop(old_fav_rom_ID)
                 roms[new_fav_rom['id']] = new_fav_rom
+
+                # >> Notify user
+                if categoryID == VCATEGORY_FAVOURITES_ID:    kodi_notify('Relinked Favourite ROM')
+                elif categoryID == VCATEGORY_COLLECTIONS_ID: kodi_notify('Relinked Collection ROM')
 
             # --- Copy launcher info from parent ROM ---
             # --- Copy metadata from parent ROM ---
