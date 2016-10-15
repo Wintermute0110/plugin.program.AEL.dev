@@ -1580,16 +1580,16 @@ class Main:
 
             # --- ROMS launcher -------------------------------------------------------------------
             if self.launchers[launcherID]['rompath'] == '':
-                type2 = dialog.select('Advanced Launcher Modification',
+                type2 = dialog.select('Launcher Advanced Modification',
                                       ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
             # --- Standalone launcher -------------------------------------------------------------
             else:
-                type2 = dialog.select('Advanced Launcher Modification',
+                type2 = dialog.select('Launcher Advanced Modification',
                                       ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
-                                       "Change ROMs Path: '{0}'".format(self.launchers[launcherID]['rompath']),
+                                       "Change ROM Path: '{0}'".format(self.launchers[launcherID]['rompath']),
                                        "Modify ROM Extensions: '{0}'".format(self.launchers[launcherID]['romext']),
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
 
@@ -1599,6 +1599,7 @@ class Main:
                 app = xbmcgui.Dialog().browse(1, 'Select the launcher application',
                                               'files', '', False, False, self.launchers[launcherID]['application'])
                 self.launchers[launcherID]['application'] = app
+                kodi_notify('Changed launcher application')
 
             # Edition of the launcher arguments
             type2_nb = type2_nb + 1
@@ -1607,23 +1608,26 @@ class Main:
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['args'] = keyboard.getText().decode('utf-8')
+                kodi_notify('Changed launcher arguments')
 
             if self.launchers[launcherID]['rompath'] != '':
-                # Launcher roms path menu option
+                # --- Launcher roms path menu option ---
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
                     rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', 'files', '',
                                                        False, False, self.launchers[launcherID]['rompath']).decode('utf-8')
                     self.launchers[launcherID]['rompath'] = rom_path
+                    kodi_notify('Changed ROM path')
 
                 # Edition of the launcher rom extensions (only for emulator launcher)
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
                     keyboard = xbmc.Keyboard(self.launchers[launcherID]['romext'],
-                                                'Edit ROM extensions, use &quot;|&quot; as separator. (e.g lnk|cbr)')
+                                                'Edit ROM extensions, use "|" as separator. (e.g lnk|cbr)')
                     keyboard.doModal()
                     if not keyboard.isConfirmed(): return
                     self.launchers[launcherID]['romext'] = keyboard.getText().decode('utf-8')
+                    kodi_notify('Changed ROM extensions')
 
             # Launcher minimize state menu option
             type2_nb = type2_nb + 1
@@ -1633,6 +1637,7 @@ class Main:
                 # User canceled select dialog
                 if type3 < 0: return
                 self.launchers[launcherID]['minimize'] = True if type3 == 1 else False
+                kodi_notify('Minimize is {0}'.format('ON' if self.launchers[launcherID]['minimize'] else 'OFF'))
 
         # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
@@ -3484,12 +3489,13 @@ class Main:
                     roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
                     for rom_id in roms:
                         ROM = misc_split_path(roms[rom_id]['filename'])
+                        fav_name = roms_fav[rom_fav_ID]['m_name']
                         if type == 1 and roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
-                            log_info('_command_manage_favourites() Favourite {0} matched by filename!')
+                            log_info('_command_manage_favourites() Favourite {0} matched by filename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
                             log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
                         elif type == 2 and ROM_FAV.base == ROM.base:
-                            log_info('_command_manage_favourites() Favourite {0} matched by basename!')
+                            log_info('_command_manage_favourites() Favourite {0} matched by basename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
                             log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
                         else:
@@ -3529,8 +3535,9 @@ class Main:
                 parent_rom          = rom_repair['parent_rom']
                 parent_launcher     = rom_repair['parent_launcher']
                 log_debug('_command_manage_favourites() Repairing ROM {0}'.format(old_fav_rom_ID))
-                log_debug('_command_manage_favourites()  New ROM      {0}'.format(new_fav_rom_ID))
-                log_debug('_command_manage_favourites()  New Launcher {0}'.format(new_fav_rom_laun_ID))
+                log_debug('_command_manage_favourites() Name          {0}'.format(old_fav_rom['m_name']))
+                log_debug('_command_manage_favourites() New ROM       {0}'.format(new_fav_rom_ID))
+                log_debug('_command_manage_favourites() New Launcher  {0}'.format(new_fav_rom_laun_ID))
 
                 # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
                 new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
