@@ -689,7 +689,7 @@ class Main:
         elif type == 0:
             launcher_categoryID = categoryID
         elif type == 1:
-            launcher_categoryID = 'root_category'
+            launcher_categoryID = VCATEGORY_ADDONROOT_ID
         else:
             kodi_notify_warn('_command_add_new_launcher() Wring type value. Report this bug.')
             return
@@ -850,7 +850,7 @@ class Main:
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
         finished_display = 'Status : Finished' if self.launchers[launcherID]['finished'] == True else 'Status : Unfinished'
-        if self.launchers[launcherID]['categoryID'] == 'root_category':
+        if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
             category_name = 'Addon root (no category)'
         else:
             category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
@@ -2449,7 +2449,7 @@ class Main:
         # --- Render categoryless launchers. Order alphabetically by name ---
         catless_launchers = {}
         for launcher_id, launcher in self.launchers.iteritems():
-            if launcher['categoryID'] == 'root_category':
+            if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
                 catless_launchers[launcher_id] = launcher
         for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
             self._gui_render_launcher_row(catless_launchers[launcher_id])
