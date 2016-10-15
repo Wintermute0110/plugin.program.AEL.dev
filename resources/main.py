@@ -4307,20 +4307,20 @@ class Main:
 
         elif categoryID == VCATEGORY_MOST_PLAYED_ID:
             log_info('_command_view_ROM() Viewing ROM in Recently played ROMs list...')
-            recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
-            current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
-            if current_ROM_position < 0:
-                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
-                return
-            rom = recent_roms_list[current_ROM_position]
+            most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+            rom = most_played_roms[romID]
             window_title = 'Most Played ROM data'
             regular_launcher = False
             vlauncher_label = 'Most Played ROM'
 
         elif categoryID == VCATEGORY_RECENT_ID:
             log_info('_command_view_ROM() Viewing ROM in Most played ROMs...')
-            most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-            rom = most_played_roms[romID]
+            recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+            current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
+            if current_ROM_position < 0:
+                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                return
+            rom = recent_roms_list[current_ROM_position]
             window_title = 'Recently launched ROM data'
             regular_launcher = False
             vlauncher_label = 'Recently launched ROM'
@@ -4517,14 +4517,14 @@ class Main:
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(rom['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(rom['minimize'])
+        if 'launch_count' in rom:
+            info_text += "[COLOR skyblue]launch_count[/COLOR]: {0}\n".format(rom['launch_count'])
         info_text += "[COLOR violet]fav_status[/COLOR]: '{0}'\n".format(rom['fav_status'])
         info_text += "[COLOR violet]roms_default_thumb[/COLOR]: '{0}'\n".format(rom['roms_default_thumb'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(rom['roms_default_fanart'])
         info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
         info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(rom['roms_default_poster'])
         info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(rom['roms_default_clearlogo'])
-        if 'launch_count' in rom:
-            info_text += "[COLOR skyblue]launch_count[/COLOR]: {0}\n".format(rom['launch_count'])
 
         return info_text
 
