@@ -179,6 +179,9 @@ def fs_new_collection():
 
     return c
 
+# -------------------------------------------------------------------------------------------------
+# Favourite ROM creation/management
+# -------------------------------------------------------------------------------------------------
 #
 # Creates a new Favourite ROM dictionary from parent ROM and Launcher.
 #
@@ -221,32 +224,85 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     return favourite
 
 #
-# Creates a new Favourite ROM from old Favourite, parent ROM and parent Launcher.
-# 1) Metadata/Assets are from old Favourite ROM.
-# 2) ROM filename is from parent ROM.
-# 3) Launcher files are from parent Launcher.
-# 4) Default assets/artwork from launcher NOT updated.
+# Creates a new Favourite ROM from old Favourite, parent ROM and parent Launcher. This function is
+# used when repairing/relinking a Favourite/Collection ROM.
 #
-def fs_get_Favourite_from_old_Fav_and_ROM(old_favourite_rom, new_standard_rom, launcher):
-    favourite = dict(old_favourite_rom)
-    
-    # >> Update launcher files from parent launcher but no default assets/artwork.
-    favourite['launcherID']  = launcher['id']
-    favourite['platform']    = launcher['platform']
-    favourite['application'] = launcher['application']
-    favourite['args']        = launcher['args']
-    favourite['rompath']     = launcher['rompath']
-    favourite['romext']      = launcher['romext']
-    favourite['minimize']    = launcher['minimize']
+# Repair mode (integer):
+#   0) Relink and update launcher info
+#   1) Relink and update metadata
+#   2) Relink and update artwork
+#   3) Relink and update everything
+#
+def fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher):
+    new_fav_rom = dict(old_fav_rom)
 
-    # >> Update filename with parent ROM filename.
-    favourite['filename']    = new_standard_rom['filename']
+    # --- Step 0 is always done in any Favourite/Collection repair ---
+    log_debug('fs_repair_Favourite_ROM() Relinking ROM and launcher (common)')
 
-    # >> Favourite ROM unique fields
-    favourite['fav_status']  = 'OK'
+    # >> Main stuff
+    new_fav_rom['id']          = parent_rom['id']
+    new_fav_rom['launcherID']  = parent_launcher['id']
+    new_fav_rom['filename']    = parent_rom['filename']        
+    new_fav_rom['fav_status']  = 'OK'
 
-    return favourite
+    # >> Launcher stuff
+    new_fav_rom['platform']    = parent_launcher['platform']
+    new_fav_rom['application'] = parent_launcher['application']
+    new_fav_rom['args']        = parent_launcher['args']
+    new_fav_rom['rompath']     = parent_launcher['rompath']
+    new_fav_rom['romext']      = parent_launcher['romext']
+    new_fav_rom['minimize']    = parent_launcher['minimize']
 
+    # --- Metadata ---
+    if repair_mode == 1:
+        log_debug('fs_repair_Favourite_ROM() Relinking Metadata')
+        fs_aux_copy_ROM_metadata(parent_rom, new_fav_rom)
+    # --- Artwork ---
+    elif repair_mode == 2:
+        log_debug('fs_repair_Favourite_ROM() Relinking Artwork')
+        fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, new_fav_rom)
+    # --- Metadata and artwork ---
+    elif repair_mode == 3:
+        log_debug('fs_repair_Favourite_ROM() Relinking Metadata and Artwork')
+        fs_aux_copy_ROM_metadata(parent_rom, new_fav_rom)
+        fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, new_fav_rom)
+
+    return new_fav_rom
+
+def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
+    dest_rom['m_name']         = source_rom['m_name']
+    dest_rom['m_year']         = source_rom['m_year']
+    dest_rom['m_genre']        = source_rom['m_genre']
+    dest_rom['m_studio']       = source_rom['m_studio']
+    dest_rom['m_rating']       = source_rom['m_rating']
+    dest_rom['m_plot']         = source_rom['m_plot']
+    dest_rom['altapp']         = source_rom['altapp']
+    dest_rom['altarg']         = source_rom['altarg']
+    dest_rom['finished']       = source_rom['finished']
+    dest_rom['nointro_status'] = source_rom['nointro_status']
+
+def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
+    dest_rom['s_title']     = source_rom['s_title']
+    dest_rom['s_snap']      = source_rom['s_snap']
+    dest_rom['s_fanart']    = source_rom['s_fanart']
+    dest_rom['s_banner']    = source_rom['s_banner']
+    dest_rom['s_clearlogo'] = source_rom['s_clearlogo']
+    dest_rom['s_boxfront']  = source_rom['s_boxfront']
+    dest_rom['s_boxback']   = source_rom['s_boxback']
+    dest_rom['s_cartridge'] = source_rom['s_cartridge']
+    dest_rom['s_flyer']     = source_rom['s_flyer']
+    dest_rom['s_map']       = source_rom['s_map']
+    dest_rom['s_manual']    = source_rom['s_manual']
+    dest_rom['s_trailer']   = source_rom['s_trailer']
+    dest_rom['roms_default_thumb']     = source_launcher['roms_default_thumb']
+    dest_rom['roms_default_fanart']    = source_launcher['roms_default_fanart']
+    dest_rom['roms_default_banner']    = source_launcher['roms_default_banner']
+    dest_rom['roms_default_poster']    = source_launcher['roms_default_poster']
+    dest_rom['roms_default_clearlogo'] = source_launcher['roms_default_clearlogo']
+
+# -------------------------------------------------------------------------------------------------
+# ROM storage file names
+# -------------------------------------------------------------------------------------------------
 def fs_get_ROMs_basename(category_name, launcher_name, launcherID):
     clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name]).replace(' ', '_')
     clean_launch_title = ''.join([i if i in string.printable else '_' for i in launcher_name]).replace(' ', '_')
