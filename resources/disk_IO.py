@@ -992,11 +992,9 @@ def fs_load_Collection_index_XML(collections_xml_file):
 
     return (collections, update_timestamp)
 
-def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
-    roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
-    log_info('fs_write_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
-    log_info('fs_write_Collection_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
-    
+def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
+    log_verb('fs_write_Collection_ROMs_JSON() {0}'.format(roms_json_file))
+
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
         'version' : AEL_STORAGE_FORMAT
@@ -1004,7 +1002,7 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
     raw_data = []
     raw_data.append(control_dic)
     raw_data.append(roms)
-    
+
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
@@ -1020,14 +1018,12 @@ def fs_write_Collection_ROMs_JSON(roms_dir, roms_base_noext, roms):
 # Loads an JSON file containing the Virtual Launcher ROMs
 # WARNING Collection ROMs are a list, not a dictionary
 #
-def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
-    # --- If file does not exist return empty dictionary ---
-    roms_json_file = os.path.join(roms_dir, roms_base_noext + '.json')
+def fs_load_Collection_ROMs_JSON(roms_json_file):
+    # --- If file does not exist return empty list ---
     if not os.path.isfile(roms_json_file): return []
 
     # --- Parse using JSON ---
-    log_info('fs_load_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
-    log_info('fs_load_Collection_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
+    log_verb('fs_load_Collection_ROMs_JSON() {0}'.format(roms_json_file))
 
     with open(roms_json_file) as file:    
         try:
@@ -1035,8 +1031,7 @@ def fs_load_Collection_ROMs_JSON(roms_dir, roms_base_noext):
         except ValueError:
             statinfo = os.stat(roms_json_file)
             log_error('fs_load_Collection_ROMs_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_Collection_ROMs_JSON() Dir  {0}'.format(roms_dir))
-            log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
+            log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(roms_json_file))
             log_error('fs_load_Collection_ROMs_JSON() Size {0}'.format(statinfo.st_size))
             return []
 

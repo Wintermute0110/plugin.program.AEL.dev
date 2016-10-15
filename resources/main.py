@@ -50,36 +50,36 @@ __addon_type__    = __addon_obj__.getAddonInfo('type').decode('utf-8')
 # --- Addon paths and constant definition ---
 # _FILE_PATH is a filename
 # _DIR is a directory (with trailing /)
-PLUGIN_DATA_DIR       = xbmc.translatePath(os.path.join('special://profile/addon_data', __addon_id__)).decode('utf-8')
-BASE_DIR              = xbmc.translatePath(os.path.join('special://', 'profile')).decode('utf-8')
-HOME_DIR              = xbmc.translatePath(os.path.join('special://', 'home')).decode('utf-8')
-KODI_FAV_FILE_PATH    = xbmc.translatePath('special://profile/favourites.xml').decode('utf-8')
-ADDONS_DIR            = xbmc.translatePath(os.path.join(HOME_DIR, 'addons')).decode('utf-8')
-CURRENT_ADDON_DIR     = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__)).decode('utf-8')
-ICON_IMG_FILE_PATH    = os.path.join(CURRENT_ADDON_DIR, 'icon.png').decode('utf-8')
-CATEGORIES_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'categories.xml').decode('utf-8')
-FAV_JSON_FILE_PATH    = os.path.join(PLUGIN_DATA_DIR, 'favourites.json').decode('utf-8')
-COLLECTIONS_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'collections.xml').decode('utf-8')
-VCAT_TITLE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_title.xml').decode('utf-8')
-VCAT_YEARS_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_years.xml').decode('utf-8')
-VCAT_GENRE_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'vcat_genre.xml').decode('utf-8')
-VCAT_STUDIO_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml').decode('utf-8')
-LAUNCH_LOG_FILE_PATH  = os.path.join(PLUGIN_DATA_DIR, 'launcher.log').decode('utf-8')
-RECENT_PLAYED_NOEXT   = 'history'
-MOST_PLAYED_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'most_played.json').decode('utf-8')
+PLUGIN_DATA_DIR         = xbmc.translatePath(os.path.join('special://profile/addon_data', __addon_id__)).decode('utf-8')
+BASE_DIR                = xbmc.translatePath(os.path.join('special://', 'profile')).decode('utf-8')
+HOME_DIR                = xbmc.translatePath(os.path.join('special://', 'home')).decode('utf-8')
+KODI_FAV_FILE_PATH      = xbmc.translatePath('special://profile/favourites.xml').decode('utf-8')
+ADDONS_DIR              = xbmc.translatePath(os.path.join(HOME_DIR, 'addons')).decode('utf-8')
+CURRENT_ADDON_DIR       = xbmc.translatePath(os.path.join(ADDONS_DIR, __addon_id__)).decode('utf-8')
+ICON_IMG_FILE_PATH      = os.path.join(CURRENT_ADDON_DIR, 'icon.png').decode('utf-8')
+CATEGORIES_FILE_PATH    = os.path.join(PLUGIN_DATA_DIR, 'categories.xml').decode('utf-8')
+FAV_JSON_FILE_PATH      = os.path.join(PLUGIN_DATA_DIR, 'favourites.json').decode('utf-8')
+COLLECTIONS_FILE_PATH   = os.path.join(PLUGIN_DATA_DIR, 'collections.xml').decode('utf-8')
+VCAT_TITLE_FILE_PATH    = os.path.join(PLUGIN_DATA_DIR, 'vcat_title.xml').decode('utf-8')
+VCAT_YEARS_FILE_PATH    = os.path.join(PLUGIN_DATA_DIR, 'vcat_years.xml').decode('utf-8')
+VCAT_GENRE_FILE_PATH    = os.path.join(PLUGIN_DATA_DIR, 'vcat_genre.xml').decode('utf-8')
+VCAT_STUDIO_FILE_PATH   = os.path.join(PLUGIN_DATA_DIR, 'vcat_studio.xml').decode('utf-8')
+LAUNCH_LOG_FILE_PATH    = os.path.join(PLUGIN_DATA_DIR, 'launcher.log').decode('utf-8')
+RECENT_PLAYED_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'history.json').decode('utf-8')
+MOST_PLAYED_FILE_PATH   = os.path.join(PLUGIN_DATA_DIR, 'most_played.json').decode('utf-8')
 
 # --- Artwork and NFO for Categories and Launchers ---
-DEFAULT_CAT_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-categories').decode('utf-8')
-DEFAULT_COL_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-collections').decode('utf-8')
-DEFAULT_LAUN_ASSET_DIR = os.path.join(PLUGIN_DATA_DIR, 'asset-launchers').decode('utf-8')
-DEFAULT_FAV_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-favourites').decode('utf-8')
-VIRTUAL_CAT_TITLE_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_title').decode('utf-8')
-VIRTUAL_CAT_YEARS_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_years').decode('utf-8')
-VIRTUAL_CAT_GENRE_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_genre').decode('utf-8')
-VIRTUAL_CAT_STUDIO_DIR = os.path.join(PLUGIN_DATA_DIR, 'db_studio').decode('utf-8')
-ROMS_DIR               = os.path.join(PLUGIN_DATA_DIR, 'db_ROMs').decode('utf-8')
-COLLECTIONS_DIR        = os.path.join(PLUGIN_DATA_DIR, 'db_Collections').decode('utf-8')
-REPORTS_DIR            = os.path.join(PLUGIN_DATA_DIR, 'reports').decode('utf-8')
+DEFAULT_CAT_ASSET_DIR   = os.path.join(PLUGIN_DATA_DIR, 'asset-categories').decode('utf-8')
+DEFAULT_COL_ASSET_DIR   = os.path.join(PLUGIN_DATA_DIR, 'asset-collections').decode('utf-8')
+DEFAULT_LAUN_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-launchers').decode('utf-8')
+DEFAULT_FAV_ASSET_DIR   = os.path.join(PLUGIN_DATA_DIR, 'asset-favourites').decode('utf-8')
+VIRTUAL_CAT_TITLE_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_title').decode('utf-8')
+VIRTUAL_CAT_YEARS_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_years').decode('utf-8')
+VIRTUAL_CAT_GENRE_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_genre').decode('utf-8')
+VIRTUAL_CAT_STUDIO_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_studio').decode('utf-8')
+ROMS_DIR                = os.path.join(PLUGIN_DATA_DIR, 'db_ROMs').decode('utf-8')
+COLLECTIONS_DIR         = os.path.join(PLUGIN_DATA_DIR, 'db_Collections').decode('utf-8')
+REPORTS_DIR             = os.path.join(PLUGIN_DATA_DIR, 'reports').decode('utf-8')
 
 # --- Misc "constants" ---
 KIND_CATEGORY            = 1
@@ -1747,7 +1747,8 @@ class Main:
             log_debug('_command_edit_rom() Editing Collection ROM')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
             #      converted back the ordered dictionary into a list before saving the collection.
@@ -2357,7 +2358,8 @@ class Main:
             collection_rom_list = []
             for key in roms:
                 collection_rom_list.append(roms[key])
-            fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
+            json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         else:
             # >> Also save categories/launchers to update timestamp
             # >> Also update changed launcher timestamp
@@ -2396,7 +2398,8 @@ class Main:
             # --- Load Collection index and roms ---
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             if not collection_rom_list: return
 
             # >> Find index of ROM to be deleted
@@ -2413,7 +2416,8 @@ class Main:
             if not ret: return
 
             del collection_rom_list[rom_index]
-            fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
+            json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
             kodi_notify('Deleted ROM from Collection')
             kodi_refresh_container()
         else:
@@ -3274,7 +3278,7 @@ class Main:
         # self._misc_set_content_and_all_sorting_methods()
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-        rom_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)        
+        rom_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
         if not rom_list:
             kodi_notify('Recently played list is empty. Play some ROMs first!')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -3374,7 +3378,8 @@ class Main:
             log_debug('_command_manage_favourites() Managing Collection ROMs')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
             #      converted back the ordered dictionary into a list before saving the collection.
@@ -3651,7 +3656,8 @@ class Main:
             collection_rom_list = []
             for key in roms_fav:
                 collection_rom_list.append(roms_fav[key])
-            fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
+            json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
 
     #
@@ -3789,7 +3795,8 @@ class Main:
         # --- Load Collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -3944,7 +3951,8 @@ class Main:
         # --- Load collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
 
         # --- Confirm deletion ---
         num_roms = len(collection_rom_list)
@@ -4002,7 +4010,8 @@ class Main:
         log_info('_command_import_collection() Importing Collection "{0}" ({1})'.format(collection_dic['name'], collection_dic['id']))
         log_info('_command_import_collection() roms_base_noext "{0}"'.format(collection_dic['roms_base_noext']))
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection_dic['roms_base_noext'], collection_rom_list)
+        json_file = os.path.join(COLLECTIONS_DIR, collection_base_name + '.json')
+        fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_dialog_OK('Imported ROM Collection "{0}"'.format(collection_dic['name']))
 
     #
@@ -4017,7 +4026,8 @@ class Main:
         # --- Load collection ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -4073,7 +4083,8 @@ class Main:
 
         # --- Load Collection ROMs ---
         collection = collections[collectionID]
-        collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+        roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         log_info('Adding ROM to Collection')
         log_info('Collection {0}'.format(collection['name']))
         log_info('romID      {0}'.format(romID))
@@ -4106,7 +4117,8 @@ class Main:
         # >> Add ROM to the last position in the collection
         collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
         collection_rom_list.append(collection_rom)
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'], collection_rom_list)
+        json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+        fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
 
     #
@@ -4292,7 +4304,7 @@ class Main:
 
         elif categoryID == VCATEGORY_MOST_PLAYED_ID:
             log_info('_command_view_ROM() Viewing ROM in Recently played ROMs list...')
-            recent_roms_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
+            recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
@@ -4367,7 +4379,8 @@ class Main:
             log_info('_command_view_ROM() Viewing ROM in Collection...')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
@@ -5005,7 +5018,7 @@ class Main:
         # --- ROM in Recently played ROMs list ---
         elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
             log_info('_command_run_rom() Launching ROM in Recently Played ROMs...')
-            recent_roms_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
+            recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
@@ -5031,7 +5044,8 @@ class Main:
             log_info('_command_run_rom() Launching ROM in Collection...')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            collection_rom_list = fs_load_Collection_ROMs_JSON(COLLECTIONS_DIR, collection['roms_base_noext'])
+            roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
+            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
@@ -5129,10 +5143,10 @@ class Main:
         log_info('_command_run_rom() arguments   = "{0}"'.format(arguments))
 
         # --- Compute ROM recently played list ---
-        recent_roms_list = fs_load_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT)
+        recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
         recent_roms_list.insert(0, recent_rom)
         if len(recent_roms_list) > 100: recent_roms_list = recent_roms_list[:10]
-        fs_write_Collection_ROMs_JSON(PLUGIN_DATA_DIR, RECENT_PLAYED_NOEXT, recent_roms_list)
+        fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
 
         # --- Compute most played ROM statistics ---
         most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
