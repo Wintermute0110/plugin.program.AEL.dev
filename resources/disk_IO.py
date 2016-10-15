@@ -240,18 +240,10 @@ def fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launche
     log_debug('fs_repair_Favourite_ROM() Relinking ROM and launcher (common)')
 
     # >> Main stuff
-    new_fav_rom['id']          = parent_rom['id']
-    new_fav_rom['launcherID']  = parent_launcher['id']
-    new_fav_rom['filename']    = parent_rom['filename']        
-    new_fav_rom['fav_status']  = 'OK'
+    fs_aux_copy_ROM_main_stuff(parent_launcher, parent_rom, new_fav_rom)
 
     # >> Launcher stuff
-    new_fav_rom['platform']    = parent_launcher['platform']
-    new_fav_rom['application'] = parent_launcher['application']
-    new_fav_rom['args']        = parent_launcher['args']
-    new_fav_rom['rompath']     = parent_launcher['rompath']
-    new_fav_rom['romext']      = parent_launcher['romext']
-    new_fav_rom['minimize']    = parent_launcher['minimize']
+    fs_aux_copy_ROM_launcher_info(parent_launcher, new_fav_rom)
 
     # --- Metadata ---
     if repair_mode == 1:
@@ -268,6 +260,20 @@ def fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launche
         fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, new_fav_rom)
 
     return new_fav_rom
+
+def fs_aux_copy_ROM_main_stuff(source_launcher, source_rom, dest_rom):
+    dest_rom['id']          = source_rom['id']
+    dest_rom['launcherID']  = source_launcher['id']
+    dest_rom['filename']    = source_rom['filename']
+    dest_rom['fav_status']  = 'OK'
+
+def fs_aux_copy_ROM_launcher_info(source_launcher, dest_rom):
+    dest_rom['platform']    = source_launcher['platform']
+    dest_rom['application'] = source_launcher['application']
+    dest_rom['args']        = source_launcher['args']
+    dest_rom['rompath']     = source_launcher['rompath']
+    dest_rom['romext']      = source_launcher['romext']
+    dest_rom['minimize']    = source_launcher['minimize']
 
 def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['m_name']         = source_rom['m_name']

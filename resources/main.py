@@ -2030,14 +2030,17 @@ class Main:
         elif type == 4:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Manage ROM object',
-                                  ['Choose another parent ROM...',
-                                   'Copy metadata from parent',
-                                   'Copy assets from parent',
+                                  ['Choose another parent ROM (launcher info only)...', # 0
+                                   'Choose another parent ROM (update all)...',         # 1
+                                   'Copy launcher info from parent ROM',                # 2
+                                   'Copy metadata from parent ROM',                     # 3
+                                   'Copy assets/artwork from parent ROM',               # 4
+                                   'Copy all from parent ROM',                          # 5
                                    'Manage default Assets/Artwork...'])
             
             # --- Choose another parent ROM ---
-            if type2 == 0:
-                # STEP 1: select new launcher.
+            if type2 == 0 or type2 == 1:
+                # --- STEP 1: select new launcher ---
                 launcher_IDs = []
                 launcher_names = []
                 for launcher_id in self.launchers:
@@ -2054,8 +2057,8 @@ class Main:
                 selected_launcher = dialog.select('New launcher for {0}'.format(roms[romID]['m_name']), launcher_names)
                 if selected_launcher < 0: return
                     
-                # STEP 2: select ROMs in that launcher.
-                launcher_id = launcher_IDs[selected_launcher]
+                # --- STEP 2: select ROMs in that launcher ---
+                launcher_id   = launcher_IDs[selected_launcher]
                 launcher_roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
                 if not launcher_roms: return
                 roms_IDs = []
@@ -2071,94 +2074,73 @@ class Main:
                 selected_rom = dialog.select('New ROM for Favourite {0}'.format(roms[romID]['m_name']), roms_names)
                 if selected_rom < 0 : return
 
-                # --- Do the relinking ---
-                launcher          = self.launchers[launcher_id]
-                new_rom_id        = roms_IDs[selected_rom]
-                new_standard_rom  = launcher_roms[new_rom_id]
-                old_favourite_rom = roms[romID]
+                # >> Collect ROM object.
+                old_fav_rom_ID  = romID
+                new_fav_rom_ID  = roms_IDs[selected_rom]
+                old_fav_rom     = roms[romID]
+                parent_rom      = launcher_roms[new_fav_rom_ID]
+                parent_launcher = self.launchers[launcher_id]
 
                 # >> Check that the selected ROM ID is not already in Favourites
-                if new_rom_id in roms:
+                if new_fav_rom_ID in roms:
                     kodi_dialog_OK('Selected ROM already in Favourites. Exiting.')
                     return
 
-                # >> Delete current favourite ROM from Favourites
-                roms.pop(romID)
+                # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
+                if type2 == 0:   new_fav_rom = fs_repair_Favourite_ROM(0, old_fav_rom, parent_rom, parent_launcher)
+                elif type2 == 1: new_fav_rom = fs_repair_Favourite_ROM(3, old_fav_rom, parent_rom, parent_launcher)
+                else:
+                    kodi_dialog_OK('Manage ROM object, relink, wrong type2 = {0}. Please report this bug.'.format(type2))
+                    return
+                roms.pop(old_fav_rom_ID)
+                roms[new_fav_rom['id']] = new_fav_rom
 
-                # >> Copy parent ROM launcher info. Keep old Fav metadata and assets.
-                # >> Insert new relinked favourite ROM
-                new_fav_rom      = fs_get_Favourite_from_old_Fav_and_ROM(old_favourite_rom, new_standard_rom, launcher)
-                roms[new_rom_id] = new_fav_rom
-
-            # --- Copy metadata from parent ---
-            elif type2 == 1:
+            # --- Copy launcher info from parent ROM ---
+            # --- Copy metadata from parent ROM ---
+            # --- Copy assets/artwork from parent ROM ---
+            # --- Copy all from parent ROM ---
+            elif type2 == 2 or type2 == 3 or type2 == 4 or type2 == 5:
                 # >> Get launcher and parent ROM
                 # >> Check Favourite ROM is linked (parent ROM exists)
                 fav_rom         = roms[romID]
                 fav_launcher_id = fav_rom['launcherID']
                 if fav_launcher_id not in self.launchers:
                     kodi_dialog_OK('Parent Launcher not found. '
-                                   'Relink this Favourite/Collection ROM before copying metadata.')
+                                   'Relink this ROM before copying stuff from parent.')
                     return
                 parent_launcher = self.launchers[fav_launcher_id]                
                 launcher_roms   = fs_load_ROMs(ROMS_DIR, parent_launcher['roms_base_noext'])
                 if romID not in launcher_roms:
                     kodi_dialog_OK('Parent ROM not found in Launcher. '
-                                   'Relink this ROM before copying metadata.')
+                                   'Relink this ROM before copying stuff from parent.')
                     return
                 parent_rom = launcher_roms[romID]
 
-                # >> Copy parent metadata into Favourite ROM
-                fav_rom['m_name']   = parent_rom['m_name']
-                fav_rom['m_year']   = parent_rom['m_year']
-                fav_rom['m_genre']  = parent_rom['m_genre']
-                fav_rom['m_studio'] = parent_rom['m_studio']
-                fav_rom['m_rating'] = parent_rom['m_rating']
-                fav_rom['m_plot']   = parent_rom['m_plot']
+                # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
+                if type2 == 2:
+                    info_str = 'launcher info'
+                    fs_aux_copy_ROM_launcher_info(parent_launcher, fav_rom)
+                elif type2 == 3:
+                    info_str = 'metadata'
+                    fs_aux_copy_ROM_metadata(parent_rom, fav_rom)
+                elif type2 == 4:
+                    info_str = 'assets/artwork'
+                    fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, fav_rom)
+                elif type2 == 5:
+                    info_str = 'all info'
+                    fs_aux_copy_ROM_launcher_info(parent_launcher, fav_rom)
+                    fs_aux_copy_ROM_metadata(parent_rom, fav_rom)
+                    fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, fav_rom)
+                else:
+                    kodi_dialog_OK('Manage ROM object, copy info, wrong type2 = {0}. Please report this bug.'.format(type2))
+                    return
 
                 # >> Notify user
-                if categoryID == VCATEGORY_FAVOURITES_ID:    kodi_notify('Updated Favourite ROM metadata')
-                elif categoryID == VCATEGORY_COLLECTIONS_ID: kodi_notify('Updated Collection ROM metadata')
-
-            # --- Copy assets/artwork from parent ---
-            elif type2 == 2:
-                # >> Get launcher and parent ROM
-                # >> Check Favourite ROM is linked (parent ROM exists)
-                fav_rom         = roms[romID]
-                fav_launcher_id = fav_rom['launcherID']
-                if fav_launcher_id not in self.launchers:
-                    kodi_dialog_OK('Parent Launcher not found. '
-                                   'Relink this Favourite/Collection ROM before copying metadata.')
-                    return
-                parent_launcher = self.launchers[fav_launcher_id]                
-                launcher_roms   = fs_load_ROMs(ROMS_DIR, parent_launcher['roms_base_noext'])
-                if romID not in launcher_roms:
-                    kodi_dialog_OK('Parent ROM not found in Launcher. '
-                                   'Relink this ROM before copying metadata.')
-                    return
-                parent_rom = launcher_roms[romID]
-
-                # >> Copy parent metadata into Favourite ROM
-                # >> Favourite ROM edited by Python value by assigment
-                fav_rom['s_title']     = parent_rom['s_title']
-                fav_rom['s_snap']      = parent_rom['s_snap']
-                fav_rom['s_fanart']    = parent_rom['s_fanart']
-                fav_rom['s_banner']    = parent_rom['s_banner']
-                fav_rom['s_clearlogo'] = parent_rom['s_clearlogo']
-                fav_rom['s_boxfront']  = parent_rom['s_boxfront']
-                fav_rom['s_boxback']   = parent_rom['s_boxback']
-                fav_rom['s_cartridge'] = parent_rom['s_cartridge']
-                fav_rom['s_flyer']     = parent_rom['s_flyer']
-                fav_rom['s_map']       = parent_rom['s_map']
-                fav_rom['s_manual']    = parent_rom['s_manual']
-                fav_rom['s_trailer']   = parent_rom['s_trailer']
-
-                # >> Notify user
-                if categoryID == VCATEGORY_FAVOURITES_ID:    kodi_notify('Updated Favourite ROM assets')
-                elif categoryID == VCATEGORY_COLLECTIONS_ID: kodi_notify('Updated Collection ROM assets')
+                if categoryID == VCATEGORY_FAVOURITES_ID:    kodi_notify('Updated Favourite ROM {0}'.format(info_str))
+                elif categoryID == VCATEGORY_COLLECTIONS_ID: kodi_notify('Updated Collection ROM {0}'.format(info_str))
 
             # --- Choose default Favourite/Collection assets/artwork ---
-            elif type2 == 3:
+            elif type2 == 6:
                 rom = roms[romID]
                 asset_thumb_srt     = assets_get_asset_name_str(rom['roms_default_thumb'])
                 asset_fanart_srt    = assets_get_asset_name_str(rom['roms_default_fanart'])
@@ -3542,8 +3524,7 @@ class Main:
                 log_debug('_command_manage_favourites()  New ROM      {0}'.format(new_fav_rom_ID))
                 log_debug('_command_manage_favourites()  New Launcher {0}'.format(new_fav_rom_laun_ID))
 
-                # >> Copy Favourite ROM (actually creates a reference)
-                # >> Remove old Favourite before inserting new one!
+                # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
                 new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
                 roms_fav.pop(old_fav_rom_ID)
                 roms_fav[new_fav_rom['id']] = new_fav_rom
@@ -3647,8 +3628,7 @@ class Main:
                 log_debug('_command_manage_favourites()  New ROM      {0}'.format(new_fav_rom_ID))
                 log_debug('_command_manage_favourites()  New Launcher {0}'.format(new_fav_rom_laun_ID))
 
-                # >> Copy Favourite ROM (actually creates a reference)
-                # >> Remove old Favourite before inserting new one!
+                # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
                 new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
                 roms_fav.pop(old_fav_rom_ID)
                 roms_fav[new_fav_rom['id']] = new_fav_rom
