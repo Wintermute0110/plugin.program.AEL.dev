@@ -2981,7 +2981,10 @@ class Main:
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform        = rom['platform']
             # >> Render number of number the ROM has been launched
-            rom_name = '{0} (Launcher {1} times)'.format(rom_raw_name, rom['launch_count'])
+            if rom['launch_count'] == 1:
+                rom_name = '{0} [COLOR orange][{1} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
+            else:
+                rom_name = '{0} [COLOR orange][{1} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
