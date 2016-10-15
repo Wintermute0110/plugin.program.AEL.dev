@@ -272,7 +272,7 @@ class Main:
             self._command_import_legacy_AL()
         # command to build/fill the menu with categories or launcher using skinshortcuts
         elif command == 'BUILD_GAMES_MENU':
-            self.buildMenu()
+            self._command_buildMenu()
         else:
             kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
 
@@ -6724,8 +6724,9 @@ class Main:
         return '{0}?com={1}&catID={2}&launID={3}&search_type={4}&search_string={5}'.format(
             self.base_url, command, categoryID, launcherID, search_type, search_string)
 
-    def buildMenu(self):
-
+    def _command_buildMenu(self):
+        log_debug('_command_buildMenu() Starting...')
+        
         hasSkinshortcuts = xbmc.getCondVisibility('System.HasAddon(script.skinshortcuts)') == 1
         if hasSkinshortcuts == False:
             log_warning("Addon skinshortcuts is not installed, cannot build games menu")
@@ -6747,25 +6748,25 @@ class Main:
             libPath = xbmc.translatePath(os.path.join(libPath, 'lib')).decode("utf-8")
             sys.path.append(libPath)
 
-            sys.modules[ "__main__" ].ADDON		= skinshortcutsAddon
-            sys.modules[ "__main__" ].ADDONID	= skinshortcutsAddon.getAddonInfo('id').decode( 'utf-8' )
-            sys.modules[ "__main__" ].CWD		= path
-            sys.modules[ "__main__" ].LANGUAGE	= skinshortcutsAddon.getLocalizedString
+            sys.modules[ "__main__" ].ADDON    = skinshortcutsAddon
+            sys.modules[ "__main__" ].ADDONID  = skinshortcutsAddon.getAddonInfo('id').decode( 'utf-8' )
+            sys.modules[ "__main__" ].CWD      = path
+            sys.modules[ "__main__" ].LANGUAGE = skinshortcutsAddon.getLocalizedString
 
             import gui, datafunctions
 
         except Exception as ex:
-            log_error("Failed to load skinshortcuts addon: %s" %  ex)
+            log_error("(Exception) Failed to load skinshortcuts addon")
+            log_error("(Exception) {0}".format(ex))
             traceback.print_exc()
             warnAddonMissingDialog = xbmcgui.Dialog()
             warnAddonMissingDialog.notification('Failure', 'Could not load skinshortcuts addon', xbmcgui.NOTIFICATION_WARNING, 5000)
             return
+        log_debug('_command_buildMenu() Loaded skinsshortcuts addon')
 
         startToBuildDialog = xbmcgui.Dialog()
         startToBuild = startToBuildDialog.yesno('Games menu', 'Want to automatically fill the menu?')
-
-        if startToBuild == False:
-            return
+        if not startToBuild: return
 
         menuStore = datafunctions.DataFunctions()
         ui = gui.GUI( "script-skinshortcuts.xml", path, "default", group="mainmenu", defaultGroup=None, nolabels="false", groupname="" )
@@ -6825,7 +6826,7 @@ class Main:
                 fanart = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
                 
-                listitem = self.buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
+                listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
                 
         ui.changeMade = True
@@ -6842,7 +6843,7 @@ class Main:
         #xml.buildMenu("9000","","0",None,"","0")
         #log_info("Done building menu for AEL")
 
-    def buildMenuItem(self, key, name, action, thumb, fanart, count, ui):
+    def _buildMenuItem(self, key, name, action, thumb, fanart, count, ui):
     
         listitem = xbmcgui.ListItem(name)
         listitem.setProperty( "defaultID", key)
