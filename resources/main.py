@@ -6762,7 +6762,7 @@ class Main:
             warnAddonMissingDialog = xbmcgui.Dialog()
             warnAddonMissingDialog.notification('Failure', 'Could not load skinshortcuts addon', xbmcgui.NOTIFICATION_WARNING, 5000)
             return
-        log_debug('_command_buildMenu() Loaded skinsshortcuts addon')
+        log_debug('_command_buildMenu() Loaded SkinsShortCuts addon')
 
         startToBuildDialog = xbmcgui.Dialog()
         startToBuild = startToBuildDialog.yesno('Games menu', 'Want to automatically fill the menu?')
@@ -6813,6 +6813,7 @@ class Main:
                 fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
                 
+                log_debug('_command_buildMenu() Adding Category "{0}"'.format(name))
                 listitem = self.buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
 
@@ -6825,7 +6826,8 @@ class Main:
                 url_str =  "ActivateWindow(Programs,\"%s\",return)" % self._misc_url('SHOW_ROMS', categoryID, launcherID)
                 fanart = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
-                
+
+                log_debug('_command_buildMenu() Adding Launcher "{0}"'.format(name))
                 listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
                 
