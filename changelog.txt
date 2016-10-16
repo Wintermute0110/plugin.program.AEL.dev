@@ -1,17 +1,19 @@
-[B]Advanced Emulator Launcher | version 0.9.4 | XX October 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
-WIP      Improve the repairing for Favourite/Collection ROMs once and for all. For example, what
-         information is copied from parent to Fav ROM when doing automatic linking?
+WIP      Extranafart for Categories/Launchers/ROMs.
 
-WIP      Parent/Clone launcher display option when using No-Intro DATs.
+
+[B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
+
+FEATURE  Improve the repairing for Favourite/Collection ROMs once and for all.
+
+FEATURE  Parent/Clone launcher display option when using No-Intro DATs.
 
 FEATURE  [Recently played ROMs] Virtual Launcher. List of ROMs played in reverse chronological
          order.
 
 FEATURE  [Most played ROMs] Virtual Launcher. Histogram of how many times a ROM has been played,
          ordered by the number of times a ROM has been played.
-
-WIP      Extranafart for Categories/Launchers/ROMs.
 
 FIX      Fixed loading of No-Intro files.
 
