@@ -2,6 +2,12 @@
 
 WIP      Extranafart for Categories/Launchers/ROMs.
 
+WIP      Update launching mechanism. User subprocess module on all platforms.
+
+WIP      Log emulator/standalone launcher stdout/stderr into a file.
+
+WIP      Improve launcher reports when there is a No-Intro file available.
+
 
 [B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
 
