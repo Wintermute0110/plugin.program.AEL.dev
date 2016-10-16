@@ -11,6 +11,8 @@ WIP      Improve launcher reports when there is a No-Intro file available.
 
 [B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
 
+FEATURE  Create ROM and standalone launchers in addon root. "Categoryless" launchers.
+
 FEATURE  Improve the repairing for Favourite/Collection ROMs once and for all.
 
 FEATURE  Parent/Clone launcher display option when using No-Intro DATs.
