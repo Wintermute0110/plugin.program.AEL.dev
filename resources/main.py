@@ -1423,11 +1423,24 @@ class Main:
                     if type_temp < 0: return
 
                     if type_temp == 0:   
+                        # --- Delete PClone index and Parent ROMs DB? ---
+                        
+                        # --- Mark status ---
                         self.launchers[launcherID]['pclone_launcher'] = False
                         log_debug('_command_edit_launcher() pclone_launcher = False')
+                        kodi_notify('Launcher view Normal')
+                       
                     elif type_temp == 1:
+                        # --- Check if user configured a No-Intro DAT ---
+                        
+                        
+                        # --- Generate PClone index and Parent ROMs DB ---
+                        
+                        
+                        # --- Mark status ---
                         self.launchers[launcherID]['pclone_launcher'] = True
                         log_debug('_command_edit_launcher() pclone_launcher = True')
+                        kodi_notify('Launcher view mode Parent/Clone')
 
                 # --- Add/Delete No-Intro XML parent-clone DAT ---
                 elif type2 == 4:
