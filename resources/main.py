@@ -3822,7 +3822,7 @@ class Main:
 
         # --- Display Collection ---
         for rom in collection_rom_list:
-            self._gui_render_rom_row(categoryID, launcherID, rom['id'], rom, False)
+            self._gui_render_rom_row(categoryID, launcherID, rom, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
