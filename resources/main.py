@@ -1411,13 +1411,10 @@ class Main:
                                 log_verb('Missing {0:<10}'.format(A.name))
 
                     # ~~~ Save ROMs XML file ~~~
-                    # >> Also save categories/launchers to update timestamp
-                    self.launchers[launcherID]['timestamp_launcher'] = time.time()
                     fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-                    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                    return
+                    kodi_notify('Rescaning of local artwork finished')
 
-                # --- Change launcher view mode ---
+                # --- Change launcher view mode (Normal or PClone) ---
                 elif type2 == 3:
                     pclone_launcher = self.launchers[launcherID]['pclone_launcher']
                     if pclone_launcher: item_list = ['Normal mode', 'PClone mode [Current]']
