@@ -4451,14 +4451,16 @@ class Main:
     def _command_view_Launcher(self, categoryID, launcherID):
         # --- Grab info ---
         window_title = 'Launcher data'
-        category = self.categories[categoryID]
+        if category == VCATEGORY_ADDONROOT_ID: category = None
+        else:                                  category = self.categories[categoryID]
         launcher = self.launchers[launcherID]
 
         # --- Make info string ---
         info_text  = '\n[COLOR orange]Launcher information[/COLOR]\n'
         info_text += self._misc_print_string_Launcher(launcher)
-        info_text += '\n[COLOR orange]Category information[/COLOR]\n'
-        info_text += self._misc_print_string_Category(category)
+        if category:
+            info_text += '\n[COLOR orange]Category information[/COLOR]\n'
+            info_text += self._misc_print_string_Category(category)
 
         # --- Show information window ---
         try:
