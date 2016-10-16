@@ -4451,8 +4451,8 @@ class Main:
     def _command_view_Launcher(self, categoryID, launcherID):
         # --- Grab info ---
         window_title = 'Launcher data'
-        if category == VCATEGORY_ADDONROOT_ID: category = None
-        else:                                  category = self.categories[categoryID]
+        if categoryID == VCATEGORY_ADDONROOT_ID: category = None
+        else:                                    category = self.categories[categoryID]
         launcher = self.launchers[launcherID]
 
         # --- Make info string ---
