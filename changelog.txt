@@ -1,8 +1,22 @@
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
+WIP      AEL ONLY WORKS ON JARVIS NOW!!!
+
+WIP      Removed ElementTree dependency in addon.xml. It's not longer needed.
+
+WIP      Use the <news> tag in addon.xml. In general, have a look at http://kodi.wiki/view/addon.xml
+         and modernise addon.xml.
+
+WIP      Make use of Krypton feature in the several dialogs of the addon.
+         New param: "preselect" for Dialog().multiselect() and Dialog().select(). 
+         See http://forum.kodi.tv/showthread.php?tid=250936
+
+WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
+         class. This need Krypton Beta 4 to run!
+
 WIP      Improve message reporting in the ROM scanner.
 
-WIP      Include databases for all supported platforms in the offline scraper.
+WIP      Include databases for all supported platforms in AEL offline scraper.
 
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
          online and offline scraper.
