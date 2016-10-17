@@ -1,9 +1,26 @@
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
+WIP      Improve message reporting in the ROM scanner.
+
+WIP      Include databases for all supported platforms in the offline scraper.
+
+WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
+         online and offline scraper.
+
+WIP      Every request must be cached in all online scrapers.
+
 WIP      Extranafart for Categories/Launchers/ROMs.
+
+WIP      Update launching mechanism. User subprocess module on all platforms.
+
+WIP      Log emulator/standalone launcher stdout/stderr into a file.
+
+WIP      Improve launcher reports when there is a No-Intro file available.
 
 
 [B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
+
+FEATURE  Create ROM and standalone launchers in addon root. "Categoryless" launchers.
 
 FEATURE  Improve the repairing for Favourite/Collection ROMs once and for all.
 
