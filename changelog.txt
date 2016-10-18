@@ -1,6 +1,6 @@
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
-WIP      AEL ONLY WORKS ON JARVIS NOW!!!
+WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
 
 WIP      Removed ElementTree dependency in addon.xml. It's not longer needed.
 
@@ -13,6 +13,11 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
+
+WIP      New command to render all ROMs in all launchers. Will be used by skins.
+
+WIP      Update virtual launchers context menu in virtual launcher and virtual ROMs (not only
+         in the addon root).
 
 WIP      Improve message reporting in the ROM scanner.
 
