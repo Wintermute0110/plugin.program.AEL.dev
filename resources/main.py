@@ -599,7 +599,6 @@ class Main:
             img_fanart       = category[category['default_fanart']] if category[category['default_fanart']] else 'DefaultAddonNone.png'
             img_banner       = category[category['default_banner']] if category[category['default_banner']] else 'DefaultAddonNone.png'
             img_poster       = category[category['default_poster']] if category[category['default_poster']] else 'DefaultAddonNone.png'
-
             img_list = [
                 {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   'label2' : label2_thumb,  'icon' : img_thumb},
                 {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt), 'label2' : label2_fanart, 'icon' : img_fanart},
@@ -627,23 +626,18 @@ class Main:
                 type_s = gui_show_image_select('Choose default Asset for Thumb', Category_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_thumb', type_s)
-
             elif type2 == 1:
                 type_s = gui_show_image_select('Choose default Asset for Fanart', Category_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_fanart', type_s)
-
             elif type2 == 2:
                 type_s = gui_show_image_select('Choose default Asset for Banner', Category_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_banner', type_s)
-
             elif type2 == 3:
                 type_s = gui_show_image_select('Choose default Asset for Poster', Category_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_poster', type_s)
-
-            # >> User canceled select dialog
             elif type2 < 0: return
 
         # --- Category status ---
@@ -3987,45 +3981,60 @@ class Main:
 
         # --- Change default artwork ---
         elif type == 2:
-            asset_thumb     = assets_get_asset_name_str(collection['default_thumb'])
-            asset_fanart    = assets_get_asset_name_str(collection['default_fanart'])
-            asset_banner    = assets_get_asset_name_str(collection['default_banner'])
-            asset_poster    = assets_get_asset_name_str(collection['default_poster'])
-            asset_clearlogo = assets_get_asset_name_str(collection['default_clearlogo'])
-            dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Edit Category Assets/Artwork',
-                                  ['Choose asset for Thumb (currently {0})'.format(asset_thumb), 
-                                   'Choose asset for Fanart (currently {0})'.format(asset_fanart),
-                                   'Choose asset for Banner (currently {0})'.format(asset_banner),
-                                   'Choose asset for Poster (currently {0})'.format(asset_poster),
-                                   'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+            asset_thumb_srt  = assets_get_asset_name_str(collection['default_thumb'])
+            asset_fanart_srt = assets_get_asset_name_str(collection['default_fanart'])
+            asset_banner_srt = assets_get_asset_name_str(collection['default_banner'])
+            asset_poster_srt = assets_get_asset_name_str(collection['default_poster'])
+            label2_thumb     = collection[collection['default_thumb']]  if collection[collection['default_thumb']]  else 'Not set'
+            label2_fanart    = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'Not set'
+            label2_banner    = collection[collection['default_banner']] if collection[collection['default_banner']] else 'Not set'
+            label2_poster    = collection[collection['default_poster']] if collection[collection['default_poster']] else 'Not set'
+            img_thumb        = collection[collection['default_thumb']]  if collection[collection['default_thumb']]  else 'DefaultAddonNone.png'
+            img_fanart       = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'DefaultAddonNone.png'
+            img_banner       = collection[collection['default_banner']] if collection[collection['default_banner']] else 'DefaultAddonNone.png'
+            img_poster       = collection[collection['default_poster']] if collection[collection['default_poster']] else 'DefaultAddonNone.png'
+            img_list = [
+                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   'label2' : label2_thumb,  'icon' : img_thumb},
+                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt), 'label2' : label2_fanart, 'icon' : img_fanart},
+                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt), 'label2' : label2_banner, 'icon' : img_banner},
+                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt), 'label2' : label2_poster, 'icon' : img_poster}
+            ]
+            type2 = gui_show_image_select('Edit Collection default Assets/Artwork', img_list)
+
+            Category_asset_img_list = [
+                {'name'   : 'Thumb',     
+                 'label2' : collection['s_thumb'] if collection['s_thumb'] else 'Not set', 
+                 'icon'   : collection['s_thumb'] if collection['s_thumb'] else 'DefaultAddonNone.png'},
+                {'name'   : 'Fanart',      
+                 'label2' : collection['s_fanart'] if collection['s_fanart'] else 'Not set', 
+                 'icon'   : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'},
+                {'name'   : 'Banner',    
+                 'label2' : collection['s_banner'] if collection['s_banner'] else 'Not set', 
+                 'icon'   : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'},
+                {'name'   : 'Poster',    
+                 'label2' : collection['s_flyer'] if collection['s_flyer'] else 'Not set', 
+                 'icon'   : collection['s_flyer'] if collection['s_flyer'] else 'DefaultAddonNone.png'}
+            ]
 
             if type2 == 0:
-                type3 = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_CATEGORY_ASSET_LIST)
-                if type3 < 0: return
-                assets_choose_category_artwork(collection, 'default_thumb', type3)
-
+                type_s = gui_show_image_select('Choose default Asset for Thumb', Category_asset_img_list)
+                if type_s < 0: return
+                assets_choose_category_artwork(collection, 'default_thumb', type_s)
             elif type2 == 1:
-                type3 = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_CATEGORY_ASSET_LIST)
-                if type3 < 0: return
-                assets_choose_category_artwork(collection, 'default_fanart', type3)
-
+                type_s = gui_show_image_select('Choose default Asset for Fanart', Category_asset_img_list)
+                if type_s < 0: return
+                assets_choose_category_artwork(collection, 'default_fanart', type_s)
             elif type2 == 2:
-                type3 = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_CATEGORY_ASSET_LIST)
-                if type3 < 0: return
-                assets_choose_category_artwork(collection, 'default_banner', type3)
-
+                type_s = gui_show_image_select('Choose default Asset for Banner', Category_asset_img_list)
+                if type_s < 0: return
+                assets_choose_category_artwork(collection, 'default_banner', type_s)
             elif type2 == 3:
-                type3 = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_CATEGORY_ASSET_LIST)
-                if type3 < 0: return
-                assets_choose_category_artwork(collection, 'default_poster', type3)
+                type_s = gui_show_image_select('Choose default Asset for Poster', Category_asset_img_list)
+                if type_s < 0: return
+                assets_choose_category_artwork(collection, 'default_poster', type_s)
+            elif type2 < 0: return
 
-            elif type2 == 4:
-                type3 = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_CATEGORY_ASSET_LIST)
-                if type3 < 0: return
-                assets_choose_category_artwork(collection, 'default_clearlogo', type3)
-
-        # >> User cancel dialog
+        # --- User cancel dialog ---
         elif type < 0: return
 
         # --- Save collection index and refresh view ---
