@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.6 | XX December 2016[/B]
 
 WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
 
@@ -14,9 +14,15 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
+
+[B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
+
 FEATURE  New command SHOW_ALL_ROMS to render all ROMs in all launchers. Will be used by skins.
 
-WIP      Improve message reporting in the ROM scanner.
+WIP      Supend/resume Kodi audio at launching. This will prevent sound problems in Linux. Include
+         a setting for this in addons "Settings" --> "Advanced".
+
+WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
@@ -27,15 +33,16 @@ WIP      Every request must be cached in all online scrapers.
 
 WIP      Extranafart for Categories/Launchers/ROMs.
 
-WIP      Update launching mechanism. User subprocess module on all platforms.
+WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
+         deprecated os.system().
 
 WIP      Log emulator/standalone launcher stdout/stderr into a file.
 
 WIP      Improve launcher reports when there is a No-Intro file available.
 
-FIX      Fixed search in launchers.
+FIX      Fixed searches in launchers.
 
-FIX      Fixed artwork displaying in ROM Collections (Icon/Fanart/Banner/Poster).
+FIX      Fixed artwork display in ROM Collections (Icon/Fanart/Banner/Poster).
 
 
 [B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
