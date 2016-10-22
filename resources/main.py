@@ -183,14 +183,16 @@ class Main:
             log_debug('Advanced Emulator Launcher exit (addon root)')
             return
 
-        # --- Process command ---
+        # --- Process command ---------------------------------------------------------------------
         command = args['com'][0]
-        if command == 'SHOW_ALL_CATEGORIES':
-            self._command_render_all_categories()
-        elif command == 'ADD_CATEGORY':
+        
+        # --- Category management ---
+        if command == 'ADD_CATEGORY':
             self._command_add_new_category()
         elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
+            
+        # --- Render stuff ---
         elif command == 'SHOW_FAVOURITES':
             self._command_render_favourites()
         elif command == 'SHOW_VIRTUAL_CATEGORY':
@@ -203,6 +205,52 @@ class Main:
             self._command_render_collections()
         elif command == 'SHOW_COLLECTION_ROMS':
             self._command_render_collection_ROMs(args['catID'][0], args['launID'][0])
+        elif command == 'SHOW_LAUNCHERS':
+            self._command_render_launchers(args['catID'][0])
+            
+        # --- Launcher management ---
+        elif command == 'ADD_LAUNCHER':
+            self._command_add_new_launcher(args['catID'][0])
+        elif command == 'EDIT_LAUNCHER':
+            self._command_edit_launcher(args['catID'][0], args['launID'][0])
+
+        # --- Show ROMs in launcher/virtual launcher ---
+        elif command == 'SHOW_ROMS':
+            self._command_render_roms(args['catID'][0], args['launID'][0])
+        elif command == 'SHOW_VLAUNCHER_ROMS':
+            self._command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
+        elif command == 'SHOW_CLONE_ROMS':
+            self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
+
+        # --- Skin commands ---
+        # >> This commands render Categories/Launcher/ROMs and are used by skins to build shortcuts.
+        elif command == 'SHOW_ALL_CATEGORIES':
+            self._command_render_all_categories()
+        elif command == 'SHOW_ALL_LAUNCHERS':
+            self._command_render_all_launchers()
+        elif command == 'SHOW_ALL_ROMS':
+            self._command_render_all_ROMs()
+
+        # --- ROM management ---
+        # >> Add/Edit/Delete ROMs in launcher, Favourites or ROM Collections <<
+        elif command == 'ADD_ROMS':
+            self._command_add_roms(args['launID'][0])
+        elif command == 'EDIT_ROM':
+            self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+        elif command == 'DELETE_ROM':
+             self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+
+        # --- Launch ROM or standalone launcher ---
+        elif command == 'LAUNCH_ROM':
+            self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+        elif command == 'LAUNCH_STANDALONE':
+            self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
+            
+        # --- Favourite/ROM Collection management ---
+        elif command == 'ADD_TO_FAV':
+            self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
+        elif command == 'ADD_TO_COLLECTION':
+            self._command_add_ROM_to_collection(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'ADD_COLLECTION':
             self._command_add_collection()
         elif command == 'EDIT_COLLECTION':
@@ -213,47 +261,20 @@ class Main:
             self._command_import_collection()
         elif command == 'EXPORT_COLLECTION':
             self._command_export_collection(args['catID'][0], args['launID'][0])
-        elif command == 'SHOW_LAUNCHERS':
-            self._command_render_launchers(args['catID'][0])
-        elif command == 'SHOW_ALL_LAUNCHERS':
-            self._command_render_all_launchers()
-        elif command == 'ADD_LAUNCHER':
-            self._command_add_new_launcher(args['catID'][0])
-        elif command == 'EDIT_LAUNCHER':
-            self._command_edit_launcher(args['catID'][0], args['launID'][0])
-        # --- Show ROMs in launcher/virtual launcher ---
-        elif command == 'SHOW_ROMS':
-            self._command_render_roms(args['catID'][0], args['launID'][0])
-        elif command == 'SHOW_VLAUNCHER_ROMS':
-            self._command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
-        elif command == 'SHOW_CLONE_ROMS':
-            self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
-        # >> Add/Edit/Delete ROMs in launcher, Favourites or ROM Collections <<
-        elif command == 'ADD_ROMS':
-            self._command_add_roms(args['launID'][0])
-        elif command == 'EDIT_ROM':
-            self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'DELETE_ROM':
-             self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-        # --- Launch ROM or standalone launcher ---
-        elif command == 'LAUNCH_ROM':
-            self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'LAUNCH_STANDALONE':
-            self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
-        elif command == 'ADD_TO_FAV':
-            self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'ADD_TO_COLLECTION':
-            self._command_add_ROM_to_collection(args['catID'][0], args['launID'][0], args['romID'][0])          
         elif command == 'MANAGE_FAV':
             self._command_manage_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
+
+        # --- Searches ---
         # This command is issued when user clicks on "Search" on the context menu of a launcher
         # in the launchers view, or context menu inside a launcher. User is asked to enter the
-        # search string and the field to search (name, category, etc.)
+        # search string and the field to search (name, category, etc.). Then, EXEC_SEARCH_LAUNCHER
+        # command is called.
         elif command == 'SEARCH_LAUNCHER':
             self._command_search_launcher(args['catID'][0], args['launID'][0])
         elif command == 'EXEC_SEARCH_LAUNCHER':
             self._command_execute_search_launcher(args['catID'][0], args['launID'][0],
                                                   args['search_type'][0], args['search_string'][0])
+
         # >> Shows info about categories/launchers/ROMs and reports
         elif command == 'VIEW_ROM':
             self._command_view_ROM(args['catID'][0], args['launID'][0], args['romID'][0])
@@ -263,6 +284,7 @@ class Main:
             self._command_view_Category(args['catID'][0])
         elif command == 'VIEW_LAUNCHER_REPORT':
             self._command_view_Launcher_Report(args['catID'][0], args['launID'][0])
+
         # >> Update virtual categories databases
         elif command == 'UPDATE_VIRTUAL_CATEGORY':
             self._command_update_virtual_category_db(args['catID'][0])
@@ -270,7 +292,8 @@ class Main:
             self._command_update_virtual_category_db_all()
         elif command == 'IMPORT_AL_LAUNCHERS':
             self._command_import_legacy_AL()
-        # command to build/fill the menu with categories or launcher using skinshortcuts
+
+        # >> Command to build/fill the menu with categories or launcher using skinshortcuts
         elif command == 'BUILD_GAMES_MENU':
             self._command_buildMenu()
         else:
