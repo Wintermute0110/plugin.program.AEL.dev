@@ -4220,11 +4220,20 @@ class Main:
         log_debug('_command_search_launcher() launcherID {0}'.format(launcherID))
 
         # --- Load ROMs ---
-        if launcherID == VLAUNCHER_FAVOURITES_ID:
+        if categoryID == VCATEGORY_FAVOURITES_ID:
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            if not roms:
-                kodi_notify('Favourites JSON is empty. Add ROMs to Favourites')
-                return
+        elif categoryID == VCATEGORY_TITLE_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_TITLE_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+        elif categoryID == VCATEGORY_YEARS_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_YEARS_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+        elif categoryID == VCATEGORY_GENRE_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_GENRE_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+        elif categoryID == VCATEGORY_STUDIO_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_STUDIO_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
         else:
             rom_file_path = os.path.join(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'] + '.json')
             log_debug('_command_search_launcher() rom_file_path "{0}"'.format(rom_file_path))
@@ -4232,9 +4241,11 @@ class Main:
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
                 return
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-            if not roms:
-                kodi_notify('Launcher JSON is empty. Add ROMs to Launcher')
-                return
+
+        # --- Empty ROM dictionary / Loading error ---            
+        if not roms:
+            kodi_notify('Launcher JSON is empty. Add ROMs to Launcher')
+            return
 
         # --- Ask user what field category to search ---
         dialog = xbmcgui.Dialog()
@@ -4337,22 +4348,31 @@ class Main:
         else: return
 
         # --- Load Launcher ROMs ---
-        if launcherID == VLAUNCHER_FAVOURITES_ID:
-            rom_is_in_favourites = True
+        if categoryID == VCATEGORY_FAVOURITES_ID:
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            if not roms:
-                kodi_notify('Favourites JSON is empty. Add ROMs to Favourites')
-                return
+        elif categoryID == VCATEGORY_TITLE_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_TITLE_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+        elif categoryID == VCATEGORY_YEARS_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_YEARS_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+        elif categoryID == VCATEGORY_GENRE_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_GENRE_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+        elif categoryID == VCATEGORY_STUDIO_ID:
+            hashed_db_filename = os.path.join(VIRTUAL_CAT_STUDIO_DIR, launcherID + '.json')
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
         else:
-            rom_is_in_favourites = False
             rom_file_path = os.path.join(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'] + '.json')
             if not os.path.isfile(rom_file_path):
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
                 return
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-            if not roms:
-                kodi_notify('Launcher JSON is empty. Add ROMs to Launcher')
-                return
+
+        # --- Empty ROM dictionary / Loading error ---
+        if not roms:
+            kodi_notify('Launcher JSON is empty. Add ROMs to Launcher')
+            return
 
         # --- Go through rom list and search for user input ---
         rl = {}
@@ -4375,7 +4395,7 @@ class Main:
         if not rl:
             kodi_dialog_OK('Search returned no results')
         for key in sorted(rl.iterkeys()):
-            self._gui_render_rom_row(categoryID, launcherID, rl[key], rom_is_in_favourites, False)
+            self._gui_render_rom_row(categoryID, launcherID, rl[key], False, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
