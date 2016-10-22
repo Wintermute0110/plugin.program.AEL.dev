@@ -169,7 +169,6 @@ def fs_new_collection():
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
          'default_poster' : 's_flyer',
-         'default_clearlogo' : 's_banner',
          's_thumb' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -940,7 +939,6 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append(XML_text('default_fanart', collection['default_fanart']))
             str_list.append(XML_text('default_banner', collection['default_banner']))
             str_list.append(XML_text('default_poster', collection['default_poster']))
-            str_list.append(XML_text('default_clearlogo', collection['default_clearlogo']))
             str_list.append(XML_text('s_thumb', collection['s_thumb']))
             str_list.append(XML_text('s_fanart', collection['s_fanart']))
             str_list.append(XML_text('s_banner', collection['s_banner']))
@@ -1059,7 +1057,6 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
         'default_fanart'    : collection['default_fanart'],
         'default_banner'    : collection['default_banner'],
         'default_poster'    : collection['default_poster'],
-        'default_clearlogo' : collection['default_clearlogo'],
         's_thumb'           : collection['s_thumb'],
         's_fanart'          : collection['s_fanart'],
         's_banner'          : collection['s_banner'],

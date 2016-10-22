@@ -33,6 +33,10 @@ WIP      Log emulator/standalone launcher stdout/stderr into a file.
 
 WIP      Improve launcher reports when there is a No-Intro file available.
 
+FIX      Fixed search in launchers.
+
+FIX      Fixed artwork displaying in ROM Collections (Icon/Fanart/Banner/Poster).
+
 
 [B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
 
