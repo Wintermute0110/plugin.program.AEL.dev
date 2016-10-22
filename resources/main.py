@@ -557,13 +557,12 @@ class Main:
             img_banner     = category['s_banner']    if category['s_banner']  else 'DefaultAddonNone.png'
             img_flyer      = category['s_flyer']     if category['s_flyer']   else 'DefaultAddonNone.png'
             img_trailer    = 'DefaultAddonVideo.png' if category['s_trailer'] else 'DefaultAddonNone.png'
-
             img_list = [
-                {'name' : 'Edit Thumbnail...', 'label2' : label2_thumb,   'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',    'label2' : label2_fanart,  'icon' : img_fanart},
-                {'name' : 'Edit Banner...',    'label2' : label2_banner,  'icon' : img_banner},
-                {'name' : 'Edit Flyer...',     'label2' : label2_poster,  'icon' : img_flyer},
-                {'name' : 'Edit Trailer...',   'label2' : label2_trailer, 'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,   'icon' : img_thumb},
+                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,  'icon' : img_fanart},
+                {'name' : 'Edit Banner...',       'label2' : label2_banner,  'icon' : img_banner},
+                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,  'icon' : img_flyer},
+                {'name' : 'Edit Trailer...',      'label2' : label2_trailer, 'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Category Assets/Artwork', img_list)
 
@@ -1103,13 +1102,12 @@ class Main:
             img_banner     = launcher['s_banner']    if launcher['s_banner']  else 'DefaultAddonNone.png'
             img_flyer      = launcher['s_flyer']     if launcher['s_flyer']   else 'DefaultAddonNone.png'
             img_trailer    = 'DefaultAddonVideo.png' if launcher['s_trailer'] else 'DefaultAddonNone.png'
-
             img_list = [
-                {'name' : 'Edit Thumbnail...', 'label2' : label2_thumb,   'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',    'label2' : label2_fanart,  'icon' : img_fanart},
-                {'name' : 'Edit Banner...',    'label2' : label2_banner,  'icon' : img_banner},
-                {'name' : 'Edit Flyer...',     'label2' : label2_poster,  'icon' : img_flyer},
-                {'name' : 'Edit Trailer...',   'label2' : label2_trailer, 'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,   'icon' : img_thumb},
+                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,  'icon' : img_fanart},
+                {'name' : 'Edit Banner...',       'label2' : label2_banner,  'icon' : img_banner},
+                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,  'icon' : img_flyer},
+                {'name' : 'Edit Trailer...',      'label2' : label2_trailer, 'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Launcher Assets/Artwork', img_list)
 
@@ -2561,7 +2559,7 @@ class Main:
         thumb_fanart    = asset_get_default_asset_Category(category_dic, 'default_fanart')
         thumb_banner    = asset_get_default_asset_Category(category_dic, 'default_banner')
         thumb_poster    = asset_get_default_asset_Category(category_dic, 'default_poster')
-        listitem.setArt({'thumb' : thumb_path,    'fanart' : thumb_fanart, 
+        listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart, 
                          'banner' : thumb_banner, 'poster' : thumb_poster})
 
         # --- Create context menu ---
@@ -3857,17 +3855,17 @@ class Main:
 
         # --- Render collections as categories ---
         for collection_id in collections:
+            # --- Create listitem ---
             collection = collections[collection_id]
             collection_name = collection['name']
             listitem = xbmcgui.ListItem(collection_name)
-            listitem.setInfo('video', {'Title'    : 'Title text',
-                                       'Label'    : 'Label text',
-                                       'Plot'     : 'Plot text',    'Studio'    : 'Studio text',
-                                       'Genre'    : 'Genre text',   'Premiered' : 'Premiered text',
-                                       'Year'     : 'Year text',    'Writer'    : 'Writer text',
-                                       'Trailer'  : 'Trailer text', 'Director'  : 'Director text',
-                                       'overlay'  : 4})
-            listitem.setArt({'icon': 'DefaultFolder.png'})
+            listitem.setInfo('video', {'title' : collection_name, 'overlay'  : 4})
+            thumb_path      = asset_get_default_asset_Category(collection, 'default_thumb', 'DefaultFolder.png')
+            thumb_fanart    = asset_get_default_asset_Category(collection, 'default_fanart')
+            thumb_banner    = asset_get_default_asset_Category(collection, 'default_banner')
+            thumb_poster    = asset_get_default_asset_Category(collection, 'default_poster')
+            listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart, 
+                             'banner' : thumb_banner, 'poster' : thumb_poster})
 
             # --- Create context menu ---
             commands = []
@@ -3957,24 +3955,24 @@ class Main:
 
         # --- Edit artwork ---
         elif type == 1:
-            status_thumb_str   = 'HAVE' if collection['s_thumb']   else 'MISSING'
-            status_fanart_str  = 'HAVE' if collection['s_fanart']  else 'MISSING'
-            status_banner_str  = 'HAVE' if collection['s_banner']  else 'MISSING'
-            status_flyer_str   = 'HAVE' if collection['s_flyer']   else 'MISSING'
-            status_trailer_str = 'HAVE' if collection['s_trailer'] else 'MISSING'
-            dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Edit Category Assets/Artwork',
-                                  ["Edit Thumbnail ({0})...".format(status_thumb_str),
-                                   "Edit Fanart ({0})...".format(status_fanart_str),
-                                   "Edit Banner ({0})...".format(status_banner_str),
-                                   "Edit Flyer ({0})...".format(status_flyer_str),
-                                   "Edit Trailer ({0})...".format(status_trailer_str)])
-
-            # --- Edit Assets ---
-            # >> _gui_edit_asset() returns True if image was changed
-            # >> Category is changed using Python passign by assigment
-            # >> If this function returns False no changes were made. No need to save categories XML and 
-            # >> update container.
+            label2_thumb   = collection['s_thumb']   if collection['s_thumb']   else 'Not set'
+            label2_fanart  = collection['s_fanart']  if collection['s_fanart']  else 'Not set'
+            label2_banner  = collection['s_banner']  if collection['s_banner']  else 'Not set'
+            label2_poster  = collection['s_flyer']   if collection['s_flyer']   else 'Not set'
+            label2_trailer = collection['s_trailer'] if collection['s_trailer'] else 'Not set'
+            img_thumb      = collection['s_thumb']   if collection['s_thumb']   else 'DefaultAddonNone.png'
+            img_fanart     = collection['s_fanart']  if collection['s_fanart']  else 'DefaultAddonNone.png'
+            img_banner     = collection['s_banner']  if collection['s_banner']  else 'DefaultAddonNone.png'
+            img_flyer      = collection['s_flyer']   if collection['s_flyer']   else 'DefaultAddonNone.png'
+            img_trailer    = 'DefaultAddonVideo.png' if collection['s_trailer'] else 'DefaultAddonNone.png'
+            img_list = [
+                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,   'icon' : img_thumb},
+                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,  'icon' : img_fanart},
+                {'name' : 'Edit Banner...',       'label2' : label2_banner,  'icon' : img_banner},
+                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,  'icon' : img_flyer},
+                {'name' : 'Edit Trailer...',      'label2' : label2_trailer, 'icon' : img_trailer}
+            ]
+            type2 = gui_show_image_select('Edit Collection Assets/Artwork', img_list)
             if type2 == 0:
                 if not self._gui_edit_asset(KIND_COLLECTION, ASSET_THUMB, collection): return
             elif type2 == 1:
@@ -3985,9 +3983,7 @@ class Main:
                 if not self._gui_edit_asset(KIND_COLLECTION, ASSET_FLYER, collection): return
             elif type2 == 4:
                 if not self._gui_edit_asset(KIND_COLLECTION, ASSET_TRAILER, collection): return
-            # >> User canceled select dialog
             elif type2 < 0: return
-
 
         # --- Change default artwork ---
         elif type == 2:
