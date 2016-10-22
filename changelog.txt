@@ -14,10 +14,7 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
-WIP      New command to render all ROMs in all launchers. Will be used by skins.
-
-WIP      Update virtual launchers context menu in virtual launcher and virtual ROMs (not only
-         in the addon root).
+FEATURE  New command SHOW_ALL_ROMS to render all ROMs in all launchers. Will be used by skins.
 
 WIP      Improve message reporting in the ROM scanner.
 

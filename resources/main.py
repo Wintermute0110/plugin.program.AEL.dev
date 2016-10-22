@@ -185,13 +185,13 @@ class Main:
 
         # --- Process command ---------------------------------------------------------------------
         command = args['com'][0]
-        
+
         # --- Category management ---
         if command == 'ADD_CATEGORY':
             self._command_add_new_category()
         elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
-            
+
         # --- Render stuff ---
         elif command == 'SHOW_FAVOURITES':
             self._command_render_favourites()
@@ -403,14 +403,18 @@ class Main:
     def _misc_set_content_type(self):
         # >> Experiment to try to increase the number of views the addon supports. I do not know why
         # >> programs does not support all views movies do.
-        # xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
-        pass
+        xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
+
+    def _misc_set_content_and_default_sorting_method(self):
+        self._misc_set_content_type()
+        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
 
     def _misc_set_content_and_all_sorting_methods(self):
         self._misc_set_content_type()
 
         # >> Adds a sorting method for the media list.
         # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
+        if self.addon_handle < 0: return
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_VIDEO_YEAR)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_STUDIO)
@@ -2944,7 +2948,7 @@ class Main:
         roms_fav_set = set(roms_fav.keys())
         loading_ticks_end = time.time()
 
-        # >> Set content type
+        # --- Set content type and sorting methods ---
         self._misc_set_content_and_all_sorting_methods()
 
         # --- Display ROMs ---
@@ -2958,7 +2962,7 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
         rendering_ticks_end = time.time()
 
-        # DEBUG Data loading/rendering statistics
+        # --- DEBUG Data loading/rendering statistics ---
         log_debug('Loading seconds   {0}'.format(loading_ticks_end - loading_ticks_start))
         log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
 
@@ -3352,6 +3356,40 @@ class Main:
         # --- Display most played ROMs, order by number of launchs ---
         for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
             self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key], False)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    #
+    # Render all ROMs
+    # This command is called by skins. Not advisable to use it if there are many ROMs...
+    #
+    def _command_render_all_ROMs(self):
+        # --- Make a dictionary having all ROMs in all Launchers ---
+        log_debug('_command_render_all_ROMs() Creating list of all ROMs in all Launchers')
+        all_roms = {}
+        for launcher_id in self.launchers:
+            launcher = self.launchers[launcher_id]
+            # If launcher is standalone skip
+            if launcher['rompath'] == '': continue
+            roms = fs_load_ROMs(ROMS_DIR, launcher['roms_base_noext'])
+            temp_roms = {}
+            for rom_id in roms:
+                temp_rom                = roms[rom_id].copy()
+                temp_rom['launcher_id'] = launcher_id
+                temp_rom['category_id'] = launcher['categoryID']
+                temp_roms[rom_id] = temp_rom
+            all_roms.update(temp_roms)
+
+        # --- Load favourites ---
+        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms_fav_set = set(roms_fav.keys())
+
+        # --- Set content type and sorting methods ---
+        self._misc_set_content_and_default_sorting_method()
+
+        # --- Render ROMs ---
+        for rom_id in sorted(all_roms, key = lambda x : all_roms[x]['m_name']):
+            self._gui_render_rom_row(all_roms[rom_id]['category_id'], all_roms[rom_id]['launcher_id'], 
+                                     all_roms[rom_id], rom_id in roms_fav_set, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -4798,7 +4836,6 @@ class Main:
         pDialog_canceled = False
 
         # --- Make a big dictionary will all the ROMs ---
-        # TODO It would be nice to have a progress dialog here...
         log_verb('_command_update_virtual_category_db() Creating list of all ROMs in all Launchers')
         all_roms = {}
         num_launchers = len(self.launchers)
