@@ -4238,7 +4238,8 @@ class Main:
 
         # --- Ask user what field category to search ---
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Search items...', ['By ROM Title', 'By Release Year', 'By Studio', 'By Genre'])
+        type = dialog.select('Search ROMs...', ['By ROM Title', 'By Release Year', 'By Genre', 'By Studio', 'By Rating'])
+        if type < 0: return
 
         # --- Search by ROM Title ---
         type_nb = 0
@@ -4252,19 +4253,17 @@ class Main:
         # --- Search by Release Date ---
         type_nb = type_nb + 1
         if type == type_nb:
-            searched_list = self._search_launcher_field('year', roms)
+            searched_list = self._search_launcher_field('m_year', roms)
             dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Release year ...', searched_list)
-            if selected_value >= 0:
-                search_string = searched_list[selected_value]
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_YEAR', search_string)
-                # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(url))
-                xbmc.executebuiltin('ActivateWindow(Programs,{0})'.format(url))
+            selected_value = dialog.select('Select a release year...', searched_list)
+            if selected_value < 0: return
+            search_string = searched_list[selected_value]
+            url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_YEAR', search_string)
 
         # --- Search by System Platform ---
-        # Note that search by platform does not make sense when searching a launcher because all items have
-        # the same platform! It only makes sense for global searches... which AEL does not.
-        # I keep this AL old code for reference, though.
+        # >> Note that search by platform does not make sense when searching a launcher because all items have
+        # >> the same platform! It only makes sense for global searches... which AEL does not.
+        # >> I keep this AL old code for reference, though.
         # type_nb = type_nb + 1
         # if type == type_nb:
         #     search = []
@@ -4274,33 +4273,39 @@ class Main:
         #     if not selected == -1:
         #         xbmc.executebuiltin("ReplaceWindow(Programs,%s?%s/%s)" % (self.base_url, search[selected], SEARCH_PLATFORM_COMMAND))
 
-        # --- Search by Studio ---
-        type_nb = type_nb + 1
-        if type == type_nb:
-            searched_list = self._search_launcher_field('studio', roms)
-            dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Studio ...', searched_list)
-            if selected_value >= 0:
-                search_string = searched_list[selected_value]
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_STUDIO', search_string)
-                # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(url))
-                xbmc.executebuiltin('ActivateWindow(Programs,{0})'.format(url))
-
         # --- Search by Genre ---
         type_nb = type_nb + 1
         if type == type_nb:
-            searched_list = self._search_launcher_field('genre', roms)
+            searched_list = self._search_launcher_field('m_genre', roms)
             dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Genre ...', searched_list)
-            if selected_value >= 0:
-                search_string = searched_list[selected_value]
-                url = self._misc_url_search('EXEC_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_GENRE', search_string)
-                # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(url))
-                xbmc.executebuiltin('ActivateWindow(Programs,{0})'.format(url))
+            selected_value = dialog.select('Select a Genre...', searched_list)
+            if selected_value < 0: return
+            search_string = searched_list[selected_value]
+            url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_GENRE', search_string)
 
-        # Replace current window by search window. When user press Back in search window
-        # it returns to the original window (either showing launcher in a cateogory or
-        # displaying ROMs in a launcher/virtual launcher).
+        # --- Search by Studio ---
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_field('m_studio', roms)
+            dialog = xbmcgui.Dialog()
+            selected_value = dialog.select('Select a Studio...', searched_list)
+            if selected_value < 0: return
+            search_string = searched_list[selected_value]
+            url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_STUDIO', search_string)
+
+        # --- Search by Rating ---
+        type_nb = type_nb + 1
+        if type == type_nb:
+            searched_list = self._search_launcher_field('m_rating', roms)
+            dialog = xbmcgui.Dialog()
+            selected_value = dialog.select('Select a Rating...', searched_list)
+            if selected_value < 0: return
+            search_string = searched_list[selected_value]
+            url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_RATING', search_string)
+
+        # --- Replace current window by search window ---
+        # When user press Back in search window it returns to the original window (either showing 
+        # launcher in a cateogory or displaying ROMs in a launcher/virtual launcher).
         #
         # NOTE ActivateWindow() / RunPlugin() / RunAddon() seem not to work here
         log_debug('_command_search_launcher() Container.Update URL {0}'.format(url))
@@ -4328,13 +4333,15 @@ class Main:
         elif search_type == 'SEARCH_YEAR'   : rom_search_field = 'm_year'
         elif search_type == 'SEARCH_STUDIO' : rom_search_field = 'm_studio'
         elif search_type == 'SEARCH_GENRE'  : rom_search_field = 'm_genre'
+        elif search_type == 'SEARCH_RATING' : rom_search_field = 'm_rating'
+        else: return
 
         # --- Load Launcher ROMs ---
         if launcherID == VLAUNCHER_FAVOURITES_ID:
             rom_is_in_favourites = True
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             if not roms:
-                kodi_notify('Favourites XML empty. Add items to Favourites')
+                kodi_notify('Favourites JSON is empty. Add ROMs to Favourites')
                 return
         else:
             rom_is_in_favourites = False
@@ -4353,15 +4360,14 @@ class Main:
         text = search_string.lower()
         empty = notset.lower()
         for keyr in roms:
-            rom = roms[keyr][rom_search_field].lower()
-            if rom == '' and text == empty:
-                rl[keyr] = roms[keyr]
+            rom_field_str = roms[keyr][rom_search_field].lower()
+            if rom_field_str == '' and text == empty: rl[keyr] = roms[keyr]
 
             if rom_search_field == 'm_name':
-                if not rom.find(text) == -1:
+                if not rom_field_str.find(text) == -1:
                     rl[keyr] = roms[keyr]
             else:
-                if rom == text:
+                if rom_field_str == text:
                     rl[keyr] = roms[keyr]
 
         # --- Render ROMs ---
