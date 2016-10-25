@@ -4,3 +4,7 @@
 
 # KDE Kate temp files
 *.kate-swp
+/plugin.program.advanced.emulator.launcher.sln
+/plugin.program.advanced.emulator.launcher.pyproj.user
+/plugin.program.advanced.emulator.launcher.pyproj
+/.vs/plugin.program.advanced.emulator.launcher/v14/.suo
