@@ -33,12 +33,20 @@ class Scraper_TheGamesDB():
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         if DEBUG_SCRAPERS:
-            log_debug('Scraper_TheGamesDB::get_search search_string        "{0}"'.format(search_string))
-            log_debug('Scraper_TheGamesDB::get_search rom_base_noext       "{0}"'.format(rom_base_noext))
-            log_debug('Scraper_TheGamesDB::get_search AEL platform         "{0}"'.format(platform))
-            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform  "{0}"'.format(scraper_platform))
+            log_debug('Scraper_TheGamesDB::get_search search_string       "{0}"'.format(search_string))
+            log_debug('Scraper_TheGamesDB::get_search rom_base_noext      "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_TheGamesDB::get_search AEL platform        "{0}"'.format(platform))
+            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform "{0}"'.format(scraper_platform))
 
         # --- This returns an XML file ---
+        # >> quote_plus() will convert the spaces into '+'.
+        scraper_platform = scraper_platform.replace('-', ' ')
+        url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
+              'name=' + urllib.quote_plus(search_string) + \
+              '&platform=' + urllib.quote_plus(scraper_platform)
+        page_data = net_get_URL_oneline(url)
+
+        # --- Parse list of games ---
         # <Data>
         #   <Game>
         #     <id>26095</id>
@@ -47,13 +55,8 @@ class Scraper_TheGamesDB():
         #     <Platform>Super Nintendo (SNES)</Platform>
         #   </Game>
         # </Data>
-        url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
-              'name=' + urllib.quote_plus(search_string) + \
-              '&platform=' + urllib.quote_plus(scraper_platform)
-        page_data = net_get_URL_oneline(url)
-
-        # --- Parse list of games ---
-        games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle><ReleaseDate>(.*?)</ReleaseDate><Platform>(.*?)</Platform></Game>", page_data)
+        games = re.findall("<Game><id>(.*?)</id><GameTitle>(.*?)</GameTitle>"
+                           "<ReleaseDate>(.*?)</ReleaseDate><Platform>(.*?)</Platform></Game>", page_data)
         game_list = []
         for item in games:
             title = item[1]

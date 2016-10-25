@@ -24,14 +24,11 @@ import resources.main
 # -------------------------------------------------------------------------------------------------
 # Hacks and tests
 # -------------------------------------------------------------------------------------------------
-# --- Test the image selector class ---
-# if __name__ == "__main__":
-#     plugin = resources.main.Main()
-#     covers = []
-#     covers.append(['http://www.captainwilliams.co.uk/sega/32x/images/32xsolo.jpg',
-#                    'http://www.captainwilliams.co.uk/sega/32x/images/32xsolo.jpg',
-#                    'Sega 32 X'])
-#     image_url = plugin.gui_show_image_select(covers)
+# --- Test SHOW_ALL_CATEGORIES / SHOW_ALL_LAUNCHERS / SHOW_ALL_ROMS command ---
+# plugin = resources.main.Main()
+# sys.argv[2] = '?com=SHOW_ALL_ROMS'
+# plugin.run_plugin()
+# sys.exit()
 
 # -------------------------------------------------------------------------------------------------
 # main()
@@ -39,10 +36,7 @@ import resources.main
 # Put the main bulk of the code in files inside /resources/, which is a package directory. 
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to PY files.
-#
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-if __name__ == "__main__":
-    plugin = resources.main.Main()
-
-    plugin.run_plugin()
-
+#
+plugin = resources.main.Main()
+plugin.run_plugin()

@@ -31,10 +31,20 @@
     <setting label="Activate 'Launching Application' notification" type="bool" default="true" id="display_launcher_notify" />
     <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" default="false" id="display_hide_finished" />
 
-    <setting label="Hide [Browse by Title] virtual launcher" type="bool" default="false" id="display_hide_title" />
-    <setting label="Hide [Browse by Year] virtual launcher" type="bool" default="false" id="display_hide_year" />
-    <setting label="Hide [Browse by Genre] virtual launcher" type="bool" default="false" id="display_hide_genre" />
-    <setting label="Hide [Browse by Studio] virtual launcher" type="bool" default="false" id="display_hide_studio" />
+    <setting id="separator" type="lsep" label="ROMs tags"/>
+    <setting label="Display ROM in Favourites label" type="bool" default="true" id="display_rom_in_fav" />
+    <setting label="Display No-Intro status label" type="bool" default="true" id="display_nointro_stat" />
+    <setting label="Display Favourite ROM status label" type="bool" default="true" id="display_fav_status" />
+
+    <setting id="separator" type="lsep" label="Special categories/launchers"/>
+    <setting label="Hide <Favourites>" type="bool" default="false" id="display_hide_favs" />
+    <setting label="Hide {ROM Collections}" type="bool" default="false" id="display_hide_collections" />    
+    <setting label="Hide [Browse by Title]" type="bool" default="false" id="display_hide_title" />
+    <setting label="Hide [Browse by Year]" type="bool" default="false" id="display_hide_year" />
+    <setting label="Hide [Browse by Genre]" type="bool" default="false" id="display_hide_genre" />
+    <setting label="Hide [Browse by Studio]" type="bool" default="false" id="display_hide_studio" />    
+    <setting label="Hide [Recently played ROMs]" type="bool" default="false" id="display_hide_recent" />
+    <setting label="Hide [Most played ROMs]" type="bool" default="false" id="display_hide_mostplayed" />
 </category>
 <category label="Paths">
     <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />
