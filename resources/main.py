@@ -37,6 +37,7 @@ from utils import *
 from utils_kodi import *
 from scrap import *
 from assets import *
+from path import Path
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
@@ -5863,18 +5864,15 @@ class Main:
         # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         kodi_notify('Scanning files...')
         kodi_busydialog_ON()
-        log_info('Scanning files in {0}'.format(launcher_path))
         files = []
+        launcherPath = Path(launcher_path)
+        log_info('Scanning files in {0}'.format(launcherPath.getCurrentPath()))
         if self.settings['scan_recursive']:
             log_info('Recursive scan activated')
-            for root, dirs, filess in os.walk(launcher_path):
-                for filename in fnmatch.filter(filess, '*.*'):
-                    files.append(os.path.join(root, filename))
+            files = launcherPath.recursiveScanFilesInPath('*.*')
         else:
             log_info('Recursive scan not activated')
-            filesname = os.listdir(launcher_path)
-            for filename in filesname:
-                files.append(os.path.join(launcher_path, filename))
+            files = launcherPath.scanFilesInPath('*.*')
         kodi_busydialog_OFF()
         num_files = len(files)
         log_info('Found {0} files'.format(num_files))
