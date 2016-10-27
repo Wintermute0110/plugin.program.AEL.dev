@@ -19,8 +19,8 @@ WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of th
 
 FEATURE  New command SHOW_ALL_ROMS to render all ROMs in all launchers. Will be used by skins.
 
-WIP      Supend/resume Kodi audio at launching. This will prevent sound problems in Linux. Include
-         a setting for this in addons "Settings" --> "Advanced".
+FEATURE  Supend/resume Kodi audio engine at launching. This will prevent sound problems in Linux. 
+         Include a setting for this in addons "Settings" --> "Advanced".
 
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
@@ -39,6 +39,8 @@ WIP      Update launching mechanism. User Python subprocess module on all platfo
 WIP      Log emulator/standalone launcher stdout/stderr into a file.
 
 WIP      Improve launcher reports when there is a No-Intro file available.
+
+FEATURE  Deal with Kodi virtual filesystem smb:// paths.
 
 FIX      Fixed searches in launchers.
 
