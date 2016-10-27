@@ -528,7 +528,8 @@ class Main:
                 # >> Get launcher NFO file
                 # No-Intro reading of files: use Unicode string for '.dat|.xml'. However, | belongs to ASCII...
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select description file (NFO)', 'files', '.nfo', False, False).decode('utf-8')
-                if not os.path.isfile(NFO_file): return
+                NFO_filepath = Path(NFO_file)
+                if not NFO_filepath.fileExists(): return
 
                 # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
@@ -668,14 +669,16 @@ class Main:
                     log_info('Deleting linked launcher "{0}" id {1}'.format(self.launchers[launcherID]['m_name'], launcherID))
                     # >> Delete information XML file
                     roms_xml_file = fs_get_ROMs_XML_file_path(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    if os.path.isfile(roms_xml_file):
+                    roms_xml_filepath = Path(roms_xml_file)
+                    if roms_xml_filepath.fileExists():
                         log_info('Deleting ROMs XML  "{0}"'.format(roms_xml_file))
-                        os.remove(roms_xml_file)
+                        roms_xmls_filepath.delete()
                     # >> Delete ROMs JSON file
                     roms_json_file = fs_get_ROMs_JSON_file_path(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    if os.path.isfile(roms_json_file):
+                    roms_json_filepath = Path(roms_json_file)
+                    if roms_json_filepath.fileExists():
                         log_info('Deleting ROMs JSON "{0}"'.format(roms_json_file))
-                        os.remove(roms_json_file)
+                        roms_json_filepath.delete()
                     self.launchers.pop(launcherID)
                 # Delete category and make sure True is returned.
                 self.categories.pop(categoryID)
