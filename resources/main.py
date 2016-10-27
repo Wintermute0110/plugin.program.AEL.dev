@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #
 # Advanced Emulator Launcher main script file
 #
@@ -1424,11 +1424,13 @@ class Main:
                             A = assets_get_info_scheme(asset)
                             if not enabled_asset_list[i]: continue
                             ROM = misc_split_path(rom['filename'])
-                            asset_path_noext = os.path.join(launcher[A.path_key], ROM.base_noext)
-                            local_asset = misc_look_for_file(asset_path_noext, A.exts)
+
+                            asset_path = Path(launcher[A.path_key])
+                            local_asset = misc_look_for_file(asset_path, ROM.base_noext, A.exts)
+
                             if local_asset:
-                                log_verb('Found   {0:<10} "{1}"'.format(A.name, local_asset))
-                                rom[A.key] = local_asset
+                                log_verb('Found   {0:<10} "{1}"'.format(A.name, local_asset.getCurrentPath()))
+                                rom[A.key] = local_asset.getOriginalPath()
                             else:
                                 log_verb('Missing {0:<10}'.format(A.name))
 

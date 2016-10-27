@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse, re, string
 
 # --- AEL modules ---
+from path import Path
 try:
     from utils_kodi import *
 except:
@@ -202,21 +203,17 @@ def misc_split_path(f_path):
     return F
 
 #
-# Given the image path with no extension and a list of file extensions search for a file.
+# Given the image path, image filename with no extension and a list of file extensions search for a file.
 #
-def misc_look_for_file(file_path_noext, file_exts):
-    file_path = ''
-    # log_debug('Testing file_path_noext {0}'.format(file_path_noext))
+def misc_look_for_file(rootPath, filename_noext, file_exts):
+    
     for ext in file_exts:
-        test_file = file_path_noext + '.' + ext
-        # log_debug('Testing file "{0}"'.format(test_file))
-        if os.path.isfile(test_file):
-            # >> OPTIMIZATION Stop loop as soon as an image is found
-            file_path = test_file
-            # log_debug('Found file "{0}"'.format(test_file))
-            break
+        test_file = filename_noext + '.' + ext
+        file_path = rootPath.getSubPath(test_file)
+        if file_path.fileExists():
+            return file_path
 
-    return file_path
+    return None
 
 # -------------------------------------------------------------------------------------------------
 # Misc stuff
