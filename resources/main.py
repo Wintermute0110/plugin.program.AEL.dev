@@ -37,7 +37,6 @@ from utils import *
 from utils_kodi import *
 from scrap import *
 from assets import *
-from path import Path
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
@@ -355,9 +354,10 @@ class Main:
         self.settings['collections_asset_dir']    = __addon_obj__.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- Advanced ---
-        self.settings['media_state']              = int(__addon_obj__.getSetting('media_state'))
+        self.settings['media_state_action']       = int(__addon_obj__.getSetting('media_state_action'))
         self.settings['lirc_state']               = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
-        self.settings['start_tempo']              = int(round(float(__addon_obj__.getSetting('start_tempo'))))
+        self.settings['delay_tempo']              = int(round(float(__addon_obj__.getSetting('delay_tempo'))))
+        self.settings['suspend_audio_engine']     = True if __addon_obj__.getSetting('suspend_audio_engine') == 'true' else False
         self.settings['escape_romfile']           = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
         self.settings['log_level']                = int(__addon_obj__.getSetting('log_level'))
         self.settings['show_batch_window']        = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
@@ -5117,9 +5117,9 @@ class Main:
             return
 
         # ~~~~~ Execute external application ~~~~~
-        kodi_was_playing_flag = self._run_before_execution(launcher_title, minimize_flag)
+        self._run_before_execution(launcher_title, minimize_flag)
         self._run_process(application, arguments, apppath, app_ext)
-        self._run_after_execution(kodi_was_playing_flag, minimize_flag)
+        self._run_after_execution(minimize_flag)
 
     #
     # Launchs a ROM
@@ -5286,9 +5286,9 @@ class Main:
             return
 
         # ~~~~~ Execute external application ~~~~~
-        kodi_was_playing_flag = self._run_before_execution(rom_title, minimize_flag)
+        self._run_before_execution(rom_title, minimize_flag)
         self._run_process(application, arguments, apppath, romext)
-        self._run_after_execution(kodi_was_playing_flag, minimize_flag)
+        self._run_after_execution(minimize_flag)
 
     #
     # Launchs a ROM launcher or standalone launcher
@@ -5362,98 +5362,88 @@ class Main:
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
+    # Variables set in this function:
+    # self.kodi_was_playing      True if Kodi player was ON, False otherwise
+    # self.kodi_audio_suspended  True if Kodi audio suspended before launching
     #
-    def _run_before_execution(self, rom_title, minimize_flag):
+    def _run_before_execution(self, rom_title, toggle_screen_flag):
         # --- User notification ---
         if self.settings['display_launcher_notify']:
             kodi_notify('Launching {0}'.format(rom_title))
 
         # --- Stop/Pause Kodi mediaplayer if requested in settings ---
-        kodi_was_playing_flag = False
-        # id="media_state" default="0" values="Stop|Pause|Let Play"
-        media_state = self.settings['media_state']
-        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state]
-        log_verb('_run_before_execution() media_state is "{0}" ({1})'.format(media_state_str, media_state))
-        if media_state != 2 and xbmc.Player().isPlaying():
-            kodi_was_playing_flag = True
-            if media_state == 0:
-                log_verb('_run_before_execution() Calling xbmc.Player().stop()')
-                xbmc.Player().stop()
-            elif media_state == 1:
-                log_verb('_run_before_execution() Calling xbmc.Player().pause()')
-                xbmc.Player().pause()
-            xbmc.sleep(self.settings['start_tempo'] + 100)
+        self.kodi_was_playing = False
+        # id="media_state_action" default="0" values="Stop|Pause|Let Play"
+        media_state_action = self.settings['media_state_action']
+        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
+        log_verb('_run_before_execution() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
+        if media_state_action == 0 and xbmc.Player().isPlaying():
+            log_verb('_run_before_execution() Calling xbmc.Player().stop()')
+            xbmc.Player().stop()
+            xbmc.sleep(100)
+            self.kodi_was_playing = True
+        elif media_state_action == 1 and xbmc.Player().isPlaying():
+            log_verb('_run_before_execution() Calling xbmc.Player().pause()')
+            xbmc.Player().pause()
+            xbmc.sleep(100)
+            self.kodi_was_playing = True
 
-            # >> Don't know what this code does exactly... Maybe compatibility with old versions of Kodi?
-            # try:
-            #     log_verb('_run_before_execution() Calling xbmc.audioSuspend()')
-            #     xbmc.audioSuspend()
-            # except:
-            #     log_verb('_run_before_execution() EXCEPCION calling xbmc.audioSuspend()')
+        # --- Force audio suspend if requested in "Settings" --> "Advanced"
+        # >> See http://forum.kodi.tv/showthread.php?tid=164522
+        self.kodi_audio_suspended = False
+        if self.settings['suspend_audio_engine']:
+            log_verb('_run_before_execution() Suspending Kodi audio engine')
+            xbmc.audioSuspend()
++           xbmc.enableNavSounds(False)
+            xbmc.sleep(100)
+            self.kodi_audio_suspended = True
 
-        # --- Toggle Kodi if requested ---
-        if minimize_flag:
+        # --- Toggle Kodi windowed/fullscreen if requested ---
+        if toggle_screen_flag:
             log_verb('_run_before_execution() Toggling Kodi fullscreen')
             kodi_toogle_fullscreen()
         else:
             log_verb('_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
-        # >> Disable navigation sounds?
-        try:
-            log_verb('_run_before_execution() Calling xbmc.enableNavSounds(False)')
-            xbmc.enableNavSounds(False)
-        except:
-            log_verb('_run_before_execution() EXCEPCION calling xbmc.enableNavSounds(False)')
+        # --- Pause Kodi execution some time ---
+        delay_tempo_ms = self.settings['delay_tempo']
+        log_verb('_run_before_execution() Pausing {0} ms'.format(delay_tempo_ms))
+        xbmc.sleep(delay_tempo_ms)
+        log_debug('_run_before_execution() function ENDS')
 
-        # >> Pause Kodi execution some time
-        start_tempo_ms = self.settings['start_tempo']
-        log_verb('_run_before_execution() Pausing {0} ms'.format(start_tempo_ms))
-        xbmc.sleep(start_tempo_ms)
+    def _run_after_execution(self, toggle_screen_flag):
+        # --- Stop Kodi some time ---
+        delay_tempo_ms = self.settings['delay_tempo']
+        log_verb('_run_after_execution() Pausing {0} ms'.format(delay_tempo_ms))
+        xbmc.sleep(delay_tempo_ms)
 
-        return kodi_was_playing_flag
-
-    def _run_after_execution(self, kodi_was_playing_flag, minimize_flag):
-        # >> Stop Kodi some time
-        start_tempo_ms = self.settings['start_tempo']
-        log_verb('_run_after_execution() Pausing {0} ms'.format(start_tempo_ms))
-        xbmc.sleep(start_tempo_ms)
-
-        try:
-            log_verb('_run_after_execution() Calling xbmc.enableNavSounds(True)')
-            xbmc.enableNavSounds(True)
-        except:
-            log_verb('_run_after_execution() EXCEPCION calling xbmc.enableNavSounds(True)')
-
-        if minimize_flag:
+        # --- Toggle Kodi windowed/fullscreen if requested ---
+        if toggle_screen_flag:
             log_verb('_run_after_execution() Toggling Kodi fullscreen')
             kodi_toogle_fullscreen()
         else:
             log_verb('_run_after_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
-        # --- Resume Kodi playing if it was stop/paused ---
-        media_state = self.settings['media_state']
-        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state]
-        log_verb('_run_after_execution() media_state is "{0}" ({1})'.format(media_state_str, media_state))
-        log_verb('_run_after_execution() kodi_was_playing_flag is {0}'.format(kodi_was_playing_flag))
-        if media_state != 2 and kodi_was_playing_flag:
-            # Calling xmbc.audioResume() takes a loong time (2/4 secs) if audio was not properly suspended!
-            # Also produces this in Kodi's log:
-            # WARNING: CActiveAE::StateMachine - signal: 0 from port: OutputControlPort not handled for state: 7
-            #   ERROR: ActiveAE::Resume - failed to init
-            #
-            # I will deactivate this and also in _run_before_execution() and see what happens.
-            # try:
-            #     log_verb('_run_after_execution() Calling xbmc.audioResume()')
-            #     xbmc.audioResume()
-            # except:
-            #     log_verb('_run_after_execution() EXCEPCION calling xbmc.audioResume()')
+        # --- Resume audio engine if it was suspended ---
+        # Calling xmbc.audioResume() takes a loong time (2/4 secs) if audio was not properly suspended!
+        # Also produces this in Kodi's log:
+        # WARNING: CActiveAE::StateMachine - signal: 0 from port: OutputControlPort not handled for state: 7
+        #   ERROR: ActiveAE::Resume - failed to init
+        if self.kodi_audio_suspended:
+            log_verb('_run_after_execution() Kodi audio engine was suspended before launching')
+            log_verb('_run_after_execution() Resuming Kodi audio engine')
+            xbmc.audioResume()
++           xbmc.enableNavSounds(True)
+            xbmc.sleep(100)
 
-            # >> If Kodi was paused then resume playing media.
-            if media_state == 1:
-                log_verb('_run_after_execution() Pausing {0} ms'.format(start_tempo_ms + 100))
-                xbmc.sleep(start_tempo_ms + 100)
-                log_verb('_run_after_execution() Calling xbmc.Player().play()')
-                xbmc.Player().play()
+        # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
+        media_state_action = self.settings['media_state_action']
+        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
+        log_verb('_run_after_execution() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
+        log_verb('_run_after_execution() self.kodi_was_playing is {0}'.format(self.kodi_was_playing))
+        if self.kodi_was_playing and media_state_action == 1:
+            log_verb('_run_after_execution() Calling xbmc.Player().play()')
+            xbmc.Player().play()
         log_debug('_run_after_execution() function ENDS')
 
     #

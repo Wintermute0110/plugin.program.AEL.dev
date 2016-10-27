@@ -21,6 +21,9 @@ import io
 import codecs
 import time
 import os
+import sys
+import fnmatch
+import string
 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
@@ -1871,3 +1874,39 @@ def fs_get_category_NFO_name(settings, category):
 
     return nfo_file_path
 
+# -------------------------------------------------------------------------------------------------
+# Filesystem scanner helper class
+# -------------------------------------------------------------------------------------------------
+class Path:
+    def __init__(self, pathString):
+
+        self.originalPath = pathString
+        self.path = pathString
+
+        if self.originalPath.lower().startswith('smb:'):
+            self.path = self.path.replace('smb:', '')
+            self.path = self.path.replace('SMB:', '')
+            self.path = self.path.replace('//', '\\\\')
+            self.path = self.path.replace('/', '\\')
+
+    def scanFilesInPath(self, mask):
+        files = []
+        filenames = os.listdir(self.path)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(os.path.join(self.path, filename))
+
+        return files
+
+    def recursiveScanFilesInPath(self, mask):
+        files = []
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                files.append(os.path.join(root, filename))
+
+        return files
+
+    def getCurrentPath(self):
+        return self.path
+
+    def getOriginalPath(self):
+        return self.originalPath
