@@ -37,7 +37,6 @@ from utils import *
 from utils_kodi import *
 from scrap import *
 from assets import *
-from path import Path
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
