@@ -5393,7 +5393,7 @@ class Main:
         if self.settings['suspend_audio_engine']:
             log_verb('_run_before_execution() Suspending Kodi audio engine')
             xbmc.audioSuspend()
-+           xbmc.enableNavSounds(False)
+            xbmc.enableNavSounds(False)
             xbmc.sleep(100)
             self.kodi_audio_suspended = True
 
@@ -5432,7 +5432,7 @@ class Main:
             log_verb('_run_after_execution() Kodi audio engine was suspended before launching')
             log_verb('_run_after_execution() Resuming Kodi audio engine')
             xbmc.audioResume()
-+           xbmc.enableNavSounds(True)
+            xbmc.enableNavSounds(True)
             xbmc.sleep(100)
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
