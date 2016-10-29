@@ -406,7 +406,8 @@ class Main:
     def _misc_set_content_type(self):
         # >> Experiment to try to increase the number of views the addon supports. I do not know why
         # >> programs does not support all views movies do.
-        xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
+        # xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
+        pass
 
     def _misc_set_content_and_default_sorting_method(self):
         self._misc_set_content_type()
