@@ -1054,7 +1054,8 @@ class Main:
                 # >> Get launcher NFO file
                 # No-Intro reading of files: use Unicode string for '.dat|.xml'. However, | belongs to ASCII...
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select description file (NFO)', 'files', '.nfo', False, False).decode('utf-8')
-                if not os.path.isfile(NFO_file): return
+                NFO_file_path = Path(NFO_file)
+                if not NFO_file_path.fileExists(): return
                 
                 # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
@@ -1482,7 +1483,8 @@ class Main:
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
                         dialog = xbmcgui.Dialog()
                         dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
-                        if not os.path.isfile(dat_file): return
+                        dat_file_path = Path(dat_file)
+                        if not dat_file_path.fileExists(): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
 
@@ -1579,12 +1581,14 @@ class Main:
                     nfo_dirname = self.launchers[launcherID]['rompath']
                     log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(nfo_dirname))
                     nfo_file_list = []
-                    for root, dirs, files in os.walk(nfo_dirname):
-                        for filename in fnmatch.filter(files, '*.nfo'):
-                            full_path = os.path.join(root, filename)
-                            log_verb('_command_edit_launcher() Adding NFO file "{0}"'.format(full_path))
-                            nfo_file_list.append(full_path)
+
+                    nfo_path = Path(nfo_dirname)
+                    nfo_scanned_files = nfo_path.recursiveScanFilesInPath('*.nfo')
+
                     if len(nfo_file_list) > 0:
+                        for filename in nfo_file_list:
+                            log_verb('_command_edit_launcher() Found NFO file "{0}"'.format(filename))
+
                         ret = kodi_dialog_yesno('Found {0} NFO files. Delete them?'.format(len(nfo_file_list)))
                         if not ret: return
                     else:
@@ -1594,7 +1598,8 @@ class Main:
                     # --- Delete NFO files ---
                     for file in nfo_file_list:
                         log_verb('_command_edit_launcher() RM "{0}"'.format(file))
-                        os.remove(file)
+                        file_path = Path(file)
+                        file_path.delete()
 
                     # >> No need to save launchers XML / Update container
                     return
@@ -1720,8 +1725,9 @@ class Main:
             else:
                 roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
                 log_info('Removing ROMs XML "{0}"'.format(roms_file_path))
+                path_to_remove = Path(roms_file_path)
                 try:
-                    os.remove(roms_file_path)
+                    path_to_remove.delete()
                 except OSError:
                     log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_file_path))
                     kodi_notify_warn('OSError exception deleting ROMs database')
@@ -1753,8 +1759,10 @@ class Main:
         else:
             roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
             log_debug('Removing ROMs XML "{0}"'.format(roms_file_path))
+            file_to_remove = Path(roms_file_path)
             try:
-                if os.path.isfile(roms_file_path): os.remove(roms_file_path)
+                if file_to_remove.fileExists(): 
+                    file_to_remove.delete()
             except OSError:
                 log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_file_path))
                 kodi_notify_warn('OSError exception deleting ROMs XML')
@@ -4065,13 +4073,14 @@ class Main:
         if not ret: return
     
         # --- Remove JSON file and delete collection object ---
-        collection_file_path = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
-        log_debug('Removing Collection JSON "{0}"'.format(collection_file_path))
+        collections_path = Path(COLLECTIONS_DIR)
+        collection_file_path = collections_path.getSubPath(collection['roms_base_noext'] + '.json')
+        log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
         try:
-            if os.path.isfile(collection_file_path):
-                os.remove(collection_file_path)
+            if collection_file_path.fileExists():
+                collection_file_path.delete()
         except OSError:
-            log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path))
+            log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path.getOriginalPath()))
             kodi_notify_warn('OSError exception deleting collection JSON')
         collections.pop(launcherID)
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
@@ -5397,7 +5406,7 @@ class Main:
         if self.settings['suspend_audio_engine']:
             log_verb('_run_before_execution() Suspending Kodi audio engine')
             xbmc.audioSuspend()
-+           xbmc.enableNavSounds(False)
+            xbmc.enableNavSounds(False)
             xbmc.sleep(100)
             self.kodi_audio_suspended = True
 
@@ -5436,7 +5445,7 @@ class Main:
             log_verb('_run_after_execution() Kodi audio engine was suspended before launching')
             log_verb('_run_after_execution() Resuming Kodi audio engine')
             xbmc.audioResume()
-+           xbmc.enableNavSounds(True)
+            xbmc.enableNavSounds(True)
             xbmc.sleep(100)
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
@@ -5997,8 +6006,9 @@ class Main:
         # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # >> Test if NFO file exists
         nfo_file_path = ROM.path_noext + ".nfo"
+        NFO_file = Path(nfo_file_path)
         log_debug('Testing NFO file "{0}"'.format(nfo_file_path))
-        found_NFO_file = True if os.path.isfile(nfo_file_path) else False
+        found_NFO_file = True if NFO_file.fileExists() else False
 
         # >> Determine metadata action based on policy
         # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
