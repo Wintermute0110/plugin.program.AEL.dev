@@ -42,6 +42,8 @@ WIP      Improve launcher reports when there is a No-Intro file available.
 
 FEATURE  Deal with Kodi virtual filesystem smb:// paths.
 
+FEATURE  New platform "Microsoft Windows"
+
 FIX      Fixed searches in launchers.
 
 FIX      Fixed artwork display in ROM Collections (Icon/Fanart/Banner/Poster).
