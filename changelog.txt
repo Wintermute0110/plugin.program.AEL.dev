@@ -29,7 +29,7 @@ WIP      Include databases for all supported platforms in AEL offline scraper.
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
          online and offline scraper.
 
-WIP      Every request must be cached in all online scrapers.
+WIP      Every network request must be cached in all online scrapers.
 
 WIP      Extranafart for Categories/Launchers/ROMs.
 
@@ -44,7 +44,7 @@ FEATURE  Deal with Kodi virtual filesystem smb:// paths.
 
 FEATURE  New platform "Microsoft Windows"
 
-WIP      Add genre and plot to collections. Possibly more metadata also (same as launchers?).
+WIP      Add genre and plot to ROM collections. Possibly more metadata also (same as launchers?).
 
 FIX      Fixed searches in launchers.
 
