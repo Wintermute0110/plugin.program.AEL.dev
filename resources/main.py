@@ -87,6 +87,9 @@ KIND_COLLECTION          = 2
 KIND_LAUNCHER            = 3
 KIND_ROM                 = 4
 DESCRIPTION_MAXSIZE      = 40
+LNK_LAUNCHER_APP_NAME    = 'lnk_launcher_app'
+
+# --- Special Cateogry/Launcher IDs ---
 VCATEGORY_ADDONROOT_ID   = 'root_category'
 VCATEGORY_FAVOURITES_ID  = 'vcat_favourites'
 VCATEGORY_COLLECTIONS_ID = 'vcat_collections'
@@ -733,7 +736,7 @@ class Main:
         log_info('_command_add_new_launcher() New launcher type = {0}'.format(type))
         filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
 
-        # --- Standalone launcher ---
+        # 0) Standalone launcher
         if type == 0:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter).decode('utf-8')
             if not app: return
@@ -781,7 +784,7 @@ class Main:
                 app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', filter).decode('utf-8')
                 if not app: return
             elif type == 2:
-                app = 'lnk_launcher_app'
+                app = LNK_LAUNCHER_APP_NAME
 
             # --- ROM path ---
             if type == 1:
@@ -808,17 +811,17 @@ class Main:
                 if not argkeyboard.isConfirmed(): return
                 args = argkeyboard.getText().decode('utf-8')
             elif type == 2:
-                args = ''
+                args = '%rom%'
 
             # --- Launcher title/name ---
             title = os.path.basename(app)
-            keyboard = xbmc.Keyboard(title.replace('.' + title.split('.')[-1], '').replace('.', ' '), 'Set the title of the launcher')
+            fixed_title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+            initial_title = fixed_title if type == 1 else ''
+            keyboard = xbmc.Keyboard(initial_title, 'Set the title of the launcher')
             keyboard.doModal()
             if not keyboard.isConfirmed(): return
             title = keyboard.getText().decode('utf-8')
-            if title == '':
-                title = os.path.basename(app)
-                title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+            if title == '': title = '[ Not set ]'
 
             # --- Selection of the launcher plaform from official AEL platform names ---
             dialog = xbmcgui.Dialog()
@@ -5237,7 +5240,8 @@ class Main:
         log_info('_command_run_rom() rom_title   = "{0}"'.format(rom_title))
 
         # --- Check for errors and abort if found ---
-        if not os.path.exists(application):
+        # >> Not check application for Windows LNK ROM Launchers
+        if not os.path.exists(application) and application != LNK_LAUNCHER_APP_NAME:
             log_error('Launching app not found "{0}"'.format(application))
             kodi_notify_warn('Launching app not found {0}'.format(application))
             return
@@ -5396,6 +5400,8 @@ class Main:
             xbmc.enableNavSounds(False)
             xbmc.sleep(100)
             self.kodi_audio_suspended = True
+        else:
+            log_verb('_run_before_execution() DO NOT suspend Kodi audio engine')
 
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
@@ -5434,6 +5440,8 @@ class Main:
             xbmc.audioResume()
             xbmc.enableNavSounds(True)
             xbmc.sleep(100)
+        else:
+            log_verb('_run_before_execution() DO NOT resume Kodi audio engine')
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']

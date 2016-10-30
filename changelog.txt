@@ -46,6 +46,8 @@ FIX      Fixed searches in launchers.
 
 FIX      Fixed artwork display in ROM Collections (Icon/Fanart/Banner/Poster).
 
+FIX      Fix "launching app not found lnk_launcher_app" error in Windows LNK launchers.
+
 
 [B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
 

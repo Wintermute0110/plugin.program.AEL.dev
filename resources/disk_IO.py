@@ -866,7 +866,7 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
 # Save Favourites JSON file
 #
 def fs_write_Favourites_JSON(roms_json_file, roms):
-    log_info('fs_write_Favourites_JSON() File {0}'.format(roms_json_file))
+    log_verb('fs_write_Favourites_JSON() File {0}'.format(roms_json_file))
 
     # --- Create JSON data structure, including version number ---
     control_dic = {
