@@ -15,10 +15,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# Addon programming conventions,
-# 1) A function with a underline _function() belongs to the Main object, even if not defined in the
-#    main body.
-
 # --- Python standard library ---
 from __future__ import unicode_literals
 import sys, os, shutil, fnmatch, string, time, traceback
@@ -404,22 +400,14 @@ class Main:
         self.scraper_asset.set_options(region, thumb_imgsize)
 
     #
-    # Set content type and sorting methods
+    # Set Sorting methods
     #
-    def _misc_set_content_type(self):
-        # >> Experiment to try to increase the number of views the addon supports. I do not know why
-        # >> programs does not support all views movies do.
-        # xbmcplugin.setContent(handle = self.addon_handle, content = 'movies')
-        pass
-
-    def _misc_set_content_and_default_sorting_method(self):
-        self._misc_set_content_type()
+    def _misc_set_default_sorting_method(self):
+        # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
+        if self.addon_handle < 0: return
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
 
-    def _misc_set_content_and_all_sorting_methods(self):
-        self._misc_set_content_type()
-
-        # >> Adds a sorting method for the media list.
+    def _misc_set_all_sorting_methods(self):
         # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
         if self.addon_handle < 0: return
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
@@ -2493,7 +2481,7 @@ class Main:
     # Renders the addon Root window. Categories, categoryless launchers, Favourites, etc.
     #
     def _command_render_categories(self):
-        self._misc_set_content_and_all_sorting_methods()
+        self._misc_set_all_sorting_methods()
 
         # --- For every category, add it to the listbox. Order alphabetically by name ---
         for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
@@ -2720,7 +2708,7 @@ class Main:
     #
     def _command_render_launchers(self, categoryID):
         # >> Set content type
-        self._misc_set_content_and_all_sorting_methods()
+        self._misc_set_all_sorting_methods()
     
         # --- If the category has no launchers then render nothing ---
         launcher_IDs = []
@@ -2876,7 +2864,7 @@ class Main:
         #     log_debug('value = {0}'.format(roms[key]))
 
         # --- Render ROMs ---
-        self._misc_set_content_and_all_sorting_methods()
+        self._misc_set_all_sorting_methods()
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
@@ -2948,7 +2936,7 @@ class Main:
         loading_ticks_end = time.time()
 
         # --- Set content type and sorting methods ---
-        self._misc_set_content_and_all_sorting_methods()
+        self._misc_set_all_sorting_methods()
 
         # --- Display ROMs ---
         rendering_ticks_start = time.time()
@@ -3200,7 +3188,7 @@ class Main:
     #
     def _command_render_favourites(self):
         # >> Content type and sorting method
-        self._misc_set_content_and_all_sorting_methods()
+        self._misc_set_all_sorting_methods()
         
         # --- Load Favourite ROMs ---
         roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
@@ -3218,11 +3206,9 @@ class Main:
     # Render launchers in virtual categories: title, year, genre, studio
     #
     def _command_render_virtual_category(self, virtual_categoryID):
-        # >> Content type and sorting method
-        self._misc_set_content_type()
+        # >> Kodi sorting methods
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
-
         
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
@@ -3286,7 +3272,7 @@ class Main:
     #
     def _command_render_virtual_launcher_roms(self, virtual_categoryID, virtual_launcherID):
         # >> Content type and sorting method
-        self._misc_set_content_and_all_sorting_methods()
+        self._misc_set_all_sorting_methods()
 
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
@@ -3328,7 +3314,7 @@ class Main:
     #
     def _command_render_recently_played(self):
         # >> Content type and sorting method
-        # self._misc_set_content_and_all_sorting_methods()
+        # self._misc_set_all_sorting_methods()
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
         rom_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
@@ -3344,7 +3330,7 @@ class Main:
 
     def _command_render_most_played(self):
         # >> Content type and sorting method
-        # self._misc_set_content_and_all_sorting_methods()
+        # self._misc_set_all_sorting_methods()
 
         # --- Load Most Played favourite ROMs ---
         roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
@@ -3384,7 +3370,7 @@ class Main:
         roms_fav_set = set(roms_fav.keys())
 
         # --- Set content type and sorting methods ---
-        self._misc_set_content_and_default_sorting_method()
+        self._misc_set_default_sorting_method()
 
         # --- Render ROMs ---
         for rom_id in sorted(all_roms, key = lambda x : all_roms[x]['m_name']):
@@ -3838,8 +3824,7 @@ class Main:
     # Renders a listview with all collections
     #
     def _command_render_collections(self):
-        # >> Content type and sorting method
-        self._misc_set_content_type()
+        # >> Kodi sorting method
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
 
@@ -4402,7 +4387,7 @@ class Main:
                     rl[keyr] = roms[keyr]
 
         # --- Render ROMs ---
-        self._misc_set_content_and_all_sorting_methods()
+        self._misc_set_all_sorting_methods()
         if not rl:
             kodi_dialog_OK('Search returned no results')
         for key in sorted(rl.iterkeys()):
