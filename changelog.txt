@@ -14,6 +14,15 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
+WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
+         deprecated os.system().
+
+WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
+         mechanism based on subprocess module.
+
+WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
+         online and offline scraper.
+
 
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
@@ -22,21 +31,16 @@ FEATURE  New command SHOW_ALL_ROMS to render all ROMs in all launchers. Will be 
 FEATURE  Supend/resume Kodi audio engine at launching. This will prevent sound problems in Linux. 
          Include a setting for this in addons "Settings" --> "Advanced".
 
+WIP      Export/Import assets/artwork in ROM Collections. Encode binary files in base64 and put
+         in an auxiliar JSON files. Exporting assets should be optional, not mandatory.
+
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
-WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
-         online and offline scraper.
-
 WIP      Every network request must be cached in all online scrapers.
 
 WIP      Extranafart for Categories/Launchers/ROMs.
-
-WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
-         deprecated os.system().
-
-WIP      Log emulator/standalone launcher stdout/stderr into a file.
 
 WIP      Improve launcher reports when there is a No-Intro file available.
 
