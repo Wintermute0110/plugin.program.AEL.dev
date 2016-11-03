@@ -17,7 +17,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, urllib, urllib2, re
+import sys, urllib, urllib2, re, os
 
 # --- AEL modules ---
 from scrap import *
@@ -344,19 +344,28 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             # print('Screenshots rlist = ' + unicode(rlist))
             cover_index = 1
             for index, rtuple in enumerate(rlist):
-                art_page_URL = rtuple[0]
+                art_page_URL = 'http://www.mobygames.com' + rtuple[0]
                 art_name     = rtuple[1]
                 art_disp_URL = 'http://www.mobygames.com' + rtuple[2]
-                art_URL      = art_disp_URL.replace('/s/', '/l/')
+                # >> This does not work because sometimes the screenshot thumbnail is JPG and the
+                # >> actual screenshoot is PNG. An auxiliar function that gets the actual
+                # >> imagename is required.
+                # art_URL = art_disp_URL.replace('/s/', '/l/')
                 
                 if asset_kind == ASSET_TITLE and art_name.find('Title') >= 0:
+                    # >> Go to artwork page and get actual filename. Skip if empty string returned.
+                    art_URL = self.get_shot_URL(art_page_URL)
+                    if not art_URL: continue
                     log_debug('asset_MobyGames::get_images() Adding Title #{0} {1}'.format(cover_index, art_name))
-                    img_name = 'Adding Title #{0} {1}'.format(cover_index, art_name)
+                    img_name = 'Title #{0}: {1}'.format(cover_index, art_name)
                     images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
                     cover_index += 1
                 elif asset_kind == ASSET_SNAP and not art_name.find('Title') >= 0:
+                    # >> Go to artwork page and get actual filename. Skip if empty string returned.
+                    art_URL = self.get_shot_URL(art_page_URL)
+                    if not art_URL: continue
                     log_debug('asset_MobyGames::get_images() Adding Snap #{0} {1}'.format(cover_index, art_name))
-                    img_name = 'Adding Snap #{0} {1}'.format(cover_index, art_name)
+                    img_name = 'Snap #{0}: {1}'.format(cover_index, art_name)
                     images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
                     cover_index += 1
 
@@ -387,21 +396,46 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
                 
                 if asset_kind == ASSET_BOXFRONT and art_name.find('Front Cover') >= 0:
                     log_debug('asset_MobyGames::get_images() Adding Boxfront #{0} {1}'.format(cover_index, art_name))
-                    img_name = 'Adding Boxfront #{0} {1}'.format(cover_index, art_name)
+                    img_name = 'Boxfront #{0}: {1}'.format(cover_index, art_name)
                     images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
                     cover_index += 1
                 elif asset_kind == ASSET_BOXBACK and art_name.find('Back Cover') >= 0:
                     log_debug('asset_MobyGames::get_images() Adding Boxback #{0} {1}'.format(cover_index, art_name))
-                    img_name = 'Adding Boxback #{0} {1}'.format(cover_index, art_name)
+                    img_name = 'Boxback #{0}: {1}'.format(cover_index, art_name)
                     images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
                     cover_index += 1
                 elif asset_kind == ASSET_CARTRIDGE and art_name.find('Media') >= 0:
                     log_debug('asset_MobyGames::get_images() Adding Cartridge #{0} {1}'.format(cover_index, art_name))
-                    img_name = 'Adding Cartridge #{0} {1}'.format(cover_index, art_name)
+                    img_name = 'Cartridge #{0}: {1}'.format(cover_index, art_name)
                     images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
                     cover_index += 1
 
         return images
+
+    #
+    # Get screenshot image URL.
+    #
+    def get_shot_URL(self, art_page_URL):
+        log_debug('asset_MobyGames::get_shot_URL() art_page_URL = {0}'.format(art_page_URL))
+        page_data = net_get_URL_oneline(art_page_URL)
+        # text_dump_str_to_file(os.path.join('E:/', 'MobyGames-get_shot_URL.txt'), page_data)
+        
+        # <img 
+        #  title="" 
+        #  alt="Super Mario World SNES Title screen" 
+        #  border="0" 
+        #  src="/images/shots/l/218703-super-mario-world-snes-screenshot-title-screen.png" 
+        #  height="448" 
+        #  width="512" ><h3>
+        rlist = re.findall('<div class="screenshot">'
+                           '<img title="(.*?)" alt="(.*?)" border="(.*?)" src="(.*?)" height="(.*?)" width="(.*?)" >'
+                           '<h3>', page_data)
+        # log_debug('Screenshots rlist = ' + unicode(rlist))
+        art_URL = ''
+        if len(rlist) > 0: art_URL = 'http://www.mobygames.com' + rlist[0][3]
+        log_debug('asset_MobyGames::get_shot_URL() art_URL = {0}'.format(art_URL))
+
+        return art_URL
 
 # -----------------------------------------------------------------------------
 # Arcade Database (for MAME) http://adb.arcadeitalia.net/
