@@ -24,6 +24,7 @@ import os
 import sys
 import fnmatch
 import string
+import base64
 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
@@ -34,6 +35,7 @@ import xml.etree.ElementTree as ET
 
 # --- AEL packages ---
 from utils import *
+from assets import *
 try:
     from utils_kodi import *
 except:
@@ -1083,6 +1085,61 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
     except IOError:
         kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename))
 
+#
+# Export collection assets. Use base64 encoding to store binary files in JSON.
+#
+def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_list, collections_asset_dir):
+    log_info('fs_export_ROM_collection_assets() File {0}'.format(output_filename))
+
+    control_dic = {
+        'control' : 'Advanced Emulator Launcher Collection ROM assets',
+        'version' : AEL_STORAGE_FORMAT
+    }
+    
+    # key -> basename : value { 'filesize' : int, 'data' : string }
+    assets_dic = {}
+    for rom_item in collection_rom_list:
+        log_debug('fs_export_ROM_collection_assets() ROM "{0}"'.format(rom_item['m_name']))
+        for asset_kind in ROM_ASSET_LIST:
+            A = assets_get_info_scheme(asset_kind)
+            asset_filename = rom_item[A.key]
+            asset_F = misc_split_path(asset_filename)
+            if not asset_filename:
+                log_debug('{0:<9s} not set.'.format(A.name))
+                continue
+            elif asset_F.dirname == collections_asset_dir:
+                log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(A.name, asset_F.base_noext))
+                # >> Read image binary data and encode
+                with open(asset_filename, mode = 'rb') as file: # b is important -> binary
+                    fileData = file.read()
+                fileData_base64 = base64.b64encode(fileData)
+                # >> Get file size
+                statinfo = os.stat(asset_filename)
+                file_size = statinfo.st_size
+                # >> Make data dictionary and append to list
+                assets_dic[asset_F.base_noext] = {'basename' : asset_F.base,
+                                                  'filesize' : file_size, 
+                                                  'data' : fileData_base64}
+            else:
+                log_error('{0:<9s} in parent ROM directory! This is not supposed to happen!'.format(A.name))
+
+    raw_data = []
+    raw_data.append(control_dic)
+    raw_data.append(assets_dic)
+
+    # >> Produce nicely formatted JSON when exporting
+    try:
+        with io.open(output_filename, 'w', encoding = 'utf-8') as file:
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                   indent = 2, separators = (', ', ' : '))
+            file.write(unicode(json_data))
+            file.close()
+    except OSError:
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename))
+    except IOError:
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename))
+
+#
 # See fs_export_ROM_collection() function.
 # Returns a tuple (control_dic, collection_dic, collection_rom_list)
 #
