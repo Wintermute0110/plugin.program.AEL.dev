@@ -31,7 +31,7 @@ FEATURE  New command SHOW_ALL_ROMS to render all ROMs in all launchers. Will be 
 FEATURE  Supend/resume Kodi audio engine at launching. This will prevent sound problems in Linux. 
          Include a setting for this in addons "Settings" --> "Advanced".
 
-WIP      Export/Import assets/artwork in ROM Collections. Encode binary files in base64 and put
+FEATURE  Export/Import assets/artwork in ROM Collections. Encode binary files in base64 and put
          in an auxiliar JSON files. Exporting assets should be optional, not mandatory.
 
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
