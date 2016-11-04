@@ -937,7 +937,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
-        for collection_id in sorted(collections, key = lambda x : collections[x]['name']):
+        for collection_id in sorted(collections, key = lambda x : collections[x]['m_name']):
             collection = collections[collection_id]
             str_list.append('<Collection>\n')
             str_list.append(XML_text('id', collection['id']))            
