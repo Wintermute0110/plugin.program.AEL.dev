@@ -34,13 +34,13 @@ FEATURE  Supend/resume Kodi audio engine at launching. This will prevent sound p
 FEATURE  Export/Import assets/artwork in ROM Collections. Encode binary files in base64 and put
          in an auxiliar JSON files. Exporting assets should be optional, not mandatory.
 
+WIP      Extranafart for Categories/Launchers/ROMs.
+
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
 WIP      Every network request must be cached in all online scrapers.
-
-WIP      Extranafart for Categories/Launchers/ROMs.
 
 WIP      Improve launcher reports when there is a No-Intro file available.
 

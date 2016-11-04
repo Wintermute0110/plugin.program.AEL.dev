@@ -4149,9 +4149,9 @@ class Main:
             if not ret: return
 
         # --- Add Collection to AEL storage ---
-        collection_id_md5    = hashlib.md5(collection_dic['name'].encode('utf-8'))
+        collection_id_md5    = hashlib.md5(collection_dic['m_name'].encode('utf-8'))
         collection_UUID      = collection_id_md5.hexdigest()
-        collection_base_name = fs_get_collection_ROMs_basename(collection_dic['name'], collection_UUID)
+        collection_base_name = fs_get_collection_ROMs_basename(collection_dic['m_name'], collection_UUID)
         collection_dic['roms_base_noext'] = collection_base_name
 
         # --- Also import assets if loaded ---
@@ -4193,7 +4193,7 @@ class Main:
 
         # --- Add imported collection to database ---
         collections[collection_dic['id']] = collection_dic
-        log_info('_command_import_collection() Importing Collection "{0}" ({1})'.format(collection_dic['name'], collection_dic['id']))
+        log_info('_command_import_collection() Importing Collection "{0}" ({1})'.format(collection_dic['m_name'], collection_dic['id']))
         log_info('_command_import_collection() roms_base_noext "{0}"'.format(collection_dic['roms_base_noext']))
 
         # --- Write ROM Collection databases ---
@@ -4201,9 +4201,9 @@ class Main:
         json_file = os.path.join(COLLECTIONS_DIR, collection_base_name + '.json')
         fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         if import_collection_assets:
-            kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['name']))
+            kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
         else:
-            kodi_dialog_OK("Imported ROM Collection '{0}' metadata.".format(collection_dic['name']))
+            kodi_dialog_OK("Imported ROM Collection '{0}' metadata.".format(collection_dic['m_name']))
 
     #
     # Exports a ROM Collection
@@ -4285,17 +4285,17 @@ class Main:
                 fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
 
         # --- Export collection metadata (Always) ---
-        output_filename = os.path.join(output_dir, collection['name'] + '.json')
+        output_filename = os.path.join(output_dir, collection['m_name'] + '.json')
         fs_export_ROM_collection(output_filename, collection, collection_rom_list)
 
         # --- Export collection assets (Optional) ---
         if export_type == 1:
-            output_filename = os.path.join(output_dir, collection['name'] + '_assets.json')
+            output_filename = os.path.join(output_dir, collection['m_name'] + '_assets.json')
             fs_export_ROM_collection_assets(output_filename, collection, collection_rom_list, collections_asset_dir)
 
         # >> User info
-        if   export_type == 0: kodi_dialog_OK('Exported ROM Collection {0} metadata.'.format(collection['name']))
-        elif export_type == 1: kodi_dialog_OK('Exported ROM Collection {0} metadata and assets.'.format(collection['name']))
+        if   export_type == 0: kodi_dialog_OK('Exported ROM Collection {0} metadata.'.format(collection['m_name']))
+        elif export_type == 1: kodi_dialog_OK('Exported ROM Collection {0} metadata and assets.'.format(collection['m_name']))
 
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
         # >> ROM in Virtual Launcher
@@ -4335,7 +4335,7 @@ class Main:
         collections_name = []
         for key in collections:
             collections_id.append(collections[key]['id'])
-            collections_name.append(collections[key]['name'])
+            collections_name.append(collections[key]['m_name'])
         selected_idx = dialog.select('Select the collection', collections_name)
         if selected_idx < 0: return
         collectionID = collections_id[selected_idx]
@@ -4345,7 +4345,7 @@ class Main:
         roms_json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         log_info('Adding ROM to Collection')
-        log_info('Collection {0}'.format(collection['name']))
+        log_info('Collection {0}'.format(collection['m_name']))
         log_info('romID      {0}'.format(romID))
         log_info('ROM m_name {0}'.format(roms[romID]['m_name']))
 
@@ -4359,7 +4359,7 @@ class Main:
             log_info('ROM already in collection')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(roms[romID]['m_name'], collection['name']))
+                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(roms[romID]['m_name'], collection['m_name']))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
@@ -4367,7 +4367,7 @@ class Main:
         else:
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(roms[romID]['m_name'], collection['name']))
+                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(roms[romID]['m_name'], collection['m_name']))
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
