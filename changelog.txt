@@ -23,6 +23,10 @@ WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires ne
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
          online and offline scraper.
 
+WIP      Extranafart for Categories/Launchers.
+
+WIP      Extranafart for ROMs.
+
 
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
@@ -34,7 +38,7 @@ FEATURE  Supend/resume Kodi audio engine at launching. This will prevent sound p
 FEATURE  Export/Import assets/artwork in ROM Collections. Encode binary files in base64 and put
          in an auxiliar JSON files. Exporting assets should be optional, not mandatory.
 
-WIP      Extranafart for Categories/Launchers/ROMs.
+FEATURE  Extranafart for ROM Collections.
 
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
@@ -43,6 +47,9 @@ WIP      Include databases for all supported platforms in AEL offline scraper.
 WIP      Every network request must be cached in all online scrapers.
 
 WIP      Improve launcher reports when there is a No-Intro file available.
+
+WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
+         Requires a change in the scraping API.
 
 FEATURE  Deal with Kodi virtual filesystem smb:// paths.
 

@@ -78,12 +78,12 @@ COLLECTIONS_DIR         = os.path.join(PLUGIN_DATA_DIR, 'db_Collections').decode
 REPORTS_DIR             = os.path.join(PLUGIN_DATA_DIR, 'reports').decode('utf-8')
 
 # --- Misc "constants" ---
-KIND_CATEGORY            = 1
-KIND_COLLECTION          = 2
-KIND_LAUNCHER            = 3
-KIND_ROM                 = 4
-DESCRIPTION_MAXSIZE      = 40
-LNK_LAUNCHER_APP_NAME    = 'lnk_launcher_app'
+KIND_CATEGORY         = 1
+KIND_COLLECTION       = 2
+KIND_LAUNCHER         = 3
+KIND_ROM              = 4
+DESCRIPTION_MAXSIZE   = 40
+LNK_LAUNCHER_APP_NAME = 'lnk_launcher_app'
 
 # --- Special Cateogry/Launcher IDs ---
 VCATEGORY_ADDONROOT_ID   = 'root_category'
@@ -3836,6 +3836,31 @@ class Main:
             thumb_poster = asset_get_default_asset_Category(collection, 'default_poster')
             listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart, 
                              'banner' : thumb_banner, 'poster' : thumb_poster})
+
+            # --- Extrafanart ---
+            extrafanart_dir = os.path.join(self.settings['collections_asset_dir'], collection['m_name']).encode('utf-8')
+            log_debug('_command_render_collections() EF dir {0}'.format(extrafanart_dir))
+            extrafanart_dic = {}
+            for i in range(25):
+                # --- PNG ---
+                extrafanart_file = os.path.join(extrafanart_dir, 'fanart{0}.png'.format(i))
+                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file))
+                if os.path.isfile(extrafanart_file):
+                    log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
+                    extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file
+                    continue
+                # --- JPG ---
+                extrafanart_file = os.path.join(extrafanart_dir, 'fanart{0}.jpg'.format(i))
+                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file))
+                if os.path.isfile(extrafanart_file):
+                    log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
+                    extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file
+                    continue
+                # >> No extrafanart found, exit loop.
+                break
+            if extrafanart_dic:
+                log_debug('_command_render_collections() Extrafanart setArt() "{0}"'.format(unicode(extrafanart_dic)))
+                listitem.setArt(extrafanart_dic)
 
             # --- Create context menu ---
             commands = []
