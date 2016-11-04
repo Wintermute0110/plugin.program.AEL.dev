@@ -51,6 +51,8 @@ FEATURE  New platform "Microsoft Windows"
 FEATURE  Add genre, plot and rating to ROM collections. Unify ROM Collections and Cateogories
          metadata.
 
+FEATURE  Request monospaced font on text viewer dialog (Window 10147).
+         
 FIX      Fixed searches in launchers.
 
 FIX      Fixed artwork display in ROM Collections (Icon/Fanart/Banner/Poster).

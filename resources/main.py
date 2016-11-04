@@ -4700,6 +4700,7 @@ class Main:
         try:
             xbmc.executebuiltin('ActivateWindow(10147)')
             window = xbmcgui.Window(10147)
+            window.setProperty('FontWidth', 'monospaced')
             xbmc.sleep(100)
             window.getControl(1).setLabel(window_title)
             window.getControl(5).setText(info_text)
@@ -4727,6 +4728,7 @@ class Main:
         try:
             xbmc.executebuiltin('ActivateWindow(10147)')
             window = xbmcgui.Window(10147)
+            window.setProperty('FontWidth', 'monospaced')
             xbmc.sleep(100)
             window.getControl(1).setLabel(window_title)
             window.getControl(5).setText(info_text)
@@ -4749,6 +4751,7 @@ class Main:
         try:
             xbmc.executebuiltin('ActivateWindow(10147)')
             window = xbmcgui.Window(10147)
+            window.setProperty('FontWidth', 'monospaced')
             xbmc.sleep(100)
             window.getControl(1).setLabel(window_title)
             window.getControl(5).setText(info_text)
@@ -4940,6 +4943,7 @@ class Main:
         try:
             xbmc.executebuiltin('ActivateWindow(10147)')
             window = xbmcgui.Window(10147)
+            window.setProperty('FontWidth', 'monospaced')
             xbmc.sleep(100)
             window.getControl(1).setLabel(window_title)
             window.getControl(5).setText(info_text)
