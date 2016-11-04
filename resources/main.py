@@ -2518,14 +2518,14 @@ class Main:
         listitem = xbmcgui.ListItem(category_dic['m_name'])
         listitem.setInfo('video', {'title'   : category_dic['m_name'],    'genre'   : category_dic['m_genre'],
                                    'plot'    : category_dic['m_plot'],    'rating'  : category_dic['m_rating'],
-                                   'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY } )
+                                   'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
 
         # --- Set Category artwork ---
         # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
-        thumb_path      = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
-        thumb_fanart    = asset_get_default_asset_Category(category_dic, 'default_fanart')
-        thumb_banner    = asset_get_default_asset_Category(category_dic, 'default_banner')
-        thumb_poster    = asset_get_default_asset_Category(category_dic, 'default_poster')
+        thumb_path   = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
+        thumb_fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
+        thumb_banner = asset_get_default_asset_Category(category_dic, 'default_banner')
+        thumb_poster = asset_get_default_asset_Category(category_dic, 'default_poster')
         listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart, 
                          'banner' : thumb_banner, 'poster' : thumb_poster})
 
@@ -3821,13 +3821,15 @@ class Main:
         for collection_id in collections:
             # --- Create listitem ---
             collection = collections[collection_id]
-            collection_name = collection['name']
+            collection_name = collection['m_name']
             listitem = xbmcgui.ListItem(collection_name)
-            listitem.setInfo('video', {'title' : collection_name, 'overlay'  : 4})
-            thumb_path      = asset_get_default_asset_Category(collection, 'default_thumb', 'DefaultFolder.png')
-            thumb_fanart    = asset_get_default_asset_Category(collection, 'default_fanart')
-            thumb_banner    = asset_get_default_asset_Category(collection, 'default_banner')
-            thumb_poster    = asset_get_default_asset_Category(collection, 'default_poster')
+            listitem.setInfo('video', {'title'   : collection['m_name'],    'genre'   : collection['m_genre'],
+                                       'plot'    : collection['m_plot'],    'rating'  : collection['m_rating'],
+                                       'trailer' : collection['s_trailer'], 'overlay' : 4 })
+            thumb_path   = asset_get_default_asset_Category(collection, 'default_thumb', 'DefaultFolder.png')
+            thumb_fanart = asset_get_default_asset_Category(collection, 'default_fanart')
+            thumb_banner = asset_get_default_asset_Category(collection, 'default_banner')
+            thumb_poster = asset_get_default_asset_Category(collection, 'default_poster')
             listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart, 
                              'banner' : thumb_banner, 'poster' : thumb_poster})
 
