@@ -668,26 +668,27 @@ class Main:
         kodi_refresh_container()
 
     def _command_add_new_launcher(self, categoryID):
-        # If categoryID not found return to plugin root window.
+        # >> If categoryID not found user is creating a new launcher using the context menu
+        # >> of a launcher in addon root.
         if categoryID not in self.categories:
-            kodi_notify_warn('Category ID not found. Report this bug.')
-            return
-
-        # --- Ask user if launcher is created on selected category or on root menu ---
-        category_name = self.categories[categoryID]['m_name']
-        dialog = xbmcgui.Dialog()
-        type = dialog.select('Choose Launcher category',
-                             ['Create Launcher in "{0}" category'.format(category_name),
-                              'Create Launcher in addon root']) 
-        if type < 0:
-            return
-        elif type == 0:
-            launcher_categoryID = categoryID
-        elif type == 1:
+            log_info('Category ID not found. Creating laucher in addon root.')
             launcher_categoryID = VCATEGORY_ADDONROOT_ID
         else:
-            kodi_notify_warn('_command_add_new_launcher() Wring type value. Report this bug.')
-            return
+            # --- Ask user if launcher is created on selected category or on root menu ---
+            category_name = self.categories[categoryID]['m_name']
+            dialog = xbmcgui.Dialog()
+            type = dialog.select('Choose Launcher category',
+                                ['Create Launcher in "{0}" category'.format(category_name),
+                                 'Create Launcher in addon root']) 
+            if type < 0:
+                return
+            elif type == 0:
+                launcher_categoryID = categoryID
+            elif type == 1:
+                launcher_categoryID = VCATEGORY_ADDONROOT_ID
+            else:
+                kodi_notify_warn('_command_add_new_launcher() Wring type value. Report this bug.')
+                return
 
         # --- Show "Create New Launcher" dialog ---
         dialog = xbmcgui.Dialog()
@@ -2779,7 +2780,10 @@ class Main:
         if launcher_dic['rompath']:
             commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID), ))
         commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID), ))
-        commands.append(('Create New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
+        # >> Launchers in addon root should be able to create a new category
+        if categoryID == VCATEGORY_ADDONROOT_ID:
+                commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems = True)
