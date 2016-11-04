@@ -48,7 +48,8 @@ FEATURE  Deal with Kodi virtual filesystem smb:// paths.
 
 FEATURE  New platform "Microsoft Windows"
 
-WIP      Add genre and plot to ROM collections. Possibly more metadata also (same as launchers?).
+FEATURE  Add genre, plot and rating to ROM collections. Unify ROM Collections and Cateogories
+         metadata.
 
 FIX      Fixed searches in launchers.
 

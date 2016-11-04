@@ -245,7 +245,7 @@ class Main:
             self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
         elif command == 'LAUNCH_STANDALONE':
             self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
-            
+
         # --- Favourite/ROM Collection management ---
         elif command == 'ADD_TO_FAV':
             self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
@@ -439,9 +439,12 @@ class Main:
         type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['m_name']),
                              ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
                               finished_display, 'Delete Category'])
+        if type < 0: return
 
         # --- Edit category metadata ---
         if type == 0:
+            NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
+            NFO_str = 'default NFO found' if os.path.isfile(NFO_file) else 'default NFO not found'
             plot_str = text_limit_string(self.categories[categoryID]['m_plot'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
@@ -449,9 +452,10 @@ class Main:
                                    "Edit Genre: '{0}'".format(self.categories[categoryID]['m_genre']),
                                    "Edit Rating: '{0}'".format(self.categories[categoryID]['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
-                                   'Import metadata from NFO (automatic)',
-                                   'Import metadata from NFO (browse NFO)...',
-                                   'Save metadata to NFO file (automatic)'])
+                                   'Import NFO file ({0})'.format(NFO_str),
+                                   'Import NFO file (browse for file)...',
+                                   'Save NFO file (default location)'])
+            if type2 < 0: return
 
             # --- Edition of the category name ---
             if type2 == 0:
@@ -490,52 +494,31 @@ class Main:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_plot'], 'Edit Plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.categories[categoryID]['m_plot'] = keyboard.getText()
+                self.categories[categoryID]['m_plot'] = keyboard.getText().decode('utf-8')
                 kodi_notify('Changed Category Plot')
-
-            # --- Import category description ---
-            # elif type2 == 3:
-            #     text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False)
-            #     if os.path.isfile(text_file):
-            #         file_data = self._gui_import_TXT_file(text_file)
-            #         if file_data != '':
-            #             self.categories[categoryID]["description"] = file_data
-            #         else:
-            #             return
-            #     else:
-            #         desc_str = text_limit_string(self.categories[categoryID]['description'], DESCRIPTION_MAXSIZE)
-            #         kodi_dialog_OK("Category description '{0}' not changed".format(desc_str))
-            #         return
 
             # --- Import category metadata from NFO file (automatic) ---
             elif type2 == 4:
-                # >> Get NFO file name for launcher
-                NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
-
-                # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
+                NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
                 if not fs_import_category_NFO(NFO_file, self.categories, categoryID): return
+                kodi_notify('Imported Category NFO file')
 
             # --- Browse for category NFO file ---
             elif type2 == 5:
-                # >> Get launcher NFO file
-                # No-Intro reading of files: use Unicode string for '.dat|.xml'. However, | belongs to ASCII...
-                NFO_file = xbmcgui.Dialog().browse(1, 'Select description file (NFO)', 'files', '.nfo', False, False).decode('utf-8')
+                NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
                 if not os.path.isfile(NFO_file): return
-
-                # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
                 if not fs_import_category_NFO(NFO_file, self.categories, categoryID): return
+                kodi_notify('Imported Category NFO file')
 
-            # --- Export launcher metadata to NFO file ---
+            # --- Export category metadata to NFO file ---
             elif type2 == 6:
+                # >> No need to save categories/launchers
                 NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
                 fs_export_category_NFO(NFO_file, self.categories[categoryID])
-                # >> No need to save launchers
+                kodi_notify('Exported Category NFO file')
                 return
-
-            # >> User canceled select dialog
-            elif type2 < 0: return
 
         # --- Edit Category Asstes/Artwork ---
         elif type == 1:
@@ -561,7 +544,6 @@ class Main:
             type2 = gui_show_image_select('Edit Category Assets/Artwork', img_list)
 
             # --- Edit Assets ---
-            # >> _gui_edit_asset() returns True if image was changed
             # >> Category is changed using Python passign by assigment
             # >> If this function returns False no changes were made. No need to save categories XML and 
             # >> update container.
@@ -576,7 +558,7 @@ class Main:
             elif type2 == 4:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_TRAILER, category): return
             elif type2 < 0: return
-            
+
         # --- Choose default thumb/fanart ---
         elif type == 2:
             category = self.categories[categoryID]
@@ -679,9 +661,6 @@ class Main:
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
                 log_info('Category has no launchers, so no launchers to delete.')
                 self.categories.pop(categoryID)
-
-        # >> User pressed cancel or close dialog
-        elif type < 0: return
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
@@ -3896,17 +3875,17 @@ class Main:
         if not keyboard.isConfirmed(): return
         
         # --- Add new collection to database ---
-        collection = fs_new_collection()
+        collection           = fs_new_collection()
         collection_name      = keyboard.getText()
         collection_id_md5    = hashlib.md5(collection_name.encode('utf-8'))
         collection_UUID      = collection_id_md5.hexdigest()
         collection_base_name = fs_get_collection_ROMs_basename(collection_name, collection_UUID)
         collection['id']              = collection_UUID
-        collection['name']            = collection_name
+        collection['m_name']          = collection_name
         collection['roms_base_noext'] = collection_base_name
         collections[collection_UUID]  = collection
         log_debug('_command_add_collection() id              "{0}"'.format(collection['id']))
-        log_debug('_command_add_collection() name            "{0}"'.format(collection['name']))
+        log_debug('_command_add_collection() m_name          "{0}"'.format(collection['m_name']))
         log_debug('_command_add_collection() roms_base_noext "{0}"'.format(collection['roms_base_noext']))
         kodi_dialog_OK("Created new Collection named '{0}'.".format(collection_name))
 
@@ -3923,19 +3902,89 @@ class Main:
 
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Select action for Collection {0}'.format(collection['name']),
-                             ['Edit Collection name', 
-                              'Edit Assets/Artwork...', 
-                              'Choose default Assets/Artwork...'])
+        type = dialog.select('Select action for ROM Collection {0}'.format(collection['m_name']),
+                            ['Edit Metadata...', 'Edit Assets/Artwork...', 
+                             'Choose default Assets/Artwork...'])
+        # >> User cancelled select dialog
+        if type < 0: return
 
-        # --- Change collection name ---
+        # --- Edit category metadata ---
         if type == 0:
-            keyboard = xbmc.Keyboard(collection['name'], 'Edit Collection name')
-            keyboard.doModal()
-            if keyboard.isConfirmed():
-                collection['name'] = keyboard.getText().decode('utf-8')
-            else:
-                kodi_dialog_OK("Collection '{0}' name not changed".format(collection['name']))
+            NFO_file = fs_get_collection_NFO_name(self.settings, collection)
+            NFO_str = 'default NFO found' if os.path.isfile(NFO_file) else 'default NFO not found'
+            plot_str = text_limit_string(collection['m_plot'], DESCRIPTION_MAXSIZE)
+            dialog = xbmcgui.Dialog()
+            type2 = dialog.select('Edit Category Metadata',
+                                  ["Edit Title: '{0}'".format(collection['m_name']),
+                                   "Edit Genre: '{0}'".format(collection['m_genre']),
+                                   "Edit Rating: '{0}'".format(collection['m_rating']),
+                                   "Edit Plot: '{0}'".format(plot_str),
+                                   'Import NFO file ({0})'.format(NFO_str),
+                                   'Import NFO file (browse for file)...',
+                                   'Save NFO file (default location)'])
+            if type2 < 0: return
+
+            # --- Edition of the collection name ---
+            if type2 == 0:
+                keyboard = xbmc.Keyboard(collection['m_name'], 'Edit Title')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                title = keyboard.getText().decode('utf-8')
+                if title == '': title = collection['m_name']
+                collection['m_name'] = title.rstrip()
+                kodi_notify('Changed Collection Title')
+
+            # --- Edition of the collection genre ---
+            elif type2 == 1:
+                keyboard = xbmc.Keyboard(collection['m_genre'], 'Edit Genre')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                collection['m_genre'] = keyboard.getText().decode('utf-8')
+                kodi_notify('Changed Collection Genre')
+
+            # --- Edition of the collection rating ---
+            elif type2 == 2:
+                rating = dialog.select('Edit Collection Rating',
+                                      ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
+                                       'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
+                # >> Rating not set, empty string
+                if rating == 0:
+                    collection['m_rating'] = ''
+                elif rating >= 1 and rating <= 11:
+                    collection['m_rating'] = '{0}'.format(rating - 1)
+                elif rating < 0:
+                    kodi_dialog_OK("Collection rating '{0}' not changed".format(collection['m_rating']))
+                    return
+
+            # --- Edition of the plot (description) ---
+            elif type2 == 3:
+                keyboard = xbmc.Keyboard(collection['m_plot'], 'Edit Plot')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                collection['m_plot'] = keyboard.getText().decode('utf-8')
+                kodi_notify('Changed Collection Plot')
+
+            # --- Import collection metadata from NFO file (automatic) ---
+            elif type2 == 4:
+                # >> Returns True if changes were made
+                NFO_file = fs_get_collection_NFO_name(self.settings, collection)
+                if not fs_import_collection_NFO(NFO_file, collections, launcherID): return
+                kodi_notify('Imported Collection NFO file')
+
+            # --- Browse for collection NFO file ---
+            elif type2 == 5:
+                NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
+                if not os.path.isfile(NFO_file): return
+                # >> Returns True if changes were made
+                if not fs_import_collection_NFO(NFO_file, collections, launcherID): return
+                kodi_notify('Imported Collection NFO file')
+
+            # --- Export collection metadata to NFO file ---
+            elif type2 == 6:
+                # >> No need to save collections at the end of function
+                NFO_file = fs_get_collection_NFO_name(self.settings, collection)
+                fs_export_collection_NFO(NFO_file, collection)
+                kodi_notify('Exported Collection NFO file')
                 return
 
         # --- Edit artwork ---
@@ -4025,9 +4074,6 @@ class Main:
                 assets_choose_category_artwork(collection, 'default_poster', type_s)
             elif type2 < 0: return
 
-        # --- User cancel dialog ---
-        elif type < 0: return
-
         # --- Save collection index and refresh view ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
         kodi_refresh_container()
@@ -4045,7 +4091,7 @@ class Main:
         # --- Confirm deletion ---
         num_roms = len(collection_rom_list)
         
-        ret = kodi_dialog_yesno('Collection {0} has {1} ROMs. '.format(collection['name'], num_roms) +
+        ret = kodi_dialog_yesno('Collection {0} has {1} ROMs. '.format(collection['m_name'], num_roms) +
                                 'Are you sure you want to delete it?')
         if not ret: return
     

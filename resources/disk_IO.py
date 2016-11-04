@@ -168,7 +168,10 @@ def fs_new_rom():
 
 def fs_new_collection():
     c = {'id' : '',
-         'name' : '',
+         'm_name' : '',
+         'm_genre' : '',
+         'm_rating' : '',
+         'm_plot' : '',
          'roms_base_noext' : '',
          'default_thumb' : 's_thumb',
          'default_fanart' : 's_fanart',
@@ -179,7 +182,7 @@ def fs_new_collection():
          's_banner' : '',
          's_flyer' : '',
          's_trailer' : ''
-         }
+    }
 
     return c
 
@@ -937,8 +940,11 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         for collection_id in sorted(collections, key = lambda x : collections[x]['name']):
             collection = collections[collection_id]
             str_list.append('<Collection>\n')
-            str_list.append(XML_text('id', collection['id']))
-            str_list.append(XML_text('name', collection['name']))
+            str_list.append(XML_text('id', collection['id']))            
+            str_list.append(XML_text('m_name', collection['m_name']))
+            str_list.append(XML_text('m_genre', collection['m_genre']))
+            str_list.append(XML_text('m_rating', collection['m_rating']))
+            str_list.append(XML_text('m_plot', collection['m_plot']))
             str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
             str_list.append(XML_text('default_thumb', collection['default_thumb']))
             str_list.append(XML_text('default_fanart', collection['default_fanart']))
@@ -988,7 +994,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
         elif root_element.tag == 'Collection':
             collection = fs_new_collection()
             for rom_child in root_element:
-                # By default read strings
+                # >> By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = rom_child.tag
@@ -1056,17 +1062,20 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
         'version' : AEL_STORAGE_FORMAT
     }
     collection_dic = {
-        'id'                : collection['id'],
-        'name'              : collection['name'],
-        'default_thumb'     : collection['default_thumb'],
-        'default_fanart'    : collection['default_fanart'],
-        'default_banner'    : collection['default_banner'],
-        'default_poster'    : collection['default_poster'],
-        's_thumb'           : collection['s_thumb'],
-        's_fanart'          : collection['s_fanart'],
-        's_banner'          : collection['s_banner'],
-        's_flyer'           : collection['s_flyer'],
-        's_trailer'         : collection['s_trailer']
+        'id'             : collection['id'],
+        'm_name'         : collection['m_name'],
+        'm_genre'        : collection['m_genre'],
+        'm_rating'       : collection['m_rating'],
+        'm_plot'         : collection['m_plot'],
+        'default_thumb'  : collection['default_thumb'],
+        'default_fanart' : collection['default_fanart'],
+        'default_banner' : collection['default_banner'],
+        'default_poster' : collection['default_poster'],
+        's_thumb'        : collection['s_thumb'],
+        's_fanart'       : collection['s_fanart'],
+        's_banner'       : collection['s_banner'],
+        's_flyer'        : collection['s_flyer'],
+        's_trailer'      : collection['s_trailer']
     }
     raw_data = []
     raw_data.append(control_dic)
@@ -1952,6 +1961,17 @@ def fs_get_category_NFO_name(settings, category):
     nfo_dir = settings['categories_asset_dir']
     nfo_file_path = os.path.join(nfo_dir, category_name + '.nfo')
     log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+
+    return nfo_file_path
+
+#
+# Collection NFO files. Same as Cateogory NFO files.
+#
+def fs_get_collection_NFO_name(settings, collection):
+    collection_name = collection['m_name']
+    nfo_dir = settings['collections_asset_dir']
+    nfo_file_path = os.path.join(nfo_dir, collection_name + '.nfo')
+    log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
 
