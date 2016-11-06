@@ -284,6 +284,8 @@ class Main:
             self._command_view_Launcher(args['catID'][0], args['launID'][0])
         elif command == 'VIEW_CATEGORY':
             self._command_view_Category(args['catID'][0])
+        elif command == 'VIEW_COLLECTION':
+            self._command_view_Collection(args['catID'][0], args['launID'][0])
         elif command == 'VIEW_LAUNCHER_REPORT':
             self._command_view_Launcher_Report(args['catID'][0], args['launID'][0])
 
@@ -3865,9 +3867,10 @@ class Main:
 
             # --- Create context menu ---
             commands = []
-            commands.append(('Export Collection', self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
-            commands.append(('Edit Collection',   self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
-            commands.append(('Delete Collection', self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
+            commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
+            commands.append(('Export Collection',        self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
+            commands.append(('Edit Collection',          self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
+            commands.append(('Delete Collection',        self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
             listitem.addContextMenuItems(commands, replaceItems = True)
@@ -4831,6 +4834,30 @@ class Main:
         except:
             log_error('_command_view_Category() Exception rendering INFO window')
 
+    #
+    # Only called for ROM Collections
+    #
+    def _command_view_Collection(self, categoryID, launcherID):
+        # --- Grab info ---
+        window_title = 'ROM Collection data'
+        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        collection = collections[launcherID]
+
+        # --- Make info string ---
+        info_text  = '\n[COLOR orange]ROM Collection information[/COLOR]\n'
+        info_text += self._misc_print_string_Collection(collection)
+
+        # --- Show information window ---
+        try:
+            xbmc.executebuiltin('ActivateWindow(10147)')
+            window = xbmcgui.Window(10147)
+            window.setProperty('FontWidth', 'monospaced')
+            xbmc.sleep(100)
+            window.getControl(1).setLabel(window_title)
+            window.getControl(5).setText(info_text)
+        except:
+            log_error('_command_view_Collection() Exception rendering INFO window')
+
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
         info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(rom['id'])
@@ -4954,6 +4981,26 @@ class Main:
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(category['s_banner'])
         info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(category['s_flyer'])
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(category['s_trailer'])
+
+        return info_text
+
+    def _misc_print_string_Collection(self, collection):
+        info_text  = ''
+        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(collection['id'])
+        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(collection['m_name'])
+        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(collection['m_genre'])
+        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(collection['m_rating'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(collection['m_plot'])
+        info_text += "[COLOR violet]roms_base_noext[/COLOR]: {0}\n".format(collection['roms_base_noext'])        
+        info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(collection['default_thumb'])
+        info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(collection['default_fanart'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(collection['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(collection['default_poster'])
+        info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(collection['s_thumb'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(collection['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(collection['s_banner'])
+        info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(collection['s_flyer'])
+        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(collection['s_trailer'])
 
         return info_text
 
