@@ -1056,7 +1056,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
 
 def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
     log_info('fs_export_ROM_collection() File {0}'.format(output_filename))
-    
+
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
         'version' : AEL_STORAGE_FORMAT
@@ -1105,8 +1105,30 @@ def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_
         'version' : AEL_STORAGE_FORMAT
     }
 
+    # --- Export Collection assets ---
+    assets_dic = {}    
+    log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
+    for asset_kind in [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER]:
+        A = assets_get_info_scheme(asset_kind)
+        asset_filename = collection[A.key]
+        asset_F = misc_split_path(asset_filename)
+        if not asset_filename:
+            log_debug('{0:<9s} not set'.format(A.name))
+            continue
+        elif asset_F.dirname == collections_asset_dir:
+            log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(A.name, asset_F.base_noext))
+            with open(asset_filename, mode = 'rb') as file: # b is important -> binary
+                fileData = file.read()
+            fileData_base64 = base64.b64encode(fileData)
+            statinfo = os.stat(asset_filename)
+            file_size = statinfo.st_size
+            a_dic = {'basename' : asset_F.base, 'filesize' : file_size, 'data' : fileData_base64}
+            assets_dic[asset_F.base_noext] = a_dic
+        else:
+            log_error('{0:<9s} in parent ROM directory! This is not supposed to happen!'.format(A.name))
+
+    # --- Export ROMs assets ---
     # key -> basename : value { 'filesize' : int, 'data' : string }
-    assets_dic = {}
     for rom_item in collection_rom_list:
         log_debug('fs_export_ROM_collection_assets() ROM "{0}"'.format(rom_item['m_name']))
         for asset_kind in ROM_ASSET_LIST:
@@ -1114,7 +1136,7 @@ def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_
             asset_filename = rom_item[A.key]
             asset_F = misc_split_path(asset_filename)
             if not asset_filename:
-                log_debug('{0:<9s} not set.'.format(A.name))
+                log_debug('{0:<9s} not set'.format(A.name))
                 continue
             elif asset_F.dirname == collections_asset_dir:
                 log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(A.name, asset_F.base_noext))
@@ -1126,9 +1148,8 @@ def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_
                 statinfo = os.stat(asset_filename)
                 file_size = statinfo.st_size
                 # >> Make data dictionary and append to list
-                assets_dic[asset_F.base_noext] = {'basename' : asset_F.base,
-                                                  'filesize' : file_size, 
-                                                  'data' : fileData_base64}
+                a_dic = {'basename' : asset_F.base, 'filesize' : file_size, 'data' : fileData_base64}
+                assets_dic[asset_F.base_noext] = a_dic
             else:
                 log_error('{0:<9s} in parent ROM directory! This is not supposed to happen!'.format(A.name))
 

@@ -65,17 +65,17 @@ RECENT_PLAYED_FILE_PATH = os.path.join(PLUGIN_DATA_DIR, 'history.json').decode('
 MOST_PLAYED_FILE_PATH   = os.path.join(PLUGIN_DATA_DIR, 'most_played.json').decode('utf-8')
 
 # --- Artwork and NFO for Categories and Launchers ---
-DEFAULT_CAT_ASSET_DIR   = os.path.join(PLUGIN_DATA_DIR, 'asset-categories').decode('utf-8')
-DEFAULT_COL_ASSET_DIR   = os.path.join(PLUGIN_DATA_DIR, 'asset-collections').decode('utf-8')
-DEFAULT_LAUN_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-launchers').decode('utf-8')
-DEFAULT_FAV_ASSET_DIR   = os.path.join(PLUGIN_DATA_DIR, 'asset-favourites').decode('utf-8')
-VIRTUAL_CAT_TITLE_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_title').decode('utf-8')
-VIRTUAL_CAT_YEARS_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_years').decode('utf-8')
-VIRTUAL_CAT_GENRE_DIR   = os.path.join(PLUGIN_DATA_DIR, 'db_genre').decode('utf-8')
-VIRTUAL_CAT_STUDIO_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_studio').decode('utf-8')
-ROMS_DIR                = os.path.join(PLUGIN_DATA_DIR, 'db_ROMs').decode('utf-8')
-COLLECTIONS_DIR         = os.path.join(PLUGIN_DATA_DIR, 'db_Collections').decode('utf-8')
-REPORTS_DIR             = os.path.join(PLUGIN_DATA_DIR, 'reports').decode('utf-8')
+DEFAULT_CAT_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-categories').decode('utf-8')
+DEFAULT_COL_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-collections').decode('utf-8')
+DEFAULT_LAUN_ASSET_DIR = os.path.join(PLUGIN_DATA_DIR, 'asset-launchers').decode('utf-8')
+DEFAULT_FAV_ASSET_DIR  = os.path.join(PLUGIN_DATA_DIR, 'asset-favourites').decode('utf-8')
+VIRTUAL_CAT_TITLE_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_title').decode('utf-8')
+VIRTUAL_CAT_YEARS_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_years').decode('utf-8')
+VIRTUAL_CAT_GENRE_DIR  = os.path.join(PLUGIN_DATA_DIR, 'db_genre').decode('utf-8')
+VIRTUAL_CAT_STUDIO_DIR = os.path.join(PLUGIN_DATA_DIR, 'db_studio').decode('utf-8')
+ROMS_DIR               = os.path.join(PLUGIN_DATA_DIR, 'db_ROMs').decode('utf-8')
+COLLECTIONS_DIR        = os.path.join(PLUGIN_DATA_DIR, 'db_Collections').decode('utf-8')
+REPORTS_DIR            = os.path.join(PLUGIN_DATA_DIR, 'reports').decode('utf-8')
 
 # --- Misc "constants" ---
 KIND_CATEGORY         = 1
@@ -4274,9 +4274,46 @@ class Main:
             if not ret:
                 kodi_dialog_OK('ROM Collection export cancelled.')
                 return
-            log_info('_command_export_collection() Copying parent assets into ROM Collections asset directory.')
+
+            # --- Copy Collection assets ---
+            log_info('_command_export_collection() Copying Collection assets...')
             collections_asset_dir = self.settings['collections_asset_dir']
-            assets_were_copied = False
+            collection_assets_were_copied = False
+            for asset_kind in CATEGORY_ASSET_LIST:
+                A = assets_get_info_scheme(asset_kind)
+                asset_filename = collection[A.key]
+                asset_F = misc_split_path(asset_filename)
+                if not asset_filename:
+                    log_debug('{0:<9s} not set.'.format(A.name))
+                    continue
+                elif asset_F.dirname == collections_asset_dir:
+                    log_debug('{0:<9s} in Collection asset dir'.format(A.name))
+                    continue
+                else:
+                    log_debug('{0:<9s} in external dir'.format(A.name))
+                    new_asset_filename = assets_get_path_noext_SUFIX(A, collections_asset_dir, collection['m_name'], collection['id']) + asset_F.ext
+                    log_debug('{0:<9s} COPY "{1}"'.format(A.name, asset_filename))
+                    log_debug('{0:<9s}   TO "{1}"'.format(A.name, new_asset_filename))
+                    try:
+                        source_path = asset_filename.decode(get_fs_encoding(), 'ignore')
+                        dest_path   = new_asset_filename.decode(get_fs_encoding(), 'ignore')
+                        shutil.copy(source_path, dest_path)
+                    except OSError:
+                        log_error('_gui_edit_asset() OSError exception copying image')
+                        kodi_notify_warn('OSError exception copying image')
+                        return
+                    except IOError:
+                        log_error('_gui_edit_asset() IOError exception copying image')
+                        kodi_notify_warn('IOError exception copying image')
+                        return
+
+                    # >> Asset were copied. Update ROM Collection database.
+                    rom_item[A.key] = new_asset_filename
+                    collection_assets_were_copied = True
+
+            # --- Copy Collection ROM assets ---
+            log_info('_command_export_collection() Copying parent assets into ROM Collections asset directory...')
+            ROM_assets_were_copied = False
             for rom_item in collection_rom_list:
                 log_debug('_command_export_collection() ROM "{0}"'.format(rom_item['m_name']))
                 for asset_kind in ROM_ASSET_LIST:
@@ -4291,6 +4328,7 @@ class Main:
                         continue
                     else:
                         # >> Copy asset from parent into ROM Collection asset dir
+                        log_debug('{0:<9s} in external dir'.format(A.name))
                         ROM_F = misc_split_path(rom_item['filename'])
                         new_asset_filename = assets_get_path_noext_SUFIX(A, collections_asset_dir, ROM_F.base_noext, rom_item['id']) + asset_F.ext
                         log_debug('{0:<9s} COPY "{1}"'.format(A.name, asset_filename))
@@ -4310,9 +4348,12 @@ class Main:
 
                         # >> Asset were copied. Update ROM Collection database.
                         rom_item[A.key] = new_asset_filename
-                        assets_were_copied = True
+                        ROM_assets_were_copied = True
+
             # >> Write ROM Collection DB.
-            if assets_were_copied:
+            if collection_assets_were_copied:
+                fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+            if ROM_assets_were_copied:
                 json_file = os.path.join(COLLECTIONS_DIR, collection['roms_base_noext'] + '.json')
                 fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
 
@@ -6671,7 +6712,7 @@ class Main:
             object_name = 'Collection'
             A = assets_get_info_scheme(asset_kind)
             asset_directory = self.settings['collections_asset_dir']
-            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['name'], object_dic['id'])
+            asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Collection "{0}"'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
