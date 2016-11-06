@@ -3083,11 +3083,12 @@ class Main:
         # >> AEL custom artwork fields
         listitem.setArt({'title'     : rom['s_title'],     'snap'    : rom['s_snap'],
                          'boxfront'  : rom['s_boxfront'],  'boxback' : rom['s_boxback'], 
-                         'cartridge' : rom['s_cartridge'], 'map'     : rom['s_map'] })
+                         'cartridge' : rom['s_cartridge'], 'flyer'   : rom['s_flyer'],
+                         'map'       : rom['s_map'] })
 
         # >> Kodi official artwork fields
-        listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart,
-                         'banner' : thumb_banner, 'poster' : thumb_poster, 'clearlogo' : thumb_clearlogo })
+        listitem.setArt({'icon'   : thumb_path,   'fanart'    : thumb_fanart,
+                         'banner' : thumb_banner, 'clearlogo' : thumb_clearlogo, 'poster' : thumb_poster })
 
         # --- ROM extrafanart ---
         # >> Build extrafanart dictionary
