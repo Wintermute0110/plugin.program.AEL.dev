@@ -4697,7 +4697,7 @@ class Main:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
                 return
             rom = collection_rom_list[current_ROM_position]
-            window_title = '{0} Collection ROM data'.format(collection['name'])
+            window_title = '{0} Collection ROM data'.format(collection['m_name'])
             regular_launcher = False
             vlauncher_label = 'Collection'
 
