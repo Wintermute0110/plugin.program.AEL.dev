@@ -55,7 +55,7 @@ def log_debug(str_text):
         # if it is str we assume it's "utf-8" encoded.
         # will fail if called with other encodings (latin, etc).
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-                                  
+
         # At this point we are sure str_text is a unicode string.
         log_text = u'AEL DEBUG: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
