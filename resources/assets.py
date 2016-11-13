@@ -19,7 +19,7 @@ import os
 
 # --- AEL packages ---
 from utils import *
-from path import Path
+from disk_IO import Path
 try:
     from utils_kodi import *
 except:
@@ -116,9 +116,9 @@ def assets_init_asset_dir(asset_path, launcher):
 
 def assets_parse_asset_dir(launchers, assetPath, key, pathName):
     subPath = assetPath.getSubPath(pathName)
-    launcher[key] = subPath.getOriginalPath()
+    launchers[key] = subPath.getOriginalPath()
 
-    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(pathToCreate.getCurrentPath()))
+    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(subPath.getCurrentPath()))
     subPath.create()
     
 #
@@ -321,7 +321,8 @@ def assets_get_info_scheme(asset_kind):
 #
 def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
     # >> Returns asset/artwork path_noext
-    return os.path.join(asset_path, asset_base_noext)
+    assetPath = Path(asset_path)
+    return assetPath.getSubPath(asset_base_noext).getCurrentPath()
 
 #
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
@@ -330,26 +331,27 @@ def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
 # Favourites special category there could be ROMs with the same name for different systems.
 def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext, objectID = '000'):
     # >> Returns asset/artwork path_noext
-    asset_path_noext = ''
+    assetPath = Path(asset_path)
+    asset_path_noext = Path('')
     objectID_str = '_' + objectID[0:3]
 
-    if   Asset.kind == ASSET_TITLE:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_title')
-    elif Asset.kind == ASSET_SNAP:      asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_snap')
-    elif Asset.kind == ASSET_FANART:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_fanart')
-    elif Asset.kind == ASSET_BANNER:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_banner')
-    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_clearlogo')
-    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_boxfront')
-    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_boxback')
-    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_cartridge')
-    elif Asset.kind == ASSET_FLYER:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_flyer')
-    elif Asset.kind == ASSET_MAP:       asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_map')
-    elif Asset.kind == ASSET_MANUAL:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_manual')
-    elif Asset.kind == ASSET_TRAILER:   asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_trailer')
-    elif Asset.kind == ASSET_THUMB:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_thumb')
+    if   Asset.kind == ASSET_TITLE:     asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_title')
+    elif Asset.kind == ASSET_SNAP:      asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_snap')
+    elif Asset.kind == ASSET_FANART:    asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_fanart')
+    elif Asset.kind == ASSET_BANNER:    asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_banner')
+    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_clearlogo')
+    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_boxfront')
+    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_boxback')
+    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_cartridge')
+    elif Asset.kind == ASSET_FLYER:     asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_flyer')
+    elif Asset.kind == ASSET_MAP:       asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_map')
+    elif Asset.kind == ASSET_MANUAL:    asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_manual')
+    elif Asset.kind == ASSET_TRAILER:   asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_trailer')
+    elif Asset.kind == ASSET_THUMB:     asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_thumb')
     else:
         log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
 
-    return asset_path_noext
+    return asset_path_noext.getCurrentPath()
 
 #
 # Get a list of enabled assets.

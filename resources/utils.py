@@ -23,7 +23,7 @@ from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse, re, string
 
 # --- AEL modules ---
-from disk_IO import Path
+from disk_IO import *
 try:
     from utils_kodi import *
 except:
