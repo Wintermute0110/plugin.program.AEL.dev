@@ -59,8 +59,6 @@
     <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false"/>
     <setting label="Escape ROMfile quotes" type="bool" id="escape_romfile" default="false" />
     <setting label="Import AL launchers.xml..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
-
-    <setting id="separator" type="lsep" label="Debug options"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
     <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
 </category>

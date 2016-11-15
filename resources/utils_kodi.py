@@ -55,7 +55,7 @@ def log_debug(str_text):
         # if it is str we assume it's "utf-8" encoded.
         # will fail if called with other encodings (latin, etc).
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-                                  
+
         # At this point we are sure str_text is a unicode string.
         log_text = u'AEL DEBUG: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
@@ -148,13 +148,13 @@ def kodi_refresh_container():
 # See http://kodi.wiki/view/HOW-TO:Reduce_disk_space_usage
 # See http://forum.kodi.tv/showthread.php?tid=139568 (What are .tbn files for?)
 #
-# Whenever Kodi downloads images from the internet, or even loads local images saved along 
-# side your media, it caches these images inside of ~/.kodi/userdata/Thumbnails/. By default, 
-# large images are scaled down to the default values shown below, but they can be sized 
+# Whenever Kodi downloads images from the internet, or even loads local images saved along
+# side your media, it caches these images inside of ~/.kodi/userdata/Thumbnails/. By default,
+# large images are scaled down to the default values shown below, but they can be sized
 # even smaller to save additional space.
 
 #
-# Gets where in Kodi image cache an image is located. 
+# Gets where in Kodi image cache an image is located.
 #
 def kodi_get_cached_image(image_path):
     THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
@@ -222,8 +222,8 @@ def kodi_kodi_read_favourites():
                 fav_icon = favourite.attributes[ 'thumb' ].nodeValue
             except:
                 fav_icon = "DefaultProgram.png"
-            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'), 
-                               fav_icon.encode('utf8','ignore'), 
+            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'),
+                               fav_icon.encode('utf8','ignore'),
                                favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
             fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
 

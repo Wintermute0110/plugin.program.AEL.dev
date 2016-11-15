@@ -24,6 +24,7 @@ import os
 import sys
 import fnmatch
 import string
+import base64
 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
@@ -34,6 +35,7 @@ import xml.etree.ElementTree as ET
 
 # --- AEL packages ---
 from utils import *
+from assets import *
 try:
     from utils_kodi import *
 except:
@@ -82,7 +84,7 @@ def fs_new_category():
 def fs_new_launcher():
     l = {'id' : '',
          'm_name' : '',
-         'm_year' : '', 
+         'm_year' : '',
          'm_genre' : '',
          'm_studio' : '',
          'm_rating' : '',
@@ -140,7 +142,7 @@ def fs_new_rom():
          'm_name' : '',
          'm_year' : '',
          'm_genre' : '',
-         'm_studio' : '',         
+         'm_studio' : '',
          'm_rating' : '',
          'm_plot' : '',
          'filename' : '',
@@ -166,7 +168,10 @@ def fs_new_rom():
 
 def fs_new_collection():
     c = {'id' : '',
-         'name' : '',
+         'm_name' : '',
+         'm_genre' : '',
+         'm_rating' : '',
+         'm_plot' : '',
          'roms_base_noext' : '',
          'default_thumb' : 's_thumb',
          'default_fanart' : 's_fanart',
@@ -177,7 +182,7 @@ def fs_new_collection():
          's_banner' : '',
          's_flyer' : '',
          's_trailer' : ''
-         }
+    }
 
     return c
 
@@ -192,7 +197,7 @@ def fs_new_collection():
 #  'OK'                ROM filename exists and launcher exists and ROM id exists
 #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
 #  'Unlinked Launcher' ROM filename exists but Launcher ID not found
-#                      Note that if the launcher does not exists implies ROM ID does not exist. 
+#                      Note that if the launcher does not exists implies ROM ID does not exist.
 #                      If launcher doesn't exist ROM JSON cannot be loaded.
 #  'Broken'            ROM filename does not exist. ROM is unplayable
 #
@@ -416,8 +421,8 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('m_genre', launcher['m_genre']))
             str_list.append(XML_text('m_studio', launcher['m_studio']))
             str_list.append(XML_text('m_plot', launcher['m_plot']))
-            str_list.append(XML_text('m_rating', launcher['m_rating']))            
-            str_list.append(XML_text('platform', launcher['platform']))            
+            str_list.append(XML_text('m_rating', launcher['m_rating']))
+            str_list.append(XML_text('platform', launcher['platform']))
             str_list.append(XML_text('categoryID', launcher['categoryID']))
             str_list.append(XML_text('application', launcher['application']))
             str_list.append(XML_text('args', launcher['args']))
@@ -564,7 +569,7 @@ def fs_write_JSON_file(file_dir, file_base_noext, data):
 
     try:
         with io.open(json_file, 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -688,7 +693,7 @@ def fs_write_ROMs_XML(roms_dir, roms_base_noext, roms, launcher):
             str_list.append(XML_text('finished', unicode(rom['finished'])))
             str_list.append(XML_text('nointro_status', rom['nointro_status']))
             if rom['default_thumb']:  str_list.append(XML_text('default_thumb', rom['default_thumb']))
-            if rom['default_fanart']: str_list.append(XML_text('default_fanart', rom['default_fanart']))            
+            if rom['default_fanart']: str_list.append(XML_text('default_fanart', rom['default_fanart']))
             if rom['s_title']:        str_list.append(XML_text('s_title', rom['s_title']))
             if rom['s_snap']:         str_list.append(XML_text('s_snap', rom['s_snap']))
             if rom['s_fanart']:       str_list.append(XML_text('s_fanart', rom['s_fanart']))
@@ -813,14 +818,14 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         log_error('fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file))
 
     # >> Write ROMs JSON dictionary.
-    # >> Do note that there is a bug in the json module where the ensure_ascii=False flag can produce 
-    # >> a mix of unicode and str objects. 
+    # >> Do note that there is a bug in the json module where the ensure_ascii=False flag can produce
+    # >> a mix of unicode and str objects.
     # >> See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
             # >> json_unicode is either str or unicode
             # >> See https://docs.python.org/2.7/library/json.html#json.dumps
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             # unicode(json_data) auto-decodes data to unicode if str
             file.write(unicode(json_data))
@@ -866,7 +871,7 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
 # Save Favourites JSON file
 #
 def fs_write_Favourites_JSON(roms_json_file, roms):
-    log_info('fs_write_Favourites_JSON() File {0}'.format(roms_json_file))
+    log_verb('fs_write_Favourites_JSON() File {0}'.format(roms_json_file))
 
     # --- Create JSON data structure, including version number ---
     control_dic = {
@@ -880,7 +885,7 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
     # --- Write JSON file ---
     try:
         with io.open(roms_json_file, 'w', encoding='utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -898,7 +903,7 @@ def fs_load_Favourites_JSON(roms_json_file):
     if not os.path.isfile(roms_json_file): return {}
 
     # --- Parse JSON ---
-    with open(roms_json_file) as file:    
+    with open(roms_json_file) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
@@ -932,11 +937,14 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
-        for collection_id in sorted(collections, key = lambda x : collections[x]['name']):
+        for collection_id in sorted(collections, key = lambda x : collections[x]['m_name']):
             collection = collections[collection_id]
             str_list.append('<Collection>\n')
             str_list.append(XML_text('id', collection['id']))
-            str_list.append(XML_text('name', collection['name']))
+            str_list.append(XML_text('m_name', collection['m_name']))
+            str_list.append(XML_text('m_genre', collection['m_genre']))
+            str_list.append(XML_text('m_rating', collection['m_rating']))
+            str_list.append(XML_text('m_plot', collection['m_plot']))
             str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
             str_list.append(XML_text('default_thumb', collection['default_thumb']))
             str_list.append(XML_text('default_fanart', collection['default_fanart']))
@@ -986,7 +994,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
         elif root_element.tag == 'Collection':
             collection = fs_new_collection()
             for rom_child in root_element:
-                # By default read strings
+                # >> By default read strings
                 xml_text = rom_child.text if rom_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = rom_child.tag
@@ -1009,7 +1017,7 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
 
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -1029,7 +1037,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
     # --- Parse using JSON ---
     log_verb('fs_load_Collection_ROMs_JSON() {0}'.format(roms_json_file))
 
-    with open(roms_json_file) as file:    
+    with open(roms_json_file) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
@@ -1048,23 +1056,26 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
 
 def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
     log_info('fs_export_ROM_collection() File {0}'.format(output_filename))
-    
+
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
         'version' : AEL_STORAGE_FORMAT
     }
     collection_dic = {
-        'id'                : collection['id'],
-        'name'              : collection['name'],
-        'default_thumb'     : collection['default_thumb'],
-        'default_fanart'    : collection['default_fanart'],
-        'default_banner'    : collection['default_banner'],
-        'default_poster'    : collection['default_poster'],
-        's_thumb'           : collection['s_thumb'],
-        's_fanart'          : collection['s_fanart'],
-        's_banner'          : collection['s_banner'],
-        's_flyer'           : collection['s_flyer'],
-        's_trailer'         : collection['s_trailer']
+        'id'             : collection['id'],
+        'm_name'         : collection['m_name'],
+        'm_genre'        : collection['m_genre'],
+        'm_rating'       : collection['m_rating'],
+        'm_plot'         : collection['m_plot'],
+        'default_thumb'  : collection['default_thumb'],
+        'default_fanart' : collection['default_fanart'],
+        'default_banner' : collection['default_banner'],
+        'default_poster' : collection['default_poster'],
+        's_thumb'        : collection['s_thumb'],
+        's_fanart'       : collection['s_fanart'],
+        's_banner'       : collection['s_banner'],
+        's_flyer'        : collection['s_flyer'],
+        's_trailer'      : collection['s_trailer']
     }
     raw_data = []
     raw_data.append(control_dic)
@@ -1074,7 +1085,7 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
     # >> Produce nicely formatted JSON when exporting
     try:
         with io.open(output_filename, 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = 2, separators = (', ', ' : '))
             file.write(unicode(json_data))
             file.close()
@@ -1083,23 +1094,99 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
     except IOError:
         kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename))
 
+#
+# Export collection assets. Use base64 encoding to store binary files in JSON.
+#
+def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_list, collections_asset_dir):
+    log_info('fs_export_ROM_collection_assets() File {0}'.format(output_filename))
+
+    control_dic = {
+        'control' : 'Advanced Emulator Launcher Collection ROM assets',
+        'version' : AEL_STORAGE_FORMAT
+    }
+
+    # --- Export Collection assets ---
+    assets_dic = {}
+    log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
+    for asset_kind in [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER]:
+        A = assets_get_info_scheme(asset_kind)
+        asset_filename = collection[A.key]
+        asset_F = misc_split_path(asset_filename)
+        if not asset_filename:
+            log_debug('{0:<9s} not set'.format(A.name))
+            continue
+        elif asset_F.dirname == collections_asset_dir:
+            log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(A.name, asset_F.base_noext))
+            with open(asset_filename, mode = 'rb') as file: # b is important -> binary
+                fileData = file.read()
+            fileData_base64 = base64.b64encode(fileData)
+            statinfo = os.stat(asset_filename)
+            file_size = statinfo.st_size
+            a_dic = {'basename' : asset_F.base, 'filesize' : file_size, 'data' : fileData_base64}
+            assets_dic[asset_F.base_noext] = a_dic
+        else:
+            log_error('{0:<9s} in parent ROM directory! This is not supposed to happen!'.format(A.name))
+
+    # --- Export ROMs assets ---
+    # key -> basename : value { 'filesize' : int, 'data' : string }
+    for rom_item in collection_rom_list:
+        log_debug('fs_export_ROM_collection_assets() ROM "{0}"'.format(rom_item['m_name']))
+        for asset_kind in ROM_ASSET_LIST:
+            A = assets_get_info_scheme(asset_kind)
+            asset_filename = rom_item[A.key]
+            asset_F = misc_split_path(asset_filename)
+            if not asset_filename:
+                log_debug('{0:<9s} not set'.format(A.name))
+                continue
+            elif asset_F.dirname == collections_asset_dir:
+                log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(A.name, asset_F.base_noext))
+                # >> Read image binary data and encode
+                with open(asset_filename, mode = 'rb') as file: # b is important -> binary
+                    fileData = file.read()
+                fileData_base64 = base64.b64encode(fileData)
+                # >> Get file size
+                statinfo = os.stat(asset_filename)
+                file_size = statinfo.st_size
+                # >> Make data dictionary and append to list
+                a_dic = {'basename' : asset_F.base, 'filesize' : file_size, 'data' : fileData_base64}
+                assets_dic[asset_F.base_noext] = a_dic
+            else:
+                log_error('{0:<9s} in parent ROM directory! This is not supposed to happen!'.format(A.name))
+
+    raw_data = []
+    raw_data.append(control_dic)
+    raw_data.append(assets_dic)
+
+    # >> Produce nicely formatted JSON when exporting
+    try:
+        with io.open(output_filename, 'w', encoding = 'utf-8') as file:
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
+                                   indent = 2, separators = (', ', ' : '))
+            file.write(unicode(json_data))
+            file.close()
+    except OSError:
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename))
+    except IOError:
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename))
+
+#
 # See fs_export_ROM_collection() function.
 # Returns a tuple (control_dic, collection_dic, collection_rom_list)
 #
-def fs_import_ROM_Collection(input_filename):
+def fs_import_ROM_collection(input_filename):
     if not os.path.isfile(input_filename): return ({}, {}, [])
 
     # --- Parse using JSON ---
-    log_info('fs_import_ROM_Collection() Loading {0}'.format(input_filename))
+    log_info('fs_import_ROM_collection() Loading {0}'.format(input_filename))
 
-    with open(input_filename) as file:    
+    with open(input_filename) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
             statinfo = os.stat(input_filename)
-            log_error('fs_import_ROM_Collection() ValueError exception in json.load() function')
-            log_error('fs_import_ROM_Collection() File {0}'.format(input_filename))
-            log_error('fs_import_ROM_Collection() Size {0}'.format(statinfo.st_size))
+            log_error('fs_import_ROM_collection() ValueError exception in json.load() function')
+            log_error('fs_import_ROM_collection() File {0}'.format(input_filename))
+            log_error('fs_import_ROM_collection() Size {0}'.format(statinfo.st_size))
             return ({}, {}, [])
 
     # --- Extract roms from JSON data structe and ensure version is correct ---
@@ -1110,6 +1197,30 @@ def fs_import_ROM_Collection(input_filename):
     version_int         = control_dic['version']
 
     return (control_dic, collection_dic, collection_rom_list)
+
+def fs_import_ROM_collection_assets(input_filename):
+    if not os.path.isfile(input_filename): return ({}, {}, [])
+
+    # --- Parse using JSON ---
+    log_info('fs_import_ROM_collection_assets() Loading {0}'.format(input_filename))
+
+    with open(input_filename) as file:
+        try:
+            raw_data = json.load(file)
+        except ValueError:
+            statinfo = os.stat(input_filename)
+            log_error('fs_import_ROM_collection_assets() ValueError exception in json.load() function')
+            log_error('fs_import_ROM_collection_assets() File {0}'.format(input_filename))
+            log_error('fs_import_ROM_collection_assets() Size {0}'.format(statinfo.st_size))
+            return ({}, {}, [])
+
+    # --- Extract roms from JSON data structe and ensure version is correct ---
+    control_dic = raw_data[0]
+    assets_dic  = raw_data[1]
+    control_str = control_dic['control']
+    version_int = control_dic['version']
+
+    return (control_dic, assets_dic)
 
 #
 # Returns:
@@ -1212,7 +1323,7 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file))
     try:
         with io.open(roms_json_file, 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -1231,7 +1342,7 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file))
-    with open(roms_json_file) as file:    
+    with open(roms_json_file) as file:
         try:
             roms = json.load(file)
         except ValueError:
@@ -1273,7 +1384,7 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
             nointro_rom = {'name' : '', 'cloneof' : ''}
             rom_name = root_element.attrib['name']
             nointro_rom['name'] = rom_name
-            if 'cloneof' in root_element.attrib: 
+            if 'cloneof' in root_element.attrib:
                 nointro_rom['cloneof'] = root_element.attrib['cloneof']
             nointro_roms[rom_name] = nointro_rom
 
@@ -1335,7 +1446,7 @@ def fs_generate_PClone_index(roms, roms_nointro):
                 parent_id = rom['id']
                 if parent_id not in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[parent_id] = []
-            # >> ROM is a clone 
+            # >> ROM is a clone
             else:
                 parent_name = nointro_rom['cloneof']
                 parent_id = names_to_ids_dic[parent_name]
@@ -1353,11 +1464,11 @@ def fs_generate_PClone_index(roms, roms_nointro):
 #
 def fs_generate_parent_ROMs(roms, roms_pclone_index):
     parent_roms = {}
-    
+
     for rom_id in roms_pclone_index:
         if rom_id == 'Unknown ROMs':
             parent_roms[rom_id] = {
-                'id' : 'Unknown ROMs', 
+                'id' : 'Unknown ROMs',
                 'm_name' : '[Unknown ROMs]',
                 'finished' : False,
                 'nointro_status' : 'Have',
@@ -1395,7 +1506,7 @@ def fs_load_GameInfo_XML(xml_file):
         return roms
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
-        if __debug_xml_parser: 
+        if __debug_xml_parser:
             log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
@@ -1429,7 +1540,7 @@ def fs_load_GameInfo_XML(xml_file):
 # See tools/read_AL_launchers_XML.py for details of this function/
 # -------------------------------------------------------------------------------------------------
 def fs_fix_launchers_xml(launchers_xml_path, sanitized_xml_path):
-    #    
+    #
     # A) Read launcher.xml line by line
     # B) Substitute offending/unescaped XML characters
     # C) Write sanitized output XML
@@ -1502,12 +1613,12 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
             for category_element in root_element:
                 log_debug('New Category')
                 # >> Initialise correct default values
-                category = {'id'       : '', 
-                            'name'     : '', 
-                            'thumb'    : '', 
-                            'fanart'   : '', 
-                            'genre'    : '', 
-                            'plot'     : '', 
+                category = {'id'       : '',
+                            'name'     : '',
+                            'thumb'    : '',
+                            'fanart'   : '',
+                            'genre'    : '',
+                            'plot'     : '',
                             'finished' : 'false' }
                 for category_child in category_element:
                     if category_child.tag == 'name': log_debug('Category name "{0}"'.format(category_child.text))
@@ -1523,19 +1634,19 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
             for launcher_element in root_element:
                 log_debug('New Launcher')
                 # >> Initialise correct default values
-                launcher = {'id'          : '', 
-                            'name'        : '', 
-                            'category'    : '', 
-                            'application' : '', 
-                            'args'        : '', 
-                            'rompath'     : '', 
+                launcher = {'id'          : '',
+                            'name'        : '',
+                            'category'    : '',
+                            'application' : '',
+                            'args'        : '',
+                            'rompath'     : '',
                             'thumbpath'   : '',
                             'fanartpath'  : '',
                             'trailerpath' : '',
                             'custompath'  : '',
                             'romext'      : '',
                             'gamesys'     : '',
-                            'thumb'       : '', 
+                            'thumb'       : '',
                             'fanart'      : '',
                             'genre'       : '',
                             'release'     : '',
@@ -1561,7 +1672,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
                         roms_element = launcher_child
                         for rom_element in roms_element:
                             # >> Defaul AL ROM values
-                            rom = {'id'       : '', 
+                            rom = {'id'       : '',
                                    'name'     : '',
                                    'filename' : '',
                                    'thumb'    : '',
@@ -1594,7 +1705,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
 #
 # When called from "Edit ROM" --> "Edit Metadata" --> "Import metadata from NFO file" function should
 # be verbose and print notifications.
-# However, this function is also used to export launcher ROMs in bulk in 
+# However, this function is also used to export launcher ROMs in bulk in
 # "Edit Launcher" --> "Manage ROM List" --> "Export ROMs metadata to NFO files". In that case, function
 # must not be verbose because it can be called thousands of times for big ROM sets!
 #
@@ -1828,7 +1939,6 @@ def fs_export_category_NFO(nfo_file_path, category):
         kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
         log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_file_path))
         return False
-
     kodi_notify('Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
     log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_file_path))
 
@@ -1871,6 +1981,75 @@ def fs_get_category_NFO_name(settings, category):
     nfo_dir = settings['categories_asset_dir']
     nfo_file_path = os.path.join(nfo_dir, category_name + '.nfo')
     log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+
+    return nfo_file_path
+
+#
+# Collection NFO files. Same as Cateogory NFO files.
+#
+def fs_export_collection_NFO(nfo_file_path, collection):
+    # --- Get NFO file name ---
+    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path))
+
+    # If NFO file does not exist then create them. If it exists, overwrite.
+    nfo_content = []
+    nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    nfo_content.append('<collection>\n')
+    nfo_content.append(XML_text('genre',  collection['m_genre']))
+    nfo_content.append(XML_text('rating', collection['m_rating']))
+    nfo_content.append(XML_text('plot',   collection['m_plot']))
+    nfo_content.append('</collection>\n')
+    full_string = ''.join(nfo_content).encode('utf-8')
+    try:
+        f = open(nfo_file_path, 'w')
+        f.write(full_string)
+        f.close()
+    except:
+        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
+        log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_file_path))
+        return False
+    kodi_notify('Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
+    log_debug("fs_export_collection_NFO() Created '{0}'".format(nfo_file_path))
+
+    return True
+
+def fs_import_collection_NFO(nfo_file_path, collections, launcherID):
+    # --- Get NFO file name ---
+    log_debug('fs_import_collection_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path))
+
+    # --- Import data ---
+    if os.path.isfile(nfo_file_path):
+        try:
+            file = codecs.open(nfo_file_path, 'r', 'utf-8')
+            item_nfo = file.read().replace('\r', '').replace('\n', '')
+            file.close()
+        except:
+            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
+            log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
+            return False
+    else:
+        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
+        log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_file_path))
+        return False
+
+    item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
+    item_rating = re.findall('<rating>(.*?)</rating>', item_nfo)
+    item_plot   = re.findall('<plot>(.*?)</plot>',   item_nfo)
+
+    if item_genre:  collections[launcherID]['m_genre']  = text_unescape_XML(item_genre[0])
+    if item_rating: collections[launcherID]['m_rating'] = text_unescape_XML(item_rating[0])
+    if item_plot:   collections[launcherID]['m_plot']   = text_unescape_XML(item_plot[0])
+
+    kodi_notify('Imported {0}'.format(os.path.basename(nfo_file_path)))
+    log_verb("fs_import_collection_NFO() Imported '{0}'".format(nfo_file_path))
+
+    return True
+
+def fs_get_collection_NFO_name(settings, collection):
+    collection_name = collection['m_name']
+    nfo_dir = settings['collections_asset_dir']
+    nfo_file_path = os.path.join(nfo_dir, collection_name + '.nfo')
+    log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
 
     return nfo_file_path
 
