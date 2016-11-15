@@ -322,7 +322,7 @@ def assets_get_info_scheme(asset_kind):
 def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
     # >> Returns asset/artwork path_noext
     assetPath = Path(asset_path)
-    return assetPath.getSubPath(asset_base_noext).getCurrentPath()
+    return assetPath.getSubPath(asset_base_noext).getOriginalPath()
 
 #
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
@@ -351,7 +351,7 @@ def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext, objectID = 
     else:
         log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
 
-    return asset_path_noext.getCurrentPath()
+    return asset_path_noext.getOriginalPath()
 
 #
 # Get a list of enabled assets.

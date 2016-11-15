@@ -769,7 +769,7 @@ class Main:
             launcherdata['m_name']             = title
             launcherdata['platform']           = launcher_platform
             launcherdata['categoryID']         = launcher_categoryID
-            launcherdata['application']        = appPath.getCurrentPath()
+            launcherdata['application']        = appPath.getOriginalPath()
             launcherdata['args']               = args
             launcherdata['timestamp_launcher'] = time.time()
             self.launchers[launcherID] = launcherdata
@@ -852,7 +852,7 @@ class Main:
             launcherdata['m_name']             = title
             launcherdata['platform']           = launcher_platform
             launcherdata['categoryID']         = launcher_categoryID
-            launcherdata['application']        = appPath.getCurrentPath()
+            launcherdata['application']        = appPath.getOriginalPath()
             launcherdata['args']               = args
             launcherdata['rompath']            = roms_path
             launcherdata['romext']             = ext
@@ -6590,6 +6590,7 @@ class Main:
             if object_dic[A.key] != '':
                 F = misc_split_path(object_dic[A.key])
                 image_dir = F.dirname
+
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             # >> ShowAndGetFile dialog
             dialog = xbmcgui.Dialog()
@@ -6605,12 +6606,12 @@ class Main:
             if not image_file or not image_file_path.fileExists(): return False
 
             # --- Update object by assigment. XML/JSON will be save by parent ---
-            object_dic[A.key] = image_file_path.getCurrentPath()
+            object_dic[A.key] = image_file_path.getOriginalPath()
             kodi_notify('{0} has been updated'.format(A.name))
-            log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, A.name, image_file_path.getCurrentPath()))
+            log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, A.name, image_file_path.getOriginalPath()))
 
             # --- Update Kodi image cache ---
-            kodi_update_image_cache(image_file_path.getCurrentPath())
+            kodi_update_image_cache(image_file_path.getOriginalPath())
 
         # --- Import an image ---
         # >> Copy and rename a local image into asset directory
@@ -6628,7 +6629,7 @@ class Main:
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
             dest_path = asset_path_noext + F.ext
-            log_debug('_gui_edit_asset() image_file   "{0}"'.format(image_file_path.getCurrentPath()))
+            log_debug('_gui_edit_asset() image_file   "{0}"'.format(image_file_path.getOriginalPath()))
             log_debug('_gui_edit_asset() img_ext      "{0}"'.format(F.ext))
             log_debug('_gui_edit_asset() dest_path    "{0}"'.format(dest_path))
 
@@ -7109,7 +7110,7 @@ def gui_show_image_select(window_title, item_list):
     # The xml file needs to be part of your addon, or included in the skin you use.
     # DialogSelect.xml is defined in Confluence here
     # https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
-    w = ImgSelectDialog('DialogSelect.xml', BASE_DIR.getCurrentPath(), title = window_title, listing = item_list)
+    w = ImgSelectDialog('DialogSelect.xml', BASE_DIR.getOriginalPath(), title = window_title, listing = item_list)
 
     # --- Execute dialog ---
     w.doModal()

@@ -1901,13 +1901,15 @@ class Path:
         if self.originalPath.lower().startswith('special:'):
             self.path = xbmc.translatePath(self.path)
 
-    def join(self, subPath):
-        self.path = os.path.join(self.path, subPath)
-        self.originalPath = os.path(self.originalPath, subPath)
+    def join(self, arg):
+        self.path = os.path.join(self.path, arg)
+        self.originalPath = os.path.join(self.originalPath, arg)
         
-    def getSubPath(self, arg):
-        actualSubPath = os.path.join(self.originalPath, arg)
-        child = Path(actualSubPath)
+    def getSubPath(self, *args):
+        child = Path(self.originalPath)
+        for arg in args:
+            child.join(arg)
+
         return child
 
     def getName(self):
