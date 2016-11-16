@@ -86,6 +86,7 @@ AEL_platform_list = [
     'Microsoft MSX',
     'Microsoft MSX 2',
     'Microsoft MS-DOS',
+    'Microsoft Windows',
     'Microsoft Xbox',
     'Microsoft Xbox 360',
     # --- NEC ---
@@ -152,6 +153,7 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Microsoft MSX'               : '',
     'Microsoft MSX 2'             : '',
     'Microsoft MS-DOS'            : '',
+    'Microsoft Windows'           : '',
     'Microsoft Xbox'              : '',
     'Microsoft Xbox 360'          : '',
     'NEC PC Engine/TurboGrafx 16' : '',
@@ -209,6 +211,7 @@ platform_AEL_to_TheGamesDB_dic = {
     'Microsoft MSX'               : 'MSX',
     'Microsoft MSX 2'             : 'MSX',
     'Microsoft MS-DOS'            : 'PC',
+    'Microsoft Windows'           : 'PC',
     'Microsoft Xbox'              : 'Microsoft Xbox',
     'Microsoft Xbox 360'          : 'Microsoft Xbox 360',
     'NEC PC Engine/TurboGrafx 16' : 'TurboGrafx 16', # Also TurboGrafx CD
@@ -266,6 +269,7 @@ platform_AEL_to_GameFAQs_dic = {
     'Microsoft MSX'               : '40',  # <option label="MSX" value="40">MSX</option>
     'Microsoft MSX 2'             : '40',
     'Microsoft MS-DOS'            : '19',  # <option label="PC" value="19">PC</option>
+    'Microsoft Windows'           : '19',  # <option label="PC" value="19">PC</option>
     'Microsoft Xbox'              : '98',  # <option label="Xbox" value="98">Xbox</option>
     'Microsoft Xbox 360'          : '111', # <option label="Xbox 360" value="111">Xbox 360</option>
     'NEC PC Engine/TurboGrafx 16' : '53',  # <option label="TurboGrafx-16" value="53">TurboGrafx-16</option>
@@ -322,6 +326,8 @@ platform_AEL_to_MobyGames_dic = {
     'Microsoft MSX'               : '57',  # <option value="57">MSX</option>
     'Microsoft MSX 2'             : '57',
     'Microsoft MS-DOS'            : '2',   # <option value="2">DOS</option>
+    'Microsoft Windows'           : '3',   # <option value="3">Windows</option>
+                                           # <option value="5">Windows 3.x</option>
     'Microsoft Xbox'              : '13',  # <option value="13">Xbox</option>
     'Microsoft Xbox 360'          : '69',  # <option value="69">Xbox 360</option>
     'NEC PC Engine/TurboGrafx 16' : '40',  # <option value="40">TurboGrafx-16</option>
