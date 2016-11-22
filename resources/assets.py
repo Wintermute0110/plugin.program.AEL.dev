@@ -19,6 +19,7 @@ import os
 
 # --- AEL packages ---
 from utils import *
+from disk_IO import Path
 try:
     from utils_kodi import *
 except:
@@ -97,39 +98,29 @@ def assets_init_asset_dir(asset_path, launcher):
     log_verb('assets_init_asset_dir() rom_path   "{0}"'.format(rom_path))
     log_verb('assets_init_asset_dir() asset_path "{0}"'.format(asset_path))
 
-    # >> Fill in launcher fields
-    launcher['path_title']     = os.path.join(asset_path, 'titles').decode('utf-8')        
-    launcher['path_snap']      = os.path.join(asset_path, 'snaps').decode('utf-8')
-    launcher['path_fanart']    = os.path.join(asset_path, 'fanarts').decode('utf-8')
-    launcher['path_banner']    = os.path.join(asset_path, 'banners').decode('utf-8')
-    launcher['path_clearlogo'] = os.path.join(asset_path, 'clearlogos').decode('utf-8')
-    launcher['path_boxfront']  = os.path.join(asset_path, 'boxfront').decode('utf-8')
-    launcher['path_boxback']   = os.path.join(asset_path, 'boxback').decode('utf-8')
-    launcher['path_cartridge'] = os.path.join(asset_path, 'cartridges').decode('utf-8')
-    launcher['path_flyer']     = os.path.join(asset_path, 'flyers').decode('utf-8')
-    launcher['path_map']       = os.path.join(asset_path, 'maps').decode('utf-8')
-    launcher['path_manual']    = os.path.join(asset_path, 'manuals').decode('utf-8')
-    launcher['path_trailer']   = os.path.join(asset_path, 'trailers').decode('utf-8')
+    assetPath = Path(asset_path)
 
-    # >> Create asset directories
-    assets_safe_create_dir(launcher['path_title'])
-    assets_safe_create_dir(launcher['path_snap'])
-    assets_safe_create_dir(launcher['path_fanart'])
-    assets_safe_create_dir(launcher['path_banner'])
-    assets_safe_create_dir(launcher['path_clearlogo'])        
-    assets_safe_create_dir(launcher['path_boxfront'])
-    assets_safe_create_dir(launcher['path_boxback'])
-    assets_safe_create_dir(launcher['path_cartridge'])
-    assets_safe_create_dir(launcher['path_flyer'])
-    assets_safe_create_dir(launcher['path_map'])
-    assets_safe_create_dir(launcher['path_manual'])
-    assets_safe_create_dir(launcher['path_trailer'])
+    # >> Fill in launcher fields and create asset directories
+    assets_parse_asset_dir(launcher, assetPath, 'path_title', 'titles')
+    assets_parse_asset_dir(launcher, assetPath, 'path_snap', 'snaps')
+    assets_parse_asset_dir(launcher, assetPath, 'path_fanart', 'fanarts')
+    assets_parse_asset_dir(launcher, assetPath, 'path_banner', 'banners')
+    assets_parse_asset_dir(launcher, assetPath, 'path_clearlogo', 'clearlogos')
+    assets_parse_asset_dir(launcher, assetPath, 'path_boxfront', 'boxfront')
+    assets_parse_asset_dir(launcher, assetPath, 'path_boxback', 'boxback')
+    assets_parse_asset_dir(launcher, assetPath, 'path_cartridge', 'cartridges')
+    assets_parse_asset_dir(launcher, assetPath, 'path_flyer', 'flyers')
+    assets_parse_asset_dir(launcher, assetPath, 'path_map', 'maps')
+    assets_parse_asset_dir(launcher, assetPath, 'path_manual', 'manuals')
+    assets_parse_asset_dir(launcher, assetPath, 'path_trailer', 'trailers')
 
-def assets_safe_create_dir(directory):
-    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(directory))
-    if not os.path.exists(directory): 
-        os.makedirs(directory)
+def assets_parse_asset_dir(launchers, assetPath, key, pathName):
+    subPath = assetPath.getSubPath(pathName)
+    launchers[key] = subPath.getOriginalPath()
 
+    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(subPath.getCurrentPath()))
+    subPath.create()
+    
 #
 # Get artwork user configured to be used as thumb/fanart/... for Cateogires/Launchers
 #
@@ -152,7 +143,7 @@ def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asse
 # Gets a human readable name string for the default fallback thumb
 #
 def assets_get_asset_name_str(default_asset):
-    asset_name_str = ''
+    asset_name_str = u''
 
     if   default_asset == 's_title':     asset_name_str = 'Title'
     elif default_asset == 's_snap':      asset_name_str = 'Snap'
@@ -330,7 +321,8 @@ def assets_get_info_scheme(asset_kind):
 #
 def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
     # >> Returns asset/artwork path_noext
-    return os.path.join(asset_path, asset_base_noext)
+    assetPath = Path(asset_path)
+    return assetPath.getSubPath(asset_base_noext).getOriginalPath()
 
 #
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
@@ -339,26 +331,27 @@ def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
 # Favourites special category there could be ROMs with the same name for different systems.
 def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext, objectID = '000'):
     # >> Returns asset/artwork path_noext
-    asset_path_noext = ''
+    assetPath = Path(asset_path)
+    asset_path_noext = Path('')
     objectID_str = '_' + objectID[0:3]
 
-    if   Asset.kind == ASSET_TITLE:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_title')
-    elif Asset.kind == ASSET_SNAP:      asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_snap')
-    elif Asset.kind == ASSET_FANART:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_fanart')
-    elif Asset.kind == ASSET_BANNER:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_banner')
-    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_clearlogo')
-    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_boxfront')
-    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_boxback')
-    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_cartridge')
-    elif Asset.kind == ASSET_FLYER:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_flyer')
-    elif Asset.kind == ASSET_MAP:       asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_map')
-    elif Asset.kind == ASSET_MANUAL:    asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_manual')
-    elif Asset.kind == ASSET_TRAILER:   asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_trailer')
-    elif Asset.kind == ASSET_THUMB:     asset_path_noext = os.path.join(asset_path, asset_base_noext + objectID_str + '_thumb')
+    if   Asset.kind == ASSET_TITLE:     asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_title')
+    elif Asset.kind == ASSET_SNAP:      asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_snap')
+    elif Asset.kind == ASSET_FANART:    asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_fanart')
+    elif Asset.kind == ASSET_BANNER:    asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_banner')
+    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_clearlogo')
+    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_boxfront')
+    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_boxback')
+    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_cartridge')
+    elif Asset.kind == ASSET_FLYER:     asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_flyer')
+    elif Asset.kind == ASSET_MAP:       asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_map')
+    elif Asset.kind == ASSET_MANUAL:    asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_manual')
+    elif Asset.kind == ASSET_TRAILER:   asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_trailer')
+    elif Asset.kind == ASSET_THUMB:     asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_thumb')
     else:
         log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
 
-    return asset_path_noext
+    return asset_path_noext.getOriginalPath()
 
 #
 # Get a list of enabled assets.
@@ -417,11 +410,15 @@ def assets_search_local_assets(launcher, ROM, enabled_asset_list):
         if not enabled_asset_list[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(A.name))
             continue
-        asset_path_noext = os.path.join(launcher[A.path_key], ROM.base_noext)
-        local_asset_list[i] = misc_look_for_file(asset_path_noext, A.exts)
-        if local_asset_list[i]:
+
+        asset_path = Path(launcher[A.path_key])
+        local_asset = misc_look_for_file(asset_path, ROM.base_noext, A.exts)
+
+        if local_asset:
+            local_asset_list[i] = local_asset.getOriginalPath()
             log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(A.name, local_asset_list[i]))
         else:
+            local_asset_list[i] = ''
             log_verb('assets_search_local_assets() Missing  {0:<9}'.format(A.name))
 
     return local_asset_list

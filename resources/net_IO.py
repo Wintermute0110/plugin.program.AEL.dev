@@ -79,7 +79,7 @@ def net_download_img(img_url, file_path):
         f = open(file_path, 'wb')
         f.write(urllib2.urlopen(req).read())
         f.close()
-    except IOError, e:    
+    except IOError as e:    
         log_error('(IOError) Exception in net_download_img()')
         log_error('(IOError) {0}'.format(str(e)))
 
@@ -103,10 +103,15 @@ def net_get_URL_oneline(url):
         log_debug('net_get_URL_oneline() encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
-    except IOError, e:    
+    except IOError as e:    
         log_error('(IOError) Exception in net_get_URL_oneline()')
         log_error('(IOError) {0}'.format(str(e)))
         return page_data
+    except Exception as e:
+        log_error('(Error) Exception in net_get_URL_oneline()')
+        log_error('(Error) {0}'.format(str(e)))
+        return page_data
+
 
     # --- Convert to Unicode ---
     num_bytes = len(page_bytes)
@@ -132,7 +137,7 @@ def net_get_URL_original(url):
         log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
-    except IOError, e:    
+    except IOError as e:    
         log_error('(IOError) Exception in net_get_URL_original()')
         log_error('(IOError) {0}'.format(str(e)))
         return page_data
