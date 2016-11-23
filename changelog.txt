@@ -27,6 +27,12 @@ WIP      Extranafart for Categories/Launchers.
 
 WIP      Extranafart for ROMs.
 
+WIP      Include databases for all supported platforms in AEL offline scraper.
+
+WIP      Every network request must be cached in all online scrapers.
+
+WIP      Add nplayers metadata field to ROMs.
+
 
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
@@ -42,24 +48,23 @@ FEATURE  Extranafart for ROM Collections.
 
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
-WIP      Include databases for all supported platforms in AEL offline scraper.
-
-WIP      Every network request must be cached in all online scrapers.
-
 WIP      Improve launcher reports when there is a No-Intro file available.
 
 WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
          Requires a change in the scraping API.
 
-FEATURE  Deal with Kodi virtual filesystem smb:// paths.
+WIP      Remove tags from parent ROM names in parent view of PClone launcher.
+
+FEATURE  Deal with Kodi virtual filesystem smb:// paths. Merged a massive patch by Chrisism.
 
 FEATURE  New platform "Microsoft Windows"
 
 FEATURE  Add genre, plot and rating to ROM collections. Unify ROM Collections and Cateogories
-         metadata.
+         metadata. During the migration current collections names will be lost and user has
+         to edit every ROM Collection and set a new name.
 
-FEATURE  Request monospaced font on text viewer dialog (Window 10147).
-         
+FEATURE  Request monospaced font on text viewer dialog (window 10147).
+
 FIX      Fixed searches in launchers.
 
 FIX      Fixed artwork display in ROM Collections (Icon/Fanart/Banner/Poster).
@@ -68,8 +73,11 @@ FIX      Fix "launching app not found lnk_launcher_app" error in Windows LNK lau
 
 FIX      Remove setContent() old code.
 
-FIX      Fixed the case of removing all categories and having just standalone launcher on addon 
-         root.
+FIX      Fixed the case of removing all categories and having just Standalone/ROM launchers on 
+         addon root.
+
+WIP      Fix offline scraper search when there is hypens in filename.
+         http://forum.kodi.tv/showthread.php?tid=287826&pid=2461203#pid2461203
 
 
 [B]Advanced Emulator Launcher | version 0.9.4 | 16 October 2016[/B]
