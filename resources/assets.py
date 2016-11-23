@@ -19,7 +19,7 @@ import os
 
 # --- AEL packages ---
 from utils import *
-from disk_IO import Path
+from disk_IO import *
 try:
     from utils_kodi import *
 except:

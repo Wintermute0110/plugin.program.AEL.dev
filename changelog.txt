@@ -48,7 +48,7 @@ FEATURE  Extranafart for ROM Collections.
 
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
-WIP      Improve launcher reports when there is a No-Intro file available.
+WIP      Improve launcher report when there is a No-Intro file available.
 
 WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
          Requires a change in the scraping API.
