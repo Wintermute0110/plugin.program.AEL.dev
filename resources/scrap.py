@@ -85,9 +85,9 @@ class Scraper_Asset(Scraper):
     # Returns:
     #   images = [image, image, ... ]
     #   image = {
-    #       'name'     : str,   Name of the image (e.g., 'Boxfront 1')
-    #       'id'       : str,   String that allows to obtain the game URL (ID number) or the URL itself.
-    #       'disp_URL' : str    URL of a thumb to display the image. Some websites have small size.
+    #       'name' : str,   Name of the image (e.g., 'Boxfront 1')
+    #       'id'   : str,   String that allows to obtain the game URL (ID number) or the URL itself.
+    #       'URL'  : str    URL of a thumb to display the image. Some websites have small size
     #                           images for preview. It could be the URL of the full size image itself.
     #   }
     def get_images(self, game, asset_kind):
