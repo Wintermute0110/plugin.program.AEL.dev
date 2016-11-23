@@ -24,11 +24,18 @@ from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse
 
 # --- Kodi modules ---
-import xbmc, xbmcgui
+try:
+    import xbmc, xbmcgui
+except:
+    # --- Create fake Kodi functions ---
+    # >> This is useful when using AEL code from outside Kodi.
+    class xbmc:
+        LOGERROR = 0
+        def log(self, str): print(str)
 
 # --- AEL modules ---
-import utils
-import disk_IO
+from utils import *
+from disk_IO import *
 
 # --- Constants ---------------------------------------------------------------
 LOG_ERROR   = 0

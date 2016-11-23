@@ -23,11 +23,8 @@ from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse, re, string
 
 # --- AEL modules ---
-from disk_IO import *
-try:
-    from utils_kodi import *
-except:
-    from utils_kodi_standalone import *
+# from disk_IO import *
+from utils_kodi import *
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text
@@ -162,7 +159,7 @@ def text_get_URL_extension(url):
     return ext
 
 #
-# Default to .jpg if URL extension cannot be determined
+# Defaults to .jpg if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
     path = urlparse.urlparse(url).path
@@ -172,36 +169,8 @@ def text_get_image_URL_extension(url):
     return ret
 
 # -------------------------------------------------------------------------------------------------
-# Filenames
+# Misc stuff
 # -------------------------------------------------------------------------------------------------
-#
-# Full decomposes a file name path or directory into its constituents
-# In theory this is indepedent of the operating system.
-# Returns a FileName object:
-#   F.path        Full path                                     /home/Wintermute/Sonic.zip
-#   F.path_noext  Full path with no extension                   /home/Wintermute/Sonic
-#   F.dirname     Directory name of file. Does not end in '/'   /home/Wintermute
-#   F.base        File name with no path                        Sonic.zip
-#   F.base_noext  File name with no path and no extension       Sonic
-#   F.ext         File extension                                .zip
-#
-class FileName:
-    pass
-
-def misc_split_path(f_path):
-    F = FileName()
-
-    F.path       = f_path
-    (root, ext)  = os.path.splitext(F.path)
-    F.path_noext = root
-    F.dirname    = os.path.dirname(f_path)
-    F.base       = os.path.basename(F.path)
-    (root, ext)  = os.path.splitext(F.base)
-    F.base_noext = root
-    F.ext        = ext
-
-    return F
-
 #
 # Given the image path, image filename with no extension and a list of file extensions search for a file.
 #
@@ -215,9 +184,6 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 
     return None
 
-# -------------------------------------------------------------------------------------------------
-# Misc stuff
-# -------------------------------------------------------------------------------------------------
 #
 # Generates a random an unique MD5 hash and returns a string with the hash
 #

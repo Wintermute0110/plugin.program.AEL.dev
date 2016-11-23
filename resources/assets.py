@@ -20,10 +20,7 @@ import os
 # --- AEL packages ---
 from utils import *
 from disk_IO import *
-try:
-    from utils_kodi import *
-except:
-    from utils_kodi_standalone import *
+from utils_kodi import *
 
 # --- Define "constants" ---
 ASSET_TITLE     = 100
@@ -143,7 +140,7 @@ def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asse
 # Gets a human readable name string for the default fallback thumb
 #
 def assets_get_asset_name_str(default_asset):
-    asset_name_str = u''
+    asset_name_str = ''
 
     if   default_asset == 's_title':     asset_name_str = 'Title'
     elif default_asset == 's_snap':      asset_name_str = 'Snap'
@@ -318,10 +315,11 @@ def assets_get_info_scheme(asset_kind):
 
 #
 # Scheme DIR uses different directories for artwork and no sufixes.
+# Returns asset path_noext.
 #
 def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
-    # >> Returns asset/artwork path_noext
-    assetPath = Path(asset_path)
+    assetPath = FileName(asset_path)
+
     return assetPath.getSubPath(asset_base_noext).getOriginalPath()
 
 #
@@ -331,8 +329,8 @@ def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
 # Favourites special category there could be ROMs with the same name for different systems.
 def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext, objectID = '000'):
     # >> Returns asset/artwork path_noext
-    assetPath = Path(asset_path)
-    asset_path_noext = Path('')
+    assetPath = AELPath(asset_path)
+    asset_path_noext = AELPath('')
     objectID_str = '_' + objectID[0:3]
 
     if   Asset.kind == ASSET_TITLE:     asset_path_noext = assetPath.getSubPath(asset_base_noext + objectID_str + '_title')

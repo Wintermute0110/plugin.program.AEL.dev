@@ -38,11 +38,9 @@ import xbmc
 
 # --- AEL packages ---
 from utils import *
-from assets import *
-try:
-    from utils_kodi import *
-except:
-    from utils_kodi_standalone import *
+# >> Avoid circular dependencies. assets.py imports disk_IO.py.
+# from assets import *
+from utils_kodi import *
 
 # --- AEL ROM storage version format ---
 # >> An integer number incremented whenever there is a change in the ROM storage format.
@@ -494,7 +492,7 @@ def fs_load_catfile(categories_file):
     # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
     log_verb('fs_load_catfile() Loading {0}'.format(categories_file.getOriginalPath()))
     try:
-        xml_tree = ET.parse(categories_file.getCurrentPath())
+        xml_tree = ET.parse(categories_file.getPath())
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
@@ -846,7 +844,7 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
 
     # --- If file does not exist return empty dictionary ---
     roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
-    if not roms_json_file.fileExists(): return roms
+    if not roms_json_file.exists(): return roms
 
     # --- Parse using json module ---
     # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
@@ -854,7 +852,7 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
     #    with this exception so at least launcher can be rescanned.
     log_verb('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir.getOriginalPath()))
     log_verb('fs_load_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
-    with open(roms_json_file.getCurrentPath()) as file:
+    with open(roms_json_file.getPath().decode('utf-8')) as file:
         try:
             roms = json.load(file)
         except ValueError:
@@ -2059,57 +2057,82 @@ def fs_get_collection_NFO_name(settings, collection):
     return nfo_file_path
 
 # -------------------------------------------------------------------------------------------------
-# Filesystem scanner helper class
+# Filesystem helper class
+# This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in
+# caller code.
 # -------------------------------------------------------------------------------------------------
-class Path:
+class FileName:
     def __init__(self, pathString):
-
         self.originalPath = pathString
-        self.path = pathString
+        self.path         = pathString
 
         self.__parseCurrentPath()
 
     def __parseCurrentPath(self):
-
         if self.originalPath.lower().startswith('smb:'):
             self.path = self.path.replace('smb:', '')
             self.path = self.path.replace('SMB:', '')
             self.path = self.path.replace('//', '\\\\')
             self.path = self.path.replace('/', '\\')
 
-        if self.originalPath.lower().startswith('special:'):
+        elif self.originalPath.lower().startswith('special:'):
             self.path = xbmc.translatePath(self.path)
 
     def join(self, arg):
-        self.path = os.path.join(self.path, arg)
+        self.path         = os.path.join(self.path, arg)
         self.originalPath = os.path.join(self.originalPath, arg)
-        
+
     def getSubPath(self, *args):
-        child = Path(self.originalPath)
+        child = FileName(self.originalPath)
         for arg in args:
             child.join(arg)
 
         return child
 
-    def getName(self):
-        return os.path.basename(self.path)
+    def escapeQuotes(self):
+        self.path = self.path.replace("'", "\\'")
+        self.path = self.path.replace('"', '\\"')
 
-    def getFileExtension(self):
-        filename, file_extension = os.path.splitext(self.path)
-        return file_extension
-
-    def stat(self):
-        return os.stat(self.path)
-    
-    def getParentDirectory(self):
-        return os.path.dirname(self.path)
-
-    def getCurrentPath(self):
-        return self.path.decode('utf-8')
+    # ---------------------------------------------------------------------------------------------
+    # Decomposes a file name path or directory into its constituents
+    #   FileName.getPath()            Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath_noext()      Full path with no extension                   /home/Wintermute/Sonic
+    #   FileName.getDirname()         Directory name of file. Does not end in '/'   /home/Wintermute
+    #   FileName.getBasename()        File name with no path                        Sonic.zip
+    #   FileName.getBasename_noext()  File name with no path and no extension       Sonic
+    #   FileName.getExt()             File extension                                .zip
+    # ---------------------------------------------------------------------------------------------
+    def getPath(self):
+        return self.path
 
     def getOriginalPath(self):
-        return self.originalPath.decode('utf-8')
+        return self.originalPath
 
+    def getPath_noext(self):
+        root, ext = os.path.splitext(self.path)
+
+        return root
+
+    def getDirname(self):
+        return os.path.dirname(self.path)
+
+    def getBasename(self):
+        return os.path.basename(self.path)
+
+    def getBasename_noext(self):
+        basename  = os.path.basename(self.path)
+        root, ext = os.path.splitext(basename)
+        
+        return root
+
+    def getFileExtension(self):
+        root, ext = os.path.splitext(self.path)
+        
+        return ext
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
     def scanFilesInPath(self, mask):
         files = []
         filenames = os.listdir(self.path)
@@ -2134,20 +2157,26 @@ class Path:
 
         return files
 
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions
+    # ---------------------------------------------------------------------------------------------
+    def stat(self):
+        return os.stat(self.path)
+
     def exists(self):
         return os.path.exists(self.path)
 
-    def directoryExists(self):
+    def isdir(self):
         return os.path.isdir(self.path)
         
-    def fileExists(self):
+    def isfile(self):
         return os.path.isfile(self.path)
 
-    def create(self):
+    def makedirs(self):
         if not os.path.exists(self.path): 
             os.makedirs(self.path)
 
-    def delete(self):
+    def remove(self):
         os.remove(self.path)
 
     def unlink(self):
@@ -2155,7 +2184,3 @@ class Path:
 
     def rename(self, to):
         os.rename(self.path, to.getCurrentPath())
-
-    def escapeQuotes(self):
-        self.path = self.path.replace("'", "\\'")
-        self.path = self.path.replace("\"", "\\\"")

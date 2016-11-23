@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Advanced Emulator Launcher main script file
 #
@@ -46,11 +46,11 @@ __addon_type__    = __addon_obj__.getAddonInfo('type').decode('utf-8')
 # --- Addon paths and constant definition ---
 # _FILE_PATH is a filename
 # _DIR is a directory (with trailing /)
-ADDONS_DATA_DIR			= Path('special://profile/addon_data')
+ADDONS_DATA_DIR         = FileName('special://profile/addon_data')
 PLUGIN_DATA_DIR         = ADDONS_DATA_DIR.getSubPath(__addon_id__)
-BASE_DIR                = Path('special://profile')
-HOME_DIR                = Path('special://home')
-KODI_FAV_FILE_PATH      = Path('special://profile/favourites.xml')
+BASE_DIR                = FileName('special://profile')
+HOME_DIR                = FileName('special://home')
+KODI_FAV_FILE_PATH      = FileName('special://profile/favourites.xml')
 ADDONS_DIR              = HOME_DIR.getSubPath('addons')
 CURRENT_ADDON_DIR       = ADDONS_DIR.getSubPath(__addon_id__)
 ICON_IMG_FILE_PATH      = CURRENT_ADDON_DIR.getSubPath('icon.png')
@@ -141,18 +141,18 @@ class Main:
         # log_debug('CURRENT_ADDON_DIR "{0}"'.format(CURRENT_ADDON_DIR))
 
         # --- Addon data paths creation ---
-        if not PLUGIN_DATA_DIR.directoryExists():        PLUGIN_DATA_DIR.create()
-        if not DEFAULT_CAT_ASSET_DIR.directoryExists():  DEFAULT_CAT_ASSET_DIR.create()
-        if not DEFAULT_COL_ASSET_DIR.directoryExists():  DEFAULT_COL_ASSET_DIR.create()
-        if not DEFAULT_LAUN_ASSET_DIR.directoryExists(): DEFAULT_LAUN_ASSET_DIR.create()
-        if not DEFAULT_FAV_ASSET_DIR.directoryExists():  DEFAULT_FAV_ASSET_DIR.create()
-        if not VIRTUAL_CAT_TITLE_DIR.directoryExists():  VIRTUAL_CAT_TITLE_DIR.create()
-        if not VIRTUAL_CAT_YEARS_DIR.directoryExists():  VIRTUAL_CAT_YEARS_DIR.create()
-        if not VIRTUAL_CAT_GENRE_DIR.directoryExists():  VIRTUAL_CAT_GENRE_DIR.create()
-        if not VIRTUAL_CAT_STUDIO_DIR.directoryExists(): VIRTUAL_CAT_STUDIO_DIR.create()
-        if not ROMS_DIR.directoryExists():               ROMS_DIR.create()
-        if not COLLECTIONS_DIR.directoryExists():		 COLLECTIONS_DIR.create()
-        if not REPORTS_DIR.directoryExists():			 REPORTS_DIR.create()
+        if not PLUGIN_DATA_DIR.exists():        PLUGIN_DATA_DIR.makedirs()
+        if not DEFAULT_CAT_ASSET_DIR.exists():  DEFAULT_CAT_ASSET_DIR.makedirs()
+        if not DEFAULT_COL_ASSET_DIR.exists():  DEFAULT_COL_ASSET_DIR.makedirs()
+        if not DEFAULT_LAUN_ASSET_DIR.exists(): DEFAULT_LAUN_ASSET_DIR.makedirs()
+        if not DEFAULT_FAV_ASSET_DIR.exists():  DEFAULT_FAV_ASSET_DIR.makedirs()
+        if not VIRTUAL_CAT_TITLE_DIR.exists():  VIRTUAL_CAT_TITLE_DIR.makedirs()
+        if not VIRTUAL_CAT_YEARS_DIR.exists():  VIRTUAL_CAT_YEARS_DIR.makedirs()
+        if not VIRTUAL_CAT_GENRE_DIR.exists():  VIRTUAL_CAT_GENRE_DIR.makedirs()
+        if not VIRTUAL_CAT_STUDIO_DIR.exists(): VIRTUAL_CAT_STUDIO_DIR.makedirs()
+        if not ROMS_DIR.exists():               ROMS_DIR.makedirs()
+        if not COLLECTIONS_DIR.exists():        COLLECTIONS_DIR.makedirs()
+        if not REPORTS_DIR.exists():            REPORTS_DIR.makedirs()
 
         # ~~~~~ Process URL ~~~~~
         self.base_url = sys.argv[0]
@@ -168,7 +168,7 @@ class Main:
         # --- Addon first-time initialisation ---
         # When the addon is installed and the file categories.xml does not exist, just
         # create an empty one with a default launcher.
-        if not CATEGORIES_FILE_PATH.fileExists():
+        if not CATEGORIES_FILE_PATH.exists():
             kodi_dialog_OK('It looks it is the first time you run Advanced Emulator Launcher! ' +
                            'A default categories.xml has been created. You can now customise it to your needs.')
             self._cat_create_default()
@@ -6815,27 +6815,27 @@ class Main:
         elif object_kind == KIND_ROM:
             # --- Grab asset information for editing ---
             object_name = 'ROM'
-            ROM = misc_split_path(object_dic['filename'])
-            A   = assets_get_info_scheme(asset_kind)
+            ROMfile = FileName(object_dic['filename'])
+            AInfo   = assets_get_info_scheme(asset_kind)
             if categoryID == VCATEGORY_FAVOURITES_ID:
                 log_info('_gui_edit_asset() ROM is in Favourites')
                 asset_directory  = self.settings['favourites_asset_dir']
                 platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, ROM.base_noext, object_dic['id'])
+                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBasename_noext(), object_dic['id'])
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
                 asset_directory  = self.settings['collections_asset_dir']
                 platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, ROM.base_noext, object_dic['id'])
+                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBasename_noext(), object_dic['id'])
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher (id {0})'.format(launcherID))
                 launcher         = self.launchers[launcherID]
-                asset_directory  = launcher[A.path_key]
+                asset_directory  = launcher[AInfo.path_key]
                 platform         = launcher['platform']
-                asset_path_noext = assets_get_path_noext_DIR(A, asset_directory, ROM.base_noext)
-            current_asset_path = object_dic[A.key]
-            rom_base_noext = ROM.base_noext
-            log_info('_gui_edit_asset() Editing ROM {0}'.format(A.name))
+                asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile.getBasename_noext())
+            current_asset_path = object_dic[AInfo.key]
+            rom_base_noext = ROMfile.getBasename_noext()
+            log_info('_gui_edit_asset() Editing ROM {0}'.format(AInfo.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory))
             log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext))
@@ -6845,7 +6845,7 @@ class Main:
 
             # --- Do not edit asset if asset directory not configured ---
             if not asset_directory:
-                kodi_dialog_OK('Directory to store {0} not configured. '.format(A.name) + \
+                kodi_dialog_OK('Directory to store {0} not configured. '.format(AInfo.name) + \
                                'Configure it before you can edit artwork.')
                 return False
 
@@ -6862,48 +6862,48 @@ class Main:
             for scrap_obj in scrapers_asset:
                 if scrap_obj.supports_asset(asset_kind):
                     scraper_obj_list.append(scrap_obj)
-                    scraper_menu_list.append('Scrape {0} from {1}'.format(A.name, scrap_obj.name))
-                    log_verb('Scraper {0} support scraping {1}'.format(scrap_obj.name, A.name))
+                    scraper_menu_list.append('Scrape {0} from {1}'.format(AInfo.name, scrap_obj.name))
+                    log_verb('Scraper {0} support scraping {1}'.format(scrap_obj.name, AInfo.name))
                 else:
-                    log_verb('Scraper {0} does not support scraping {1}'.format(scrap_obj.name, A.name))
+                    log_verb('Scraper {0} does not support scraping {1}'.format(scrap_obj.name, AInfo.name))
                     log_verb('Scraper DISABLED')
 
         # --- Show image editing options ---
         # >> Scrape only supported for ROMs (for the moment)
         dialog = xbmcgui.Dialog()
-        common_menu_list = ['Select local {0}'.format(A.kind_str, A.kind_str),
-                            'Import local {0} (copy and rename)'.format(A.kind_str)]
+        common_menu_list = ['Select local {0}'.format(AInfo.kind_str, AInfo.kind_str),
+                            'Import local {0} (copy and rename)'.format(AInfo.kind_str)]
         if object_kind == KIND_ROM:
-            type2 = dialog.select('Change {0} {1}'.format(A.name, A.kind_str),
+            type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
                                   common_menu_list + scraper_menu_list)
         else:
-            type2 = dialog.select('Change {0} {1}'.format(A.name, A.kind_str), common_menu_list)
+            type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str), common_menu_list)
 
         # --- Link to a local image ---
         if type2 == 0:
             image_dir = ''
-            if object_dic[A.key] != '':
-                F = misc_split_path(object_dic[A.key])
+            if object_dic[AInfo.key] != '':
+                F = misc_split_path(object_dic[AInfo.key])
                 image_dir = F.dirname
 
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             # >> ShowAndGetFile dialog
             dialog = xbmcgui.Dialog()
             if asset_kind == ASSET_MANUAL or asset_kind == ASSET_TRAILER:
-                image_file = dialog.browse(1, 'Select {0} {1}'.format(A.name, A.kind_str), 'files',
-                                           A.exts_dialog, True, False, image_dir)
+                image_file = dialog.browse(1, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
+                                           AInfo.exts_dialog, True, False, image_dir)
 
             # >> ShowAndGetImage dialog
             else:
-                image_file = dialog.browse(2, 'Select {0} {1}'.format(A.name, A.kind_str), 'files',
-                                           A.exts_dialog, True, False, image_dir)
+                image_file = dialog.browse(2, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
+                                           AInfo.exts_dialog, True, False, image_dir)
             image_file_path = Path(image_file)
             if not image_file or not image_file_path.fileExists(): return False
 
             # --- Update object by assigment. XML/JSON will be save by parent ---
-            object_dic[A.key] = image_file_path.getOriginalPath()
-            kodi_notify('{0} has been updated'.format(A.name))
-            log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, A.name, image_file_path.getOriginalPath()))
+            object_dic[AInfo.key] = image_file_path.getOriginalPath()
+            kodi_notify('{0} has been updated'.format(AInfo.name))
+            log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, AInfo.name, image_file_path.getOriginalPath()))
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(image_file_path.getOriginalPath())
@@ -6912,12 +6912,12 @@ class Main:
         # >> Copy and rename a local image into asset directory
         elif type2 == 1:
             image_dir = ''
-            if object_dic[A.key] != '':
-                F = misc_split_path(object_dic[A.key])
+            if object_dic[AInfo.key] != '':
+                F = misc_split_path(object_dic[AInfo.key])
                 image_dir = F.dirname
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
-            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(A.name), 'files',
-                                                 A.exts_dialog, True, False, image_dir)
+            image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(AInfo.name), 'files',
+                                                 AInfo.exts_dialog, True, False, image_dir)
             image_file_path = Path(image_file)
             if not image_file or not image_file_path.fileExists(): return False
 
@@ -6945,11 +6945,11 @@ class Main:
                 return False
 
             # Update object by assigment. XML will be save by parent
-            object_dic[A.key] = dest_path
-            kodi_notify('{0} has been updated'.format(A.name))
+            object_dic[AInfo.key] = dest_path
+            kodi_notify('{0} has been updated'.format(AInfo.name))
             log_info('_gui_edit_asset() Copied file  "{0}"'.format(image_file))
             log_info('_gui_edit_asset() Into         "{0}"'.format(dest_path))
-            log_info('_gui_edit_asset() Selected {0} {1} "{2}"'.format(object_name, A.name, dest_path))
+            log_info('_gui_edit_asset() Selected {0} {1} "{2}"'.format(object_name, AInfo.name, dest_path))
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(dest_path)
@@ -6982,10 +6982,10 @@ class Main:
             kodi_busydialog_ON()
             results = scraper_obj.get_search(search_string, rom_base_noext, platform)
             kodi_busydialog_OFF()
-            log_debug('{0} scraper found {1} result/s'.format(A.name, len(results)))
+            log_debug('{0} scraper found {1} result/s'.format(AInfo.name, len(results)))
             if not results:
                 kodi_dialog_OK('Scraper found no matches.')
-                log_debug('{0} scraper did not found any game'.format(A.name))
+                log_debug('{0} scraper did not found any game'.format(AInfo.name))
                 return False
 
             # --- Choose game to download image ---
@@ -7002,7 +7002,7 @@ class Main:
             kodi_busydialog_ON()
             image_list = scraper_obj.get_images(results[selectgame], asset_kind)
             kodi_busydialog_OFF()
-            log_verb('{0} scraper returned {1} images'.format(A.name, len(image_list)))
+            log_verb('{0} scraper returned {1} images'.format(AInfo.name, len(image_list)))
             if not image_list:
                 kodi_dialog_OK('Scraper found no images.')
                 return False
@@ -7021,10 +7021,10 @@ class Main:
                 item_dic = {'name' : item['name'], 'label2' : item['disp_URL'], 'icon' : item['disp_URL']}
                 img_dialog_list.append(item_dic)
             image_selected_index = gui_show_image_select('Select image', img_dialog_list)
-            log_debug('{0} dialog returned index {1}'.format(A.name, image_selected_index))
+            log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
             if image_selected_index < 0: image_selected_index = 0
             image_url = image_list[image_selected_index]['URL']
-            log_debug('Selected image URL "{1}"'.format(A.name, image_url))
+            log_debug('Selected image URL "{1}"'.format(AInfo.name, image_url))
 
             # --- If user chose the local image don't download anything ---
             if image_url != current_asset_path:
@@ -7057,7 +7057,7 @@ class Main:
 
             # --- Edit using Python pass by assigment ---
             # >> Caller is responsible to save Categories/Launchers/ROMs
-            object_dic[A.key] = image_local_path
+            object_dic[AInfo.key] = image_local_path
 
         # --- User canceled select box ---
         elif type2 < 0:
