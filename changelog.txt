@@ -55,6 +55,9 @@ WIP      Improve launcher report when there is a No-Intro file available.
 
 WIP      Remove tags from parent ROM names in parent view of PClone launcher.
 
+WIP      Browse by Category Virtual Launcher.
+         http://forum.kodi.tv/showthread.php?tid=287826&pid=2458080#pid2458080
+
 FEATURE  Deal with Kodi virtual filesystem smb:// paths. Merged a massive patch by Chrisism.
 
 FEATURE  New platform "Microsoft Windows"
