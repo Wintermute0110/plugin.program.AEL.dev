@@ -46,12 +46,12 @@ FEATURE  Export/Import assets/artwork in ROM Collections. Encode binary files in
 
 FEATURE  Extranafart for ROM Collections.
 
+WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
+         Requires a change in the scraping API.
+
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
 WIP      Improve launcher report when there is a No-Intro file available.
-
-WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
-         Requires a change in the scraping API.
 
 WIP      Remove tags from parent ROM names in parent view of PClone launcher.
 

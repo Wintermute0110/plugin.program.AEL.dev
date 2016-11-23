@@ -30,7 +30,8 @@ DEBUG_SCRAPERS = 1
 # Base class for all scrapers
 #--------------------------------------------------------------------------------------------------
 class Scraper:
-    name = ''        # Short name to refer to object in code
+    # Short name to refer to object in code
+    name = ''
 
     # This function is called when the user wants to search a whole list of games.
     #   search_string   Online scrapers use this
@@ -39,9 +40,11 @@ class Scraper:
     #
     # Returns:
     #   results = [game, game, ... ]
-    #   game = {'id' : str,             String that allows to calculate the game URL (ID number) or the URL itself.
-    #           'display_name' : str,   Scraped name of the ROM/Launcher/Game.
-    #            ... }
+    #   game = {
+    #       'id' : str,             String that allows to obtain the game URL (ID number) or the URL itself.
+    #       'display_name' : str,   Scraped name of the ROM/Launcher/Game.
+    #       ...
+    #   }
     #   game dictionary may have more fields depending on the scraper (which are not used outside that scraper)
     def get_search(self, search_string, rom_base_noext, platform):
         raise NotImplementedError('Subclass must implement get_search() abstract method')
@@ -81,12 +84,21 @@ class Scraper_Asset(Scraper):
     #
     # Returns:
     #   images = [image, image, ... ]
-    #   image = {'name'     : str,   Name of the image (e.g., 'Boxfront 1')
-    #            'URL'      : str,   URL to download image
-    #            'disp_URL' : str}   URL of a thumb to display the image. Some websites have small size 
-    #                                images for preview.If not available same as URL
+    #   image = {
+    #       'name'     : str,   Name of the image (e.g., 'Boxfront 1')
+    #       'id'       : str,   String that allows to obtain the game URL (ID number) or the URL itself.
+    #       'disp_URL' : str    URL of a thumb to display the image. Some websites have small size.
+    #                           images for preview. It could be the URL of the full size image itself.
+    #   }
     def get_images(self, game, asset_kind):
         raise NotImplementedError('Subclass must implement get_images() abstract method')
+
+    # Resolves the full size image URL. id is the string returned by get_images()
+    # Returns:
+    #   (URL,            Full URL of the full size image.
+    #    img_extension)  Extension of the image.
+    def resolve_image_URL(self, id):
+        raise NotImplementedError('Subclass must implement resolve_image_URL() abstract method')
 
 #--------------------------------------------------------------------------------------------------
 # Instantiate scraper objects
