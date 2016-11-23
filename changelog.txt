@@ -23,15 +23,21 @@ WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires ne
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
          online and offline scraper.
 
-WIP      Extranafart for Categories/Launchers.
+WIP      Full Extranafart support for Categories/Launchers.
 
-WIP      Extranafart for ROMs.
+WIP      Full Extranafart for ROMs.
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
 WIP      Every network request must be cached in all online scrapers.
 
 WIP      Add nplayers metadata field to ROMs.
+
+WIP      Support for multidisc systems. Have a look at old AL launcher code.
+
+WIP      Support for several arguments in launcher. This will be useful when using MAME for
+         console emulation (MAME consoles from a different region have different names, and an
+         European console will typically refuse to run a Japanese game).
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
