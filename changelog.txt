@@ -39,6 +39,12 @@ WIP      Support for several arguments in launcher. This will be useful when usi
          console emulation (MAME consoles from a different region have different names, and an
          European console will typically refuse to run a Japanese game).
 
+WIP      All requests are cached in GameFAQs scraper.
+
+WIP      All requests are cached in MobyGames scraper.
+
+WIP      New Arcade Database scraper for MAME ROMs.
+
 
 [B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
 
@@ -54,6 +60,12 @@ FEATURE  Extranafart for ROM Collections.
 
 WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
          Requires a change in the scraping API.
+
+WIP      TheGamesDB scraper now returns Titles and Snaps. However, since there is no difference
+         between Titles, Snaps and shots in TheGamesDB this only is useful when doing manual
+         scraping.
+
+WIP      All requests are cached in TheGamesDB scraper.
 
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
