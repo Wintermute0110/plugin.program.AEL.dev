@@ -163,7 +163,7 @@ class Main:
         # However, if plugin is called as type video then Kodi adds the following
         # even for the first call: 'content_type': ['video']
         self.content_type = args['content_type'] if 'content_type' in args else None
-        log_debug('content_type = {0}'.format(self.content_type))
+        # log_debug('content_type = {0}'.format(self.content_type))
 
         # --- Addon first-time initialisation ---
         # When the addon is installed and the file categories.xml does not exist, just
@@ -448,7 +448,7 @@ class Main:
         if type == 0:
             NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
             NFO_filepath = Path(NFO_file)
-            NFO_str = 'default NFO found' if NFO_filepath.fileExists() else 'default NFO not found'
+            NFO_str = 'default NFO found' if NFO_filepath.exists() else 'default NFO not found'
             plot_str = text_limit_string(self.categories[categoryID]['m_plot'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
@@ -512,7 +512,7 @@ class Main:
             elif type2 == 5:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
                 NFO_file_path = Path(NFO_file)
-                if not NFO_file_path.fileExists(): return
+                if not NFO_file_path.exists(): return
                 # >> Returns True if changes were made
                 if not fs_import_category_NFO(NFO_file, self.categories, categoryID): return
                 kodi_notify('Imported Category NFO file')
@@ -648,12 +648,12 @@ class Main:
                     log_info('Deleting linked launcher "{0}" id {1}'.format(self.launchers[launcherID]['m_name'], launcherID))
                     # >> Delete information XML file
                     roms_xml_file = fs_get_ROMs_XML_file_path(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    if roms_xml_file.fileExists():
+                    if roms_xml_file.exists():
                         log_info('Deleting ROMs XML  "{0}"'.format(roms_xml_file.getOriginalPath()))
                         roms_xml_file.delete()
                     # >> Delete ROMs JSON file
                     roms_json_file = fs_get_ROMs_JSON_file_path(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    if roms_json_filepath.fileExists():
+                    if roms_json_filepath.exists():
                         log_info('Deleting ROMs JSON "{0}"'.format(roms_json_file.getOriginalPath()))
                         roms_json_file.delete()
                     self.launchers.pop(launcherID)
@@ -917,7 +917,7 @@ class Main:
                 old_roms_file_xml            = ROMS_DIR.getSubPath(old_roms_base_noext + '.xml')
                 old_PClone_index_file_json   = ROMS_DIR.getSubPath(old_roms_base_noext + '_PClone_index.json')
                 old_PClone_parents_file_json = ROMS_DIR.getSubPath(old_roms_base_noext + '_PClone_parents.json')
-                if old_roms_file_json.fileExists():
+                if old_roms_file_json.exists():
                     log_debug('_command_edit_launcher() Edit Title: ROM JSON found')
                     category_name                = self.categories[categoryID]['m_name']
                     new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
@@ -935,11 +935,11 @@ class Main:
                     log_debug('_command_edit_launcher()    into {0}'.format(new_roms_file_xml.getOriginalPath()))
 
                     # >> Renamed PClone files if found
-                    if old_PClone_index_file_json.fileExists():
+                    if old_PClone_index_file_json.exists():
                         old_PClone_index_file_json.rename(new_PClone_index_file_json)
                         log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_index_file_json))
                         log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_index_file_json))
-                    if old_PClone_parents_file_json.fileExists():
+                    if old_PClone_parents_file_json.exists():
                         old_PClone_parents_file_json.rename(new_PClone_parents_file_json)
                         log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_parents_file_json))
                         log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_parents_file_json))
@@ -1034,7 +1034,7 @@ class Main:
                 # No-Intro reading of files: use Unicode string for '.dat|.xml'. However, | belongs to ASCII...
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select description file (NFO)', 'files', '.nfo', False, False).decode('utf-8')
                 NFO_file_path = Path(NFO_file)
-                if not NFO_file_path.fileExists(): return
+                if not NFO_file_path.exists(): return
                 
                 # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
@@ -1464,7 +1464,7 @@ class Main:
                         dialog = xbmcgui.Dialog()
                         dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
                         dat_file_path = Path(dat_file)
-                        if not dat_file_path.fileExists(): return
+                        if not dat_file_path.exists(): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
 
@@ -1739,7 +1739,7 @@ class Main:
             roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
             log_debug('Removing ROMs XML "{0}"'.format(roms_file_path.getOriginalPath()))
             try:
-                if roms_file_path.fileExists(): 
+                if roms_file_path.exists(): 
                     roms_file_path.delete()
             except OSError:
                 log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_file_path.getCurrentPath()))
@@ -1897,7 +1897,7 @@ class Main:
                 text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
                                           'files', '.txt|.dat', False, False).decode('utf-8')
                 text_file_path = Path(text_file)
-                if text_file_path.fileExists():
+                if text_file_path.exists():
                     file_data = self._gui_import_TXT_file(text_file_path)
                     roms[romID]['m_plot'] = file_data
                     kodi_notify('Imported ROM Plot')
@@ -2832,7 +2832,7 @@ class Main:
 
         # --- Load ROMs for this launcher ---
         roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
-        if not roms_file_path.fileExists():
+        if not roms_file_path.exists():
             kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
@@ -2845,7 +2845,7 @@ class Main:
         # --- Load parent/clone index ---
         index_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_index'
         index_file_path = ROMS_DIR.getSubPath(index_base_noext + '.json')
-        if not index_file_path.fileExists():
+        if not index_file_path.exists():
             kodi_notify('Parent list JSON not found.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
@@ -2894,7 +2894,7 @@ class Main:
             # --- Load parent ROMs ---
             parents_roms_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_parents'
             parents_file_path = ROMS_DIR.getSubPath(parents_roms_base_noext + '.json')
-            if not parents_file_path.fileExists():
+            if not parents_file_path.exists():
                 kodi_notify('Parent list JSON not found.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
@@ -2906,7 +2906,7 @@ class Main:
             # --- Load parent/clone index ---
             index_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_index'
             index_file_path = ROMS_DIR.getSubPath(index_base_noext + '.json')
-            if not index_file_path.fileExists():
+            if not index_file_path.exists():
                 kodi_notify('Parent list JSON not found.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
@@ -2918,7 +2918,7 @@ class Main:
         else:
             # --- Load ROMs for this launcher ---
             roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
-            if not roms_file_path.fileExists():
+            if not roms_file_path.exists():
                 kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
@@ -3236,7 +3236,7 @@ class Main:
 
         # --- If the virtual category has no launchers then render nothing ---
         # >> Also, tell the user to update the virtual launcher database
-        if not vcategory_db_filename.fileExists():
+        if not vcategory_db_filename.exists():
             kodi_dialog_OK('{0} database not found. '.format(vcategory_name) +
                            'Update the virtual category database first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -3296,7 +3296,7 @@ class Main:
 
         # --- Load Virtual Launcher DB ---
         hashed_db_filename = vcategory_db_dir.getSubPath(virtual_launcherID + '.json')
-        if not hashed_db_filename.fileExists():
+        if not hashed_db_filename.exists():
             kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
             return
         roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
@@ -3820,7 +3820,7 @@ class Main:
             pDialog.update(i * 100 / num_progress_items)
             i += 1
             romFile = Path(roms_fav[rom_fav_ID]['filename'])
-            if not romFile.fileExists():
+            if not romFile.exists():
                 log_verb('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['m_name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
                 self.num_fav_broken += 1
@@ -3869,14 +3869,14 @@ class Main:
                 # --- PNG ---
                 extrafanart_file = extrafanart_dir.getSubPath('fanart{0}.png'.format(i))
                 log_debug('_command_render_collections() test   {0}'.format(extrafanart_file))
-                if extrafanart_file.fileExists():
+                if extrafanart_file.exists():
                     log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
                     extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
                     continue
                 # --- JPG ---
                 extrafanart_file = extrafanart_dir.getSubPath('fanart{0}.jpg'.format(i))
                 log_debug('_command_render_collections() test   {0}'.format(extrafanart_file))
-                if extrafanart_file.fileExists():
+                if extrafanart_file.exists():
                     log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
                     extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
                     continue
@@ -3968,7 +3968,7 @@ class Main:
         if type == 0:
             NFO_file = fs_get_collection_NFO_name(self.settings, collection)            
             NFO_filepath = Path(NFO_file)
-            NFO_str = 'default NFO found' if NFO_filepath.fileExists() else 'default NFO not found'
+            NFO_str = 'default NFO found' if NFO_filepath.exists() else 'default NFO not found'
             plot_str = text_limit_string(collection['m_plot'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
@@ -4033,7 +4033,7 @@ class Main:
             elif type2 == 5:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
                 NFO_filepath = Path(NFO_file)
-                if not NFO_filepath.fileExists(): return
+                if not NFO_filepath.exists(): return
                 # >> Returns True if changes were made
                 if not fs_import_collection_NFO(NFO_filepath, collections, launcherID): return
                 kodi_notify('Imported Collection NFO file')
@@ -4159,7 +4159,7 @@ class Main:
         collection_file_path = COLLECTIONS_DIR.getSubPath(collection['roms_base_noext'] + '.json')
         log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
         try:
-            if collection_file_path.fileExists():
+            if collection_file_path.exists():
                 collection_file_path.delete()
         except OSError:
             log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path.getOriginalPath()))
@@ -4194,7 +4194,7 @@ class Main:
         collection_asset_path = Path(c_file_F.dirname)
         collection_asset_file_F = collection_asset_path.getSubPath(c_file_F.base_noext + '_assets.json')
         import_collection_assets = False
-        if collection_asset_file_F.fileExists():
+        if collection_asset_file_F.exists():
             ret = kodi_dialog_yesno('Collection asset JSON detected. Import collection assets as well?')
             if ret: import_collection_assets = True
             # --- Load assets ---
@@ -4508,7 +4508,7 @@ class Main:
         else:
             rom_file_path = ROMS_DIR.getSubPath(self.launchers[launcherID]['roms_base_noext'] + '.json')
             log_debug('_command_search_launcher() rom_file_path "{0}"'.format(rom_file_path.getOriginalPath()))
-            if not rom_file_path.fileExists():
+            if not rom_file_path.exists():
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
                 return
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
@@ -4635,7 +4635,7 @@ class Main:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
         else:
             rom_file_path = ROMS_DIR.getSubPath(self.launchers[launcherID]['roms_base_noext'] + '.json')
-            if not rom_file_path.fileExists():
+            if not rom_file_path.exists():
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
                 return
             roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
@@ -4707,7 +4707,7 @@ class Main:
         elif categoryID == VCATEGORY_TITLE_ID:
             log_info('_command_view_ROM() Viewing ROM in Virtual Launcher Title...')
             hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.getSubPath(launcherID + '.json')
-            if hashed_db_filename.fileExists():
+            if hashed_db_filename.exists():
                 log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getCurrentPath()))
                 kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                 return
@@ -4720,7 +4720,7 @@ class Main:
         elif categoryID == VCATEGORY_YEARS_ID:
             log_info('_command_view_ROM() Viewing ROM in Virtual Launcher Year...')
             hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.getSubPath(launcherID + '.json')
-            if not hashed_db_filename.fileExists():
+            if not hashed_db_filename.exists():
                 log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getCurrentPath()))
                 kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                 return
@@ -4733,7 +4733,7 @@ class Main:
         elif categoryID == VCATEGORY_GENRE_ID:
             log_info('_command_view_ROM() Viewing ROM in Virtual Launcher Genre...')
             hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.getSubPath(launcherID + '.json')
-            if not hashed_db_filename.fileExists():
+            if not hashed_db_filename.exists():
                 log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getCurrentPath()))
                 kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                 return
@@ -4746,7 +4746,7 @@ class Main:
         elif categoryID == VCATEGORY_STUDIO_ID:
             log_info('_command_view_ROM() Viewing ROM in Virtual Launcher Studio...')
             hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.getSubPath(launcherID + '.json')
-            if not hashed_db_filename.fileExists():
+            if not hashed_db_filename.exists():
                 log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getCurrentPath()))
                 kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                 return
@@ -5054,7 +5054,7 @@ class Main:
             return
 
         # --- If report doesn't exists create it automatically ---
-        if report_file_name.fileExists():
+        if report_file_name.exists():
             kodi_dialog_OK('Report file not found. Will be generated now.')
             self._roms_create_launcher_report(categoryID, launcherID, roms)
             xbmc.sleep(250)
@@ -5164,7 +5164,7 @@ class Main:
             
             log_verb('_command_update_virtual_category_db() Deleting "{0}"'.format(the_file.getCurrentPath()))
             try:
-                if the_file.fileExists():
+                if the_file.exists():
                     the_file.unlink()
             except Exception as e:
                 log_error('_command_update_virtual_category_db() Excepcion deleting hashed DB XMLs')
@@ -5278,7 +5278,7 @@ class Main:
         FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.getSubPath('fixed_launchers.xml')
 
         # >> Check that launchers.xml exist
-        if not LAUNCHERS_FILE_PATH.fileExists():
+        if not LAUNCHERS_FILE_PATH.exists():
             log_error("_command_import_legacy_AL() Cannot find '{0}'".format(LAUNCHERS_FILE_PATH.getCurrentPath()))
             kodi_dialog_OK('launchers.xml not found! Nothing imported.')
             return
@@ -5907,7 +5907,7 @@ class Main:
                 log_debug('_roms_delete_missing_ROMs() Testing {0}'.format(name))
 
                 # Remove missing ROMs
-                if not filename.fileExists():
+                if not filename.exists():
                     log_debug('_roms_delete_missing_ROMs() Delete {0} item entry'.format(name))
                     del roms[rom_id]
                     num_removed_roms += 1
@@ -5950,7 +5950,7 @@ class Main:
 
         # --- Check if DAT file exists ---
         nointro_xml_path = Path(nointro_xml_file)
-        if not nointro_xml_path.fileExists():
+        if not nointro_xml_path.exists():
             log_warn('_roms_update_NoIntro_status Not found {0}'.format(nointro_xml_path.getCurrentPath()))
             return
 
@@ -5982,7 +5982,7 @@ class Main:
             name     = roms[rom_id]['m_name']
             filename = Path(roms[rom_id]['filename'])
             # log_debug('_roms_update_NoIntro_status() Testing {0}'.format(name))
-            if not filename.fileExists():
+            if not filename.exists():
                 # log_debug('_roms_update_NoIntro_status() Not found {0}'.format(name))
                 roms[rom_id]['nointro_status'] = 'Miss'
 
@@ -6153,7 +6153,7 @@ class Main:
                 self.pDialog.update(i * 100 / num_roms)
                 i += 1
                 fileName = Path(roms[key]['filename'])
-                if not fileName.fileExists():
+                if not fileName.exists():
                     log_debug('Not found')
                     log_debug('Delete {0} item entry'.format(roms[key]['filename']))
                     del roms[key]
@@ -6310,7 +6310,7 @@ class Main:
         nfo_file_path = ROM.path_noext + ".nfo"
         NFO_file = Path(nfo_file_path)
         log_debug('Testing NFO file "{0}"'.format(nfo_file_path))
-        found_NFO_file = True if NFO_file.fileExists() else False
+        found_NFO_file = True if NFO_file.exists() else False
 
         # >> Determine metadata action based on policy
         # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
@@ -6349,7 +6349,7 @@ class Main:
             scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             log_debug('Trying NFO file "{0}"'.format(nfo_file_path.getCurrentPath()))
-            if nfo_file_path.fileExists():
+            if nfo_file_path.exists():
                 log_debug('NFO file found. Reading it')
                 nfo_dic = fs_load_NFO_file_scanner(nfo_file_path)
                 # NOTE <platform> is chosen by AEL, never read from NFO files
@@ -6898,7 +6898,7 @@ class Main:
                 image_file = dialog.browse(2, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
                                            AInfo.exts_dialog, True, False, image_dir)
             image_file_path = Path(image_file)
-            if not image_file or not image_file_path.fileExists(): return False
+            if not image_file or not image_file_path.exists(): return False
 
             # --- Update object by assigment. XML/JSON will be save by parent ---
             object_dic[AInfo.key] = image_file_path.getOriginalPath()
@@ -6919,7 +6919,7 @@ class Main:
             image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(AInfo.name), 'files',
                                                  AInfo.exts_dialog, True, False, image_dir)
             image_file_path = Path(image_file)
-            if not image_file or not image_file_path.fileExists(): return False
+            if not image_file or not image_file_path.exists(): return False
 
             # Determine image extension and dest filename
             F = misc_split_path(image_file)
@@ -7010,7 +7010,7 @@ class Main:
             # --- Always do semi-automatic scraping when editing images ---
             # If there is a local image add it to the list and show it to the user
             assetPath = Path(current_asset_path)
-            if assetPath.fileExists():
+            if assetPath.exists():
                 image_list.insert(0, {'name' : 'Current local image', 
                                       'URL' : current_asset_path, 
                                       'disp_URL' : current_asset_path })

@@ -469,7 +469,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         # Strings in the list are Unicode. Encode to UTF-8
         # Join string, and save categories.xml file
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(categories_file.getCurrentPath(), 'w')
+        file_obj = open(categories_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
@@ -569,33 +569,33 @@ def fs_write_JSON_file(file_dir, file_base_noext, data):
     log_verb('fs_write_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
 
     try:
-        with io.open(json_file.getCurrentPath(), 'w', encoding = 'utf-8') as file:
+        with io.open(json_file.getPath(), 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(json_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(json_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(json_file.getPath()))
 
 def fs_load_JSON_file(file_dir, file_base_noext):
     data = {}
 
     # --- If file does not exist return empty dictionary ---
     json_file = file_dir.getSubPath(file_base_noext + '.json')
-    if not json_file.fileExists(): return data
+    if not json_file.exists(): return data
 
     # --- Parse using json module ---
     log_verb('fs_load_JSON_file() Dir  {0}'.format(file_dir.getOriginalPath()))
     log_verb('fs_load_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
-    with open(json_file.getCurrentPath()) as file:
+    with open(json_file.getPath()) as file:
         try:
             data = json.load(file)
         except ValueError:
             statinfo = json_file.stat()
             log_error('fs_load_JSON_file() ValueError exception in json.load() function')
-            log_error('fs_load_JSON_file() Dir  {0}'.format(file_dir.getCurrentPath()))
+            log_error('fs_load_JSON_file() Dir  {0}'.format(file_dir.getPath()))
             log_error('fs_load_JSON_file() File {0}'.format(file_base_noext + '.json'))
             log_error('fs_load_JSON_file() Size {0}'.format(statinfo.st_size))
         file.close()
@@ -808,22 +808,22 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(roms_xml_file.getCurrentPath(), 'w')
+        file_obj = open(roms_xml_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_xml_file.getCurrentPath()))
-        log_error('fs_write_ROMs_JSON() (OSerror) Cannot write file "{0}"'.format(roms_xml_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_xml_file.getPath()))
+        log_error('fs_write_ROMs_JSON() (OSerror) Cannot write file "{0}"'.format(roms_xml_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_xml_file.getCurrentPath()))
-        log_error('fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_xml_file.getPath()))
+        log_error('fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file.getPath()))
 
     # >> Write ROMs JSON dictionary.
     # >> Do note that there is a bug in the json module where the ensure_ascii=False flag can produce
     # >> a mix of unicode and str objects.
     # >> See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
     try:
-        with io.open(roms_json_file.getCurrentPath(), 'w', encoding = 'utf-8') as file:
+        with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
             # >> json_unicode is either str or unicode
             # >> See https://docs.python.org/2.7/library/json.html#json.dumps
             json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
@@ -832,9 +832,9 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getPath()))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -858,7 +858,7 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('fs_load_ROMs_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir.getCurrentPath()))
+            log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir.getPath()))
             log_error('fs_load_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
             log_error('fs_load_ROMs_JSON() Size {0}'.format(statinfo.st_size))
         file.close()
@@ -885,15 +885,15 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
 
     # --- Write JSON file ---
     try:
-        with io.open(roms_json_file.getCurrentPath(), 'w', encoding='utf-8') as file:
+        with io.open(roms_json_file.getPath(), 'w', encoding='utf-8') as file:
             json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getPath()))
 
 #
 # Loads an JSON file containing the Favourite ROMs
@@ -901,17 +901,17 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
 def fs_load_Favourites_JSON(roms_json_file):
     # --- If file does not exist return empty dictionary ---
     log_verb('fs_load_Favourites_JSON() File {0}'.format(roms_json_file.getOriginalPath()))
-    if not roms_json_file.fileExists(): 
+    if not roms_json_file.exists(): 
         return {}
 
     # --- Parse JSON ---
-    with open(roms_json_file.getCurrentPath()) as file:    
+    with open(roms_json_file.getPath()) as file:    
         try:
             raw_data = json.load(file)
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('fs_load_Favourites_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_Favourites_JSON() File {0}'.format(roms_json_file.getCurrentPath()))
+            log_error('fs_load_Favourites_JSON() File {0}'.format(roms_json_file.getPath()))
             log_error('fs_load_Favourites_JSON() Size {0}'.format(statinfo.st_size))
             return {}
 
@@ -960,13 +960,13 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(collections_xml_file.getCurrentPath(), 'w')
+        file_obj = open(collections_xml_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(collections_xml_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(collections_xml_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(collections_xml_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(collections_xml_file.getPath()))
 
 def fs_load_Collection_index_XML(collections_xml_file):
     __debug_xml_parser = 0
@@ -974,12 +974,12 @@ def fs_load_Collection_index_XML(collections_xml_file):
     collections = {}
 
     # --- If file does not exist return empty dictionary ---
-    if not collections_xml_file.fileExists(): return (collections, update_timestamp)
+    if not collections_xml_file.exists(): return (collections, update_timestamp)
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_Collection_index_XML() Loading {0}'.format(collections_xml_file.getOriginalPath()))
     try:
-        xml_tree = ET.parse(collections_xml_file.getCurrentPath())
+        xml_tree = ET.parse(collections_xml_file.getPath())
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
@@ -1018,15 +1018,15 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
     raw_data.append(roms)
 
     try:
-        with io.open(roms_json_file.getCurrentPath(), 'w', encoding = 'utf-8') as file:
+        with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getPath()))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -1034,13 +1034,13 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
 #
 def fs_load_Collection_ROMs_JSON(roms_json_file):
     # --- If file does not exist return empty list ---
-    if not roms_json_file.fileExists():
+    if not roms_json_file.exists():
         return []
 
     # --- Parse using JSON ---
     log_verb('fs_load_Collection_ROMs_JSON() {0}'.format(roms_json_file.getOriginalPath()))
 
-    with open(roms_json_file.getCurrentPath()) as file:    
+    with open(roms_json_file.getPath()) as file:    
         try:
             raw_data = json.load(file)
         except ValueError:
@@ -1087,15 +1087,15 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
 
     # >> Produce nicely formatted JSON when exporting
     try:
-        with io.open(output_filename.getCurrentPath(), 'w', encoding = 'utf-8') as file:
+        with io.open(output_filename.getPath(), 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                    indent = 2, separators = (', ', ' : '))
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename.getPath()))
 
 #
 # Export collection assets. Use base64 encoding to store binary files in JSON.
@@ -1162,15 +1162,15 @@ def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_
 
     # >> Produce nicely formatted JSON when exporting
     try:
-        with io.open(output_filename.getCurrentPath(), 'w', encoding = 'utf-8') as file:
+        with io.open(output_filename.getPath(), 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = 2, separators = (', ', ' : '))
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename.getPath()))
 
 #
 # See fs_export_ROM_collection() function.
@@ -1202,18 +1202,18 @@ def fs_import_ROM_collection(input_filename):
     return (control_dic, collection_dic, collection_rom_list)
 
 def fs_import_ROM_collection_assets(input_filename):
-    if not input_filename.fileExists(): return ({}, {}, [])
+    if not input_filename.exists(): return ({}, {}, [])
 
     # --- Parse using JSON ---
     log_info('fs_import_ROM_collection_assets() Loading {0}'.format(input_filename.getOriginalPath()))
 
-    with open(input_filename.getCurrentPath()) as file:
+    with open(input_filename.getPath()) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
             statinfo = os.stat(input_filename)
             log_error('fs_import_ROM_collection_assets() ValueError exception in json.load() function')
-            log_error('fs_import_ROM_collection_assets() File {0}'.format(input_filename.getCurrentPath()))
+            log_error('fs_import_ROM_collection_assets() File {0}'.format(input_filename.getPath()))
             log_error('fs_import_ROM_collection_assets() Size {0}'.format(statinfo.st_size))
             return ({}, {}, [])
 
@@ -1266,13 +1266,13 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
             str_list.append('</VLauncher>\n')
         str_list.append('</advanced_emulator_launcher_Virtual_Category_index>\n')
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(roms_xml_file.getCurrentPath(), 'w')
+        file_obj = open(roms_xml_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_xml_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_xml_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_xml_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_xml_file.getPath()))
 
 #
 # Loads an XML file containing Virtual Launcher indices
@@ -1284,12 +1284,12 @@ def fs_load_VCategory_XML(roms_xml_file):
     VLaunchers = {}
 
     # --- If file does not exist return empty dictionary ---
-    if not roms_xml_file.fileExists(): return (update_timestamp, VLaunchers)
+    if not roms_xml_file.exists(): return (update_timestamp, VLaunchers)
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_XML() Loading XML file {0}'.format(roms_xml_file.getOriginalPath()))
     try:
-        xml_tree = ET.parse(roms_xml_file.getCurrentPath())
+        xml_tree = ET.parse(roms_xml_file.getPath())
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
@@ -1325,15 +1325,15 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file.getOriginalPath()))
     try:
-        with io.open(roms_json_file.getCurrentPath(), 'w', encoding = 'utf-8') as file:
+        with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getCurrentPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getPath()))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -1341,17 +1341,17 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
 def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
     # --- If file does not exist return empty dictionary ---
     roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
-    if not roms_json_file.fileExists(): return {}
+    if not roms_json_file.exists(): return {}
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file.getOriginalPath()))
-    with open(roms_json_file.getCurrentPath()) as file:    
+    with open(roms_json_file.getPath()) as file:    
         try:
             roms = json.load(file)
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('fs_load_VCategory_ROMs_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_VCategory_ROMs_JSON() Dir  {0}'.format(roms_dir.getCurrentPath()))
+            log_error('fs_load_VCategory_ROMs_JSON() Dir  {0}'.format(roms_dir.getPath()))
             log_error('fs_load_VCategory_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
             log_error('fs_load_VCategory_ROMs_JSON() Size {0}'.format(statinfo.st_size))
             return {}
@@ -1370,13 +1370,13 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 #
 def fs_load_NoIntro_XML_file(roms_xml_file):
     # --- If file does not exist return empty dictionary ---
-    if not roms_xml_file.fileExists(): return {}
+    if not roms_xml_file.exists(): return {}
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_NoIntro_XML_file() Loading XML file {0}'.format(roms_xml_file.getOriginalPath()))
     nointro_roms = {}
     try:
-        xml_tree = ET.parse(roms_xml_file.getCurrentPath())
+        xml_tree = ET.parse(roms_xml_file.getPath())
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
@@ -1551,9 +1551,9 @@ def fs_fix_launchers_xml(launchers_xml_path, sanitized_xml_path):
     log_info('fs_fix_launchers_xml() Sanitizing AL launchers.xml...')
     log_info('fs_fix_launchers_xml() Input  {0}'.format(launchers_xml_path.getOriginalPath()))
     log_info('fs_fix_launchers_xml() Output {0}'.format(sanitized_xml_path.getOriginalPath()))
-    with open(launchers_xml_path.getCurrentPath()) as f_in:
+    with open(launchers_xml_path.getPath()) as f_in:
         lines = f_in.readlines()
-    f_out = open(sanitized_xml_path.getCurrentPath(), 'w')
+    f_out = open(sanitized_xml_path.getPath(), 'w')
     p = re.compile(r'^(\s+)<(.+?)>(.+)</\2>(\s+)')
     line_counter = 1
     for line in lines:
@@ -1602,7 +1602,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
     # --- Parse using ElementTree ---
     log_info('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath.getOriginalPath()))
     try:
-        xml_tree = ET.parse(AL_launchers_filepath.getCurrentPath())
+        xml_tree = ET.parse(AL_launchers_filepath.getPath())
     except ET.ParseError, e:
         log_error('ParseError exception parsing XML categories.xml')
         log_error('ParseError: {0}'.format(str(e)))
@@ -1796,7 +1796,7 @@ def fs_load_NFO_file_scanner(nfo_file_path):
     nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'publisher' : '', 'rating' : '', 'plot' : '' }
 
     # >> Read file, put in a string and remove line endings
-    file = codecs.open(nfo_file_path.getCurrentPath(), 'r', 'utf-8')
+    file = codecs.open(nfo_file_path.getPath(), 'r', 'utf-8')
     nfo_str = file.read().replace('\r', '').replace('\n', '')
     file.close()
 
@@ -1992,7 +1992,7 @@ def fs_get_category_NFO_name(settings, category):
 #
 def fs_export_collection_NFO(nfo_file_path, collection):
     # --- Get NFO file name ---
-    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path.getCurrentPath()))
+    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -2004,15 +2004,15 @@ def fs_export_collection_NFO(nfo_file_path, collection):
     nfo_content.append('</collection>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_file_path.getCurrentPath(), 'w')
+        f = open(nfo_file_path.getPath(), 'w')
         f.write(full_string)
         f.close()
     except:
         kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_file_path.getName()))
-        log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_file_path.getCurrentPath()))
+        log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_file_path.getPath()))
         return False
     kodi_notify('Created NFO file {0}'.format(os.path.basename(nfo_file_path.getName())))
-    log_debug("fs_export_collection_NFO() Created '{0}'".format(nfo_file_path.getCurrentPath()))
+    log_debug("fs_export_collection_NFO() Created '{0}'".format(nfo_file_path.getPath()))
 
     return True
 
@@ -2021,18 +2021,18 @@ def fs_import_collection_NFO(nfo_file_path, collections, launcherID):
     log_debug('fs_import_collection_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path.getOriginalPath()))
 
     # --- Import data ---
-    if os.path.isfile(nfo_file_path.getCurrentPath()):
+    if os.path.isfile(nfo_file_path.getPath()):
         try:
-            file = codecs.open(nfo_file_path.getCurrentPath(), 'r', 'utf-8')
+            file = codecs.open(nfo_file_path.getPath(), 'r', 'utf-8')
             item_nfo = file.read().replace('\r', '').replace('\n', '')
             file.close()
         except:
             kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getName()))
-            log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_file_path.getCurrentPath()))
+            log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_file_path.getPath()))
             return False
     else:
         kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_file_path.getOriginalPath())))
-        log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_file_path.getCurrentPath()))
+        log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_file_path.getPath()))
         return False
 
     item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
@@ -2060,15 +2060,16 @@ def fs_get_collection_NFO_name(settings, collection):
 # Filesystem helper class
 # This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in
 # caller code.
+# A) Transform paths like smb://server/directory/ into \\server\directory\
+# B) Use xbmc.translatePath() for paths starting with special://
 # -------------------------------------------------------------------------------------------------
 class FileName:
+    # pathString must be a Unicode string object
     def __init__(self, pathString):
         self.originalPath = pathString
         self.path         = pathString
-
-        self.__parseCurrentPath()
-
-    def __parseCurrentPath(self):
+        
+        # --- Path transformation ---
         if self.originalPath.lower().startswith('smb:'):
             self.path = self.path.replace('smb:', '')
             self.path = self.path.replace('SMB:', '')
@@ -2086,6 +2087,20 @@ class FileName:
         child = FileName(self.originalPath)
         for arg in args:
             child.join(arg)
+
+        return child
+
+    # See http://blog.teamtreehouse.com/operator-overloading-python
+    # other is a FileName object. other originalPath is expected to be a subdirectory (path
+    # transformation not required)
+    def __add__(self, other):
+        current_path = self.originalPath
+        if type(other) is FileName:  other_path = other.originalPath
+        elif type(other) is unicode: other_path = other
+        elif type(other) is str:     other_path = other.decode('utf-8')
+        else: raise NameError('Unknown type for overloaded + in FileName object')
+        new_path = os.path.join(current_path, other_path)
+        child    = FileName(new_path)
 
         return child
 
@@ -2183,4 +2198,4 @@ class FileName:
         os.unlink(self.path)
 
     def rename(self, to):
-        os.rename(self.path, to.getCurrentPath())
+        os.rename(self.path, to.getPath())
