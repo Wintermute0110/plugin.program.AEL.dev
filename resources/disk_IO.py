@@ -2160,7 +2160,7 @@ class FileName:
         files = []
         filenames = os.listdir(self.path)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(Path(os.path.join(self.path, filename)))
+            files.append(FileName(os.path.join(self.path, filename)))
 
         return files
 

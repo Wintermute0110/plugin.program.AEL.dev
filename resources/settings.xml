@@ -42,7 +42,8 @@
     <setting label="Hide [Browse by Title]" type="bool" default="false" id="display_hide_title" />
     <setting label="Hide [Browse by Year]" type="bool" default="false" id="display_hide_year" />
     <setting label="Hide [Browse by Genre]" type="bool" default="false" id="display_hide_genre" />
-    <setting label="Hide [Browse by Studio]" type="bool" default="false" id="display_hide_studio" />    
+    <setting label="Hide [Browse by Studio]" type="bool" default="false" id="display_hide_studio" />
+    <setting label="Hide [Browse by Category]" type="bool" default="false" id="display_hide_category" />
     <setting label="Hide [Recently played ROMs]" type="bool" default="false" id="display_hide_recent" />
     <setting label="Hide [Most played ROMs]" type="bool" default="false" id="display_hide_mostplayed" />
 </category>
