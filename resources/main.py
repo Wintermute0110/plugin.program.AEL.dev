@@ -6680,9 +6680,8 @@ class Main:
         else:
             launcher = self.launchers[launcherID]
             platform = launcher['platform']
-        f_path   = roms[romID]['filename']
+        ROM      = FileName(roms[romID]['filename'])
         rom_name = roms[romID]['m_name']
-        ROM      = misc_split_path(f_path)
         scan_clean_tags            = self.settings['scan_clean_tags']
         scan_ignore_scrapped_title = self.settings['scan_ignore_scrap_title']
         log_info('_gui_scrap_rom_metadata() ROM "{0}"'.format(rom_name))
@@ -6696,7 +6695,7 @@ class Main:
         # --- Do a search and get a list of games ---
         # >> Prevent race conditions
         kodi_busydialog_ON()
-        results = scraper_obj.get_search(search_string, ROM.base_noext, platform)
+        results = scraper_obj.get_search(search_string, ROM.getBasename_noext(), platform)
         kodi_busydialog_OFF()
         log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
