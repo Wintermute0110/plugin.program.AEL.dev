@@ -30,11 +30,33 @@ from utils import *
 # ----------------------------------------------------------------------------- 
 class Scraper_TheGamesDB():
     def __init__(self):
+        self.reset_cache()
+
+    def check_cache(self, search_string, rom_base_noext, platform):
+        if self.get_search_cached_search_string  == search_string and \
+           self.get_search_cached_rom_base_noext == rom_base_noext and \
+           self.get_search_cached_platform       == platform:
+           log_debug('Scraper_TheGamesDB::check_cache Cache HIT.')
+           return True
+        log_debug('Scraper_TheGamesDB::check_cache Cache MISS. Updating cache.')
+
+        return False
+
+    def update_cache(self, search_string, rom_base_noext, platform, page_data):
+        self.get_search_cached_search_string  = search_string
+        self.get_search_cached_rom_base_noext = rom_base_noext
+        self.get_search_cached_platform       = platform
+        self.get_search_cached_page_data      = page_data
+
+    def reset_cache(self):
         self.get_search_cached_search_string  = ''
         self.get_search_cached_rom_base_noext = ''
         self.get_search_cached_platform       = ''
         self.get_search_cached_page_data      = ''
 
+    def get_cached_pagedata(self):
+        return self.get_search_cached_page_data
+        
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
@@ -51,25 +73,13 @@ class Scraper_TheGamesDB():
         url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
               'name=' + urllib.quote_plus(search_string) + '&platform=' + urllib.quote_plus(scraper_platform)
 
-        if self.get_search_cached_search_string  == search_string and \
-           self.get_search_cached_rom_base_noext == rom_base_noext and \
-           self.get_search_cached_platform       == platform:
-            log_debug('Scraper_TheGamesDB::get_search Cache HIT.')
-            page_data = self.get_search_cached_page_data
+        if self.check_cache(search_string, rom_base_noext, platform):
+            page_data = self.get_cached_pagedata()
         else:
-            log_debug('Scraper_TheGamesDB::get_search Cache MISS. Updating cache.')
             page_data = net_get_URL_oneline(url)
             # >> If nothing is returned maybe a timeout happened. In this case, reset the cache.
-            if page_data:
-                self.get_search_cached_search_string  = search_string
-                self.get_search_cached_rom_base_noext = rom_base_noext
-                self.get_search_cached_platform       = platform
-                self.get_search_cached_page_data      = page_data
-            else:
-                self.get_search_cached_search_string  = ''
-                self.get_search_cached_rom_base_noext = ''
-                self.get_search_cached_platform       = ''
-                self.get_search_cached_page_data      = ''
+            if page_data: self.update_cache(search_string, rom_base_noext, platform, page_data)
+            else:         self.reset_cache()
 
         # --- Parse list of games ---
         # <Data>
@@ -144,17 +154,38 @@ class Scraper_GameFAQs():
 
         return game_list
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # MobyGames (http://www.mobygames.com)
-# MobyGames makes it difficult to extract information. Maybe a grammar parser
-# will be needed.
-# ----------------------------------------------------------------------------- 
+# MobyGames makes it difficult to extract information. Maybe a grammar parser will be needed.
+# -------------------------------------------------------------------------------------------------
 class Scraper_MobyGames():
     def __init__(self):
+        self.reset_cache()
+
+    def check_cache(self, search_string, rom_base_noext, platform):
+        if self.get_search_cached_search_string  == search_string and \
+           self.get_search_cached_rom_base_noext == rom_base_noext and \
+           self.get_search_cached_platform       == platform:
+           log_debug('Scraper_MobyGames::check_cache Cache HIT.')
+           return True
+        log_debug('Scraper_MobyGames::check_cache Cache MISS. Updating cache.')
+
+        return False
+
+    def update_cache(self, search_string, rom_base_noext, platform, page_data):
+        self.get_search_cached_search_string  = search_string
+        self.get_search_cached_rom_base_noext = rom_base_noext
+        self.get_search_cached_platform       = platform
+        self.get_search_cached_page_data      = page_data
+
+    def reset_cache(self):
         self.get_search_cached_search_string  = ''
         self.get_search_cached_rom_base_noext = ''
         self.get_search_cached_platform       = ''
         self.get_search_cached_page_data      = ''
+
+    def get_cached_pagedata(self):
+        return self.get_search_cached_page_data
 
     # --- Search with no platform -----------------------------------------------------------------
     # http://www.mobygames.com/search/quick?q=super+mario+world
@@ -217,17 +248,29 @@ class Scraper_MobyGames():
             log_debug('Scraper_MobyGames::get_search AEL platform       "{0}"'.format(platform))
             log_debug('Scraper_MobyGames::get_search MobyGames platform "{0}"'.format(scraper_platform))
 
-        # --- Search for games ---
+        # --- Search for games and get search page data ---
         # >> NOTE Search result page is a little bit different if platform used or not!!!
         # >> Findall returns a list of tuples. Tuples elements are the groups
         str_tokens = search_string.split(' ')
         str_mobygames = '+'.join(str_tokens)
         log_debug('Scraper_MobyGames::get_search str_mobygames = "{0}"'.format(str_mobygames))
-        game_list = []
         if scraper_platform == '':
             log_debug('Scraper_MobyGames::get_search NO plaform search')
             url = 'http://www.mobygames.com/search/quick?q={0}'.format(str_mobygames)
+        else:
+            log_debug('Scraper_MobyGames::get_search Search using platform')
+            url = 'http://www.mobygames.com/search/quick?q={0}&p={1}'.format(str_mobygames, scraper_platform)
+        if self.check_cache(search_string, rom_base_noext, platform):
+            page_data = self.get_cached_pagedata()
+        else:
             page_data = net_get_URL_oneline(url)
+            # >> If nothing is returned maybe a timeout happened. In this case, reset the cache.
+            if page_data: self.update_cache(search_string, rom_base_noext, platform, page_data)
+            else:         self.reset_cache()
+
+        # --- Extract information from page data ---
+        game_list = []        
+        if scraper_platform == '':
             # Search for: <span style="white-space: nowrap"><a href="/game/arcade/super-mario-world">Arcade</a> (<em>1991</em>)</span>
             m = re.findall('<span style="white-space: nowrap"><a href="(.+?)">(.+?)</a> \(<em>(.+?)</em>\)</span>', page_data)
             # print(m)
@@ -242,23 +285,21 @@ class Scraper_MobyGames():
                 if game_raw[-1] == '_': game_raw = game_raw[:-1]
                 game_tokens = game_raw.split('-')
                 game_tokens = [x.capitalize() for x in game_tokens]
-                game_name   = ' '.join(game_tokens)
+                game_name   = text_unescape_HTML(' '.join(game_tokens))
                 game['id']           = game_tuple[0]
                 game['display_name'] = game_name + ' / {0}'.format(game_tuple[1])
                 game_list.append(game)
 
         else:
-            log_debug('Scraper_MobyGames::get_search Search using platform')
-            url = 'http://www.mobygames.com/search/quick?q={0}&p={1}'.format(str_mobygames, scraper_platform)
-            page_data = net_get_URL_oneline(url)
             # Search for: <div class="searchTitle">Game: <a href="/game/snes/super-mario-world">Super Mario World</a>
             m = re.findall('<div class="searchTitle">Game: <a href="(.+?)">(.+?)</a>', page_data)
             # print(m)
             for game_tuple in m:
                 game = {}
+                game_name = text_unescape_HTML(game_tuple[1])
                 game['id']           = game_tuple[0]
-                game['display_name'] = game_tuple[1] + ' / {0}'.format(platform)
-                game['game_name']    = game_tuple[1]
+                game['display_name'] = game_name + ' / {0}'.format(platform)
+                game['game_name']    = game_name # Additional MobyGames scraper field
                 game_list.append(game)
 
         return game_list
