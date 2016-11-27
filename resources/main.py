@@ -650,21 +650,12 @@ class Main:
                                         'Are you sure you want to delete "{0}"?'.format(category_name))
                 if not ret: return
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
-                # Delete launchers and ROM XML associated with them
+                # >> Delete launchers and ROM JSON/XML associated with them
                 for launcherID in launcherID_list:
                     log_info('Deleting linked launcher "{0}" id {1}'.format(self.launchers[launcherID]['m_name'], launcherID))
-                    # >> Delete information XML file
-                    roms_xml_file = fs_get_ROMs_XML_file_path(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    if roms_xml_file.exists():
-                        log_info('Deleting ROMs XML  "{0}"'.format(roms_xml_file.getOriginalPath()))
-                        roms_xml_file.unlink()
-                    # >> Delete ROMs JSON file
-                    roms_json_file = fs_get_ROMs_JSON_file_path(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    if roms_json_file.exists():
-                        log_info('Deleting ROMs JSON "{0}"'.format(roms_json_file.getOriginalPath()))
-                        roms_json_file.unlink()
+                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
                     self.launchers.pop(launcherID)
-                # Delete category and make sure True is returned.
+                # >> Delete category from database.
                 self.categories.pop(categoryID)
             else:
                 ret = kodi_dialog_yesno('Category "{0}" contains no launchers. '.format(category_name) +
@@ -1593,10 +1584,24 @@ class Main:
 
                 # --- Empty Launcher menu option ---
                 elif type2 == 11:
-                    self._gui_empty_launcher(launcherID)
-                    # _gui_empty_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
-                    # Container.Refresh at the end of this function and calling the plugin twice.
-                    return
+                    roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    num_roms = len(roms)
+
+                    # If launcher is empty (no ROMs) do nothing
+                    if num_roms == 0:
+                        kodi_dialog_OK('Launcher has no ROMs. Nothing to do.')
+                        return
+
+                    # Confirm user wants to delete ROMs
+                    dialog = xbmcgui.Dialog()
+                    ret = dialog.yesno('Advanced Emulator Launcher',
+                                       "Launcher '{0}' has {1} ROMs. Are you sure you want to delete them "
+                                       "from AEL database?".format(self.launchers[launcherID]['m_name'], num_roms))
+                    if not ret: return
+
+                    # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
+                    # when user add more ROMs.
+                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
 
                 # >> User canceled select dialog
                 elif type2 < 0: return
@@ -1671,10 +1676,24 @@ class Main:
         # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
-            self._gui_remove_launcher(launcherID)
-            # _gui_remove_launcher calls ReplaceWindow/Container.Refresh. Return now to avoid the
-            # Container.Refresh at the end of this function and calling the plugin twice.
-            return
+            rompath = self.launchers[launcherID]['rompath']
+            # >> Standalone launcher
+            if rompath == '':
+                ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(self.launchers[launcherID]['m_name']) +
+                                        'Are you sure you want to delete it?')
+            # >> ROMs launcher
+            else:
+                roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                num_roms = len(roms)
+                ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs '.format(self.launchers[launcherID]['m_name'], num_roms) +
+                                        'Are you sure you want to delete it?')
+            if not ret: return
+
+            # --- Remove JSON/XML file if exist ---
+            fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+
+            # --- Remove launcher from database. Categories.xml will be saved at the end of function ---
+            self.launchers.pop(launcherID)
 
         # User pressed cancel or close dialog
         if type < 0:
@@ -1682,78 +1701,9 @@ class Main:
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
-        # >> Update edited launcher timestamp.
-        self.launchers[launcherID]['timestamp_launcher'] = time.time()
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_refresh_container()
-
-    #
-    # Removes ROMs for a given launcher. Note this function will never be called for standalone launchers.
-    #
-    def _gui_empty_launcher(self, launcherID):
-        roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-        num_roms = len(roms)
-
-        # If launcher is empty (no ROMs) do nothing
-        if num_roms == 0:
-            kodi_dialog_OK('Launcher is empty. Nothing to do.')
-            return
-
-        # Confirm user wants to delete ROMs
-        dialog = xbmcgui.Dialog()
-        ret = dialog.yesno('Advanced Emulator Launcher',
-                           "Launcher '{0}' has {1} ROMs. Are you sure you want to delete them "
-                           "from AEL database?".format(self.launchers[launcherID]['m_name'], num_roms))
-        if ret:
-            # Just remove ROMs file. Keep the value of roms_base_noext to be reused when user add more ROMs.
-            roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-            if roms_base_noext == '':
-                log_info('Launcher roms_base_noext is empty "". No ROMs XML to remove')
-            else:
-                roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
-                log_info('Removing ROMs XML "{0}"'.format(roms_file_path.getOriginalPath()))
-                try:
-                    roms_file_path.unlink()
-                except OSError:
-                    log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_file_path.getPath()))
-                    kodi_notify_warn('OSError exception deleting ROMs database')
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_refresh_container()
-
-    #
-    # Removes a launcher. For ROMs launcher it also removes ROM XML. For standalone launcher there is no
-    # files to remove and no ROMs to check.
-    #
-    def _gui_remove_launcher(self, launcherID):
-        rompath = self.launchers[launcherID]['rompath']
-        # >> Standalone launcher
-        if rompath == '':
-            ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(self.launchers[launcherID]['m_name']) +
-                                    'Are you sure you want to delete it?')
-        # >> ROMs launcher
-        else:
-            roms = fs_load_ROMs(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-            num_roms = len(roms)
-            ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs '.format(self.launchers[launcherID]['m_name'], num_roms) +
-                                    'Are you sure you want to delete it?')
-        if not ret: return
-
-        # --- Remove XML file and delete launcher object, only if launcher is not empty ---
-        roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-        if roms_base_noext == '' or rompath == '':
-            log_debug('Launcher is empty or standalone. No ROMs XML to remove')
-        else:
-            roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
-            log_debug('Removing ROMs XML "{0}"'.format(roms_file_path.getOriginalPath()))
-            try:
-                if roms_file_path.exists(): 
-                    roms_file_path.unlink()
-            except OSError:
-                log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_file_path.getPath()))
-                kodi_notify_warn('OSError exception deleting ROMs XML')
-
-        categoryID = self.launchers[launcherID]['categoryID']
-        self.launchers.pop(launcherID)
+        # >> Update edited launcher timestamp, only if launcher was not deleted!
+        if launcherID in self.launchers:
+            self.launchers[launcherID]['timestamp_launcher'] = time.time()
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 

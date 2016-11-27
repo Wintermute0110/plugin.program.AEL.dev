@@ -619,6 +619,18 @@ def fs_get_ROMs_JSON_file_path(roms_dir, roms_base_noext):
 
     return roms_file_path
 
+def fs_unlink_ROMs_database(roms_dir, roms_base_noext):
+    # >> Delete ROMs info XML file
+    roms_xml_file = fs_get_ROMs_XML_file_path(ROMS_DIR, roms_base_noext)
+    if roms_xml_file.exists():
+        log_info('Deleting ROMs XML  "{0}"'.format(roms_xml_file.getOriginalPath()))
+        roms_xml_file.unlink()
+    # >> Delete ROMs JSON file
+    roms_json_file = fs_get_ROMs_JSON_file_path(ROMS_DIR, roms_base_noext)
+    if roms_json_file.exists():
+        log_info('Deleting ROMs JSON "{0}"'.format(roms_json_file.getOriginalPath()))
+        roms_json_file.unlink()
+
 def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     # >> Get file names
     roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
