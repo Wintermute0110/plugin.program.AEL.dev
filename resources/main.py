@@ -3875,21 +3875,21 @@ class Main:
                              'banner' : thumb_banner, 'poster' : thumb_poster})
 
             # --- Extrafanart ---
-            collections_asset_dir = Path(self.settings['collections_asset_dir'])
-            extrafanart_dir = collections_asset_dir.getSubPath(collection['m_name'])
-            log_debug('_command_render_collections() EF dir {0}'.format(extrafanart_dir))
+            collections_asset_dir = FileName(self.settings['collections_asset_dir'])
+            extrafanart_dir = collections_asset_dir + collection['m_name']
+            log_debug('_command_render_collections() EF dir {0}'.format(extrafanart_dir.getPath()))
             extrafanart_dic = {}
             for i in range(25):
                 # --- PNG ---
-                extrafanart_file = extrafanart_dir.getSubPath('fanart{0}.png'.format(i))
-                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file))
+                extrafanart_file = extrafanart_dir + 'fanart{0}.png'.format(i)
+                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file.getPath()))
                 if extrafanart_file.exists():
                     log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
                     extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
                     continue
                 # --- JPG ---
-                extrafanart_file = extrafanart_dir.getSubPath('fanart{0}.jpg'.format(i))
-                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file))
+                extrafanart_file = extrafanart_dir + 'fanart{0}.jpg'.format(i)
+                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file.getPath()))
                 if extrafanart_file.exists():
                     log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
                     extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()

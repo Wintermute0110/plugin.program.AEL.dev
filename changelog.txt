@@ -71,7 +71,8 @@ WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
 WIP      Improve launcher report when there is a No-Intro file available.
 
-WIP      Remove tags from parent ROM names in parent view of PClone launcher.
+WIP      Remove ROM tags (for example, (Europe), [Rev A]) from parent ROM names when showing 
+         parent ROMs in a PClone launcher.
 
 FEATURE  Browse by Category Virtual Launcher.
          http://forum.kodi.tv/showthread.php?tid=287826&pid=2458080#pid2458080
