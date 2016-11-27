@@ -165,10 +165,12 @@ class Scraper_GameFAQs():
         game_list = []
         for get in gets:
             game = {}
+            game_name = text_unescape_HTML(get[4])
             gamesystem = get[1].split('/')
             game['id']           = get[1]
-            game['display_name'] = text_unescape_HTML(get[4]) + ' / ' + gamesystem[1].capitalize()
-            game['order']        = 1
+            game['display_name'] = game_name + ' / ' + gamesystem[1].capitalize()
+            game['game_name']    = game_name # Additional GameFAQs scraper field
+            game['order']        = 1         # Additional GameFAQs scraper field
 
             # Increase search score based on our own search
             # In the future use an scoring algortihm based on Levenshtein Distance
@@ -314,6 +316,7 @@ class Scraper_MobyGames():
                 game_name   = text_unescape_HTML(' '.join(game_tokens))
                 game['id']           = game_tuple[0]
                 game['display_name'] = game_name + ' / {0}'.format(game_tuple[1])
+                game['game_name']    = game_name # Additional MobyGames scraper field
                 game_list.append(game)
 
         else:

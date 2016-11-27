@@ -243,7 +243,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
 
         # --- Process metadata ---
         gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
-        gamedata['title'] = game['display_name']
+        gamedata['title'] = game['game_name']
 
         # <ol class="crumbs">
         # <li class="crumb top-crumb"><a href="/snes">Super Nintendo</a></li>
