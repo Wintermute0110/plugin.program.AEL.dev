@@ -79,16 +79,17 @@ def text_unescape_XML(data_str):
     return data_str
 
 def text_unescape_HTML(s):
-
     # >> Replace single HTML characters by their Unicode equivalent
     s = s.replace('<br>',   ' ')
     s = s.replace('<br />', ' ')
     s = s.replace('&lt;',   '<')
     s = s.replace('&gt;',   '>')
-    s = s.replace('&amp;',  '&')
-    s = s.replace('&#039;', "'")
     s = s.replace('&quot;', '"')
     s = s.replace('&nbsp;', ' ')
+    s = s.replace('&amp;',  '&') # Must be done last
+    
+    # >> Complex HTML entities. Single HTML chars must be already replaced.
+    s = s.replace('&#039;', "'")
     s = s.replace('&#x26;', '&')
     s = s.replace('&#x27;', "'")
 
