@@ -56,7 +56,7 @@ class Scraper_TheGamesDB():
 
     def get_cached_pagedata(self):
         return self.get_search_cached_page_data
-        
+
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
@@ -72,7 +72,6 @@ class Scraper_TheGamesDB():
         scraper_platform = scraper_platform.replace('-', ' ')
         url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
               'name=' + urllib.quote_plus(search_string) + '&platform=' + urllib.quote_plus(scraper_platform)
-
         if self.check_cache(search_string, rom_base_noext, platform):
             page_data = self.get_cached_pagedata()
         else:
@@ -111,10 +110,32 @@ class Scraper_TheGamesDB():
 # ----------------------------------------------------------------------------- 
 class Scraper_GameFAQs():
     def __init__(self):
+        self.reset_cache()
+
+    def check_cache(self, search_string, rom_base_noext, platform):
+        if self.get_search_cached_search_string  == search_string and \
+           self.get_search_cached_rom_base_noext == rom_base_noext and \
+           self.get_search_cached_platform       == platform:
+           log_debug('Scraper_GameFAQs::check_cache Cache HIT.')
+           return True
+        log_debug('Scraper_GameFAQs::check_cache Cache MISS. Updating cache.')
+
+        return False
+
+    def update_cache(self, search_string, rom_base_noext, platform, page_data):
+        self.get_search_cached_search_string  = search_string
+        self.get_search_cached_rom_base_noext = rom_base_noext
+        self.get_search_cached_platform       = platform
+        self.get_search_cached_page_data      = page_data
+
+    def reset_cache(self):
         self.get_search_cached_search_string  = ''
         self.get_search_cached_rom_base_noext = ''
         self.get_search_cached_platform       = ''
         self.get_search_cached_page_data      = ''
+
+    def get_cached_pagedata(self):
+        return self.get_search_cached_page_data
 
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
@@ -131,7 +152,13 @@ class Scraper_GameFAQs():
         url = 'http://www.gamefaqs.com/search/index.html?' + \
               'platform={0}'.format(scraper_platform) + \
               '&game=' + search_string + ''
-        page_data = net_get_URL_oneline(url)
+        if self.check_cache(search_string, rom_base_noext, platform):
+            page_data = self.get_cached_pagedata()
+        else:
+            page_data = net_get_URL_oneline(url)
+            # >> If nothing is returned maybe a timeout happened. In this case, reset the cache.
+            if page_data: self.update_cache(search_string, rom_base_noext, platform, page_data)
+            else:         self.reset_cache()
 
         # --- Old Parse list of games ---
         gets = re.findall('<td class="rtitle">(.*?)<a href="(.*?)"(.*?)class="sevent_(.*?)">(.*?)</a></td>', page_data)
@@ -142,10 +169,9 @@ class Scraper_GameFAQs():
             game['id']           = get[1]
             game['display_name'] = text_unescape_HTML(get[4]) + ' / ' + gamesystem[1].capitalize()
             game['order']        = 1
-            # game["gamesys"]      = gamesystem[1].capitalize()
-            # game["title"]        = text_unescape_HTML(get[4])
 
             # Increase search score based on our own search
+            # In the future use an scoring algortihm based on Levenshtein Distance
             title = text_unescape_HTML(get[4])
             if title.lower() == search_string.lower():          game['order'] += 1
             if title.lower().find(search_string.lower()) != -1: game['order'] += 1
