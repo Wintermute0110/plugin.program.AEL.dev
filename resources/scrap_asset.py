@@ -175,6 +175,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def __init__(self):
         self.name = 'GameFAQs'
+        Scraper_GameFAQs.__init__(self)
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
@@ -316,6 +317,7 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
     def __init__(self):
         self.name = 'MobyGames'
+        Scraper_MobyGames.__init__(self)
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
@@ -462,6 +464,7 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
 class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
     def __init__(self):
         self.name = 'Arcade Database'
+        Scraper_ArcadeDB.__init__(self)
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):

@@ -184,6 +184,7 @@ class metadata_Offline(Scraper_Metadata):
 class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
     def __init__(self):
         self.name = 'TheGamesDB'
+        Scraper_TheGamesDB.__init__(self)
 
     def set_addon_dir(self, plugin_dir):
         pass
@@ -225,6 +226,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
     def __init__(self):
         self.name = 'GameFAQs'
+        Scraper_GameFAQs.__init__(self)
 
     def set_addon_dir(self, plugin_dir):
         pass
@@ -273,6 +275,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
 class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
     def __init__(self):
         self.name = 'MobyGames'
+        Scraper_MobyGames.__init__(self)
 
     def set_addon_dir(self, plugin_dir):
         pass
@@ -336,7 +339,8 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
 # ----------------------------------------------------------------------------- 
 class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
     def __init__(self):
-        self.name = 'GameFAQs'
+        self.name = 'Arcade Database'
+        Scraper_ArcadeDB.__init__(self)
 
     def set_addon_dir(self, plugin_dir):
         pass
