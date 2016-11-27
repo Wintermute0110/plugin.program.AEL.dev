@@ -96,7 +96,7 @@ FIX      Remove setContent() old code.
 FIX      Fixed the case of removing all categories and having just Standalone/ROM launchers on 
          addon root.
 
-WIP      Fix offline scraper search when there is hypens in filename.
+WIP      Fix offline scraper search when there are hypens in filename.
          http://forum.kodi.tv/showthread.php?tid=287826&pid=2461203#pid2461203
 
 
