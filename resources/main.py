@@ -1711,7 +1711,7 @@ class Main:
                 roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, roms_base_noext)
                 log_info('Removing ROMs XML "{0}"'.format(roms_file_path.getOriginalPath()))
                 try:
-                    roms_file_path.delete()
+                    roms_file_path.unlink()
                 except OSError:
                     log_error('_gui_empty_launcher() OSError exception deleting "{0}"'.format(roms_file_path.getPath()))
                     kodi_notify_warn('OSError exception deleting ROMs database')
@@ -1745,7 +1745,7 @@ class Main:
             log_debug('Removing ROMs XML "{0}"'.format(roms_file_path.getOriginalPath()))
             try:
                 if roms_file_path.exists(): 
-                    roms_file_path.delete()
+                    roms_file_path.unlink()
             except OSError:
                 log_error('_gui_remove_launcher() OSError exception deleting "{0}"'.format(roms_file_path.getPath()))
                 kodi_notify_warn('OSError exception deleting ROMs XML')

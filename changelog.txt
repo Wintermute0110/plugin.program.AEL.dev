@@ -29,8 +29,6 @@ WIP      Full Extranafart for ROMs.
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
-WIP      Every network request must be cached in all online scrapers.
-
 WIP      Add nplayers metadata field to ROMs.
 
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
@@ -38,10 +36,6 @@ WIP      Support for multidisc systems. Have a look at old AL launcher code.
 WIP      Support for several arguments in launcher. This will be useful when using MAME for
          console emulation (MAME consoles from a different region have different names, and an
          European console will typically refuse to run a Japanese game).
-
-WIP      All requests are cached in GameFAQs scraper.
-
-WIP      All requests are cached in MobyGames scraper.
 
 WIP      New Arcade Database scraper for MAME ROMs.
 
@@ -60,10 +54,14 @@ FEATURE  Extranafart for ROM Collections.
 
 FEATURE  All requests are cached in TheGamesDB scraper.
 
-WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
+FEATURE  All requests are cached in GameFAQs scraper.
+
+FEATURE  All requests are cached in MobyGames scraper.
+
+FEATURE  Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
          Requires a change in the scraping API.
 
-WIP      TheGamesDB scraper now returns Titles and Snaps. However, since there is no difference
+FEATURE  TheGamesDB scraper now returns Titles and Snaps. However, since there is no difference
          between Titles, Snaps and shots in TheGamesDB this only is useful when doing manual
          scraping.
 
