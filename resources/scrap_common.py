@@ -100,6 +100,12 @@ class Scraper_TheGamesDB():
 # GameFAQs online metadata scraper
 # ----------------------------------------------------------------------------- 
 class Scraper_GameFAQs():
+    def __init__(self):
+        self.get_search_cached_search_string  = ''
+        self.get_search_cached_rom_base_noext = ''
+        self.get_search_cached_platform       = ''
+        self.get_search_cached_page_data      = ''
+
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_GameFAQs(platform)
@@ -144,6 +150,12 @@ class Scraper_GameFAQs():
 # will be needed.
 # ----------------------------------------------------------------------------- 
 class Scraper_MobyGames():
+    def __init__(self):
+        self.get_search_cached_search_string  = ''
+        self.get_search_cached_rom_base_noext = ''
+        self.get_search_cached_platform       = ''
+        self.get_search_cached_page_data      = ''
+
     # --- Search with no platform -----------------------------------------------------------------
     # http://www.mobygames.com/search/quick?q=super+mario+world
     #
@@ -255,6 +267,12 @@ class Scraper_MobyGames():
 # Arcade Database (for MAME) http://adb.arcadeitalia.net/
 # ----------------------------------------------------------------------------- 
 class Scraper_ArcadeDB():
+    def __init__(self):
+        self.get_search_cached_search_string  = ''
+        self.get_search_cached_rom_base_noext = ''
+        self.get_search_cached_platform       = ''
+        self.get_search_cached_page_data      = ''
+
     def get_search(self, search_string, rom_base_noext, platform):
         if DEBUG_SCRAPERS:
             log_debug('Scraper_ArcadeDB::get_search search_string      "{0}"'.format(search_string))
