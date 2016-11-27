@@ -83,12 +83,13 @@ class Scraper_Asset(Scraper):
     # Obtain a set of images of the given kind, based on a previous search with get_search()
     #
     # Returns:
-    #   images = [image, image, ... ]
-    #   image = {
+    #   images = [image_dic, image_dic, ... ]
+    #   image_dic = {
     #       'name' : str,   Name of the image (e.g., 'Boxfront 1')
     #       'id'   : str,   String that allows to obtain the game URL (ID number) or the URL itself.
     #       'URL'  : str    URL of a thumb to display the image. Some websites have small size
     #                           images for preview. It could be the URL of the full size image itself.
+    #       ...    : ...    Scrapers may add additional fields for image_dic dictionary if needed.
     #   }
     def get_images(self, game, asset_kind):
         raise NotImplementedError('Subclass must implement get_images() abstract method')
@@ -97,7 +98,7 @@ class Scraper_Asset(Scraper):
     # Returns:
     #   (URL,            Full URL of the full size image.
     #    img_extension)  Extension of the image.
-    def resolve_image_URL(self, id):
+    def resolve_image_URL(self, image_dic):
         raise NotImplementedError('Subclass must implement resolve_image_URL() abstract method')
 
 #--------------------------------------------------------------------------------------------------
