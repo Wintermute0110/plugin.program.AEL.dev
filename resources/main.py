@@ -4806,7 +4806,8 @@ class Main:
             if launcherID not in self.launchers:
                 kodi_dialog_OK('launcherID not found in self.launchers')
                 return
-            category = self.categories[categoryID]
+            launcher_in_category = False if categoryID == VCATEGORY_ADDONROOT_ID else True
+            if launcher_in_category: category = self.categories[categoryID]
             launcher = self.launchers[launcherID]
             roms = fs_load_ROMs(ROMS_DIR, launcher['roms_base_noext'])
             rom = roms[romID]
@@ -4821,7 +4822,10 @@ class Main:
             info_text += '\n[COLOR orange]Launcher information[/COLOR]\n'
             info_text += self._misc_print_string_Launcher(launcher)
             info_text += '\n[COLOR orange]Category information[/COLOR]\n'
-            info_text += self._misc_print_string_Category(category)
+            if launcher_in_category:
+                info_text += self._misc_print_string_Category(category)
+            else:
+                info_text += 'No Category (Launcher in addon root)'
         else:
             info_text += '\n[COLOR orange]{0} ROM additional information[/COLOR]\n'.format(vlauncher_label)
             info_text += self._misc_print_string_ROM_additional(rom)
