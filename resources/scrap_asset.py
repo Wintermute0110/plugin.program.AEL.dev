@@ -133,38 +133,32 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
                                'id' : baseImgUrl + fanart[1], 'URL' : baseImgUrl + fanart[2]})
 
         elif asset_kind == ASSET_BANNER:
-            banners = re.findall('<banner (.*?)">(.*?)</banner>', page_data)
+            banners = re.findall('<banner (.*?)>(.*?)</banner>', page_data)
             for index, banner in enumerate(banners):
-                log_debug('asset_TheGamesDB::get_images Adding banner #{0} {1}'.format(str(index + 1), banner[1]))
-                images.append({'name'     : 'Banner ' + str(index + 1), 
-                               'URL'      : 'http://thegamesdb.net/banners/' + banner[1],
-                               'disp_URL' : 'http://thegamesdb.net/banners/' + banner[1]})
+                log_debug('asset_TheGamesDB::get_images Adding banner #{0} "{1}"'.format(str(index + 1), banner[1]))
+                images.append({'name' : 'Banner {0}'.format(index + 1), 
+                               'id' : baseImgUrl + banner[1], 'URL' : baseImgUrl + banner[1]})
 
         elif asset_kind == ASSET_CLEARLOGO:
-            clearlogos = re.findall('<clearlogo (.*?)">(.*?)</clearlogo>', page_data)
+            clearlogos = re.findall('<clearlogo (.*?)>(.*?)</clearlogo>', page_data)
             for index, clearlogo in enumerate(clearlogos):
-                log_debug('asset_TheGamesDB::get_images Adding clearlogo #{0} {1}'.format(str(index + 1), clearlogo[1]))
-                images.append({'name'     : 'Clearlogo ' + str(index + 1), 
-                               'URL'      : 'http://thegamesdb.net/banners/' + clearlogo[1],
-                               'disp_URL' : 'http://thegamesdb.net/banners/' + clearlogo[1]})
+                log_debug('asset_TheGamesDB::get_images Adding clearlogo #{0} "{1}"'.format(str(index + 1), clearlogo[1]))
+                images.append({'name' : 'Clearlogo {0}'.format(index + 1),
+                               'id' : baseImgUrl + clearlogo[1], 'URL' : baseImgUrl + clearlogo[1]})
 
         elif asset_kind == ASSET_BOXFRONT:
-            boxarts = re.findall('<boxart side="front" (.*?)">(.*?)</boxart>', page_data)
+            boxarts = re.findall('<boxart side="front" (.*?)>(.*?)</boxart>', page_data)
             for index, boxart in enumerate(boxarts):
-                # print(index, boxart)
                 log_debug('asset_TheGamesDB::get_images Adding boxfront #{0} {1}'.format(str(index + 1), boxart[1]))
-                images.append({'name'     : 'Boxfront ' + str(index + 1),
-                               'URL'      : 'http://thegamesdb.net/banners/' + boxart[1],
-                               'disp_URL' : 'http://thegamesdb.net/banners/' + boxart[1]})
+                images.append({'name' : 'Boxfront ' + str(index + 1),
+                               'id' : baseImgUrl + boxart[1], 'URL' : baseImgUrl + boxart[1]})
         
         elif asset_kind == ASSET_BOXBACK:
-            boxarts = re.findall('<boxart side="back" (.*?)">(.*?)</boxart>', page_data)
+            boxarts = re.findall('<boxart side="back" (.*?)>(.*?)</boxart>', page_data)
             for index, boxart in enumerate(boxarts):
-                # print(index, boxart)
-                log_debug('asset_TheGamesDB::get_images Adding boxfront #{0} {1}'.format(str(index + 1), boxart[1]))
-                images.append({'name'     : 'Boxback ' + str(index + 1),
-                               'URL'      : 'http://thegamesdb.net/banners/' + boxart[1],
-                               'disp_URL' : 'http://thegamesdb.net/banners/' + boxart[1]})
+                log_debug('asset_TheGamesDB::get_images Adding boxback #{0} {1}'.format(str(index + 1), boxart[1]))
+                images.append({'name' : 'Boxback ' + str(index + 1),
+                               'id' : baseImgUrl + boxart[1], 'URL' : baseImgUrl + boxart[1]})
 
         return images
 

@@ -58,14 +58,14 @@ FEATURE  Export/Import assets/artwork in ROM Collections. Encode binary files in
 
 FEATURE  Extranafart for ROM Collections.
 
+FEATURE  All requests are cached in TheGamesDB scraper.
+
 WIP      Resolve image URL for online asset scrapers. This will increase scraping speed a lot.
          Requires a change in the scraping API.
 
 WIP      TheGamesDB scraper now returns Titles and Snaps. However, since there is no difference
          between Titles, Snaps and shots in TheGamesDB this only is useful when doing manual
          scraping.
-
-WIP      All requests are cached in TheGamesDB scraper.
 
 WIP      Improve message reporting in Kodi GUI when scanning ROMs.
 
