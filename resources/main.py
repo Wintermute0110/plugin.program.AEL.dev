@@ -215,6 +215,8 @@ class Main:
         # --- Launcher management ---
         elif command == 'ADD_LAUNCHER':
             self._command_add_new_launcher(args['catID'][0])
+        elif command == 'ADD_LAUNCHER_ROOT':
+            self._command_add_new_launcher(VCATEGORY_ADDONROOT_ID)
         elif command == 'EDIT_LAUNCHER':
             self._command_edit_launcher(args['catID'][0], args['launID'][0])
 
@@ -2561,10 +2563,10 @@ class Main:
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
         categoryID = category_dic['id']
-        commands.append(('View Category data',  self._misc_url_RunPlugin('VIEW_CATEGORY', categoryID), ))
-        commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID), ))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID), ))
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
+        commands.append(('View Category data',  self._misc_url_RunPlugin('VIEW_CATEGORY', categoryID)))
+        commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
@@ -2588,9 +2590,10 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY'), ))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
@@ -2610,11 +2613,12 @@ class Main:
         listitem.setArt({'thumb' : collections_thumb, 'fanart' : collections_fanart, 'banner' : collections_banner, 'poster' : collections_flyer})
 
         commands = []
-        commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION'), ))
-        commands.append(('Import Collection',     self._misc_url_RunPlugin('IMPORT_COLLECTION'), ))
-        commands.append(('Create New Category',   self._misc_url_RunPlugin('ADD_CATEGORY'), ))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION')))
+        commands.append(('Import Collection',     self._misc_url_RunPlugin('IMPORT_COLLECTION')))
+        commands.append(('Create New Category',   self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',      self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_COLLECTIONS')
@@ -2668,10 +2672,12 @@ class Main:
         commands = []
         update_vcat_URL     = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
         update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
-        commands.append(('Update {0} database'.format(vcategory_label), update_vcat_URL, ))
-        commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL, ))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('Update {0} database'.format(vcategory_label), update_vcat_URL))
+        commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL))
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
@@ -2690,6 +2696,7 @@ class Main:
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -2710,6 +2717,7 @@ class Main:
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
