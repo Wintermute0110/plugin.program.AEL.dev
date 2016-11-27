@@ -331,8 +331,8 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
     def __init__(self):
         self.name = 'MobyGames'
-        self.get_images_cached_game_id   = ''
-        self.get_images_cached_page_data = ''
+        self.get_images_cached_game_id_url = ''
+        self.get_images_cached_page_data   = ''
         Scraper_MobyGames.__init__(self)
 
     # Call common code in parent class
@@ -343,7 +343,7 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
         pass
 
     def supports_asset(self, asset_kind):
-        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP or \
+        if asset_kind == ASSET_TITLE    or asset_kind == ASSET_SNAP    or \
            asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or asset_kind == ASSET_CARTRIDGE:
            return True
 
@@ -367,14 +367,14 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
         log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(A.name))
 
         # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
-        if self.get_images_cached_game_id == game['id']:
+        if self.get_images_cached_game_id_url == game_id_url:
             log_debug('asset_MobyGames::get_images Cache HIT')
             page_data = self.get_images_cached_page_data
         else:
             log_debug('asset_MobyGames::get_images Cache MISS. Updating cache')
             page_data = net_get_URL_oneline(game_id_url)
-            self.get_images_cached_game_id   = game['id']
-            self.get_images_cached_page_data = page_data
+            self.get_images_cached_game_id_url = game_id_url
+            self.get_images_cached_page_data   = page_data
         # text_dump_str_to_file('MobyGames-screenshots.txt', page_data)
 
         if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
