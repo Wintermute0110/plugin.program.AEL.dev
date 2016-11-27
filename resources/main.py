@@ -5024,14 +5024,15 @@ class Main:
 
     def _command_view_Launcher_Report(self, categoryID, launcherID):
         # --- Standalone launchers do not have reports! ---
-        category = self.categories[categoryID]
+        if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
+        else:                             category_name = VCATEGORY_ADDONROOT_ID
         launcher = self.launchers[launcherID]
         if not launcher['rompath']:
             kodi_notify_warn('Cannot create report for standalone launcher.')
             return
 
         # --- Get report filename ---
-        roms_base_noext = fs_get_ROMs_basename(category['m_name'], launcher['m_name'], launcherID)
+        roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
         report_file_name = REPORTS_DIR.getSubPath(roms_base_noext + '.txt')
         window_title = 'Launcher {0} Report'.format(launcher['m_name'])
         log_verb('_command_view_Launcher_Report() Dir  "{0}"'.format(REPORTS_DIR.getOriginalPath()))
@@ -5045,7 +5046,8 @@ class Main:
             return
 
         # --- If report doesn't exists create it automatically ---
-        if report_file_name.exists():
+        log_debug('_command_view_Launcher_Report() Testing report file "{0}"'.format(report_file_name.getPath()))
+        if not report_file_name.exists():
             kodi_dialog_OK('Report file not found. Will be generated now.')
             self._roms_create_launcher_report(categoryID, launcherID, roms)
             xbmc.sleep(250)
@@ -5779,9 +5781,10 @@ class Main:
         ROM_NAME_LENGHT = 50
 
         # >> Report file name
-        category = self.categories[categoryID]
+        if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
+        else:                             category_name = VCATEGORY_ADDONROOT_ID
         launcher = self.launchers[launcherID]
-        roms_base_noext = fs_get_ROMs_basename(category['m_name'], launcher['m_name'], launcherID)
+        roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
         report_file_name = REPORTS_DIR.getSubPath(roms_base_noext + '.txt')
         log_verb('_roms_create_launcher_report() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
         kodi_notify('Creating Launcher report...')
@@ -5795,11 +5798,13 @@ class Main:
         missing_s_title     = missing_s_snap     = missing_s_fanart  = missing_s_banner    = 0
         missing_s_clearlogo = missing_s_boxfront = missing_s_boxback = missing_s_cartridge = 0
         missing_s_flyer     = missing_s_map      = missing_s_manual  = missing_s_trailer   = 0
+        audit_none = audit_have = audit_miss = audit_unknown = 0
         check_list = []
         for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             rom = roms[rom_id]
             rom_info = {}
             rom_info['m_name'] = rom['m_name']
+            rom_info['m_nointro_status'] = rom['nointro_status']
             # >> Metadata
             if rom['m_year']:   rom_info['m_year']   = 'YES'
             else:               rom_info['m_year']   = '---'; missing_m_year += 1
@@ -5836,46 +5841,67 @@ class Main:
             else:                  rom_info['s_manual']    = '-'; missing_s_manual += 1
             if rom['s_trailer']:   rom_info['s_trailer']   = 'Y'
             else:                  rom_info['s_trailer']   = '-'; missing_s_trailer += 1
+            # >> ROM audit
+            if   rom['nointro_status'] == 'None':    audit_none += 1
+            elif rom['nointro_status'] == 'Have':    audit_have += 1
+            elif rom['nointro_status'] == 'Miss':    audit_miss += 1
+            elif rom['nointro_status'] == 'Unknown': audit_unknown += 1
+            else:
+                log_error('Unknown audit status {0}.'.format(rom['nointro_status']))
+                kodi_dialog_OK('Unknown audit status {0}. This is a bug, please report it.'.format(rom['nointro_status']))
+                return
             # >> Add to list
             check_list.append(rom_info)
-
-        # >> Step 4: No-Intro audit
 
         # >> Step 5: Make report
         str_list = []
         str_list.append('<Launcher Information>\n')
-        str_list.append('Launcher name       {0}\n'.format(launcher['m_name']))
-        str_list.append('Number of ROMs      {0}\n'.format(num_roms))
+        str_list.append('Launcher name  {0}\n'.format(launcher['m_name']))
+        str_list.append('Number of ROMs {0}\n'.format(num_roms))
         # >> Metadata
-        str_list.append('ROMs with Year      {0} ({1} missing)\n'.format(num_roms - missing_m_year,   missing_m_year))
-        str_list.append('ROMs with Genre     {0} ({1} missing)\n'.format(num_roms - missing_m_genre,  missing_m_genre))
-        str_list.append('ROMs with Studio    {0} ({1} missing)\n'.format(num_roms - missing_m_studio, missing_m_studio))
-        str_list.append('ROMs with Rating    {0} ({1} missing)\n'.format(num_roms - missing_m_rating, missing_m_rating))
-        str_list.append('ROMs with Plot      {0} ({1} missing)\n'.format(num_roms - missing_m_plot,   missing_m_plot))
+        str_list.append('ROMs with Year   {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_year, missing_m_year) +
+                        'ROMs with Title     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_title, missing_s_title))
+        str_list.append('ROMs with Genre  {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_genre, missing_m_genre) +
+                        'ROMS with Snap      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_snap, missing_s_snap))        
+        str_list.append('ROMs with Studio {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_studio, missing_m_studio) +
+                        'ROMs with Fanart    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_fanart, missing_s_fanart))        
+        str_list.append('ROMs with Rating {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_rating, missing_m_rating) +
+                        'ROMS with Banner    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_banner, missing_s_banner))        
+        str_list.append('ROMs with Plot   {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_plot, missing_m_plot) +
+                        'ROMs with Clearlogo {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_clearlogo, missing_s_clearlogo))        
+        
         # >> Assets
-        str_list.append('ROMs with Title     {0} ({1} missing)\n'.format(num_roms - missing_s_title,     missing_s_title))
-        str_list.append('ROMS with Snap      {0} ({1} missing)\n'.format(num_roms - missing_s_snap,      missing_s_snap))
-        str_list.append('ROMs with Fanart    {0} ({1} missing)\n'.format(num_roms - missing_s_fanart,    missing_s_fanart))
-        str_list.append('ROMS with Banner    {0} ({1} missing)\n'.format(num_roms - missing_s_banner,    missing_s_banner))
-        str_list.append('ROMs with Clearlogo {0} ({1} missing)\n'.format(num_roms - missing_s_clearlogo, missing_s_clearlogo))
-        str_list.append('ROMS with Boxfront  {0} ({1} missing)\n'.format(num_roms - missing_s_boxfront,  missing_s_boxfront))
-        str_list.append('ROMs with Boxback   {0} ({1} missing)\n'.format(num_roms - missing_s_boxback,   missing_s_boxback))
-        str_list.append('ROMS with Cartridge {0} ({1} missing)\n'.format(num_roms - missing_s_cartridge, missing_s_cartridge))
-        str_list.append('ROMs with Flyer     {0} ({1} missing)\n'.format(num_roms - missing_s_flyer,     missing_s_flyer))
-        str_list.append('ROMS with Map       {0} ({1} missing)\n'.format(num_roms - missing_s_map,       missing_s_map))
-        str_list.append('ROMs with Manual    {0} ({1} missing)\n'.format(num_roms - missing_s_manual,    missing_s_manual))
-        str_list.append('ROMS with Trailer   {0} ({1} missing)\n'.format(num_roms - missing_s_trailer,   missing_s_trailer))
+        str_null_offset = 15
+        str_null = ' ' * str_null_offset
+        str_list.append('Have ROMs        {0:5d} {1} | '.format(audit_have, str_null) +
+                        'ROMS with Boxfront  {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxfront, missing_s_boxfront))
 
+        str_list.append('Missing ROMs     {0:5d} {1} | '.format(audit_miss, str_null) +
+                        'ROMs with Boxback   {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxback, missing_s_boxback))
+
+        str_list.append('Unknown ROMs     {0:5d} {1} | '.format(audit_unknown, str_null) +
+                        'ROMS with Cartridge {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_cartridge, missing_s_cartridge))
+
+        str_list.append('Not checked ROMs {0:5d} {1} | '.format(audit_none, str_null) +        
+                        'ROMs with Flyer     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_flyer, missing_s_flyer))
+
+        str_null_offset = 40
+        str_null = ' ' * str_null_offset
+        str_list.append('{0} ROMS with Map       {1:5d} ({2:5d} missing)\n'.format(str_null, num_roms - missing_s_map,       missing_s_map))
+        str_list.append('{0} ROMs with Manual    {1:5d} ({2:5d} missing)\n'.format(str_null, num_roms - missing_s_manual,    missing_s_manual))
+        str_list.append('{0} ROMS with Trailer   {1:5d} ({2:5d} missing)\n'.format(str_null, num_roms - missing_s_trailer,   missing_s_trailer))
+
+        # >> Info
         str_list.append('\n<Metadata Information>\n')
-        str_list.append('{0} Year Genre Studio Rating Plot\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_list.append('{0}\n'.format('-' * 80))
+        str_list.append('{0} Year Genre Studio Rating Plot Audit\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
+        str_list.append('{0}\n'.format('-' * 86))
         for m in check_list:
             # >> Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_list.append('{0} {1}  {2}   {3}    {4}    {5}\n'.format(
+            str_list.append('{0} {1}  {2}   {3}    {4}    {5}  {6}\n'.format(
                             name_str.ljust(ROM_NAME_LENGHT),
                             m['m_year'], m['m_genre'], m['m_studio'],
-                            m['m_rating'], m['m_plot']))
+                            m['m_rating'], m['m_plot'], m['m_nointro_status']))
 
         str_list.append('\n<Asset/Artwork Information>\n')
         str_list.append('{0} Tit Snap Fan Ban Clr Boxf Boxb Cart Fly Map Man Tra\n'.format('Name'.ljust(ROM_NAME_LENGHT)))

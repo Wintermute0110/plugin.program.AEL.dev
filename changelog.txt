@@ -65,9 +65,9 @@ FEATURE  TheGamesDB scraper now returns Titles and Snaps. However, since there i
          between Titles, Snaps and shots in TheGamesDB this only is useful when doing manual
          scraping.
 
-WIP      Improve message reporting in Kodi GUI when scanning ROMs.
+FEATURE  Improve message reporting in Kodi GUI when scanning ROMs.
 
-WIP      Improve launcher report when there is a No-Intro file available.
+FEATURE  Improve launcher report and include is a No-Intro audit information.
 
 WIP      Remove ROM tags (for example, (Europe), [Rev A]) from parent ROM names when showing 
          parent ROMs in a PClone launcher.
