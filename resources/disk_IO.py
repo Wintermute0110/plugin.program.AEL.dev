@@ -2202,9 +2202,7 @@ class FileName:
         if not os.path.exists(self.path): 
             os.makedirs(self.path)
 
-    def remove(self):
-        os.remove(self.path)
-
+    # os.remove() and os.unlink() are exactly the same.
     def unlink(self):
         os.unlink(self.path)
 
