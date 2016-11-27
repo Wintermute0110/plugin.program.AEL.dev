@@ -759,8 +759,7 @@ class Main:
                 if not app: return
             elif type == 2:
                 app = LNK_LAUNCHER_APP_NAME
-
-            appPath = Path(app)
+            app_FName = FileName(app)
 
             # --- ROM path ---
             if type == 1:
@@ -768,10 +767,11 @@ class Main:
             elif type == 2:
                 roms_path = xbmcgui.Dialog().browse(0, 'Select the LNKs path', 'files', '').decode('utf-8')
             if not roms_path: return
+            roms_path_FName   = FileName(roms_path)
 
             # --- ROM extensions ---
             if type == 1:
-                extensions = emudata_get_program_extensions(appPath.getName())
+                extensions = emudata_get_program_extensions(app_FName.getBasename())
                 extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
                 extkey.doModal()
                 if not extkey.isConfirmed(): return
@@ -781,7 +781,7 @@ class Main:
 
             # --- Launcher arguments ---
             if type == 1:
-                default_arguments = emudata_get_program_arguments(appPath.getName())
+                default_arguments = emudata_get_program_arguments(app_FName.getBasename())
                 argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
                 argkeyboard.doModal()
                 if not argkeyboard.isConfirmed(): return
@@ -790,7 +790,7 @@ class Main:
                 args = '%rom%'
 
             # --- Launcher title/name ---
-            title = appPath.getName()
+            title = app_FName.getBasename()
             fixed_title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
             initial_title = fixed_title if type == 1 else ''
             keyboard = xbmc.Keyboard(initial_title, 'Set the title of the launcher')
@@ -811,30 +811,32 @@ class Main:
             # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
             assets_path = xbmcgui.Dialog().browse(0, 'Select asset/artwork directory', 'files', '', False, False, roms_path).decode('utf-8')
             if not assets_path: return
+            assets_path_FName = FileName(assets_path)
 
             # --- Create launcher object data, add to dictionary and write XML file ---
             # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
             # even launcher with the same name in the same category.
             launcherID      = misc_generate_random_SID()
-            category_name   = self.categories[categoryID]['m_name']
+            category_name   = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
             roms_base_noext = fs_get_ROMs_basename(category_name, title, launcherID)
 
             # --- Create new launcher. categories.xml is save at the end of this function ---
+            # NOTE than in the database original paths are always stored.
             launcherdata = fs_new_launcher()
             launcherdata['id']                 = launcherID
             launcherdata['m_name']             = title
             launcherdata['platform']           = launcher_platform
             launcherdata['categoryID']         = launcher_categoryID
-            launcherdata['application']        = appPath.getOriginalPath()
+            launcherdata['application']        = app_FName.getOriginalPath()
             launcherdata['args']               = args
-            launcherdata['rompath']            = roms_path
+            launcherdata['rompath']            = roms_path_FName.getOriginalPath()
             launcherdata['romext']             = ext
             launcherdata['roms_base_noext']    = roms_base_noext
             launcherdata['timestamp_launcher'] = time.time()
 
             # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
             # >> launcher is edited using Python passing by assignment.
-            assets_init_asset_dir(assets_path, launcherdata)
+            assets_init_asset_dir(assets_path_FName, launcherdata)
             self.launchers[launcherID] = launcherdata
 
             # >> Notify user

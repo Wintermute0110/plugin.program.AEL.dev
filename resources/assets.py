@@ -90,34 +90,31 @@ def asset_get_dialog_extension_list(exts):
 # Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
 # struct.
 # 
-def assets_init_asset_dir(asset_path, launcher):
+def assets_init_asset_dir(assets_path_FName, launcher):
     rom_path = launcher['rompath']
     log_verb('assets_init_asset_dir() rom_path   "{0}"'.format(rom_path))
-    log_verb('assets_init_asset_dir() asset_path "{0}"'.format(asset_path))
-
-    assetPath = Path(asset_path)
+    log_verb('assets_init_asset_dir() asset_path "{0}"'.format(assets_path_FName.getPath()))
 
     # >> Fill in launcher fields and create asset directories
-    assets_parse_asset_dir(launcher, assetPath, 'path_title', 'titles')
-    assets_parse_asset_dir(launcher, assetPath, 'path_snap', 'snaps')
-    assets_parse_asset_dir(launcher, assetPath, 'path_fanart', 'fanarts')
-    assets_parse_asset_dir(launcher, assetPath, 'path_banner', 'banners')
-    assets_parse_asset_dir(launcher, assetPath, 'path_clearlogo', 'clearlogos')
-    assets_parse_asset_dir(launcher, assetPath, 'path_boxfront', 'boxfront')
-    assets_parse_asset_dir(launcher, assetPath, 'path_boxback', 'boxback')
-    assets_parse_asset_dir(launcher, assetPath, 'path_cartridge', 'cartridges')
-    assets_parse_asset_dir(launcher, assetPath, 'path_flyer', 'flyers')
-    assets_parse_asset_dir(launcher, assetPath, 'path_map', 'maps')
-    assets_parse_asset_dir(launcher, assetPath, 'path_manual', 'manuals')
-    assets_parse_asset_dir(launcher, assetPath, 'path_trailer', 'trailers')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'boxfront')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'boxback')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'cartridges')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
+    assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
 
-def assets_parse_asset_dir(launchers, assetPath, key, pathName):
-    subPath = assetPath.getSubPath(pathName)
+def assets_parse_asset_dir(launchers, assets_path_FName, key, pathName):
+    subPath        = assets_path_FName.getSubPath(pathName)
     launchers[key] = subPath.getOriginalPath()
+    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(subPath.getPath()))
+    subPath.makedirs()
 
-    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(subPath.getCurrentPath()))
-    subPath.create()
-    
 #
 # Get artwork user configured to be used as thumb/fanart/... for Cateogires/Launchers
 #
