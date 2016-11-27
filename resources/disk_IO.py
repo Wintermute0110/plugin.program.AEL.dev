@@ -351,7 +351,7 @@ def XML_text(tag_name, tag_text):
 
 #
 # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
-#
+# This function is not needed. It is deprecated and will be removed soon.
 def get_fs_encoding():
     return sys.getfilesystemencoding()
 
@@ -2083,6 +2083,15 @@ class FileName:
         self.path         = os.path.join(self.path, arg)
         self.originalPath = os.path.join(self.originalPath, arg)
 
+        return self
+
+    def append(self, arg):
+        self.path         = self.path + arg
+        self.originalPath = self.originalPath + arg
+
+        return self
+
+    # Behaves like os.path.join()
     def getSubPath(self, *args):
         child = FileName(self.originalPath)
         for arg in args:
@@ -2090,6 +2099,8 @@ class FileName:
 
         return child
 
+    # Behaves like os.path.join()
+    #
     # See http://blog.teamtreehouse.com/operator-overloading-python
     # other is a FileName object. other originalPath is expected to be a subdirectory (path
     # transformation not required)
@@ -2140,7 +2151,7 @@ class FileName:
         
         return root
 
-    def getFileExtension(self):
+    def getExt(self):
         root, ext = os.path.splitext(self.path)
         
         return ext

@@ -110,21 +110,24 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
             # [2] -> 'screenshots/thumb/136-1.jpg'
             screenshots = re.findall('<screenshot><original (.*?)>(.*?)</original><thumb>(.*?)</thumb></screenshot>', page_data)
             for index, screenshot in enumerate(screenshots):
-                log_debug('asset_TheGamesDB::get_images Adding title #{0} {1}'.format(index + 1, screenshot[1]))
+                log_debug('asset_TheGamesDB::get_images '
+                          'Adding title #{0} "{1}" (thumb "{2}")'.format(index + 1, screenshot[1], screenshot[2]))
                 images.append({'name' : 'Screenshot {0}'.format(index + 1), 
                                'id' : baseImgUrl + screenshot[1], 'URL' : baseImgUrl + screenshot[2]})
 
         elif asset_kind == ASSET_SNAP:
             screenshots = re.findall('<screenshot><original (.*?)>(.*?)</original><thumb>(.*?)</thumb></screenshot>', page_data)
             for index, screenshot in enumerate(screenshots):
-                log_debug('asset_TheGamesDB::get_images Adding title #{0} {1}'.format(index + 1, screenshot[1]))
+                log_debug('asset_TheGamesDB::get_images '
+                          'Adding snap #{0} "{1}" (thumb "{2}")'.format(index + 1, screenshot[1], screenshot[2]))
                 images.append({'name' : 'Screenshot {0}'.format(index + 1), 
                                'id' : baseImgUrl + screenshot[1], 'URL' : baseImgUrl + screenshot[2]})
 
         elif asset_kind == ASSET_FANART:
             fanarts = re.findall('<fanart><original (.*?)>(.*?)</original><thumb>(.*?)</thumb></fanart>', page_data)
             for index, fanart in enumerate(fanarts):
-                log_debug('asset_TheGamesDB::get_images Adding fanart #{0} {1}'.format(index + 1, fanart[1]))
+                log_debug('asset_TheGamesDB::get_images '
+                          'Adding fanart #{0} "{1}" (thumb "{2}")'.format(index + 1, fanart[1], fanart[2]))
                 images.append({'name' : 'Fanart {0}'.format(index + 1),
                                'id' : baseImgUrl + fanart[1], 'URL' : baseImgUrl + fanart[2]})
 
@@ -164,8 +167,12 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 
         return images
 
-    def resolve_image_URL(self, id):
-        return ('', '')
+    def resolve_image_URL(self, image_dic):
+        log_debug('asset_TheGamesDB::resolve_image_URL Resolving {0}'.format(image_dic['name']))
+        image_url = image_dic['id']
+        image_ext = text_get_image_URL_extension(image_dic['id'])
+        
+        return (image_url, image_ext)
 
 # -------------------------------------------------------------------------------------------------
 # GameFAQs asset scraper

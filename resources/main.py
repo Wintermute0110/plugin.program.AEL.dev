@@ -6821,7 +6821,7 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Category'
             A = assets_get_info_scheme(asset_kind)
-            asset_directory = self.settings['categories_asset_dir']
+            asset_directory = FileName(self.settings['categories_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Category "{0}"'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
@@ -6836,7 +6836,7 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Collection'
             A = assets_get_info_scheme(asset_kind)
-            asset_directory = self.settings['collections_asset_dir']
+            asset_directory = FileName(self.settings['collections_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Collection "{0}"'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
@@ -6851,7 +6851,7 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Launcher'
             A = assets_get_info_scheme(asset_kind)
-            asset_directory = self.settings['launchers_asset_dir']
+            asset_directory = FileName(self.settings['launchers_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(A, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Launcher "{0}"'.format(A.name))
             log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
@@ -6869,29 +6869,27 @@ class Main:
             AInfo   = assets_get_info_scheme(asset_kind)
             if categoryID == VCATEGORY_FAVOURITES_ID:
                 log_info('_gui_edit_asset() ROM is in Favourites')
-                asset_directory  = self.settings['favourites_asset_dir']
+                asset_directory  = FileName(self.settings['favourites_asset_dir'])
                 platform         = object_dic['platform']
                 asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBasename_noext(), object_dic['id'])
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
-                asset_directory  = self.settings['collections_asset_dir']
+                asset_directory  = FileName(self.settings['collections_asset_dir'])
                 platform         = object_dic['platform']
                 asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBasename_noext(), object_dic['id'])
             else:
-                log_info('_gui_edit_asset() ROM is in Launcher (id {0})'.format(launcherID))
+                log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
                 launcher         = self.launchers[launcherID]
-                asset_directory  = launcher[AInfo.path_key]
+                asset_directory  = FileName(launcher[AInfo.path_key])
                 platform         = launcher['platform']
-                asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile.getBasename_noext())
-            current_asset_path = object_dic[AInfo.key]
-            rom_base_noext = ROMfile.getBasename_noext()
+                asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile)
+            current_asset_path = FileName(object_dic[AInfo.key])
             log_info('_gui_edit_asset() Editing ROM {0}'.format(AInfo.name))
-            log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory))
-            log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext))
-            log_debug('_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path))
+            log_info('_gui_edit_asset() ROM id {0}'.format(object_dic['id']))
+            log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory.getPath()))
+            log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext.getPath()))
+            log_debug('_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path.getPath()))
             log_debug('_gui_edit_asset() platform           "{0}"'.format(platform))
-            log_debug('_gui_edit_asset() rom_base_noext     "{0}"'.format(rom_base_noext))
 
             # --- Do not edit asset if asset directory not configured ---
             if not asset_directory:
@@ -7030,7 +7028,7 @@ class Main:
             #           has been called and nothing is displayed.
             #           THIS PREVENTS THE RACE CONDITIONS THAT CAUSE TROUBLE IN ADVANCED LAUNCHER!!!
             kodi_busydialog_ON()
-            results = scraper_obj.get_search(search_string, rom_base_noext, platform)
+            results = scraper_obj.get_search(search_string, ROMfile.getBasename_noext(), platform)
             kodi_busydialog_OFF()
             log_debug('{0} scraper found {1} result/s'.format(AInfo.name, len(results)))
             if not results:
@@ -7059,37 +7057,31 @@ class Main:
 
             # --- Always do semi-automatic scraping when editing images ---
             # If there is a local image add it to the list and show it to the user
-            assetPath = Path(current_asset_path)
-            if assetPath.exists():
+            if current_asset_path.exists():
                 image_list.insert(0, {'name' : 'Current local image', 
-                                      'URL' : current_asset_path, 
-                                      'disp_URL' : current_asset_path })
+                                      'id' : current_asset_path.getPath(),
+                                      'URL' : current_asset_path.getPath()})
 
-            # Convert list returned by scraper into a list the select window uses
+            # >> Convert list returned by scraper into a list the select window uses
             img_dialog_list = []
             for item in image_list:
-                item_dic = {'name' : item['name'], 'label2' : item['disp_URL'], 'icon' : item['disp_URL']}
+                item_dic = {'name' : item['name'], 'label2' : item['URL'], 'icon' : item['URL']}
                 img_dialog_list.append(item_dic)
             image_selected_index = gui_show_image_select('Select image', img_dialog_list)
             log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
             if image_selected_index < 0: image_selected_index = 0
-            image_url = image_list[image_selected_index]['URL']
-            log_debug('Selected image URL "{1}"'.format(AInfo.name, image_url))
+            # >> Resolve asset URL
+            image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
+            log_debug('Resolved {0} URL "{1}"'.format(AInfo.name, image_url))
+            log_debug('URL extension "{0}"'.format(image_ext))
 
             # --- If user chose the local image don't download anything ---
             if image_url != current_asset_path:
-                # ~~~ Download scraped image ~~~
-                # Get Tumb/Fanart name with no extension, then get URL image extension
-                # and make full thumb path. If extension cannot be determined
-                # from URL defaul to '.jpg'
-                img_ext          = text_get_image_URL_extension(image_url) # Includes front dot -> .jpg
-                image_local_path = asset_path_noext + img_ext
-
                 # ~~~ Download image ~~~
-                log_debug('asset_path_noext "{0}"'.format(asset_path_noext))
-                log_debug('img_ext          "{0}"'.format(img_ext))
-                log_verb('Downloading URL  "{0}"'.format(image_url))
-                log_verb('Into local file  "{0}"'.format(image_local_path))
+                image_local_path = asset_path_noext.append(image_ext).getPath()
+                log_verb('Downloading URL "{0}"'.format(image_url))
+                log_verb('Into local file "{0}"'.format(image_local_path))
+
                 # >> Prevent race conditions
                 kodi_busydialog_ON()
                 try:

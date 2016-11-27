@@ -34,8 +34,10 @@ except:
         def log(self, str): print(str)
 
 # --- AEL modules ---
-from utils import *
-from disk_IO import *
+# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid 
+# >> circular dependencies.
+# from utils import *
+# from disk_IO import *
 
 # --- Constants ---------------------------------------------------------------
 LOG_ERROR   = 0
@@ -187,10 +189,10 @@ def kodi_update_image_cache(img_path):
     # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
     # However, images in the cache have the original extension. Replace TBN extension
     # with that of the original image.
-    F_cached = utils.misc_split_path(cached_thumb)
-    if F_cached.ext == '.tbn':
-        F_img = utils.misc_split_path(img_path)
-        cached_thumb = cached_thumb.replace('.tbn', F_img.ext)
+    cached_thumb_root, cached_thumb_ext = os.path.splitext(cached_thumb)
+    if cached_thumb_ext == '.tbn':
+        img_path_root, img_path_ext = os.path.splitext(img_path)
+        cached_thumb = cached_thumb.replace('.tbn', img_path_ext)
         log_debug('kodi_update_image_cache() New cached_thumb {0}'.format(cached_thumb))
 
     # Check if file exists in the cache
@@ -200,10 +202,11 @@ def kodi_update_image_cache(img_path):
         return
 
     # --- Copy local image into Kodi image cache ---
+    # >> See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
     log_debug('kodi_update_image_cache() copying {0}'.format(img_path))
     log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb))
-    fs_encoding = disk_IO.get_fs_encoding()
-    decoded_img_path     = img_path.decode(fs_encoding, 'ignore')
+    fs_encoding = sys.getfilesystemencoding()
+    decoded_img_path = img_path.decode(fs_encoding, 'ignore')
     decoded_cached_thumb = cached_thumb.decode(fs_encoding, 'ignore')
     try:
         shutil.copy2(decoded_img_path, decoded_cached_thumb)
@@ -221,8 +224,8 @@ def kodi_toogle_fullscreen():
 def kodi_kodi_read_favourites():
     favourites = []
     fav_names = []
-    if os.path.isfile( FAVOURITES_PATH ):
-        fav_xml = parse( FAVOURITES_PATH )
+    if os.path.isfile(FAVOURITES_PATH):
+        fav_xml = parse(FAVOURITES_PATH)
         fav_doc = fav_xml.documentElement.getElementsByTagName( 'favourite' )
         for count, favourite in enumerate(fav_doc):
             try:

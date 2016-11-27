@@ -315,18 +315,24 @@ def assets_get_info_scheme(asset_kind):
 
 #
 # Scheme DIR uses different directories for artwork and no sufixes.
-# Returns asset path_noext.
 #
-def assets_get_path_noext_DIR(Asset, asset_path, asset_base_noext):
-    assetPath = FileName(asset_path)
+# Assets    -> Assets info object
+# AssetPath -> FileName object
+# ROM       -> ROM name FileName object
+# Returns a FileName object
+#
+def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
 
-    return assetPath.getSubPath(asset_base_noext).getOriginalPath()
+    return AssetPath + ROM.getBasename_noext()
 
 #
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
 # Name example: "Sonic The Hedgehog (Europe)_a3e_title"
 # First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
 # Favourites special category there could be ROMs with the same name for different systems.
+#
+# 
+#
 def assets_get_path_noext_SUFIX(Asset, asset_path, asset_base_noext, objectID = '000'):
     # >> Returns asset/artwork path_noext
     assetPath = AELPath(asset_path)
