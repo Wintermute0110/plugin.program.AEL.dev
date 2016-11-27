@@ -220,38 +220,71 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 
         # --- Retrieve assets ---
         if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
-            # Example: http://www.gamefaqs.com/snes/588741-super-metroid/images
+            # URL Examples: 
+            # http://www.gamefaqs.com/snes/588741-super-metroid/images
+            # http://www.gamefaqs.com/snes/519824-super-mario-world/images
             # <td class="thumb">
             # <a href="/snes/588741-super-metroid/images/21">
             # <img class="imgboxart" src="http://img.gamefaqs.net/screens/1/4/8/gfs_4598_1_1_thm.jpg" />
             # </a>
             # </td>
-            img_pages = []
-            results = re.findall('<td class="thumb"><a href="(.+?)"><img class="imgboxart" src="(.+?)" /></a></td>', page_data)
+            results = re.findall('<td class="thumb"><a href="(.+?)">'
+                                 '<img class="imgboxart" src="(.+?)" /></a></td>', page_data)
             # print(results)
+
+            # >> Title is usually the first or first snapshoots in GameFAQs.
             for index, boxart in enumerate(results):
-                str_index = str(index + 1)
-                log_debug('asset_GameFAQs::get_images Artwork page #{0} {1}'.format(str_index, boxart[0]))
-                img_pages.append( (boxart[0], boxart[1]) )
-            images = []
-            if not img_pages: return images
-            # Title is usually the first or first snapshoots in GameFAQs
-            num_images = len(img_pages)
-            if asset_kind == ASSET_TITLE:
-                img_page = img_pages[0]
-                log_debug('asset_GameFAQs::get_images Title chose image index {0} (of {1})'.format(0, num_images))
-            # For Snap choose a random one
-            else:
-                random_index = random.randint(1, num_images)
-                img_page = img_pages[random_index]
-                log_debug('asset_GameFAQs::get_images Snap chose image index {0} (of {1})'.format(random_index, num_images))
+                log_debug('asset_GameFAQs::get_images '
+                          'Screenshot artwork page #{0:02d} "{1}" (thumb "{2}")'.format(index + 1, boxart[0], boxart[1]))
+                name_str = 'Screenshoot #{0}'.format(index + 1)
+                images.append({'name' : name_str, 'id' : 'http://www.gamefaqs.com' + boxart[0], 
+                               'URL' : boxart[1], 'asset_kind' : asset_kind})
 
-            # --- Go to full size page and get thumb ---
-            image_url = 'http://www.gamefaqs.com' + img_page[0]
-            page_data = net_get_URL_oneline(image_url)
-            # text_dump_str_to_file(page_data, 'page_data.txt')
+        elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
+            # --- Parse game thumb information ---
+            # The Game Images URL shows a page with boxart and screenshots thumbnails.
+            # Boxart can be diferent depending on the ROM/game region. Each region has then a 
+            # separate page with the full size artwork (boxfront, boxback, etc.)
+            #
+            # URL Example:
+            # http://www.gamefaqs.com/snes/588741-super-metroid/images
+            #
+            # <div class="img boxshot">
+            #  <a href="/snes/588741-super-metroid/images/14598">
+            #  <img class="img100 imgboxart" src="http://img.gamefaqs.net/box/3/2/1/51321_thumb.jpg" alt="Super Metroid (JP)" />
+            #  </a>
+            #  <div class="region">JP 03/19/94</div>
+            # </div>
+            results = re.findall('<div class="img boxshot"><a href="(.+?)">'
+                                 '<img class="img100 imgboxart" src="(.+?)" alt="(.+?)" /></a>', page_data)
+            # print(results)
 
-            # Example: http://www.gamefaqs.com/snes/588741-super-metroid/images/21
+            # --- Choose one full size artwork page based on game region ---
+            for index, boxart in enumerate(results):
+                log_debug('asset_GameFAQs::get_images '
+                          'Boxart artwork page #{0:02d} "{1}" (thumb "{2}")'.format(index + 1, boxart[0], boxart[1]))
+                name_str = 'Boxart #{0}'.format(index + 1)
+                images.append({'name' : name_str, 'id' : 'http://www.gamefaqs.com' + boxart[0],
+                               'URL' : boxart[1], 'asset_kind' : asset_kind})
+
+        return images
+
+    #
+    # image_dic['id'] has the URL of the artwork page.
+    #
+    def resolve_image_URL(self, image_dic):
+        log_debug('asset_GameFAQs::resolve_image_URL Resolving {0}'.format(image_dic['name']))
+        
+        # --- Go to full size page and get thumb ---
+        asset_kind = image_dic['asset_kind']
+        image_url  = image_dic['id']
+        page_data  = net_get_URL_oneline(image_url)
+        # text_dump_str_to_file(page_data, 'page_data.txt')
+
+        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
+            # In an screenshot artwork page there is only one image.
+            # URL Example:
+            # http://www.gamefaqs.com/snes/588741-super-metroid/images/21
             #
             # <div class="img">
             #  <a href="http://img.gamefaqs.net/screens/5/1/f/gfs_4598_1_1.jpg">
@@ -260,71 +293,37 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
             # </div>
             results = re.findall('<img class="full_boxshot" src="(.+?)" alt="(.+?)">', page_data)
             # print(results)
-            for index, thumb in enumerate(results):
-                str_index = str(index + 1)
-                log_debug('asset_GameFAQs::get_images Adding thumb #{0} {0}'.format(str_index, thumb[0]))
-                images.append({'name' : thumb[1], 'id' : thumb[0], 'URL' : thumb[0]})
+            if results:
+                image_url = results[0][0]
+                image_ext = text_get_image_URL_extension(image_url)
+                return (image_url, image_ext)
 
         elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
-            # --- Parse game thumb information ---
-            # The game URL shows a page with boxart and screenshots thumbnails.
-            # Boxart can be diferent depending on the ROM/game region. Each region has then a separate 
-            # page with the full size artwork (boxfront, boxback, etc.)
+            # NOTE findall() returns a list of tuples, not a match object!
+            # In an Boxart artwork page there is typically several images.
+            # URL Examples:
+            # http://www.gamefaqs.com/snes/588741-super-metroid/images/1277946
             #
-            # Example: http://www.gamefaqs.com/snes/588741-super-metroid/images
-            #
-            # <div class="img boxshot">
-            #  <a href="/snes/588741-super-metroid/images/14598">
-            #  <img class="img100 imgboxart" src="http://img.gamefaqs.net/box/3/2/1/51321_thumb.jpg" alt="Super Metroid (JP)" />
-            #  </a>
-            #  <div class="region">JP 03/19/94</div>
-            # </div>
-            img_pages = []
-            results = re.findall('<div class="img boxshot"><a href="(.+?)">' +
-                                 '<img class="img100 imgboxart" src="(.+?)" alt="(.+?)" /></a>', page_data)
-            # print(results)
-
-            # --- Choose one full size artwork page based on game region ---
-            for index, boxart in enumerate(results):
-                str_index = str(index + 1)
-                log_debug('asset_GameFAQs::get_images Artwork page #{0} {1}'.format(str_index, boxart[1]))
-                img_pages.append( (boxart[0], boxart[1], boxart[2]) )
-
-            # For now just pick the first one
-            if not img_pages: return images
-            img_page = img_pages[0]
-
-            # --- Go to full size page and get thumb ---
-            image_url = 'http://www.gamefaqs.com' + img_page[0]
-            page_data = net_get_URL_oneline(image_url)
-            # text_dump_str_to_file('GameFAQs-images.txt', page_data)
-
-            # >> NOTE findall() returns a list of tuples, not a match object!
             # <a href="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg">
             # <img class="full_boxshot" src="http://img.gamefaqs.net/box/3/2/1/51321_front.jpg" alt="Super Metroid Box Front" />
             # </a>
             results = re.findall('<img class="full_boxshot" src="(.+?)" alt="(.+?)" /></a>', page_data)
             # print(results)
-            str_index = 1
+            
+            # >> Return as soon as a Boxart assets if found
             for index, boxart in enumerate(results):
                 art_name = boxart[1]
                 if asset_kind == ASSET_BOXFRONT and art_name.find('Front') >= 0:
-                    log_debug('asset_GameFAQs::get_images Adding Boxfront #{0} {1}'.format(str_index, boxart[0]))
-                    images.append({'name' : boxart[1], 'URL' : boxart[0], 'disp_URL' : boxart[0]})
-                    str_index += 1
+                    image_url = boxart[0]
+                    image_ext = text_get_image_URL_extension(image_url)
+                    return (image_url, image_ext)
+
                 elif asset_kind == ASSET_BOXBACK and art_name.find('Back') >= 0:
-                    log_debug('asset_GameFAQs::get_images Adding Boxback #{0} {1}'.format(str_index, boxart[0]))
-                    images.append({'name' : boxart[1], 'URL' : boxart[0], 'disp_URL' : boxart[0]})
-                    str_index += 1
+                    image_url = boxart[0]
+                    image_ext = text_get_image_URL_extension(image_url)
+                    return (image_url, image_ext)
 
-        return images
-
-    def resolve_image_URL(self, image_dic):
-        log_debug('asset_GameFAQs::resolve_image_URL Resolving {0}'.format(image_dic['name']))
-        image_url = image_dic['id']
-        image_ext = text_get_image_URL_extension(image_dic['id'])
-        
-        return (image_url, image_ext)
+        return ('', '')
 
 # -------------------------------------------------------------------------------------------------
 # MobyGames
