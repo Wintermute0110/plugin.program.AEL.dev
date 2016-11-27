@@ -56,6 +56,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         # >> Cache page data in get_images()
         self.get_images_cached_game_id   = ''
         self.get_images_cached_page_data = ''
+        Scraper_TheGamesDB.__init__(self)
 
     # Call scraper shared code in parent class
     def get_search(self, search_string, rom_base_noext, platform):

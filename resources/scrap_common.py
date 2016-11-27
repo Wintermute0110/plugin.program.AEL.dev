@@ -29,6 +29,12 @@ from utils import *
 # TheGamesDB scraper common code
 # ----------------------------------------------------------------------------- 
 class Scraper_TheGamesDB():
+    def __init__(self):
+        self.get_search_cached_search_string  = ''
+        self.get_search_cached_rom_base_noext = ''
+        self.get_search_cached_platform       = ''
+        self.get_search_cached_page_data      = ''
+
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
@@ -38,13 +44,32 @@ class Scraper_TheGamesDB():
             log_debug('Scraper_TheGamesDB::get_search AEL platform        "{0}"'.format(platform))
             log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform "{0}"'.format(scraper_platform))
 
-        # --- This returns an XML file ---
+        # >> Check if URL page data is in cache. If so it's a cache hit.
+        # >> If cache miss, then update cache.
         # >> quote_plus() will convert the spaces into '+'.
         scraper_platform = scraper_platform.replace('-', ' ')
         url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
-              'name=' + urllib.quote_plus(search_string) + \
-              '&platform=' + urllib.quote_plus(scraper_platform)
-        page_data = net_get_URL_oneline(url)
+              'name=' + urllib.quote_plus(search_string) + '&platform=' + urllib.quote_plus(scraper_platform)
+
+        if self.get_search_cached_search_string  == search_string and \
+           self.get_search_cached_rom_base_noext == rom_base_noext and \
+           self.get_search_cached_platform       == platform:
+            log_debug('Scraper_TheGamesDB::get_search Cache HIT.')
+            page_data = self.get_search_cached_page_data
+        else:
+            log_debug('Scraper_TheGamesDB::get_search Cache MISS. Updating cache.')
+            page_data = net_get_URL_oneline(url)
+            # >> If nothing is returned maybe a timeout happened. In this case, reset the cache.
+            if page_data:
+                self.get_search_cached_search_string  = search_string
+                self.get_search_cached_rom_base_noext = rom_base_noext
+                self.get_search_cached_platform       = platform
+                self.get_search_cached_page_data      = page_data
+            else:
+                self.get_search_cached_search_string  = ''
+                self.get_search_cached_rom_base_noext = ''
+                self.get_search_cached_platform       = ''
+                self.get_search_cached_page_data      = ''
 
         # --- Parse list of games ---
         # <Data>
