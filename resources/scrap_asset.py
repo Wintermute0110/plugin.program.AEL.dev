@@ -86,8 +86,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         log_debug('asset_TheGamesDB::get_images game_id_url = {0}'.format(game_id_url))
         log_debug('asset_TheGamesDB::get_images asset_kind  = {0}'.format(A.name))
 
-        # >> Check if URL page data is in cache. If so it's a cache hit.
-        # >> If cache miss, then update cache.
+        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
         if self.get_images_cached_game_id == game['id']:
             log_debug('asset_TheGamesDB::get_images Cache HIT')
             page_data = self.get_images_cached_page_data
@@ -175,6 +174,8 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def __init__(self):
         self.name = 'GameFAQs'
+        self.get_images_cached_game_id   = ''
+        self.get_images_cached_page_data = ''
         Scraper_GameFAQs.__init__(self)
 
     # Call common code in parent class
@@ -208,7 +209,14 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 
         # >> Check if URL page data is in cache. If so it's a cache hit.
         # >> If cache miss, then update cache.
-        page_data = net_get_URL_oneline(game_id_url)
+        if self.get_images_cached_game_id == game['id']:
+            log_debug('asset_GameFAQs::get_images Cache HIT')
+            page_data = self.get_images_cached_page_data
+        else:
+            log_debug('asset_GameFAQs::get_images Cache MISS. Updating cache')
+            page_data = net_get_URL_oneline(game_id_url)
+            self.get_images_cached_game_id   = game['id']
+            self.get_images_cached_page_data = page_data
 
         # --- Retrieve assets ---
         if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
@@ -255,7 +263,7 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
             for index, thumb in enumerate(results):
                 str_index = str(index + 1)
                 log_debug('asset_GameFAQs::get_images Adding thumb #{0} {0}'.format(str_index, thumb[0]))
-                images.append({'name' : thumb[1], 'URL' : thumb[0], 'disp_URL' : thumb[0]})
+                images.append({'name' : thumb[1], 'id' : thumb[0], 'URL' : thumb[0]})
 
         elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK:
             # --- Parse game thumb information ---
@@ -311,12 +319,21 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 
         return images
 
+    def resolve_image_URL(self, image_dic):
+        log_debug('asset_GameFAQs::resolve_image_URL Resolving {0}'.format(image_dic['name']))
+        image_url = image_dic['id']
+        image_ext = text_get_image_URL_extension(image_dic['id'])
+        
+        return (image_url, image_ext)
+
 # -------------------------------------------------------------------------------------------------
 # MobyGames
 # -------------------------------------------------------------------------------------------------
 class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
     def __init__(self):
         self.name = 'MobyGames'
+        self.get_images_cached_game_id   = ''
+        self.get_images_cached_page_data = ''
         Scraper_MobyGames.__init__(self)
 
     # Call common code in parent class
@@ -333,24 +350,39 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
 
         return False
 
+    #
+    # 'asset_kind' is a MobyGames additional field.
+    #
     def get_images(self, game, asset_kind):
         images = []
-        
+
         # --- If asset kind not supported return inmediately ---
         if not self.supports_asset(asset_kind): return images
 
         if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
             game_id_url = 'http://www.mobygames.com' + game['id'] + '/screenshots'
-            A = assets_get_info_scheme(asset_kind)
-            log_debug('asset_MobyGames::get_images() game_id_url = {0}'.format(game_id_url))
-            log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(A.name))
+        elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or asset_kind == ASSET_CARTRIDGE:
+            game_id_url = 'http://www.mobygames.com' + game['id'] + '/cover-art'
+        A = assets_get_info_scheme(asset_kind)
+        log_debug('asset_MobyGames::get_images() game_id_url = {0}'.format(game_id_url))
+        log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(A.name))
 
-            # >> Check if URL page data is in cache. If so it's a cache hit.
-            # >> If cache miss, then update cache.
+        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
+        if self.get_images_cached_game_id == game['id']:
+            log_debug('asset_MobyGames::get_images Cache HIT')
+            page_data = self.get_images_cached_page_data
+        else:
+            log_debug('asset_MobyGames::get_images Cache MISS. Updating cache')
             page_data = net_get_URL_oneline(game_id_url)
-            # text_dump_str_to_file('MobyGames-screenshots.txt', page_data)
+            self.get_images_cached_game_id   = game['id']
+            self.get_images_cached_page_data = page_data
+        # text_dump_str_to_file('MobyGames-screenshots.txt', page_data)
 
+        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
             # NOTE findall() returns a list of tuples, not a match object!
+            # URL Examples:
+            # http://www.mobygames.com/game/snes/super-mario-world/screenshots/
+            #
             # <div class="thumbnail-image-wrapper">
             # <a href="/game/snes/super-metroid/screenshots/gameShotId,222488/" 
             #  title="Super Metroid SNES Title screen." class="thumbnail-image" 
@@ -366,38 +398,25 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             cover_index = 1
             for index, rtuple in enumerate(rlist):
                 art_page_URL = 'http://www.mobygames.com' + rtuple[0]
-                art_name     = rtuple[1]
+                art_name     = text_unescape_HTML(rtuple[1])
                 art_disp_URL = 'http://www.mobygames.com' + rtuple[2]
-                # >> This does not work because sometimes the screenshot thumbnail is JPG and the
-                # >> actual screenshoot is PNG. An auxiliar function that gets the actual
-                # >> imagename is required.
-                # art_URL = art_disp_URL.replace('/s/', '/l/')
-                
+                # >> NOTE: thumbnail is JPG and the actual screenshoot could be PNG. An auxiliar 
+                # >> function that gets the actual image URL is required.
                 if asset_kind == ASSET_TITLE and art_name.find('Title') >= 0:
-                    # >> Go to artwork page and get actual filename. Skip if empty string returned.
-                    art_URL = self.get_shot_URL(art_page_URL)
-                    if not art_URL: continue
                     log_debug('asset_MobyGames::get_images() Adding Title #{0} {1}'.format(cover_index, art_name))
-                    img_name = 'Title #{0}: {1}'.format(cover_index, art_name)
-                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    img_name = 'Title #{0:02d}: {1}'.format(cover_index, art_name)
+                    images.append({'name' : img_name, 'id' : art_page_URL, 'URL' : art_disp_URL, 'asset_kind' : asset_kind})
                     cover_index += 1
                 elif asset_kind == ASSET_SNAP and not art_name.find('Title') >= 0:
-                    # >> Go to artwork page and get actual filename. Skip if empty string returned.
-                    art_URL = self.get_shot_URL(art_page_URL)
-                    if not art_URL: continue
                     log_debug('asset_MobyGames::get_images() Adding Snap #{0} {1}'.format(cover_index, art_name))
-                    img_name = 'Snap #{0}: {1}'.format(cover_index, art_name)
-                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    img_name = 'Snap #{0:02d}: {1}'.format(cover_index, art_name)
+                    images.append({'name' : img_name, 'id' : art_page_URL, 'URL' : art_disp_URL, 'asset_kind' : asset_kind})
                     cover_index += 1
 
         elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or asset_kind == ASSET_CARTRIDGE:
-            game_id_url = 'http://www.mobygames.com' + game['id'] + '/cover-art'
-            A = assets_get_info_scheme(asset_kind)
-            log_debug('asset_MobyGames::get_images() game_id_url = {0}'.format(game_id_url))
-            log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(A.name))
-            page_data = net_get_URL_oneline(game_id_url)
-            # text_dump_str_to_file('MobyGames-cover-art.txt', page_data)
-
+            # URL examples:
+            # http://www.mobygames.com/game/snes/super-mario-world/cover-art/
+            #
             # <div class="thumbnail-image-wrapper">
             # <a href="/game/snes/super-metroid/cover-art/gameCoverId,16501/" 
             #  title="Super Metroid SNES Front Cover" class="thumbnail-cover" 
@@ -411,24 +430,23 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             cover_index = 1
             for index, rtuple in enumerate(rlist):
                 art_page_URL = rtuple[0]
-                art_name     = rtuple[1]
+                art_name     = text_unescape_HTML(rtuple[1])
                 art_disp_URL = 'http://www.mobygames.com' + rtuple[2]
                 art_URL      = art_disp_URL.replace('/s/', '/l/')
-                
                 if asset_kind == ASSET_BOXFRONT and art_name.find('Front Cover') >= 0:
                     log_debug('asset_MobyGames::get_images() Adding Boxfront #{0} {1}'.format(cover_index, art_name))
                     img_name = 'Boxfront #{0}: {1}'.format(cover_index, art_name)
-                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL, 'asset_kind' : asset_kind})
                     cover_index += 1
                 elif asset_kind == ASSET_BOXBACK and art_name.find('Back Cover') >= 0:
                     log_debug('asset_MobyGames::get_images() Adding Boxback #{0} {1}'.format(cover_index, art_name))
                     img_name = 'Boxback #{0}: {1}'.format(cover_index, art_name)
-                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL, 'asset_kind' : asset_kind})
                     cover_index += 1
                 elif asset_kind == ASSET_CARTRIDGE and art_name.find('Media') >= 0:
                     log_debug('asset_MobyGames::get_images() Adding Cartridge #{0} {1}'.format(cover_index, art_name))
                     img_name = 'Cartridge #{0}: {1}'.format(cover_index, art_name)
-                    images.append({'name' : img_name, 'URL' : art_URL, 'disp_URL' : art_disp_URL})
+                    images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL, 'asset_kind' : asset_kind})
                     cover_index += 1
 
         return images
@@ -458,12 +476,32 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
 
         return art_URL
 
+    def resolve_image_URL(self, image_dic):
+        log_debug('asset_MobyGames::resolve_image_URL Resolving {0}'.format(image_dic['name']))
+        asset_kind = image_dic['asset_kind']
+
+        if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
+            # >> Go to artwork page and get actual filename. Skip if empty string returned.
+            art_page_URL = image_dic['id']
+            image_url = self.get_shot_URL(art_page_URL)
+            if not image_url: return ('', '')
+        elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or asset_kind == ASSET_CARTRIDGE:
+            image_url = image_dic['id']
+        else:
+            log_error('asset_MobyGames::resolve_image_URL Wrong asset_kind =  {0}'.format(asset_kind))
+            return ('', '')
+        image_ext = text_get_image_URL_extension(image_url)
+        
+        return (image_url, image_ext)
+
 # -------------------------------------------------------------------------------------------------
 # Arcade Database (for MAME only) http://adb.arcadeitalia.net/
 # -------------------------------------------------------------------------------------------------
 class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
     def __init__(self):
         self.name = 'Arcade Database'
+        self.get_images_cached_game_id   = ''
+        self.get_images_cached_page_data = ''
         Scraper_ArcadeDB.__init__(self)
 
     # Call common code in parent class
