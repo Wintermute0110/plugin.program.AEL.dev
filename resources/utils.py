@@ -20,7 +20,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, os, shutil, time, random, hashlib, urlparse, re, string
+import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch
 
 # --- AEL modules ---
 # from disk_IO import *
@@ -182,12 +182,16 @@ def text_get_image_URL_extension(url):
 #
 # Given the image path, image filename with no extension and a list of file extensions search for a file.
 #
+# rootPath       -> FileName object
+# filename_noext -> Unicode string
+# file_exts      -> list of extenstions with no dot [ 'zip', 'rar' ]
+#
+# Returns a FileName object.
+#
 def misc_look_for_file(rootPath, filename_noext, file_exts):
-    
     for ext in file_exts:
-        test_file = filename_noext + '.' + ext
-        file_path = rootPath.getSubPath(test_file)
-        if file_path.fileExists():
+        file_path = rootPath + filename_noext + '.' + ext
+        if file_path.exists():
             return file_path
 
     return None
@@ -202,6 +206,159 @@ def misc_generate_random_SID():
     sid = base.hexdigest()
 
     return sid
+
+# -------------------------------------------------------------------------------------------------
+# Filesystem helper class
+# This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in
+# caller code.
+# A) Transform paths like smb://server/directory/ into \\server\directory\
+# B) Use xbmc.translatePath() for paths starting with special://
+# -------------------------------------------------------------------------------------------------
+class FileName:
+    # pathString must be a Unicode string object
+    def __init__(self, pathString):
+        self.originalPath = pathString
+        self.path         = pathString
+        
+        # --- Path transformation ---
+        if self.originalPath.lower().startswith('smb:'):
+            self.path = self.path.replace('smb:', '')
+            self.path = self.path.replace('SMB:', '')
+            self.path = self.path.replace('//', '\\\\')
+            self.path = self.path.replace('/', '\\')
+
+        elif self.originalPath.lower().startswith('special:'):
+            self.path = xbmc.translatePath(self.path)
+
+    def join(self, arg):
+        self.path         = os.path.join(self.path, arg)
+        self.originalPath = os.path.join(self.originalPath, arg)
+
+        return self
+
+    def append(self, arg):
+        self.path         = self.path + arg
+        self.originalPath = self.originalPath + arg
+
+        return self
+
+    # Behaves like os.path.join()
+    def getSubPath(self, *args):
+        child = FileName(self.originalPath)
+        for arg in args:
+            child.join(arg)
+
+        return child
+
+    # Behaves like os.path.join()
+    #
+    # See http://blog.teamtreehouse.com/operator-overloading-python
+    # other is a FileName object. other originalPath is expected to be a subdirectory (path
+    # transformation not required)
+    def __add__(self, other):
+        current_path = self.originalPath
+        if type(other) is FileName:  other_path = other.originalPath
+        elif type(other) is unicode: other_path = other
+        elif type(other) is str:     other_path = other.decode('utf-8')
+        else: raise NameError('Unknown type for overloaded + in FileName object')
+        new_path = os.path.join(current_path, other_path)
+        child    = FileName(new_path)
+
+        return child
+
+    def escapeQuotes(self):
+        self.path = self.path.replace("'", "\\'")
+        self.path = self.path.replace('"', '\\"')
+
+    # ---------------------------------------------------------------------------------------------
+    # Decomposes a file name path or directory into its constituents
+    #   FileName.getPath()            Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath_noext()      Full path with no extension                   /home/Wintermute/Sonic
+    #   FileName.getDirname()         Directory name of file. Does not end in '/'   /home/Wintermute
+    #   FileName.getBasename()        File name with no path                        Sonic.zip
+    #   FileName.getBasename_noext()  File name with no path and no extension       Sonic
+    #   FileName.getExt()             File extension                                .zip
+    # ---------------------------------------------------------------------------------------------
+    def getPath(self):
+        return self.path
+
+    def getOriginalPath(self):
+        return self.originalPath
+
+    def getPath_noext(self):
+        root, ext = os.path.splitext(self.path)
+
+        return root
+
+    def getDirname(self):
+        return os.path.dirname(self.path)
+
+    def getBasename(self):
+        return os.path.basename(self.path)
+
+    def getBasename_noext(self):
+        basename  = os.path.basename(self.path)
+        root, ext = os.path.splitext(basename)
+        
+        return root
+
+    def getExt(self):
+        root, ext = os.path.splitext(self.path)
+        
+        return ext
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask):
+        files = []
+        filenames = os.listdir(self.path)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(os.path.join(self.path, filename))
+
+        return files
+
+    def scanFilesInPathAsPaths(self, mask):
+        files = []
+        filenames = os.listdir(self.path)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(FileName(os.path.join(self.path, filename)))
+
+        return files
+
+    def recursiveScanFilesInPath(self, mask):
+        files = []
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                files.append(os.path.join(root, filename))
+
+        return files
+
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions
+    # ---------------------------------------------------------------------------------------------
+    def stat(self):
+        return os.stat(self.path)
+
+    def exists(self):
+        return os.path.exists(self.path)
+
+    def isdir(self):
+        return os.path.isdir(self.path)
+        
+    def isfile(self):
+        return os.path.isfile(self.path)
+
+    def makedirs(self):
+        if not os.path.exists(self.path): 
+            os.makedirs(self.path)
+
+    # os.remove() and os.unlink() are exactly the same.
+    def unlink(self):
+        os.unlink(self.path)
+
+    def rename(self, to):
+        os.rename(self.path, to.getPath())
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
