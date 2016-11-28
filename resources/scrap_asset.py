@@ -54,8 +54,8 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
     def __init__(self):
         self.name = 'TheGamesDB'
         # >> Cache page data in get_images()
-        self.get_images_cached_game_id   = ''
-        self.get_images_cached_page_data = ''
+        self.get_images_cached_game_id_url = ''
+        self.get_images_cached_page_data   = ''
         Scraper_TheGamesDB.__init__(self)
 
     # Call scraper shared code in parent class
@@ -87,14 +87,14 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         log_debug('asset_TheGamesDB::get_images asset_kind  = {0}'.format(A.name))
 
         # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
-        if self.get_images_cached_game_id == game['id']:
+        if self.get_images_cached_game_id_url == game_id_url:
             log_debug('asset_TheGamesDB::get_images Cache HIT')
             page_data = self.get_images_cached_page_data
         else:
             log_debug('asset_TheGamesDB::get_images Cache MISS. Updating cache')
             page_data = net_get_URL_oneline(game_id_url)
-            self.get_images_cached_game_id   = game['id']
-            self.get_images_cached_page_data = page_data
+            self.get_images_cached_game_id_url = game['id']
+            self.get_images_cached_page_data   = page_data
 
         # --- Parse game thumb information and make list of images ---
         # The XML returned by GetGame.php has many tags. See examples here:
@@ -174,8 +174,8 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def __init__(self):
         self.name = 'GameFAQs'
-        self.get_images_cached_game_id   = ''
-        self.get_images_cached_page_data = ''
+        self.get_images_cached_game_id_url = ''
+        self.get_images_cached_page_data   = ''
         Scraper_GameFAQs.__init__(self)
 
     # Call common code in parent class
@@ -209,14 +209,14 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 
         # >> Check if URL page data is in cache. If so it's a cache hit.
         # >> If cache miss, then update cache.
-        if self.get_images_cached_game_id == game['id']:
+        if self.get_images_cached_game_id_url == game_id_url:
             log_debug('asset_GameFAQs::get_images Cache HIT')
             page_data = self.get_images_cached_page_data
         else:
             log_debug('asset_GameFAQs::get_images Cache MISS. Updating cache')
             page_data = net_get_URL_oneline(game_id_url)
-            self.get_images_cached_game_id   = game['id']
-            self.get_images_cached_page_data = page_data
+            self.get_images_cached_game_id_url = game_id_url
+            self.get_images_cached_page_data   = page_data
 
         # --- Retrieve assets ---
         if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
