@@ -5155,7 +5155,7 @@ class Main:
         # --- Delete previous hashed database XMLs ---
         log_info('_command_update_virtual_category_db() Cleaning hashed database old XMLs')
         for the_file in vcategory_db_directory.scanFilesInPathAsPaths('*.*'):
-            file_extension = the_file.getFileExtension()
+            file_extension = the_file.getExt()
             if file_extension.lower() != '.xml' and file_extension.lower() != '.json':
                 # >> There should be only XMLs or JSON in this directory
                 log_error('_command_update_virtual_category_db() Non XML/JSON file "{0}"'.format(the_file.getPath()))
@@ -5216,7 +5216,7 @@ class Main:
 
             # >> Update dictionary
             all_roms.update(fav_roms)
-        pDialog.update(i * 100 / num_launchers)
+        pDialog.update(100)
         pDialog.close()
 
         # --- Create a dictionary that with key the virtual category and value a dictionay of roms
@@ -5268,7 +5268,7 @@ class Main:
                                                    'name'            : vlauncher_id,
                                                    'rom_count'       : str(len(vlauncher_roms)),
                                                    'roms_base_noext' : hashed_db_UUID }
-        pDialog.update(i * 100 / num_vlaunchers)
+        pDialog.update(100)
         pDialog.close()
 
         # --- Write virtual launchers XML file ---
