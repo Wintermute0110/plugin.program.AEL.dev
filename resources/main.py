@@ -1419,7 +1419,7 @@ class Main:
                                 log_verb('Missing {0:<10}'.format(A.name))
 
                     # ~~~ Save ROMs XML file ~~~
-                    fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     kodi_notify('Rescaning of local artwork finished')
 
                 # --- Change launcher view mode (Normal or PClone) ---
@@ -1499,7 +1499,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
-                    fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
 
                 # --- Reset audit status ---
                 elif type2 == 6:
@@ -1512,7 +1512,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
-                    fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
 
                 # --- Remove dead ROMs ---
                 elif type2 == 7:
@@ -1529,7 +1529,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
-                    fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
 
                 # --- Import Items list form NFO files ---
                 elif type2 == 8:
@@ -1541,7 +1541,7 @@ class Main:
                         fs_import_ROM_NFO(roms, rom_id, verbose = False)
                     # >> Save ROMs XML file / Launcher saved at the end of function
                     # >> Also save categories/launchers to update timestamp
-                    fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
 
                 # --- Export Items list to NFO files ---
                 elif type2 == 9:
@@ -2363,7 +2363,7 @@ class Main:
             # >> Also update changed launcher timestamp
             self.launchers[launcherID]['timestamp_launcher'] = _t = time.time()
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-            fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+            fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # It seems that updating the container does more harm than good... specially when having many ROMs
@@ -2431,7 +2431,7 @@ class Main:
 
             roms.pop(romID)
             roms_base_noext = launcher['roms_base_noext']
-            fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, launcher)
+            fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, launcher)
             # >> Also save categories/launchers to update main timestamp and launcher timestamp
             self.launchers[launcherID]['timestamp_launcher'] = time.time()
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
@@ -5383,7 +5383,7 @@ class Main:
                     roms[rom['id']] = rom
 
                 # >> Save ROMs XML
-                fs_write_ROMs(ROMS_DIR, roms_base_noext, roms, launcher)
+                fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, launcher)
             else:
                 launcher['roms_xml_file'] = ''
             # >> Add launcher to AEL launchers
@@ -6122,7 +6122,7 @@ class Main:
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
         launcher['timestamp_launcher'] = time.time()
-        fs_write_ROMs(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
+        fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
     #
