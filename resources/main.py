@@ -868,7 +868,7 @@ class Main:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
                                   'Change Category: {0}'.format(category_name), finished_display,
-                                  'Manage ROM List...',
+                                  'Manage ROM List...', 'Audit ROMs / Launcher view mode...',
                                   'Advanced Modifications...', 'Delete Launcher'])
 
         # --- Edition of the launcher metadata ---
@@ -1224,27 +1224,16 @@ class Main:
             type_nb = type_nb + 1
             if type == type_nb:
                 dialog = xbmcgui.Dialog()
-                launcher = self.launchers[launcherID]
-                has_NoIntro_DAT = True if launcher['nointro_xml_file'] else False
-                if has_NoIntro_DAT:
-                    nointro_xml_file = launcher['nointro_xml_file']
-                    add_delete_NoIntro_str = 'Delete No-Intro DAT: {0}'.format(nointro_xml_file)
-                else:
-                    add_delete_NoIntro_str = 'Add No-Intro XML DAT...'
-                launcher_mode_str = 'PClone mode' if launcher['pclone_launcher'] else 'Normal mode'
-                type2 = dialog.select('Manage Items List',
+                type2 = dialog.select('Manage ROMs',
                                       ['Choose ROMs default assets/artwork...',
                                        'Manage ROMs asset directories...',
                                        'Rescan ROMs local assets/artwork',
-                                       'Change launcher view mode (Now {0})'.format(launcher_mode_str),
-                                       add_delete_NoIntro_str,
-                                       'Audit ROMs using No-Intro XML PClone DAT',
-                                       'Clear No-Intro audit status',
-                                       'Remove missing/dead ROMs',
+                                       'Remove dead/missing ROMs',
                                        'Import ROMs metadata from NFO files',
                                        'Export ROMs metadata to NFO files',
-                                       'Delete ROMs metadata NFO files',
+                                       'Delete ROMs NFO files',
                                        'Clear ROMs from launcher' ])
+                if type2 < 0: return # User canceled select dialog
 
                 # --- Choose default ROMs assets/artwork ---
                 if type2 == 0:
@@ -1422,55 +1411,194 @@ class Main:
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     kodi_notify('Rescaning of local artwork finished')
 
-                # --- Change launcher view mode (Normal or PClone) ---
+                # --- Remove Remove dead/missing ROMs ROMs ---
                 elif type2 == 3:
-                    pclone_launcher = self.launchers[launcherID]['pclone_launcher']
+                    ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
+                    if not ret: return
+
+                    # --- Load ROMs for this launcher ---
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+
+                    # --- Remove dead ROMs ---
+                    num_removed_roms = self._roms_delete_missing_ROMs(roms)
+                    kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
+
+                    # ~~~ Save ROMs XML file ~~~
+                    # >> Launcher saved at the end of the function / launcher timestamp updated.
+                    fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'], 
+                                       roms, self.launchers[launcherID])
+
+                # --- Import ROM metadata from NFO files ---
+                elif type2 == 4:
+                    # >> Load ROMs, iterate and import NFO files
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    # >> Iterating dictionaries gives the key.
+                    for rom_id in roms:
+                        fs_import_ROM_NFO(roms, rom_id, verbose = False)
+                    # >> Save ROMs XML file / Launcher saved at the end of function
+                    # >> Also save categories/launchers to update timestamp
+                    fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'], 
+                                       roms, self.launchers[launcherID])
+
+                # --- Export ROM metadata to NFO files ---
+                elif type2 == 5:
+                    # >> Load ROMs for current launcher, iterate and write NFO files
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    if not roms: return
+                    kodi_busydialog_ON()
+                    for rom_id in roms:
+                        fs_export_ROM_NFO(roms[rom_id], verbose = False)
+                    kodi_busydialog_OFF()
+                    # >> No need to save launchers XML / Update container
+                    return
+
+                # --- Delete ROMs metadata NFO files ---
+                elif type2 == 6:
+                    # --- Get list of NFO files ---
+                    nfo_dirname = self.launchers[launcherID]['rompath']
+                    log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(nfo_dirname))
+                    nfo_file_list = []
+
+                    nfo_path = Path(nfo_dirname)
+                    nfo_scanned_files = nfo_path.recursiveScanFilesInPath('*.nfo')
+
+                    if len(nfo_file_list) > 0:
+                        for filename in nfo_file_list:
+                            log_verb('_command_edit_launcher() Found NFO file "{0}"'.format(filename))
+
+                        ret = kodi_dialog_yesno('Found {0} NFO files. Delete them?'.format(len(nfo_file_list)))
+                        if not ret: return
+                    else:
+                        kodi_dialog_OK('No NFO files found. Nothing to delete.')
+                        return
+
+                    # --- Delete NFO files ---
+                    for file in nfo_file_list:
+                        log_verb('_command_edit_launcher() RM "{0}"'.format(file))
+                        file_path = Path(file)
+                        file_path.delete()
+
+                    # >> No need to save launchers XML / Update container
+                    return
+
+                # --- Empty Launcher menu option ---
+                elif type2 == 7:
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    num_roms = len(roms)
+
+                    # If launcher is empty (no ROMs) do nothing
+                    if num_roms == 0:
+                        kodi_dialog_OK('Launcher has no ROMs. Nothing to do.')
+                        return
+
+                    # Confirm user wants to delete ROMs
+                    dialog = xbmcgui.Dialog()
+                    ret = dialog.yesno('Advanced Emulator Launcher',
+                                       "Launcher '{0}' has {1} ROMs. Are you sure you want to delete them "
+                                       "from AEL database?".format(self.launchers[launcherID]['m_name'], num_roms))
+                    if not ret: return
+
+                    # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
+                    # when user add more ROMs.
+                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+
+        # --- Audit ROMs / Launcher view mode ---
+        # ONLY for ROM launchers, not for standalone launchers
+        if self.launchers[launcherID]['rompath'] != '':
+            type_nb = type_nb + 1
+            if type == type_nb:
+                dialog = xbmcgui.Dialog()
+                launcher = self.launchers[launcherID]
+                has_NoIntro_DAT = True if launcher['nointro_xml_file'] else False
+                if has_NoIntro_DAT:
+                    nointro_xml_file = launcher['nointro_xml_file']
+                    add_delete_NoIntro_str = 'Delete No-Intro DAT: {0}'.format(nointro_xml_file)
+                else:
+                    add_delete_NoIntro_str = 'Add No-Intro XML DAT...'
+                launcher_mode_str = 'PClone mode' if launcher['pclone_launcher'] else 'Normal mode'
+                type2 = dialog.select('Audit ROMs / Launcher view mode',
+                                      ['Change launcher view mode (Now {0})'.format(launcher_mode_str),
+                                       add_delete_NoIntro_str,
+                                       'Audit ROMs using No-Intro XML PClone DAT',
+                                       'Clear No-Intro audit status',
+                                       'Remove No-Intro Missing ROMs'])
+                if type2 < 0: return # User canceled select dialog
+
+                # --- Change launcher view mode (Normal or PClone) ---
+                if type2 == 0:
+                    launcher = self.launchers[launcherID]
+                    pclone_launcher = launcher['pclone_launcher']
                     if pclone_launcher: item_list = ['Normal mode', 'PClone mode [Current]']
                     else:               item_list = ['Normal mode [Current]', 'PClone mode']
                     type_temp = dialog.select('Manage Items List', item_list)
                     if type_temp < 0: return
 
-                    if type_temp == 0:   
-                        # --- Delete PClone index and Parent ROMs DB? ---
+                    if type_temp == 0:
+                        # --- Delete PClone index and Parent ROMs DB to save disk space ---
 
                         # --- Mark status ---
                         self.launchers[launcherID]['pclone_launcher'] = False
                         log_debug('_command_edit_launcher() pclone_launcher = False')
-                        kodi_notify('Launcher view Normal')
+                        kodi_notify('Launcher view set Normal')
 
                     elif type_temp == 1:
-                        # --- Check if user configured a No-Intro DAT ---
+                        # >> Check if user configured a No-Intro DAT. If not configured  or file does
+                        # >> not exists refuse to switch to PClone view and force normal mode.
+                        nointro_xml_file = launcher['nointro_xml_file']
+                        nointro_xml_file_FName = FileName(nointro_xml_file)
+                        if not nointro_xml_file:
+                            log_info('_command_edit_launcher() No-Intro DAT not configured. PClone view mode cannot be set.')
+                            log_info('_command_edit_launcher() Forcing normal view mode.')
+                            kodi_dialog_OK('No-Intro DAT not configured. PClone view mode cannot be set.')
+                            self.launchers[launcherID]['pclone_launcher'] = False
 
+                        elif not nointro_xml_file_FName.exists():
+                            log_info('_command_edit_launcher() No-Intro DAT not found. PClone view mode cannot be set.')
+                            log_info('_command_edit_launcher() Forcing normal view mode.')
+                            kodi_dialog_OK('No-Intro DAT cannot be found. PClone view mode cannot be set.')
+                            self.launchers[launcherID]['pclone_launcher'] = False
 
-                        # --- Generate PClone index and Parent ROMs DB ---
+                        else:
+                            # --- Re/Generate PClone index and Parent ROMs DB ---
 
-
-                        # --- Mark status ---
-                        self.launchers[launcherID]['pclone_launcher'] = True
-                        log_debug('_command_edit_launcher() pclone_launcher = True')
-                        kodi_notify('Launcher view mode Parent/Clone')
+                            # --- Mark status ---
+                            self.launchers[launcherID]['pclone_launcher'] = True
+                            log_debug('_command_edit_launcher() pclone_launcher = True')
+                            kodi_notify('Launcher view mode set to Parent/Clone')
 
                 # --- Add/Delete No-Intro XML parent-clone DAT ---
-                elif type2 == 4:
+                elif type2 == 1:
                     if has_NoIntro_DAT:
                         dialog = xbmcgui.Dialog()
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro DAT file?')
                         if not ret: return
                         self.launchers[launcherID]['nointro_xml_file'] = ''
-                        kodi_dialog_OK('Rescan your ROMs to remove No-Intro tags.')
+                        kodi_dialog_OK('No-Intro DAT deleted. '
+                                       'Clear No-Intro tags and/or Delete No-Intro missing ROMs from launcher.')
                     else:
-                        # Browse for No-Intro file
+                        # --- Browse for No-Intro file ---
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
                         dialog = xbmcgui.Dialog()
+                        
+                        #  >> DOES NOT SHOW .DAT FILES BUT SHOWS .XML FILES
                         dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
-                        dat_file_path = Path(dat_file)
-                        if not dat_file_path.exists(): return
+                        
+                        # >> SHOWS .DAT and .XML files. .DAT files have a video icon, .XML have a book icon
+                        # dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files').decode('utf-8')
+                        
+                        # >> DOES NOT SHOW .DAT FILES
+                        # dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat').decode('utf-8')
+                        
+                        # >> DOES NOT SHOW .DAT NOR .XML files, but shows .ZIP files
+                        # dat_file = dialog.browse(2, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
+
+                        if not FileName(dat_file).exists(): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
-                elif type2 == 5:
+                elif type2 == 2:
                     # Check if No-Intro XML DAT exists
                     if not has_NoIntro_DAT:
                         kodi_dialog_OK('No-Intro XML DAT not configured. Add one before ROM audit.')
@@ -1502,7 +1630,7 @@ class Main:
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
 
                 # --- Reset audit status ---
-                elif type2 == 6:
+                elif type2 == 3:
                     # --- Load ROMs for this launcher ---
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
@@ -1514,8 +1642,11 @@ class Main:
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
 
-                # --- Remove dead ROMs ---
-                elif type2 == 7:
+                # --- Remove No-Intro Missing ROMs ---
+                elif type2 == 4:
+                    kodi_dialog_OK('Implement me!')
+                    return
+                    
                     ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
                     if not ret: return
 
@@ -1530,83 +1661,6 @@ class Main:
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-
-                # --- Import Items list form NFO files ---
-                elif type2 == 8:
-                    # >> Load ROMs, iterate and import NFO files
-                    roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
-                    # >> Iterating dictionaries gives the key.
-                    for rom_id in roms:
-                        fs_import_ROM_NFO(roms, rom_id, verbose = False)
-                    # >> Save ROMs XML file / Launcher saved at the end of function
-                    # >> Also save categories/launchers to update timestamp
-                    fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-
-                # --- Export Items list to NFO files ---
-                elif type2 == 9:
-                    # >> Load ROMs for current launcher, iterate and write NFO files
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    if not roms: return
-                    kodi_busydialog_ON()
-                    for rom_id in roms:
-                        fs_export_ROM_NFO(roms[rom_id], verbose = False)
-                    kodi_busydialog_OFF()
-                    # >> No need to save launchers XML / Update container
-                    return
-
-                # --- Delete ROMs metadat NFO files ---
-                elif type2 == 10:
-                    # --- Get list of NFO files ---
-                    nfo_dirname = self.launchers[launcherID]['rompath']
-                    log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(nfo_dirname))
-                    nfo_file_list = []
-
-                    nfo_path = Path(nfo_dirname)
-                    nfo_scanned_files = nfo_path.recursiveScanFilesInPath('*.nfo')
-
-                    if len(nfo_file_list) > 0:
-                        for filename in nfo_file_list:
-                            log_verb('_command_edit_launcher() Found NFO file "{0}"'.format(filename))
-
-                        ret = kodi_dialog_yesno('Found {0} NFO files. Delete them?'.format(len(nfo_file_list)))
-                        if not ret: return
-                    else:
-                        kodi_dialog_OK('No NFO files found. Nothing to delete.')
-                        return
-
-                    # --- Delete NFO files ---
-                    for file in nfo_file_list:
-                        log_verb('_command_edit_launcher() RM "{0}"'.format(file))
-                        file_path = Path(file)
-                        file_path.delete()
-
-                    # >> No need to save launchers XML / Update container
-                    return
-
-                # --- Empty Launcher menu option ---
-                elif type2 == 11:
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    num_roms = len(roms)
-
-                    # If launcher is empty (no ROMs) do nothing
-                    if num_roms == 0:
-                        kodi_dialog_OK('Launcher has no ROMs. Nothing to do.')
-                        return
-
-                    # Confirm user wants to delete ROMs
-                    dialog = xbmcgui.Dialog()
-                    ret = dialog.yesno('Advanced Emulator Launcher',
-                                       "Launcher '{0}' has {1} ROMs. Are you sure you want to delete them "
-                                       "from AEL database?".format(self.launchers[launcherID]['m_name'], num_roms))
-                    if not ret: return
-
-                    # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
-                    # when user add more ROMs.
-                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-
-                # >> User canceled select dialog
-                elif type2 < 0: return
 
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
