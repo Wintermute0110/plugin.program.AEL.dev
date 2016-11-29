@@ -52,11 +52,23 @@ class asset_NULL(Scraper_Asset):
 # -------------------------------------------------------------------------------------------------
 class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
     def __init__(self):
+        Scraper_TheGamesDB.__init__(self)
         self.name = 'TheGamesDB'
         # >> Cache page data in get_images()
         self.get_images_cached_game_id_url = ''
         self.get_images_cached_page_data   = ''
-        Scraper_TheGamesDB.__init__(self)
+
+    # Get a URL text and cache it.
+    def get_URL_and_cache(self, game_id_url):
+        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
+        if self.get_images_cached_game_id_url == game_id_url:
+            log_debug('asset_TheGamesDB::get_URL_and_cache Cache HIT')
+            page_data = self.get_images_cached_page_data
+        else:
+            log_debug('asset_TheGamesDB::get_URL_and_cache Cache MISS. Updating cache')
+            page_data = net_get_URL_oneline(game_id_url)
+            self.get_images_cached_game_id_url = game_id_url
+            self.get_images_cached_page_data   = page_data
 
     # Call scraper shared code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
@@ -82,19 +94,10 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 
         # --- Download game page XML data ---
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
-        A = assets_get_info_scheme(asset_kind)
+        AInfo = assets_get_info_scheme(asset_kind)
         log_debug('asset_TheGamesDB::get_images game_id_url = {0}'.format(game_id_url))
-        log_debug('asset_TheGamesDB::get_images asset_kind  = {0}'.format(A.name))
-
-        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
-        if self.get_images_cached_game_id_url == game_id_url:
-            log_debug('asset_TheGamesDB::get_images Cache HIT')
-            page_data = self.get_images_cached_page_data
-        else:
-            log_debug('asset_TheGamesDB::get_images Cache MISS. Updating cache')
-            page_data = net_get_URL_oneline(game_id_url)
-            self.get_images_cached_game_id_url = game['id']
-            self.get_images_cached_page_data   = page_data
+        log_debug('asset_TheGamesDB::get_images asset_kind  = {0}'.format(AInfo.name))
+        page_data = self.get_URL_and_cache(game_id_url)
 
         # --- Parse game thumb information and make list of images ---
         # The XML returned by GetGame.php has many tags. See examples here:
@@ -173,10 +176,22 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 # -------------------------------------------------------------------------------------------------
 class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
     def __init__(self):
+        Scraper_GameFAQs.__init__(self)
         self.name = 'GameFAQs'
         self.get_images_cached_game_id_url = ''
         self.get_images_cached_page_data   = ''
-        Scraper_GameFAQs.__init__(self)
+
+    # Get a URL text and cache it.
+    def get_URL_and_cache(self, game_id_url):
+        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
+        if self.get_images_cached_game_id_url == game_id_url:
+            log_debug('asset_GameFAQs::get_URL_and_cache Cache HIT')
+            page_data = self.get_images_cached_page_data
+        else:
+            log_debug('asset_GameFAQs::get_URL_and_cache Cache MISS. Updating cache')
+            page_data = net_get_URL_oneline(game_id_url)
+            self.get_images_cached_game_id_url = game_id_url
+            self.get_images_cached_page_data   = page_data
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
@@ -203,20 +218,10 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 
         # --- Download game page data ---
         game_id_url = 'http://www.gamefaqs.com' + game['id'] + '/images'
-        A = assets_get_info_scheme(asset_kind)
+        AInfo = assets_get_info_scheme(asset_kind)
         log_debug('asset_GameFAQs::get_images game_id_url = {0}'.format(game_id_url))
-        log_debug('asset_GameFAQs::get_images asset_kind  = {0}'.format(A.name))
-
-        # >> Check if URL page data is in cache. If so it's a cache hit.
-        # >> If cache miss, then update cache.
-        if self.get_images_cached_game_id_url == game_id_url:
-            log_debug('asset_GameFAQs::get_images Cache HIT')
-            page_data = self.get_images_cached_page_data
-        else:
-            log_debug('asset_GameFAQs::get_images Cache MISS. Updating cache')
-            page_data = net_get_URL_oneline(game_id_url)
-            self.get_images_cached_game_id_url = game_id_url
-            self.get_images_cached_page_data   = page_data
+        log_debug('asset_GameFAQs::get_images asset_kind  = {0}'.format(AInfo.name))
+        page_data = self.get_URL_and_cache(game_id_url)
 
         # --- Retrieve assets ---
         if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
@@ -330,10 +335,22 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
 # -------------------------------------------------------------------------------------------------
 class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
     def __init__(self):
+        Scraper_MobyGames.__init__(self)
         self.name = 'MobyGames'
         self.get_images_cached_game_id_url = ''
         self.get_images_cached_page_data   = ''
-        Scraper_MobyGames.__init__(self)
+
+    # Get a URL text and cache it.
+    def get_URL_and_cache(self, game_id_url):
+        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
+        if self.get_images_cached_game_id_url == game_id_url:
+            log_debug('asset_MobyGames::get_URL_and_cache Cache HIT')
+            page_data = self.get_images_cached_page_data
+        else:
+            log_debug('asset_MobyGames::get_URL_and_cache Cache MISS. Updating cache')
+            page_data = net_get_URL_oneline(game_id_url)
+            self.get_images_cached_game_id_url = game_id_url
+            self.get_images_cached_page_data   = page_data
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
@@ -362,20 +379,11 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             game_id_url = 'http://www.mobygames.com' + game['id'] + '/screenshots'
         elif asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or asset_kind == ASSET_CARTRIDGE:
             game_id_url = 'http://www.mobygames.com' + game['id'] + '/cover-art'
-        A = assets_get_info_scheme(asset_kind)
+        AInfo = assets_get_info_scheme(asset_kind)
         log_debug('asset_MobyGames::get_images() game_id_url = {0}'.format(game_id_url))
-        log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(A.name))
-
-        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
-        if self.get_images_cached_game_id_url == game_id_url:
-            log_debug('asset_MobyGames::get_images Cache HIT')
-            page_data = self.get_images_cached_page_data
-        else:
-            log_debug('asset_MobyGames::get_images Cache MISS. Updating cache')
-            page_data = net_get_URL_oneline(game_id_url)
-            self.get_images_cached_game_id_url = game_id_url
-            self.get_images_cached_page_data   = page_data
-        # text_dump_str_to_file('MobyGames-screenshots.txt', page_data)
+        log_debug('asset_MobyGames::get_images() asset_kind  = {0}'.format(AInfo.name))
+        page_data = self.get_URL_and_cache(game_id_url)
+        # text_dump_str_to_file('MobyGames-game_id_url.txt', page_data)
 
         if asset_kind == ASSET_TITLE or asset_kind == ASSET_SNAP:
             # NOTE findall() returns a list of tuples, not a match object!
@@ -498,10 +506,10 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
 # -------------------------------------------------------------------------------------------------
 class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
     def __init__(self):
+        Scraper_ArcadeDB.__init__(self)
         self.name = 'Arcade Database'
         self.get_images_cached_game_id   = ''
         self.get_images_cached_page_data = ''
-        Scraper_ArcadeDB.__init__(self)
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
