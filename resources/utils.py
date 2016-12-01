@@ -108,12 +108,12 @@ def text_dump_str_to_file(filename, full_string):
 # ROM name cleaning and formatting
 # -------------------------------------------------------------------------------------------------
 #
-# This function is used to clean the ROM name to be used as search string for the scraper
+# This function is used to clean the ROM name to be used as search string for the scraper.
 #
 # Cleans ROM tags: [BIOS], (Europe), (Rev A), ...
 # Substitutes some characters by spaces
 #
-def text_clean_ROM_name_for_scraping(title):
+def text_format_ROM_name_for_scraping(title):
     title = re.sub('\[.*?\]', '', title)
     title = re.sub('\(.*?\)', '', title)
     title = re.sub('\{.*?\}', '', title)
@@ -134,9 +134,9 @@ def text_clean_ROM_name_for_scraping(title):
 
 #
 # Format ROM file name when scraping is disabled.
-# 1) Remove No-Intro/TOSEC tags (), [], {}
+# 1) Remove No-Intro/TOSEC tags (), [], {} at the end of the file
 #
-def text_ROM_title_format(title, clean_tags):
+def text_format_ROM_title(title, clean_tags):
     if clean_tags:
         title = re.sub('\[.*?\]', '', title)
         title = re.sub('\(.*?\)', '', title)

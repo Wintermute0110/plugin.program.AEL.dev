@@ -1602,6 +1602,7 @@ class Main:
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
 
                     # --- Load No-Intro DAT and audit ROMs ---
+                    nointro_xml_file = FileName(launcher['nointro_xml_file'])
                     log_info('Auditing ROMs using No-Intro DAT {0}'.format(nointro_xml_file))
 
                     # --- Update No-Intro status for ROMs ---
@@ -6025,23 +6026,22 @@ class Main:
     #  1) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_index.json
     #  2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_parents.json
     #
-    def _roms_update_NoIntro_status(self, launcher, roms, nointro_xml_file):
+    def _roms_update_NoIntro_status(self, launcher, roms, nointro_xml_file_FileName):
         # --- Reset the No-Intro status ---
         self.audit_have = self.audit_miss = self.audit_unknown = 0
         self._roms_reset_NoIntro_status(roms)
 
         # --- Check if DAT file exists ---
-        nointro_xml_path = Path(nointro_xml_file)
-        if not nointro_xml_path.exists():
-            log_warn('_roms_update_NoIntro_status Not found {0}'.format(nointro_xml_path.getPath()))
+        if not nointro_xml_file_FileName.exists():
+            log_warn('_roms_update_NoIntro_status Not found {0}'.format(nointro_xml_file_FileName.getPath()))
             return
 
         # --- Load No-Intro DAT ---
-        roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_path)
+        roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file_FileName)
 
         # --- Check for errors ---
         if not roms_nointro:
-            log_warn('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_path.getPath()))
+            log_warn('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
             return
 
         # --- Put No-Intro ROM names in a set ---
@@ -6062,9 +6062,9 @@ class Main:
         # --- Mark dead ROMs as missing ---
         for rom_id in roms:
             name     = roms[rom_id]['m_name']
-            filename = Path(roms[rom_id]['filename'])
+            filename = roms[rom_id]['filename']
             # log_debug('_roms_update_NoIntro_status() Testing {0}'.format(name))
-            if not filename.exists():
+            if not FileName(filename).exists():
                 # log_debug('_roms_update_NoIntro_status() Not found {0}'.format(name))
                 roms[rom_id]['nointro_status'] = 'Miss'
 

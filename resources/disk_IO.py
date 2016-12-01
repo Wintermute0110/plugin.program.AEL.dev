@@ -1274,11 +1274,11 @@ def fs_generate_PClone_index(roms, roms_nointro):
     # --- Build PClone dictionary using ROM base_noext names ---
     for rom_id in roms:
         rom = roms[rom_id]
-        F = misc_split_path(rom['filename'])
+        ROMFileName = FileName(rom['filename'])
         # log_debug('rom_id {0}'.format(rom_id))
         # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
         # log_debug('  filename         "{0}"'.format(rom['filename']))
-        # log_debug('  F.base_noext     "{0}"'.format(F.base_noext))
+        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBasename_noext()))
 
         if rom['nointro_status'] == 'Unknown':
             clone_id = rom['id']
@@ -1291,7 +1291,7 @@ def fs_generate_PClone_index(roms, roms_nointro):
         # Parent/Clone data is available.
         else:
             if rom['nointro_status'] == 'Miss': rom_nointro_name = rom['m_name']
-            else:                               rom_nointro_name = F.base_noext
+            else:                               rom_nointro_name = ROMFileName.getBasename_noext()
             # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
             nointro_rom = roms_nointro[rom_nointro_name]
 
@@ -1335,6 +1335,9 @@ def fs_generate_parent_ROMs(roms, roms_pclone_index):
         else:
             parent_roms[rom_id] = roms[rom_id]
             parent_roms[rom_id]['num_clones_str'] = unicode(len(roms_pclone_index[rom_id]))
+            # >> Clean parent ROM name tags from ROM Name
+            clean_ROM_name = parent_roms[rom_id]['m_name']
+            parent_roms[rom_id]['m_name'] = text_format_ROM_title(clean_ROM_name, True)
 
     return parent_roms
 
