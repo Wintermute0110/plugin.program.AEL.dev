@@ -138,6 +138,7 @@ def text_format_ROM_name_for_scraping(title):
 #
 def text_format_ROM_title(title, clean_tags):
     if clean_tags:
+        # >> BUG: [BIOS] tag at the beginning is removed and must be not.
         title = re.sub('\[.*?\]', '', title)
         title = re.sub('\(.*?\)', '', title)
         title = re.sub('\{.*?\}', '', title)
