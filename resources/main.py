@@ -2851,7 +2851,7 @@ class Main:
         selectedLauncher = self.launchers[launcherID]
 
         # --- Load ROMs for this launcher ---
-        roms_file_path = fs_get_ROMs_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
+        roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
         if not roms_file_path.exists():
             kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)

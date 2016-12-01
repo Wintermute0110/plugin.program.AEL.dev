@@ -69,7 +69,7 @@ FEATURE  Improve message reporting in Kodi GUI when scanning ROMs.
 
 FEATURE  Improve launcher report and include is a No-Intro audit information.
 
-WIP      Remove ROM tags (for example, (Europe), [Rev A]) from parent ROM names when showing 
+FEATURE  Remove ROM tags (for example, (Europe), [Rev A]) from parent ROM names when showing 
          parent ROMs in a PClone launcher.
 
 FEATURE  Browse by Category Virtual Launcher.
