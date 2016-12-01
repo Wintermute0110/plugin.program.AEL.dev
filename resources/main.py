@@ -6047,10 +6047,7 @@ class Main:
         if not nointro_xml_file_FileName.exists():
             log_warn('_roms_update_NoIntro_status Not found {0}'.format(nointro_xml_file_FileName.getPath()))
             return
-
-        # --- Load No-Intro DAT ---
         roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file_FileName)
-
         # --- Check for errors ---
         if not roms_nointro:
             log_warn('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
@@ -6059,12 +6056,11 @@ class Main:
         # --- Put No-Intro ROM names in a set ---
         # >> Set is the fastest Python container for searching elements (implements hashed search).
         # >> No-Intro names include tags
-
         roms_nointro_set = set(roms_nointro.keys())
         roms_set = set()
         for rom_id in roms: roms_set.add(roms[rom_id]['m_name'])
 
-        # --- Traverse ROMs and check they are in the DAT ---
+        # --- Traverse Launcher ROMs and check if they are in the DAT ---
         for rom_id in roms:
             if roms[rom_id]['m_name'] in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = 'Have'
@@ -6073,7 +6069,7 @@ class Main:
                 roms[rom_id]['nointro_status'] = 'Unknown'
                 self.audit_unknown += 1
 
-        # --- Mark dead ROMs as missing ---
+        # --- Mark Launcher dead ROMs as missing ---
         for rom_id in roms:
             name     = roms[rom_id]['m_name']
             filename = roms[rom_id]['filename']
@@ -6082,15 +6078,15 @@ class Main:
                 # log_debug('_roms_update_NoIntro_status() Not found {0}'.format(name))
                 roms[rom_id]['nointro_status'] = 'Miss'
 
-        # --- Now add missing ROMs ---
-        # Traverse the nointro set and add the ROM if it's not there.
+        # --- Now add missing ROMs to Launcher ---
+        # >> Traverse the nointro set and add the ROM if it's not there.
         for nointro_rom in roms_nointro_set:
             if nointro_rom not in roms_set:
                 # Add new "fake" missing ROM. This ROM cannot be launched!
                 rom = fs_new_rom()
-                rom_id = misc_generate_random_SID()
-                rom['id'] = rom_id
-                rom['m_name'] = nointro_rom
+                rom_id                = misc_generate_random_SID()
+                rom['id']             = rom_id
+                rom['m_name']         = nointro_rom
                 rom['nointro_status'] = 'Miss'
                 self.audit_miss += 1
                 roms[rom_id] = rom
