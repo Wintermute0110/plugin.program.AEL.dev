@@ -1574,27 +1574,19 @@ class Main:
                         if not ret: return
                         self.launchers[launcherID]['nointro_xml_file'] = ''
                         kodi_dialog_OK('No-Intro DAT deleted. '
-                                       'Clear No-Intro tags and/or Delete No-Intro missing ROMs from launcher.')
+                                       'No-Intro Missing ROMs are still on launcher database. '
+                                       'You may want to Clear No-Intro tags and/or Delete No-Intro missing ROMs from launcher.')
+                        kodi_notify('Removed No-Intro PClone DAT')
                     else:
                         # --- Browse for No-Intro file ---
                         # BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
+                        # Fixed in Krypton Beta 6 http://forum.kodi.tv/showthread.php?tid=298161
                         dialog = xbmcgui.Dialog()
-                        
-                        #  >> DOES NOT SHOW .DAT FILES BUT SHOWS .XML FILES
                         dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
-                        
-                        # >> SHOWS .DAT and .XML files. .DAT files have a video icon, .XML have a book icon
-                        # dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files').decode('utf-8')
-                        
-                        # >> DOES NOT SHOW .DAT FILES
-                        # dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat').decode('utf-8')
-                        
-                        # >> DOES NOT SHOW .DAT NOR .XML files, but shows .ZIP files
-                        # dat_file = dialog.browse(2, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
-
                         if not FileName(dat_file).exists(): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
+                        kodi_notify('Added No-Intro PClone DAT')
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
