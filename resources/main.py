@@ -1611,12 +1611,11 @@ class Main:
                     self._roms_update_NoIntro_status(launcher, roms, nointro_xml_file)
 
                     # --- Report ---
-                    log_info('***** No-Intro audit finished. Report ******')
+                    log_info('********** No-Intro audit finished. Report ***********')
                     log_info('No-Intro Have ROMs    {0:6d}'.format(self.audit_have))
                     log_info('No-Intro Miss ROMs    {0:6d}'.format(self.audit_miss))
                     log_info('No-Intro Unknown ROMs {0:6d}'.format(self.audit_unknown))
-                    kodi_notify('Audit finished. '
-                                'Have {0}/Miss {1}/Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
+                    kodi_notify('Have {0}/Miss {1}/Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
@@ -1624,36 +1623,23 @@ class Main:
 
                 # --- Reset audit status ---
                 elif type2 == 3:
-                    # --- Load ROMs for this launcher ---
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
-
                     self._roms_reset_NoIntro_status(roms)
-                    kodi_notify('No-Intro status reset')
-
-                    # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    kodi_notify('No-Intro status reset')
 
                 # --- Remove No-Intro Missing ROMs ---
                 elif type2 == 4:
-                    kodi_dialog_OK('Implement me!')
-                    return
-                    
-                    ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
+                    ret = kodi_dialog_yesno('Are you sure you want to remove No-Intro Missing ROMs?')
                     if not ret: return
-
-                    # --- Load ROMs for this launcher ---
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
-
-                    # --- Remove dead ROMs ---
-                    num_removed_roms = self._roms_delete_missing_ROMs(roms)
-                    kodi_notify('Reset No-Intro status. Removed {0} missing ROMs'.format(num_removed_roms))
-
-                    # ~~~ Save ROMs XML file ~~~
+                    num_removed_roms = self._roms_delete_NoIntro_missing_ROMs(roms)
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    kodi_notify('Removed {0} No-Intro Missing ROMs'.format(num_removed_roms))
 
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
@@ -5976,7 +5962,9 @@ class Main:
             kodi_notify_warn('Cannot write Launcher Report (IOError)')
 
     #
-    # Deletes missing ROMs
+    # --- Deletes missing ROMs ---
+    # 1) Get rom['filename'].
+    # 2) If rom['filename'] file does not exists then delete from database.
     #
     def _roms_delete_missing_ROMs(self, roms):
         num_removed_roms = 0
@@ -5985,22 +5973,45 @@ class Main:
         if num_roms > 0:
             log_verb('_roms_delete_missing_ROMs() Starting dead items scan')
             for rom_id in sorted(roms.iterkeys()):
-                name = roms[rom_id]['m_name']
-                filename = Path(roms[rom_id]['filename'])
-                log_debug('_roms_delete_missing_ROMs() Testing {0}'.format(name))
-
-                # Remove missing ROMs
-                if not filename.exists():
-                    log_debug('_roms_delete_missing_ROMs() Delete {0} item entry'.format(name))
+                ROMFileName = FileName(roms[rom_id]['filename'])
+                log_debug('_roms_delete_missing_ROMs() Testing "{0}"'.format(ROMFileName.getBasename()))
+                # --- Remove missing ROMs ---
+                if not ROMFileName.exists():
+                    log_debug('_roms_delete_missing_ROMs() Delete "{0}"'.format(ROMFileName.getBasename()))
                     del roms[rom_id]
                     num_removed_roms += 1
-                    continue
             if num_removed_roms > 0:
                 log_info('_roms_delete_missing_ROMs() {0} dead ROMs removed successfully'.format(num_removed_roms))
             else:
                 log_info('_roms_delete_missing_ROMs() No dead ROMs found.')
         else:
             log_info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
+
+        return num_removed_roms
+
+    #
+    # --- Deletes No-Intro missing ROMs ---
+    # 1) If rom['filename'] is '' then delete ROM.
+    # 2) If rom['nointro_status'] is 'Miss' then delete ROM.
+    #
+    def _roms_delete_NoIntro_missing_ROMs(self, roms):
+        num_removed_roms = 0
+        num_roms = len(roms)
+        log_info('_roms_delete_NoIntro_missing_ROMs() Launcher DB contain {0} items'.format(num_roms))
+        if num_roms > 0:
+            log_verb('_roms_delete_NoIntro_missing_ROMs() Starting dead items scan')
+            for rom_id in sorted(roms.iterkeys()):
+                ROMFileName = FileName(roms[rom_id]['filename'])
+                if roms[rom_id]['filename'] == '' or roms[rom_id]['nointro_status'] == 'Miss':
+                    log_debug('_roms_delete_NoIntro_missing_ROMs() Delete "{0}"'.format(ROMFileName.getBasename()))
+                    del roms[rom_id]
+                    num_removed_roms += 1
+            if num_removed_roms > 0:
+                log_info('_roms_delete_NoIntro_missing_ROMs() {0} No-Intro Missing ROMs removed successfully'.format(num_removed_roms))
+            else:
+                log_info('_roms_delete_NoIntro_missing_ROMs() No No-Intro Missing ROMs found.')
+        else:
+            log_info('_roms_delete_NoIntro_missing_ROMs() Launcher is empty. No No-Intro Missing ROM check.')
 
         return num_removed_roms
 
@@ -6027,8 +6038,9 @@ class Main:
     #  2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_parents.json
     #
     def _roms_update_NoIntro_status(self, launcher, roms, nointro_xml_file_FileName):
-        # --- Reset the No-Intro status ---
+        # --- Reset the No-Intro status and removed No-Intro missing ROMs ---
         self.audit_have = self.audit_miss = self.audit_unknown = 0
+        self._roms_delete_NoIntro_missing_ROMs(roms)
         self._roms_reset_NoIntro_status(roms)
 
         # --- Check if DAT file exists ---
@@ -6045,7 +6057,9 @@ class Main:
             return
 
         # --- Put No-Intro ROM names in a set ---
-        # Set is the fastest Python container for searching elements (implements hashed search).
+        # >> Set is the fastest Python container for searching elements (implements hashed search).
+        # >> No-Intro names include tags
+
         roms_nointro_set = set(roms_nointro.keys())
         roms_set = set()
         for rom_id in roms: roms_set.add(roms[rom_id]['m_name'])
