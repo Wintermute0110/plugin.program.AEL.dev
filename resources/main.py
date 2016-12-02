@@ -1602,13 +1602,13 @@ class Main:
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
 
                     # --- Load No-Intro DAT and audit ROMs ---
-                    nointro_xml_file = FileName(launcher['nointro_xml_file'])
-                    log_info('Auditing ROMs using No-Intro DAT {0}'.format(nointro_xml_file))
+                    nointro_xml_FileName = FileName(launcher['nointro_xml_file'])
+                    log_info('Auditing ROMs using No-Intro DAT {0}'.format(nointro_xml_FileName))
 
                     # --- Update No-Intro status for ROMs ---
                     # Note that roms dictionary is updated using Python pass by assigment.
                     # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
-                    self._roms_update_NoIntro_status(launcher, roms, nointro_xml_file)
+                    self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FileName)
 
                     # --- Report ---
                     log_info('********** No-Intro audit finished. Report ***********')
@@ -6058,29 +6058,35 @@ class Main:
         # >> No-Intro names include tags
         roms_nointro_set = set(roms_nointro.keys())
         roms_set = set()
-        for rom_id in roms: roms_set.add(roms[rom_id]['m_name'])
-
-        # --- Traverse Launcher ROMs and check if they are in the DAT ---
         for rom_id in roms:
-            if roms[rom_id]['m_name'] in roms_nointro_set:
+            # >> Use the ROM basename.
+            ROMFileName = FileName(roms[rom_id]['filename'])
+            roms_set.add(ROMFileName.getBasename_noext())
+
+        # --- Traverse Launcher ROMs and check if No-Intro ROMs are or not ---
+        for rom_id in roms:
+            ROMFileName = FileName(roms[rom_id]['filename'])
+            if ROMFileName.getBasename_noext() in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = 'Have'
                 self.audit_have += 1
+                log_debug('_roms_update_NoIntro_status() HAVE "{0}"'.format(ROMFileName.getBasename_noext()))
             else:
                 roms[rom_id]['nointro_status'] = 'Unknown'
                 self.audit_unknown += 1
+                log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBasename_noext()))
 
         # --- Mark Launcher dead ROMs as missing ---
         for rom_id in roms:
-            name     = roms[rom_id]['m_name']
-            filename = roms[rom_id]['filename']
-            # log_debug('_roms_update_NoIntro_status() Testing {0}'.format(name))
-            if not FileName(filename).exists():
-                # log_debug('_roms_update_NoIntro_status() Not found {0}'.format(name))
+            ROMFileName = FileName(roms[rom_id]['filename'])
+            if not ROMFileName.exists():
                 roms[rom_id]['nointro_status'] = 'Miss'
+                self.audit_miss += 1
+                log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBasename_noext()))
 
         # --- Now add missing ROMs to Launcher ---
-        # >> Traverse the nointro set and add the ROM if it's not there.
-        for nointro_rom in roms_nointro_set:
+        # >> Traverse the nointro set and add the No-Intro ROM if it's not in the Launcher
+        for nointro_rom in sorted(roms_nointro_set):
+            # log_debug('_roms_update_NoIntro_status() Checking "{0}"'.format(nointro_rom))
             if nointro_rom not in roms_set:
                 # Add new "fake" missing ROM. This ROM cannot be launched!
                 rom = fs_new_rom()
@@ -6088,8 +6094,9 @@ class Main:
                 rom['id']             = rom_id
                 rom['m_name']         = nointro_rom
                 rom['nointro_status'] = 'Miss'
+                roms[rom_id]          = rom
                 self.audit_miss += 1
-                roms[rom_id] = rom
+                log_debug('_roms_update_NoIntro_status() ADDED "{0}"'.format(nointro_rom))
 
         # --- Make a Parent/Clone list based on romID ---
         roms_pclone_index = fs_generate_PClone_index(roms, roms_nointro)
