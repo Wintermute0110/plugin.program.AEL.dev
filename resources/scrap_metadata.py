@@ -94,36 +94,47 @@ class metadata_Offline(Scraper_Metadata):
         log_debug('metadata_Offline::initialise_scraper cached_xml_path = {0}'.format(self.cached_xml_path))
         log_debug('metadata_Offline::initialise_scraper cached_platform = {0}'.format(self.cached_platform))
 
-    # List of games found
+    # --- Search games and return list of matches ---
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_Offline::get_search Searching '{0}' '{1}' '{2}'".format(search_string, rom_base_noext, platform))
+        log_verb("metadata_Offline::get_search Searching '{0}' | '{1}' | '{2}'".format(search_string, rom_base_noext, platform))
         results_ret = []
 
-        # If not cached XML data found (maybe offline scraper does not exist
-        # for this platform or cannot be loaded) return.
+        # If not cached XML data found (maybe offline scraper does not exist for this platform or 
+        # cannot be loaded) return.
         self.initialise_scraper(platform)
-        if not self.games:
-            return results_ret
+        if not self.games: return results_ret
 
-        # Search MAME games
+        # --- Search MAME games ---
         if platform == 'MAME':
-            log_verb("metadata_Offline::get_search Mode MAME searching for '{0}'".format(rom_base_noext))
+            log_verb("metadata_Offline::get_search Mode MAME -> Search '{0}'".format(rom_base_noext))
             
             # --- MAME rom_base_noext is exactly the rom name ---
-            if rom_base_noext.lower() in self.games:
-                game = {'id'           : self.games[rom_base_noext]['name'], 
-                        'display_name' : self.games[rom_base_noext]['description'] }
+            rom_base_noext_lower = rom_base_noext.lower()
+            if rom_base_noext_lower in self.games:
+                game = {'id'           : self.games[rom_base_noext_lower]['name'], 
+                        'display_name' : self.games[rom_base_noext_lower]['description']}
                 results_ret.append(game)
             else:
                 return results_ret
 
-        # Search No-Intro games
+        # --- Search No-Intro games ---
         else:
-            log_verb("metadata_Offline::get_search Mode No-Intro searching for '{0}'".format(search_string))
+            # --- First try an exact match using rom_base_noext ---
+            log_verb("metadata_Offline::get_search Mode No-Intro -> Exact search '{0}'".format(rom_base_noext))
+            if rom_base_noext in self.games:
+                log_verb("metadata_Offline::get_search Mode No-Intro -> Exact match found")
+                game = {'id'           : rom_base_noext,
+                        'display_name' : self.games[rom_base_noext]['name']}
+                results_ret.append(game)
+                return results_ret
+            log_verb("metadata_Offline::get_search Mode No-Intro -> No exact match found")
+
+            # --- If nothing found, do a fuzzy search ---
+            log_verb("metadata_Offline::get_search Mode No-Intro -> Fuzzy search '{0}'".format(search_string))
             search_string_lower = search_string.lower()
             regexp = '.*{0}.*'.format(search_string_lower)
             try:
-                # Sometimes this produces raise error, v # invalid expression
+                # >> Sometimes this produces: raise error, v # invalid expression
                 p = re.compile(regexp)
             except:
                 log_info('metadata_Offline::get_search Exception in re.compile(regexp)')
@@ -132,7 +143,7 @@ class metadata_Offline(Scraper_Metadata):
 
             game_list = []
             for key in self.games:
-                this_game_name = self.games[key]['name']
+                this_game_name       = self.games[key]['name']
                 this_game_name_lower = this_game_name.lower()
                 match = p.match(this_game_name_lower)
                 if match:

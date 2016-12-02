@@ -36,11 +36,12 @@ WIP      Support for multidisc systems. Have a look at old AL launcher code.
 WIP      Support for several arguments in launcher. This will be useful when using MAME for
          console emulation (MAME consoles from a different region have different names, and an
          European console will typically refuse to run a Japanese game).
+         http://forum.kodi.tv/showthread.php?tid=287826&pid=2467547#pid2467547
 
-WIP      New Arcade Database scraper for MAME ROMs.
+WIP      New Arcade Database online metadata/asset scraper for MAME ROMs.
 
 
-[B]Advanced Emulator Launcher | version 0.9.5 | XX November 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.5 | XX December 2016[/B]
 
 FEATURE  New command SHOW_ALL_ROMS to render all ROMs in all launchers. Will be used by skins.
 
@@ -98,7 +99,7 @@ FIX      Remove setContent() old code.
 FIX      Fixed the case of removing all categories and having just Standalone/ROM launchers on 
          addon root.
 
-WIP      Fix offline scraper search when there are hypens in filename.
+FIX      Fix offline scraper search when there are hypens in filename.
          http://forum.kodi.tv/showthread.php?tid=287826&pid=2461203#pid2461203
 
 
