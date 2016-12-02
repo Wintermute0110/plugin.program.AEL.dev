@@ -72,6 +72,8 @@ FEATURE  Improve launcher report and include is a No-Intro audit information.
 FEATURE  Remove ROM tags (for example, (Europe), [Rev A]) from parent ROM names when showing 
          parent ROMs in a PClone launcher.
 
+FEATURE  New No-Intro status 'Added'.
+
 FEATURE  Browse by Category Virtual Launcher.
          http://forum.kodi.tv/showthread.php?tid=287826&pid=2458080#pid2458080
 

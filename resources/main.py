@@ -1427,18 +1427,19 @@ class Main:
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'], 
                                        roms, self.launchers[launcherID])
+                    kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
                 # --- Import ROM metadata from NFO files ---
                 elif type2 == 4:
                     # >> Load ROMs, iterate and import NFO files
                     roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-                    # >> Iterating dictionaries gives the key.
+                    num_read_NFO_files = 0
                     for rom_id in roms:
-                        fs_import_ROM_NFO(roms, rom_id, verbose = False)
-                    # >> Save ROMs XML file / Launcher saved at the end of function
-                    # >> Also save categories/launchers to update timestamp
+                        if fs_import_ROM_NFO(roms, rom_id, verbose = False): num_read_NFO_files += 1
+                    # >> Save ROMs XML file / Launcher/timestamp saved at the end of function
                     fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'], 
                                        roms, self.launchers[launcherID])
+                    kodi_notify('Imported {0} NFO files'.format(num_read_NFO_files))
 
                 # --- Export ROM metadata to NFO files ---
                 elif type2 == 5:
@@ -1450,6 +1451,7 @@ class Main:
                         fs_export_ROM_NFO(roms[rom_id], verbose = False)
                     kodi_busydialog_OFF()
                     # >> No need to save launchers XML / Update container
+                    kodi_notify('Created {0} NFO files'.format(len(roms)))
                     return
 
                 # --- Delete ROMs metadata NFO files ---
@@ -1479,6 +1481,7 @@ class Main:
                         file_path.delete()
 
                     # >> No need to save launchers XML / Update container
+                    kodi_notify('Deleted {0} NFO files'.format(len(nfo_file_list)))
                     return
 
                 # --- Empty Launcher menu option ---
@@ -1501,6 +1504,7 @@ class Main:
                     # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
                     # when user add more ROMs.
                     fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    kodi_notify('Cleared ROMs from launcher database')
 
         # --- Audit ROMs / Launcher view mode ---
         # ONLY for ROM launchers, not for standalone launchers
@@ -1539,7 +1543,7 @@ class Main:
                         # --- Mark status ---
                         self.launchers[launcherID]['pclone_launcher'] = False
                         log_debug('_command_edit_launcher() pclone_launcher = False')
-                        kodi_notify('Launcher view set Normal')
+                        kodi_notify('Launcher view mode set Normal')
 
                     elif type_temp == 1:
                         # >> Check if user configured a No-Intro DAT. If not configured  or file does
@@ -1551,12 +1555,14 @@ class Main:
                             log_info('_command_edit_launcher() Forcing normal view mode.')
                             kodi_dialog_OK('No-Intro DAT not configured. PClone view mode cannot be set.')
                             self.launchers[launcherID]['pclone_launcher'] = False
+                            kodi_notify('Launcher view mode set to Normal')
 
                         elif not nointro_xml_file_FName.exists():
                             log_info('_command_edit_launcher() No-Intro DAT not found. PClone view mode cannot be set.')
                             log_info('_command_edit_launcher() Forcing normal view mode.')
                             kodi_dialog_OK('No-Intro DAT cannot be found. PClone view mode cannot be set.')
                             self.launchers[launcherID]['pclone_launcher'] = False
+                            kodi_notify('Launcher view mode set to Normal')
 
                         else:
                             # --- Re/Generate PClone index and Parent ROMs DB ---
@@ -1615,11 +1621,11 @@ class Main:
                     log_info('No-Intro Have ROMs    {0:6d}'.format(self.audit_have))
                     log_info('No-Intro Miss ROMs    {0:6d}'.format(self.audit_miss))
                     log_info('No-Intro Unknown ROMs {0:6d}'.format(self.audit_unknown))
-                    kodi_notify('Have {0}/Miss {1}/Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    kodi_notify('Have {0}/Miss {1}/Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
 
                 # --- Reset audit status ---
                 elif type2 == 3:
