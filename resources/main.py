@@ -712,22 +712,20 @@ class Main:
         if type == 0:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter).decode('utf-8')
             if not app: return
-
-            appPath = Path(app)
+            appPath = FileName(app)
 
             argument = ''
             argkeyboard = xbmc.Keyboard(argument, 'Application arguments')
             argkeyboard.doModal()
             args = argkeyboard.getText().decode('utf-8')
 
-            title = appPath.getName()
+            title = appPath.getBasename_noext()
             title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
             keyboard = xbmc.Keyboard(title_formatted, 'Set the title of the launcher')
             keyboard.doModal()
             title = keyboard.getText().decode('utf-8')
             if not title:
-                title = appPath.getName()
-                title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+                title = appPath.getBasename_noext()
 
             # >> Selection of the launcher game system
             dialog = xbmcgui.Dialog()
@@ -5451,21 +5449,21 @@ class Main:
         minimize_flag = launcher['minimize']
 
         # --- Execute Kodi built-in function under certain conditions ---
-        application = Path(launcher['application'])
-        if application.getName().lower().replace('.exe' , '') == 'xbmc'  or \
+        application = FileName(launcher['application'])
+        if application.getBasename().lower().replace('.exe' , '') == 'xbmc'  or \
            'xbmc-fav-' in launcher['application'] or 'xbmc-sea-' in launcher['application']:
-            xbmc.executebuiltin('XBMC.%s' % launcher['args'])
+            xbmc.executebuiltin('XBMC.{0}'.format(launcher['args']))
             return
 
         # ~~~~~ External application ~~~~~
-        app_basename   = application.getName()
-        arguments      = launcher['args'].replace('%apppath%' , application.getParentDirectory()).replace('%APPPATH%' , application.getParentDirectory())
+        app_basename   = application.getBasename()
+        arguments      = launcher['args'].replace('%apppath%' , application.getDirname()).replace('%APPPATH%' , application.getDirname())
         app_ext        = launcher['application'].split('.')[-1]
         launcher_title = launcher['m_name']
         log_info('_run_standalone_launcher() categoryID     = {0}'.format(categoryID))
         log_info('_run_standalone_launcher() launcherID     = {0}'.format(launcherID))
         log_info('_run_standalone_launcher() application    = "{0}"'.format(application.getPath()))
-        log_info('_run_standalone_launcher() apppath        = "{0}"'.format(application.getParentDirectory()))
+        log_info('_run_standalone_launcher() apppath        = "{0}"'.format(application.getDirname()))
         log_info('_run_standalone_launcher() app_basename   = "{0}"'.format(app_basename))
         log_info('_run_standalone_launcher() arguments      = "{0}"'.format(arguments))
         log_info('_run_standalone_launcher() app_ext        = "{0}"'.format(app_ext))
@@ -5479,7 +5477,7 @@ class Main:
 
         # ~~~~~ Execute external application ~~~~~
         self._run_before_execution(launcher_title, minimize_flag)
-        self._run_process(application.getPath(), arguments, application.getParentDirectory(), app_ext)
+        self._run_process(application.getPath(), arguments, application.getDirname(), app_ext)
         self._run_after_execution(minimize_flag)
 
     #
@@ -5581,19 +5579,18 @@ class Main:
             romext        = launcher['romext']
 
         # ~~~~~ Launch ROM ~~~~~
-        application = Path(application)
-        apppath     = application.getParentDirectory()
-        ROM         = misc_split_path(rom['filename'])
-        romfile     = Path(ROM.path)
-        rompath     = ROM.dirname
-        rombasename = ROM.base
+        application = FileName(application)
+        apppath     = application.getDirname()
+        ROMFileName = FileName(rom['filename'])
+        rompath     = ROMFileName.getDirname()
+        rombasename = ROMFileName.getBasename()
         rom_title   = rom['m_name']
         log_info('_command_run_rom() categoryID  = {0}'.format(categoryID))
         log_info('_command_run_rom() launcherID  = {0}'.format(launcherID))
         log_info('_command_run_rom() romID       = {0}'.format(romID))
         log_info('_command_run_rom() application = "{0}"'.format(application.getPath()))
         log_info('_command_run_rom() apppath     = "{0}"'.format(apppath))
-        log_info('_command_run_rom() romfile     = "{0}"'.format(romfile.getPath()))
+        log_info('_command_run_rom() romfile     = "{0}"'.format(ROMFileName.getPath()))
         log_info('_command_run_rom() rompath     = "{0}"'.format(rompath))
         log_info('_command_run_rom() rombasename = "{0}"'.format(rombasename))
         log_info('_command_run_rom() romext      = "{0}"'.format(romext))
@@ -5605,19 +5602,19 @@ class Main:
             kodi_notify_warn('Launching app not found {0}'.format(application.getOriginalPath()))
             return
 
-        if not romfile.exists():
-            log_error('ROM not found "{0}"'.format(romfile.getPath()))
-            kodi_notify_warn('ROM not found {0}'.format(romfile.getOriginalPath()))
+        if not ROMFileName.exists():
+            log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
+            kodi_notify_warn('ROM not found {0}'.format(ROMFileName.getOriginalPath()))
             return
 
-        # --- Escape quotes and double quotes in romfile ---
+        # --- Escape quotes and double quotes in ROMFileName ---
         # >> This maybe useful to Android users with complex command line arguments
         if self.settings['escape_romfile']:
-            log_info("_command_run_rom() Escaping romfile ' and \"")
-            romfile.escapeQuotes()
+            log_info("_command_run_rom() Escaping ROMFileName ' and \"")
+            ROMFileName.escapeQuotes()
 
         # ~~~~ Argument substitution ~~~~~
-        arguments = arguments.replace('%rom%', romfile.getPath()).replace('%ROM%', romfile.getPath())
+        arguments = arguments.replace('%rom%',         ROMFileName.getPath()).replace('%ROM%', ROMFileName.getPath())
         arguments = arguments.replace('%rombasename%', rombasename).replace('%ROMBASENAME%', rombasename)
         arguments = arguments.replace('%apppath%',     apppath).replace('%APPPATH%',         apppath)
         arguments = arguments.replace('%rompath%',     rompath).replace('%ROMPATH%',         rompath)
@@ -5642,7 +5639,7 @@ class Main:
         fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
 
         # --- Execute Kodi internal function (RetroPlayer?) ---
-        if application.getName().lower().replace('.exe', '') == 'xbmc':
+        if application.getBasename().lower().replace('.exe', '') == 'xbmc':
             xbmc.executebuiltin('XBMC.' + arguments)
             return
 

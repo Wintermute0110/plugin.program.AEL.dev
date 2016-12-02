@@ -285,7 +285,7 @@ class FileName:
     # Decomposes a file name path or directory into its constituents
     #   FileName.getPath()            Full path                                     /home/Wintermute/Sonic.zip
     #   FileName.getPath_noext()      Full path with no extension                   /home/Wintermute/Sonic
-    #   FileName.getDirname()         Directory name of file. Does not end in '/'   /home/Wintermute
+    #   FileName.getDirname()         Directory name of file. Does not end in '/'   /home/Wintermute/
     #   FileName.getBasename()        File name with no path                        Sonic.zip
     #   FileName.getBasename_noext()  File name with no path and no extension       Sonic
     #   FileName.getExt()             File extension                                .zip
