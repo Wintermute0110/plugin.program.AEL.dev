@@ -9,7 +9,7 @@
 
     <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
     <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="true" id="scan_ignore_scrap_title" />
-    <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag]" type="bool" default="false" id="scan_clean_tags" />
+    <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" default="false" id="scan_clean_tags" />
 </category>
 <category label="ROM scraping">
     <setting id="separator" type="lsep" label="Scrapers"/>
