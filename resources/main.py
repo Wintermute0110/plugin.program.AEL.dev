@@ -6298,12 +6298,13 @@ class Main:
             # --- Get all file name combinations ---
             ROM = FileName(f_path)
             log_debug('========== Processing File ==========')
-            log_debug('ROM.getPath()  "{0}"'.format(ROM.getPath()))
-            # log_debug('ROM.path_noext "{0}"'.format(ROM.path_noext))
-            # log_debug('ROM.base       "{0}"'.format(ROM.base))
-            # log_debug('ROM.dirname    "{0}"'.format(ROM.dirname))
-            # log_debug('ROM.base_noext "{0}"'.format(ROM.base_noext))
-            # log_debug('ROM.ext        "{0}"'.format(ROM.ext))
+            log_debug('ROM.getPath()           "{0}"'.format(ROM.getPath()))
+            log_debug('ROM.getOriginalPath()   "{0}"'.format(ROM.getOriginalPath()))
+            # log_debug('ROM.getPath_noext()     "{0}"'.format(ROM.getPath_noext()))
+            # log_debug('ROM.getDirname()        "{0}"'.format(ROM.getDirname()))
+            # log_debug('ROM.getBasename()       "{0}"'.format(ROM.getBasename()))
+            # log_debug('ROM.getBasename_noext() "{0}"'.format(ROM.getBasename_noext()))
+            # log_debug('ROM.getExt()            "{0}"'.format(ROM.getExt()))
 
             # ~~~ Update progress dialog ~~~
             self.progress_number = num_files_checked * 100 / num_files
@@ -6405,11 +6406,12 @@ class Main:
         META_SCRAPER    = 300
 
         # --- Create new rom dictionary ---
+        # >> Database always stores the original (non transformed/manipulated) path
         launcher = self.launchers[launcherID]
         platform = launcher['platform']
         romdata  = fs_new_rom()
-        romdata['id'] = misc_generate_random_SID()
-        romdata['filename'] = ROM.path
+        romdata['id']       = misc_generate_random_SID()
+        romdata['filename'] = ROM.getOriginalPath()
 
         # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # >> Test if NFO file exists
@@ -6448,7 +6450,7 @@ class Main:
         if metadata_action == META_TITLE_ONLY:
             scraper_text = 'Formatting ROM name.'
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-            romdata['m_name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
+            romdata['m_name'] = text_format_ROM_title(ROM.base_noext, scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
             nfo_file_path = Path(ROM.path_noext + ".nfo")
             scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
@@ -6465,13 +6467,13 @@ class Main:
                 romdata['m_plot']   = nfo_dic['plot']      # <plot>
             else:
                 log_debug('NFO file not found. Only cleaning ROM name.')
-                romdata['m_name'] = text_ROM_title_format(ROM.getBasename_noext(), scan_clean_tags)
+                romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
         elif metadata_action == META_SCRAPER:
             scraper_text = 'Scraping metadata with {0}. Searching for matching games...'.format(self.scraper_metadata.name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
             # --- Do a search and get a list of games ---
-            rom_name_scraping = text_clean_ROM_name_for_scraping(ROM.getBasename_noext())
+            rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBasename_noext())
             results = self.scraper_metadata.get_search(rom_name_scraping, ROM.getBasename_noext(), platform)
             log_debug('Metadata scraper found {0} result/s'.format(len(results)))
             if results:
@@ -6506,19 +6508,19 @@ class Main:
                 # --- Put metadata into ROM dictionary ---
                 if scan_ignore_scrapped_title:
                     # Ignore scraped title
-                    romdata['m_name'] = text_ROM_title_format(ROM.getBasename_noext(), scan_clean_tags)
+                    romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
                     log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['m_name']))
                 else:
                     # Use scraped title
                     romdata['m_name'] = gamedata['title']
-                    log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
+                    log_debug('User wants scrapped name. Setting name to "{0}"'.format(romdata['m_name']))
                 romdata['m_year']   = gamedata['year']
                 romdata['m_genre']  = gamedata['genre']
                 romdata['m_studio'] = gamedata['studio']
                 romdata['m_plot']   = gamedata['plot']
             else:
                 log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
-                romdata['m_name'] = text_ROM_title_format(ROM.getBasename_noext(), scan_clean_tags)
+                romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
         else:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
