@@ -5622,9 +5622,14 @@ class Main:
         log_info('_command_run_rom() arguments   = "{0}"'.format(arguments))
 
         # --- Compute ROM recently played list ---
+        MAX_RECENT_PLAYED_ROMS = 100
         recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
         recent_roms_list.insert(0, recent_rom)
-        if len(recent_roms_list) > 100: recent_roms_list = recent_roms_list[:10]
+        if len(recent_roms_list) > MAX_RECENT_PLAYED_ROMS:
+            log_debug('_command_run_rom() len(recent_roms_list) = {0}'.format(len(recent_roms_list)))
+            log_debug('_command_run_rom() Trimming list to {0} ROMs'.format(MAX_RECENT_PLAYED_ROMS))
+            temp_list        = recent_roms_list[:MAX_RECENT_PLAYED_ROMS]
+            recent_roms_list = temp_list
         fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
 
         # --- Compute most played ROM statistics ---
