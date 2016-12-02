@@ -136,7 +136,7 @@ def fs_new_launcher():
 # id              string MD5 hash
 # name            string ROM name
 # finished        bool ['True', 'False'] default 'False'
-# nointro_status  string ['Have', 'Miss', 'Unknown', 'None'] default 'None'
+# nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
 def fs_new_rom():
     r = {'id' : '',
          'm_name' : '',
@@ -1262,11 +1262,11 @@ def fs_generate_PClone_index(roms, roms_nointro):
     names_to_ids_dic = {}
     for rom_id in roms:
         rom = roms[rom_id]
-        if rom['nointro_status'] == 'Miss':
+        if rom['nointro_status'] == 'Added':
             rom_name = rom['m_name']
         else:
-            F = misc_split_path(rom['filename'])
-            rom_name = F.base_noext
+            ROMFileName = FileName(rom['filename'])
+            rom_name = ROMFileName.getBasename_noext()
         # log_debug('{0} --> {1}'.format(rom_name, rom_id))
         # log_debug('{0}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
@@ -1287,11 +1287,12 @@ def fs_generate_PClone_index(roms, roms_nointro):
                 roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
             else:
                 roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
-        # If status is Have or Miss then ROM is guaranteed to be in the No-Intro file, so
+        # If status is Have, Miss  or Added then ROM is guaranteed to be in the No-Intro file, so
         # Parent/Clone data is available.
         else:
-            if rom['nointro_status'] == 'Miss': rom_nointro_name = rom['m_name']
-            else:                               rom_nointro_name = ROMFileName.getBasename_noext()
+            # Added No-Intro ROMs always have all No-Intro tags
+            if rom['nointro_status'] == 'Added': rom_nointro_name = rom['m_name']
+            else:                                rom_nointro_name = ROMFileName.getBasename_noext()
             # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
             nointro_rom = roms_nointro[rom_nointro_name]
 
@@ -1303,8 +1304,8 @@ def fs_generate_PClone_index(roms, roms_nointro):
             # >> ROM is a clone
             else:
                 parent_name = nointro_rom['cloneof']
-                parent_id = names_to_ids_dic[parent_name]
-                clone_id = rom['id']
+                parent_id   = names_to_ids_dic[parent_name]
+                clone_id    = rom['id']
                 if parent_id in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[parent_id].append(clone_id)
                 else:

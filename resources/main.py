@@ -1521,7 +1521,7 @@ class Main:
                                        add_delete_NoIntro_str,
                                        'Audit ROMs using No-Intro XML PClone DAT',
                                        'Clear No-Intro audit status',
-                                       'Remove No-Intro Missing ROMs'])
+                                       'Remove No-Intro Added ROMs'])
                 if type2 < 0: return # User canceled select dialog
 
                 # --- Change launcher view mode (Normal or PClone) ---
@@ -1630,16 +1630,16 @@ class Main:
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     kodi_notify('No-Intro status reset')
 
-                # --- Remove No-Intro Missing ROMs ---
+                # --- Remove No-Intro Added ROMs ---
                 elif type2 == 4:
-                    ret = kodi_dialog_yesno('Are you sure you want to remove No-Intro Missing ROMs?')
+                    ret = kodi_dialog_yesno('Are you sure you want to remove No-Intro Added ROMs?')
                     if not ret: return
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
-                    num_removed_roms = self._roms_delete_NoIntro_missing_ROMs(roms)
+                    num_removed_roms = self._roms_delete_NoIntro_added_ROMs(roms)
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-                    kodi_notify('Removed {0} No-Intro Missing ROMs'.format(num_removed_roms))
+                    kodi_notify('Removed {0} No-Intro Added ROMs'.format(num_removed_roms))
 
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
@@ -3080,9 +3080,11 @@ class Main:
                 # >> Mark No-Intro status
                 if self.settings['display_nointro_stat']:
                     if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                    elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
+                    elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
+                    elif rom['nointro_status'] == 'Added':   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
                     elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-                    else:                                    rom_name = rom_raw_name
+                    elif rom['nointro_status'] == 'None':    rom_name = rom_raw_name
+                    else:                                    rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
                 else:
                     rom_name = rom_raw_name
 
@@ -5990,9 +5992,9 @@ class Main:
         return num_removed_roms
 
     #
-    # --- Deletes No-Intro missing ROMs ---
+    # --- Deletes No-Intro Added ROMs ---
     # 1) If rom['filename'] is '' then delete ROM.
-    # 2) If rom['nointro_status'] is 'Miss' then delete ROM.
+    # 2) If rom['nointro_status'] is 'Added' then delete ROM.
     #
     def _roms_delete_NoIntro_missing_ROMs(self, roms):
         num_removed_roms = 0
@@ -6002,7 +6004,7 @@ class Main:
             log_verb('_roms_delete_NoIntro_missing_ROMs() Starting dead items scan')
             for rom_id in sorted(roms.iterkeys()):
                 ROMFileName = FileName(roms[rom_id]['filename'])
-                if roms[rom_id]['filename'] == '' or roms[rom_id]['nointro_status'] == 'Miss':
+                if roms[rom_id]['filename'] == '' or roms[rom_id]['nointro_status'] == 'Added':
                     log_debug('_roms_delete_NoIntro_missing_ROMs() Delete "{0}"'.format(ROMFileName.getBasename()))
                     del roms[rom_id]
                     num_removed_roms += 1
@@ -6069,7 +6071,7 @@ class Main:
             if ROMFileName.getBasename_noext() in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = 'Have'
                 self.audit_have += 1
-                log_debug('_roms_update_NoIntro_status() HAVE "{0}"'.format(ROMFileName.getBasename_noext()))
+                log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBasename_noext()))
             else:
                 roms[rom_id]['nointro_status'] = 'Unknown'
                 self.audit_unknown += 1
@@ -6093,10 +6095,10 @@ class Main:
                 rom_id                = misc_generate_random_SID()
                 rom['id']             = rom_id
                 rom['m_name']         = nointro_rom
-                rom['nointro_status'] = 'Miss'
+                rom['nointro_status'] = 'Added'
                 roms[rom_id]          = rom
                 self.audit_miss += 1
-                log_debug('_roms_update_NoIntro_status() ADDED "{0}"'.format(nointro_rom))
+                log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(nointro_rom))
 
         # --- Make a Parent/Clone list based on romID ---
         roms_pclone_index = fs_generate_PClone_index(roms, roms_nointro)
