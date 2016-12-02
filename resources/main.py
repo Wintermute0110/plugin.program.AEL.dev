@@ -1447,41 +1447,41 @@ class Main:
                     roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
                     if not roms: return
                     kodi_busydialog_ON()
+                    num_nfo_files = 0
                     for rom_id in roms:
+                        # >> Skip No-Intro Added ROMs
+                        if not roms[rom_id]['filename']: continue
                         fs_export_ROM_NFO(roms[rom_id], verbose = False)
+                        num_nfo_files += 1
                     kodi_busydialog_OFF()
                     # >> No need to save launchers XML / Update container
-                    kodi_notify('Created {0} NFO files'.format(len(roms)))
+                    kodi_notify('Created {0} NFO files'.format(num_nfo_files))
                     return
 
                 # --- Delete ROMs metadata NFO files ---
                 elif type2 == 6:
                     # --- Get list of NFO files ---
-                    nfo_dirname = self.launchers[launcherID]['rompath']
-                    log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(nfo_dirname))
-                    nfo_file_list = []
+                    ROMPath_FileName = FileName(self.launchers[launcherID]['rompath'])
+                    log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(ROMPath_FileName.getPath()))
 
-                    nfo_path = Path(nfo_dirname)
-                    nfo_scanned_files = nfo_path.recursiveScanFilesInPath('*.nfo')
-
-                    if len(nfo_file_list) > 0:
-                        for filename in nfo_file_list:
-                            log_verb('_command_edit_launcher() Found NFO file "{0}"'.format(filename))
-
-                        ret = kodi_dialog_yesno('Found {0} NFO files. Delete them?'.format(len(nfo_file_list)))
+                    nfo_scanned_files = ROMPath_FileName.recursiveScanFilesInPath('*.nfo')
+                    if len(nfo_scanned_files) > 0:
+                        log_verb('_command_edit_launcher() Found {0} NFO files.'.format(len(nfo_scanned_files)))
+                        #for filename in nfo_scanned_files:
+                        #     log_verb('_command_edit_launcher() Found NFO file "{0}"'.format(filename))
+                        ret = kodi_dialog_yesno('Found {0} NFO files. Delete them?'.format(len(nfo_scanned_files)))
                         if not ret: return
                     else:
                         kodi_dialog_OK('No NFO files found. Nothing to delete.')
                         return
 
                     # --- Delete NFO files ---
-                    for file in nfo_file_list:
+                    for file in nfo_scanned_files:
                         log_verb('_command_edit_launcher() RM "{0}"'.format(file))
-                        file_path = Path(file)
-                        file_path.delete()
+                        FileName(file).unlink()
 
                     # >> No need to save launchers XML / Update container
-                    kodi_notify('Deleted {0} NFO files'.format(len(nfo_file_list)))
+                    kodi_notify('Deleted {0} NFO files'.format(len(nfo_scanned_files)))
                     return
 
                 # --- Empty Launcher menu option ---
@@ -5981,11 +5981,14 @@ class Main:
         if num_roms > 0:
             log_verb('_roms_delete_missing_ROMs() Starting dead items scan')
             for rom_id in sorted(roms.iterkeys()):
+                if not roms[rom_id]['filename']:
+                    log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(roms[rom_id]['m_name']))
+                    continue
                 ROMFileName = FileName(roms[rom_id]['filename'])
-                log_debug('_roms_delete_missing_ROMs() Testing "{0}"'.format(ROMFileName.getBasename()))
+                log_debug('_roms_delete_missing_ROMs() Test "{0}"'.format(ROMFileName.getBasename()))
                 # --- Remove missing ROMs ---
                 if not ROMFileName.exists():
-                    log_debug('_roms_delete_missing_ROMs() Delete "{0}"'.format(ROMFileName.getBasename()))
+                    log_debug('_roms_delete_missing_ROMs() RM   "{0}"'.format(ROMFileName.getBasename()))
                     del roms[rom_id]
                     num_removed_roms += 1
             if num_removed_roms > 0:
@@ -6002,24 +6005,23 @@ class Main:
     # 1) If rom['filename'] is '' then delete ROM.
     # 2) If rom['nointro_status'] is 'Added' then delete ROM.
     #
-    def _roms_delete_NoIntro_missing_ROMs(self, roms):
+    def _roms_delete_NoIntro_added_ROMs(self, roms):
         num_removed_roms = 0
         num_roms = len(roms)
-        log_info('_roms_delete_NoIntro_missing_ROMs() Launcher DB contain {0} items'.format(num_roms))
+        log_info('_roms_delete_NoIntro_added_ROMs() Launcher DB contain {0} items'.format(num_roms))
         if num_roms > 0:
-            log_verb('_roms_delete_NoIntro_missing_ROMs() Starting dead items scan')
+            log_verb('_roms_delete_NoIntro_added_ROMs() Starting dead items scan')
             for rom_id in sorted(roms.iterkeys()):
-                ROMFileName = FileName(roms[rom_id]['filename'])
                 if roms[rom_id]['filename'] == '' or roms[rom_id]['nointro_status'] == 'Added':
-                    log_debug('_roms_delete_NoIntro_missing_ROMs() Delete "{0}"'.format(ROMFileName.getBasename()))
+                    log_debug('_roms_delete_NoIntro_added_ROMs() Clear "{0}"'.format(roms[rom_id]['m_name']))
                     del roms[rom_id]
                     num_removed_roms += 1
             if num_removed_roms > 0:
-                log_info('_roms_delete_NoIntro_missing_ROMs() {0} No-Intro Missing ROMs removed successfully'.format(num_removed_roms))
+                log_info('_roms_delete_NoIntro_added_ROMs() {0} No-Intro Missing ROMs removed successfully'.format(num_removed_roms))
             else:
-                log_info('_roms_delete_NoIntro_missing_ROMs() No No-Intro Missing ROMs found.')
+                log_info('_roms_delete_NoIntro_added_ROMs() No No-Intro Missing ROMs found.')
         else:
-            log_info('_roms_delete_NoIntro_missing_ROMs() Launcher is empty. No No-Intro Missing ROM check.')
+            log_info('_roms_delete_NoIntro_added_ROMs() Launcher is empty. No No-Intro Missing ROM check.')
 
         return num_removed_roms
 

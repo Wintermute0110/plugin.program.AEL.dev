@@ -1568,8 +1568,10 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
 # must not be verbose because it can be called thousands of times for big ROM sets!
 #
 def fs_export_ROM_NFO(rom, verbose = True):
-    F = misc_split_path(rom['filename'])
-    nfo_file_path  = F.path_noext + '.nfo'
+    # >> Skip No-Intro Added ROMs. rom['filename'] will be empty.
+    if not rom['filename']: return
+    ROMFileName = FileName(rom['filename'])
+    nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
     log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path))
 
     # Always overwrite NFO files.
@@ -1605,8 +1607,8 @@ def fs_export_ROM_NFO(rom, verbose = True):
 # About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
 #
 def fs_import_ROM_NFO(roms, romID, verbose = True):
-    F = misc_split_path(roms[romID]['filename'])
-    nfo_file_path = F.path_noext + '.nfo'
+    ROMFileName = FileName(roms[romID]['filename'])
+    nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
     log_debug('fs_export_ROM_NFO() Loading "{0}"'.format(nfo_file_path))
 
     # --- Import data ---
