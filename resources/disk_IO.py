@@ -1317,11 +1317,11 @@ def fs_generate_PClone_index(roms, roms_nointro):
 # parent_roms = { AEL ROM dictionary having parents only }
 #
 def fs_generate_parent_ROMs(roms, roms_pclone_index):
-    parent_roms = {}
+    p_roms = {}
 
     for rom_id in roms_pclone_index:
         if rom_id == 'Unknown ROMs':
-            parent_roms[rom_id] = {
+            p_roms[rom_id] = {
                 'id' : 'Unknown ROMs',
                 'm_name' : '[Unknown ROMs]',
                 'finished' : False,
@@ -1333,13 +1333,13 @@ def fs_generate_parent_ROMs(roms, roms_pclone_index):
                 'num_clones_str' : unicode(len(roms_pclone_index[rom_id]))
             }
         else:
-            parent_roms[rom_id] = roms[rom_id]
-            parent_roms[rom_id]['num_clones_str'] = unicode(len(roms_pclone_index[rom_id]))
+            # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
             # >> Clean parent ROM name tags from ROM Name
-            clean_ROM_name = parent_roms[rom_id]['m_name']
-            parent_roms[rom_id]['m_name'] = text_format_ROM_title(clean_ROM_name, True)
+            p_roms[rom_id] = dict(roms[rom_id])
+            p_roms[rom_id]['num_clones_str'] = unicode(len(roms_pclone_index[rom_id]))
+            p_roms[rom_id]['m_name'] = text_format_ROM_title(p_roms[rom_id]['m_name'], True)
 
-    return parent_roms
+    return p_roms
 
 #
 # Loads offline scraper information XML file.
