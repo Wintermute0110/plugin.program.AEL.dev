@@ -110,8 +110,8 @@ def text_dump_str_to_file(filename, full_string):
 #
 # This function is used to clean the ROM name to be used as search string for the scraper.
 #
-# Cleans ROM tags: [BIOS], (Europe), (Rev A), ...
-# Substitutes some characters by spaces
+# 1) Cleans ROM tags: [BIOS], (Europe), (Rev A), ...
+# 2) Substitutes some characters by spaces
 #
 def text_format_ROM_name_for_scraping(title):
     title = re.sub('\[.*?\]', '', title)
@@ -137,13 +137,23 @@ def text_format_ROM_name_for_scraping(title):
 # 1) Remove No-Intro/TOSEC tags (), [], {} at the end of the file
 #
 def text_format_ROM_title(title, clean_tags):
+    #
+    # Regexp to decompose a string in tokens
+    #
+    reg_exp = '\[.+?\]\s?|\(.+?\)\s?|\{.+?\}|[^\[\(\{]+'
     if clean_tags:
-        # >> BUG: [BIOS] tag at the beginning is removed and must be not.
-        title = re.sub('\[.*?\]', '', title)
-        title = re.sub('\(.*?\)', '', title)
-        title = re.sub('\{.*?\}', '', title)
-    new_title = title.rstrip()
-    
+        tokens = re.findall(reg_exp, ROM_filename)
+        str_list = []
+        for token in tokens:
+            stripped_token = token.strip()
+            if (stripped_token[0] == '[' or stripped_token[0] == '(' or stripped_token[0] == '{') and \
+               stripped_token != '[BIOS]':
+                continue
+            str_list.append(stripped_token)
+        cleaned_title = ' '.join(str_list)
+    else:
+        cleaned_title = title
+
     # if format_title:
     #     if (title.startswith("The ")): new_title = title.replace("The ","", 1)+", The"
     #     if (title.startswith("A ")): new_title = title.replace("A ","", 1)+", A"
@@ -153,7 +163,7 @@ def text_format_ROM_title(title, clean_tags):
     #     if (title.endswith(", A")): new_title = "A "+"".join(title.rsplit(", A", 1))
     #     if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
 
-    return new_title
+    return cleaned_title
 
 # -------------------------------------------------------------------------------------------------
 # URLs
