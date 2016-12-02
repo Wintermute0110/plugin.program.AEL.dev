@@ -142,7 +142,7 @@ def text_format_ROM_title(title, clean_tags):
     #
     reg_exp = '\[.+?\]\s?|\(.+?\)\s?|\{.+?\}|[^\[\(\{]+'
     if clean_tags:
-        tokens = re.findall(reg_exp, ROM_filename)
+        tokens = re.findall(reg_exp, title)
         str_list = []
         for token in tokens:
             stripped_token = token.strip()
@@ -413,18 +413,21 @@ def print_game_metadata(scraperObj, results):
         plot   = text_limit_string(metadata['plot'], PLOT_LENGTH)
         print('\nDisplaying metadata for title "{0}"'.format(title))
         print("{0} {1} {2} {3} {4}".format('Title'.ljust(NAME_LENGTH), 'Genre'.ljust(GENRE_LENGTH), 
-                                      'Year'.ljust(YEAR_LENGTH), 'Studio'.ljust(STUDIO_LENGTH), 'Plot'.ljust(PLOT_LENGTH)))
+                                           'Year'.ljust(YEAR_LENGTH), 'Studio'.ljust(STUDIO_LENGTH),
+                                           'Plot'.ljust(PLOT_LENGTH)))
         print("{0} {1} {2} {3} {4}".format('-'*NAME_LENGTH, '-'*GENRE_LENGTH, '-'*YEAR_LENGTH, 
-                                      '-'*STUDIO_LENGTH, '-'*PLOT_LENGTH))
-        print("{0} {1} {2} {3} {4}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), year.ljust(YEAR_LENGTH), 
-                                      studio.ljust(STUDIO_LENGTH), plot.ljust(PLOT_LENGTH)))
+                                           '-'*STUDIO_LENGTH, '-'*PLOT_LENGTH))
+        print("{0} {1} {2} {3} {4}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), 
+                                           year.ljust(YEAR_LENGTH), studio.ljust(STUDIO_LENGTH),
+                                           plot.ljust(PLOT_LENGTH)))
 
 def print_game_image_list(scraperObj, results, asset_kind):
     # --- Get image list of first game ---
     if results:
         image_list = scraperObj.get_images(results[0], asset_kind)
         print('Found {0} image/s'.format(len(image_list)))
-        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH), 'URL'.ljust(URL_LENGTH), 'Display URL'.ljust(URL_LENGTH)))
+        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH), 
+                                   'URL'.ljust(URL_LENGTH), 'Display URL'.ljust(URL_LENGTH)))
         print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
         for image in image_list:
             display_name  = text_limit_string(image['name'], NAME_LENGTH)
@@ -432,4 +435,3 @@ def print_game_image_list(scraperObj, results, asset_kind):
             disp_url      = text_limit_string(image['disp_URL'], URL_LENGTH)
             print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), url.ljust(URL_LENGTH), disp_url.ljust(URL_LENGTH)))
         print('\n')
-
