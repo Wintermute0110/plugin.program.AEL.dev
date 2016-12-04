@@ -5115,8 +5115,8 @@ class Main:
 
         # --- Eye candy ---
         info_text = info_text.replace('<Launcher Information>', '[COLOR orange]<Launcher Information>[/COLOR]')
-        info_text = info_text.replace('<Metadata Information>', '[COLOR orange]<Metadata Information>[/COLOR]')
-        info_text = info_text.replace('<Artwork Information>', '[COLOR orange]<Artwork Information>[/COLOR]')
+        info_text = info_text.replace('<Metadata/Audit Information>', '[COLOR orange]<Metadata Information>[/COLOR]')
+        info_text = info_text.replace('<Asset/Artwork Information>', '[COLOR orange]<Artwork Information>[/COLOR]')
 
         # --- Show information window ---
         try:
@@ -5935,7 +5935,7 @@ class Main:
         str_list.append('{0} ROMS with Trailer   {1:5d} ({2:5d} missing)\n'.format(str_null, num_roms - missing_s_trailer,   missing_s_trailer))
 
         # >> Info
-        str_list.append('\n<Metadata Information>\n')
+        str_list.append('\n<Metadata/Audit Information>\n')
         str_list.append('{0} Year Genre Studio Rating Plot Audit\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
         str_list.append('{0}\n'.format('-' * 86))
         for m in check_list:
