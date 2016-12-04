@@ -571,7 +571,7 @@ def fs_load_catfile(categories_file):
 # Look at the ROMs JSON code for reference/comments to these functions.
 def fs_write_JSON_file(file_dir, file_base_noext, data):
     # >> Get file names
-    json_file = file_dir.getSubPath(file_base_noext + '.json')
+    json_file = file_dir.join(file_base_noext + '.json')
     log_verb('fs_write_JSON_file() Dir  {0}'.format(file_dir.getOriginalPath()))
     log_verb('fs_write_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
 
@@ -590,7 +590,7 @@ def fs_load_JSON_file(file_dir, file_base_noext):
     data = {}
 
     # --- If file does not exist return empty dictionary ---
-    json_file = file_dir.getSubPath(file_base_noext + '.json')
+    json_file = file_dir.join(file_base_noext + '.json')
     if not json_file.exists(): return data
 
     # --- Parse using json module ---
@@ -618,12 +618,12 @@ def fs_load_JSON_file(file_dir, file_base_noext):
 # launcher info. When removing launchers both the JSON and XML files must be removed.
 #
 def fs_get_ROMs_XML_file_path(roms_dir, roms_base_noext):
-    roms_file_path = roms_dir.getSubPath(roms_base_noext + '.xml')
+    roms_file_path = roms_dir.join(roms_base_noext + '.xml')
 
     return roms_file_path
 
 def fs_get_ROMs_JSON_file_path(roms_dir, roms_base_noext):
-    roms_file_path = roms_dir.getSubPath(roms_base_noext + '.json')
+    roms_file_path = roms_dir.join(roms_base_noext + '.json')
 
     return roms_file_path
 
@@ -641,8 +641,8 @@ def fs_unlink_ROMs_database(roms_dir, roms_base_noext):
 
 def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     # >> Get file names
-    roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
-    roms_xml_file  = roms_dir.getSubPath(roms_base_noext + '.xml')
+    roms_json_file = roms_dir.join(roms_base_noext + '.json')
+    roms_xml_file  = roms_dir.join(roms_base_noext + '.xml')
     log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir.getOriginalPath()))
     log_verb('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     log_verb('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
@@ -702,7 +702,7 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
     roms = {}
 
     # --- If file does not exist return empty dictionary ---
-    roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
+    roms_json_file = roms_dir.join(roms_base_noext + '.json')
     if not roms_json_file.exists(): return roms
 
     # --- Parse using json module ---
@@ -1181,7 +1181,7 @@ def fs_load_VCategory_XML(roms_xml_file):
 # Write virtual category ROMs
 #
 def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
-    roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
+    roms_json_file = roms_dir.join(roms_base_noext + '.json')
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file.getOriginalPath()))
     try:
         with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
@@ -1199,7 +1199,7 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
 #
 def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
     # --- If file does not exist return empty dictionary ---
-    roms_json_file = roms_dir.getSubPath(roms_base_noext + '.json')
+    roms_json_file = roms_dir.join(roms_base_noext + '.json')
     if not roms_json_file.exists(): return {}
 
     # --- Parse using cElementTree ---

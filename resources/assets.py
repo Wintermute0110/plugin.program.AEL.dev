@@ -110,7 +110,7 @@ def assets_init_asset_dir(assets_path_FName, launcher):
     assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
 
 def assets_parse_asset_dir(launchers, assets_path_FName, key, pathName):
-    subPath        = assets_path_FName.getSubPath(pathName)
+    subPath        = assets_path_FName.join(pathName)
     launchers[key] = subPath.getOriginalPath()
     log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(subPath.getPath()))
     subPath.makedirs()
@@ -341,19 +341,19 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
     asset_path_noext_FileName = FileName('')
     objectID_str = '_' + objectID[0:3]
 
-    if   Asset.kind == ASSET_TITLE:     asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_title')
-    elif Asset.kind == ASSET_SNAP:      asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_snap')
-    elif Asset.kind == ASSET_FANART:    asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_fanart')
-    elif Asset.kind == ASSET_BANNER:    asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_banner')
-    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_clearlogo')
-    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_boxfront')
-    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_boxback')
-    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_cartridge')
-    elif Asset.kind == ASSET_FLYER:     asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_flyer')
-    elif Asset.kind == ASSET_MAP:       asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_map')
-    elif Asset.kind == ASSET_MANUAL:    asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_manual')
-    elif Asset.kind == ASSET_TRAILER:   asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_trailer')
-    elif Asset.kind == ASSET_THUMB:     asset_path_noext_FileName = AssetPath.getSubPath(asset_base_noext + objectID_str + '_thumb')
+    if   Asset.kind == ASSET_TITLE:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_title')
+    elif Asset.kind == ASSET_SNAP:      asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_snap')
+    elif Asset.kind == ASSET_FANART:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_fanart')
+    elif Asset.kind == ASSET_BANNER:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_banner')
+    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_clearlogo')
+    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_boxfront')
+    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_boxback')
+    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_cartridge')
+    elif Asset.kind == ASSET_FLYER:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_flyer')
+    elif Asset.kind == ASSET_MAP:       asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_map')
+    elif Asset.kind == ASSET_MANUAL:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_manual')
+    elif Asset.kind == ASSET_TRAILER:   asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_trailer')
+    elif Asset.kind == ASSET_THUMB:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_thumb')
     else:
         log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
 
