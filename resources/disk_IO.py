@@ -217,6 +217,7 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['platform']               = launcher['platform']
     favourite['application']            = launcher['application']
     favourite['args']                   = launcher['args']
+    favourite['args_extra']             = launcher['args_extra']
     favourite['rompath']                = launcher['rompath']
     favourite['romext']                 = launcher['romext']
     favourite['minimize']               = launcher['minimize']
