@@ -1656,25 +1656,27 @@ class Main:
                 type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
+                                       "Modify Aditional arguments...",
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
             # --- Standalone launcher -------------------------------------------------------------
             else:
                 type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
+                                       "Aditional arguments...",
                                        "Change ROM Path: '{0}'".format(self.launchers[launcherID]['rompath']),
                                        "Modify ROM Extensions: '{0}'".format(self.launchers[launcherID]['romext']),
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
 
-            # Launcher application path menu option
+            # --- Launcher application path menu option ---
             type2_nb = 0
             if type2 == type2_nb:
-                app = xbmcgui.Dialog().browse(1, 'Select the launcher application',
-                                              'files', '', False, False, self.launchers[launcherID]['application'])
+                app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '', 
+                                              False, False, self.launchers[launcherID]['application'])
                 self.launchers[launcherID]['application'] = app
                 kodi_notify('Changed launcher application')
 
-            # Edition of the launcher arguments
+            # --- Edition of the launcher arguments ---
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['args'], 'Edit application arguments')
@@ -1682,6 +1684,46 @@ class Main:
                 if not keyboard.isConfirmed(): return
                 self.launchers[launcherID]['args'] = keyboard.getText().decode('utf-8')
                 kodi_notify('Changed launcher arguments')
+
+            # --- Launcher Additional arguments ---
+            type2_nb = type2_nb + 1
+            if type2 == type2_nb:
+                launcher = self.launchers[launcherID]
+                additional_args_list = []
+                for extra_arg in launcher['args_extra']:
+                    additional_args_list.append("Modify '{0}'".format(extra_arg))
+                type_aux = dialog.select('Launcher additional arguments',
+                                         ['Add new additional arguments...'] + additional_args_list)
+                if type_aux < 0: return
+
+                # >> Add new additional arguments
+                if type_aux == 0:
+                    keyboard = xbmc.Keyboard('', 'Edit launcher additional arguments')
+                    keyboard.doModal()
+                    if not keyboard.isConfirmed(): return
+                    launcher['args_extra'].append(keyboard.getText().decode('utf-8'))
+                    log_debug('_command_edit_launcher() Appending extra_args to launcher {0}'.format(launcherID))
+                    kodi_notify('Added additional arguments in position {0}'.format(len(launcher['args_extra'])))
+                elif type_aux >= 1:
+                    arg_index = type_aux - 1
+                    type_aux_2 = dialog.select('Modify extra arguments {0}'.format(type_aux),
+                                               ["Edit '{0}'...".format(launcher['args_extra'][arg_index]), 
+                                                'Delete extra arguments'])
+                    if type_aux_2 < 0: return
+
+                    if type_aux_2 == 0:
+                        keyboard = xbmc.Keyboard(launcher['args_extra'][arg_index], 'Edit application arguments')
+                        keyboard.doModal()
+                        if not keyboard.isConfirmed(): return
+                        launcher['args_extra'][arg_index] = keyboard.getText().decode('utf-8')
+                        log_debug('_command_edit_launcher() Edited args_extra[{0}] to "{1}"'.format(arg_index, launcher['args_extra'][arg_index]))
+                        kodi_notify('Changed launcher extra arguments {0}'.format(type_aux))
+                    elif type_aux_2 == 1:
+                        ret = kodi_dialog_yesno('Are you sure you want to delete Launcher additional arguments {0}?'.format(type_aux))
+                        if not ret: return
+                        del launcher['args_extra'][arg_index]
+                        log_debug("_command_edit_launcher() Deleted launcher['args_extra'][{0}]".format(arg_index))
+                        kodi_notify('Changed launcher extra arguments {0}'.format(type_aux))
 
             if self.launchers[launcherID]['rompath'] != '':
                 # --- Launcher roms path menu option ---
@@ -1692,17 +1734,17 @@ class Main:
                     self.launchers[launcherID]['rompath'] = rom_path
                     kodi_notify('Changed ROM path')
 
-                # Edition of the launcher rom extensions (only for emulator launcher)
+                # --- Edition of the launcher rom extensions (only for emulator launcher) ---
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
                     keyboard = xbmc.Keyboard(self.launchers[launcherID]['romext'],
-                                                'Edit ROM extensions, use "|" as separator. (e.g lnk|cbr)')
+                                             'Edit ROM extensions, use "|" as separator. (e.g lnk|cbr)')
                     keyboard.doModal()
                     if not keyboard.isConfirmed(): return
                     self.launchers[launcherID]['romext'] = keyboard.getText().decode('utf-8')
                     kodi_notify('Changed ROM extensions')
 
-            # Launcher minimize state menu option
+            # --- Launcher minimize state menu option ---
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
                 dialog = xbmcgui.Dialog()
@@ -1735,8 +1777,7 @@ class Main:
             self.launchers.pop(launcherID)
 
         # User pressed cancel or close dialog
-        if type < 0:
-            return
+        if type < 0: return
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
@@ -4980,6 +5021,7 @@ class Main:
         info_text += "[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
         info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher['application'])
         info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
+        info_text += "[COLOR skyblue]args_extra[/COLOR]: '{0}'\n".format(launcher['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
@@ -5067,7 +5109,7 @@ class Main:
         else:                             category_name = VCATEGORY_ADDONROOT_ID
         launcher = self.launchers[launcherID]
         if not launcher['rompath']:
-            kodi_notify_warn('Cannot create report for standalone launcher.')
+            kodi_notify_warn('Cannot create report for standalone launcher')
             return
 
         # --- Get report filename ---
@@ -5081,7 +5123,7 @@ class Main:
         launcher = self.launchers[launcherID]
         roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
         if not roms:
-            kodi_notify_warn('No ROMs in launcher. Report not created.')
+            kodi_notify_warn('No ROMs in launcher. Report not created')
             return
 
         # --- If report doesn't exists create it automatically ---

@@ -93,6 +93,7 @@ def fs_new_launcher():
          'categoryID' : '',
          'application' : '',
          'args' : '',
+         'args_extra' : [],
          'rompath' : '',
          'romext' : '',
          'finished': False,
@@ -426,6 +427,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('categoryID', launcher['categoryID']))
             str_list.append(XML_text('application', launcher['application']))
             str_list.append(XML_text('args', launcher['args']))
+            # >> To simulate a list with XML allow multiple XML tags.
+            if 'args_extra' in launcher:
+                for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
             str_list.append(XML_text('rompath', launcher['rompath']))
             str_list.append(XML_text('romext', launcher['romext']))
             str_list.append(XML_text('finished', unicode(launcher['finished'])))
@@ -536,23 +540,26 @@ def fs_load_catfile(categories_file):
 
             # Parse child tags of category
             for category_child in category_element:
-                # By default read strings
+                # >> By default read strings
                 xml_text = category_child.text if category_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = category_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
-                launcher[xml_tag] = xml_text
 
-                # Transform Bool datatype
-                if xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
+                # >> Transform list datatype
+                if xml_tag == 'args_extra':
+                    launcher[xml_tag].append(xml_text)
+                # >> Transform Bool datatype
+                elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
                     xml_bool = True if xml_text == 'True' else False
                     launcher[xml_tag] = xml_bool
-                # Transform Float datatype
+                # >> Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
                     xml_float = float(xml_text)
                     launcher[xml_tag] = xml_float
-
-            # Add launcher to categories dictionary
+                else:
+                    launcher[xml_tag] = xml_text
+            # --- Add launcher to categories dictionary ---
             launchers[launcher['id']] = launcher
 
     return (update_timestamp, categories, launchers)
