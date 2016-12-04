@@ -664,6 +664,7 @@ class Main:
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
                 log_info('Category has no launchers, so no launchers to delete.')
                 self.categories.pop(categoryID)
+            kodi_notify('Deleted category {0}'.format(category_name))
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
