@@ -241,23 +241,24 @@ class FileName:
         elif self.originalPath.lower().startswith('special:'):
             self.path = xbmc.translatePath(self.path)
 
-    def join(self, arg):
+    def _join_raw(self, arg):
         self.path         = os.path.join(self.path, arg)
         self.originalPath = os.path.join(self.originalPath, arg)
 
         return self
 
+    # Appends a string to path. Returns self FileName object
     def append(self, arg):
         self.path         = self.path + arg
         self.originalPath = self.originalPath + arg
 
         return self
 
-    # Behaves like os.path.join()
-    def getSubPath(self, *args):
+    # Behaves like os.path.join(). Returns a FileName object
+    def join(self, *args):
         child = FileName(self.originalPath)
         for arg in args:
-            child.join(arg)
+            child._join_raw(arg)
 
         return child
 
