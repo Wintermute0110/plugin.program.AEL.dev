@@ -5532,8 +5532,6 @@ class Main:
             roms          = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             rom           = roms[romID]
             recent_rom    = rom
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
             romext        = rom['romext']
 
@@ -5547,8 +5545,6 @@ class Main:
                 return
             rom           = recent_roms_list[current_ROM_position]
             recent_rom    = rom
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
             romext        = rom['romext']
         # --- ROM in Most played ROMs ---
@@ -5557,8 +5553,6 @@ class Main:
             most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
             rom           = most_played_roms[romID]
             recent_rom    = rom
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
             romext        = rom['romext']
         # --- ROM in Collection ---
@@ -5574,8 +5568,6 @@ class Main:
                 return
             rom           = collection_rom_list[current_ROM_position]
             recent_rom    = rom
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
             romext        = rom['romext']
         # --- ROM in Virtual Launcher ---
@@ -5596,11 +5588,9 @@ class Main:
 
             rom           = roms[romID]
             recent_rom    = rom
-            application   = rom['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = rom['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = rom['minimize']
             romext        = rom['romext']
-        # --- ROM in launcher ---
+        # --- ROM in standard ROM launcher ---
         else:
             log_info('_command_run_rom() Launching ROM in Launcher...')
             # --- Check launcher is OK and load ROMs ---
@@ -5615,10 +5605,32 @@ class Main:
                 return
             rom           = roms[romID]
             recent_rom    = fs_get_Favourite_from_ROM(rom, launcher)
-            application   = launcher['application'] if rom['altapp'] == '' else rom['altapp']
-            arguments     = launcher['args'] if rom['altarg'] == '' else rom['altarg']
             minimize_flag = launcher['minimize']
             romext        = launcher['romext']
+            args_extra    = launcher['args_extra']
+
+        # ~~~~~ Substitue additional arguments ~~~~~
+        # >> If ROM has altapp configured, then use altapp/altarg
+        # >> If Launcher has args_extra configured then show a dialog to the user to selec the
+        # >> arguments to launch ROM.
+        if rom['altapp']:
+            log_info('_command_run_rom() Using ROM altapp/altarg')
+            application = rom['altapp']
+            arguments   = rom['altarg']
+        elif args_extra:
+            # >> Ask user what arguments to launch application
+            log_info('_command_run_rom() Using Launcher args_extra')
+            arg_list = list(launcher['args'] + args_extra)
+            dialog = xbmcgui.Dialog()
+            dselect_ret = dialog.select('Edit Category Metadata', arg_list)
+            if dselect_ret < 0: return
+            log_info('_command_run_rom() User chose args index {0}'.format(dselect_ret))
+            application = launcher['application']
+            arguments   = arg_list[dselect_ret]
+        else:
+            log_info('_command_run_rom() Using Launcher normal args')
+            application = launcher['application']
+            arguments   = launcher['args']
 
         # ~~~~~ Launch ROM ~~~~~
         application = FileName(application)
