@@ -4757,7 +4757,7 @@ class Main:
         elif categoryID == VCATEGORY_TITLE_ID:
             log_info('_command_view_ROM() Viewing ROM in Title Virtual Launcher...')
             hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
-            if hashed_db_filename.exists():
+            if not hashed_db_filename.exists():
                 log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                 kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                 return
