@@ -33,15 +33,15 @@ WIP      Add nplayers metadata field to ROMs.
 
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
-WIP      Support for several arguments in launcher. This will be useful when using MAME for
-         console emulation (MAME consoles from a different region have different names, and an
-         European console will typically refuse to run a Japanese game).
-         http://forum.kodi.tv/showthread.php?tid=287826&pid=2467547#pid2467547
-
 WIP      New Arcade Database online metadata/asset scraper for MAME ROMs.
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | XX December 2016[/B]
+
+FEATURE  Support for several arguments in launcher. This will be useful when using MAME for
+         console emulation (MAME consoles from a different region have different names, and an
+         European console will typically refuse to run a Japanese game).
+         Survey about this: http://forum.kodi.tv/showthread.php?tid=287826&pid=2467547#pid2467547
 
 FEATURE  New command SHOW_ALL_ROMS to render all ROMs in all launchers. Will be used by skins.
 

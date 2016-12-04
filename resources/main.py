@@ -138,8 +138,7 @@ class Main:
         # log_debug('__addon_author__  {0}'.format(__addon_author__))
         # log_debug('__addon_profile__ {0}'.format(__addon_profile__))
         # log_debug('__addon_type__    {0}'.format(__addon_type__))
-        for i in range(len(sys.argv)):
-            log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
+        for i in range(len(sys.argv)): log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
         # log_debug('PLUGIN_DATA_DIR   "{0}"'.format(PLUGIN_DATA_DIR))
         # log_debug('CURRENT_ADDON_DIR "{0}"'.format(CURRENT_ADDON_DIR))
 
@@ -4994,6 +4993,8 @@ class Main:
         info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(rom['platform'])
         info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(rom['application'])
         info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(rom['args'])
+        if 'args_extra' in rom:
+            info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(rom['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(rom['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(rom['minimize'])
