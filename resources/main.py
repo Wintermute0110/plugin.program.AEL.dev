@@ -453,7 +453,7 @@ class Main:
         # --- Edit category metadata ---
         if type == 0:
             NFO_FileName = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
-            NFO_str = 'default NFO found' if NFO_FileName.exists() else 'default NFO not found'
+            NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
             plot_str = text_limit_string(self.categories[categoryID]['m_plot'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
@@ -461,8 +461,8 @@ class Main:
                                    "Edit Genre: '{0}'".format(self.categories[categoryID]['m_genre']),
                                    "Edit Rating: '{0}'".format(self.categories[categoryID]['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
-                                   'Import NFO file ({0})'.format(NFO_str),
-                                   'Import NFO file (browse for file)...',
+                                   'Import NFO file (default, {0})'.format(NFO_str),
+                                   'Import NFO file (browse NFO file)...',
                                    'Save NFO file (default location)'])
             if type2 < 0: return
 
@@ -872,6 +872,7 @@ class Main:
                                   'Change Category: {0}'.format(category_name), finished_display,
                                   'Manage ROM List...', 'Audit ROMs / Launcher view mode...',
                                   'Advanced Modifications...', 'Delete Launcher'])
+        if type < 0: return
 
         # --- Edition of the launcher metadata ---
         type_nb = 0
@@ -885,19 +886,22 @@ class Main:
                 log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
 
             # >> Metadata edit dialog
+            NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
+            NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+            plot_str = text_limit_string(self.launchers[launcherID]['m_plot'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string(self.launchers[launcherID]['m_plot'], DESCRIPTION_MAXSIZE)
             menu_list = ["Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
                          "Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
                          "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
                          "Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
                          "Edit Studio: '{0}'".format(self.launchers[launcherID]['m_studio']),
                          "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
-                         "Edit Plot: '{0}'".format(desc_str),
-                         'Import metadata from NFO (automatic)',
-                         'Import metadata from NFO (browse NFO)...',
-                         'Save metadata to NFO file']
+                         "Edit Plot: '{0}'".format(plot_str),
+                         'Import NFO file (default, {0})'.format(NFO_str),
+                         'Import NFO file (browse NFO file)...',
+                         'Save NFO file (default location)']
             type2 = dialog.select('Edit Launcher Metadata', menu_list + scraper_menu_list)
+            if type2 < 0: return
 
             # --- Edition of the launcher name ---
             if type2 == 0:
@@ -1010,43 +1014,32 @@ class Main:
                 self.launchers[launcherID]['m_plot'] = keyboard.getText().decode('utf-8')
                 kodi_notify('Changed Launcher Plot')
 
-            # --- Import of the launcher descripion (plot) ---
-            # elif type2 == 8:
-            #     text_file = xbmcgui.Dialog().browse(1, 'Select description file (TXT|DAT)', 'files', '.txt|.dat', False, False).decode('utf-8')
-            #     if os.path.isfile(text_file) == True:
-            #         file_data = self._gui_import_TXT_file(text_file)
-            #         self.launchers[launcherID]['plot'] = file_data
-            #     else:
-            #         desc_str = text_limit_string(self.launchers[launcherID]['plot'], DESCRIPTION_MAXSIZE)
-            #         kodi_dialog_OK("Launcher plot '{0}' not changed".format(desc_str))
-            #         return
-
             # --- Import launcher metadata from NFO file (automatic) ---
             elif type2 == 7:
                 # >> Get NFO file name for launcher
-                NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
-
                 # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
+                NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
                 if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
+                kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Browse for NFO file ---
             elif type2 == 8:
-                # >> Get launcher NFO file
-                # No-Intro reading of files: use Unicode string for '.dat|.xml'. However, | belongs to ASCII...
-                NFO_file = xbmcgui.Dialog().browse(1, 'Select description file (NFO)', 'files', '.nfo', False, False).decode('utf-8')
-                NFO_file_path = Path(NFO_file)
-                if not NFO_file_path.exists(): return
-                
+                NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
+                if not NFO_file: return
+                NFO_FileName = FileName(NFO_file)
+                if not NFO_FileName.exists(): return
                 # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
-                if not fs_import_launcher_NFO(NFO_file, self.launchers, launcherID): return
+                if not fs_import_launcher_NFO(NFO_FileName, self.launchers, launcherID): return
+                kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Export launcher metadata to NFO file ---
             elif type2 == 9:
-                NFO_file = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
-                fs_export_launcher_NFO(NFO_file, self.launchers[launcherID])
+                NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
+                if not fs_export_launcher_NFO(NFO_FileName, self.launchers[launcherID]): return
                 # >> No need to save launchers
+                kodi_notify('Exported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
                 return
 
             # --- Scrape launcher metadata ---
@@ -1063,9 +1056,6 @@ class Main:
 
                 # >> If this returns False there were no changes so no need to save categories.xml
                 if not self._gui_scrap_launcher_metadata(launcherID, scraper_obj): return
-
-            # >> User canceled select dialog
-            elif type2 < 0: return
 
         # --- Edit Launcher Assets/Artwork ---
         type_nb = type_nb + 1
@@ -1107,7 +1097,7 @@ class Main:
             # >> User canceled select dialog
             elif type2 < 0: return
 
-        # --- Choose default thumb/fanart ---
+        # --- Choose default thumb/fanart/banner/poster ---
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
@@ -1176,9 +1166,9 @@ class Main:
         if type == type_nb:
             current_category_ID = self.launchers[launcherID]['categoryID']
 
-            # >> If only one Category there is nothing to change
-            if len(self.categories) == 1:
-                kodi_dialog_OK('There is only one category. Nothing to change.')
+            # >> If no Categories there is nothing to change
+            if len(self.categories) == 0:
+                kodi_dialog_OK('There is no Categories. Nothing to change.')
                 return
             dialog = xbmcgui.Dialog()
             # Add special root cateogory at the beginning
@@ -1191,8 +1181,9 @@ class Main:
             if selected_cat < 0: return
             new_categoryID = categories_id[selected_cat]
             self.launchers[launcherID]['categoryID'] = new_categoryID
-            log_debug('_command_edit_launcher() current category "{0}"'.format(current_category_ID))
-            log_debug('_command_edit_launcher() new     category "{0}"'.format(new_categoryID))
+            log_debug('_command_edit_launcher() current category   ID "{0}"'.format(current_category_ID))
+            log_debug('_command_edit_launcher() new     category   ID "{0}"'.format(new_categoryID))
+            log_debug('_command_edit_launcher() new     category name "{0}"'.format(categories_name[selected_cat]))
 
             # >> Save cateogires/launchers
             self.launchers[launcherID]['timestamp_launcher'] = time.time()
@@ -1209,6 +1200,7 @@ class Main:
             log_debug('_command_edit_launcher() Plugin URL     "{0}"'.format(plugin_url))
             log_debug('_command_edit_launcher() Executebuiltin "{0}"'.format(exec_str))
             xbmc.executebuiltin(exec_str)
+            kodi_notify('Launcher new Category is {0}'.format(categories_name[selected_cat]))
             return
 
         # --- Launcher status (finished [bool]) ---
@@ -4387,11 +4379,11 @@ class Main:
                         dest_path   = new_asset_filename.decode(get_fs_encoding(), 'ignore')
                         shutil.copy(source_path, dest_path)
                     except OSError:
-                        log_error('_gui_edit_asset() OSError exception copying image')
+                        log_error('_command_export_collection() OSError exception copying image')
                         kodi_notify_warn('OSError exception copying image')
                         return
                     except IOError:
-                        log_error('_gui_edit_asset() IOError exception copying image')
+                        log_error('_command_export_collection() IOError exception copying image')
                         kodi_notify_warn('IOError exception copying image')
                         return
 
@@ -4426,11 +4418,11 @@ class Main:
                             dest_path   = new_asset_filename.decode(get_fs_encoding(), 'ignore')
                             shutil.copy(source_path, dest_path)
                         except OSError:
-                            log_error('_gui_edit_asset() OSError exception copying image')
+                            log_error('_command_export_collection() OSError exception copying image')
                             kodi_notify_warn('OSError exception copying image')
                             return
                         except IOError:
-                            log_error('_gui_edit_asset() IOError exception copying image')
+                            log_error('_command_export_collection() IOError exception copying image')
                             kodi_notify_warn('IOError exception copying image')
                             return
 
@@ -6938,7 +6930,7 @@ class Main:
             asset_directory = FileName(self.settings['categories_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Category "{0}"'.format(AInfo.name))
-            log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
+            log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
             log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
             if not asset_directory.isdir():
@@ -6953,9 +6945,9 @@ class Main:
             asset_directory = FileName(self.settings['collections_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Collection "{0}"'.format(AInfo.name))
-            log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
-            log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext))
+            log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
+            log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
+            log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
             if not asset_directory.isdir():
                 kodi_dialog_OK('Directory to store Collection artwork not configured or not found. '
                                'Configure it before you can edit artwork.')
@@ -6968,9 +6960,9 @@ class Main:
             asset_directory = FileName(self.settings['launchers_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Launcher "{0}"'.format(AInfo.name))
-            log_info('_gui_edit_asset() id {0}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory))
-            log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext))
+            log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
+            log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
+            log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
             if not asset_directory.isdir():
                 kodi_dialog_OK('Directory to store Launcher artwork not configured or not found. '
                                'Configure it before you can edit artwork.')
@@ -6999,10 +6991,10 @@ class Main:
                 asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile)
             current_asset_path = FileName(object_dic[AInfo.key])
             log_info('_gui_edit_asset() Editing ROM {0}'.format(AInfo.name))
-            log_info('_gui_edit_asset() ROM id {0}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory.getPath()))
-            log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext.getPath()))
-            log_debug('_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path.getPath()))
+            log_info('_gui_edit_asset() ROM ID {0}'.format(object_dic['id']))
+            log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory.getOriginalPath()))
+            log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext.getOriginalPath()))
+            log_debug('_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path.getOriginalPath()))
             log_debug('_gui_edit_asset() platform           "{0}"'.format(platform))
 
             # --- Do not edit asset if asset directory not configured ---
