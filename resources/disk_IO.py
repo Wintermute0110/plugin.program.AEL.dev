@@ -1786,9 +1786,9 @@ def fs_get_launcher_NFO_name(settings, launcher):
 # Look at the launcher NFO files for a reference implementation.
 # Categories NFO files only have genre and plot.
 #
-def fs_export_category_NFO(nfo_file_path, category):
+def fs_export_category_NFO(nfo_file_FileName, category):
     # --- Get NFO file name ---
-    log_debug('fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path))
+    log_debug('fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -1800,35 +1800,34 @@ def fs_export_category_NFO(nfo_file_path, category):
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_file_path, 'w')
+        f = open(nfo_file_FileName.getPath(), 'w')
         f.write(full_string)
         f.close()
     except:
-        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
-        log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_file_path))
+        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_file_FileName.getPath())))
+        log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_file_FileName.getPath()))
         return False
-    kodi_notify('Created NFO file {0}'.format(os.path.basename(os.path.basename(nfo_file_path))))
-    log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_file_path))
+    log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_file_FileName.getPath()))
 
     return True
 
-def fs_import_category_NFO(nfo_file_path, categories, categoryID):
+def fs_import_category_NFO(nfo_file_FileName, categories, categoryID):
     # --- Get NFO file name ---
-    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path))
+    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_file_FileName.getPath()))
 
     # --- Import data ---
-    if os.path.isfile(nfo_file_path):
+    if nfo_file_FileName.isfile():
         try:
-            file = codecs.open(nfo_file_path, 'r', 'utf-8')
+            file = codecs.open(nfo_file_FileName.getPath(), 'r', 'utf-8')
             item_nfo = file.read().replace('\r', '').replace('\n', '')
             file.close()
         except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
-            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_file_FileName.getPath())))
+            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_FileName.getPath()))
             return False
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
-        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_path))
+        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_file_FileName.getPath())))
+        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_FileName.getPath()))
         return False
 
     item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
@@ -1839,16 +1838,18 @@ def fs_import_category_NFO(nfo_file_path, categories, categoryID):
     if item_rating: categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
     if item_plot:   categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
 
-    kodi_notify('Imported {0}'.format(os.path.basename(nfo_file_path)))
-    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_file_path))
+    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_file_FileName.getPath()))
 
     return True
 
+#
+# Returns a FileName object
+#
 def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
     nfo_dir = settings['categories_asset_dir']
-    nfo_file_path = os.path.join(nfo_dir, category_name + '.nfo')
-    log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+    nfo_file_path = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
+    log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
 
