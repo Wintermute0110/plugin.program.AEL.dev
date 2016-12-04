@@ -1690,9 +1690,9 @@ def fs_load_NFO_file_scanner(nfo_file_path):
 # ROM launchers:
 #   Same as standalone launchers.
 #
-def fs_export_launcher_NFO(nfo_file_path, launcher):
+def fs_export_launcher_NFO(nfo_FileName, launcher):
     # --- Get NFO file name ---
-    log_debug('fs_export_launcher_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path))
+    log_debug('fs_export_launcher_NFO() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -1706,16 +1706,14 @@ def fs_export_launcher_NFO(nfo_file_path, launcher):
     nfo_content.append('</launcher>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_file_path, 'w')
+        f = open(nfo_FileName.getPath(), 'w')
         f.write(full_string)
         f.close()
     except:
-        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_file_path)))
-        log_error("fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_file_path))
+        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
+        log_error("fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
         return False
-
-    kodi_notify('Created NFO file {0}'.format(os.path.basename(nfo_file_path)))
-    log_debug("fs_export_launcher_NFO() Created '{0}'".format(nfo_file_path))
+    log_debug("fs_export_launcher_NFO() Created '{0}'".format(nfo_FileName.getPath()))
 
     return True
 
@@ -1729,25 +1727,25 @@ def fs_export_launcher_NFO(nfo_file_path, launcher):
 #
 # Function asumes that the NFO file already exists.
 #
-def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
+def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
     # --- Get NFO file name ---
-    log_debug('fs_import_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path))
+    log_debug('fs_import_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # --- Import data ---
-    if os.path.isfile(nfo_file_path):
+    if os.path.isfile(nfo_FileName.getPath()):
         # >> Read NFO file data
         try:
-            file = codecs.open(nfo_file_path, 'r', 'utf-8')
+            file = codecs.open(nfo_FileName.getPath(), 'r', 'utf-8')
             item_nfo = file.read().replace('\r', '').replace('\n', '')
             file.close()
         except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_file_path)))
-            log_error("fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_file_path))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
+            log_error("fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
             return False
         # log_debug("fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_file_path)))
-        log_info("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_file_path))
+        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getPath())))
+        log_info("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
         return False
 
     # Find data
@@ -1769,16 +1767,18 @@ def fs_import_launcher_NFO(nfo_file_path, launchers, launcherID):
     if item_rating:    launchers[launcherID]['m_rating'] = text_unescape_XML(item_rating[0])
     if item_plot:      launchers[launcherID]['m_plot']   = text_unescape_XML(item_plot[0])
 
-    kodi_notify('Imported {0}'.format(os.path.basename(nfo_file_path)))
-    log_verb("fs_import_launcher_NFO() Imported '{0}'".format(nfo_file_path))
+    log_verb("fs_import_launcher_NFO() Imported '{0}'".format(nfo_FileName.getPath()))
 
     return True
 
+#
+# Returns a FileName object
+#
 def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
     nfo_dir = settings['launchers_asset_dir']
-    nfo_file_path = os.path.join(nfo_dir, launcher_name + '.nfo')
-    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+    nfo_file_path = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
+    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
 
@@ -1786,9 +1786,9 @@ def fs_get_launcher_NFO_name(settings, launcher):
 # Look at the launcher NFO files for a reference implementation.
 # Categories NFO files only have genre and plot.
 #
-def fs_export_category_NFO(nfo_file_FileName, category):
+def fs_export_category_NFO(nfo_FileName, category):
     # --- Get NFO file name ---
-    log_debug('fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_FileName.getPath()))
+    log_debug('fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -1800,34 +1800,34 @@ def fs_export_category_NFO(nfo_file_FileName, category):
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_file_FileName.getPath(), 'w')
+        f = open(nfo_FileName.getPath(), 'w')
         f.write(full_string)
         f.close()
     except:
-        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_file_FileName.getPath())))
-        log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_file_FileName.getPath()))
+        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
+        log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
         return False
-    log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_file_FileName.getPath()))
+    log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_FileName.getPath()))
 
     return True
 
-def fs_import_category_NFO(nfo_file_FileName, categories, categoryID):
+def fs_import_category_NFO(nfo_FileName, categories, categoryID):
     # --- Get NFO file name ---
-    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_file_FileName.getPath()))
+    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # --- Import data ---
-    if nfo_file_FileName.isfile():
+    if nfo_FileName.isfile():
         try:
-            file = codecs.open(nfo_file_FileName.getPath(), 'r', 'utf-8')
+            file = codecs.open(nfo_FileName.getPath(), 'r', 'utf-8')
             item_nfo = file.read().replace('\r', '').replace('\n', '')
             file.close()
         except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_file_FileName.getPath())))
-            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_file_FileName.getPath()))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
+            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
             return False
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_file_FileName.getPath())))
-        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_file_FileName.getPath()))
+        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getPath())))
+        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
         return False
 
     item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
@@ -1838,7 +1838,7 @@ def fs_import_category_NFO(nfo_file_FileName, categories, categoryID):
     if item_rating: categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
     if item_plot:   categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
 
-    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_file_FileName.getPath()))
+    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getPath()))
 
     return True
 
