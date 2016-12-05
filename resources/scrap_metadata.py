@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 # --- AEL modules ---
 from scrap import *
 from scrap_common import *
+from disk_IO import *
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing
@@ -237,7 +238,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
     def set_addon_dir(self, plugin_dir):
         pass
 
-    # Call common code in parent class
+    # >> Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
         return Scraper_GameFAQs.get_search(self, search_string, rom_base_noext, platform)
 
