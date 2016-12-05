@@ -21,18 +21,13 @@ from __future__ import unicode_literals
 # --- AEL modules ---
 from scrap import *
 from scrap_common import *
-from disk_IO import *
-try:
-    import utils_kodi
-except:
-    import utils_kodi_standalone
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing
 # -----------------------------------------------------------------------------
 class metadata_NULL(Scraper_Metadata):
     def __init__(self):
-        self.name       = 'NULL'
+        self.name = 'NULL'
 
     def set_addon_dir(self, plugin_dir):
         pass
@@ -221,7 +216,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
         gamedata['genre'] = text_unescape_HTML(game_genre) if game_genre else ''
 
         game_release = ''.join(re.findall('<ReleaseDate>(.*?)</ReleaseDate>', page_data))
-        gamedata['release'] = text_unescape_HTML(game_release[-4:]) if game_release else ''
+        gamedata['year'] = text_unescape_HTML(game_release[-4:]) if game_release else ''
             
         game_studio = ''.join(re.findall('<Developer>(.*?)</Developer>', page_data))
         gamedata['studio'] = text_unescape_HTML(game_studio) if game_studio else ''
