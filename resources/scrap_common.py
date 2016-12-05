@@ -374,6 +374,7 @@ class Scraper_ArcadeDB():
             game = {}
             game['display_name'] = m_title[0]
             game['id']           = url
+            game['mame_name']    = rom_base_noext
             game_list.append(game)
 
         return game_list

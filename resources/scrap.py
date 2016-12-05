@@ -107,7 +107,7 @@ class Scraper_Asset(Scraper):
 from scrap_metadata import *
 from scrap_asset import *
 
-# This is the official list of supported scrapers. This list MUST match the
-# settings configuration in settings.xml or bad things will happen.
-scrapers_metadata = [ metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs(), metadata_MobyGames() ]
-scrapers_asset    = [ asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames() ]
+# This is the official list of supported scrapers. This list MUST match the settings configuration 
+# in settings.xml or bad things will happen.
+scrapers_metadata = [ metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs(), metadata_MobyGames(), metadata_ArcadeDB() ]
+scrapers_asset    = [ asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]

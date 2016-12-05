@@ -18,6 +18,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 import sys, urllib, urllib2, re, os
+import pprint
 
 # --- AEL modules ---
 from scrap import *
@@ -344,7 +345,7 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
         self.get_images_cached_game_id_url = ''
         self.get_images_cached_page_data   = ''
 
-    # Get a URL text and cache it.
+    # --- Get a URL text and cache it ---
     def get_URL_and_cache(self, game_id_url):
         # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
         if self.get_images_cached_game_id_url == game_id_url:
@@ -514,8 +515,22 @@ class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
     def __init__(self):
         Scraper_ArcadeDB.__init__(self)
         self.name = 'Arcade Database'
-        self.get_images_cached_game_id   = ''
+        self.get_images_cached_game_id_url   = ''
         self.get_images_cached_page_data = ''
+
+    # --- Get a URL text and cache it ---
+    def get_URL_and_cache(self, game_id_url):
+        # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
+        if self.get_images_cached_game_id_url == game_id_url:
+            log_debug('asset_ArcadeDB::get_URL_and_cache Cache HIT')
+            page_data = self.get_images_cached_page_data
+        else:
+            log_debug('asset_ArcadeDB::get_URL_and_cache Cache MISS. Updating cache')
+            page_data = net_get_URL_oneline(game_id_url)
+            self.get_images_cached_game_id_url = game_id_url
+            self.get_images_cached_page_data   = page_data
+
+        return page_data
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
@@ -525,9 +540,178 @@ class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
         pass
 
     def supports_asset(self, asset_kind):
+        if asset_kind == ASSET_TITLE     or asset_kind == ASSET_SNAP      or \
+           asset_kind == ASSET_BANNER    or asset_kind == ASSET_CLEARLOGO or \
+           asset_kind == ASSET_BOXFRONT  or asset_kind == ASSET_BOXBACK   or \
+           asset_kind == ASSET_CARTRIDGE or asset_kind == ASSET_FLYER:
+           return True
+
         return False
 
     def get_images(self, game, asset_kind):
         images = []
 
+        # --- If asset kind not supported return inmediately ---
+        if not self.supports_asset(asset_kind): return images
+        
+        # --- Get game info page ---
+        # >> Not needed, game artwork is obtained with AJAX.
+        # game_id_url = game['id'] 
+        # log_debug('asset_ArcadeDB::get_metadata game_id_url "{0}"'.format(game_id_url))
+        # page_data = self.get_URL_and_cache(game_id_url)
+        # text_dump_str_to_file('ArcadeDB-game_id_url.txt', page_data)
+
+        #
+        # <li class="mostra_archivio cursor_pointer" title="Show all images, videos and documents archived for this game"> 
+        # <a href="javascript:void mostra_media_archivio();"> <span>Other files</span> </a>
+        #
+        # Function void mostra_media_archivio(); is in file http://adb.arcadeitalia.net/dettaglio_mame.js?release=87
+        #
+        # AJAX call >> view-source:http://adb.arcadeitalia.net/dettaglio_mame.php?ajax=mostra_media_archivio&game_name=toki
+        # AJAX returns HTML code:
+        # <xml><html>
+        # <content1 id='elenco_anteprime' type='html'>%26lt%3Bli%20class......gt%3B</content1>
+        # </html><result></result><message><code></code><title></title><type></type><text></text></message></xml>
+        #
+        # pprint.pprint(game)
+        AInfo = assets_get_info_scheme(asset_kind)
+        log_debug('asset_ArcadeDB::get_metadata game ID "{0}"'.format(game['id']))
+        log_debug('asset_ArcadeDB::get_metadata name    "{0}"'.format(game['mame_name']))
+        log_debug('asset_ArcadeDB::get_metadata Asset   {0}'.format(AInfo.name))
+        AJAX_URL  = 'http://adb.arcadeitalia.net/dettaglio_mame.php?ajax=mostra_media_archivio&game_name={0}'.format(game['mame_name'])
+        page_data = self.get_URL_and_cache(AJAX_URL)
+        rcode     = re.findall('<xml><html><content1 id=\'elenco_anteprime\' type=\'html\'>(.*?)</content1></html>', page_data)
+        if not rcode: return images
+        raw_HTML     = rcode[0]
+        decoded_HTML = text_decode_HTML(raw_HTML)
+        escaped_HTML = text_unescape_HTML(decoded_HTML)
+        # text_dump_str_to_file('ArcadeDB-get_images-AJAX-dino-raw.txt', raw_HTML)
+        # text_dump_str_to_file('ArcadeDB-get_images-AJAX-dino-decoded.txt', decoded_HTML)
+        # text_dump_str_to_file('ArcadeDB-get_images-AJAX-dino-escaped.txt', escaped_HTML)
+
+        #
+        # <li class='cursor_pointer' tag="Boss-0" onclick="javascript:set_media(this,'Boss','current','4','0');"  title="Boss" ><div>
+        # <img media_id='1' class='colorbox_image' src='http://adb.arcadeitalia.net/media/mame.current/bosses/small/toki.png'
+        #      src_full="http://adb.arcadeitalia.net/media/mame.current/bosses/toki.png"></img>
+        # </div><span>Boss</span></li>
+        # <li class='cursor_pointer' tag="Cabinet-0" onclick="javascript:set_media(this,'Cabinet','current','5','0');"  title="Cabinet" ><div>
+        # <img media_id='2' class='colorbox_image' src='http://adb.arcadeitalia.net/media/mame.current/cabinets/small/toki.png'
+        #      src_full="http://adb.arcadeitalia.net/media/mame.current/cabinets/toki.png"></img>
+        # </div><span>Cabinet</span></li>
+        # .....
+        # <li class='cursor_pointer'  title="Manuale" >
+        # <a href="http://adb.arcadeitalia.net/download_file.php?tipo=mame_current&amp;codice=toki&amp;entity=manual&amp;oper=view&amp;filler=toki.pdf" target='_blank'>
+        # <img src='http://adb.arcadeitalia.net/media/mame.current/manuals/small/toki.png'></img><br/><span>Manuale</span></a></li>
+        #
+        cover_index = 1
+        if asset_kind == ASSET_TITLE:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="Titolo-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            # pprint.pprint(rlist)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Title #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Title #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
+        elif asset_kind == ASSET_SNAP:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="Gioco-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Snap #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Snap #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
+        # Banner is Marquee
+        elif asset_kind == ASSET_BANNER:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="Marquee-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Banner/Marquee #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Banner/Marquee #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
+        # Clearlogo is called Decal in ArcadeDB
+        elif asset_kind == ASSET_CLEARLOGO:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="Scritta-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Clearlogo #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Clearlogo #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
+        # Boxfront is Cabinet
+        elif asset_kind == ASSET_BOXFRONT:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="Cabinet-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Boxfront/Cabinet #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Boxfront/Cabinet #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
+        # Boxback is ControlPanel
+        elif asset_kind == ASSET_BOXBACK:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="CPO-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Boxback/CPanel #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Boxback/CPanel #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
+        # Cartridge is PCB
+        elif asset_kind == ASSET_CARTRIDGE:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="PCB-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Cartridge/PCB #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Cartridge/PCB #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
+        elif asset_kind == ASSET_FLYER:
+            rlist = re.findall(
+                '<li class=\'cursor_pointer\' tag="Volantino-[0-9]" onclick="(.*?)"  title="(.*?)" >' +
+                '<div><img media_id=\'(.*?)\' class=\'colorbox_image\' src=\'(.*?)\' src_full="(.*?)"></img></div>', escaped_HTML)
+            for index, rtuple in enumerate(rlist):
+                img_name = 'Flyer #{0:02d}'.format(cover_index)
+                art_URL = rtuple[4]
+                art_disp_URL = rtuple[3]
+                log_debug('asset_ArcadeDB::get_images() Adding Flyer #{0:02d}'.format(cover_index))
+                images.append({'name' : img_name, 'id' : art_URL, 'URL' : art_disp_URL})
+                cover_index += 1
+
         return images
+
+    #
+    # image_dic['id'] has the URL of the full size image
+    #
+    def resolve_image_URL(self, image_dic):
+        log_debug('asset_ArcadeDB::resolve_image_URL Resolving {0}'.format(image_dic['name']))
+
+        return image_dic['id']
