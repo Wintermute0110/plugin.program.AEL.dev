@@ -310,7 +310,6 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         gamedata['title'] = game['game_name']
 
         game_genre = re.findall('Genre</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
-        # print(game_genre)
         if game_genre: gamedata['genre'] = text_unescape_HTML(game_genre[0][1])
 
         # NOTE Year can be
@@ -332,11 +331,9 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
             elif year_C: gamedata['year'] = year_C[0][2]
 
         game_studio = re.findall('Published by</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
-        # print(game_studio)
         if game_studio: gamedata['studio'] = text_unescape_HTML(game_studio[0][1])
 
         game_description = re.findall('<h2>Description</h2>(.*?)<div class="sideBarLinks">', page_data)
-        # print(game_description)
         if game_description: gamedata['plot'] = text_unescape_HTML(game_description[0])
         
         return gamedata
@@ -363,9 +360,34 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         game_id_url = game['id'] 
         log_debug('metadata_ArcadeDB::get_metadata game_id_url "{0}"'.format(game_id_url))
         page_data = net_get_URL_oneline(game_id_url)
+        # text_dump_str_to_file('arcadedb_get_metadata.txt', page_data)
 
         # --- Process metadata ---
-        m_title = re.findall('<div id="game_description" class="invisibile">(.+?)</div>', page_data)
+        # Example game page: http://adb.arcadeitalia.net/dettaglio_mame.php?lang=en&game_name=aliens
+        #
+        # --- Title ---
+        # <div class="table_caption">Name: </div> <div class="table_value"> <span class="dettaglio">Aliens (World set 1)</span>
+        fa_title = re.findall('<div class="table_caption">Name: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
+        if fa_title: gamedata['title'] = fa_title[0]
 
+        # --- Genre/Category ---
+        # <div class="table_caption">Category: </div> <div class="table_value"> <span class="dettaglio">Platform / Shooter Scrolling</span>
+        fa_genre = re.findall('<div class="table_caption">Category: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
+        if fa_genre: gamedata['genre'] = fa_genre[0]
+
+        # --- Year ---
+        # <div class="table_caption">Year: </div> <div class="table_value"> <span class="dettaglio">1990</span> <div id="inputid89"
+        fa_year = re.findall('<div class="table_caption">Year: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
+        if fa_year: gamedata['year'] = fa_year[1]
+
+        # --- Studio ---
+        # <div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">Konami</span> </div>
+        fa_studio = re.findall('<div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span> </div>', page_data)
+        if fa_studio: gamedata['studio'] = fa_studio[0]
+        
+        # --- Plot ---
+        # <div id="history_detail" class="extra_info_detail"><div class="history_title"></div>Aliens © 1990 Konami........&amp;id=63&amp;o=2</div>
+        fa_plot = re.findall('<div id="history_detail" class="extra_info_detail"><div class=\'history_title\'></div>(.*?)</div>', page_data)
+        if fa_plot: gamedata['plot'] = text_unescape_HTML(fa_plot[0])
 
         return gamedata

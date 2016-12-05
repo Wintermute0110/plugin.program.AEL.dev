@@ -222,7 +222,8 @@ class Scraper_MobyGames():
     # <div class="searchResult"><div class="searchNumber">1.</div>
     # <div class="searchImage">
     #  <a href="/game/super-mario-world">
-    #  <img class="searchResultImage" alt="Super Mario World New" src="/images/covers/t/324893-super-mario-world-new-nintendo-3ds-front-cover.jpg" border="0" height="57" width="60">
+    #  <img class="searchResultImage" alt="Super Mario World New" 
+    #       src="/images/covers/t/324893-super-mario-world-new-nintendo-3ds-front-cover.jpg" border="0" height="57" width="60">
     #  </a>
     # </div>
     # <div class="searchData">
@@ -254,7 +255,8 @@ class Scraper_MobyGames():
     # <div class="searchResult"><div class="searchNumber">1.</div>
     # <div class="searchImage">
     # <a href="/game/snes/super-mario-world">
-    #  <img class="searchResultImage" alt="Super Mario World SNES Front Cover" border="0" src="/images/covers/t/79892-super-mario-world-snes-front-cover.jpg" height="42" width="60" >
+    #  <img class="searchResultImage" alt="Super Mario World SNES Front Cover" border="0" 
+    #       src="/images/covers/t/79892-super-mario-world-snes-front-cover.jpg" height="42" width="60" >
     # </a>
     # </div>
     # <div class="searchData">
@@ -349,8 +351,8 @@ class Scraper_ArcadeDB():
             log_debug('Scraper_ArcadeDB::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
             log_debug('Scraper_ArcadeDB::get_search AEL platform       "{0}"'.format(platform))
 
-        # MAME always uses rom_base_noext and ignores search_string.
-        # Example game search: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino
+        # >> MAME always uses rom_base_noext and ignores search_string.
+        # >> Example game search: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino
         url = 'http://adb.arcadeitalia.net/dettaglio_mame.php?lang=en&game_name={0}'.format(rom_base_noext)
         page_data = net_get_URL_oneline(url)
 
@@ -363,14 +365,15 @@ class Scraper_ArcadeDB():
         m = re.findall('<h2>Error: Game not found</h2>', page_data)
         if m:
             log_debug('Scraper_ArcadeDB::get_search Game NOT found "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_ArcadeDB::get_search Returning empty game_list')
         else:
-            # Example URL: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino&lang=en
-            # <div id="game_description" class="invisibile">Cadillacs and Dinosaurs (World 930201)</div>
+            # >> Example URL: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino&lang=en
+            # >> <div id="game_description" class="invisibile">Cadillacs and Dinosaurs (World 930201)</div>
             m_title = re.findall('<div id="game_description" class="invisibile">(.+?)</div>', page_data)
             if not m_title: return game_list
             game = {}
-            game['id']           = url
             game['display_name'] = m_title[0]
+            game['id']           = url
             game_list.append(game)
 
         return game_list
