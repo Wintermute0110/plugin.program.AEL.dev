@@ -4330,8 +4330,8 @@ class Main:
         dialog = xbmcgui.Dialog()
         output_dir = dialog.browse(3, 'Select Collection output directory', 'files').decode('utf-8')
         if not output_dir: return
+        output_dir_FileName = FileName(output_dir)
 
-        output_dir = Path(output_dir)
         # --- Load collection ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
@@ -4355,28 +4355,32 @@ class Main:
                 kodi_dialog_OK('ROM Collection export cancelled.')
                 return
 
-            # --- Copy Collection assets ---
+            # --- Copy Collection assets to Collection asset directory ---
             log_info('_command_export_collection() Copying Collection assets...')
-            collections_asset_dir = self.settings['collections_asset_dir']
+            collections_asset_dir_FileName = FileName(self.settings['collections_asset_dir'])
             collection_assets_were_copied = False
             for asset_kind in CATEGORY_ASSET_LIST:
-                A = assets_get_info_scheme(asset_kind)
-                asset_filename = collection[A.key]
-                asset_F = misc_split_path(asset_filename)
-                if not asset_filename:
-                    log_debug('{0:<9s} not set.'.format(A.name))
+                AInfo = assets_get_info_scheme(asset_kind)
+                asset_FileName = FileName(collection[AInfo.key])
+                if not collection[AInfo.key]:
+                    log_debug('{0:<9s} not set.'.format(AInfo.name))
                     continue
-                elif asset_F.dirname == collections_asset_dir:
-                    log_debug('{0:<9s} in Collection asset dir'.format(A.name))
+                elif asset_FileName.getDirname() == collections_asset_dir_FileName.getDirname():
+                    log_debug('{0:<9s} in Collection asset dir'.format(AInfo.name))
                     continue
                 else:
-                    log_debug('{0:<9s} in external dir'.format(A.name))
-                    new_asset_filename = assets_get_path_noext_SUFIX(A, collections_asset_dir, collection['m_name'], collection['id']) + asset_F.ext
-                    log_debug('{0:<9s} COPY "{1}"'.format(A.name, asset_filename))
-                    log_debug('{0:<9s}   TO "{1}"'.format(A.name, new_asset_filename))
+                    log_debug('{0:<9s} in external dir'.format(AInfo.name))
+                    new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FileName, collection['m_name'], collection['id'])
+                    new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
+                    log_debug('{0:<9s} OR COPY "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
+                    log_debug('{0:<9s} OR   TO "{1}"'.format(AInfo.name, new_asset_FileName.getOriginalPath()))
+                    log_debug('{0:<9s} RE COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
+                    log_debug('{0:<9s} RE   TO "{1}"'.format(AInfo.name, new_asset_FileName.getPath()))
                     try:
-                        source_path = asset_filename.decode(get_fs_encoding(), 'ignore')
-                        dest_path   = new_asset_filename.decode(get_fs_encoding(), 'ignore')
+                        source_path = asset_FileName.getPath().decode(get_fs_encoding(), 'ignore')
+                        dest_path   = new_asset_FileName.getPath().decode(get_fs_encoding(), 'ignore')
+                        log_debug('source_path "{0}"'.format(source_path))
+                        log_debug('dest_path   "{0}"'.format(dest_path))
                         shutil.copy(source_path, dest_path)
                     except OSError:
                         log_error('_command_export_collection() OSError exception copying image')
@@ -4388,7 +4392,7 @@ class Main:
                         return
 
                     # >> Asset were copied. Update ROM Collection database.
-                    rom_item[A.key] = new_asset_filename
+                    rom_item[A.key] = new_asset_FileName.getOriginalPath()
                     collection_assets_were_copied = True
 
             # --- Copy Collection ROM assets ---
@@ -4397,25 +4401,28 @@ class Main:
             for rom_item in collection_rom_list:
                 log_debug('_command_export_collection() ROM "{0}"'.format(rom_item['m_name']))
                 for asset_kind in ROM_ASSET_LIST:
-                    A = assets_get_info_scheme(asset_kind)
-                    asset_filename = rom_item[A.key]
-                    asset_F = misc_split_path(asset_filename)
-                    if not asset_filename:
-                        log_debug('{0:<9s} not set.'.format(A.name))
+                    AInfo = assets_get_info_scheme(asset_kind)
+                    asset_FileName = FileName(rom_item[AInfo.key])
+                    if not rom_item[AInfo.key]:
+                        log_debug('{0:<9s} not set.'.format(AInfo.name))
                         continue
-                    elif asset_F.dirname == collections_asset_dir:
-                        log_debug('{0:<9s} in Collection asset dir'.format(A.name))
+                    elif asset_FileName.getDirname() == collections_asset_dir_FileName.getDirname():
+                        log_debug('{0:<9s} in Collection asset dir'.format(AInfo.name))
                         continue
                     else:
                         # >> Copy asset from parent into ROM Collection asset dir
-                        log_debug('{0:<9s} in external dir'.format(A.name))
-                        ROM_F = misc_split_path(rom_item['filename'])
-                        new_asset_filename = assets_get_path_noext_SUFIX(A, collections_asset_dir, ROM_F.base_noext, rom_item['id']) + asset_F.ext
-                        log_debug('{0:<9s} COPY "{1}"'.format(A.name, asset_filename))
-                        log_debug('{0:<9s}   TO "{1}"'.format(A.name, new_asset_filename))
+                        log_debug('{0:<9s} in external dir'.format(AInfo.name))
+                        ROM_FileName = FileName(rom_item['filename'])
+                        new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FileName, 
+                                                                               ROM_FileName.getBasename_noext(), rom_item['id'])
+                        new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
+                        log_debug('{0:<9s} OR COPY "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
+                        log_debug('{0:<9s} OR   TO "{1}"'.format(AInfo.name, new_asset_FileName.getOriginalPath()))
+                        log_debug('{0:<9s} RE COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
+                        log_debug('{0:<9s} RE   TO "{1}"'.format(AInfo.name, new_asset_FileName.getPath()))
                         try:
-                            source_path = asset_filename.decode(get_fs_encoding(), 'ignore')
-                            dest_path   = new_asset_filename.decode(get_fs_encoding(), 'ignore')
+                            source_path = asset_FileName.getPath().decode(get_fs_encoding(), 'ignore')
+                            dest_path   = new_asset_FileName.getPath().decode(get_fs_encoding(), 'ignore')
                             shutil.copy(source_path, dest_path)
                         except OSError:
                             log_error('_command_export_collection() OSError exception copying image')
@@ -4433,9 +4440,11 @@ class Main:
             # >> Write ROM Collection DB.
             if collection_assets_were_copied:
                 fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+                log_info('_command_export_collection() Collection assets were copied. Saving Collection index')
             if ROM_assets_were_copied:
                 json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
                 fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
+                log_info('_command_export_collection() Collection ROM assets were copied. Saving Collection database')
 
         # --- Export collection metadata (Always) ---
         output_filename = output_dir.join(collection['m_name'] + '.json')
