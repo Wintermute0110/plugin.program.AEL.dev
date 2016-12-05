@@ -278,6 +278,7 @@ def fs_aux_copy_ROM_launcher_info(source_launcher, dest_rom):
     dest_rom['platform']    = source_launcher['platform']
     dest_rom['application'] = source_launcher['application']
     dest_rom['args']        = source_launcher['args']
+    dest_rom['args_extra']  = source_launcher['args_extra']
     dest_rom['rompath']     = source_launcher['rompath']
     dest_rom['romext']      = source_launcher['romext']
     dest_rom['minimize']    = source_launcher['minimize']
