@@ -32,13 +32,8 @@ import base64
 # ~~~ Using ElementTree seems to solve the problem
 import xml.etree.ElementTree as ET
 
-# --- Kodi stuff ---
-import xbmc
-
 # --- AEL packages ---
 from utils import *
-# >> Avoid circular dependencies. assets.py imports disk_IO.py.
-# from assets import *
 from utils_kodi import *
 
 # --- AEL ROM storage version format ---
