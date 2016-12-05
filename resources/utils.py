@@ -23,8 +23,7 @@ from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch
 
 # --- AEL modules ---
-# from disk_IO import *
-from utils_kodi import *
+# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text

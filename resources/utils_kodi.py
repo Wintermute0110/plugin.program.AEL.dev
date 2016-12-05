@@ -27,17 +27,10 @@ import sys, os, shutil, time, random, hashlib, urlparse
 try:
     import xbmc, xbmcgui
 except:
-    # --- Create fake Kodi functions ---
-    # >> This is useful when using AEL code from outside Kodi.
-    class xbmc:
-        LOGERROR = 0
-        def log(self, str): print(str)
+    from utils_kodi_standalone import *
 
 # --- AEL modules ---
-# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid 
-# >> circular dependencies.
-# from utils import *
-# from disk_IO import *
+# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
 
 # --- Constants ---------------------------------------------------------------
 LOG_ERROR   = 0

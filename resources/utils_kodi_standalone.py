@@ -22,3 +22,14 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+
+# --- Make fake Kodi functions ---
+class xbmc_wrapper:
+    LOGINFO  = 3
+    LOGERROR = 5
+
+    def log(self, log_text, level):
+        print(log_text)
+
+# --- Fake xbmc class ---
+xbmc = xbmc_wrapper()
