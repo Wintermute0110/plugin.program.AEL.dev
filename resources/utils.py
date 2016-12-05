@@ -77,6 +77,27 @@ def text_unescape_XML(data_str):
     
     return data_str
 
+#
+# http://www.w3schools.com/tags/ref_urlencode.asp
+#
+def text_decode_HTML(s):
+    # >> Must be done first
+    s = s.replace('%25', '%')
+    
+    s = s.replace('%20', ' ')
+    s = s.replace('%23', '#')
+    s = s.replace('%26', '&')
+    s = s.replace('%28', '(')
+    s = s.replace('%29', ')')
+    s = s.replace('%2C', ',')
+    s = s.replace('%2F', '/')
+    s = s.replace('%3B', ';')
+    s = s.replace('%3A', ':')
+    s = s.replace('%3D', '=')
+    s = s.replace('%3F', '?')
+
+    return s
+
 def text_unescape_HTML(s):
     # >> Replace single HTML characters by their Unicode equivalent
     s = s.replace('<br>',   '\n')
@@ -87,17 +108,21 @@ def text_unescape_HTML(s):
     s = s.replace('&quot;', '"')
     s = s.replace('&nbsp;', ' ')
     s = s.replace('&copy;', '©')
+    s = s.replace('&amp;',  '&') # >> Must be done last
 
     # >> Complex HTML entities. Single HTML chars must be already replaced.
     s = s.replace('&#039;', "'")
     s = s.replace('&#149;', "•")
+    s = s.replace('&#x22;', '"')
     s = s.replace('&#x26;', '&')
     s = s.replace('&#x27;', "'")
 
-    # >> Must be done last
-    s = s.replace('&amp;',  '&')
+    return s
 
-    # >> Remove HTML tags
+#    
+# Remove HTML tags
+#
+def text_remove_HTML_tags(s):
     p = re.compile(r'<.*?>')
     s = p.sub('', s)
 
@@ -379,13 +404,13 @@ class FileName:
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
 # -------------------------------------------------------------------------------------------------
-ID_LENGTH     = 60
+ID_LENGTH     = 70
 NAME_LENGTH   = 60
 GENRE_LENGTH  = 20
 YEAR_LENGTH   = 4
 STUDIO_LENGTH = 20
 PLOT_LENGTH   = 70
-URL_LENGTH    = 62
+URL_LENGTH    = 70
 
 def print_scraper_list(scraper_obj_list):
     print('Scraper name')
@@ -431,12 +456,13 @@ def print_game_image_list(scraperObj, results, asset_kind):
     if results:
         image_list = scraperObj.get_images(results[0], asset_kind)
         print('Found {0} image/s'.format(len(image_list)))
-        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH), 
-                                   'URL'.ljust(URL_LENGTH), 'Display URL'.ljust(URL_LENGTH)))
+        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH),
+                                   'ID'.ljust(ID_LENGTH), 
+                                   'URL'.ljust(URL_LENGTH)))
         print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
         for image in image_list:
             display_name  = text_limit_string(image['name'], NAME_LENGTH)
+            id            = text_limit_string(image['id'], ID_LENGTH)
             url           = text_limit_string(image['URL'], URL_LENGTH)
-            disp_url      = text_limit_string(image['disp_URL'], URL_LENGTH)
-            print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), url.ljust(URL_LENGTH), disp_url.ljust(URL_LENGTH)))
+            print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH), url.ljust(URL_LENGTH)))
         print('\n')
