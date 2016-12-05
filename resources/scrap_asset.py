@@ -70,6 +70,8 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
             self.get_images_cached_game_id_url = game_id_url
             self.get_images_cached_page_data   = page_data
 
+        return page_data
+
     # Call scraper shared code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
         return Scraper_TheGamesDB.get_search(self, search_string, rom_base_noext, platform)
@@ -192,6 +194,8 @@ class asset_GameFAQs(Scraper_Asset, Scraper_GameFAQs):
             page_data = net_get_URL_oneline(game_id_url)
             self.get_images_cached_game_id_url = game_id_url
             self.get_images_cached_page_data   = page_data
+
+        return page_data
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
@@ -351,6 +355,8 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             page_data = net_get_URL_oneline(game_id_url)
             self.get_images_cached_game_id_url = game_id_url
             self.get_images_cached_page_data   = page_data
+
+        return page_data
 
     # Call common code in parent class
     def get_search(self, search_string, rom_base_noext, platform):
