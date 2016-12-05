@@ -5029,7 +5029,7 @@ class Main:
         info_text += "[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
         info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher['application'])
         info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
-        info_text += "[COLOR skyblue]args_extra[/COLOR]: '{0}'\n".format(launcher['args_extra'])
+        info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(launcher['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
