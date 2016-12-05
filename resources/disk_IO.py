@@ -1852,9 +1852,9 @@ def fs_get_category_NFO_name(settings, category):
 #
 # Collection NFO files. Same as Cateogory NFO files.
 #
-def fs_export_collection_NFO(nfo_file_path, collection):
+def fs_export_collection_NFO(nfo_FileName, collection):
     # --- Get NFO file name ---
-    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{0}"'.format(nfo_file_path.getPath()))
+    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -1866,35 +1866,34 @@ def fs_export_collection_NFO(nfo_file_path, collection):
     nfo_content.append('</collection>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_file_path.getPath(), 'w')
+        f = open(nfo_FileName.getPath(), 'w')
         f.write(full_string)
         f.close()
     except:
-        kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_file_path.getName()))
-        log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_file_path.getPath()))
+        kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_FileName.getName()))
+        log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
         return False
-    kodi_notify('Created NFO file {0}'.format(os.path.basename(nfo_file_path.getName())))
-    log_debug("fs_export_collection_NFO() Created '{0}'".format(nfo_file_path.getPath()))
+    log_debug("fs_export_collection_NFO() Created '{0}'".format(nfo_FileName.getPath()))
 
     return True
 
-def fs_import_collection_NFO(nfo_file_path, collections, launcherID):
+def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
     # --- Get NFO file name ---
-    log_debug('fs_import_collection_NFO() Importing launcher NFO "{0}"'.format(nfo_file_path.getOriginalPath()))
+    log_debug('fs_import_collection_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # --- Import data ---
-    if os.path.isfile(nfo_file_path.getPath()):
+    if nfo_FileName.isfile():
         try:
-            file = codecs.open(nfo_file_path.getPath(), 'r', 'utf-8')
+            file = codecs.open(nfo_FileName.getPath(), 'r', 'utf-8')
             item_nfo = file.read().replace('\r', '').replace('\n', '')
             file.close()
         except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getName()))
-            log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_file_path.getPath()))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getName()))
+            log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
             return False
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_file_path.getOriginalPath())))
-        log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_file_path.getPath()))
+        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getOriginalPath())))
+        log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
         return False
 
     item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
@@ -1905,15 +1904,14 @@ def fs_import_collection_NFO(nfo_file_path, collections, launcherID):
     if item_rating: collections[launcherID]['m_rating'] = text_unescape_XML(item_rating[0])
     if item_plot:   collections[launcherID]['m_plot']   = text_unescape_XML(item_plot[0])
 
-    kodi_notify('Imported {0}'.format(os.path.basename(nfo_file_path.getOriginalPath())))
-    log_verb("fs_import_collection_NFO() Imported '{0}'".format(nfo_file_path.getOriginalPath()))
+    log_verb("fs_import_collection_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
 
     return True
 
 def fs_get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
     nfo_dir = settings['collections_asset_dir']
-    nfo_file_path = os.path.join(nfo_dir, collection_name + '.nfo')
-    log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path))
+    nfo_file_path = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
+    log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path

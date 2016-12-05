@@ -4016,9 +4016,8 @@ class Main:
 
         # --- Edit category metadata ---
         if type == 0:
-            NFO_file = fs_get_collection_NFO_name(self.settings, collection)            
-            NFO_filepath = Path(NFO_file)
-            NFO_str = 'default NFO found' if NFO_filepath.exists() else 'default NFO not found'
+            NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)            
+            NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
             plot_str = text_limit_string(collection['m_plot'], DESCRIPTION_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
@@ -4026,8 +4025,8 @@ class Main:
                                    "Edit Genre: '{0}'".format(collection['m_genre']),
                                    "Edit Rating: '{0}'".format(collection['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
-                                   'Import NFO file ({0})'.format(NFO_str),
-                                   'Import NFO file (browse for file)...',
+                                   'Import NFO file (default, {0})'.format(NFO_str),
+                                   'Import NFO file (browse NFO file)...',
                                    'Save NFO file (default location)'])
             if type2 < 0: return
 
@@ -4074,27 +4073,29 @@ class Main:
             # --- Import collection metadata from NFO file (automatic) ---
             elif type2 == 4:
                 # >> Returns True if changes were made
-                NFO_file = fs_get_collection_NFO_name(self.settings, collection)
-                NFO_filepath = Path(NFO_file)
-                if not fs_import_collection_NFO(NFO_filepath, collections, launcherID): return
-                kodi_notify('Imported Collection NFO file')
+                NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)
+                if not fs_import_collection_NFO(NFO_FileName, collections, launcherID): return
+                kodi_notify('Imported Collection NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Browse for collection NFO file ---
             elif type2 == 5:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
-                NFO_filepath = Path(NFO_file)
-                if not NFO_filepath.exists(): return
+                log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
+                if not NFO_file: return
+                NFO_FileName = FileName(NFO_file)
+                if not NFO_FileName.exists(): return
                 # >> Returns True if changes were made
-                if not fs_import_collection_NFO(NFO_filepath, collections, launcherID): return
-                kodi_notify('Imported Collection NFO file')
+                if not fs_import_collection_NFO(NFO_FileName, collections, launcherID): return
+                kodi_notify('Imported Collection NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Export collection metadata to NFO file ---
             elif type2 == 6:
-                # >> No need to save collections at the end of function
-                NFO_file = fs_get_collection_NFO_name(self.settings, collection)
-                NFO_filepath = Path(NFO_file)
-                fs_export_collection_NFO(NFO_filepath, collection)
-                kodi_notify('Exported Collection NFO file')
+                NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)
+                # >> Returns False if exception happened. If an Exception happened function notifies
+                # >> user, so display nothing to not overwrite error notification.
+                if not fs_export_collection_NFO(NFO_FileName, collection): return
+                # >> No need to save categories/launchers
+                kodi_notify('Exported Collection NFO file {0}'.format(NFO_FileName.getPath()))
                 return
 
         # --- Edit artwork ---

@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.6 | XX December 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.6 | XX January 2017[/B]
 
 WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
 
