@@ -13,8 +13,8 @@
 </category>
 <category label="ROM scraping">
     <setting id="separator" type="lsep" label="Scrapers"/>
-    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="Asset scraper" type="enum" id="asset_scraper" default="0" values="TheGamesDB|GameFAQs|MobyGames"/>
+    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Asset scraper" type="enum" id="asset_scraper" default="0" values="TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
 
     <setting id="separator" type="lsep" label="Scraping mode"/>
     <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
