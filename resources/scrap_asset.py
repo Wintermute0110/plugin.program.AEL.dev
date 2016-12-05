@@ -713,5 +713,7 @@ class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
     #
     def resolve_image_URL(self, image_dic):
         log_debug('asset_ArcadeDB::resolve_image_URL Resolving {0}'.format(image_dic['name']))
-
-        return image_dic['id']
+        image_url = image_dic['id']
+        image_ext = text_get_image_URL_extension(image_url)
+        
+        return (image_url, image_ext)
