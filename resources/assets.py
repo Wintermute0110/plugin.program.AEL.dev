@@ -19,8 +19,7 @@ import os
 
 # --- AEL packages ---
 from utils import *
-# from utils_kodi import *
-# from disk_IO import *
+from utils_kodi import *
 
 # --- Define "constants" ---
 ASSET_TITLE     = 100

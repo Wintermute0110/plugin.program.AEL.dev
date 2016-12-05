@@ -14,29 +14,36 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
+
+
 WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
          deprecated os.system().
 
 WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
          mechanism based on subprocess module.
 
+
+
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
          online and offline scraper.
-
-WIP      Full Extranafart support for Categories/Launchers.
-
-WIP      Full Extranafart for ROMs.
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
 WIP      Add nplayers metadata field to ROMs.
 
-WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
-WIP      New Arcade Database online metadata/asset scraper for MAME ROMs.
+
+WIP      Full Extranafart support for Categories/Launchers.
+
+WIP      Full Extranafart for ROMs.
+
+
+WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | XX December 2016[/B]
+
+FEATURE  New Arcade Database online metadata/asset scraper for MAME ROMs.
 
 FEATURE  Support for several arguments in launcher. This will be useful when using MAME for
          console emulation (MAME consoles from a different region have different names, and an

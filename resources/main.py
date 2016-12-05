@@ -2003,18 +2003,18 @@ class Main:
             img_trailer      = 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'
 
             img_list = [
-                {'name' : 'Edit Title...',     'label2' : label2_title,     'icon' : img_title},
-                {'name' : 'Edit Snap...',      'label2' : label2_snap,      'icon' : img_snap},
-                {'name' : 'Edit Fanart...',    'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner...',    'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Clearlogo...', 'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Boxfront...',  'label2' : label2_boxfront,  'icon' : img_boxfront},
-                {'name' : 'Edit Boxback...',   'label2' : label2_boxback,   'icon' : img_boxback},
-                {'name' : 'Edit Cartridge...', 'label2' : label2_cartridge, 'icon' : img_cartridge},
-                {'name' : 'Edit Flyer...',     'label2' : label2_flyer,     'icon' : img_flyer},
-                {'name' : 'Edit Map...',       'label2' : label2_map,       'icon' : img_map},
-                {'name' : 'Edit Manual...',    'label2' : label2_manual,    'icon' : img_manual},
-                {'name' : 'Edit Trailer...',   'label2' : label2_trailer,   'icon' : img_trailer}
+                {'name' : 'Edit Title...',            'label2' : label2_title,     'icon' : img_title},
+                {'name' : 'Edit Snap...',             'label2' : label2_snap,      'icon' : img_snap},
+                {'name' : 'Edit Fanart...',           'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner/Marquee...',   'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Clearlogo...',        'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Boxfront/Cabinet...', 'label2' : label2_boxfront,  'icon' : img_boxfront},
+                {'name' : 'Edit Boxback/CPanel...',   'label2' : label2_boxback,   'icon' : img_boxback},
+                {'name' : 'Edit Cartridge/PCB...',    'label2' : label2_cartridge, 'icon' : img_cartridge},
+                {'name' : 'Edit Flyer...',            'label2' : label2_flyer,     'icon' : img_flyer},
+                {'name' : 'Edit Map...',              'label2' : label2_map,       'icon' : img_map},
+                {'name' : 'Edit Manual...',           'label2' : label2_manual,    'icon' : img_manual},
+                {'name' : 'Edit Trailer...',          'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit ROM Assets/Artwork', img_list)
 
