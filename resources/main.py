@@ -4363,16 +4363,22 @@ class Main:
             for asset_kind in CATEGORY_ASSET_LIST:
                 AInfo = assets_get_info_scheme(asset_kind)
                 asset_FileName = FileName(collection[AInfo.key])
+                new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FileName,
+                                                                       collection['m_name'], collection['id'])
+                new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                 if not collection[AInfo.key]:
                     log_debug('{0:<9s} not set.'.format(AInfo.name))
                     continue
-                elif asset_FileName.getDirname() == collections_asset_dir_FileName.getDirname():
+                elif asset_FileName.getPath() == new_asset_FileName.getPath():
                     log_debug('{0:<9s} in Collection asset dir'.format(AInfo.name))
+                    continue
+                # >> If asset cannot be found then ignore it. Do not touch JSON database.
+                elif not asset_FileName.exists():
+                    log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
+                    log_debug('{0:<9s} ignored'.format(AInfo.name))
                     continue
                 else:
                     log_debug('{0:<9s} in external dir'.format(AInfo.name))
-                    new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FileName, collection['m_name'], collection['id'])
-                    new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                     log_debug('{0:<9s} OR COPY "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
                     log_debug('{0:<9s} OR   TO "{1}"'.format(AInfo.name, new_asset_FileName.getOriginalPath()))
                     log_debug('{0:<9s} RE COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
@@ -4393,7 +4399,7 @@ class Main:
                         return
 
                     # >> Asset were copied. Update ROM Collection database.
-                    rom_item[A.key] = new_asset_FileName.getOriginalPath()
+                    collection[AInfo.key] = new_asset_FileName.getOriginalPath()
                     collection_assets_were_copied = True
 
             # --- Copy Collection ROM assets ---
@@ -4404,19 +4410,24 @@ class Main:
                 for asset_kind in ROM_ASSET_LIST:
                     AInfo = assets_get_info_scheme(asset_kind)
                     asset_FileName = FileName(rom_item[AInfo.key])
+                    ROM_FileName = FileName(rom_item['filename'])
+                    new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FileName, 
+                                                                           ROM_FileName.getBasename_noext(), rom_item['id'])
+                    new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                     if not rom_item[AInfo.key]:
                         log_debug('{0:<9s} not set.'.format(AInfo.name))
                         continue
-                    elif asset_FileName.getDirname() == collections_asset_dir_FileName.getDirname():
+                    elif asset_FileName.getPath() == new_asset_FileName.getPath():
                         log_debug('{0:<9s} in Collection asset dir'.format(AInfo.name))
+                        continue
+                    # >> If asset cannot be found then ignore it. Do not touch JSON database.
+                    elif not asset_FileName.exists():
+                        log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
+                        log_debug('{0:<9s} ignored'.format(AInfo.name))
                         continue
                     else:
                         # >> Copy asset from parent into ROM Collection asset dir
                         log_debug('{0:<9s} in external dir'.format(AInfo.name))
-                        ROM_FileName = FileName(rom_item['filename'])
-                        new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FileName, 
-                                                                               ROM_FileName.getBasename_noext(), rom_item['id'])
-                        new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                         log_debug('{0:<9s} OR COPY "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
                         log_debug('{0:<9s} OR   TO "{1}"'.format(AInfo.name, new_asset_FileName.getOriginalPath()))
                         log_debug('{0:<9s} RE COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
@@ -4435,7 +4446,7 @@ class Main:
                             return
 
                         # >> Asset were copied. Update ROM Collection database.
-                        rom_item[A.key] = new_asset_filename
+                        rom_item[AInfo.key] = new_asset_FileName.getOriginalPath()
                         ROM_assets_were_copied = True
 
             # >> Write ROM Collection DB.
@@ -4448,17 +4459,19 @@ class Main:
                 log_info('_command_export_collection() Collection ROM assets were copied. Saving Collection database')
 
         # --- Export collection metadata (Always) ---
-        output_filename = output_dir.join(collection['m_name'] + '.json')
-        fs_export_ROM_collection(output_filename, collection, collection_rom_list)
+        output_FileName = output_dir_FileName.join(collection['m_name'] + '.json')
+        fs_export_ROM_collection(output_FileName, collection, collection_rom_list)
 
         # --- Export collection assets (Optional) ---
         if export_type == 1:
-            output_filename = output_dir.join(collection['m_name'] + '_assets.json')
-            fs_export_ROM_collection_assets(output_filename, collection, collection_rom_list, collections_asset_dir)
+            output_FileName = output_dir_FileName.join(collection['m_name'] + '_assets.json')
+            fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_list, collections_asset_dir_FileName)
 
         # >> User info
-        if   export_type == 0: kodi_dialog_OK('Exported ROM Collection {0} metadata.'.format(collection['m_name']))
-        elif export_type == 1: kodi_dialog_OK('Exported ROM Collection {0} metadata and assets.'.format(collection['m_name']))
+        if   export_type == 0:
+            kodi_notify('Exported ROM Collection {0} metadata.'.format(collection['m_name']))
+        elif export_type == 1:
+            kodi_notify('Exported ROM Collection {0} metadata and assets.'.format(collection['m_name']))
 
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
         # >> ROM in Virtual Launcher

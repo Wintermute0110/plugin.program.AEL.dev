@@ -35,6 +35,7 @@ import xml.etree.ElementTree as ET
 # --- AEL packages ---
 from utils import *
 from utils_kodi import *
+from assets import *
 
 # --- AEL ROM storage version format ---
 # >> An integer number incremented whenever there is a change in the ROM storage format.
@@ -955,8 +956,8 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
 #
 # Export collection assets. Use base64 encoding to store binary files in JSON.
 #
-def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_list, collections_asset_dir):
-    log_info('fs_export_ROM_collection_assets() File {0}'.format(output_filename.getOriginalPath()))
+def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_list, collections_asset_dir_FileName):
+    log_info('fs_export_ROM_collection_assets() File {0}'.format(output_FileName.getOriginalPath()))
 
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROM assets',
@@ -967,49 +968,56 @@ def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_
     assets_dic = {}
     log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
     for asset_kind in [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER]:
-        A = assets_get_info_scheme(asset_kind)
-        asset_filename = collection[A.key]
-        asset_F = misc_split_path(asset_filename)
-        if not asset_filename:
-            log_debug('{0:<9s} not set'.format(A.name))
+        AInfo = assets_get_info_scheme(asset_kind)
+        asset_FileName = FileName(collection[AInfo.key])
+        if not collection[AInfo.key]:
+            log_debug('{0:<9s} not set'.format(AInfo.name))
             continue
-        elif asset_F.dirname == collections_asset_dir:
-            log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(A.name, asset_F.base_noext))
-            with open(asset_filename, mode = 'rb') as file: # b is important -> binary
-                fileData = file.read()
+        elif not asset_FileName.exists():
+            log_error('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getPath()))
+            log_error('{0:<9s} ignoring'.format(AInfo.name))
+            continue
+        elif asset_FileName.getDirname() != collections_asset_dir_FileName.getPath():
+            log_error('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
+            continue
+        # >> Read image binary data and encode
+        log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FileName.getBasename_noext()))
+        with open(asset_FileName.getPath(), mode = 'rb') as file: # b is important -> binary
+            fileData = file.read()
             fileData_base64 = base64.b64encode(fileData)
-            statinfo = os.stat(asset_filename)
+            statinfo = os.stat(asset_FileName.getPath())
             file_size = statinfo.st_size
-            a_dic = {'basename' : asset_F.base, 'filesize' : file_size, 'data' : fileData_base64}
-            assets_dic[asset_F.base_noext] = a_dic
-        else:
-            log_error('{0:<9s} in parent ROM directory! This is not supposed to happen!'.format(A.name))
+            a_dic = {'basename' : asset_FileName.getBasename_noext(), 'filesize' : file_size, 'data' : fileData_base64}
+            assets_dic[asset_FileName.getBasename_noext()] = a_dic
 
     # --- Export ROMs assets ---
     # key -> basename : value { 'filesize' : int, 'data' : string }
+    log_debug('fs_export_ROM_collection_assets() Exporting ROM assets')
     for rom_item in collection_rom_list:
         log_debug('fs_export_ROM_collection_assets() ROM "{0}"'.format(rom_item['m_name']))
         for asset_kind in ROM_ASSET_LIST:
-            A = assets_get_info_scheme(asset_kind)
-            asset_filename = rom_item[A.key]
-            asset_F = misc_split_path(asset_filename)
-            if not asset_filename:
-                log_debug('{0:<9s} not set'.format(A.name))
+            AInfo = assets_get_info_scheme(asset_kind)
+            asset_FileName = FileName(rom_item[AInfo.key])
+            if not rom_item[AInfo.key]:
+                log_debug('{0:<9s} not set'.format(AInfo.name))
                 continue
-            elif asset_F.dirname == collections_asset_dir:
-                log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(A.name, asset_F.base_noext))
-                # >> Read image binary data and encode
-                with open(asset_filename, mode = 'rb') as file: # b is important -> binary
-                    fileData = file.read()
-                fileData_base64 = base64.b64encode(fileData)
-                # >> Get file size
-                statinfo = os.stat(asset_filename)
-                file_size = statinfo.st_size
-                # >> Make data dictionary and append to list
-                a_dic = {'basename' : asset_F.base, 'filesize' : file_size, 'data' : fileData_base64}
-                assets_dic[asset_F.base_noext] = a_dic
-            else:
-                log_error('{0:<9s} in parent ROM directory! This is not supposed to happen!'.format(A.name))
+            elif not asset_FileName.exists():
+                log_error('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getPath()))
+                log_error('{0:<9s} ignoring'.format(AInfo.name))
+                continue
+            elif asset_FileName.getDirname() != collections_asset_dir_FileName.getPath():
+                log_error('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
+                continue
+            # >> Read image binary data and encode
+            log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FileName.getBasename_noext()))
+            with open(asset_FileName.getPath(), mode = 'rb') as file: # b is important -> binary
+                fileData = file.read()
+            fileData_base64 = base64.b64encode(fileData)
+            statinfo = os.stat(asset_FileName.getPath())
+            file_size = statinfo.st_size
+            a_dic = {'basename' : asset_FileName.getBasename_noext(), 'filesize' : file_size, 'data' : fileData_base64}
+            assets_dic[asset_FileName.getBasename_noext()] = a_dic
+            log_error('{0:<9s} exported/encoded'.format(AInfo.name))
 
     raw_data = []
     raw_data.append(control_dic)
@@ -1017,15 +1025,15 @@ def fs_export_ROM_collection_assets(output_filename, collection, collection_rom_
 
     # >> Produce nicely formatted JSON when exporting
     try:
-        with io.open(output_filename.getPath(), 'w', encoding = 'utf-8') as file:
+        with io.open(output_FileName.getPath(), 'w', encoding = 'utf-8') as file:
             json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = 2, separators = (', ', ' : '))
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getPath()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_FileName.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename.getPath()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_FileName.getPath()))
 
 #
 # See fs_export_ROM_collection() function.
