@@ -7052,10 +7052,7 @@ class Main:
 
         # --- Link to a local image ---
         elif type2 == 1:
-            image_dir = ''
-            if object_dic[AInfo.key] != '':
-                F = misc_split_path(object_dic[AInfo.key])
-                image_dir = F.dirname
+            image_dir = FileName(object_dic[AInfo.key]).getDirname() if object_dic[AInfo.key] else ''
 
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             # >> ShowAndGetFile dialog
