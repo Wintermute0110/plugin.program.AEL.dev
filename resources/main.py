@@ -5545,6 +5545,7 @@ class Main:
 
     #
     # Launchs a ROM
+    # NOTE args_extre maybe present or not in Favourite ROM. In newer version of AEL always present.
     #
     def _command_run_rom(self, categoryID, launcherID, romID):
         # --- ROM in Favourites ---
@@ -5555,7 +5556,9 @@ class Main:
             recent_rom    = rom
             minimize_flag = rom['minimize']
             romext        = rom['romext']
-
+            standard_app  = rom['application']
+            standard_args = rom['args']
+            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Recently played ROMs list ---
         elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
             log_info('_command_run_rom() Launching ROM in Recently Played ROMs...')
@@ -5568,6 +5571,9 @@ class Main:
             recent_rom    = rom
             minimize_flag = rom['minimize']
             romext        = rom['romext']
+            standard_app  = rom['application']
+            standard_args = rom['args']
+            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Most played ROMs ---
         elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
             log_info('_command_run_rom() Launching ROM in Most played ROMs...')
@@ -5576,6 +5582,9 @@ class Main:
             recent_rom    = rom
             minimize_flag = rom['minimize']
             romext        = rom['romext']
+            standard_app  = rom['application']
+            standard_args = rom['args']
+            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_info('_command_run_rom() Launching ROM in Collection...')
@@ -5591,6 +5600,9 @@ class Main:
             recent_rom    = rom
             minimize_flag = rom['minimize']
             romext        = rom['romext']
+            standard_app  = rom['application']
+            standard_args = rom['args']
+            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
@@ -5611,6 +5623,9 @@ class Main:
             recent_rom    = rom
             minimize_flag = rom['minimize']
             romext        = rom['romext']
+            standard_app  = rom['application']
+            standard_args = rom['args']
+            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in standard ROM launcher ---
         else:
             log_info('_command_run_rom() Launching ROM in Launcher...')
@@ -5628,6 +5643,8 @@ class Main:
             recent_rom    = fs_get_Favourite_from_ROM(rom, launcher)
             minimize_flag = launcher['minimize']
             romext        = launcher['romext']
+            standard_app  = launcher['application']
+            standard_args = launcher['args']
             args_extra    = launcher['args_extra']
 
         # ~~~~~ Substitue additional arguments ~~~~~
@@ -5641,17 +5658,17 @@ class Main:
         elif args_extra:
             # >> Ask user what arguments to launch application
             log_info('_command_run_rom() Using Launcher args_extra')
-            arg_list = list(launcher['args'] + args_extra)
+            arg_list = list(standard_args + args_extra)
             dialog = xbmcgui.Dialog()
             dselect_ret = dialog.select('Edit Category Metadata', arg_list)
             if dselect_ret < 0: return
             log_info('_command_run_rom() User chose args index {0}'.format(dselect_ret))
-            application = launcher['application']
+            application = standard_app
             arguments   = arg_list[dselect_ret]
         else:
-            log_info('_command_run_rom() Using Launcher normal args')
-            application = launcher['application']
-            arguments   = launcher['args']
+            log_info('_command_run_rom() Using Launcher standard arguments')
+            application = standard_app
+            arguments   = standard_args
 
         # ~~~~~ Launch ROM ~~~~~
         application = FileName(application)
