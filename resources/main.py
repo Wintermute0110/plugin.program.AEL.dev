@@ -7224,6 +7224,9 @@ class Main:
             image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
             log_debug('Resolved {0} URL "{1}"'.format(AInfo.name, image_url))
             log_debug('URL extension "{0}"'.format(image_ext))
+            if not image_url or not image_ext:
+                log_error('_gui_edit_asset() image_url or image_ext empty/not set')
+                return False
 
             # --- If user chose the local image don't download anything ---
             if image_url != current_asset_path:
@@ -7243,6 +7246,9 @@ class Main:
                 # ~~~ Update Kodi cache with downloaded image ~~~
                 # Recache only if local image is in the Kodi cache, this function takes care of that.
                 kodi_update_image_cache(image_local_path)
+
+                # --- Notify user ---
+                kodi_notify('Downloaded {0} with {1} scraper'.format(AInfo.name, scraper_obj.name))
             else:
                 log_debug('Scraper: user chose local image "{1}"'.format(current_asset_path))
                 return False
