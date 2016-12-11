@@ -5654,7 +5654,7 @@ class Main:
         elif args_extra:
             # >> Ask user what arguments to launch application
             log_info('_command_run_rom() Using Launcher args_extra')
-            arg_list = list(standard_args + args_extra)
+            arg_list = list(standard_args) + args_extra
             dialog = xbmcgui.Dialog()
             dselect_ret = dialog.select('Edit Category Metadata', arg_list)
             if dselect_ret < 0: return
