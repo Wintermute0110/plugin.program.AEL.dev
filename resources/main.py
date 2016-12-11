@@ -1387,7 +1387,7 @@ class Main:
                             if not enabled_asset_list[i]: continue
                             ROM = misc_split_path(rom['filename'])
 
-                            asset_path = Path(launcher[A.path_key])
+                            asset_path = FileName(launcher[A.path_key])
                             local_asset = misc_look_for_file(asset_path, ROM.base_noext, A.exts)
 
                             if local_asset:
@@ -1926,7 +1926,7 @@ class Main:
                 dialog = xbmcgui.Dialog()
                 text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
                                           'files', '.txt|.dat', False, False).decode('utf-8')
-                text_file_path = Path(text_file)
+                text_file_path = FileName(text_file)
                 if text_file_path.exists():
                     file_data = self._gui_import_TXT_file(text_file_path)
                     roms[romID]['m_plot'] = file_data
@@ -3867,7 +3867,7 @@ class Main:
         for rom_fav_ID in roms_fav:
             pDialog.update(i * 100 / num_progress_items)
             i += 1
-            romFile = Path(roms_fav[rom_fav_ID]['filename'])
+            romFile = FileName(roms_fav[rom_fav_ID]['filename'])
             if not romFile.exists():
                 log_verb('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['m_name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
@@ -4240,7 +4240,7 @@ class Main:
 
         # --- Check if asset JSON exist. If so, ask the user about importing it. ---
         c_file_F = misc_split_path(collection_file)
-        collection_asset_path = Path(c_file_F.dirname)
+        collection_asset_path = FileName(c_file_F.dirname)
         collection_asset_file_F = collection_asset_path.join(c_file_F.base_noext + '_assets.json')
         import_collection_assets = False
         if collection_asset_file_F.exists():
@@ -4268,7 +4268,7 @@ class Main:
         # 1) Traverse every asset in every collection ROM.
         # 2) Compare asset basename with asset_dic contents. If match, then
         if import_collection_assets:
-            collections_asset_dir = Path(self.settings['collections_asset_dir'])
+            collections_asset_dir = FileName(self.settings['collections_asset_dir'])
             for rom_item in collection_rom_list:
                 log_debug('_command_import_collection() ROM "{0}"'.format(rom_item['m_name']))
                 for asset_kind in ROM_ASSET_LIST:
@@ -5381,7 +5381,7 @@ class Main:
         if not ret: return
 
         kodi_notify('Importing AL launchers.xml...')
-        AL_DATA_DIR = Path('special://profile/addon_data/plugin.program.advanced.launcher')
+        AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
         LAUNCHERS_FILE_PATH = AL_DATA_DIR.join('launchers.xml')
         FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.join('fixed_launchers.xml')
 
@@ -6546,7 +6546,7 @@ class Main:
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             romdata['m_name'] = text_format_ROM_title(ROM.base_noext, scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
-            nfo_file_path = Path(ROM.path_noext + ".nfo")
+            nfo_file_path = FileName(ROM.path_noext + ".nfo")
             scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             log_debug('Trying NFO file "{0}"'.format(nfo_file_path.getPath()))
@@ -7354,13 +7354,13 @@ class Main:
         path = ""
         try:
             skinshortcutsAddon = xbmcaddon.Addon('script.skinshortcuts')
-            path = Path(skinshortcutsAddon.getAddonInfo('path'))
+            path = FileName(skinshortcutsAddon.getAddonInfo('path'))
 
             libPath = path.join('resources', 'lib')
             sys.path.append(libPath.getPath())
 
             unidecodeModule = xbmcaddon.Addon('script.module.unidecode')
-            libPath = Path(unidecodeModule.getAddonInfo('path'))
+            libPath = FileName(unidecodeModule.getAddonInfo('path'))
             libPath = libPath.join('lib')
             sys.path.append(libPath.getPath())
 
