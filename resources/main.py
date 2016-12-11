@@ -3084,10 +3084,13 @@ class Main:
 
             # >> Mark No-Intro status
             if self.settings['display_nointro_stat']:
-                if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR red][Miss][/COLOR]'.format(rom_raw_name)
-                elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-                else:                                    rom_name = rom_raw_name
+                nstat = rom['nointro_status']
+                if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
+                elif nstat == NOINTRO_STATUS_ADDED:   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
+                elif nstat == NOINTRO_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                elif nstat == NOINTRO_STATUS_NONE:    rom_name = rom_raw_name
+                else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
             else:
                 rom_name = rom_raw_name
 
@@ -3117,12 +3120,13 @@ class Main:
 
                 # >> Mark No-Intro status
                 if self.settings['display_nointro_stat']:
-                    if   rom['nointro_status'] == 'Have':    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                    elif rom['nointro_status'] == 'Miss':    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-                    elif rom['nointro_status'] == 'Added':   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
-                    elif rom['nointro_status'] == 'Unknown': rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-                    elif rom['nointro_status'] == 'None':    rom_name = rom_raw_name
-                    else:                                    rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
+                    nstat = rom['nointro_status']
+                    if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                    elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
+                    elif nstat == NOINTRO_STATUS_ADDED:   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
+                    elif nstat == NOINTRO_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                    elif nstat == NOINTRO_STATUS_NONE:    rom_name = rom_raw_name
+                    else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
                 else:
                     rom_name = rom_raw_name
 
