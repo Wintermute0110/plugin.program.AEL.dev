@@ -5656,7 +5656,7 @@ class Main:
             log_info('_command_run_rom() Using Launcher args_extra')
             arg_list = [standard_args] + args_extra
             dialog = xbmcgui.Dialog()
-            dselect_ret = dialog.select('Edit Category Metadata', arg_list)
+            dselect_ret = dialog.select('Select launcher arguments', arg_list)
             if dselect_ret < 0: return
             log_info('_command_run_rom() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
             application = standard_app
