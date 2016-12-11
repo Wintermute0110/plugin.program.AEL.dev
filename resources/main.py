@@ -3194,7 +3194,8 @@ class Main:
         elif categoryID == VCATEGORY_RECENT_ID or categoryID == VCATEGORY_MOST_PLAYED_ID:
             commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
-             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
+             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID or \
+             categoryID == VCATEGORY_CATEGORY_ID:
             commands.append(('View Virtual Launcher ROM data',  self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
             commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
             commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
