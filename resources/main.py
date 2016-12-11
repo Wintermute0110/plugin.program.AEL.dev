@@ -3449,6 +3449,9 @@ class Main:
         elif categoryID == VCATEGORY_STUDIO_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
+        elif categoryID == VCATEGORY_CATEGORY_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+            launcher = self.launchers[roms[romID]['launcherID']]
         # >> ROMs in standard launcher
         else:
             launcher = self.launchers[launcherID]
@@ -3462,10 +3465,10 @@ class Main:
         # --- Load favourites ---
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
 
-        # DEBUG
-        log_verb('Adding ROM to Favourites')
-        log_verb('romID  {0}'.format(romID))
-        log_verb('m_name {0}'.format(roms[romID]['m_name']))
+        # --- DEBUG info ---
+        log_verb('_command_add_to_favourites() Adding ROM to Favourites')
+        log_verb('_command_add_to_favourites() romID  {0}'.format(romID))
+        log_verb('_command_add_to_favourites() m_name {0}'.format(roms[romID]['m_name']))
 
         # Check if ROM already in favourites an warn user if so
         if romID in roms_fav:
@@ -3491,6 +3494,7 @@ class Main:
         # if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = launcher['thumb']
         # if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = launcher['fanart']
         fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
+        kodi_notify('ROM {0} added to Favourites'.format(roms[romID]['m_name']))
         kodi_refresh_container()
 
     #
