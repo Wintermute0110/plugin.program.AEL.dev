@@ -1748,16 +1748,17 @@ class Main:
         # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
-            rompath = self.launchers[launcherID]['rompath']
+            rompath       = self.launchers[launcherID]['rompath']
+            launcher_name = self.launchers[launcherID]['m_name']
             # >> Standalone launcher
             if rompath == '':
-                ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(self.launchers[launcherID]['m_name']) +
+                ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(launcher_name) +
                                         'Are you sure you want to delete it?')
             # >> ROMs launcher
             else:
                 roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
                 num_roms = len(roms)
-                ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs '.format(self.launchers[launcherID]['m_name'], num_roms) +
+                ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs '.format(launcher_name, num_roms) +
                                         'Are you sure you want to delete it?')
             if not ret: return
 
@@ -1766,6 +1767,7 @@ class Main:
 
             # --- Remove launcher from database. Categories.xml will be saved at the end of function ---
             self.launchers.pop(launcherID)
+            kodi_notify('Deleted launcher {0}'.format(launcher_name))
 
         # User pressed cancel or close dialog
         if type < 0: return
