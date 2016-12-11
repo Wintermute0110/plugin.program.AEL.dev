@@ -4688,17 +4688,15 @@ class Main:
         if categoryID == VCATEGORY_FAVOURITES_ID:
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_TITLE_ID:
-            hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
         elif categoryID == VCATEGORY_YEARS_ID:
-            hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.join(launcherID + '.json')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
         elif categoryID == VCATEGORY_GENRE_ID:
-            hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.join(launcherID + '.json')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
         elif categoryID == VCATEGORY_STUDIO_ID:
-            hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.join(launcherID + '.json')
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+        elif categoryID == VCATEGORY_CATEGORY_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
         else:
             rom_file_path = ROMS_DIR.join(self.launchers[launcherID]['roms_base_noext'] + '.json')
             if not rom_file_path.exists():
