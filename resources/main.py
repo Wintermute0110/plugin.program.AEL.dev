@@ -923,39 +923,34 @@ class Main:
                 old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
                 old_PClone_index_file_json   = ROMS_DIR.join(old_roms_base_noext + '_PClone_index.json')
                 old_PClone_parents_file_json = ROMS_DIR.join(old_roms_base_noext + '_PClone_parents.json')
+                category_name                = self.categories[categoryID]['m_name']
+                new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
+                new_roms_file_json           = ROMS_DIR.join(new_roms_base_noext + '.json')
+                new_roms_file_xml            = ROMS_DIR.join(new_roms_base_noext + '.xml')
+                new_PClone_index_file_json   = ROMS_DIR.join(new_roms_base_noext + '_PClone_index.json')
+                new_PClone_parents_file_json = ROMS_DIR.join(new_roms_base_noext + '_PClone_parents.json')
+                log_debug('_command_edit_launcher() old_roms_base_noext "{0}"'.format(old_roms_base_noext))
+                log_debug('_command_edit_launcher() new_roms_base_noext "{0}"'.format(new_roms_base_noext))
+                # >> Rename ROMS JSON/XML
                 if old_roms_file_json.exists():
-                    log_debug('_command_edit_launcher() Edit Title: ROM JSON found')
-                    category_name                = self.categories[categoryID]['m_name']
-                    new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-                    new_roms_file_json           = ROMS_DIR.join(new_roms_base_noext + '.json')
-                    new_roms_file_xml            = ROMS_DIR.join(new_roms_base_noext + '.xml')
-                    new_PClone_index_file_json   = ROMS_DIR.join(new_roms_base_noext + '_PClone_index.json')
-                    new_PClone_parents_file_json = ROMS_DIR.join(new_roms_base_noext + '_PClone_parents.json')
-
-                    # >> Rename ROMS JSON/XML
                     old_roms_file_json.rename(new_roms_file_json)
                     log_debug('_command_edit_launcher() RENAMED {0}'.format(old_roms_file_json.getOriginalPath()))
                     log_debug('_command_edit_launcher()    into {0}'.format(new_roms_file_json.getOriginalPath()))
+                if old_roms_file_xml.exists():
                     old_roms_file_xml.rename(new_roms_file_xml)
                     log_debug('_command_edit_launcher() RENAMED {0}'.format(old_roms_file_xml.getOriginalPath()))
                     log_debug('_command_edit_launcher()    into {0}'.format(new_roms_file_xml.getOriginalPath()))
-
-                    # >> Renamed PClone files if found
-                    if old_PClone_index_file_json.exists():
-                        old_PClone_index_file_json.rename(new_PClone_index_file_json)
-                        log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_index_file_json))
-                        log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_index_file_json))
-                    if old_PClone_parents_file_json.exists():
-                        old_PClone_parents_file_json.rename(new_PClone_parents_file_json)
-                        log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_parents_file_json))
-                        log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_parents_file_json))
-
-                    # >> Update launcher roms_base_noext
-                    launcher['roms_base_noext'] = new_roms_base_noext
-                else:
-                    log_debug('_command_edit_launcher() Edit Title: ROM JSON NOT found')
-
+                # >> Renamed PClone files if found
+                if old_PClone_index_file_json.exists():
+                    old_PClone_index_file_json.rename(new_PClone_index_file_json)
+                    log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_index_file_json.getOriginalPath()))
+                    log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_index_file_json.getOriginalPath()))
+                if old_PClone_parents_file_json.exists():
+                    old_PClone_parents_file_json.rename(new_PClone_parents_file_json)
+                    log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_parents_file_json.getOriginalPath()))
+                    log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_parents_file_json.getOriginalPath()))
                 launcher['m_name'] = new_launcher_name
+                launcher['roms_base_noext'] = new_roms_base_noext
                 kodi_notify('Changed Launcher Title')
 
             # --- Selection of the launcher platform from AEL "official" list ---
