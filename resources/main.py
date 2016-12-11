@@ -6118,7 +6118,7 @@ class Main:
     #
     # Reset the No-Intro status
     # 1) Remove all ROMs which does not exist.
-    # 2) Set status of remaining ROMs to nointro_status = 'None'
+    # 2) Set status of remaining ROMs to nointro_status = NOINTRO_STATUS_NONE
     #
     def _roms_reset_NoIntro_status(self, roms):
         num_roms = len(roms)
@@ -6126,7 +6126,7 @@ class Main:
         if num_roms > 0:
             log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
             for rom_id in sorted(roms.iterkeys()):
-                roms[rom_id]['nointro_status'] = 'None'
+                roms[rom_id]['nointro_status'] = NOINTRO_STATUS_NONE
         else:
             log_info('_roms_reset_NoIntro_status() Launcher is empty. No dead ROM check.')
 
@@ -6140,7 +6140,7 @@ class Main:
     def _roms_update_NoIntro_status(self, launcher, roms, nointro_xml_file_FileName):
         # --- Reset the No-Intro status and removed No-Intro missing ROMs ---
         self.audit_have = self.audit_miss = self.audit_unknown = 0
-        self._roms_delete_NoIntro_missing_ROMs(roms)
+        self._roms_delete_NoIntro_added_ROMs(roms)
         self._roms_reset_NoIntro_status(roms)
 
         # --- Check if DAT file exists ---

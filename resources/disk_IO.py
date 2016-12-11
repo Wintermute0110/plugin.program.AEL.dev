@@ -132,8 +132,15 @@ def fs_new_launcher():
 # Mandatory variables in XML:
 # id              string MD5 hash
 # name            string ROM name
-# finished        bool ['True', 'False'] default 'False'
+# finished        bool default False
 # nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
+NOINTRO_STATUS_HAVE    = 'Have'
+NOINTRO_STATUS_MISS    = 'Miss'
+NOINTRO_STATUS_ADDED   = 'Added'
+NOINTRO_STATUS_UNKNOWN = 'Unknown'
+NOINTRO_STATUS_NONE    = 'None'
+NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE,    NOINTRO_STATUS_MISS, NOINTRO_STATUS_ADDED,
+                          NOINTRO_STATUS_UNKNOWN, NOINTRO_STATUS_NONE]
 def fs_new_rom():
     r = {'id' : '',
          'm_name' : '',
