@@ -5600,7 +5600,8 @@ class Main:
             args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
-             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID:
+             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID or \
+             categoryID == VCATEGORY_CATEGORY_ID:
             if categoryID == VCATEGORY_TITLE_ID:
                 log_info('_command_run_rom() Launching ROM in Virtual Launcher...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
@@ -5613,6 +5614,9 @@ class Main:
             elif categoryID == VCATEGORY_STUDIO_ID:
                 log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+            elif categoryID == VCATEGORY_CATEGORY_ID:
+                log_info('_command_run_rom() Launching ROM in Category Virtual Launcher...')
+                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
 
             rom           = roms[romID]
             recent_rom    = rom
