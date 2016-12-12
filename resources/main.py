@@ -5657,10 +5657,10 @@ class Main:
         # >> If ROM has altapp configured, then use altapp/altarg
         # >> If Launcher has args_extra configured then show a dialog to the user to selec the
         # >> arguments to launch ROM.
-        if rom['altapp']:
+        if rom['altapp'] or rom['altarg']:
             log_info('_command_run_rom() Using ROM altapp/altarg')
-            application = rom['altapp']
-            arguments   = rom['altarg']
+            application = rom['altapp'] if rom['altapp'] else standard_app
+            arguments   = rom['altarg'] if rom['altarg'] else standard_args
         elif args_extra:
             # >> Ask user what arguments to launch application
             log_info('_command_run_rom() Using Launcher args_extra')
