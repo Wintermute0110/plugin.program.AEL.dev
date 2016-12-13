@@ -24,8 +24,8 @@ WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires ne
 
 
 
-WIP      Advanced fuzzy search engine based on the Levenshtein Distance algortihm, for both
-         online and offline scraper.
+WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
+         online and offline scrapers.
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
@@ -41,7 +41,7 @@ WIP      Full Extranafart for ROMs.
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
 
-[B]Advanced Emulator Launcher | version 0.9.5 | XX December 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.5~beta1 | 13 December 2016[/B]
 
 FEATURE  New Arcade Database online metadata/asset scraper for MAME ROMs.
 
