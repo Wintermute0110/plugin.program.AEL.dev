@@ -5,10 +5,6 @@
          2.25.0  Krypton 17.x 
       -->
     <import addon="xbmc.python" version="2.24.0" />
-    <!-- 1.2.8 is the ElementTree module available in Gotham, see http://mirrors.kodi.tv/addons/gotham/
-         NOTE Seems this is not needed in Kodi Jarvis
-      -->
-    <!-- <import addon="script.module.elementtree" version="1.2.8"/> -->
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
     <provides>executable</provides>
