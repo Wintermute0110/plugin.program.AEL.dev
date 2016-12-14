@@ -6306,15 +6306,15 @@ class Main:
         log_debug('========== _roms_import_roms() BEGIN ==========')
 
         # --- Get information from launcher ---
-        launcher         = self.launchers[launcherID]
-        launcher_app     = FileName(launcher['application'])
-        launcher_path    = FileName(launcher['rompath'])
-        launcher_exts    = launcher['romext']
-        log_debug('Scanning launcher "{0}"'.format(launcher['m_name']))
-        log_debug('launcher_app  = {0}'.format(launcher_app.getPath()))
-        log_debug('launcher_path = {0}'.format(launcher_path.getPath()))
-        log_debug('launcher_exts = {0}'.format(launcher_exts))
-        log_debug('platform      = {0}'.format(launcher['platform']))
+        launcher      = self.launchers[launcherID]
+        launcher_path = FileName(launcher['rompath'])
+        launcher_exts = launcher['romext']
+        log_info('_roms_import_roms() Starting ROM scanner...')
+        log_info('launcher name "{0}"'.format(launcher['m_name']))
+        log_info('launcher ID   {0}'.format(launcher['id']))
+        log_info('ROM path      "{0}"'.format(launcher_path.getPath()))
+        log_info('ROM ext       "{0}"'.format(launcher_exts))
+        log_info('platform      "{0}"'.format(launcher['platform']))
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
@@ -6469,10 +6469,14 @@ class Main:
             kodi_dialog_OK('No ROMs found! Make sure launcher directory and file extensions are correct.')
             return
 
-        if num_new_roms == 0:
-            kodi_dialog_OK('Launcher has {0} ROMs and no new ROMs have been added.'.format(len(roms)))
+        # --- Notify user ---
+        if num_new_roms == 0: kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
+        else:                 kodi_notify('Added {0} new ROMs'.format(num_new_roms))
 
         # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
+        if launcher['nointro_xml_file']:
+            kodi_dialog_OK('Launcher has a No-Intro PClone DAT. It is recommended to audit your ROMs.')
+
         # >> NOTE disable No-Intro auditing in scanner. User can do the audit in the Edit Launcher menu.
         # if launcher['nointro_xml_file'] != '':
         #     nointro_xml_file = launcher['nointro_xml_file']
@@ -6491,14 +6495,9 @@ class Main:
         # else:
         #     log_info('No No-Intro DAT configured. No auditing ROMs.')
 
-        # ~~~ Save ROMs XML file ~~~
-        # >> Also save categories/launchers to update timestamp
+        # ~~~ Save ROMs XML file. Also save categories/launchers to update timestamp. ~~~
         fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-
-        # ~~~ Notify user ~~~
-        kodi_notify('Added {0} new ROMs'.format(num_new_roms))
-        log_debug('========== _roms_import_roms() END ==========')
         kodi_refresh_container()
 
     def _roms_process_scanned_ROM(self, launcherID, ROM):
@@ -6711,7 +6710,7 @@ class Main:
             return ret_asset_path
 
         # --- Call scraper and get a list of games ---
-        rom_name_scraping = text_clean_ROM_name_for_scraping(ROM.getBasename_noext())
+        rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBasename_noext())
         results = scraper_obj.get_search(rom_name_scraping, ROM.getBasename_noext(), platform)
         log_debug('{0} scraper found {1} result/s'.format(A.name, len(results)))
         if not results:

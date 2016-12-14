@@ -162,12 +162,6 @@ def text_format_ROM_name_for_scraping(title):
 
     return title
 
-# def text_ROM_base_filename(filename):
-#     filename = re.sub('(\[.*?\]|\(.*?\)|\{.*?\})', '', filename)
-#     filename = re.sub('(\.|-| |_)cd\d+$', '', filename)
-#
-#     return filename.rstrip()
-
 #
 # Format ROM file name when scraping is disabled.
 # 1) Remove No-Intro/TOSEC tags (), [], {} at the end of the file

@@ -41,6 +41,13 @@ WIP      Full Extranafart for ROMs.
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
 
+[B]Advanced Emulator Launcher | version 0.9.5~beta2 | xx December 2016[/B]
+
+FIX      Fixed crash when scanning ROMs and the asset scraper is ON.
+
+FIX      Improved ROM scanner debug output. Will make it easier to read scanner logs.
+
+
 [B]Advanced Emulator Launcher | version 0.9.5~beta1 | 13 December 2016[/B]
 
 FEATURE  New Arcade Database online metadata/asset scraper for MAME ROMs.
