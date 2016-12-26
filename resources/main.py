@@ -3608,19 +3608,19 @@ class Main:
                 log_info('_command_manage_favourites() Fav ROM status "{0}"'.format(roms_fav[rom_fav_ID]['fav_status']))
 
                 # >> Traverse all launchers and find rom by filename or base name
-                ROM_FAV = misc_split_path(roms_fav[rom_fav_ID]['filename'])
+                ROM_FN_FAV = FileName(roms_fav[rom_fav_ID]['filename'])
                 filename_found = False
                 for launcher_id in self.launchers:
                     # >> Load launcher ROMs
                     roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
                     for rom_id in roms:
-                        ROM = misc_split_path(roms[rom_id]['filename'])
+                        ROM_FN = FileName(roms[rom_id]['filename'])
                         fav_name = roms_fav[rom_fav_ID]['m_name']
                         if type == 1 and roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
                             log_info('_command_manage_favourites() Favourite {0} matched by filename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
                             log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
-                        elif type == 2 and ROM_FAV.base == ROM.base:
+                        elif type == 2 and ROM_FN_FAV.getBasename() == ROM_FN.getBasename():
                             log_info('_command_manage_favourites() Favourite {0} matched by basename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
                             log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
@@ -3726,14 +3726,12 @@ class Main:
                 launcher_id   = rom_fav['launcherID']
                 launcher_roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
 
-                # >> Is there a ROM with same basename (including extension) as the Favourite?
+                # >> Is there a ROM with same basename (including extension) as the Favourite ROM?
                 filename_found = False
-                F_ROM = misc_split_path(rom_fav['filename'])
-                favorite_basename  = F_ROM.base
+                ROM_FAV_FN = FileName(rom_fav['filename'])
                 for rom_id in launcher_roms:
-                    ROM = misc_split_path(launcher_roms[rom_id]['filename'])
-                    rom_basename = ROM.base
-                    if favorite_basename == rom_basename:
+                    ROM_FN = FileName(launcher_roms[rom_id]['filename'])
+                    if ROM_FAV_FN.getBasename() == ROM_FN.getBasename():
                         filename_found = True
                         new_fav_rom_ID = rom_id
                         break
@@ -4246,15 +4244,14 @@ class Main:
             return
 
         # --- Check if asset JSON exist. If so, ask the user about importing it. ---
-        c_file_F = misc_split_path(collection_file)
-        collection_asset_path = FileName(c_file_F.dirname)
-        collection_asset_file_F = collection_asset_path.join(c_file_F.base_noext + '_assets.json')
+        collection_FileName = FileName(collection_file)
+        collection_asset_FileName = FileName(collection_FileName.getBasename_noext() + '_assets.json')
         import_collection_assets = False
-        if collection_asset_file_F.exists():
+        if collection_asset_FileName.exists():
             ret = kodi_dialog_yesno('Collection asset JSON detected. Import collection assets as well?')
             if ret: import_collection_assets = True
             # --- Load assets ---
-            asset_control_dic, assets_dic = fs_import_ROM_collection_assets(collection_asset_file_F)
+            asset_control_dic, assets_dic = fs_import_ROM_collection_assets(collection_asset_FileName)
 
         # --- Load collection indices ---
         collections, update_timestamp = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -4280,8 +4277,8 @@ class Main:
                 log_debug('_command_import_collection() ROM "{0}"'.format(rom_item['m_name']))
                 for asset_kind in ROM_ASSET_LIST:
                     A = assets_get_info_scheme(asset_kind)
-                    asset_F = misc_split_path(rom_item[A.key])
-                    current_DB_asset_base_noext = asset_F.base_noext
+                    asset_FileName = FileName(rom_item[A.key])
+                    current_DB_asset_base_noext = asset_FileName.getBasename_noext()
                     log_debug('{0:<9s} base_noext "{1}"'.format(A.name, current_DB_asset_base_noext))
                     if current_DB_asset_base_noext not in assets_dic:
                         log_debug('{0:<9s} not found in imported asset dictionary'.format(A.name))

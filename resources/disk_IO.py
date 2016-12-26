@@ -1046,21 +1046,22 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
 # See fs_export_ROM_collection() function.
 # Returns a tuple (control_dic, collection_dic, collection_rom_list)
 #
-def fs_import_ROM_collection(input_filename):
-    if not os.path.isfile(input_filename): return ({}, {}, [])
+def fs_import_ROM_collection(input_FileName):
+    default_return = ({}, {}, [])
+    if not input_FileName.exists(): return default_return
 
     # --- Parse using JSON ---
-    log_info('fs_import_ROM_collection() Loading {0}'.format(input_filename))
+    log_info('fs_import_ROM_collection() Loading {0}'.format(input_FileName.getOriginalPath()))
 
-    with open(input_filename) as file:
+    with open(input_FileName.getPath()) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
-            statinfo = os.stat(input_filename)
+            statinfo = os.stat(input_FileName.getPath())
             log_error('fs_import_ROM_collection() ValueError exception in json.load() function')
-            log_error('fs_import_ROM_collection() File {0}'.format(input_filename))
+            log_error('fs_import_ROM_collection() File {0}'.format(input_FileName.getPath()))
             log_error('fs_import_ROM_collection() Size {0}'.format(statinfo.st_size))
-            return ({}, {}, [])
+            return default_return
 
     # --- Extract roms from JSON data structe and ensure version is correct ---
     control_dic         = raw_data[0]
@@ -1071,21 +1072,25 @@ def fs_import_ROM_collection(input_filename):
 
     return (control_dic, collection_dic, collection_rom_list)
 
-def fs_import_ROM_collection_assets(input_filename):
-    if not input_filename.exists(): return ({}, {}, [])
+#
+# Returns a tuple (control_dic, assets_dic)
+#
+def fs_import_ROM_collection_assets(input_FileName):
+    default_return = ({}, {})
+    if not input_FileName.exists(): return default_return
 
     # --- Parse using JSON ---
-    log_info('fs_import_ROM_collection_assets() Loading {0}'.format(input_filename.getOriginalPath()))
+    log_info('fs_import_ROM_collection_assets() Loading {0}'.format(input_FileName.getOriginalPath()))
 
-    with open(input_filename.getPath()) as file:
+    with open(input_FileName.getPath()) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
-            statinfo = os.stat(input_filename)
+            statinfo = os.stat(input_FileName.getPath())
             log_error('fs_import_ROM_collection_assets() ValueError exception in json.load() function')
-            log_error('fs_import_ROM_collection_assets() File {0}'.format(input_filename.getPath()))
+            log_error('fs_import_ROM_collection_assets() File {0}'.format(input_FileName.getPath()))
             log_error('fs_import_ROM_collection_assets() Size {0}'.format(statinfo.st_size))
-            return ({}, {}, [])
+            return default_return
 
     # --- Extract roms from JSON data structe and ensure version is correct ---
     control_dic = raw_data[0]

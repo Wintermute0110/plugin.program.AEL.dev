@@ -53,6 +53,8 @@ FIX      Fixed crash in "Edit Launcher" -> "Manage ROM List" -> "Rescan ROMs loc
 FIX      Fixed crash when adding single ROM.
          http://forum.kodi.tv/showthread.php?tid=287826&pid=2484522#pid2484522
 
+FIX      Fixed several uses of old function misc_split_path(). Now FileName() class must be used.
+
 
 [B]Advanced Emulator Launcher | version 0.9.5~beta1 | 13 December 2016[/B]
 
