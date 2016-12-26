@@ -166,6 +166,11 @@ def text_format_ROM_name_for_scraping(title):
 # Format ROM file name when scraping is disabled.
 # 1) Remove No-Intro/TOSEC tags (), [], {} at the end of the file
 #
+# title      -> Unicode string
+# clean_tags -> bool
+#
+# Returns a Unicode string.
+#
 def text_format_ROM_title(title, clean_tags):
     #
     # Regexp to decompose a string in tokens

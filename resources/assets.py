@@ -375,9 +375,9 @@ def asset_get_configured_dir_list(launcher):
         configured_bool_list[i] = True if launcher[A.path_key] else False
         if not configured_bool_list[i]: 
             unconfigured_name_list.append(A.name)
-            log_verb('asset_get_enabled_asset_list() {0:<9} unconfigured'.format(A.name))
+            log_verb('asset_get_enabled_asset_list() {0:<9} path unconfigured'.format(A.name))
         else:
-            log_debug('asset_get_enabled_asset_list() {0:<9} configured'.format(A.name))
+            log_debug('asset_get_enabled_asset_list() {0:<9} path configured'.format(A.name))
 
     return (configured_bool_list, unconfigured_name_list)
 
