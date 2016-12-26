@@ -1376,25 +1376,24 @@ class Main:
                         log_info('No duplicated asset dirs found')
 
                     # >> Traverse ROM list and check local asset/artwork
-                    # >> Traverse ROM list and check local asset/artwork
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
                     for rom_id in roms:
                         rom = roms[rom_id]
-                        log_info('Checking ROM "{0}"'.format(rom['filename']))
+                        ROMFile = FileName(rom['filename'])
+                        rom_basename_noext = ROMFile.getBasename_noext()
+                        log_info('Checking ROM "{0}"'.format(ROMFile.getBasename()))
                         for i, asset in enumerate(ROM_ASSET_LIST):
-                            A = assets_get_info_scheme(asset)
+                            AInfo = assets_get_info_scheme(asset)
                             if not enabled_asset_list[i]: continue
-                            ROM = misc_split_path(rom['filename'])
-
-                            asset_path = FileName(launcher[A.path_key])
-                            local_asset = misc_look_for_file(asset_path, ROM.base_noext, A.exts)
-
+                            asset_path = FileName(launcher[AInfo.path_key])
+                            local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
                             if local_asset:
-                                log_verb('Found   {0:<10} "{1}"'.format(A.name, local_asset.getPath()))
-                                rom[A.key] = local_asset.getOriginalPath()
+                                rom[AInfo.key] = local_asset.getOriginalPath()
+                                log_verb('Found   {0:<10} "{1}"'.format(AInfo.name, local_asset.getPath()))
                             else:
-                                log_verb('Missing {0:<10}'.format(A.name))
+                                rom[AInfo.key] = ''
+                                log_verb('Missing {0:<10}'.format(AInfo.name))
 
                     # ~~~ Save ROMs XML file ~~~
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
