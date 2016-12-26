@@ -227,7 +227,8 @@ def text_get_image_URL_extension(url):
 # filename_noext -> Unicode string
 # file_exts      -> list of extenstions with no dot [ 'zip', 'rar' ]
 #
-# Returns a FileName object.
+# Returns a FileName object if a valid filename is found.
+# Returns None if no file was found.
 #
 def misc_look_for_file(rootPath, filename_noext, file_exts):
     for ext in file_exts:

@@ -407,20 +407,20 @@ def asset_get_duplicated_dir_list(launcher):
 # Search for local assets and put found files into a list. List all has assets as defined 
 # in ROM_ASSET_LIST.
 #
-# launcher           -> launcher dictionary
-# ROM                -> FileName object
-# enabled_asset_list -> list of booleans
+# launcher               -> launcher dictionary
+# ROMFile                -> FileName object
+# enabled_ROM_asset_list -> list of booleans
 #
-def assets_search_local_assets(launcher, ROM, enabled_asset_list):
+def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_LIST)
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
-        if not enabled_asset_list[i]:
+        if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
         asset_path = FileName(launcher[AInfo.path_key])
-        local_asset = misc_look_for_file(asset_path, ROM.getBasename_noext(), AInfo.exts)
+        local_asset = misc_look_for_file(asset_path, ROMFile.getBasename_noext(), AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
