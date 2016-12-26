@@ -41,7 +41,11 @@ WIP      Full Extranafart for ROMs.
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
 
-[B]Advanced Emulator Launcher | version 0.9.5~beta2 | xx December 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.5~beta3 | XX January 2017[/B]
+
+
+
+[B]Advanced Emulator Launcher | version 0.9.5~beta2 | 27 December 2016[/B]
 
 FIX      Fixed crash when scanning ROMs and the asset scraper is ON.
 
