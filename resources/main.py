@@ -6244,8 +6244,8 @@ class Main:
 
         # --- Format title ---
         scan_clean_tags = self.settings['scan_clean_tags']
-        ROM = misc_split_path(romfile)
-        romname = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
+        ROMFile = FileName(romfile)
+        rom_name = text_format_ROM_title(ROMFile.getBasename_noext(), scan_clean_tags)
 
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         # >> Do not warn about unconfigured dirs here
@@ -6263,13 +6263,13 @@ class Main:
             log_debug('_roms_add_new_rom() No duplicated asset dirs found')
 
         # ~~~ Search for local artwork/assets ~~~
-        local_asset_list = assets_search_local_assets(launcher, ROM, enabled_asset_list)
+        local_asset_list = assets_search_local_assets(launcher, ROMFile, enabled_asset_list)
 
         # --- Create ROM data structure ---
         romdata = fs_new_rom()
         romdata['id']          = misc_generate_random_SID()
-        romdata['filename']    = ROM.path
-        romdata['m_name']      = romname
+        romdata['filename']    = ROMFile.getOriginalPath()
+        romdata['m_name']      = rom_name
         for index, asset_kind in enumerate(ROM_ASSET_LIST):
             A = assets_get_info_scheme(asset_kind)
             romdata[A.key] = local_asset_list[index]
