@@ -41,8 +41,13 @@ WIP      Full Extranafart for ROMs.
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
 
-[B]Advanced Emulator Launcher | version 0.9.5~beta3 | XX January 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.5 | 31 December 2016[/B]
 
+FIX      ROM substitution keywords now use $ instead of the ugly %.
+         %rom% becomes $rom$
+
+FIX      Added new argument substitution keywords $rombasenoext$, $categoryID$, $launcherID$,
+         and $romID$.
 
 
 [B]Advanced Emulator Launcher | version 0.9.5~beta2 | 27 December 2016[/B]

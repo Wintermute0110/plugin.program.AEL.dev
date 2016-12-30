@@ -5673,22 +5673,24 @@ class Main:
             arguments   = standard_args
 
         # ~~~~~ Launch ROM ~~~~~
-        application = FileName(application)
-        apppath     = application.getDirname()
-        ROMFileName = FileName(rom['filename'])
-        rompath     = ROMFileName.getDirname()
-        rombasename = ROMFileName.getBasename()
-        rom_title   = rom['m_name']
-        log_info('_command_run_rom() categoryID  = {0}'.format(categoryID))
-        log_info('_command_run_rom() launcherID  = {0}'.format(launcherID))
-        log_info('_command_run_rom() romID       = {0}'.format(romID))
-        log_info('_command_run_rom() application = "{0}"'.format(application.getPath()))
-        log_info('_command_run_rom() apppath     = "{0}"'.format(apppath))
-        log_info('_command_run_rom() romfile     = "{0}"'.format(ROMFileName.getPath()))
-        log_info('_command_run_rom() rompath     = "{0}"'.format(rompath))
-        log_info('_command_run_rom() rombasename = "{0}"'.format(rombasename))
-        log_info('_command_run_rom() romext      = "{0}"'.format(romext))
-        log_info('_command_run_rom() rom_title   = "{0}"'.format(rom_title))
+        application   = FileName(application)
+        apppath       = application.getDirname()
+        ROMFileName   = FileName(rom['filename'])
+        rompath       = ROMFileName.getDirname()
+        rombase       = ROMFileName.getBasename()
+        rombase_noext = ROMFileName.getBasename_noext()
+        romtitle      = rom['m_name']
+        log_info('_command_run_rom() categoryID   {0}'.format(categoryID))
+        log_info('_command_run_rom() launcherID   {0}'.format(launcherID))
+        log_info('_command_run_rom() romID        {0}'.format(romID))
+        log_info('_command_run_rom() romfile      "{0}"'.format(ROMFileName.getPath()))
+        log_info('_command_run_rom() rompath      "{0}"'.format(rompath))
+        log_info('_command_run_rom() rombase      "{0}"'.format(rombase))
+        log_info('_command_run_rom() rombasenoext "{0}"'.format(rombase_noext))
+        log_info('_command_run_rom() romtitle     "{0}"'.format(romtitle))
+        log_info('_command_run_rom() application  "{0}"'.format(application.getPath()))
+        log_info('_command_run_rom() apppath      "{0}"'.format(apppath))
+        log_info('_command_run_rom() romext       "{0}"'.format(romext))
 
         # --- Check for errors and abort if found --- todo: CHECK
         if not application.exists() and application.getOriginalPath() != LNK_LAUNCHER_APP_NAME:
@@ -5708,12 +5710,21 @@ class Main:
             ROMFileName.escapeQuotes()
 
         # ~~~~ Argument substitution ~~~~~
-        arguments = arguments.replace('%rom%',         ROMFileName.getPath()).replace('%ROM%', ROMFileName.getPath())
-        arguments = arguments.replace('%rombasename%', rombasename).replace('%ROMBASENAME%', rombasename)
-        arguments = arguments.replace('%apppath%',     apppath).replace('%APPPATH%',         apppath)
-        arguments = arguments.replace('%rompath%',     rompath).replace('%ROMPATH%',         rompath)
-        arguments = arguments.replace('%romtitle%',    rom['m_name']).replace('%ROMTITLE%',  rom['m_name'])
-        log_info('_command_run_rom() arguments   = "{0}"'.format(arguments))
+        log_info('_command_run_rom() raw arguments   "{0}"'.format(arguments))
+        arguments = arguments.replace('$categoryID$', categoryID)
+        arguments = arguments.replace('$launcherID$', launcherID)
+        arguments = arguments.replace('$romID$', romID)
+        arguments = arguments.replace('$rom$', ROMFileName.getPath())
+        arguments = arguments.replace('$romfile$', ROMFileName.getPath())
+        arguments = arguments.replace('$rompath$', rompath)
+        arguments = arguments.replace('$rombase$', rombase)
+        arguments = arguments.replace('$rombasenoext$', rombase_noext)
+        arguments = arguments.replace('$romtitle$', romtitle)
+        arguments = arguments.replace('$apppath$', apppath)
+        # >> Legacy names for argument substitution
+        arguments = arguments.replace('%rom%', ROMFileName.getPath())
+        arguments = arguments.replace('%ROM%', ROMFileName.getPath())
+        log_info('_command_run_rom() final arguments "{0}"'.format(arguments))
 
         # --- Compute ROM recently played list ---
         MAX_RECENT_PLAYED_ROMS = 100
@@ -5743,7 +5754,7 @@ class Main:
             return
 
         # ~~~~~ Execute external application ~~~~~
-        self._run_before_execution(rom_title, minimize_flag)
+        self._run_before_execution(romtitle, minimize_flag)
         self._run_process(application.getPath(), arguments, apppath, romext)
         self._run_after_execution(minimize_flag)
 
