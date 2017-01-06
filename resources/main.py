@@ -6772,14 +6772,15 @@ class Main:
             self.pDialog.close()
 
             # If there is a local image add it to the list and show it to the user
-            # local_image is never set??
-            if os.path.isfile(local_image):
-                image_list.insert(0, {'name' : 'Current local image', 'URL' : local_image, 'disp_URL' : local_image})
+            if os.path.isfile(local_asset_path):
+                image_list.insert(0, {'name' : 'Current local image', 
+                                      'id'   : local_asset_path,
+                                      'URL'  : local_asset_path})
 
             # Convert list returned by scraper into a list the select window uses
             img_dialog_list = []
             for item in image_list:
-                item_dic = {'name' : item['name'], 'label2' : item['disp_URL'], 'icon' : item['disp_URL']}
+                item_dic = {'name' : item['name'], 'label2' : item['URL'], 'icon' : item['URL']}
                 img_dialog_list.append(item_dic)
             image_selected_index = gui_show_image_select('Select image', img_dialog_list)
             log_debug('{0} dialog returned index {1}'.format(A.name, image_selected_index))

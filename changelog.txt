@@ -41,13 +41,18 @@ WIP      Full Extranafart for ROMs.
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
 
 
-[B]Advanced Emulator Launcher | version 0.9.5 | 31 December 2016[/B]
+[B]Advanced Emulator Launcher | version 0.9.5 | 6 January 2017[/B]
 
 FIX      ROM substitution keywords now use $ instead of the ugly %.
          %rom% becomes $rom$
 
 FIX      Added new argument substitution keywords $rombasenoext$, $categoryID$, $launcherID$,
          and $romID$.
+
+FIX      Fixed issues #31 and #32 (FileName class related stuff). This should fix also
+         "Edit Launcher" -> "Manage ROMs" -> "Scan for local artwork/assets"
+
+FIX      Fixed error in the ROM scanner when using semi-automatic scraping.
 
 
 [B]Advanced Emulator Launcher | version 0.9.5~beta2 | 27 December 2016[/B]
