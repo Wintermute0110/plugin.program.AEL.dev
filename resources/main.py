@@ -723,13 +723,13 @@ class Main:
             argkeyboard.doModal()
             args = argkeyboard.getText().decode('utf-8')
 
-            title = appPath.getBasename_noext()
+            title = appPath.getBase_noext()
             title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
             keyboard = xbmc.Keyboard(title_formatted, 'Set the title of the launcher')
             keyboard.doModal()
             title = keyboard.getText().decode('utf-8')
             if not title:
-                title = appPath.getBasename_noext()
+                title = appPath.getBase_noext()
 
             # >> Selection of the launcher game system
             dialog = xbmcgui.Dialog()
@@ -773,7 +773,7 @@ class Main:
 
             # --- ROM extensions ---
             if type == 1:
-                extensions = emudata_get_program_extensions(app_FName.getBasename())
+                extensions = emudata_get_program_extensions(app_FName.getBase())
                 extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
                 extkey.doModal()
                 if not extkey.isConfirmed(): return
@@ -783,7 +783,7 @@ class Main:
 
             # --- Launcher arguments ---
             if type == 1:
-                default_arguments = emudata_get_program_arguments(app_FName.getBasename())
+                default_arguments = emudata_get_program_arguments(app_FName.getBase())
                 argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
                 argkeyboard.doModal()
                 if not argkeyboard.isConfirmed(): return
@@ -792,7 +792,7 @@ class Main:
                 args = '%rom%'
 
             # --- Launcher title/name ---
-            title = app_FName.getBasename()
+            title = app_FName.getBase()
             fixed_title = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
             initial_title = fixed_title if type == 1 else ''
             keyboard = xbmc.Keyboard(initial_title, 'Set the title of the launcher')
@@ -1381,8 +1381,8 @@ class Main:
                     for rom_id in roms:
                         rom = roms[rom_id]
                         ROMFile = FileName(rom['filename'])
-                        rom_basename_noext = ROMFile.getBasename_noext()
-                        log_info('Checking ROM "{0}"'.format(ROMFile.getBasename()))
+                        rom_basename_noext = ROMFile.getBase_noext()
+                        log_info('Checking ROM "{0}"'.format(ROMFile.getBase()))
                         for i, asset in enumerate(ROM_ASSET_LIST):
                             AInfo = assets_get_info_scheme(asset)
                             if not enabled_asset_list[i]: continue
@@ -3620,7 +3620,7 @@ class Main:
                             log_info('_command_manage_favourites() Favourite {0} matched by filename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
                             log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
-                        elif type == 2 and ROM_FN_FAV.getBasename() == ROM_FN.getBasename():
+                        elif type == 2 and ROM_FN_FAV.getBase() == ROM_FN.getBase():
                             log_info('_command_manage_favourites() Favourite {0} matched by basename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher_id))
                             log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
@@ -3731,7 +3731,7 @@ class Main:
                 ROM_FAV_FN = FileName(rom_fav['filename'])
                 for rom_id in launcher_roms:
                     ROM_FN = FileName(launcher_roms[rom_id]['filename'])
-                    if ROM_FAV_FN.getBasename() == ROM_FN.getBasename():
+                    if ROM_FAV_FN.getBase() == ROM_FN.getBase():
                         filename_found = True
                         new_fav_rom_ID = rom_id
                         break
@@ -4245,7 +4245,7 @@ class Main:
 
         # --- Check if asset JSON exist. If so, ask the user about importing it. ---
         collection_FileName = FileName(collection_file)
-        collection_asset_FileName = FileName(collection_FileName.getBasename_noext() + '_assets.json')
+        collection_asset_FileName = FileName(collection_FileName.getBase_noext() + '_assets.json')
         import_collection_assets = False
         if collection_asset_FileName.exists():
             ret = kodi_dialog_yesno('Collection asset JSON detected. Import collection assets as well?')
@@ -4278,7 +4278,7 @@ class Main:
                 for asset_kind in ROM_ASSET_LIST:
                     A = assets_get_info_scheme(asset_kind)
                     asset_FileName = FileName(rom_item[A.key])
-                    current_DB_asset_base_noext = asset_FileName.getBasename_noext()
+                    current_DB_asset_base_noext = asset_FileName.getBase_noext()
                     log_debug('{0:<9s} base_noext "{1}"'.format(A.name, current_DB_asset_base_noext))
                     if current_DB_asset_base_noext not in assets_dic:
                         log_debug('{0:<9s} not found in imported asset dictionary'.format(A.name))
@@ -4414,7 +4414,7 @@ class Main:
                     asset_FileName = FileName(rom_item[AInfo.key])
                     ROM_FileName = FileName(rom_item['filename'])
                     new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FileName, 
-                                                                           ROM_FileName.getBasename_noext(), rom_item['id'])
+                                                                           ROM_FileName.getBase_noext(), rom_item['id'])
                     new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                     if not rom_item[AInfo.key]:
                         log_debug('{0:<9s} not set.'.format(AInfo.name))
@@ -5511,20 +5511,22 @@ class Main:
 
         # --- Execute Kodi built-in function under certain conditions ---
         application = FileName(launcher['application'])
-        if application.getBasename().lower().replace('.exe' , '') == 'xbmc'  or \
+        if application.getBase().lower().replace('.exe' , '') == 'xbmc'  or \
            'xbmc-fav-' in launcher['application'] or 'xbmc-sea-' in launcher['application']:
             xbmc.executebuiltin('XBMC.{0}'.format(launcher['args']))
             return
 
         # ~~~~~ External application ~~~~~
-        app_basename   = application.getBasename()
-        arguments      = launcher['args'].replace('%apppath%' , application.getDirname()).replace('%APPPATH%' , application.getDirname())
+        app_basename   = application.getBase()
+        raw_arguments  = launcher['args']
+        arguments      = raw_arguments.replace('%apppath%' , application.getDir())
+        arguments      = arguments.replace('%APPPATH%' , application.getDir())
         app_ext        = launcher['application'].split('.')[-1]
         launcher_title = launcher['m_name']
         log_info('_run_standalone_launcher() categoryID     = {0}'.format(categoryID))
         log_info('_run_standalone_launcher() launcherID     = {0}'.format(launcherID))
         log_info('_run_standalone_launcher() application    = "{0}"'.format(application.getPath()))
-        log_info('_run_standalone_launcher() apppath        = "{0}"'.format(application.getDirname()))
+        log_info('_run_standalone_launcher() apppath        = "{0}"'.format(application.getDir()))
         log_info('_run_standalone_launcher() app_basename   = "{0}"'.format(app_basename))
         log_info('_run_standalone_launcher() arguments      = "{0}"'.format(arguments))
         log_info('_run_standalone_launcher() app_ext        = "{0}"'.format(app_ext))
@@ -5538,7 +5540,7 @@ class Main:
 
         # ~~~~~ Execute external application ~~~~~
         self._run_before_execution(launcher_title, minimize_flag)
-        self._run_process(application.getPath(), arguments, application.getDirname(), app_ext)
+        self._run_process(application.getPath(), arguments, application.getDir(), app_ext)
         self._run_after_execution(minimize_flag)
 
     #
@@ -5674,11 +5676,11 @@ class Main:
 
         # ~~~~~ Launch ROM ~~~~~
         application   = FileName(application)
-        apppath       = application.getDirname()
+        apppath       = application.getDir()
         ROMFileName   = FileName(rom['filename'])
-        rompath       = ROMFileName.getDirname()
-        rombase       = ROMFileName.getBasename()
-        rombase_noext = ROMFileName.getBasename_noext()
+        rompath       = ROMFileName.getDir()
+        rombase       = ROMFileName.getBase()
+        rombase_noext = ROMFileName.getBase_noext()
         romtitle      = rom['m_name']
         log_info('_command_run_rom() categoryID   {0}'.format(categoryID))
         log_info('_command_run_rom() launcherID   {0}'.format(launcherID))
@@ -5749,7 +5751,7 @@ class Main:
         fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
 
         # --- Execute Kodi internal function (RetroPlayer?) ---
-        if application.getBasename().lower().replace('.exe', '') == 'xbmc':
+        if application.getBase().lower().replace('.exe', '') == 'xbmc':
             xbmc.executebuiltin('XBMC.' + arguments)
             return
 
@@ -6092,10 +6094,10 @@ class Main:
                     log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(roms[rom_id]['m_name']))
                     continue
                 ROMFileName = FileName(roms[rom_id]['filename'])
-                log_debug('_roms_delete_missing_ROMs() Test "{0}"'.format(ROMFileName.getBasename()))
+                log_debug('_roms_delete_missing_ROMs() Test "{0}"'.format(ROMFileName.getBase()))
                 # --- Remove missing ROMs ---
                 if not ROMFileName.exists():
-                    log_debug('_roms_delete_missing_ROMs() RM   "{0}"'.format(ROMFileName.getBasename()))
+                    log_debug('_roms_delete_missing_ROMs() RM   "{0}"'.format(ROMFileName.getBase()))
                     del roms[rom_id]
                     num_removed_roms += 1
             if num_removed_roms > 0:
@@ -6178,19 +6180,19 @@ class Main:
         for rom_id in roms:
             # >> Use the ROM basename.
             ROMFileName = FileName(roms[rom_id]['filename'])
-            roms_set.add(ROMFileName.getBasename_noext())
+            roms_set.add(ROMFileName.getBase_noext())
 
         # --- Traverse Launcher ROMs and check if No-Intro ROMs are or not ---
         for rom_id in roms:
             ROMFileName = FileName(roms[rom_id]['filename'])
-            if ROMFileName.getBasename_noext() in roms_nointro_set:
+            if ROMFileName.getBase_noext() in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = 'Have'
                 self.audit_have += 1
-                log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBasename_noext()))
+                log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBase_noext()))
             else:
                 roms[rom_id]['nointro_status'] = 'Unknown'
                 self.audit_unknown += 1
-                log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBasename_noext()))
+                log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBase_noext()))
 
         # --- Mark Launcher dead ROMs as missing ---
         for rom_id in roms:
@@ -6198,7 +6200,7 @@ class Main:
             if not ROMFileName.exists():
                 roms[rom_id]['nointro_status'] = 'Miss'
                 self.audit_miss += 1
-                log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBasename_noext()))
+                log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBase_noext()))
 
         # --- Now add missing ROMs to Launcher ---
         # >> Traverse the nointro set and add the No-Intro ROM if it's not in the Launcher
@@ -6253,7 +6255,7 @@ class Main:
         # --- Format title ---
         scan_clean_tags = self.settings['scan_clean_tags']
         ROMFile = FileName(romfile)
-        rom_name = text_format_ROM_title(ROMFile.getBasename_noext(), scan_clean_tags)
+        rom_name = text_format_ROM_title(ROMFile.getBase_noext(), scan_clean_tags)
 
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         # >> Do not warn about unconfigured dirs here
@@ -6407,17 +6409,17 @@ class Main:
             # --- Get all file name combinations ---
             ROM = FileName(f_path)
             log_debug('========== Processing File ==========')
-            log_debug('ROM.getPath()           "{0}"'.format(ROM.getPath()))
-            log_debug('ROM.getOriginalPath()   "{0}"'.format(ROM.getOriginalPath()))
-            # log_debug('ROM.getPath_noext()     "{0}"'.format(ROM.getPath_noext()))
-            # log_debug('ROM.getDirname()        "{0}"'.format(ROM.getDirname()))
-            # log_debug('ROM.getBasename()       "{0}"'.format(ROM.getBasename()))
-            # log_debug('ROM.getBasename_noext() "{0}"'.format(ROM.getBasename_noext()))
-            # log_debug('ROM.getExt()            "{0}"'.format(ROM.getExt()))
+            log_debug('ROM.getPath()         "{0}"'.format(ROM.getPath()))
+            log_debug('ROM.getOriginalPath() "{0}"'.format(ROM.getOriginalPath()))
+            # log_debug('ROM.getPath_noext()   "{0}"'.format(ROM.getPath_noext()))
+            # log_debug('ROM.getDir()          "{0}"'.format(ROM.getDir()))
+            # log_debug('ROM.getBase()         "{0}"'.format(ROM.getBase()))
+            # log_debug('ROM.getBase_noext()   "{0}"'.format(ROM.getBase_noext()))
+            # log_debug('ROM.getExt()          "{0}"'.format(ROM.getExt()))
 
             # ~~~ Update progress dialog ~~~
             self.progress_number = num_files_checked * 100 / num_files
-            self.file_text       = 'ROM {0}'.format(ROM.getBasename())
+            self.file_text       = 'ROM {0}'.format(ROM.getBase())
             activity_text        = 'Checking if has ROM extension...'
             self.pDialog.update(self.progress_number, self.file_text, activity_text)
             num_files_checked += 1
@@ -6448,7 +6450,7 @@ class Main:
             # --- Ignore BIOS ROMs ---
             # Name of bios is: '[BIOS] Rom name example.zip'
             if self.settings['scan_ignore_bios']:
-                BIOS_re = re.findall('\[BIOS\]', ROM.getBasename())
+                BIOS_re = re.findall('\[BIOS\]', ROM.getBase())
                 if len(BIOS_re) > 0:
                     log_info("BIOS detected. Skipping ROM '{0}'".format(ROM.path))
                     continue
@@ -6527,7 +6529,7 @@ class Main:
 
         # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # >> Test if NFO file exists
-        NFO_file = FileName(ROM.getBasename_noext() + '.nfo')
+        NFO_file = FileName(ROM.getBase_noext() + '.nfo')
         log_debug('Testing NFO file "{0}"'.format(NFO_file.getPath()))
         found_NFO_file = True if NFO_file.exists() else False
 
@@ -6562,7 +6564,7 @@ class Main:
         if metadata_action == META_TITLE_ONLY:
             scraper_text = 'Formatting ROM name.'
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-            romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
+            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
             nfo_file_path = FileName(ROM.getPath_noext() + ".nfo")
             scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
@@ -6579,14 +6581,14 @@ class Main:
                 romdata['m_plot']   = nfo_dic['plot']      # <plot>
             else:
                 log_debug('NFO file not found. Only cleaning ROM name.')
-                romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
+                romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         elif metadata_action == META_SCRAPER:
             scraper_text = 'Scraping metadata with {0}. Searching for matching games...'.format(self.scraper_metadata.name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
             # --- Do a search and get a list of games ---
-            rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBasename_noext())
-            results = self.scraper_metadata.get_search(rom_name_scraping, ROM.getBasename_noext(), platform)
+            rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
+            results = self.scraper_metadata.get_search(rom_name_scraping, ROM.getBase_noext(), platform)
             log_debug('Metadata scraper found {0} result/s'.format(len(results)))
             if results:
                 # id="metadata_scraper_mode" values="Semi-automatic|Automatic"
@@ -6600,7 +6602,7 @@ class Main:
                     dialog = xbmcgui.Dialog()
                     rom_name_list = []
                     for game in results: rom_name_list.append(game['display_name'])
-                    selectgame = dialog.select('Select game for ROM {0}'.format(ROM.getBasename_noext()), rom_name_list)
+                    selectgame = dialog.select('Select game for ROM {0}'.format(ROM.getBase_noext()), rom_name_list)
                     if selectgame < 0: selectgame = 0
 
                     # Open progress dialog again
@@ -6620,7 +6622,7 @@ class Main:
                 # --- Put metadata into ROM dictionary ---
                 if scan_ignore_scrapped_title:
                     # Ignore scraped title
-                    romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
+                    romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
                     log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['m_name']))
                 else:
                     # Use scraped title
@@ -6632,7 +6634,7 @@ class Main:
                 romdata['m_plot']   = gamedata['plot']
             else:
                 log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
-                romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
+                romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         else:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
@@ -6707,7 +6709,7 @@ class Main:
         platform = launcher['platform']
 
         # --- Updated progress dialog ---
-        file_text    = 'ROM {0}'.format(ROM.getBasename())
+        file_text    = 'ROM {0}'.format(ROM.getBase())
         scraper_text = 'Scraping {0} with {1}. Searching for matching games...'.format(A.name, scraper_obj.name)
         self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
@@ -6721,8 +6723,8 @@ class Main:
             return ret_asset_path
 
         # --- Call scraper and get a list of games ---
-        rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBasename_noext())
-        results = scraper_obj.get_search(rom_name_scraping, ROM.getBasename_noext(), platform)
+        rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
+        results = scraper_obj.get_search(rom_name_scraping, ROM.getBase_noext(), platform)
         log_debug('{0} scraper found {1} result/s'.format(A.name, len(results)))
         if not results:
             log_debug('{0} scraper did not found any game'.format(A.name))
@@ -6742,7 +6744,7 @@ class Main:
             rom_name_list = []
             for game in results:
                 rom_name_list.append(game['display_name'])
-            selectgame = dialog.select('Select game for ROM {0}'.format(ROM.getBasename_noext()), rom_name_list)
+            selectgame = dialog.select('Select game for ROM {0}'.format(ROM.getBase_noext()), rom_name_list)
             if selectgame < 0: selectgame = 0
 
             # Open progress dialog again
@@ -6858,7 +6860,7 @@ class Main:
         # --- Do a search and get a list of games ---
         # >> Prevent race conditions
         kodi_busydialog_ON()
-        results = scraper_obj.get_search(search_string, ROM.getBasename_noext(), platform)
+        results = scraper_obj.get_search(search_string, ROM.getBase_noext(), platform)
         kodi_busydialog_OFF()
         log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
@@ -7033,12 +7035,12 @@ class Main:
                 log_info('_gui_edit_asset() ROM is in Favourites')
                 asset_directory  = FileName(self.settings['favourites_asset_dir'])
                 platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBasename_noext(), object_dic['id'])
+                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
                 asset_directory  = FileName(self.settings['collections_asset_dir'])
                 platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBasename_noext(), object_dic['id'])
+                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
                 launcher         = self.launchers[launcherID]
@@ -7098,7 +7100,7 @@ class Main:
 
         # --- Link to a local image ---
         elif type2 == 1:
-            image_dir = FileName(object_dic[AInfo.key]).getDirname() if object_dic[AInfo.key] else ''
+            image_dir = FileName(object_dic[AInfo.key]).getDir() if object_dic[AInfo.key] else ''
 
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             # >> ShowAndGetFile dialog
@@ -7127,7 +7129,7 @@ class Main:
         elif type2 == 2:
             # >> If assets exists start file dialog from current asset directory
             image_dir = ''
-            if object_dic[AInfo.key]: image_dir = FileName(object_dic[AInfo.key]).getDirname()
+            if object_dic[AInfo.key]: image_dir = FileName(object_dic[AInfo.key]).getDir()
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(AInfo.name), 'files',
                                                  AInfo.exts_dialog, True, False, image_dir)
@@ -7194,7 +7196,7 @@ class Main:
             #           has been called and nothing is displayed.
             #           THIS PREVENTS THE RACE CONDITIONS THAT CAUSE TROUBLE IN ADVANCED LAUNCHER!!!
             kodi_busydialog_ON()
-            results = scraper_obj.get_search(search_string, ROMfile.getBasename_noext(), platform)
+            results = scraper_obj.get_search(search_string, ROMfile.getBase_noext(), platform)
             kodi_busydialog_OFF()
             log_debug('{0} scraper found {1} result/s'.format(AInfo.name, len(results)))
             if not results:

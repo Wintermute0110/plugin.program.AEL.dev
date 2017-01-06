@@ -320,7 +320,7 @@ def assets_get_info_scheme(asset_kind):
 #
 def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
 
-    return AssetPath + ROM.getBasename_noext()
+    return AssetPath + ROM.getBase_noext()
 
 #
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
@@ -420,7 +420,7 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
         asset_path = FileName(launcher[AInfo.path_key])
-        local_asset = misc_look_for_file(asset_path, ROMFile.getBasename_noext(), AInfo.exts)
+        local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()

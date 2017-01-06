@@ -984,18 +984,18 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
             log_error('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getPath()))
             log_error('{0:<9s} ignoring'.format(AInfo.name))
             continue
-        elif asset_FileName.getDirname() != collections_asset_dir_FileName.getPath():
+        elif asset_FileName.getDir() != collections_asset_dir_FileName.getPath():
             log_error('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
             continue
         # >> Read image binary data and encode
-        log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FileName.getBasename_noext()))
+        log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FileName.getBase_noext()))
         with open(asset_FileName.getPath(), mode = 'rb') as file: # b is important -> binary
             fileData = file.read()
             fileData_base64 = base64.b64encode(fileData)
             statinfo = os.stat(asset_FileName.getPath())
             file_size = statinfo.st_size
-            a_dic = {'basename' : asset_FileName.getBasename_noext(), 'filesize' : file_size, 'data' : fileData_base64}
-            assets_dic[asset_FileName.getBasename_noext()] = a_dic
+            a_dic = {'basename' : asset_FileName.getBase_noext(), 'filesize' : file_size, 'data' : fileData_base64}
+            assets_dic[asset_FileName.getBase_noext()] = a_dic
 
     # --- Export ROMs assets ---
     # key -> basename : value { 'filesize' : int, 'data' : string }
@@ -1012,18 +1012,18 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
                 log_error('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getPath()))
                 log_error('{0:<9s} ignoring'.format(AInfo.name))
                 continue
-            elif asset_FileName.getDirname() != collections_asset_dir_FileName.getPath():
+            elif asset_FileName.getDir() != collections_asset_dir_FileName.getPath():
                 log_error('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
                 continue
             # >> Read image binary data and encode
-            log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FileName.getBasename_noext()))
+            log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FileName.getBase_noext()))
             with open(asset_FileName.getPath(), mode = 'rb') as file: # b is important -> binary
                 fileData = file.read()
             fileData_base64 = base64.b64encode(fileData)
             statinfo = os.stat(asset_FileName.getPath())
             file_size = statinfo.st_size
-            a_dic = {'basename' : asset_FileName.getBasename_noext(), 'filesize' : file_size, 'data' : fileData_base64}
-            assets_dic[asset_FileName.getBasename_noext()] = a_dic
+            a_dic = {'basename' : asset_FileName.getBase_noext(), 'filesize' : file_size, 'data' : fileData_base64}
+            assets_dic[asset_FileName.getBase_noext()] = a_dic
             log_error('{0:<9s} exported/encoded'.format(AInfo.name))
 
     raw_data = []
@@ -1290,7 +1290,7 @@ def fs_generate_PClone_index(roms, roms_nointro):
             rom_name = rom['m_name']
         else:
             ROMFileName = FileName(rom['filename'])
-            rom_name = ROMFileName.getBasename_noext()
+            rom_name = ROMFileName.getBase_noext()
         # log_debug('{0} --> {1}'.format(rom_name, rom_id))
         # log_debug('{0}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
@@ -1302,7 +1302,7 @@ def fs_generate_PClone_index(roms, roms_nointro):
         # log_debug('rom_id {0}'.format(rom_id))
         # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
         # log_debug('  filename         "{0}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBasename_noext()))
+        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
 
         if rom['nointro_status'] == 'Unknown':
             clone_id = rom['id']
@@ -1316,7 +1316,7 @@ def fs_generate_PClone_index(roms, roms_nointro):
         else:
             # Added No-Intro ROMs always have all No-Intro tags
             if rom['nointro_status'] == 'Added': rom_nointro_name = rom['m_name']
-            else:                                rom_nointro_name = ROMFileName.getBasename_noext()
+            else:                                rom_nointro_name = ROMFileName.getBase_noext()
             # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
             nointro_rom = roms_nointro[rom_nointro_name]
 
