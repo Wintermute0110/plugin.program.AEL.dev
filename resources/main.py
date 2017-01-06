@@ -6507,6 +6507,10 @@ class Main:
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
+    #
+    # launcherID -> string, MD5 hash
+    # ROM        -> FileName object
+    #
     def _roms_process_scanned_ROM(self, launcherID, ROM):
         # --- "Constants" ---
         META_TITLE_ONLY = 100
@@ -6558,9 +6562,9 @@ class Main:
         if metadata_action == META_TITLE_ONLY:
             scraper_text = 'Formatting ROM name.'
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-            romdata['m_name'] = text_format_ROM_title(ROM.base_noext, scan_clean_tags)
+            romdata['m_name'] = text_format_ROM_title(ROM.getBasename_noext(), scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
-            nfo_file_path = FileName(ROM.path_noext + ".nfo")
+            nfo_file_path = FileName(ROM.getPath_noext() + ".nfo")
             scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             log_debug('Trying NFO file "{0}"'.format(nfo_file_path.getPath()))

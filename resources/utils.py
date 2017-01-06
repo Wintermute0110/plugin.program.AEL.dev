@@ -226,7 +226,8 @@ def text_get_image_URL_extension(url):
 # Misc stuff
 # -------------------------------------------------------------------------------------------------
 #
-# Given the image path, image filename with no extension and a list of file extensions search for a file.
+# Given the image path, image filename with no extension and a list of file extensions search for 
+# a file.
 #
 # rootPath       -> FileName object
 # filename_noext -> Unicode string
@@ -237,7 +238,7 @@ def text_get_image_URL_extension(url):
 #
 def misc_look_for_file(rootPath, filename_noext, file_exts):
     for ext in file_exts:
-        file_path = rootPath + filename_noext + '.' + ext
+        file_path = rootPath.join(filename_noext + '.' + ext)
         if file_path.exists():
             return file_path
 
@@ -320,31 +321,32 @@ class FileName:
 
     # ---------------------------------------------------------------------------------------------
     # Decomposes a file name path or directory into its constituents
-    #   FileName.getPath()            Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath_noext()      Full path with no extension                   /home/Wintermute/Sonic
-    #   FileName.getDirname()         Directory name of file. Does not end in '/'   /home/Wintermute/
-    #   FileName.getBasename()        File name with no path                        Sonic.zip
-    #   FileName.getBasename_noext()  File name with no path and no extension       Sonic
-    #   FileName.getExt()             File extension                                .zip
+    #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
+    #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
+    #   FileName.getBase()          File name with no path                        Sonic.zip
+    #   FileName.getBase_noext()    File name with no path and no extension       Sonic
+    #   FileName.getExt()           File extension                                .zip
     # ---------------------------------------------------------------------------------------------
-    def getPath(self):
-        return self.path
-
     def getOriginalPath(self):
         return self.originalPath
+
+    def getPath(self):
+        return self.path
 
     def getPath_noext(self):
         root, ext = os.path.splitext(self.path)
 
         return root
 
-    def getDirname(self):
+    def getDir(self):
         return os.path.dirname(self.path)
 
-    def getBasename(self):
+    def getBase(self):
         return os.path.basename(self.path)
 
-    def getBasename_noext(self):
+    def getBase_noext(self):
         basename  = os.path.basename(self.path)
         root, ext = os.path.splitext(basename)
         
