@@ -5793,14 +5793,12 @@ class Main:
                     log_debug('_run_process() (Windows) Launching BAT application')
                     info = subprocess_hack.STARTUPINFO()
                     info.dwFlags = 1
-                    if self.settings['show_batch']: info.wShowWindow = 5
-                    else:                           info.wShowWindow = 0
+                    info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
                 else:
                     log_debug('_run_process() (Windows) Launching regular application (not BAT)')
                 log_debug('_run_process() (Windows) Calling popen()')
-                pr = subprocess_hack.Popen(r'{0} {1}'.format(application, arguments).encode('utf-8'),
-                                           cwd = apppath.encode('utf-8'),
-                                           startupinfo = info)
+                pr = subprocess_hack.Popen('{0} {1}'.format(application, arguments).encode('utf-8'),
+                                           cwd = apppath.encode('utf-8'), startupinfo = info)
                 pr.wait()
 
         # >> Linux and Android
