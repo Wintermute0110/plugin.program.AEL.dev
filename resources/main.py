@@ -5518,19 +5518,21 @@ class Main:
 
         # ~~~~~ External application ~~~~~
         app_basename   = application.getBase()
-        raw_arguments  = launcher['args']
-        arguments      = raw_arguments.replace('%apppath%' , application.getDir())
-        arguments      = arguments.replace('%APPPATH%' , application.getDir())
-        app_ext        = launcher['application'].split('.')[-1]
+        app_ext        = application.getExt()
+        arguments      = launcher['args']
         launcher_title = launcher['m_name']
-        log_info('_run_standalone_launcher() categoryID     = {0}'.format(categoryID))
-        log_info('_run_standalone_launcher() launcherID     = {0}'.format(launcherID))
-        log_info('_run_standalone_launcher() application    = "{0}"'.format(application.getPath()))
-        log_info('_run_standalone_launcher() apppath        = "{0}"'.format(application.getDir()))
-        log_info('_run_standalone_launcher() app_basename   = "{0}"'.format(app_basename))
-        log_info('_run_standalone_launcher() arguments      = "{0}"'.format(arguments))
-        log_info('_run_standalone_launcher() app_ext        = "{0}"'.format(app_ext))
-        log_info('_run_standalone_launcher() launcher_title = "{0}"'.format(launcher_title))
+        log_info('_run_standalone_launcher() categoryID {0}'.format(categoryID))
+        log_info('_run_standalone_launcher() launcherID {0}'.format(launcherID))
+        log_info('_run_standalone_launcher() application   "{0}"'.format(application.getPath()))
+        log_info('_run_standalone_launcher() apppath       "{0}"'.format(application.getDir()))
+        log_info('_run_standalone_launcher() app_basename  "{0}"'.format(app_basename))
+        log_info('_run_standalone_launcher() app_ext       "{0}"'.format(app_ext))
+        log_info('_run_standalone_launcher() launcher name "{0}"'.format(launcher_title))
+
+        # ~~~ Argument substitution ~~~
+        log_info('_run_standalone_launcher() raw arguments   "{0}"'.format(arguments))
+        arguments = arguments.replace('$apppath%' , application.getDir())
+        log_info('_run_standalone_launcher() final arguments "{0}"'.format(arguments))
 
         # --- Check for errors and abort if errors found ---
         if not application.exists():
