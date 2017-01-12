@@ -39,9 +39,17 @@ WIP      Full Extranafart for ROMs.
 
 
 WIP      Support for multidisc systems. Have a look at old AL launcher code.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2495480#pid2495480
+
+WIP      Add Retroplayer support.
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 
 
-[B]Advanced Emulator Launcher | version 0.9.5 | 6 January 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
+
+WIP      Fix ROM Collection exporting/importing.
+
+WIP      Properly remove HTML tags in online scrapers.
 
 FIX      ROM substitution keywords now use $ instead of the ugly %.
          %rom% becomes $rom$
