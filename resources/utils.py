@@ -190,8 +190,8 @@ def text_format_ROM_title(title, clean_tags):
     #
     # Regexp to decompose a string in tokens
     #
-    reg_exp = '\[.+?\]\s?|\(.+?\)\s?|\{.+?\}|[^\[\(\{]+'
     if clean_tags:
+        reg_exp = '\[.+?\]\s?|\(.+?\)\s?|\{.+?\}|[^\[\(\{]+'
         tokens = re.findall(reg_exp, title)
         str_list = []
         for token in tokens:

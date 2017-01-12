@@ -6934,12 +6934,12 @@ class Main:
         # --- Put metadata into ROM dictionary ---
         # >> Ignore scraped title
         if scan_ignore_scrapped_title:
-            roms[romID]['m_name'] = text_ROM_title_format(ROM.base_noext, scan_clean_tags)
-            log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(roms[romID]['m_name']))
+            roms[romID]['m_name'] = text_format_ROM_title(ROM.base_noext, scan_clean_tags)
+            log_debug('User wants to ignore scraper name. Setting name to "{0}"'.format(roms[romID]['m_name']))
         # >> Use scraped title
         else:
             roms[romID]['m_name'] = gamedata['title']
-            log_debug("User wants scrapped name. Setting name to '{0}'".format(roms[romID]['m_name']))
+            log_debug('User wants scrapped name. Setting name to "{0}"'.format(roms[romID]['m_name']))
         roms[romID]['m_year']   = gamedata['year']
         roms[romID]['m_genre']  = gamedata['genre']
         roms[romID]['m_studio'] = gamedata['studio']
