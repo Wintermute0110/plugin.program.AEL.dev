@@ -6934,7 +6934,7 @@ class Main:
         # --- Put metadata into ROM dictionary ---
         # >> Ignore scraped title
         if scan_ignore_scrapped_title:
-            roms[romID]['m_name'] = text_format_ROM_title(ROM.base_noext, scan_clean_tags)
+            roms[romID]['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
             log_debug('User wants to ignore scraper name. Setting name to "{0}"'.format(roms[romID]['m_name']))
         # >> Use scraped title
         else:
