@@ -3552,7 +3552,7 @@ class Main:
                                '{0} Unliked ROM and '.format(self.num_fav_urom) +
                                '{0} Broken.'.format(self.num_fav_broken))
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                kodi_dialog_OK('You have {0} ROMs in Collection "{1}". '.format(self.num_fav_roms, collection['name']) +
+                kodi_dialog_OK('You have {0} ROMs in Collection "{1}". '.format(self.num_fav_roms, collection['m_name']) +
                                '{0} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
                                '{0} Unliked ROM and '.format(self.num_fav_urom) +
                                '{0} are Broken.'.format(self.num_fav_broken))
