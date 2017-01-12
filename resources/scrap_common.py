@@ -93,8 +93,9 @@ class Scraper_TheGamesDB():
                            "<ReleaseDate>(.*?)</ReleaseDate><Platform>(.*?)</Platform></Game>", page_data)
         game_list = []
         for item in games:
-            title = item[1]
-            display_name = title + ' / ' + item[3]
+            title    = text_unescape_and_untag_HTML(item[1])
+            platform = text_unescape_and_untag_HTML(item[3])
+            display_name = title + ' / ' + platform
             game = {'id' : item[0], 'display_name' : display_name, 'order' : 1}
             # Increase search score based on our own search
             if title.lower() == search_string.lower():          game['order'] += 1
