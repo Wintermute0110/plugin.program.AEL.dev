@@ -211,19 +211,19 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 
         # --- Parse game page data ---
         game_title = ''.join(re.findall('<GameTitle>(.*?)</GameTitle>', page_data))
-        gamedata['title'] = text_unescape_HTML(game_title) if game_title else ''
+        gamedata['title'] = text_unescape_and_untag_HTML(game_title) if game_title else ''
 
         game_genre = ' / '.join(re.findall('<genre>(.*?)</genre>', page_data))
-        gamedata['genre'] = text_unescape_HTML(game_genre) if game_genre else ''
+        gamedata['genre'] = text_unescape_and_untag_HTML(game_genre) if game_genre else ''
 
         game_release = ''.join(re.findall('<ReleaseDate>(.*?)</ReleaseDate>', page_data))
-        gamedata['year'] = text_unescape_HTML(game_release[-4:]) if game_release else ''
+        gamedata['year'] = text_unescape_and_untag_HTML(game_release[-4:]) if game_release else ''
             
         game_studio = ''.join(re.findall('<Developer>(.*?)</Developer>', page_data))
-        gamedata['studio'] = text_unescape_HTML(game_studio) if game_studio else ''
+        gamedata['studio'] = text_unescape_and_untag_HTML(game_studio) if game_studio else ''
             
         game_plot = ''.join(re.findall('<Overview>(.*?)</Overview>', page_data))
-        gamedata['plot'] = text_unescape_HTML(game_plot) if game_plot else ''
+        gamedata['plot'] = text_unescape_and_untag_HTML(game_plot) if game_plot else ''
 
         return gamedata
 
@@ -272,7 +272,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
             gamedata['studio'] = p.sub('', game_studio[0][1])
 
         game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page_data)
-        if game_plot: gamedata['plot'] = text_unescape_HTML(game_plot[0])
+        if game_plot: gamedata['plot'] = text_unescape_and_untag_HTML(game_plot[0])
             
         return gamedata
 
@@ -310,7 +310,7 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         gamedata['title'] = game['game_name']
 
         game_genre = re.findall('Genre</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
-        if game_genre: gamedata['genre'] = text_unescape_HTML(game_genre[0][1])
+        if game_genre: gamedata['genre'] = text_unescape_and_untag_HTML(game_genre[0][1])
 
         # NOTE Year can be
         #      A) YYYY
@@ -318,7 +318,7 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         #      C) MMM DD, YYYY
         game_year = re.findall('Released</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
         if game_year: 
-            year_str = text_unescape_HTML(game_year[0][1])
+            year_str = text_unescape_and_untag_HTML(game_year[0][1])
             # print('Year_str = "' + year_str + '"')
             year_A = re.findall('^([0-9]{4})', year_str)
             year_B = re.findall('([\w]{3}), ([0-9]{4})', year_str)
@@ -331,10 +331,10 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
             elif year_C: gamedata['year'] = year_C[0][2]
 
         game_studio = re.findall('Published by</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
-        if game_studio: gamedata['studio'] = text_unescape_HTML(game_studio[0][1])
+        if game_studio: gamedata['studio'] = text_unescape_and_untag_HTML(game_studio[0][1])
 
         game_description = re.findall('<h2>Description</h2>(.*?)<div class="sideBarLinks">', page_data)
-        if game_description: gamedata['plot'] = text_unescape_HTML(game_description[0])
+        if game_description: gamedata['plot'] = text_unescape_and_untag_HTML(game_description[0])
         
         return gamedata
 
@@ -388,6 +388,6 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         # --- Plot ---
         # <div id="history_detail" class="extra_info_detail"><div class="history_title"></div>Aliens © 1990 Konami........&amp;id=63&amp;o=2</div>
         fa_plot = re.findall('<div id="history_detail" class="extra_info_detail"><div class=\'history_title\'></div>(.*?)</div>', page_data)
-        if fa_plot: gamedata['plot'] = text_unescape_HTML(fa_plot[0])
+        if fa_plot: gamedata['plot'] = text_unescape_and_untag_HTML(fa_plot[0])
 
         return gamedata

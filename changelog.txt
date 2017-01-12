@@ -47,9 +47,9 @@ WIP      Add Retroplayer support.
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
 
-WIP      Fix ROM Collection exporting/importing.
+FIX      Fix ROM Collection exporting/importing.
 
-WIP      Properly remove HTML tags in online scrapers.
+FIX      Properly remove HTML tags in MobyGames metadata scraper plot.
 
 FIX      ROM substitution keywords now use $ instead of the ugly %.
          %rom% becomes $rom$

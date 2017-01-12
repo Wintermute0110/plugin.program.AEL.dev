@@ -124,6 +124,15 @@ def text_unescape_HTML(s):
     s = s.replace('&#x26;', '&')
     s = s.replace('&#x27;', "'")
 
+    s = s.replace('&#x101;', "ā")
+    s = s.replace('&#x113;', "ē")
+    s = s.replace('&#x12b;', "ī")
+    s = s.replace('&#x12B;', "ī")
+    s = s.replace('&#x14d;', "ō")
+    s = s.replace('&#x14D;', "ō")
+    s = s.replace('&#x16b;', "ū")
+    s = s.replace('&#x16B;', "ū")
+    
     return s
 
 #    
@@ -132,6 +141,12 @@ def text_unescape_HTML(s):
 def text_remove_HTML_tags(s):
     p = re.compile(r'<.*?>')
     s = p.sub('', s)
+
+    return s
+
+def text_unescape_and_untag_HTML(s):
+    s = text_unescape_HTML(s)
+    s = text_remove_HTML_tags(s)
 
     return s
 
