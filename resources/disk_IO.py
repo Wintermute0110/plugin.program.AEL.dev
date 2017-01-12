@@ -870,7 +870,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
     return (collections, update_timestamp)
 
 def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
-    log_verb('fs_write_Collection_ROMs_JSON() {0}'.format(roms_json_file.getOriginalPath()))
+    log_verb('fs_write_Collection_ROMs_JSON() File {0}'.format(roms_json_file.getOriginalPath()))
 
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
@@ -1052,10 +1052,10 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
 #
 def fs_import_ROM_collection(input_FileName):
     default_return = ({}, {}, [])
-    if not input_FileName.exists(): return default_return
 
     # --- Parse using JSON ---
     log_info('fs_import_ROM_collection() Loading {0}'.format(input_FileName.getOriginalPath()))
+    if not input_FileName.exists(): return default_return
 
     with open(input_FileName.getPath()) as file:
         try:
@@ -1068,11 +1068,16 @@ def fs_import_ROM_collection(input_FileName):
             return default_return
 
     # --- Extract roms from JSON data structe and ensure version is correct ---
-    control_dic         = raw_data[0]
-    collection_dic      = raw_data[1]
-    collection_rom_list = raw_data[2]
-    control_str         = control_dic['control']
-    version_int         = control_dic['version']
+    try:
+        control_dic         = raw_data[0]
+        collection_dic      = raw_data[1]
+        collection_rom_list = raw_data[2]
+        control_str         = control_dic['control']
+        version_int         = control_dic['version']
+    except:
+        log_error('fs_import_ROM_collection() Exception unpacking ROM Collection data')
+        log_error('fs_import_ROM_collection() Empty ROM Collection returned')
+        return default_return
 
     return (control_dic, collection_dic, collection_rom_list)
 

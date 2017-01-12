@@ -4213,8 +4213,7 @@ class Main:
         collection_file_path = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
         log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
         try:
-            if collection_file_path.exists():
-                collection_file_path.delete()
+            if collection_file_path.exists(): collection_file_path.unlink()
         except OSError:
             log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path.getOriginalPath()))
             kodi_notify_warn('OSError exception deleting collection JSON')
@@ -4228,13 +4227,14 @@ class Main:
     def _command_import_collection(self):
         # --- Choose collection to import ---
         dialog = xbmcgui.Dialog()
-        collection_file = dialog.browse(1, 'Select the ROM Collection file', 'files', '.json', False, False).decode('utf-8')
-        if not collection_file: return
+        collection_file_str = dialog.browse(1, 'Select the ROM Collection file', 'files', '.json', False, False).decode('utf-8')
+        if not collection_file_str: return
 
         # --- Load ROM Collection file ---
-        control_dic, collection_dic, collection_rom_list = fs_import_ROM_collection(collection_file)
+        collection_FN = FileName(collection_file_str)
+        control_dic, collection_dic, collection_rom_list = fs_import_ROM_collection(collection_FN)
         if not collection_dic:
-            kodi_dialog_OK('Error reading Collection JSON file.')
+            kodi_dialog_OK('Error reading Collection JSON file. JSON file corrupted or wrong.')
             return
         if not collection_rom_list:
             kodi_dialog_OK('Collection is empty.')
@@ -4244,76 +4244,122 @@ class Main:
             return
 
         # --- Check if asset JSON exist. If so, ask the user about importing it. ---
-        collection_FileName = FileName(collection_file)
-        collection_asset_FileName = FileName(collection_FileName.getBase_noext() + '_assets.json')
+        collection_asset_FN = FileName(collection_FN.getPath_noext() + '_assets.json')
+        log_debug('_command_import_collection() collection_asset_FN "{0}"'.format(collection_asset_FN.getPath()))
         import_collection_assets = False
-        if collection_asset_FileName.exists():
-            ret = kodi_dialog_yesno('Collection asset JSON detected. Import collection assets as well?')
-            if ret: import_collection_assets = True
-            # --- Load assets ---
-            asset_control_dic, assets_dic = fs_import_ROM_collection_assets(collection_asset_FileName)
+        if collection_asset_FN.exists():
+            log_debug('_command_import_collection() Collection asset JSON found')
+            ret = kodi_dialog_yesno('Collection asset JSON found. Import collection assets as well?')
+            if ret: 
+                import_collection_assets = True
+                asset_control_dic, assets_dic = fs_import_ROM_collection_assets(collection_asset_FN)
+        else:
+            log_debug('_command_import_collection() Collection asset JSON NOT found')
 
         # --- Load collection indices ---
         collections, update_timestamp = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
 
         # --- If collectionID already on index warn the user ---
         if collection_dic['id'] in collections:
-            log_info('_command_import_collection() Collection {0} already in index'.format(collection_dic['id']))
+            log_info('_command_import_collection() Collection {0} already in AEL'.format(collection_dic['m_name']))
             ret = kodi_dialog_yesno('A Collection with same ID exists. Overwrite?')
             if not ret: return
 
-        # --- Add Collection to AEL storage ---
-        collection_id_md5    = hashlib.md5(collection_dic['m_name'].encode('utf-8'))
-        collection_UUID      = collection_id_md5.hexdigest()
-        collection_base_name = fs_get_collection_ROMs_basename(collection_dic['m_name'], collection_UUID)
+        # --- Regenrate roms_base_noext field ---
+        collection_base_name = fs_get_collection_ROMs_basename(collection_dic['m_name'], collection_dic['id'])
         collection_dic['roms_base_noext'] = collection_base_name
+        log_debug('_command_import_collection() roms_base_noext "{0}"'.format(collection_dic['roms_base_noext']))
 
         # --- Also import assets if loaded ---
-        # 1) Traverse every asset in every collection ROM.
-        # 2) Compare asset basename with asset_dic contents. If match, then
         if import_collection_assets:
-            collections_asset_dir = FileName(self.settings['collections_asset_dir'])
+            collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
+
+            # --- Import Collection assets ---
+            log_info('_command_import_collection() Importing ROM Collection assets...')
+            for asset_kind in CATEGORY_ASSET_LIST:
+                # >> Get asset filename with no extension
+                AInfo = assets_get_info_scheme(asset_kind)
+                asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
+                                                             collection_dic['m_name'], collection_dic['id'])
+                log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, asset_noext_FN.getBase()))
+                if asset_noext_FN.getBase() not in assets_dic:
+                    # >> Asset not found. Make sure asset is unset in imported Collection.
+                    collection_dic[AInfo.key] = ''
+                    log_debug('{0:<9s} NOT found in imported asset dictionary'.format(AInfo.name))
+                    continue
+                log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
+                asset_dic = assets_dic[asset_noext_FN.getBase()]
+                new_asset_FN = collections_asset_dir_FN.join(asset_dic['basename'])
+
+                # >> Create asset file
+                asset_base64_data = asset_dic['data']
+                asset_filesize    = asset_dic['filesize']
+                fileData = base64.b64decode(asset_base64_data)
+                log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
+                log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
+                with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
+                    file.write(fileData)
+                statinfo = new_asset_FN.stat()
+                file_size = statinfo.st_size
+                if asset_filesize != file_size:
+                    # >> File creation/Unpacking error. Make sure asset is unset in imported Collection.
+                    collection_dic[AInfo.key] = ''
+                    log_error('{0:<9s} wrong file size {1} (must be {2})'.format(A.name, file_size, asset_filesize))
+                    return
+                else:
+                    log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
+                # >> Update imported asset filename in database.
+                collection_dic[AInfo.key] = new_asset_FN.getOriginalPath()
+
+            # --- Import ROM assets ---
+            log_info('_command_import_collection() Importing ROM assets...')
             for rom_item in collection_rom_list:
                 log_debug('_command_import_collection() ROM "{0}"'.format(rom_item['m_name']))
                 for asset_kind in ROM_ASSET_LIST:
-                    A = assets_get_info_scheme(asset_kind)
-                    asset_FileName = FileName(rom_item[A.key])
-                    current_DB_asset_base_noext = asset_FileName.getBase_noext()
-                    log_debug('{0:<9s} base_noext "{1}"'.format(A.name, current_DB_asset_base_noext))
-                    if current_DB_asset_base_noext not in assets_dic:
-                        log_debug('{0:<9s} not found in imported asset dictionary'.format(A.name))
+                    # >> Get assets filename with no extension
+                    AInfo = assets_get_info_scheme(asset_kind)
+                    ROM_FN = FileName(rom_item['filename'])                    
+                    ROM_asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
+                                                                     ROM_FN.getBase_noext(), rom_item['id'])
+                    ROM_asset_FN = ROM_asset_noext_FN.append(ROM_asset_noext_FN.getExt())
+                    log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, ROM_asset_FN.getBase_noext()))
+                    if ROM_asset_FN.getBase_noext() not in assets_dic:
+                        # >> Asset not found. Make sure asset is unset in imported Collection.
+                        rom_item[AInfo.key] = ''
+                        log_debug('{0:<9s} NOT found in imported asset dictionary'.format(AInfo.name))
                         continue
-                    asset_dic = assets_dic[current_DB_asset_base_noext]
-                    new_asset_filename = collections_asset_dir.join(asset_dic['basename'])
+                    log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
+                    asset_dic = assets_dic[ROM_asset_FN.getBase_noext()]                        
+                    new_asset_FN = collections_asset_dir_FN.join(asset_dic['basename'])
 
                     # >> Create asset file
                     asset_base64_data = asset_dic['data']
                     asset_filesize    = asset_dic['filesize']
                     fileData = base64.b64decode(asset_base64_data)
-                    log_debug('{0:<9s} Creating "{1}"'.format(A.name, new_asset_filename.getOriginalPath()))
-                    with open(new_asset_filename.getPath(), mode = 'wb') as file: # b is important -> binary
+                    log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
+                    log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
+                    with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
                         file.write(fileData)
-                    statinfo = new_asset_filename.stat()
+                    statinfo = new_asset_FN.stat()
                     file_size = statinfo.st_size
                     if asset_filesize != file_size:
-                        log_error('{0:<9s} wrong file size {1} (must be {2})'.format(A.name, file_size, asset_filesize))
+                        # >> File creation/Unpacking error. Make sure asset is unset in imported Collection.
+                        rom_item[AInfo.key] = ''
+                        log_error('{0:<9s} wrong file size {1} (must be {2})'.format(AInfo.name, file_size, asset_filesize))
                         return
                     else:
-                        log_debug('{0:<9s} file size OK ({1} bytes)'.format(A.name, asset_filesize))
-
+                        log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
                     # >> Update asset info in database
-                    rom_item[A.key] = new_asset_filename.getOriginalPath()
+                    rom_item[AInfo.key] = new_asset_FN.getOriginalPath()
             log_debug('_command_import_collection() Finished importing assets')
 
         # --- Add imported collection to database ---
         collections[collection_dic['id']] = collection_dic
-        log_info('_command_import_collection() Importing Collection "{0}" ({1})'.format(collection_dic['m_name'], collection_dic['id']))
-        log_info('_command_import_collection() roms_base_noext "{0}"'.format(collection_dic['roms_base_noext']))
+        log_info('_command_import_collection() Imported Collection "{0}" (id {1})'.format(collection_dic['m_name'], collection_dic['id']))
 
         # --- Write ROM Collection databases ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
-        json_file = COLLECTIONS_DIR.join(collection_base_name + '.json')
-        fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
+        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR.join(collection_base_name + '.json'), collection_rom_list)
         if import_collection_assets:
             kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
         else:
