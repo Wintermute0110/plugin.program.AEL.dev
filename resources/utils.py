@@ -2,7 +2,7 @@
 # Advanced Emulator Launcher miscellaneous functions
 #
 
-# Copyright (c) 2016 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
