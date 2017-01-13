@@ -127,7 +127,7 @@ class Main:
         set_log_level(self.settings['log_level'])
 
         # --- Some debug stuff for development ---
-        log_debug('---------- Called AEL addon.py Main() constructor ----------')
+        log_debug('---------- Called AEL Main::run_plugin() constructor ----------')
         log_debug('sys.platform   {0}'.format(sys.platform))
         # log_debug('WindowId       {0}'.format(xbmcgui.getCurrentWindowId()))
         # log_debug('WindowName     {0}'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
@@ -158,9 +158,9 @@ class Main:
         if not REPORTS_DIR.exists():              REPORTS_DIR.makedirs()
 
         # ~~~~~ Process URL ~~~~~
-        self.base_url = sys.argv[0]
+        self.base_url     = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
-        args = urlparse.parse_qs(sys.argv[2][1:])
+        args              = urlparse.parse_qs(sys.argv[2][1:])
         log_debug('args = {0}'.format(args))
         # Interestingly, if plugin is called as type executable then args is empty.
         # However, if plugin is called as type video then Kodi adds the following
