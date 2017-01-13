@@ -4,7 +4,7 @@ Advanced Emulator Launcher was originally forked from Advanced Launcher
 version 2.5.8 on May 2016 by Wintermute0110 <wintermute0110@gmail.com>. First
 public released version of Advanced Emulator Launcher was 0.9.0 on Aug 2016.
 
-Kodi forum thread: not yet
+Kodi forum thread: http://forum.kodi.tv/showthread.php?tid=287826
 
 AEL contributors: Chrisism, Paradix, Rufoo.
 
