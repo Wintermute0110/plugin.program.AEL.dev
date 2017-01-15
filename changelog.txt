@@ -45,6 +45,12 @@ WIP      Add Retroplayer support.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 
 
+WIP     Use a Window property to let skins now wheter a launcher OR ROMs are being rendered.
+        Set xbmcgui.Window(10000).setProperty('AEL_Content', 'launchers')
+            xbmcgui.Window(10000).setProperty('AEL_Content', 'roms')
+        It must be set on entering and unset on exiting the plugin.
+
+
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
 
 FIX      Fix ROM Collection exporting/importing.
