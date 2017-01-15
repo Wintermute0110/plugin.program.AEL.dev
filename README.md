@@ -10,7 +10,7 @@ standalone applications is also available.
 Follow [this link](https://github.com/Wintermute0110/repository.wintermute0110/tree/master/plugin.program.advanced.emulator.launcher) 
 and download the ZIP file of the version you want.
 
-## Installing the latests development version ##
+## Installing the latest development version ##
 
 It is important that you follow this instructions or Advanced Emulator Launcher won't work well.
 
