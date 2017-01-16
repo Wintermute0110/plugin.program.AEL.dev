@@ -50,6 +50,9 @@ WIP     Use a Window property to let skins now wheter a launcher OR ROMs are bei
             xbmcgui.Window(10000).setProperty('AEL_Content', 'roms')
         It must be set on entering and unset on exiting the plugin.
 
+WIP     Default to launcher icon if ROM icon is missing.
+        See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
+
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
 
