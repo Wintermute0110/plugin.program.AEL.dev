@@ -45,6 +45,32 @@
 
 # Implementation of multidisc support #
 
+To be decided yet...
+
+## Naming conventions ##
+
+[TOSEC Naming Convention]
+
+[TOSEC Naming Convention]: http://www.tosecdev.org/tosec-naming-convention
+
+ Organisation | Name example                                                |
+--------------|-------------------------------------------------------------|
+ TOSEC        | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 1 of 2).cue |
+              | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 2 of 2).cue |
+ Trurip       | Final Fantasy VII (EU) - (Disc 1 of 3).cue                  |
+              | Final Fantasy VII (EU) - (Disc 2 of 3).cue                  |
+              | Final Fantasy VII (EU) - (Disc 3 of 3).cue                  |
+ Redump       | Final Fantasy VII (USA) (Disc 1).cue                        |
+              | Final Fantasy VII (USA) (Disc 2).cue                        |
+              | Final Fantasy VII (USA) (Disc 3).cue                        |
+
+
+# TOSEC/Trurip/Redump image formats #
+
+ TOSEC       | Redump  | Trurip          |
+-------------|---------|-----------------|
+ cue,iso,wav | cue,bin | cue,img,ccd,sub |
+
 
 # AL subprocess module hack #
 
@@ -72,16 +98,16 @@ enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
 
 # Development environment #
 
-    1. Installed the packages `kodi` and `kodi-visualization-spectrum` in Debian.
+  1. Installed the packages `kodi` and `kodi-visualization-spectrum` in Debian.
 
-    2. Kodi can be run from the command line in windowed mode.
+  2. Kodi can be run from the command line in windowed mode.
 
-    3. Created a basic package for AEL and install it from zip file.
+  3. Created a basic package for AEL and install it from zip file.
 
-    4. Once installed, addon code is located in `~/.kodi/addons/plugin.addon.name`
+  4. Once installed, addon code is located in `~/.kodi/addons/plugin.addon.name`
 
-    5. Once installed, addon can be developed in place. A repository can be cloned in
-       `~/.kodi/addons/plugin.addon.name`.
+  5. Once installed, addon can be developed in place. A repository can be cloned in
+     `~/.kodi/addons/plugin.addon.name`.
 
 
 # Installing the addon from github #
