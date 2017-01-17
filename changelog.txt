@@ -15,13 +15,16 @@ WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of th
          class. This need Krypton Beta 4 to run!
 
 
-
 WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
          deprecated os.system().
 
 WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
          mechanism based on subprocess module.
 
+
+WIP      Full Extranafart support for Categories/Launchers.
+
+WIP      Full Extranafart for ROMs.
 
 
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
@@ -32,26 +35,29 @@ WIP      Include databases for all supported platforms in AEL offline scraper.
 WIP      Add nplayers metadata field to ROMs.
 
 
-
-WIP      Full Extranafart support for Categories/Launchers.
-
-WIP      Full Extranafart for ROMs.
-
-
-WIP      Support for multidisc systems. Have a look at old AL launcher code.
+WIP      Support for multidisc systems. Have a look to NOTES.md for more details about the AEL
+         implementation.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2495480#pid2495480
+
+         AL ROM scanner only added the first disc to the database and skipped disc numbers
+         from 2 to 9.
+         https://github.com/Wintermute0110/plugin.program.advanced.launcher/blob/master/resources/lib/launcher_plugin.py#L2088
+
+         At ROM launching, if any of the strings ['.cd1', '-cd1', '_cd1', ' cd1'] is found on the
+         ROMfile basename then the rompath was scanned looking for all the discs. User selected
+         the disc number to launch from a select dialog.
+         https://github.com/Wintermute0110/plugin.program.advanced.launcher/blob/master/resources/lib/launcher_plugin.py#L1688
 
 WIP      Add Retroplayer support.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 
+WIP      Use a Window property to let skins know wheter a launcher OR ROMs are being rendered.
+         Set xbmcgui.Window(10000).setProperty('AEL_Content', 'launchers')
+             xbmcgui.Window(10000).setProperty('AEL_Content', 'roms')
+         It must be set on entering and unset on exiting the plugin.
 
-WIP     Use a Window property to let skins now wheter a launcher OR ROMs are being rendered.
-        Set xbmcgui.Window(10000).setProperty('AEL_Content', 'launchers')
-            xbmcgui.Window(10000).setProperty('AEL_Content', 'roms')
-        It must be set on entering and unset on exiting the plugin.
-
-WIP     Default to launcher icon if ROM icon is missing.
-        See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
+WIP      Default to launcher icon if ROM icon is missing.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
