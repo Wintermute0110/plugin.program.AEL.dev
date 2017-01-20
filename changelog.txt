@@ -56,6 +56,22 @@ WIP      Use a Window property to let skins know wheter a launcher OR ROMs are b
              xbmcgui.Window(10000).setProperty('AEL_Content', 'roms')
          It must be set on entering and unset on exiting the plugin.
 
+WIP      Use setProperty() to inform the sking about ROM flags:
+           1) Favourite status: OK, Unlinked ROM, Unlinked Launcher, Broken
+           2) No-Intro status: Have, Missing, Added, Unknown
+           3) Parent/Clone status: Parent or Clone (Boolean)
+         
+         For example:
+           setProperty('AEL_Fav_stat',     'Fav_OK')
+           setProperty('AEL_Fav_stat',     'Fav_UnlinkedROM')
+           setProperty('AEL_Fav_stat',     'Fav_UnlinkedLauncher')
+           setProperty('AEL_Fav_stat',     'Fav_Broken')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Have')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Miss')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Added')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Unknown')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_None')
+
 WIP      Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
