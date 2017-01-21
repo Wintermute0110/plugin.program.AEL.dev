@@ -54,6 +54,8 @@
  
     * The ROM basename is added to the `disks` list.
 
+    * Asset names will have the basename of the set `Final Fantasy VII (USA)`.
+
 ```
     filename = '/home/kodi/ROMs/Final Fantasy VII (USA) (Disc 3).cue'
     disks = ['Final Fantasy VII (USA) (Disc 3).cue']
