@@ -43,9 +43,43 @@
    use the subprocess module.
 
 
-# Implementation of multidisc support #
+# Multidisc support #
 
-To be decided yet...
+## ROM scanner implementation ##
+
+ 1) If the ROM scanner finds a multidisc image belonging to a set, for example
+    `Final Fantasy VII (USA) (Disc 3).cue`.
+ 
+    * The filename corresponds to the first ROM of the set.
+ 
+    * The ROM basename is added to the `disks` list.
+
+```
+    filename = '/home/kodi/ROMs/Final Fantasy VII (USA) (Disc 3).cue'
+    disks = ['Final Fantasy VII (USA) (Disc 3).cue']
+```
+ 
+ 2) If the ROM scanner finds another image of the set then:
+ 
+    * The basename is added to the `disks` list.
+    
+    * `disks` list is reordered so ROMs have consecutive order.
+    
+    * `filename` points to the first image of the set.
+    
+    * Metadata/Asset scraping is only done for the first ROM of the set.
+
+```
+    filename = '/home/kodi/ROMs/Final Fantasy VII (USA) (Disc 1).cue'
+    disks = ['Final Fantasy VII (USA) (Disc 1).cue', 'Final Fantasy VII (USA) (Disc 3).cue']
+```
+
+ 3) ROMs not in a set have an empty `disks` list.
+
+ 4) This implementation is safe if there are missing ROMs in the set.
+ 
+ 5) Al launching time, users selects from a select dialog of the basenames of the roms of the
+    set which one to launch.
 
 ## Naming conventions ##
 
