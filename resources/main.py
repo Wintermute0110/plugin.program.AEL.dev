@@ -110,6 +110,24 @@ AEL_CONTENT_VALUE_LAUNCHERS = 'launchers'
 AEL_CONTENT_VALUE_ROMS      = 'roms'
 AEL_CONTENT_VALUE_NONE      = ''
 
+# --- ROM flags used by skins to display status icons ---
+AEL_FAV_STAT_LABEL     = 'AEL_Fav_stat'
+AEL_NOINTRO_STAT_LABEL = 'AEL_NoIntro_stat'
+AEL_PCLONE_STAT_LABEL  = 'AEL_PClone_stat'
+AEL_FAV_STAT_VALUE_OK                = 'Fav_OK'
+AEL_FAV_STAT_VALUE_UNLINKED_ROM      = 'Fav_UnlinkedROM'
+AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER = 'Fav_UnlinkedLauncher'
+AEL_FAV_STAT_VALUE_BROKEN            = 'Fav_Broken'
+AEL_FAV_STAT_VALUE_UNKNOWN           = 'Fav_Unknown'
+AEL_NOINTRO_STAT_VALUE_HAVE          = 'NoIntro_Have'
+AEL_NOINTRO_STAT_VALUE_MISS          = 'NoIntro_Miss'
+AEL_NOINTRO_STAT_VALUE_ADDED         = 'NoIntro_Added'
+AEL_NOINTRO_STAT_VALUE_UNKNOWN       = 'NoIntro_Unknown'
+AEL_NOINTRO_STAT_VALUE_NONE          = 'NoIntro_None'
+AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
+AEL_PCLONE_STAT_VALUE_CLONE          = 'PClone_Clone'
+AEL_PCLONE_STAT_VALUE_UNKNOWN        = 'PClone_Unknown'
+
 # --- Main code ---
 class Main:
     update_timestamp = 0.0
@@ -3053,6 +3071,11 @@ class Main:
         # --- Do not render row if ROM is finished ---
         if rom['finished'] and self.settings['display_hide_finished']: return
 
+        # --- Default values for flags ---
+        AEL_Fav_stat_value     = AEL_FAV_STAT_VALUE_OK
+        AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
+        AEL_PClone_stat_value  = AEL_PCLONE_STAT_VALUE_UNKNOWN
+
         # --- Create listitem row ---
         rom_raw_name = rom['m_name']
         if categoryID == VCATEGORY_FAVOURITES_ID:
@@ -3073,6 +3096,12 @@ class Main:
                 else:                                          rom_name = rom_raw_name
             else:
                 rom_name = rom_raw_name
+            # >> ROM flags
+            if   rom['fav_status'] == 'OK':                AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
+            elif rom['fav_status'] == 'Unlinked ROM':      AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
+            elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+            elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
+            else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
             thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
@@ -3091,6 +3120,12 @@ class Main:
                 else:                                          rom_name = rom_raw_name
             else:
                 rom_name = rom_raw_name
+            # >> ROM flags
+            if   rom['fav_status'] == 'OK':                AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
+            elif rom['fav_status'] == 'Unlinked ROM':      AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
+            elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+            elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
+            else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
         elif categoryID == VCATEGORY_RECENT_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
             thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
@@ -3161,8 +3196,8 @@ class Main:
                 thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
 
                 # >> Mark No-Intro status
+                nstat = rom['nointro_status']
                 if self.settings['display_nointro_stat']:
-                    nstat = rom['nointro_status']
                     if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
                     elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
                     elif nstat == NOINTRO_STATUS_ADDED:   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
@@ -3171,7 +3206,12 @@ class Main:
                     else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
                 else:
                     rom_name = rom_raw_name
-
+                # >> NoIntro flags
+                if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
+                elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
+                elif nstat == NOINTRO_STATUS_ADDED:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_ADDED
+                elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
+                elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
                 # >> Mark clone ROMs
                 if 'isClone' in rom: rom_name += ' [COLOR orange][Clo][/COLOR]'
 
@@ -3221,6 +3261,11 @@ class Main:
         # if self._content_type == 'video':
         # listitem.setProperty('IsPlayable', 'false')
         # log_debug('Item Row IsPlayable false')
+
+        # --- ROM flags (Skins will use these flags to render icons) ---
+        listitem.setProperty('AEL_Fav_stat',     AEL_Fav_stat_value)
+        listitem.setProperty('AEL_NoIntro_stat', AEL_NoIntro_stat_value)
+        listitem.setProperty('AEL_PClone_stat',  AEL_PClone_stat_value)
 
         # --- Create context menu ---
         romID = rom['id']
