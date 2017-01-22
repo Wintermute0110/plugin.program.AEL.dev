@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.6 | XX January 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.7 | XX February 2017[/B]
 
 WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
 
@@ -14,6 +14,17 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
+WIP      Full Extranafart support for Categories/Launchers.
+
+WIP      Full Extranafart for ROMs.
+
+WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
+         online and offline scrapers.
+
+WIP      Include databases for all supported platforms in AEL offline scraper.
+
+
+[B]Advanced Emulator Launcher | version 0.9.6 | XX January 2017[/B]
 
 WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
          deprecated os.system().
@@ -21,19 +32,11 @@ WIP      Update launching mechanism. User Python subprocess module on all platfo
 WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
          mechanism based on subprocess module.
 
-
-WIP      Full Extranafart support for Categories/Launchers.
-
-WIP      Full Extranafart for ROMs.
-
-
-WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
-         online and offline scrapers.
-
-WIP      Include databases for all supported platforms in AEL offline scraper.
-
 WIP      Add nplayers metadata field to ROMs.
 
+WIP      Add ESRB/MPAA/PEGI rating?
+
+WIP      Have a setting to restrict ROMs displayed based on rating.
 
 WIP      Support for multidisc systems. Have a look to NOTES.md for more details about the AEL
          implementation.
