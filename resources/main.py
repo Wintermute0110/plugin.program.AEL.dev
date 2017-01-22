@@ -103,6 +103,13 @@ VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
 VLAUNCHER_RECENT_ID      = 'vcat_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vcat_most_played'
 
+# --- Content type to be used by skins ---
+AEL_CONTENT_WINDOW_ID       = 10001
+AEL_CONTENT_LABEL           = 'AEL_Content'
+AEL_CONTENT_VALUE_LAUNCHERS = 'launchers'
+AEL_CONTENT_VALUE_ROMS      = 'roms'
+AEL_CONTENT_VALUE_NONE      = ''
+
 # --- Main code ---
 class Main:
     update_timestamp = 0.0
@@ -425,6 +432,26 @@ class Main:
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_STUDIO)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_GENRE)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
+
+    #
+    # Set the AEL content type. It is a Window property used by skins to know if AEL is rendering
+    # a Window that has categories/launchers or ROMs.
+    #
+    def _misc_set_AEL_Content(self, AEL_Content_Value):
+        if AEL_Content_Value == AEL_CONTENT_VALUE_LAUNCHERS:
+            log_debug('_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
+                      'Property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS))
+            xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS)
+        elif AEL_Content_Value == AEL_CONTENT_VALUE_ROMS:
+            log_debug('_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
+                      'Property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS))
+            xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS)
+        elif AEL_Content_Value == AEL_CONTENT_VALUE_NONE:
+            log_debug('_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
+                      'Property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE))
+            xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE)
+        else:
+            log_error('_misc_set_AEL_Content() Invalid AEL_Content_Value "{0}"'.format(AEL_Content_Value))
 
     def _command_add_new_category(self):
         dialog = xbmcgui.Dialog()
@@ -2508,11 +2535,15 @@ class Main:
             kodi_notify('Deleted ROM from launcher')
             kodi_refresh_container()
 
+    # ---------------------------------------------------------------------------------------------
+    # Categories LisItem rendering
+    # ---------------------------------------------------------------------------------------------
     #
     # Renders the addon Root window. Categories, categoryless launchers, Favourites, etc.
     #
     def _command_render_categories(self):
         self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # --- For every category, add it to the listbox. Order alphabetically by name ---
         for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
@@ -2547,7 +2578,7 @@ class Main:
 
     #
     # Renders all categories without Favourites, Collections, virtual categories, etc.
-    # This function is called by skins tu build menu.
+    # This function is called by skins tu build shortcuts menu.
     #
     def _command_render_all_categories(self):
         # >> If no categories render nothing
@@ -2747,6 +2778,9 @@ class Main:
         url_str = self._misc_url('SHOW_MOST_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
+    # ---------------------------------------------------------------------------------------------
+    # Launcher LisItem rendering
+    # ---------------------------------------------------------------------------------------------
     #
     # Former  _get_launchers
     # Renders the launcher for a given category
@@ -2754,6 +2788,7 @@ class Main:
     def _command_render_launchers(self, categoryID):
         # >> Set content type
         self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # --- If the category has no launchers then render nothing ---
         launcher_IDs = []
@@ -2791,7 +2826,8 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
-    # Renders all launchers belonging to all categories. This function is called by skins
+    # Renders all launchers belonging to all categories.
+    # This function is called by skins to create shortcuts.
     #
     def _command_render_all_launchers(self):
         # >> If no launchers render nothing
@@ -2861,11 +2897,18 @@ class Main:
             folder_flag = False
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = folder_flag)
 
+    # ---------------------------------------------------------------------------------------------
+    # ROM LisItem rendering
+    # ---------------------------------------------------------------------------------------------
     #
     # Render clone ROMs. romID is the parent ROM.
     # This is only called in PClone display mode.
     #
     def _command_render_clone_roms(self, categoryID, launcherID, romID):
+        # --- Set content type and sorting methods ---
+        self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+
         # --- Check for errors ---
         if launcherID not in self.launchers:
             log_error('_command_render_clone_roms() Launcher ID not found in self.launchers')
@@ -2912,7 +2955,6 @@ class Main:
         #     log_debug('value = {0}'.format(roms[key]))
 
         # --- Render ROMs ---
-        self._misc_set_all_sorting_methods()
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
@@ -2924,6 +2966,10 @@ class Main:
     # Renders the roms listbox for a given launcher
     #
     def _command_render_roms(self, categoryID, launcherID):
+        # --- Set content type and sorting methods ---
+        self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+
         # --- Check for errors ---
         if launcherID not in self.launchers:
             log_error('_command_render_roms() Launcher ID not found in self.launchers')
@@ -2982,9 +3028,6 @@ class Main:
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         loading_ticks_end = time.time()
-
-        # --- Set content type and sorting methods ---
-        self._misc_set_all_sorting_methods()
 
         # --- Display ROMs ---
         rendering_ticks_start = time.time()
@@ -3246,6 +3289,7 @@ class Main:
     def _command_render_favourites(self):
         # >> Content type and sorting method
         self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Favourite ROMs ---
         roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
@@ -3259,13 +3303,17 @@ class Main:
             self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, roms[key], False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
+    # ---------------------------------------------------------------------------------------------
+    # Virtual Launcher LisItem rendering
+    # ---------------------------------------------------------------------------------------------
     #
-    # Render virtual launchers in virtual categories: title, year, genre, studio, category
+    # Render virtual launchers in virtual categories: Title, year, Genre, Studio, Category
     #
     def _command_render_virtual_category(self, virtual_categoryID):
         # >> Kodi sorting methods
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
@@ -3333,6 +3381,7 @@ class Main:
     def _command_render_virtual_launcher_roms(self, virtual_categoryID, virtual_launcherID):
         # >> Content type and sorting method
         self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:      vcategory_db_dir = VIRTUAL_CAT_TITLE_DIR
@@ -3371,7 +3420,8 @@ class Main:
     #
     def _command_render_recently_played(self):
         # >> Content type and sorting method
-        # self._misc_set_all_sorting_methods()
+        self._misc_set_default_sorting_method()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
         rom_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
@@ -3387,7 +3437,8 @@ class Main:
 
     def _command_render_most_played(self):
         # >> Content type and sorting method
-        # self._misc_set_all_sorting_methods()
+        self._misc_set_default_sorting_method()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Most Played favourite ROMs ---
         roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
@@ -3887,6 +3938,7 @@ class Main:
         # >> Kodi sorting method
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # --- Load collection index ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -3955,6 +4007,9 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _command_render_collection_ROMs(self, categoryID, launcherID):
+        self._misc_set_default_sorting_method()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+
         # --- Load Collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]

@@ -26,6 +26,30 @@ WIP      Include databases for all supported platforms in AEL offline scraper.
 
 [B]Advanced Emulator Launcher | version 0.9.6 | XX January 2017[/B]
 
+FEATURE  Use a Window property to let skins know wheter a launcher OR ROMs are being rendered.
+         Set xbmcgui.Window(10001).setProperty('AEL_Content', 'launchers')
+             xbmcgui.Window(10001).setProperty('AEL_Content', 'roms')
+         It must be set on entering and unset on exiting the plugin.
+
+WIP      Use setProperty() to inform the sking about ROM flags:
+           1) Favourite status: OK, Unlinked ROM, Unlinked Launcher, Broken
+           2) No-Intro status: Have, Missing, Added, Unknown
+           3) Parent/Clone status: Parent or Clone (Boolean)
+         
+         For example:
+           setProperty('AEL_Fav_stat',     'Fav_OK')
+           setProperty('AEL_Fav_stat',     'Fav_UnlinkedROM')
+           setProperty('AEL_Fav_stat',     'Fav_UnlinkedLauncher')
+           setProperty('AEL_Fav_stat',     'Fav_Broken')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Have')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Miss')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Added')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_Unknown')
+           setProperty('AEL_NoIntro_stat', 'NoIntro_None')
+
+WIP      Default to launcher icon if ROM icon is missing.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
+
 WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
          deprecated os.system().
 
@@ -51,32 +75,10 @@ WIP      Support for multidisc systems. Have a look to NOTES.md for more details
          the disc number to launch from a select dialog.
          https://github.com/Wintermute0110/plugin.program.advanced.launcher/blob/master/resources/lib/launcher_plugin.py#L1688
 
+         AEL will use a better implementation based on a ROM filename parser. See NOTES.md
+
 WIP      Add Retroplayer support.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
-
-WIP      Use a Window property to let skins know wheter a launcher OR ROMs are being rendered.
-         Set xbmcgui.Window(10000).setProperty('AEL_Content', 'launchers')
-             xbmcgui.Window(10000).setProperty('AEL_Content', 'roms')
-         It must be set on entering and unset on exiting the plugin.
-
-WIP      Use setProperty() to inform the sking about ROM flags:
-           1) Favourite status: OK, Unlinked ROM, Unlinked Launcher, Broken
-           2) No-Intro status: Have, Missing, Added, Unknown
-           3) Parent/Clone status: Parent or Clone (Boolean)
-         
-         For example:
-           setProperty('AEL_Fav_stat',     'Fav_OK')
-           setProperty('AEL_Fav_stat',     'Fav_UnlinkedROM')
-           setProperty('AEL_Fav_stat',     'Fav_UnlinkedLauncher')
-           setProperty('AEL_Fav_stat',     'Fav_Broken')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_Have')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_Miss')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_Added')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_Unknown')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_None')
-
-WIP      Default to launcher icon if ROM icon is missing.
-         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
