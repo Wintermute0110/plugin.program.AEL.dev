@@ -50,6 +50,9 @@ FEATURE  Use setProperty() to inform the skin about ROM flags:
            setProperty('AEL_PClone_stat',  'PClone_Clone')
            setProperty('AEL_PClone_stat',  'PClone_Unknown')
 
+FEATURE  Add Retroplayer support.
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
+
 WIP      Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
@@ -79,9 +82,6 @@ WIP      Support for multidisc systems. Have a look to NOTES.md for more details
          https://github.com/Wintermute0110/plugin.program.advanced.launcher/blob/master/resources/lib/launcher_plugin.py#L1688
 
          AEL will use a better implementation based on a ROM filename parser. See NOTES.md
-
-WIP      Add Retroplayer support.
-         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
