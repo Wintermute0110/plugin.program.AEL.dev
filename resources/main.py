@@ -1703,18 +1703,24 @@ class Main:
         if type == type_nb:
             minimize_str = 'ON' if self.launchers[launcherID]['minimize'] == True else 'OFF'
             filter_str   = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
+            if self.launchers[launcherID]['application'] == RETROPLAYER_LAUNCHER_APP_NAME:
+                launcher_str = 'Kodi Retroplayer'
+            elif self.launchers[launcherID]['application'] == LNK_LAUNCHER_APP_NAME:
+                launcher_str = 'LNK Launcher'
+            else:
+                launcher_str = "'{0}'".format(self.launchers[launcherID]['application'])
 
             # --- ROMS launcher -------------------------------------------------------------------
             if self.launchers[launcherID]['rompath'] == '':
                 type2 = dialog.select('Launcher Advanced Modifications',
-                                      ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
+                                      ["Change Application: {0}".format(launcher_str),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Modify Aditional arguments...",
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
             # --- Standalone launcher -------------------------------------------------------------
             else:
                 type2 = dialog.select('Launcher Advanced Modifications',
-                                      ["Change Application: '{0}'".format(self.launchers[launcherID]['application']),
+                                      ["Change Application: {0}".format(launcher_str),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Aditional arguments...",
                                        "Change ROM Path: '{0}'".format(self.launchers[launcherID]['rompath']),
@@ -1724,10 +1730,38 @@ class Main:
             # --- Launcher application path menu option ---
             type2_nb = 0
             if type2 == type2_nb:
-                app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '', 
-                                              False, False, self.launchers[launcherID]['application'])
-                self.launchers[launcherID]['application'] = app
-                kodi_notify('Changed launcher application')
+                # >> Choose launching mechanism
+                LAUNCHER_ROM         = 1
+                LAUNCHER_RETROPLAYER = 2
+                LAUNCHER_LNK         = 3
+                if sys.platform == 'win32':
+                    answer = dialog.select('Choose launcher mechanism',
+                                          ['Use Kodi Retroplayer',
+                                           'Use Windows LNK launcher',
+                                           'Choose launching application'])
+                    if   answer == 0: launcher_type = LAUNCHER_RETROPLAYER
+                    elif answer == 1: launcher_type = LAUNCHER_LNK
+                    elif answer == 2: launcher_type = LAUNCHER_ROM
+                    else: return
+                else:
+                    answer = kodi_dialog_yesno('Use Kodi Retroplayer in this launcher? '
+                                               'Answer NO to choose a new launching application.')
+                    if not answer: launcher_type = LAUNCHER_RETROPLAYER
+                    else:          launcher_type = LAUNCHER_ROM
+
+                # >> Choose launching application
+                if launcher_type == LAUNCHER_RETROPLAYER:
+                    self.launchers[launcherID]['application'] = RETROPLAYER_LAUNCHER_APP_NAME
+                    kodi_notify('Launcher app is Retroplayer')
+                elif launcher_type == LAUNCHER_LNK:
+                    self.launchers[launcherID]['application'] = LNK_LAUNCHER_APP_NAME
+                    kodi_notify('Launcher app is Windows LNK launcher')
+                elif launcher_type == LAUNCHER_ROM:
+                    app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '', 
+                                                  False, False, self.launchers[launcherID]['application'])
+                    if not app: return
+                    self.launchers[launcherID]['application'] = app
+                    kodi_notify('Changed launcher application')
 
             # --- Edition of the launcher arguments ---
             type2_nb = type2_nb + 1
@@ -5934,7 +5968,7 @@ class Main:
             if self.settings['display_launcher_notify']:
                 kodi_notify('Launching {0} with Retroplayer'.format(romtitle))
 
-            log_verb('_command_run_rom() Calling xbmc.Player().play()...')
+            log_verb('_command_run_rom() Calling xbmc.Player().play() ...')
             xbmc.Player().play(ROMFileName.getPath(), bc_listitem)
             log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
             return
