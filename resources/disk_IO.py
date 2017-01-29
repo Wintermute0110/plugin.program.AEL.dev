@@ -149,8 +149,8 @@ ESRB_EVERYONE_10 = 'E10+ (Everyone 10+ )'
 ESRB_TEEN        = 'T (Teen)'
 ESRB_MATURE      = 'M (Mature)'
 ESRB_ADULTS_ONLY = 'AO (Adults Only)'
-ESRB_LIST        = [ESRB_PENDING ESRB_EARLY ESRB_EVERYONE ESRB_EVERYONE_10 ESRB_TEEN 
-                    ESRB_MATURE ESRB_ADULTS_ONLY]
+ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
+                    ESRB_MATURE, ESRB_ADULTS_ONLY]
 def fs_new_rom():
     r = {'id' : '',
          'm_name' : '',
