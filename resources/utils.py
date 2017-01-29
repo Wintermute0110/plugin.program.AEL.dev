@@ -24,10 +24,7 @@ import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch
 
 # --- Kodi modules ---
 # >> FileName class uses xbmc.translatePath()
-try:
-    import xbmc
-except:
-    from utils_kodi_standalone import *
+from utils_kodi import *
 
 # --- AEL modules ---
 # >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
@@ -214,6 +211,54 @@ def text_format_ROM_title(title, clean_tags):
     #     if (title.endswith(", An")): new_title = "An "+"".join(title.rsplit(", An", 1))
 
     return cleaned_title
+
+# -------------------------------------------------------------------------------------------------
+# Multidisc ROM support
+# -------------------------------------------------------------------------------------------------
+class MultiDiscInfo:
+    def __init__(self, ROM_FN):
+        self.ROM_FN = ROM_FN
+        self.isMultiDisc = False
+        self.setName = ''
+        self.order = 0
+
+def text_get_multidisc_info(ROM_FN):
+    MDSet = MultiDiscInfo(ROM_FN)
+    
+    # --- Parse ROM base_noext into tokens ---
+    base_noext = ROM_FN.getBase_noext()
+    reg_exp = '\[.+?\]\s?|\(.+?\)\s?|\{.+?\}|[^\[\(\{]+|- \(.+?\)\s?'
+    tokens = re.findall(reg_exp, base_noext)
+    log_debug('text_get_multidisc_info() tokens = {0}'.format(tokens))
+
+    # --- Check if ROM belongs to a multidisc set and get set name and order ---
+    # Algortihm:
+    # 1) Iterate list of tokens
+    # 2) If a token marks a multidisk ROM extract set order
+    # 3) Define the set basename by removing the multidisk token
+    for index, token in enumerate(tokens):
+        matchObj = re.match(r'\(Disc ([0-9]+)\)', token)
+        if matchObj:
+            log_debug('text_get_multidisc_info() Matched Redump multidisc ROM')
+            break
+
+        matchObj = re.match(r'\(Disc ([0-9]+) of ([0-9]+)\)', token)
+        if matchObj:
+            log_debug('text_get_multidisc_info() Matched TOSEC multidisc ROM')
+            tokens_idx = range(0, len(tokens))
+            tokens_nodisc_idx = tokens_idx.remove(index)
+            tokens_nodisc_list = [tokens[x] for x in tokens_nodisc_idx]
+            log_debug('text_get_multidisc_info() tokens_idx         = {0}'.format(tokens_idx))
+            log_debug('text_get_multidisc_info() tokens_nodisc_idx  = {0}'.format(tokens_nodisc_idx))
+            log_debug('text_get_multidisc_info() tokens_nodisc_list = {0}'.format(tokens_nodisc_list))
+            MDSet.isMultiDisc = True
+            MDSet.setName = ' '.join(tokens_nodisc_list)
+            MDSet.order = int(matchObj.group(1))
+            log_debug('text_get_multidisc_info() setName  = "{0}"'.format(MDSet.setName))
+            log_debug('text_get_multidisc_info() order    = {0}'.format(MDSet.order))
+            break
+
+    return MDSet
 
 # -------------------------------------------------------------------------------------------------
 # URLs

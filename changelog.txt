@@ -67,14 +67,14 @@ WIP      Update launching mechanism. User Python subprocess module on all platfo
 WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
          mechanism based on subprocess module. 
 
-WIP      Add nplayers metadata field to ROMs. Billyc999 database has nplayers NFO.
+PARTIAL  Add nplayers metadata field to ROMs. Billyc999 database has nplayers NFO.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2407055#pid2407055
 
-WIP      Add ESRB/MPAA/PEGI rating? >> User ESRB, new metadata field esrb in ROMs.
+PARTIAL  Add ESRB/MPAA/PEGI rating? >> User ESRB, new metadata field esrb in ROMs.
 
 WIP      Have a setting to restrict ROMs displayed based on rating.
 
-WIP      Support for multidisc systems. Have a look to NOTES.md for more details about the AEL
+PARTIAL  Support for multidisc systems. Have a look to NOTES.md for more details about the AEL
          implementation.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2495480#pid2495480
 

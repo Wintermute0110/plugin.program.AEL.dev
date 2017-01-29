@@ -26,7 +26,7 @@
     filename = '/home/kodi/ROMs/Final Fantasy VII (USA)'
     disks = ['Final Fantasy VII (USA) (Disc 3).cue']
 ```
- 
+
  2) If the ROM scanner finds another image of the set then:
  
     * The basename is added to the `disks` list.

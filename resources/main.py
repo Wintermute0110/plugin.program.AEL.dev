@@ -6543,7 +6543,7 @@ class Main:
     # Note that actually this command is "Add/Update" ROMs.
     #
     def _roms_import_roms(self, launcherID):
-        log_debug('========== _roms_import_roms() BEGIN ==========')
+        log_debug('========== _roms_import_roms() BEGIN ==================================================')
 
         # --- Get information from launcher ---
         launcher      = self.launchers[launcherID]
@@ -6655,31 +6655,36 @@ class Main:
             self.pDialog.update(self.progress_number, self.file_text, activity_text)
             num_files_checked += 1
 
-            # ~~~ Find ROM file ~~~
-            # The recursive scan has scanned all file. Check if this file matches some of the extensions
-            # for ROMs. If not, skip this file and go for next one in the list.
+            # --- Check if filename matchs ROM extensions ---
+            # The recursive scan has scanned all files. Check if this file matches some of 
+            # the ROM extensions. If this file isn't a ROM skip it and go for next one in the list.
             processROM = False
             for ext in launcher_exts.split("|"):
-                # Check if filename matchs extension
                 if ROM.getExt() == '.' + ext:
                     log_debug("Expected '{0}' extension detected".format(ext))
                     processROM = True
-            # If file does not match any of the ROM extensions skip it
-            if not processROM:
-                continue
+            if not processROM: continue
 
-            # Check that ROM is not already in the list of ROMs
+            # --- Check if ROM belongs to a multidisc set ---
+            MDSet = text_get_multidisc_info(ROM)
+            if MDSet.isMultiDisc:
+                log_info('ROM belongs to a multidisc set.')
+            else:
+                log_info('ROM does not belong to a multidisc set.')
+
+            # --- Check that ROM is not already in the list of ROMs ---
+            # >> If file already in ROM list skip it
             repeatedROM = False
             for rom_id in roms:
-                if roms[rom_id]['filename'] == f_path:
-                    log_debug('File already into launcher list')
-                    repeatedROM = True
-            # If file already in ROM list skip it
+                if roms[rom_id]['filename'] == f_path: repeatedROM = True
             if repeatedROM:
+                log_debug('File already into launcher list')
                 continue
+            else:
+                log_debug('File not in launcher list. Processing it.')
 
             # --- Ignore BIOS ROMs ---
-            # Name of bios is: '[BIOS] Rom name example.zip'
+            # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
             if self.settings['scan_ignore_bios']:
                 BIOS_re = re.findall('\[BIOS\]', ROM.getBase())
                 if len(BIOS_re) > 0:
