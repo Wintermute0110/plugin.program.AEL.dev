@@ -5861,7 +5861,9 @@ class Main:
         log_info('_command_run_rom() romext       "{0}"'.format(romext))
 
         # --- Check for errors and abort if found --- todo: CHECK
-        if not application.exists() and application.getOriginalPath() != LNK_LAUNCHER_APP_NAME:
+        if not application.exists() and (
+            application.getOriginalPath() != RETROPLAYER_LAUNCHER_APP_NAME and
+            application.getOriginalPath() != LNK_LAUNCHER_APP_NAME ):
             log_error('Launching app not found "{0}"'.format(application.getPath()))
             kodi_notify_warn('Launching app not found {0}'.format(application.getOriginalPath()))
             return
@@ -5916,10 +5918,28 @@ class Main:
             most_played_roms[recent_rom['id']] = recent_rom
         fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
 
-        # --- Execute Kodi internal function (RetroPlayer?) ---
-        if application.getBase().lower().replace('.exe', '') == 'xbmc':
-            xbmc.executebuiltin('XBMC.' + arguments)
+        # --- Execute Kodi Retroplayer if launcher configured to do so ---
+        # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
+        if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
+            log_info('_command_run_rom() Executing Kodi Retroplayer...')
+            bc_romfile = os.path.basename(ROMFileName.getPath())
+            bc_listitem = xbmcgui.ListItem(bc_romfile, "0", "", "")
+            bc_parameters = {'Platform': 'Test Platform', 'Title': 'Test Game', 'URL': 'testurl'}
+            bc_listitem.setInfo(type = 'game', infoLabels = bc_parameters)
+            log_info('_command_run_rom() application.getOriginalPath() "{0}"'.format(application.getOriginalPath()))
+            log_info('_command_run_rom() ROMFileName.getPath()         "{0}"'.format(ROMFileName.getPath()))
+            log_info('_command_run_rom() bc_romfile                    "{0}"'.format(bc_romfile))
+
+            # --- User notification ---
+            if self.settings['display_launcher_notify']:
+                kodi_notify('Launching {0} with Retroplayer'.format(romtitle))
+
+            log_verb('_command_run_rom() Calling xbmc.Player().play()...')
+            xbmc.Player().play(ROMFileName.getPath(), bc_listitem)
+            log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
             return
+        else:
+            log_info('_command_run_rom() Launcher is not Kodi Retroplayer.')
 
         # ~~~~~ Execute external application ~~~~~
         self._run_before_execution(romtitle, minimize_flag)
