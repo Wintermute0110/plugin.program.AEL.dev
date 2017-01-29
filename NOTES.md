@@ -1,32 +1,5 @@
 # TODO #
 
- * Add a search engine for the scrapers based on the Levenshtein Distance. There is a Python
-   implementation here,
- 
-   https://github.com/seatgeek/fuzzywuzzy
-
- * Add nplayers metadata field?
- 
-   Will have a look next week in detail. Billyc999 database has nplayers NFO. Will check RetroarchDB 
-   and if that also has nplayers will add a nplayers metadata field. 
-   
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2407055#pid2407055
-
- * Do you have any plans to add multi-disk support in? I have my roms set up for Advanced Launcher, 
-   which only scanned the first disk in a set and popped up a submenu to select the other disks. It 
-   did this by looking for a "-cdXX" appended to the file name to determine the CD number, and 
-   allowed you to specify what names were shown in the interface with curly brackets (for example 
-   "Chrono Cross {English Disk 2}-cd2.cue" would show up as entry 2 in the submenu as "English Disk 2."). 
-   It was super handy for multi-disk games and hiding mods behind a sub-category.
-
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2406770#pid2406770
- 
-   I use playlists for emulators that support them, but a lot of emulators (and PC games) don't 
-   support them and the one's that do have pretty minimal interfaces to use playlists, so it's better 
-   from a GUI perspective to be able to handle it on the Kodi side. 
- 
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2407122#pid2407122
- 
  * GameFAQs: detect when web server is blocked.
  
    Blocked IP Address
@@ -34,13 +7,6 @@
    common causes of this issue are:
  
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2403674#pid2403674
-
- * Current patched subprocess_hack module is from Python 2.4. Current Python in Kodi is 2.7. Should
-   be upgraded soon...
-
- * os.system(), os.open(), etc. are deprecated, and the subprocess module should be used instead
-   for all platforms. (ONLY IMPLEMENTED IN UNIX). A parser of arguments must be coded in order to
-   use the subprocess module.
 
 
 # Multidisc support #
@@ -50,14 +16,14 @@
  1) If the ROM scanner finds a multidisc image belonging to a set, for example
     `Final Fantasy VII (USA) (Disc 3).cue`.
  
-    * The filename corresponds to the first ROM of the set.
+    * The filename corresponds to the basename of the set.
  
     * The ROM basename is added to the `disks` list.
 
     * Asset names will have the basename of the set `Final Fantasy VII (USA)`.
 
 ```
-    filename = '/home/kodi/ROMs/Final Fantasy VII (USA) (Disc 3).cue'
+    filename = '/home/kodi/ROMs/Final Fantasy VII (USA)'
     disks = ['Final Fantasy VII (USA) (Disc 3).cue']
 ```
  
@@ -72,7 +38,7 @@
     * Metadata/Asset scraping is only done for the first ROM of the set.
 
 ```
-    filename = '/home/kodi/ROMs/Final Fantasy VII (USA) (Disc 1).cue'
+    filename = '/home/kodi/ROMs/Final Fantasy VII (USA)'
     disks = ['Final Fantasy VII (USA) (Disc 1).cue', 'Final Fantasy VII (USA) (Disc 3).cue']
 ```
 

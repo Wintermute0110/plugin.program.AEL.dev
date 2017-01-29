@@ -19,7 +19,8 @@ WIP      Full Extranafart support for Categories/Launchers.
 WIP      Full Extranafart for ROMs.
 
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
-         online and offline scrapers.
+         online and offline scrapers. There is a Python implementation of the algorithm here,
+         https://github.com/seatgeek/fuzzywuzzy
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
@@ -57,14 +58,19 @@ WIP      Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
 WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
-         deprecated os.system().
+         deprecated os.system(). Current patched subprocess_hack module is from Python 2.4. Current 
+         Python version in Kodi is 2.7.
+         os.system(), os.open(), etc. are deprecated, and the subprocess module should be used 
+         instead for all platforms. A parser of arguments must be coded in order to use the 
+         subprocess module.
 
 WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
-         mechanism based on subprocess module.
+         mechanism based on subprocess module. 
 
-WIP      Add nplayers metadata field to ROMs.
+WIP      Add nplayers metadata field to ROMs. Billyc999 database has nplayers NFO.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2407055#pid2407055
 
-WIP      Add ESRB/MPAA/PEGI rating?
+WIP      Add ESRB/MPAA/PEGI rating? >> User ESRB, new metadata field esrb in ROMs.
 
 WIP      Have a setting to restrict ROMs displayed based on rating.
 

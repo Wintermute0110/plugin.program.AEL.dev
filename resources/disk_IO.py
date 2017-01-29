@@ -141,19 +141,32 @@ NOINTRO_STATUS_UNKNOWN = 'Unknown'
 NOINTRO_STATUS_NONE    = 'None'
 NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE,    NOINTRO_STATUS_MISS, NOINTRO_STATUS_ADDED,
                           NOINTRO_STATUS_UNKNOWN, NOINTRO_STATUS_NONE]
+# m_esrb string ESRB_LIST default ESRB_PENDING
+ESRB_PENDING     = 'RP (Rating Pending)'
+ESRB_EARLY       = 'EC (Early Chiuldhood)'
+ESRB_EVERYONE    = 'E (Everyone)'
+ESRB_EVERYONE_10 = 'E10+ (Everyone 10+ )'
+ESRB_TEEN        = 'T (Teen)'
+ESRB_MATURE      = 'M (Mature)'
+ESRB_ADULTS_ONLY = 'AO (Adults Only)'
+ESRB_LIST        = [ESRB_PENDING ESRB_EARLY ESRB_EVERYONE ESRB_EVERYONE_10 ESRB_TEEN 
+                    ESRB_MATURE ESRB_ADULTS_ONLY]
 def fs_new_rom():
     r = {'id' : '',
          'm_name' : '',
          'm_year' : '',
          'm_genre' : '',
          'm_studio' : '',
+         'm_nplayers' : '',
+         'm_esrb' : ESRB_PENDING,
          'm_rating' : '',
          'm_plot' : '',
          'filename' : '',
+         'disks' : [],
          'altapp' : '',
          'altarg' : '',
          'finished' : False,
-         'nointro_status' : 'None',
+         'nointro_status' : NOINTRO_STATUS_NONE,
          's_title' : '',
          's_snap' : '',
          's_fanart' : '',
