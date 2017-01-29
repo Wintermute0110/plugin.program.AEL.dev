@@ -86,7 +86,8 @@ KIND_COLLECTION       = 2
 KIND_LAUNCHER         = 3
 KIND_ROM              = 4
 DESCRIPTION_MAXSIZE   = 40
-LNK_LAUNCHER_APP_NAME = 'lnk_launcher_app'
+RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
+LNK_LAUNCHER_APP_NAME         = 'lnk_launcher_app'
 
 # --- Special Cateogry/Launcher IDs ---
 VCATEGORY_ADDONROOT_ID   = 'root_category'
@@ -720,6 +721,11 @@ class Main:
         kodi_refresh_container()
 
     def _command_add_new_launcher(self, categoryID):
+        LAUNCHER_STANDALONE  = 1
+        LAUNCHER_ROM         = 2
+        LAUNCHER_RETROPLAYER = 3
+        LAUNCHER_LNK         = 4
+        
         # >> If categoryID not found user is creating a new launcher using the context menu
         # >> of a launcher in addon root.
         if categoryID not in self.categories:
@@ -748,17 +754,28 @@ class Main:
             type = dialog.select('Create New Launcher',
                                  ['Standalone launcher (Game/Application)',
                                   'ROM launcher (Emulator)',
+                                  'ROM launcher (Kodi Retroplayer)',
                                   'LNK launcher (Windows only)'])
         else:
             type = dialog.select('Create New Launcher',
                                  ['Standalone launcher (Game/Application)',
-                                  'ROM launcher (Emulator)'])
+                                  'ROM launcher (Emulator)',
+                                  'ROM launcher (Kodi Retroplayer)',])
+        if type < 0: return
 
-        log_info('_command_add_new_launcher() New launcher type = {0}'.format(type))
+        # --- Select type of new launcher ---
         filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
+        if   type == 0: launcher_type = LAUNCHER_STANDALONE
+        elif type == 1: launcher_type = LAUNCHER_ROM
+        elif type == 2: launcher_type = LAUNCHER_RETROPLAYER
+        elif type == 3: launcher_type = LAUNCHER_LNK
+        else:
+            kodi_dialog_OK('Error creating launcher (type = {0}). This is a bug, pleas report it.'.format(type))
+            return
+        log_info('_command_add_new_launcher() New launcher (launcher_type = {0})'.format(launcher_type))
 
-        # 0) Standalone launcher
-        if type == 0:
+        # --- Standalone launcher ---
+        if launcher_type == LAUNCHER_STANDALONE:
             app = xbmcgui.Dialog().browse(1, 'Select the launcher application', "files", filter).decode('utf-8')
             if not app: return
             appPath = FileName(app)
@@ -797,43 +814,46 @@ class Main:
 
         #
         # 1) ROM Launcher
-        # 2) LNK launcher (Windows only)
+        # 2) Retroplayer launcher
+        # 3) LNK launcher (Windows only)
         #
-        elif type == 1 or type == 2:
+        else:
             # --- Launcher application ---
-            if type == 1:
+            if launcher_type == LAUNCHER_ROM:
                 app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', filter).decode('utf-8')
                 if not app: return
-            elif type == 2:
+            elif launcher_type == LAUNCHER_RETROPLAYER:
+                app = RETROPLAYER_LAUNCHER_APP_NAME
+            elif launcher_type == LAUNCHER_LNK:
                 app = LNK_LAUNCHER_APP_NAME
             app_FName = FileName(app)
 
             # --- ROM path ---
-            if type == 1:
+            if launcher_type == LAUNCHER_ROM or launcher_type == LAUNCHER_RETROPLAYER:
                 roms_path = xbmcgui.Dialog().browse(0, 'Select the ROMs path', 'files', '').decode('utf-8')
-            elif type == 2:
+            elif launcher_type == LAUNCHER_LNK:
                 roms_path = xbmcgui.Dialog().browse(0, 'Select the LNKs path', 'files', '').decode('utf-8')
             if not roms_path: return
             roms_path_FName   = FileName(roms_path)
 
             # --- ROM extensions ---
-            if type == 1:
+            if launcher_type == LAUNCHER_ROM or launcher_type == LAUNCHER_RETROPLAYER:
                 extensions = emudata_get_program_extensions(app_FName.getBase())
                 extkey = xbmc.Keyboard(extensions, 'Set files extensions, use "|" as separator. (e.g lnk|cbr)')
                 extkey.doModal()
                 if not extkey.isConfirmed(): return
                 ext = extkey.getText().decode('utf-8')
-            elif type == 2:
+            elif launcher_type == LAUNCHER_LNK:
                 ext = 'lnk'
 
             # --- Launcher arguments ---
-            if type == 1:
+            if launcher_type == LAUNCHER_ROM:
                 default_arguments = emudata_get_program_arguments(app_FName.getBase())
                 argkeyboard = xbmc.Keyboard(default_arguments, 'Application arguments')
                 argkeyboard.doModal()
                 if not argkeyboard.isConfirmed(): return
                 args = argkeyboard.getText().decode('utf-8')
-            elif type == 2:
+            elif launcher_type == LAUNCHER_RETROPLAYER or launcher_type == LAUNCHER_LNK:
                 args = '%rom%'
 
             # --- Launcher title/name ---
@@ -887,11 +907,9 @@ class Main:
             self.launchers[launcherID] = launcherdata
 
             # >> Notify user
-            if   type == 1: kodi_notify('Created ROM launcher {0}'.format(title))
-            elif type == 2: kodi_notify('Created LNK launcher {0}'.format(title))
-
-        # >> User cancelled dialog
-        else: return
+            if   launcher_type == LAUNCHER_ROM:         kodi_notify('Created ROM launcher {0}'.format(title))
+            elif launcher_type == LAUNCHER_RETROPLAYER: kodi_notify('Created Retroplayer launcher {0}'.format(title))
+            elif launcher_type == LAUNCHER_LNK:         kodi_notify('Created LNK launcher {0}'.format(title))
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
