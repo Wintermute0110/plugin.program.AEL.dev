@@ -1,4 +1,0 @@
-#!/bin/bash
-#
-
-cp MAME.xml ../data/GameDBInfo/MAME.xml
