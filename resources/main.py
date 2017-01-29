@@ -310,16 +310,14 @@ class Main:
                                                   args['search_type'][0], args['search_string'][0])
 
         # >> Shows info about categories/launchers/ROMs and reports
+        elif command == 'VIEW_LAUNCHER_MENU':
+            self._command_view_Launcher_menu(args['catID'][0], args['launID'][0])
         elif command == 'VIEW_ROM':
             self._command_view_ROM(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'VIEW_LAUNCHER':
-            self._command_view_Launcher(args['catID'][0], args['launID'][0])
         elif command == 'VIEW_CATEGORY':
             self._command_view_Category(args['catID'][0])
         elif command == 'VIEW_COLLECTION':
             self._command_view_Collection(args['catID'][0], args['launID'][0])
-        elif command == 'VIEW_LAUNCHER_REPORT':
-            self._command_view_Launcher_Report(args['catID'][0], args['launID'][0])
 
         # >> Update virtual categories databases
         elif command == 'UPDATE_VIRTUAL_CATEGORY':
@@ -2943,8 +2941,7 @@ class Main:
         commands = []
         launcherID = launcher_dic['id']
         categoryID = launcher_dic['categoryID']
-        commands.append(('View Launcher data',   self._misc_url_RunPlugin('VIEW_LAUNCHER', categoryID, launcherID), ))
-        commands.append(('View Launcher report', self._misc_url_RunPlugin('VIEW_LAUNCHER_REPORT', categoryID, launcherID), ))
+        commands.append(('View Launcher',        self._misc_url_RunPlugin('VIEW_LAUNCHER_MENU', categoryID, launcherID), ))
         commands.append(('Edit Launcher',        self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID), ))
         # >> ONLY for ROM launchers
         if launcher_dic['rompath']:
@@ -4939,6 +4936,118 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
+    # View Launcher command (Launcher context menu)
+    #
+    def _command_view_Launcher_menu(self, categoryID, launcherID):
+        dialog = xbmcgui.Dialog()
+        selected_value = dialog.select('View Launcher...', 
+                                      ['View Launcher data', 
+                                       'View Launcher report',
+                                       'View last execution output (stdout)', 
+                                       'View last execution error output (stderr)'])
+        if selected_value < 0: return
+
+        # --- View launcher data ---
+        if selected_value == 0:
+            # --- Grab info ---
+            window_title = 'Launcher data'
+            if categoryID == VCATEGORY_ADDONROOT_ID: category = None
+            else:                                    category = self.categories[categoryID]
+            launcher = self.launchers[launcherID]
+
+            # --- Make info string ---
+            info_text  = '\n[COLOR orange]Launcher information[/COLOR]\n'
+            info_text += self._misc_print_string_Launcher(launcher)
+            if category:
+                info_text += '\n[COLOR orange]Category information[/COLOR]\n'
+                info_text += self._misc_print_string_Category(category)
+
+            # --- Show information window ---
+            try:
+                xbmc.executebuiltin('ActivateWindow(10147)')
+                window = xbmcgui.Window(10147)
+                window.setProperty('FontWidth', 'monospaced')
+                xbmc.sleep(100)
+                window.getControl(1).setLabel(window_title)
+                window.getControl(5).setText(info_text)
+            except:
+                log_error('_command_view_Launcher() Exception rendering INFO window')
+        
+        elif selected_value == 1:
+            # --- Standalone launchers do not have reports! ---
+            if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
+            else:                             category_name = VCATEGORY_ADDONROOT_ID
+            launcher = self.launchers[launcherID]
+            if not launcher['rompath']:
+                kodi_notify_warn('Cannot create report for standalone launcher')
+                return
+
+            # --- Get report filename ---
+            roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
+            report_file_name = REPORTS_DIR.join(roms_base_noext + '.txt')
+            window_title = 'Launcher {0} Report'.format(launcher['m_name'])
+            log_verb('_command_view_Launcher_Report() Dir  "{0}"'.format(REPORTS_DIR.getOriginalPath()))
+            log_verb('_command_view_Launcher_Report() File "{0}"'.format(roms_base_noext + '.txt'))
+
+            # --- If no ROMs in launcher do nothing ---
+            launcher = self.launchers[launcherID]
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            if not roms:
+                kodi_notify_warn('No ROMs in launcher. Report not created')
+                return
+
+            # --- If report doesn't exists create it automatically ---
+            log_debug('_command_view_Launcher_Report() Testing report file "{0}"'.format(report_file_name.getPath()))
+            if not report_file_name.exists():
+                kodi_dialog_OK('Report file not found. Will be generated now.')
+                self._roms_create_launcher_report(categoryID, launcherID, roms)
+                xbmc.sleep(250)
+                # >> Update report timestamp
+                self.launchers[launcherID]['timestamp_report'] = time.time()
+                # >> Save Categories/Launchers
+                # >> DO NOT update the timestamp of categories/launchers of report will always be obsolete!!!
+                # >> Keep same timestamp as before.
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+
+            # --- If report timestamp is older than launchers last modification, recreate it ---
+            if self.launchers[launcherID]['timestamp_report'] <= self.launchers[launcherID]['timestamp_launcher']:
+                kodi_dialog_OK('Report is outdated. Will be regenerated now.')
+                self._roms_create_launcher_report(categoryID, launcherID, roms)
+                xbmc.sleep(250)
+                self.launchers[launcherID]['timestamp_report'] = time.time()
+                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+
+            # --- Read report file ---
+            try:
+                file = open(report_file_name.getPath(), 'r')
+                info_text = file.read()
+                file.close()
+            except:
+                log_error('_command_view_Launcher_Report() Exception reading report TXT file')
+
+            # --- Eye candy ---
+            info_text = info_text.replace('<Launcher Information>', '[COLOR orange]<Launcher Information>[/COLOR]')
+            info_text = info_text.replace('<Metadata/Audit Information>', '[COLOR orange]<Metadata Information>[/COLOR]')
+            info_text = info_text.replace('<Asset/Artwork Information>', '[COLOR orange]<Artwork Information>[/COLOR]')
+
+            # --- Show information window ---
+            try:
+                xbmc.executebuiltin('ActivateWindow(10147)')
+                window = xbmcgui.Window(10147)
+                window.setProperty('FontWidth', 'monospaced')
+                xbmc.sleep(100)
+                window.getControl(1).setLabel(window_title)
+                window.getControl(5).setText(info_text)
+            except:
+                log_error('_command_view_Launcher_Report() Exception rendering INFO window')
+
+        elif selected_value == 2:
+            kodi_dialog_OK('View stdout not implemented yet. Sorry.')
+
+        elif selected_value == 3:
+            kodi_dialog_OK('View stderr not implemented yet. Sorry.')
+
+    #
     # Show raw information about ROMs
     # Idea taken from script.logviewer
     #
@@ -5095,34 +5204,6 @@ class Main:
             window.getControl(5).setText(info_text)
         except:
             log_error('_command_view_ROM() Exception rendering INFO window')
-
-    #
-    # Only called for regular launchers
-    #
-    def _command_view_Launcher(self, categoryID, launcherID):
-        # --- Grab info ---
-        window_title = 'Launcher data'
-        if categoryID == VCATEGORY_ADDONROOT_ID: category = None
-        else:                                    category = self.categories[categoryID]
-        launcher = self.launchers[launcherID]
-
-        # --- Make info string ---
-        info_text  = '\n[COLOR orange]Launcher information[/COLOR]\n'
-        info_text += self._misc_print_string_Launcher(launcher)
-        if category:
-            info_text += '\n[COLOR orange]Category information[/COLOR]\n'
-            info_text += self._misc_print_string_Category(category)
-
-        # --- Show information window ---
-        try:
-            xbmc.executebuiltin('ActivateWindow(10147)')
-            window = xbmcgui.Window(10147)
-            window.setProperty('FontWidth', 'monospaced')
-            xbmc.sleep(100)
-            window.getControl(1).setLabel(window_title)
-            window.getControl(5).setText(info_text)
-        except:
-            log_error('_command_view_Launcher() Exception rendering INFO window')
 
     #
     # Only called for regular categories
@@ -5319,74 +5400,6 @@ class Main:
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(collection['s_trailer'])
 
         return info_text
-
-    def _command_view_Launcher_Report(self, categoryID, launcherID):
-        # --- Standalone launchers do not have reports! ---
-        if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
-        else:                             category_name = VCATEGORY_ADDONROOT_ID
-        launcher = self.launchers[launcherID]
-        if not launcher['rompath']:
-            kodi_notify_warn('Cannot create report for standalone launcher')
-            return
-
-        # --- Get report filename ---
-        roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
-        report_file_name = REPORTS_DIR.join(roms_base_noext + '.txt')
-        window_title = 'Launcher {0} Report'.format(launcher['m_name'])
-        log_verb('_command_view_Launcher_Report() Dir  "{0}"'.format(REPORTS_DIR.getOriginalPath()))
-        log_verb('_command_view_Launcher_Report() File "{0}"'.format(roms_base_noext + '.txt'))
-
-        # --- If no ROMs in launcher do nothing ---
-        launcher = self.launchers[launcherID]
-        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
-        if not roms:
-            kodi_notify_warn('No ROMs in launcher. Report not created')
-            return
-
-        # --- If report doesn't exists create it automatically ---
-        log_debug('_command_view_Launcher_Report() Testing report file "{0}"'.format(report_file_name.getPath()))
-        if not report_file_name.exists():
-            kodi_dialog_OK('Report file not found. Will be generated now.')
-            self._roms_create_launcher_report(categoryID, launcherID, roms)
-            xbmc.sleep(250)
-            # >> Update report timestamp
-            self.launchers[launcherID]['timestamp_report'] = time.time()
-            # >> Save Categories/Launchers
-            # >> DO NOT update the timestamp of categories/launchers of report will always be obsolete!!!
-            # >> Keep same timestamp as before.
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
-
-        # --- If report timestamp is older than launchers last modification, recreate it ---
-        if self.launchers[launcherID]['timestamp_report'] <= self.launchers[launcherID]['timestamp_launcher']:
-            kodi_dialog_OK('Report is outdated. Will be regenerated now.')
-            self._roms_create_launcher_report(categoryID, launcherID, roms)
-            xbmc.sleep(250)
-            self.launchers[launcherID]['timestamp_report'] = time.time()
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
-
-        # --- Read report file ---
-        try:
-            file = open(report_file_name.getPath(), 'r')
-            info_text = file.read()
-            file.close()
-        except:
-            log_error('_command_view_Launcher_Report() Exception reading report TXT file')
-
-        # --- Eye candy ---
-        info_text = info_text.replace('<Launcher Information>', '[COLOR orange]<Launcher Information>[/COLOR]')
-        info_text = info_text.replace('<Metadata/Audit Information>', '[COLOR orange]<Metadata Information>[/COLOR]')
-        info_text = info_text.replace('<Asset/Artwork Information>', '[COLOR orange]<Artwork Information>[/COLOR]')
-
-        # --- Show information window ---
-        try:
-            xbmc.executebuiltin('ActivateWindow(10147)')
-            window = xbmcgui.Window(10147)
-            window.setProperty('FontWidth', 'monospaced')
-            xbmc.sleep(100)
-            window.getControl(1).setLabel(window_title)
-            window.getControl(5).setText(info_text)
-        except:
-            log_error('_command_view_Launcher_Report() Exception rendering INFO window')
 
     #
     # Updated all virtual categories DB
