@@ -89,6 +89,7 @@ AEL_platform_list = [
     'Microsoft Windows',
     'Microsoft Xbox',
     'Microsoft Xbox 360',
+    'Microsoft Xbox One',
     # --- NEC ---
     'NEC PC Engine/TurboGrafx 16',
     'NEC PC SuperGrafx',
@@ -105,8 +106,10 @@ AEL_platform_list = [
     'Nintendo DSi',
     'Nintendo NES',
     'Nintendo SNES',
+    'Nintendo Switch',
     'Nintendo Virtual Boy',
     'Nintendo Wii',
+    'Nintendo Wii U',
     # --- Sega ---
     'Sega 32X',
     'Sega Game Gear',
@@ -125,6 +128,8 @@ AEL_platform_list = [
     # --- SONY ---
     'Sony PlayStation',
     'Sony PlayStation 2',
+    'Sony PlayStation 3',
+    'Sony PlayStation 4',
     'Sony PlayStation Portable',
     # --- Unknown ---
     'Unknown'
@@ -156,6 +161,7 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Microsoft Windows'           : '',
     'Microsoft Xbox'              : '',
     'Microsoft Xbox 360'          : '',
+    'Microsoft Xbox One'          : '',
     'NEC PC Engine/TurboGrafx 16' : '',
     'NEC PC SuperGrafx'           : '',
     'NEC PC-FX'                   : '',    
@@ -170,8 +176,10 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Nintendo DSi'                : '',
     'Nintendo NES'                : 'resources/data/GameDBInfo/Nintendo Entertainment System.xml',
     'Nintendo SNES'               : 'resources/data/GameDBInfo/Super Nintendo Entertainment System.xml',
+    'Nintendo Switch'             : '',
     'Nintendo Virtual Boy'        : '',
     'Nintendo Wii'                : '',
+    'Nintendo Wii U'              : '',
     'Sega 32X'                    : 'resources/data/GameDBInfo/Sega 32x.xml',
     'Sega Game Gear'              : 'resources/data/GameDBInfo/Sega Game Gear.xml',
     'Sega Master System/Mark III' : 'resources/data/GameDBInfo/Sega Master System.xml',
@@ -186,6 +194,8 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'SNK Neo-Geo Pocket Color'    : '',
     'Sony PlayStation'            : 'resources/data/GameDBInfo/Sony PlayStation.xml',
     'Sony PlayStation 2'          : 'resources/data/GameDBInfo/Sony Playstation 2.xml',
+    'Sony PlayStation 3'          : '',
+    'Sony PlayStation 4'          : '',
     'Sony PlayStation Portable'   : 'resources/data/GameDBInfo/Sony PSP.xml',
     'Unknown'                     : ''
 }
@@ -214,6 +224,7 @@ platform_AEL_to_TheGamesDB_dic = {
     'Microsoft Windows'           : 'PC',
     'Microsoft Xbox'              : 'Microsoft Xbox',
     'Microsoft Xbox 360'          : 'Microsoft Xbox 360',
+    'Microsoft Xbox One'          : 'Microsoft Xbox One',
     'NEC PC Engine/TurboGrafx 16' : 'TurboGrafx 16', # Also TurboGrafx CD
     'NEC PC SuperGrafx'           : 'TurboGrafx 16',
     'NEC PC-FX'                   : 'PC-FX',
@@ -228,8 +239,10 @@ platform_AEL_to_TheGamesDB_dic = {
     'Nintendo DSi'                : 'Nintendo DS', # Not found in TheGamesDB
     'Nintendo NES'                : 'Nintendo Entertainment System (NES)',
     'Nintendo SNES'               : 'Super Nintendo (SNES)',
+    'Nintendo Switch'             : 'Nintendo Switch',
     'Nintendo Virtual Boy'        : 'Nintendo Virtual Boy',
     'Nintendo Wii'                : 'Nintendo Wii',
+    'Nintendo Wii U'              : 'Nintendo Wii U',
     'Sega 32X'                    : 'Sega 32X',
     'Sega Game Gear'              : 'Sega Game Gear',
     'Sega Master System/Mark III' : 'Sega Master System',
@@ -244,6 +257,8 @@ platform_AEL_to_TheGamesDB_dic = {
     'SNK Neo-Geo Pocket Color'    : 'Neo Geo Pocket Color',
     'Sony PlayStation'            : 'Sony Playstation',
     'Sony PlayStation 2'          : 'Sony Playstation 2',
+    'Sony PlayStation 3'          : 'Sony Playstation 3',
+    'Sony PlayStation 4'          : 'Sony Playstation 4',
     'Sony PlayStation Portable'   : 'Sony PSP',
 }
 
@@ -272,6 +287,7 @@ platform_AEL_to_GameFAQs_dic = {
     'Microsoft Windows'           : '19',  # <option label="PC" value="19">PC</option>
     'Microsoft Xbox'              : '98',  # <option label="Xbox" value="98">Xbox</option>
     'Microsoft Xbox 360'          : '111', # <option label="Xbox 360" value="111">Xbox 360</option>
+    'Microsoft Xbox One'          : '121', # <option label="Xbox One" value="121">Xbox One</option>
     'NEC PC Engine/TurboGrafx 16' : '53',  # <option label="TurboGrafx-16" value="53">TurboGrafx-16</option>
                                            # <option label="Turbo CD" value="56">Turbo CD</option>
     'NEC PC SuperGrafx'           : '53',  # Didn't found SuperGrafx on GameFAQs
@@ -287,8 +303,10 @@ platform_AEL_to_GameFAQs_dic = {
     'Nintendo DSi'                : '108', # Not found in GameFAQs
     'Nintendo NES'                : '41',  # <option label="NES" value="41">NES</option>
     'Nintendo SNES'               : '63',  # <option label="Super Nintendo" value="63">Super Nintendo</option>
+    'Nintendo Switch'             : '124', # <option label="Nintendo Switch" value="124">Nintendo Switch</option>
     'Nintendo Virtual Boy'        : '83',  # <option label="Virtual Boy" value="83">Virtual Boy</option>
     'Nintendo Wii'                : '114', # <option label="Wii" value="114">Wii</option>
+    'Nintendo Wii U'              : '118', # <option label="Wii U" value="118">Wii U</option>
     'Sega 32X'                    : '74',  # <option label="Sega 32X" value="74">Sega 32X</option>
     'Sega Game Gear'              : '62',  # <option label="GameGear" value="62">GameGear</option>
     'Sega Master System/Mark III' : '49',  # <option label="Sega Master System" value="49">Sega Master System</option>
@@ -303,6 +321,8 @@ platform_AEL_to_GameFAQs_dic = {
     'SNK Neo-Geo Pocket Color'    : '89',  # <option label="NeoGeo Pocket Color" value="89">NeoGeo Pocket Color</option>
     'Sony PlayStation'            : '78',  # <option label="PlayStation" value="78">PlayStation</option>
     'Sony PlayStation 2'          : '94',  # <option label="PlayStation 2" value="94">PlayStation 2</option>
+    'Sony PlayStation 3'          : '113', # <option label="PlayStation 3" value="113">PlayStation 3</option>
+    'Sony PlayStation 4'          : '120', # <option label="PlayStation 4" value="120">PlayStation 4</option>
     'Sony PlayStation Portable'   : '109', # <option label="PSP" value="109">PSP</option>
 }
 
@@ -330,6 +350,7 @@ platform_AEL_to_MobyGames_dic = {
                                            # <option value="5">Windows 3.x</option>
     'Microsoft Xbox'              : '13',  # <option value="13">Xbox</option>
     'Microsoft Xbox 360'          : '69',  # <option value="69">Xbox 360</option>
+    'Microsoft Xbox One'          : '142', # <option value="142">Xbox One</option>
     'NEC PC Engine/TurboGrafx 16' : '40',  # <option value="40">TurboGrafx-16</option>
                                            # <option value="45">TurboGrafx CD</option>
     'NEC PC SuperGrafx'           : '127', # <option value="127">SuperGrafx</option>
@@ -345,8 +366,10 @@ platform_AEL_to_MobyGames_dic = {
     'Nintendo DSi'                : '87',  # <option value="87">Nintendo DSi</option>
     'Nintendo NES'                : '22',  # <option value="22">NES</option>
     'Nintendo SNES'               : '15',  # <option value="15">SNES</option>
+#   'Nintendo Switch'             : '',    # Not in MobyGames
     'Nintendo Virtual Boy'        : '38',  # <option value="38">Virtual Boy</option>
     'Nintendo Wii'                : '82',  # <option value="82">Wii</option>
+    'Nintendo Wii U'              : '132', # <option value="132">Wii U</option>
     'Sega 32X'                    : '21',  # <option value="21">SEGA 32X</option>
     'Sega Game Gear'              : '25',  # <option value="25">Game Gear</option>
     'Sega Master System/Mark III' : '26',  # <option value="26">SEGA Master System</option>
@@ -361,6 +384,8 @@ platform_AEL_to_MobyGames_dic = {
     'SNK Neo-Geo Pocket Color'    : '53',  # <option value="53">Neo Geo Pocket Color</option>
     'Sony PlayStation'            : '6',   # <option value="6">PlayStation</option>
     'Sony PlayStation 2'          : '7',   # <option value="7">PlayStation 2</option>
+    'Sony PlayStation 3'          : '81',  # <option value="81">PlayStation 3</option>
+    'Sony PlayStation 4'          : '141', # <option value="141">PlayStation 4</option>
     'Sony PlayStation Portable'   : '46',  # <option value="46">PSP</option>
 }
 
