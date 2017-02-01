@@ -54,6 +54,10 @@ FEATURE  Use setProperty() to inform the skin about ROM flags:
 FEATURE  Add Retroplayer support.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 
+FEATURE  Added new platforms Xbox One, Nintendo Switch, Nintendo Wii U, PSX 3 and PSX 4.
+
+FIX      Fixed crash when editing Collection ROM position.
+
 WIP      Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 

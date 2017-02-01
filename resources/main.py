@@ -2409,7 +2409,7 @@ class Main:
                 if current_ROM_position < 0:
                     kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
                     return
-                log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['name'], collection['id']))
+                log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['m_name'], collection['id']))
                 log_verb('_command_edit_rom() Collection has {0} ROMs'.format(num_roms))
 
                 # --- Show a select dialog ---
@@ -2453,7 +2453,7 @@ class Main:
                 if current_ROM_position < 0:
                     kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
                     return
-                log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['name'], collection['id']))
+                log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['m_name'], collection['id']))
                 log_verb('_command_edit_rom() Collection has {0} ROMs'.format(num_roms))
                 log_verb('_command_edit_rom() Moving ROM in position {0} up'.format(current_ROM_position))
 
@@ -2485,7 +2485,7 @@ class Main:
                 if current_ROM_position < 0:
                     kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
                     return
-                log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['name'], collection['id']))
+                log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['m_name'], collection['id']))
                 log_verb('_command_edit_rom() Collection has {0} ROMs'.format(num_roms))
                 log_verb('_command_edit_rom() Moving ROM in position {0} down'.format(current_ROM_position))
 
