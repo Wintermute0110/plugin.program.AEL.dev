@@ -5917,8 +5917,8 @@ class Main:
 
         if not ROMFileName.exists():
             log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            kodi_notify_warn('ROM not found {0}'.format(ROMFileName.getOriginalPath()))
-            return
+            # kodi_notify_warn('ROM not found {0}'.format(ROMFileName.getOriginalPath()))
+            # return
 
         # --- Escape quotes and double quotes in ROMFileName ---
         # >> This maybe useful to Android users with complex command line arguments
