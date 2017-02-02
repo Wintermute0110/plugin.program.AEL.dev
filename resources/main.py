@@ -5255,19 +5255,23 @@ class Main:
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
         info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(rom['id'])
+        # >> Metadata
         info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(rom['m_name'])
         info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(rom['m_year'])
         info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(rom['m_genre'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(rom['m_plot'])
         info_text += "[COLOR violet]m_studio[/COLOR]: '{0}'\n".format(rom['m_studio'])
+        info_text += "[COLOR violet]m_nplayers[/COLOR]: '{0}'\n".format(rom['m_nplayers'])
+        info_text += "[COLOR violet]m_esrb[/COLOR]: '{0}'\n".format(rom['m_esrb'])
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(rom['m_rating'])
-
-        info_text += "[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(rom['m_plot'])
+        # >> Info
+        info_text += "[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])        
+        info_text += "[COLOR skyblue]disks[/COLOR]: {0}\n".format(rom['disks'])
         info_text += "[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom['altapp'])
         info_text += "[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
         info_text += "[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
-
+        # >> Assets/artwork
         info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
         info_text += "[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(rom['s_fanart'])
@@ -5289,11 +5293,11 @@ class Main:
         info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(rom['platform'])
         info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(rom['application'])
         info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(rom['args'])
-        if 'args_extra' in rom:
-            info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(rom['args_extra'])
+        info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(rom['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(rom['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(rom['minimize'])
+        # >> launch_count only in Favourite ROMs in "Most played ROms"
         if 'launch_count' in rom:
             info_text += "[COLOR skyblue]launch_count[/COLOR]: {0}\n".format(rom['launch_count'])
         info_text += "[COLOR violet]fav_status[/COLOR]: '{0}'\n".format(rom['fav_status'])
