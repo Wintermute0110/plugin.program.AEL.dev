@@ -327,6 +327,10 @@ class Main:
         elif command == 'IMPORT_AL_LAUNCHERS':
             self._command_import_legacy_AL()
 
+        # >> Checks and updates all AEL databases
+        elif command == 'CHECK_DATABASE':
+            self._command_check_database()
+
         # >> Command to build/fill the menu with categories or launcher using skinshortcuts
         elif command == 'BUILD_GAMES_MENU':
             self._command_buildMenu()
@@ -7630,6 +7634,108 @@ class Main:
         text_plot.close()
 
         return file_data
+
+    #
+    # Checks all databases and tries to update to newer version if possible
+    #
+    def _command_check_database(self):
+        log_debug('_command_check_database() Beginning ....')
+        pDialog = xbmcgui.DialogProgress()
+        pDialog_canceled = False
+
+        # >> Open Categories/Launchers XML.
+        #    XML should be updated automatically on load.
+        pDialog.create('Advanced Emulator Launcher',
+                       'Checking Categories/Launchers ...')
+        (self.update_timestamp, self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
+        pDialog.close()
+
+        # >> Traverse all launchers. Load ROMs and check every ROMs.
+        pDialog.create('Advanced Emulator Launcher',
+                       'Checking Launcher ROMs ...')
+        num_launchers = len(self.launchers)
+        processed_launchers = 0
+        for launcher_id in self.launchers:
+            log_debug('_command_edit_rom() Checking Launcher "{0}"'.format(self.launchers[launcher_id]['m_name']))
+            # >> Load ROMs
+            roms_base_noext = self.launchers[launcher_id]['roms_base_noext']
+            roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+
+            for rom_id in roms:
+                # >> Get ROM object
+                rom = roms[rom_id]
+
+                # >> Add empty string fields m_nplayers, m_esrb if not present.
+                if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
+                if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
+
+                # >> Disks empty list
+                if not 'disks'      in rom: rom['disks']      = []
+
+            # >> Save ROMs
+            fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcher_id])
+            
+            # >> Also Save Categories/Launchers XML.
+            # >> This updates timestamps and forces regeneration of Virtual Launchers.
+            self.launchers[launcher_id]['timestamp_launcher'] = time.time()            
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+            # >> Update dialog
+            processed_launchers += 1
+            update_number = (float(processed_launchers) / float(num_launchers)) * 100 
+            pDialog.update(int(update_number))
+        pDialog.update(100)
+        pDialog.close()
+
+        # >> Load Favourite ROMs and update JSON
+        pDialog.create('Advanced Emulator Launcher',
+                       'Checking Favourite ROMs ...')
+        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        num_fav_roms = len(roms_fav)
+        processed_fav_roms = 0
+        for rom_id in roms_fav:
+            # >> Get ROM object
+            rom = roms_fav[rom_id]
+
+            # >> Add empty string fields m_nplayers, m_esrb if not present.
+            if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
+            if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
+
+            # >> Disks empty list
+            if not 'disks'      in rom: rom['disks']      = []
+
+            # >> args_extra empty list
+            if not 'args_extra' in rom: rom['args_extra'] = []
+
+            # >> Update dialog
+            processed_fav_roms += 1
+            update_number = (float(processed_fav_roms) / float(num_fav_roms)) * 100 
+            pDialog.update(int(update_number))
+        fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
+        pDialog.update(100)
+        pDialog.close()
+
+        # >> Load ROM Collections
+        # (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        
+        # >> Traverse every collection and check/update.
+
+        # roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        # collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+
+        # fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
+        
+        # >> Load Most Played ROMs and check/update.
+        # most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+        # fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+
+        # >> Load Recently Played ROMs and check/update.
+        # recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+        # fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
+        
+        # >> So long and thanks for all the fish.
+        kodi_notify('All databases checked')
+        log_debug('_command_check_database() Exiting')
 
     #
     # A set of functions to help making plugin URLs
