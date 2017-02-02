@@ -5864,7 +5864,7 @@ class Main:
             standard_args = launcher['args']
             args_extra    = launcher['args_extra']
 
-        # ~~~~~ Substitue additional arguments ~~~~~
+        # ~~~~~ Substitue altapp/altarg or additional arguments ~~~~~
         # >> If ROM has altapp configured, then use altapp/altarg
         # >> If Launcher has args_extra configured then show a dialog to the user to selec the
         # >> arguments to launch ROM.
@@ -5887,10 +5887,26 @@ class Main:
             application = standard_app
             arguments   = standard_args
 
+        # ~~~ Choose file to launch in multidisc ROM sets ~~~
+        if rom['disks']:
+            log_info('_command_run_rom() Multidisc ROM set detected')
+            dialog = xbmcgui.Dialog()
+            dselect_ret = dialog.select('Select ROM to launch in multidisc set', rom['disks'])
+            if dselect_ret < 0: return
+            selected_rom_base = rom['disks'][dselect_ret]
+            log_info('_command_run_rom() Selected ROM "{0}"'.format(selected_rom_base))
+            ROM_temp = FileName(rom['filename'])
+            ROM_dir = FileName(ROM_temp.getDir())
+            ROMFileName = ROM_dir.pjoin(selected_rom_base)
+        else:
+            log_info('_command_run_rom() Sigle ROM detected (no multidisc)')
+            ROMFileName = FileName(rom['filename'])
+        log_info('_command_run_rom() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
+        log_info('_command_run_rom() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
+
         # ~~~~~ Launch ROM ~~~~~
         application   = FileName(application)
         apppath       = application.getDir()
-        ROMFileName   = FileName(rom['filename'])
         rompath       = ROMFileName.getDir()
         rombase       = ROMFileName.getBase()
         rombase_noext = ROMFileName.getBase_noext()
