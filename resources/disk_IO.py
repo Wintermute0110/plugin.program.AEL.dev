@@ -143,9 +143,9 @@ NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE,    NOINTRO_STATUS_MISS, NOINTRO_S
                           NOINTRO_STATUS_UNKNOWN, NOINTRO_STATUS_NONE]
 # m_esrb string ESRB_LIST default ESRB_PENDING
 ESRB_PENDING     = 'RP (Rating Pending)'
-ESRB_EARLY       = 'EC (Early Chiuldhood)'
+ESRB_EARLY       = 'EC (Early Childhood)'
 ESRB_EVERYONE    = 'E (Everyone)'
-ESRB_EVERYONE_10 = 'E10+ (Everyone 10+ )'
+ESRB_EVERYONE_10 = 'E10+ (Everyone 10+)'
 ESRB_TEEN        = 'T (Teen)'
 ESRB_MATURE      = 'M (Mature)'
 ESRB_ADULTS_ONLY = 'AO (Adults Only)'
