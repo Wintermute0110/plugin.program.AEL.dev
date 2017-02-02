@@ -6666,9 +6666,45 @@ class Main:
             if not processROM: continue
 
             # --- Check if ROM belongs to a multidisc set ---
+            MultiDiscInROMs = False
             MDSet = text_get_multidisc_info(ROM)
             if MDSet.isMultiDisc:
                 log_info('ROM belongs to a multidisc set.')
+                log_info('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
+                log_info('setName     "{0}"'.format(MDSet.setName))
+                log_info('discName    "{0}"'.format(MDSet.discName))
+                log_info('extension   "{0}"'.format(MDSet.extension))
+                log_info('order       "{0}"'.format(MDSet.order))
+                
+                # >> Check if the set is already in launcher ROMs.
+                MultiDisc_rom_id = None
+                for rom_id, rom_dic in roms.iteritems():
+                    temp_FN = FileName(rom_dic['filename'])
+                    if temp_FN.getBase() == MDSet.setName:
+                        MultiDiscInROMs  = True
+                        MultiDisc_rom_id = rom_id
+                        break
+                log_info('MultiDiscInROMs is {0}'.format(MultiDiscInROMs))
+
+                # >> If the set is not in the ROMs then this ROM is the first of the set.
+                # >> Add the set
+                if not MultiDiscInROMs:
+                    log_info('First ROM in the set. Adding to ROMs ...')
+                    # >> Manipulate ROM so filename is the name of the set
+                    ROM_dir = FileName(ROM.getDir())
+                    ROM_temp = ROM_dir.pjoin(MDSet.setName)
+                    log_info('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
+                    log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
+                    ROM = ROM_temp
+                # >> If set already in ROMs, just add this disk into the set disks field.
+                else:
+                    log_info('Adding additional disk "{0}"'.format(MDSet.discName))
+                    roms[MultiDisc_rom_id]['disks'].append(MDSet.discName)
+                    # >> Reorder disks like Disk 1, Disk 2, ...
+                    
+                    # >> Process next file
+                    log_info('Processing next file ...')
+                    continue
             else:
                 log_info('ROM does not belong to a multidisc set.')
 
@@ -6697,6 +6733,11 @@ class Main:
             roms[romID] = romdata
             num_new_roms += 1
 
+            # --- This was the first ROM in a multidisc set ---
+            if MDSet.isMultiDisc and not MultiDiscInROMs:
+                log_info('Adding first disk "{0}"'.format(MDSet.discName))
+                roms[romID]['disks'].append(MDSet.discName)
+            
             # ~~~ Check if user pressed the cancel button ~~~
             if self.pDialog.iscanceled() or self.pDialog_canceled:
                 self.pDialog.close()

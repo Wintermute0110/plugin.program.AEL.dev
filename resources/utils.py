@@ -252,6 +252,7 @@ class MultiDiscInfo:
         self.ROM_FN      = ROM_FN
         self.isMultiDisc = False
         self.setName     = ''
+        self.discName    = ROM_FN.getBase()
         self.extension   = ROM_FN.getExt()
         self.order       = 0
 
@@ -295,12 +296,13 @@ def text_get_multidisc_info(ROM_FN):
 
     if MultDiscFound:
         MDSet.isMultiDisc = True
-        MDSet.setName = ' '.join(tokens_mdisc)
+        MDSet.setName = ' '.join(tokens_mdisc) + MDSet.extension
         MDSet.order = int(matchObj.group(1))
         log_debug('text_get_multidisc_info() base_noext   "{0}"'.format(ROM_FN.getBase_noext()))
         log_debug('text_get_multidisc_info() tokens       {0}'.format(tokens))
         log_debug('text_get_multidisc_info() tokens_mdisc {0}'.format(tokens_mdisc))
         log_debug('text_get_multidisc_info() setName      "{0}"'.format(MDSet.setName))
+        log_debug('text_get_multidisc_info() discName     "{0}"'.format(MDSet.discName))
         log_debug('text_get_multidisc_info() extension    "{0}"'.format(MDSet.extension))
         log_debug('text_get_multidisc_info() order        {0}'.format(MDSet.order))
 
@@ -398,7 +400,15 @@ class FileName:
         return self
 
     # Behaves like os.path.join(). Returns a FileName object
+    # DEPRECATED
     def join(self, *args):
+        child = FileName(self.originalPath)
+        for arg in args:
+            child._join_raw(arg)
+
+        return child
+
+    def pjoin(self, *args):
         child = FileName(self.originalPath)
         for arg in args:
             child._join_raw(arg)
