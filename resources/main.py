@@ -112,14 +112,21 @@ AEL_CONTENT_VALUE_ROMS      = 'roms'
 AEL_CONTENT_VALUE_NONE      = ''
 
 # --- ROM flags used by skins to display status icons ---
-AEL_FAV_STAT_LABEL     = 'AEL_Fav_stat'
-AEL_NOINTRO_STAT_LABEL = 'AEL_NoIntro_stat'
-AEL_PCLONE_STAT_LABEL  = 'AEL_PClone_stat'
+AEL_INFAV_BOOL_LABEL     = 'AEL_InFav'
+AEL_MULTIDISC_BOOL_LABEL = 'AEL_MultiDisc'
+AEL_FAV_STAT_LABEL       = 'AEL_Fav_stat'
+AEL_NOINTRO_STAT_LABEL   = 'AEL_NoIntro_stat'
+AEL_PCLONE_STAT_LABEL    = 'AEL_PClone_stat'
+
+AEL_INFAV_BOOL_VALUE_TRUE            = 'InFav_True'
+AEL_INFAV_BOOL_VALUE_FALSE           = 'InFav_False'
+AEL_MULTIDISC_BOOL_VALUE_TRUE        = 'MultiDisc_True'
+AEL_MULTIDISC_BOOL_VALUE_FALSE       = 'MultiDisc_False'
 AEL_FAV_STAT_VALUE_OK                = 'Fav_OK'
 AEL_FAV_STAT_VALUE_UNLINKED_ROM      = 'Fav_UnlinkedROM'
 AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER = 'Fav_UnlinkedLauncher'
 AEL_FAV_STAT_VALUE_BROKEN            = 'Fav_Broken'
-AEL_FAV_STAT_VALUE_UNKNOWN           = 'Fav_Unknown'
+AEL_FAV_STAT_VALUE_NONE              = 'Fav_None'
 AEL_NOINTRO_STAT_VALUE_HAVE          = 'NoIntro_Have'
 AEL_NOINTRO_STAT_VALUE_MISS          = 'NoIntro_Miss'
 AEL_NOINTRO_STAT_VALUE_ADDED         = 'NoIntro_Added'
@@ -127,7 +134,7 @@ AEL_NOINTRO_STAT_VALUE_UNKNOWN       = 'NoIntro_Unknown'
 AEL_NOINTRO_STAT_VALUE_NONE          = 'NoIntro_None'
 AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
 AEL_PCLONE_STAT_VALUE_CLONE          = 'PClone_Clone'
-AEL_PCLONE_STAT_VALUE_UNKNOWN        = 'PClone_Unknown'
+AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 
 # --- Main code ---
 class Main:
@@ -3125,9 +3132,11 @@ class Main:
         if rom['finished'] and self.settings['display_hide_finished']: return
 
         # --- Default values for flags ---
-        AEL_Fav_stat_value     = AEL_FAV_STAT_VALUE_OK
-        AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
-        AEL_PClone_stat_value  = AEL_PCLONE_STAT_VALUE_UNKNOWN
+        AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
+        AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
+        AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
+        AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
+        AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
 
         # --- Create listitem row ---
         rom_raw_name = rom['m_name']
@@ -3270,7 +3279,11 @@ class Main:
 
             # >> If listing regular launcher and rom is in favourites, mark it
             if self.settings['display_rom_in_fav'] and rom_in_fav:
+                AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
+                
+            # >> Multidisc ROM
+            if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
         # --- Add ROM to lisitem ---
         ICON_OVERLAY = 5 if rom['finished'] else 4
@@ -3284,6 +3297,8 @@ class Main:
                                    'genre'   : rom['m_genre'],   'plot'    : rom['m_plot'],
                                    'studio'  : rom['m_studio'],  'rating'  : rom['m_rating'],
                                    'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
+        listitem.setProperty('nplayers', rom['m_nplayers'])
+        listitem.setProperty('esrb', rom['m_esrb'])
         listitem.setProperty('platform', platform)
 
         # --- Set ROM artwork ---
@@ -3316,9 +3331,11 @@ class Main:
         # log_debug('Item Row IsPlayable false')
 
         # --- ROM flags (Skins will use these flags to render icons) ---
-        listitem.setProperty('AEL_Fav_stat',     AEL_Fav_stat_value)
-        listitem.setProperty('AEL_NoIntro_stat', AEL_NoIntro_stat_value)
-        listitem.setProperty('AEL_PClone_stat',  AEL_PClone_stat_value)
+        listitem.setProperty(AEL_INFAV_BOOL_LABEL,     AEL_InFav_bool_value)
+        listitem.setProperty(AEL_MULTIDISC_BOOL_LABEL, AEL_MultiDisc_bool_value)
+        listitem.setProperty(AEL_FAV_STAT_LABEL,       AEL_Fav_stat_value)
+        listitem.setProperty(AEL_NOINTRO_STAT_LABEL,   AEL_NoIntro_stat_value)
+        listitem.setProperty(AEL_PCLONE_STAT_LABEL,    AEL_PClone_stat_value)
 
         # --- Create context menu ---
         romID = rom['id']
@@ -6419,12 +6436,12 @@ class Main:
 
         # --- Check if DAT file exists ---
         if not nointro_xml_file_FileName.exists():
-            log_warn('_roms_update_NoIntro_status Not found {0}'.format(nointro_xml_file_FileName.getPath()))
+            log_warning('_roms_update_NoIntro_status Not found {0}'.format(nointro_xml_file_FileName.getPath()))
             return
         roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file_FileName)
         # --- Check for errors ---
         if not roms_nointro:
-            log_warn('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
+            log_warning('_roms_update_NoIntro_status Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
             return
 
         # --- Put No-Intro ROM names in a set ---
