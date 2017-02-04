@@ -7662,14 +7662,12 @@ class Main:
 
         # >> Open Categories/Launchers XML.
         #    XML should be updated automatically on load.
-        pDialog.create('Advanced Emulator Launcher',
-                       'Checking Categories/Launchers ...')
+        pDialog.create('Advanced Emulator Launcher', 'Checking Categories/Launchers ...')
         (self.update_timestamp, self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
         pDialog.close()
 
         # >> Traverse all launchers. Load ROMs and check every ROMs.
-        pDialog.create('Advanced Emulator Launcher',
-                       'Checking Launcher ROMs ...')
+        pDialog.create('Advanced Emulator Launcher', 'Checking Launcher ROMs ...')
         num_launchers = len(self.launchers)
         processed_launchers = 0
         for launcher_id in self.launchers:
@@ -7677,18 +7675,10 @@ class Main:
             # >> Load ROMs
             roms_base_noext = self.launchers[launcher_id]['roms_base_noext']
             roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
-
             for rom_id in roms:
                 # >> Get ROM object
                 rom = roms[rom_id]
-
-                # >> Add empty string fields m_nplayers, m_esrb if not present.
-                if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
-                if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
-
-                # >> Disks empty list
-                if not 'disks'      in rom: rom['disks']      = []
-
+                self._misc_fix_rom_object(rom)
             # >> Save ROMs
             fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcher_id])
             
@@ -7705,25 +7695,14 @@ class Main:
         pDialog.close()
 
         # >> Load Favourite ROMs and update JSON
-        pDialog.create('Advanced Emulator Launcher',
-                       'Checking Favourite ROMs ...')
+        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs ...')
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         num_fav_roms = len(roms_fav)
         processed_fav_roms = 0
         for rom_id in roms_fav:
             # >> Get ROM object
             rom = roms_fav[rom_id]
-
-            # >> Add empty string fields m_nplayers, m_esrb if not present.
-            if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
-            if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
-
-            # >> Disks empty list
-            if not 'disks'      in rom: rom['disks']      = []
-
-            # >> args_extra empty list
-            if not 'args_extra' in rom: rom['args_extra'] = []
-
+            self._misc_fix_Favourite_rom_object(rom)
             # >> Update dialog
             processed_fav_roms += 1
             update_number = (float(processed_fav_roms) / float(num_fav_roms)) * 100 
@@ -7732,27 +7711,63 @@ class Main:
         pDialog.update(100)
         pDialog.close()
 
-        # >> Load ROM Collections
-        # (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-        
-        # >> Traverse every collection and check/update.
+        # >> Traverse every ROM Collection and check/update.
+        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        pDialog.create('Advanced Emulator Launcher', 'Checking Collection ROMs ...')
+        num_collections = len(collections)
+        processed_collections = 0
+        for collection_id in collections:
+            collection = collections[collection_id]
+            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+            for rom in collection_rom_list: self._misc_fix_Favourite_rom_object(rom)
+            fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
+            # >> Update progress dialog
+            processed_collections += 1
+            update_number = (float(processed_collections) / float(num_collections)) * 100 
+            pDialog.update(int(update_number))
+        pDialog.update(100)
+        pDialog.close()
 
-        # roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-        # collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-
-        # fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
-        
         # >> Load Most Played ROMs and check/update.
-        # most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-        # fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+        pDialog.create('Advanced Emulator Launcher', 'Checking Most Played ROMs ...')
+        most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+        for rom_id in most_played_roms:
+            # >> Get ROM object
+            rom = most_played_roms[rom_id]
+            self._misc_fix_Favourite_rom_object(rom)
+        fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+        pDialog.update(100)
+        pDialog.close()
 
         # >> Load Recently Played ROMs and check/update.
-        # recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
-        # fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
-        
+        pDialog.create('Advanced Emulator Launcher', 'Checking Recently Played ROMs ...')
+        recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+        for rom in recent_roms_list: self._misc_fix_Favourite_rom_object(rom)
+        fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
+        pDialog.update(100)
+        pDialog.close()
+
         # >> So long and thanks for all the fish.
         kodi_notify('All databases checked')
         log_debug('_command_check_database() Exiting')
+
+    #
+    # ROM dictionary is edited by Python passing by assigment
+    #
+    def _misc_fix_rom_object(self, rom):
+        # >> Add empty string fields m_nplayers, m_esrb if not present.
+        if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
+        if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
+        if not 'disks'      in rom: rom['disks']      = []
+        
+    def _misc_fix_Favourite_rom_object(self, rom):
+        # >> Add empty string fields m_nplayers, m_esrb, disks if not present.
+        if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
+        if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
+        if not 'disks'      in rom: rom['disks']      = []
+        # >> args_extra empty list
+        if not 'args_extra' in rom: rom['args_extra'] = []
 
     #
     # A set of functions to help making plugin URLs
