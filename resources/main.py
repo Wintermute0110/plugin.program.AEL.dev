@@ -2677,8 +2677,7 @@ class Main:
 
     def _gui_render_category_row(self, category_dic, key):
         # --- Do not render row if category finished ---
-        if category_dic['finished'] and self.settings['display_hide_finished']:
-            return
+        if category_dic['finished'] and self.settings['display_hide_finished']: return
 
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if category_dic['finished'] else 4
@@ -2689,12 +2688,13 @@ class Main:
 
         # --- Set Category artwork ---
         # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
-        thumb_path   = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
-        thumb_fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
-        thumb_banner = asset_get_default_asset_Category(category_dic, 'default_banner')
-        thumb_poster = asset_get_default_asset_Category(category_dic, 'default_poster')
-        listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart, 
-                         'banner' : thumb_banner, 'poster' : thumb_poster})
+        thumb_path      = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
+        thumb_fanart    = asset_get_default_asset_Category(category_dic, 'default_fanart')
+        thumb_banner    = asset_get_default_asset_Category(category_dic, 'default_banner')
+        thumb_poster    = asset_get_default_asset_Category(category_dic, 'default_poster')
+        thumb_clearlogo = asset_get_default_asset_Category(category_dic, 'default_clearlogo')
+        listitem.setArt({'icon'   : thumb_path,   'fanart' : thumb_fanart, 
+                         'banner' : thumb_banner, 'poster' : thumb_poster, 'clearlogo' : thumb_clearlogo})
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
