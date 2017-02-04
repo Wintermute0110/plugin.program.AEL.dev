@@ -590,28 +590,32 @@ class Main:
                 kodi_notify('Exported Category NFO file {0}'.format(NFO_FileName.getPath()))
                 return
 
-        # --- Edit Category Asstes/Artwork ---
+        # --- Edit Category Assets/Artwork ---
         elif type == 1:
             category = self.categories[categoryID]
 
-            label2_thumb   = category['s_thumb']     if category['s_thumb']   else 'Not set'
-            label2_fanart  = category['s_fanart']    if category['s_fanart']  else 'Not set'
-            label2_banner  = category['s_banner']    if category['s_banner']  else 'Not set'
-            label2_poster  = category['s_flyer']     if category['s_flyer']   else 'Not set'
-            label2_trailer = category['s_trailer']   if category['s_trailer'] else 'Not set'
-            img_thumb      = category['s_thumb']     if category['s_thumb']   else 'DefaultAddonNone.png'
-            img_fanart     = category['s_fanart']    if category['s_fanart']  else 'DefaultAddonNone.png'
-            img_banner     = category['s_banner']    if category['s_banner']  else 'DefaultAddonNone.png'
-            img_flyer      = category['s_flyer']     if category['s_flyer']   else 'DefaultAddonNone.png'
-            img_trailer    = 'DefaultAddonVideo.png' if category['s_trailer'] else 'DefaultAddonNone.png'
+            label2_thumb     = category['s_thumb']     if category['s_thumb']     else 'Not set'
+            label2_fanart    = category['s_fanart']    if category['s_fanart']    else 'Not set'
+            label2_banner    = category['s_banner']    if category['s_banner']    else 'Not set'
+            label2_poster    = category['s_flyer']     if category['s_flyer']     else 'Not set'
+            label2_clearlogo = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'
+            label2_trailer   = category['s_trailer']   if category['s_trailer']   else 'Not set'
+            img_thumb        = category['s_thumb']     if category['s_thumb']     else 'DefaultAddonNone.png'
+            img_fanart       = category['s_fanart']    if category['s_fanart']    else 'DefaultAddonNone.png'
+            img_banner       = category['s_banner']    if category['s_banner']    else 'DefaultAddonNone.png'
+            img_flyer        = category['s_flyer']     if category['s_flyer']     else 'DefaultAddonNone.png'
+            img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
+            img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,   'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,  'icon' : img_fanart},
-                {'name' : 'Edit Banner...',       'label2' : label2_banner,  'icon' : img_banner},
-                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,  'icon' : img_flyer},
-                {'name' : 'Edit Trailer...',      'label2' : label2_trailer, 'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,     'icon' : img_thumb},
+                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner...',       'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,    'icon' : img_flyer},
+                {'name' : 'Edit Clearlogo...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Trailer...',      'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Category Assets/Artwork', img_list)
+            if type2 < 0: return
 
             # --- Edit Assets ---
             # >> Category is changed using Python passign by assigment
@@ -626,8 +630,9 @@ class Main:
             elif type2 == 3:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_FLYER, category): return
             elif type2 == 4:
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_CLEARLOGO, category): return
+            elif type2 == 5:
                 if not self._gui_edit_asset(KIND_CATEGORY, ASSET_TRAILER, category): return
-            elif type2 < 0: return
 
         # --- Choose default thumb/fanart ---
         elif type == 2:
@@ -652,6 +657,7 @@ class Main:
                 {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt), 'label2' : label2_poster, 'icon' : img_poster}
             ]
             type2 = gui_show_image_select('Edit Category default Assets/Artwork', img_list)
+            if type2 < 0: return
 
             Category_asset_img_list = [
                 {'name'   : 'Thumb',
@@ -684,7 +690,6 @@ class Main:
                 type_s = gui_show_image_select('Choose default Asset for Poster', Category_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_poster', type_s)
-            elif type2 < 0: return
 
         # --- Category status ---
         elif type == 3:
