@@ -40,7 +40,7 @@ ASSET_THUMB     = 1300 # Only used in Categories/Launchers
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
 #
 CATEGORY_ASSET_LIST = [
-    ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER
+    ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER
 ]
 
 ROM_ASSET_LIST = [
@@ -49,7 +49,7 @@ ROM_ASSET_LIST = [
     ASSET_FLYER,     ASSET_MAP,      ASSET_MANUAL,  ASSET_TRAILER
 ]
 
-DEFAULT_CATEGORY_ASSET_LIST = ['Thumbnail', 'Fanart', 'Banner', 'Flyer']
+DEFAULT_CATEGORY_ASSET_LIST = ['Thumbnail', 'Fanart', 'Banner', 'Clearlogo', 'Flyer']
 DEFAULT_ROM_ASSET_LIST      = ['Title', 'Snap', 'Fanart', 'Banner', 'Clearlogo', 'Boxfront', 
                                'Boxback', 'Cartridge', 'Flyer', 'Map']
 

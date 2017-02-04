@@ -5359,6 +5359,7 @@ class Main:
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher['default_fanart'])
         info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(launcher['default_banner'])
         info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(launcher['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(launcher['default_clearlogo'])
         info_text += "[COLOR violet]roms_default_thumb[/COLOR]: '{0}'\n".format(launcher['roms_default_thumb'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(launcher['roms_default_fanart'])
         info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(launcher['roms_default_banner'])
@@ -5369,6 +5370,7 @@ class Main:
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(launcher['s_banner'])
         info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(launcher['s_flyer'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(launcher['s_clearlogo'])
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(launcher['s_trailer'])
 
         info_text += "[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher['path_title'])
@@ -5398,10 +5400,12 @@ class Main:
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(category['default_fanart'])
         info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(category['default_banner'])
         info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(category['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(category['default_clearlogo'])
         info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(category['s_thumb'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(category['s_fanart'])
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(category['s_banner'])
         info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(category['s_flyer'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(category['s_clearlogo'])
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(category['s_trailer'])
 
         return info_text
@@ -5418,10 +5422,12 @@ class Main:
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(collection['default_fanart'])
         info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(collection['default_banner'])
         info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(collection['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(collection['default_clearlogo'])
         info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(collection['s_thumb'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(collection['s_fanart'])
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(collection['s_banner'])
         info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(collection['s_flyer'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(collection['s_clearlogo'])
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(collection['s_trailer'])
 
         return info_text

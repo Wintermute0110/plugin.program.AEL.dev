@@ -68,10 +68,12 @@ def fs_new_category():
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
          'default_poster' : 's_flyer',
+         'default_clearlogo' : 's_clearlogo',
          's_thumb' : '',
          's_fanart' : '',
          's_banner' : '',
          's_flyer' : '',
+         's_clearlogo' : '',
          's_trailer' : ''
          }
 
@@ -103,6 +105,7 @@ def fs_new_launcher():
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
          'default_poster' : 's_flyer',
+         'default_clearlogo' : 's_clearlogo',
          'roms_default_thumb' : 's_boxfront',
          'roms_default_fanart' : 's_fanart',
          'roms_default_banner' : 's_banner',
@@ -112,6 +115,7 @@ def fs_new_launcher():
          's_fanart' : '',
          's_banner' : '',
          's_flyer' : '',
+         's_clearlogo' : '',
          's_trailer' : '',
          'path_title' : '',
          'path_snap' : '',
@@ -194,10 +198,12 @@ def fs_new_collection():
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
          'default_poster' : 's_flyer',
+         'default_clearlogo' : 's_clearlogo',
          's_thumb' : '',
          's_fanart' : '',
          's_banner' : '',
          's_flyer' : '',
+         's_clearlogo' : '',
          's_trailer' : ''
     }
 
