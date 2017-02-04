@@ -3169,6 +3169,8 @@ class Main:
             elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
             elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
+            # >> Multidisc ROM flag
+            if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
             thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
@@ -3193,6 +3195,8 @@ class Main:
             elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
             elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
+            # >> Multidisc ROM flag
+            if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
         elif categoryID == VCATEGORY_RECENT_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
             thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
@@ -3202,6 +3206,8 @@ class Main:
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform        = rom['platform']
             rom_name = rom_raw_name
+            # >> Multidisc ROM flag
+            if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
         elif categoryID == VCATEGORY_MOST_PLAYED_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
             thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
@@ -3215,6 +3221,8 @@ class Main:
                 rom_name = '{0} [COLOR orange][{1} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
             else:
                 rom_name = '{0} [COLOR orange][{1} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
+            # >> Multidisc ROM flag
+            if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID or \
              categoryID == VCATEGORY_CATEGORY_ID:
@@ -3238,9 +3246,12 @@ class Main:
             else:
                 rom_name = rom_raw_name
 
-            # >> Mark if ROM is in Favourites
+            # >> In Favourites ROM flag
             if self.settings['display_rom_in_fav'] and rom_in_fav:
+                AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
+            # >> Multidisc ROM flag
+            if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
         else:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
@@ -3286,8 +3297,7 @@ class Main:
             if self.settings['display_rom_in_fav'] and rom_in_fav:
                 AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
-                
-            # >> Multidisc ROM
+            # >> Multidisc ROM flag
             if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
         # --- Add ROM to lisitem ---
