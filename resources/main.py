@@ -7677,9 +7677,78 @@ class Main:
     #
     # Import AEL launcher configuration
     #
+    def _misc_get_default_import_launcher(self):
+        l = {'category' : 'root_category',
+             'name' : '',
+             'year' : '',
+             'genre' : '',
+             'studio' : '',
+             'rating' : '',
+             'plot' : '',
+             'platform' : 'Unknown',
+             'application' : '',
+             'args' : '',
+             'args_extra' : [],
+             'rompath' : '',
+             'romext' : '',
+             'thumb' : '',
+             'fanart' : '',
+             'banner' : '',
+             'flyer' : '',
+             'clearlogo' : '',
+             'trailer' : '',
+             'path_assets' : '',
+        }
+
+        return l
+
     def _command_import_launchers(self):
-        kodi_dialog_OK('Not coded yet, sorry.')
-        
+        # >> Ask user for configuration XML file.
+        dialog = xbmcgui.Dialog()
+        xml_file = dialog.browse(1, 'Select XML launcher configuration', 'files', '.xml').decode('utf-8')
+        import_FN = FileName(xml_file)
+        if not import_FN.exists(): return
+        log_debug('_command_import_launchers() import_FN OP "{0}"'.format(import_FN.getOriginalPath()))
+        log_debug('_command_import_launchers() import_FN  P "{0}"'.format(import_FN.getPath()))
+
+        # >> Load XML file. Fill missing XML tags with defaults.
+        __debug_xml_parser = True
+        imported_launchers_list = []
+        log_verb('_command_import_launchers() Loading {0}'.format(import_FN.getOriginalPath()))
+        try:
+            xml_tree = ET.parse(import_FN.getPath())
+        except ET.ParseError, e:
+            log_error('(ParseError) Exception parsing XML categories.xml')
+            log_error('(ParseError) {0}'.format(str(e)))
+            kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
+                           'Maybe XML file is corrupt or contains invalid characters.')
+            return
+        xml_root = xml_tree.getroot()
+        for root_element in xml_root:
+            if __debug_xml_parser: log_debug('Root child tag <{0}>'.format(root_element.tag))
+
+            if root_element.tag == 'launcher':
+                launcher = self._misc_get_default_import_launcher()
+                for root_child in root_element:
+                    # >> By default read strings
+                    xml_text = root_child.text if root_child.text is not None else ''
+                    xml_text = text_unescape_XML(xml_text)
+                    xml_tag  = root_child.tag
+                    if __debug_xml_parser: log_debug('"{0}" --> "{1}"'.format(xml_tag, xml_text))
+
+                    # >> Transform list datatype
+                    if xml_tag == 'args_extra': launcher[xml_tag].append(xml_text)
+                    else:                       launcher[xml_tag] = xml_text
+                # --- Add launcher to categories dictionary ---
+                log_debug('Adding to list launcher "{0}"'.format(launcher['name']))
+                imported_launchers_list.append(launcher)
+
+        # >> Traverse launcher list and import all launchers found in XML file.
+        # A) Match categories by name. If multiple categories with same name pick the first one.
+        # B) If category does not exist create a new one.
+        # C) Launchers are matched by name. If launcher name not found then create a new launcherID.
+        kodi_dialog_OK('Launcher import not coded yet')
+
     #
     # Export AEL launcher configuration
     #
@@ -7697,16 +7766,14 @@ class Main:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
         str_list.append('<advanced_emulator_launcher_configuration>\n')
-
-        # --- Write launchers ---
         for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             # >> Data which is not string must be converted to string
             launcher = self.launchers[launcherID]
             category_name = launcher['categoryID']
             path_assets = 'not coded yet'
             str_list.append('<launcher>\n')
-            str_list.append(XML_text('category', category_name))
             str_list.append(XML_text('name', launcher['m_name']))
+            str_list.append(XML_text('category', category_name))
             str_list.append(XML_text('year', launcher['m_year']))
             str_list.append(XML_text('genre', launcher['m_genre']))
             str_list.append(XML_text('studio', launcher['m_studio']))
@@ -7722,11 +7789,11 @@ class Main:
             str_list.append(XML_text('fanart', launcher['s_fanart']))
             str_list.append(XML_text('banner', launcher['s_banner']))
             str_list.append(XML_text('flyer', launcher['s_flyer']))
+            str_list.append(XML_text('clearlogo', launcher['s_clearlogo']))
             str_list.append(XML_text('trailer', launcher['s_trailer']))
             str_list.append(XML_text('path_assets', path_assets))
             str_list.append('</launcher>\n')
-        # End of file
-        str_list.append('</advanced_emulator_launcher>\n')
+        str_list.append('</advanced_emulator_launcher_configuration>\n')
 
         # >> Export file
         # Strings in the list are Unicode. Encode to UTF-8. Join string, and save categories.xml file
