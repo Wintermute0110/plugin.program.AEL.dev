@@ -7684,7 +7684,65 @@ class Main:
     # Export AEL launcher configuration
     #
     def _command_export_launchers(self):
-        kodi_dialog_OK('Not coded yet, sorry.')
+        # >> Ask path to export launcher configuration
+        dialog = xbmcgui.Dialog()
+        dir_path = dialog.browse(0, 'Select Export directory', 'files', '', False, False).decode('utf-8')
+        if not dir_path: return
+        export_FN = FileName(dir_path)
+        export_FN = export_FN.pjoin('AEL_config.xml')
+        # log_debug('_command_export_launchers() export_FN OP "{0}"'.format(export_FN.getOriginalPath()))
+        # log_debug('_command_export_launchers() export_FN  P "{0}"'.format(export_FN.getPath()))
+
+        # >> Traverse all launchers and add to the XML file.
+        str_list = []
+        str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        str_list.append('<advanced_emulator_launcher_configuration>\n')
+
+        # --- Write launchers ---
+        for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+            # >> Data which is not string must be converted to string
+            launcher = self.launchers[launcherID]
+            category_name = launcher['categoryID']
+            path_assets = 'not coded yet'
+            str_list.append('<launcher>\n')
+            str_list.append(XML_text('category', category_name))
+            str_list.append(XML_text('name', launcher['m_name']))
+            str_list.append(XML_text('year', launcher['m_year']))
+            str_list.append(XML_text('genre', launcher['m_genre']))
+            str_list.append(XML_text('studio', launcher['m_studio']))
+            str_list.append(XML_text('rating', launcher['m_rating']))
+            str_list.append(XML_text('plot', launcher['m_plot']))
+            str_list.append(XML_text('platform', launcher['platform']))
+            str_list.append(XML_text('application', launcher['application']))
+            str_list.append(XML_text('args', launcher['args']))
+            for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
+            str_list.append(XML_text('rompath', launcher['rompath']))
+            str_list.append(XML_text('romext', launcher['romext']))
+            str_list.append(XML_text('thumb', launcher['s_thumb']))
+            str_list.append(XML_text('fanart', launcher['s_fanart']))
+            str_list.append(XML_text('banner', launcher['s_banner']))
+            str_list.append(XML_text('flyer', launcher['s_flyer']))
+            str_list.append(XML_text('trailer', launcher['s_trailer']))
+            str_list.append(XML_text('path_assets', path_assets))
+            str_list.append('</launcher>\n')
+        # End of file
+        str_list.append('</advanced_emulator_launcher>\n')
+
+        # >> Export file
+        # Strings in the list are Unicode. Encode to UTF-8. Join string, and save categories.xml file
+        try:
+            full_string = ''.join(str_list).encode('utf-8')
+            file_obj = open(export_FN.getPath(), 'w')
+            file_obj.write(full_string)
+            file_obj.close()
+        except OSError:
+            log_error('(OSError) Cannot write categories.xml file')
+            kodi_notify_warn('(OSError) Cannot write categories.xml file')
+        except IOError:
+            log_error('(IOError) Cannot write categories.xml file')
+            kodi_notify_warn('(IOError) Cannot write categories.xml file')
+        log_verb('_command_export_launchers() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
+        log_verb('_command_export_launchers() Exported  P "{0}"'.format(export_FN.getPath()))
 
     #
     # Checks all databases and tries to update to newer version if possible
