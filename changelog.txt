@@ -1,4 +1,17 @@
-[B]Advanced Emulator Launcher | version 0.9.7 | XX February 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.8 | XX April 2017[/B]
+
+WIP      Full Extranafart support for Categories/Launchers.
+
+WIP      Full Extranafart for ROMs.
+
+WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
+         online and offline scrapers. There is a Python implementation of the algorithm here,
+         https://github.com/seatgeek/fuzzywuzzy
+
+WIP      Include databases for all supported platforms in AEL offline scraper.
+
+
+[B]Advanced Emulator Launcher | version 0.9.7 | XX March 2017[/B]
 
 WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
 
@@ -14,18 +27,8 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
-WIP      Full Extranafart support for Categories/Launchers.
 
-WIP      Full Extranafart for ROMs.
-
-WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
-         online and offline scrapers. There is a Python implementation of the algorithm here,
-         https://github.com/seatgeek/fuzzywuzzy
-
-WIP      Include databases for all supported platforms in AEL offline scraper.
-
-
-[B]Advanced Emulator Launcher | version 0.9.6 | XX January 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.6 | XX February 2017[/B]
 
 FEATURE  Use a Window property to let skins know wheter a launcher OR ROMs are being rendered.
          Set xbmcgui.Window(10001).setProperty('AEL_Content', 'launchers')
@@ -39,22 +42,17 @@ FEATURE  Use setProperty() to inform the skin about ROM flags:
          
          For example:
            setProperty('AEL_Fav_stat',     'Fav_OK')
-           setProperty('AEL_Fav_stat',     'Fav_UnlinkedROM')
-           setProperty('AEL_Fav_stat',     'Fav_UnlinkedLauncher')
-           setProperty('AEL_Fav_stat',     'Fav_Broken')
            setProperty('AEL_NoIntro_stat', 'NoIntro_Have')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_Miss')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_Added')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_Unknown')
-           setProperty('AEL_NoIntro_stat', 'NoIntro_None')
            setProperty('AEL_PClone_stat',  'PClone_Parent')
-           setProperty('AEL_PClone_stat',  'PClone_Clone')
-           setProperty('AEL_PClone_stat',  'PClone_Unknown')
 
 FEATURE  Add Retroplayer support.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 
 FEATURE  Added new platforms Xbox One, Nintendo Switch, Nintendo Wii U, PSX 3 and PSX 4.
+
+WIP      Import and Export of Launchers configurations. Will be very useful for Android users.
+
+WIP      Clearlogos in Categories, Launchers and ROM Collections.
 
 FIX      Fixed crash when editing Collection ROM position.
 
