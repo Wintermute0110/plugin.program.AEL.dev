@@ -331,12 +331,12 @@ class Main:
             self._command_update_virtual_category_db(args['catID'][0])
         elif command == 'UPDATE_ALL_VCATEGORIES':
             self._command_update_virtual_category_db_all()
-        elif command == 'IMPORT_AL_LAUNCHERS':
-            self._command_import_legacy_AL()
 
-        # >> Checks and updates all AEL databases
-        elif command == 'CHECK_DATABASE':
-            self._command_check_database()
+        # >> Commands called from addon settings window
+        elif command == 'IMPORT_LAUNCHERS':    self._command_import_launchers()
+        elif command == 'EXPORT_LAUNCHERS':    self._command_export_launchers()
+        elif command == 'CHECK_DATABASE':      self._command_check_database()
+        elif command == 'IMPORT_AL_LAUNCHERS': self._command_import_legacy_AL()
 
         # >> Command to build/fill the menu with categories or launcher using skinshortcuts
         elif command == 'BUILD_GAMES_MENU':
@@ -7652,7 +7652,8 @@ class Main:
         return empty_category
 
     #
-    # Reads a text file with category/launcher description. Checks file size to avoid importing binary files!
+    # Reads a text file with category/launcher plot. 
+    # Checks file size to avoid importing binary files!
     #
     def _gui_import_TXT_file(text_file):
         # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
@@ -7672,6 +7673,18 @@ class Main:
         text_plot.close()
 
         return file_data
+
+    #
+    # Import AEL launcher configuration
+    #
+    def _command_import_launchers(self):
+        kodi_dialog_OK('Not coded yet, sorry.')
+        
+    #
+    # Export AEL launcher configuration
+    #
+    def _command_export_launchers(self):
+        kodi_dialog_OK('Not coded yet, sorry.')
 
     #
     # Checks all databases and tries to update to newer version if possible
