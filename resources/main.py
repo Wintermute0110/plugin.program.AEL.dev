@@ -7747,7 +7747,39 @@ class Main:
         # A) Match categories by name. If multiple categories with same name pick the first one.
         # B) If category does not exist create a new one.
         # C) Launchers are matched by name. If launcher name not found then create a new launcherID.
-        kodi_dialog_OK('Launcher import not coded yet')
+        for i_launcher in imported_launchers_list:
+            log_info('Processing launcher "{0}"'.format(i_launcher['name']))
+            log_info('      with Category "{0}"'.format(i_launcher['category']))
+            s_category = self._misc_search_category_by_name(i_launcher['category'])
+            s_launcher = self._misc_search_launcher_by_name(i_launcher['name'])
+            log_debug('s_category = "{0}"'.format(s_category))
+            log_debug('s_launcher = "{0}"'.format(s_launcher))
+            
+            # >> If category not found then create a new one for this imported launcher
+            # if not s_category:
+                
+            # >> 
+            
+
+    def _misc_search_category_by_name(self, cat_name):
+        s_category = None
+        for categoryID in self.categories:
+            category = self.categories[categoryID]
+            if cat_name == category['m_name']:
+                s_category = category['id']
+                return s_category
+
+        return s_category
+
+    def _misc_search_launcher_by_name(self, launcher_name):
+        s_launcher = None
+        for launcherID in self.launchers:
+            launcher = self.launchers[launcherID]
+            if launcher_name == launcher['m_name']:
+                s_launcher = launcher['id']
+                return s_launcher
+
+        return s_launcher
 
     #
     # Export AEL launcher configuration
