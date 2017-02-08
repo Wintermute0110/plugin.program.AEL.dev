@@ -7801,7 +7801,7 @@ class Main:
         for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             # >> Data which is not string must be converted to string
             launcher = self.launchers[launcherID]
-            category_name = launcher['categoryID']
+            category_name = self.categories[self.launchers['categoryID']]['m_name']
             path_assets = 'not coded yet'
             str_list.append('<launcher>\n')
             str_list.append(XML_text('name', launcher['m_name']))
