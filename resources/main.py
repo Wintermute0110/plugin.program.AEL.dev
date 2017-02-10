@@ -2778,7 +2778,7 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_virtual_category_root_row(self):
-        vcategory_name   = '[Browse by ...]'
+        vcategory_name   = '[Browse by ... ]'
         vcategory_thumb  = ''
         vcategory_fanart = ''
         vcategory_banner = ''
