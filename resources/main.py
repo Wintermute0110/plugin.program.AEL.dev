@@ -97,6 +97,9 @@ VCATEGORY_TITLE_ID       = 'vcat_title'
 VCATEGORY_YEARS_ID       = 'vcat_years'
 VCATEGORY_GENRE_ID       = 'vcat_genre'
 VCATEGORY_STUDIO_ID      = 'vcat_studio'
+VCATEGORY_NPLAYERS_ID    = 'vcat_nplayers'
+VCATEGORY_ESRB_ID        = 'vcat_esrb'
+VCATEGORY_RATING_ID      = 'vcat_rating'
 VCATEGORY_CATEGORY_ID    = 'vcat_category'
 VCATEGORY_RECENT_ID      = 'vcat_recent'
 VCATEGORY_MOST_PLAYED_ID = 'vcat_most_played'
@@ -229,6 +232,8 @@ class Main:
             self._command_edit_category(args['catID'][0])
 
         # --- Render stuff ---
+        elif command == 'SHOW_VCATEGORIES_ROOT':
+            self._gui_render_vcategories_root()        
         elif command == 'SHOW_FAVOURITES':
             self._command_render_favourites()
         elif command == 'SHOW_VIRTUAL_CATEGORY':
@@ -381,15 +386,21 @@ class Main:
         self.settings['display_rom_in_fav']       = True if __addon_obj__.getSetting('display_rom_in_fav') == 'true' else False
         self.settings['display_nointro_stat']     = True if __addon_obj__.getSetting('display_nointro_stat') == 'true' else False
         self.settings['display_fav_status']       = True if __addon_obj__.getSetting('display_fav_status') == 'true' else False
+
         self.settings['display_hide_favs']        = True if __addon_obj__.getSetting('display_hide_favs') == 'true' else False
         self.settings['display_hide_collections'] = True if __addon_obj__.getSetting('display_hide_collections') == 'true' else False
+        self.settings['display_hide_vlaunchers']  = True if __addon_obj__.getSetting('display_hide_vlaunchers') == 'true' else False
+        self.settings['display_hide_recent']      = True if __addon_obj__.getSetting('display_hide_recent') == 'true' else False
+        self.settings['display_hide_mostplayed']  = True if __addon_obj__.getSetting('display_hide_mostplayed') == 'true' else False
+
         self.settings['display_hide_title']       = True if __addon_obj__.getSetting('display_hide_title') == 'true' else False
         self.settings['display_hide_year']        = True if __addon_obj__.getSetting('display_hide_year') == 'true' else False
         self.settings['display_hide_genre']       = True if __addon_obj__.getSetting('display_hide_genre') == 'true' else False
         self.settings['display_hide_studio']      = True if __addon_obj__.getSetting('display_hide_studio') == 'true' else False
+        self.settings['display_hide_nplayers']    = True if __addon_obj__.getSetting('display_hide_nplayers') == 'true' else False
+        self.settings['display_hide_esrb']        = True if __addon_obj__.getSetting('display_hide_esrb') == 'true' else False
+        self.settings['display_hide_rating']      = True if __addon_obj__.getSetting('display_hide_rating') == 'true' else False
         self.settings['display_hide_category']    = True if __addon_obj__.getSetting('display_hide_category') == 'true' else False
-        self.settings['display_hide_recent']      = True if __addon_obj__.getSetting('display_hide_recent') == 'true' else False
-        self.settings['display_hide_mostplayed']  = True if __addon_obj__.getSetting('display_hide_mostplayed') == 'true' else False
 
         # --- Paths ---
         self.settings['categories_asset_dir']     = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
@@ -2648,11 +2659,7 @@ class Main:
         if not self.settings['display_hide_collections']: self._gui_render_category_collections_row()
 
         # --- AEL Virtual Categories ---
-        if not self.settings['display_hide_title']:    self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
-        if not self.settings['display_hide_year']:     self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
-        if not self.settings['display_hide_genre']:    self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
-        if not self.settings['display_hide_studio']:   self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
-        if not self.settings['display_hide_category']: self._gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
+        if not self.settings['display_hide_vlaunchers']: self._gui_render_virtual_category_root_row()
 
         # --- Recently played and most played ROMs  ---
         if not self.settings['display_hide_recent']:     self._gui_render_category_recently_played_row()
@@ -2662,7 +2669,7 @@ class Main:
 
     #
     # Renders all categories without Favourites, Collections, virtual categories, etc.
-    # This function is called by skins tu build shortcuts menu.
+    # This function is called by skins to build shortcuts menu.
     #
     def _command_render_all_categories(self):
         # >> If no categories render nothing
@@ -2745,7 +2752,7 @@ class Main:
         collections_flyer  = ''
         collections_label  = 'Title'
         listitem = xbmcgui.ListItem(collections_name)
-        listitem.setInfo('video', {'title': collections_name,         'genre' : 'AEL Collections',
+        listitem.setInfo('video', {'title': collections_name,       'genre'  : 'AEL Collections',
                                    'plot' : 'AEL virtual category', 'overlay': 4 } )
         listitem.setArt({'thumb' : collections_thumb, 'fanart' : collections_fanart, 'banner' : collections_banner, 'poster' : collections_flyer})
 
@@ -2760,6 +2767,88 @@ class Main:
 
         url_str = self._misc_url('SHOW_COLLECTIONS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_virtual_category_root_row(self):
+        vcategory_name   = '[Browse by ...]'
+        vcategory_thumb  = ''
+        vcategory_fanart = ''
+        vcategory_banner = ''
+        vcategory_flyer  = ''
+        vcategory_label  = 'Browse by ...'
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name,         'genre'  : 'AEL Virtual Launcher',
+                                   'plot' : 'AEL virtual category', 'overlay': 4 } )
+        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart, 'banner' : vcategory_banner, 'poster' : vcategory_flyer})
+
+        commands = []
+        update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
+        commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL))
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        url_str = self._misc_url('SHOW_VCATEGORIES_ROOT')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_category_recently_played_row(self):
+        fav_name = '[Recently played ROMs]'
+        fav_thumb = 'DefaultFolder.png'
+        fav_fanart = ''
+        fav_banner = ''
+        fav_flyer = ''
+        listitem = xbmcgui.ListItem(fav_name)
+        listitem.setInfo('video', {'title': fav_name,             'genre'  : 'AEL Favourites',
+                                   'plot' : 'AEL Favourite ROMs', 'overlay': 4 } )
+        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
+
+        commands = []
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        url_str = self._misc_url('SHOW_RECENTLY_PLAYED')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_category_most_played_row(self):
+        fav_name = '[Most played ROMs]'
+        fav_thumb = 'DefaultFolder.png'
+        fav_fanart = ''
+        fav_banner = ''
+        fav_flyer = ''
+        listitem = xbmcgui.ListItem(fav_name)
+        listitem.setInfo('video', {'title': fav_name,             'genre'  : 'AEL Favourites',
+                                   'plot' : 'AEL Favourite ROMs', 'overlay': 4 } )
+        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
+
+        commands = []
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        url_str = self._misc_url('SHOW_MOST_PLAYED')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    # ---------------------------------------------------------------------------------------------
+    # Virtual categories/launchers (Browse by...)
+    # ---------------------------------------------------------------------------------------------
+    def _gui_render_vcategories_root(self):
+        self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+        if not self.settings['display_hide_title']:    self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
+        if not self.settings['display_hide_year']:     self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
+        if not self.settings['display_hide_genre']:    self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
+        if not self.settings['display_hide_studio']:   self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
+        if not self.settings['display_hide_nplayers']: self._gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
+        if not self.settings['display_hide_esrb']:     self._gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
+        if not self.settings['display_hide_rating']:   self._gui_render_virtual_category_row(VCATEGORY_RATING_ID)
+        if not self.settings['display_hide_category']: self._gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_virtual_category_row(self, virtual_category_kind):
         if virtual_category_kind == VCATEGORY_TITLE_ID:
@@ -2790,6 +2879,27 @@ class Main:
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'Studio'
+        elif virtual_category_kind == VCATEGORY_NPLAYERS_ID:
+            vcategory_name   = '[Browse by Number of Players]'
+            vcategory_thumb  = ''
+            vcategory_fanart = ''
+            vcategory_banner = ''
+            vcategory_flyer  = ''
+            vcategory_label  = 'NPlayers'
+        elif virtual_category_kind == VCATEGORY_ESRB_ID:
+            vcategory_name   = '[Browse by ESRB Rating]'
+            vcategory_thumb  = ''
+            vcategory_fanart = ''
+            vcategory_banner = ''
+            vcategory_flyer  = ''
+            vcategory_label  = 'ESRB Rating'
+        elif virtual_category_kind == VCATEGORY_RATING_ID:
+            vcategory_name   = '[Browse by User Rating]'
+            vcategory_thumb  = ''
+            vcategory_fanart = ''
+            vcategory_banner = ''
+            vcategory_flyer  = ''
+            vcategory_label  = 'User Rating'            
         elif virtual_category_kind == VCATEGORY_CATEGORY_ID:
             vcategory_name   = '[Browse by Category]'
             vcategory_thumb  = ''
@@ -2802,9 +2912,10 @@ class Main:
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             return
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', {'title': vcategory_name,         'genre' : 'AEL Virtual Launcher',
+        listitem.setInfo('video', {'title': vcategory_name,         'genre'  : 'AEL Virtual Launcher',
                                    'plot' : 'AEL virtual category', 'overlay': 4 } )
-        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart, 'banner' : vcategory_banner, 'poster' : vcategory_flyer})
+        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart, 
+                         'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
         commands = []
         update_vcat_URL     = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
@@ -2818,48 +2929,6 @@ class Main:
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
-
-    def _gui_render_category_recently_played_row(self):
-        fav_name = '[Recently played ROMs]'
-        fav_thumb = 'DefaultFolder.png'
-        fav_fanart = ''
-        fav_banner = ''
-        fav_flyer = ''
-        listitem = xbmcgui.ListItem(fav_name)
-        listitem.setInfo('video', {'title': fav_name,             'genre' : 'AEL Favourites',
-                                   'plot' : 'AEL Favourite ROMs', 'overlay' : 4 } )
-        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
-
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
-
-        url_str = self._misc_url('SHOW_RECENTLY_PLAYED')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
-
-    def _gui_render_category_most_played_row(self):
-        fav_name = '[Most played ROMs]'
-        fav_thumb = 'DefaultFolder.png'
-        fav_fanart = ''
-        fav_banner = ''
-        fav_flyer = ''
-        listitem = xbmcgui.ListItem(fav_name)
-        listitem.setInfo('video', {'title': fav_name,             'genre' : 'AEL Favourites',
-                                   'plot' : 'AEL Favourite ROMs', 'overlay' : 4 } )
-        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
-
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
-
-        url_str = self._misc_url('SHOW_MOST_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     # ---------------------------------------------------------------------------------------------
