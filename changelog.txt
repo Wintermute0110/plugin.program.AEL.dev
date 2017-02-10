@@ -10,6 +10,8 @@ WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorith
 
 WIP      Include databases for all supported platforms in AEL offline scraper.
 
+WIP      Have a setting to restrict ROMs displayed based on rating.
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX March 2017[/B]
 
@@ -39,7 +41,7 @@ FEATURE  Use setProperty() to inform the skin about ROM flags:
            1) Favourite status: OK, Unlinked ROM, Unlinked Launcher, Broken
            2) No-Intro status: Have, Missing, Added, Unknown
            3) Parent/Clone status: Parent or Clone (Boolean)
-         
+
          For example:
            setProperty('AEL_Fav_stat',     'Fav_OK')
            setProperty('AEL_NoIntro_stat', 'NoIntro_Have')
@@ -48,13 +50,15 @@ FEATURE  Use setProperty() to inform the skin about ROM flags:
 FEATURE  Add Retroplayer support.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 
+FEATURE  New menu for the virtual launchers [Browse by ...]
+
+FEATURE  New virtual launchers [Browse by ESRB Rating] and Browse by [Number of Players].
+
 FEATURE  Added new platforms Xbox One, Nintendo Switch, Nintendo Wii U, PSX 3 and PSX 4.
 
-WIP      Import and Export of Launchers configurations. Will be very useful for Android users.
+PARTIAL  Import and Export of Launchers configurations. Will be very useful for Android users.
 
-WIP      Clearlogos in Categories, Launchers and ROM Collections.
-
-FIX      Fixed crash when editing Collection ROM position.
+PARTIAL  Clearlogos in Categories, Launchers and ROM Collections.
 
 WIP      Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
@@ -74,8 +78,6 @@ PARTIAL  Add nplayers metadata field to ROMs. Billyc999 database has nplayers NF
 
 PARTIAL  Add ESRB/MPAA/PEGI rating? >> User ESRB, new metadata field esrb in ROMs.
 
-WIP      Have a setting to restrict ROMs displayed based on rating.
-
 PARTIAL  Support for multidisc systems. Have a look to NOTES.md for more details about the AEL
          implementation.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2495480#pid2495480
@@ -90,6 +92,8 @@ PARTIAL  Support for multidisc systems. Have a look to NOTES.md for more details
          https://github.com/Wintermute0110/plugin.program.advanced.launcher/blob/master/resources/lib/launcher_plugin.py#L1688
 
          AEL will use a better implementation based on a ROM filename parser. See NOTES.md
+
+FIX      Fixed crash when editing Collection ROM position.
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
