@@ -61,6 +61,9 @@ VCAT_TITLE_FILE_PATH    = PLUGIN_DATA_DIR.join('vcat_title.xml')
 VCAT_YEARS_FILE_PATH    = PLUGIN_DATA_DIR.join('vcat_years.xml')
 VCAT_GENRE_FILE_PATH    = PLUGIN_DATA_DIR.join('vcat_genre.xml')
 VCAT_STUDIO_FILE_PATH   = PLUGIN_DATA_DIR.join('vcat_studio.xml')
+VCAT_NPLAYERS_FILE_PATH = PLUGIN_DATA_DIR.join('vcat_nplayers.xml')
+VCAT_ESRB_FILE_PATH     = PLUGIN_DATA_DIR.join('vcat_esrb.xml')
+VCAT_RATING_FILE_PATH   = PLUGIN_DATA_DIR.join('vcat_rating.xml')
 VCAT_CATEGORY_FILE_PATH = PLUGIN_DATA_DIR.join('vcat_category.xml')
 LAUNCH_LOG_FILE_PATH    = PLUGIN_DATA_DIR.join('launcher.log')
 RECENT_PLAYED_FILE_PATH = PLUGIN_DATA_DIR.join('history.json')
@@ -75,6 +78,9 @@ VIRTUAL_CAT_TITLE_DIR    = PLUGIN_DATA_DIR.join('db_title')
 VIRTUAL_CAT_YEARS_DIR    = PLUGIN_DATA_DIR.join('db_years')
 VIRTUAL_CAT_GENRE_DIR    = PLUGIN_DATA_DIR.join('db_genre')
 VIRTUAL_CAT_STUDIO_DIR   = PLUGIN_DATA_DIR.join('db_studio')
+VIRTUAL_CAT_NPLAYERS_DIR = PLUGIN_DATA_DIR.join('db_nplayers')
+VIRTUAL_CAT_ESRB_DIR     = PLUGIN_DATA_DIR.join('db_esrb')
+VIRTUAL_CAT_RATING_DIR   = PLUGIN_DATA_DIR.join('db_rating')
 VIRTUAL_CAT_CATEGORY_DIR = PLUGIN_DATA_DIR.join('db_category')
 ROMS_DIR                 = PLUGIN_DATA_DIR.join('db_ROMs')
 COLLECTIONS_DIR          = PLUGIN_DATA_DIR.join('db_Collections')
@@ -188,6 +194,9 @@ class Main:
         if not VIRTUAL_CAT_YEARS_DIR.exists():    VIRTUAL_CAT_YEARS_DIR.makedirs()
         if not VIRTUAL_CAT_GENRE_DIR.exists():    VIRTUAL_CAT_GENRE_DIR.makedirs()
         if not VIRTUAL_CAT_STUDIO_DIR.exists():   VIRTUAL_CAT_STUDIO_DIR.makedirs()
+        if not VIRTUAL_CAT_NPLAYERS_DIR.exists(): VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
+        if not VIRTUAL_CAT_ESRB_DIR.exists():     VIRTUAL_CAT_ESRB_DIR.makedirs()
+        if not VIRTUAL_CAT_RATING_DIR.exists():   VIRTUAL_CAT_RATING_DIR.makedirs()
         if not VIRTUAL_CAT_CATEGORY_DIR.exists(): VIRTUAL_CAT_CATEGORY_DIR.makedirs()
         if not ROMS_DIR.exists():                 ROMS_DIR.makedirs()
         if not COLLECTIONS_DIR.exists():          COLLECTIONS_DIR.makedirs()
@@ -3509,8 +3518,10 @@ class Main:
     # Render virtual launchers in virtual categories: Title, year, Genre, Studio, Category
     #
     def _command_render_virtual_category(self, virtual_categoryID):
+        log_error('_command_render_virtual_category() Starting ...')
         # >> Kodi sorting methods
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_SIZE)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
@@ -3527,6 +3538,15 @@ class Main:
         elif virtual_categoryID == VCATEGORY_STUDIO_ID:
             vcategory_db_filename = VCAT_STUDIO_FILE_PATH
             vcategory_name        = 'Browse by Studio'
+        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
+            vcategory_db_filename = VCAT_NPLAYERS_FILE_PATH
+            vcategory_name        = 'Browse by Number of Players'
+        elif virtual_categoryID == VCATEGORY_ESRB_ID:
+            vcategory_db_filename = VCAT_ESRB_FILE_PATH
+            vcategory_name        = 'Browse by ESRB Rating'
+        elif virtual_categoryID == VCATEGORY_RATING_ID:
+            vcategory_db_filename = VCAT_RATING_FILE_PATH
+            vcategory_name        = 'Browse by User Rating'
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
             vcategory_db_filename = VCAT_CATEGORY_FILE_PATH
             vcategory_name        = 'Browse by Category'
@@ -3560,9 +3580,10 @@ class Main:
                                        'plot'     : 'Plot text',    'Studio'    : 'Studio text',
                                        'genre'    : 'Genre text',   'Premiered' : 'Premiered text',
                                        'year'     : 'Year text',
-                                       'overlay'  : 4} )
-            # Set ListItem artwork
+                                       'overlay'  : 4,
+                                       'size'     : vlauncher['rom_count'] })
             listitem.setArt({'icon': 'DefaultFolder.png'})
+
             # --- Create context menu ---
             commands = []
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
@@ -3578,6 +3599,7 @@ class Main:
     # Renders ROMs in a virtual launcher.
     #
     def _command_render_virtual_launcher_roms(self, virtual_categoryID, virtual_launcherID):
+        log_error('_command_render_virtual_launcher_roms() Starting ...')
         # >> Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
@@ -3587,6 +3609,9 @@ class Main:
         elif virtual_categoryID == VCATEGORY_YEARS_ID:    vcategory_db_dir = VIRTUAL_CAT_YEARS_DIR
         elif virtual_categoryID == VCATEGORY_GENRE_ID:    vcategory_db_dir = VIRTUAL_CAT_GENRE_DIR
         elif virtual_categoryID == VCATEGORY_STUDIO_ID:   vcategory_db_dir = VIRTUAL_CAT_STUDIO_DIR
+        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID: vcategory_db_dir = VIRTUAL_CAT_NPLAYERS_DIR
+        elif virtual_categoryID == VCATEGORY_ESRB_ID:     vcategory_db_dir = VIRTUAL_CAT_ESRB_DIR
+        elif virtual_categoryID == VCATEGORY_RATING_ID:   vcategory_db_dir = VIRTUAL_CAT_RATING_DIR
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID: vcategory_db_dir = VIRTUAL_CAT_CATEGORY_DIR
         else:
             log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
@@ -5529,7 +5554,10 @@ class Main:
         self._command_update_virtual_category_db(VCATEGORY_TITLE_ID)
         self._command_update_virtual_category_db(VCATEGORY_YEARS_ID)
         self._command_update_virtual_category_db(VCATEGORY_GENRE_ID)
-        self._command_update_virtual_category_db(VCATEGORY_STUDIO_ID)
+        self._command_update_virtual_category_db(VCATEGORY_STUDIO_ID)        
+        self._command_update_virtual_category_db(VCATEGORY_NPLAYERS_ID)
+        self._command_update_virtual_category_db(VCATEGORY_ESRB_ID)
+        self._command_update_virtual_category_db(VCATEGORY_RATING_ID)
         self._command_update_virtual_category_db(VCATEGORY_CATEGORY_ID)
         kodi_notify('All virtual categories updated')
 
@@ -5562,6 +5590,24 @@ class Main:
             vcategory_db_filename  = VCAT_STUDIO_FILE_PATH
             vcategory_field_name   = 'm_studio'
             vcategory_name         = 'Studios'
+        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
+            log_info('_command_update_virtual_category_db() Updating NPlayers DB')
+            vcategory_db_directory = VIRTUAL_CAT_NPLAYERS_DIR
+            vcategory_db_filename  = VCAT_NPLAYERS_FILE_PATH
+            vcategory_field_name   = 'm_nplayers'
+            vcategory_name         = 'NPlayers'
+        elif virtual_categoryID == VCATEGORY_ESRB_ID:
+            log_info('_command_update_virtual_category_db() Updating ESRB DB')
+            vcategory_db_directory = VIRTUAL_CAT_ESRB_DIR
+            vcategory_db_filename  = VCAT_ESRB_FILE_PATH
+            vcategory_field_name   = 'm_esrb'
+            vcategory_name         = 'ESRB'
+        elif virtual_categoryID == VCATEGORY_RATING_ID:
+            log_info('_command_update_virtual_category_db() Updating Rating DB')
+            vcategory_db_directory = VIRTUAL_CAT_RATING_DIR
+            vcategory_db_filename  = VCAT_RATING_FILE_PATH
+            vcategory_field_name   = 'm_rating'
+            vcategory_name         = 'Rating'
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
             log_info('_command_update_virtual_category_db() Updating Categories DB')
             vcategory_db_directory = VIRTUAL_CAT_CATEGORY_DIR
