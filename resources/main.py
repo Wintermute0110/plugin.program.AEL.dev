@@ -3230,6 +3230,8 @@ class Main:
         AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
 
         # --- Create listitem row ---
+        # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling 
+        #      function. A lot of ifs will be avoided here and that will increase speed.
         rom_raw_name = rom['m_name']
         if categoryID == VCATEGORY_FAVOURITES_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
@@ -3240,7 +3242,7 @@ class Main:
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform        = rom['platform']
 
-            # >> If we are rendering Favourites then mark fav_status
+            # --- Favourite status flag ---
             if self.settings['display_fav_status']:
                 if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
                 elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
@@ -3249,7 +3251,6 @@ class Main:
                 else:                                          rom_name = rom_raw_name
             else:
                 rom_name = rom_raw_name
-            # >> ROM flags
             if   rom['fav_status'] == 'OK':                AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
             elif rom['fav_status'] == 'Unlinked ROM':      AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
             elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
@@ -3264,7 +3265,7 @@ class Main:
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform        = rom['platform']
 
-            # >> If we are rendering Collections then mark fav_status
+            # --- Favourite status flag ---
             if self.settings['display_fav_status']:
                 if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
                 elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
@@ -3273,7 +3274,6 @@ class Main:
                 else:                                          rom_name = rom_raw_name
             else:
                 rom_name = rom_raw_name
-            # >> ROM flags
             if   rom['fav_status'] == 'OK':                AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
             elif rom['fav_status'] == 'Unlinked ROM':      AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
             elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
@@ -3312,9 +3312,9 @@ class Main:
             thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform        = rom['platform']
 
-            # >> Mark No-Intro status
+            # --- NoIntro status flag ---
+            nstat = rom['nointro_status']
             if self.settings['display_nointro_stat']:
-                nstat = rom['nointro_status']
                 if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
                 elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
                 elif nstat == NOINTRO_STATUS_ADDED:   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
@@ -3323,11 +3323,15 @@ class Main:
                 else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
             else:
                 rom_name = rom_raw_name
+            if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
+            elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
+            elif nstat == NOINTRO_STATUS_ADDED:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_ADDED
+            elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
+            elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
 
-            # >> In Favourites ROM flag
-            if self.settings['display_rom_in_fav'] and rom_in_fav:
-                AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
-                rom_name += ' [COLOR violet][Fav][/COLOR]'
+            # --- In Favourites ROM flag ---
+            if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
+            if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
         else:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
@@ -3349,7 +3353,7 @@ class Main:
                 thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
                 thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
 
-                # >> Mark No-Intro status
+                # --- NoIntro status flag ---
                 nstat = rom['nointro_status']
                 if self.settings['display_nointro_stat']:
                     if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
@@ -3360,19 +3364,17 @@ class Main:
                     else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
                 else:
                     rom_name = rom_raw_name
-                # >> NoIntro flags
                 if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
                 elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
                 elif nstat == NOINTRO_STATUS_ADDED:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_ADDED
                 elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
                 elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
-                # >> Mark clone ROMs
-                if 'isClone' in rom: rom_name += ' [COLOR orange][Clo][/COLOR]'
 
-            # >> If listing regular launcher and rom is in favourites, mark it
-            if self.settings['display_rom_in_fav'] and rom_in_fav:
-                AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
-                rom_name += ' [COLOR violet][Fav][/COLOR]'
+                # --- Mark clone ROMs ---
+                if 'isClone' in rom: rom_name += ' [COLOR orange][Clo][/COLOR]'
+            # --- In Favourites ROM flag ---
+            if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
+            if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
 
         # --- Set common flags to all launchers---
         # >> Multidisc ROM flag
