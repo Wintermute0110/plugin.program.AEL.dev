@@ -3335,7 +3335,7 @@ class Main:
         else:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
-            kodi_def_thumb  = 'DefaultProgram.png'
+            kodi_def_thumb  = launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultProgram.png'
             kodi_def_fanart = launcher['s_fanart']
             platform        = launcher['platform']
             if parent_launcher:
