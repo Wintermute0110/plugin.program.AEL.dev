@@ -3010,10 +3010,18 @@ class Main:
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
         listitem = xbmcgui.ListItem(launcher_dic['m_name'])
-        listitem.setInfo('video', {'title'   : launcher_dic['m_name'],    'year'    : launcher_dic['m_year'],
-                                   'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
-                                   'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
-                                   'trailer' : launcher_dic['s_trailer'], 'Overlay' : ICON_OVERLAY })
+        # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
+        # >>     skin. If year is not set then the correct icon is shown.
+        if launcher_dic['m_year']:
+            listitem.setInfo('video', {'title'   : launcher_dic['m_name'],    'year'    : launcher_dic['m_year'],
+                                       'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
+                                       'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
+                                       'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+        else:
+            listitem.setInfo('video', {'title'   : launcher_dic['m_name'],
+                                       'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
+                                       'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
+                                       'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty('platform', launcher_dic['platform'])
 
         # --- Set ListItem artwork ---
@@ -3386,10 +3394,18 @@ class Main:
         # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
         # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
         # instead of changing the whole row colour.
-        listitem.setInfo('video', {'title'   : rom_name,         'year'    : rom['m_year'],
-                                   'genre'   : rom['m_genre'],   'plot'    : rom['m_plot'],
-                                   'studio'  : rom['m_studio'],  'rating'  : rom['m_rating'],
-                                   'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
+        # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
+        # >>     skin. If year is not set then the correct icon is shown.
+        if rom['m_year']:
+            listitem.setInfo('video', {'title'   : rom_name,         'year'    : rom['m_year'],
+                                       'genre'   : rom['m_genre'],   'plot'    : rom['m_plot'],
+                                       'studio'  : rom['m_studio'],  'rating'  : rom['m_rating'],
+                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
+        else:
+            listitem.setInfo('video', {'title'   : rom_name,
+                                       'genre'   : rom['m_genre'],   'plot'    : rom['m_plot'],
+                                       'studio'  : rom['m_studio'],  'rating'  : rom['m_rating'],
+                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty('nplayers', rom['m_nplayers'])
         listitem.setProperty('esrb', rom['m_esrb'])
         listitem.setProperty('platform', platform)
