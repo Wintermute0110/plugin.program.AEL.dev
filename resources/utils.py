@@ -21,6 +21,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch
+import xbmcvfs
 
 # --- Kodi modules ---
 # >> FileName class uses xbmc.translatePath()
@@ -507,7 +508,8 @@ class FileName:
         return os.stat(self.path)
 
     def exists(self):
-        return os.path.exists(self.path)
+        return xbmcvfs.exists(self.originalPath)
+        #return os.path.exists(self.path)
 
     def isdir(self):
         return os.path.isdir(self.path)
@@ -516,8 +518,12 @@ class FileName:
         return os.path.isfile(self.path)
 
     def makedirs(self):
-        if not os.path.exists(self.path): 
-            os.makedirs(self.path)
+        
+        if not xbmcvfs.exists(self.originalPath):
+            xbmcvfs.mkdirs(self.originalPath)
+
+        #if not os.path.exists(self.path): 
+        #    os.makedirs(self.path)
 
     # os.remove() and os.unlink() are exactly the same.
     def unlink(self):
