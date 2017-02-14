@@ -509,7 +509,6 @@ class FileName:
 
     def exists(self):
         return xbmcvfs.exists(self.originalPath)
-        #return os.path.exists(self.path)
 
     def isdir(self):
         return os.path.isdir(self.path)
@@ -522,12 +521,12 @@ class FileName:
         if not xbmcvfs.exists(self.originalPath):
             xbmcvfs.mkdirs(self.originalPath)
 
-        #if not os.path.exists(self.path): 
-        #    os.makedirs(self.path)
-
-    # os.remove() and os.unlink() are exactly the same.
     def unlink(self):
-        os.unlink(self.path)
+
+        if self.isfile():
+            xbmcvfs.delete(self.originalPath)
+        else:
+            xbmcvfs.rmdir(self.originalPath)
 
     def rename(self, to):
         os.rename(self.path, to.getPath())
