@@ -370,6 +370,7 @@ def misc_generate_random_SID():
 # caller code.
 # A) Transform paths like smb://server/directory/ into \\server\directory\
 # B) Use xbmc.translatePath() for paths starting with special://
+# C) Uses xbmcvfs wherever possible
 # -------------------------------------------------------------------------------------------------
 class FileName:
     # pathString must be a Unicode string object
@@ -479,17 +480,19 @@ class FileName:
     # ---------------------------------------------------------------------------------------------
     def scanFilesInPath(self, mask):
         files = []
-        filenames = os.listdir(self.path)
+
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(os.path.join(self.path, filename))
+            files.append(os.path.join(self.originalPath, filename))
 
         return files
 
     def scanFilesInPathAsPaths(self, mask):
         files = []
-        filenames = os.listdir(self.path)
+        
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(FileName(os.path.join(self.path, filename)))
+            files.append(FileName(os.path.join(self.originalPath, filename)))
 
         return files
 
@@ -505,7 +508,7 @@ class FileName:
     # Filesystem functions
     # ---------------------------------------------------------------------------------------------
     def stat(self):
-        return os.stat(self.path)
+        return xbmcvfs.Stat(self.originalPath)
 
     def exists(self):
         return xbmcvfs.exists(self.originalPath)
@@ -518,7 +521,7 @@ class FileName:
 
     def makedirs(self):
         
-        if not xbmcvfs.exists(self.originalPath):
+        if not self.exists():
             xbmcvfs.mkdirs(self.originalPath)
 
     def unlink(self):
@@ -529,7 +532,11 @@ class FileName:
             xbmcvfs.rmdir(self.originalPath)
 
     def rename(self, to):
-        os.rename(self.path, to.getPath())
+
+        if self.isfile():
+            xbmcvfs.rename(self.originalPath, to.getOriginalPath())
+        else:
+            os.rename(self.path, to.getPath())
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
