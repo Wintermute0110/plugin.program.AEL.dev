@@ -2769,13 +2769,13 @@ class Main:
 
         # --- Set Category artwork ---
         # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
-        thumb_path      = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
-        thumb_fanart    = asset_get_default_asset_Category(category_dic, 'default_fanart')
-        thumb_banner    = asset_get_default_asset_Category(category_dic, 'default_banner')
-        thumb_poster    = asset_get_default_asset_Category(category_dic, 'default_poster')
-        thumb_clearlogo = asset_get_default_asset_Category(category_dic, 'default_clearlogo')
-        listitem.setArt({'icon'   : thumb_path,   'fanart' : thumb_fanart, 
-                         'banner' : thumb_banner, 'poster' : thumb_poster, 'clearlogo' : thumb_clearlogo})
+        icon_path      = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
+        fanart_path    = asset_get_default_asset_Category(category_dic, 'default_fanart')
+        banner_path    = asset_get_default_asset_Category(category_dic, 'default_banner')
+        poster_path    = asset_get_default_asset_Category(category_dic, 'default_poster')
+        clearlogo_path = asset_get_default_asset_Category(category_dic, 'default_clearlogo')
+        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 
+                         'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
@@ -3090,13 +3090,14 @@ class Main:
         listitem.setProperty('platform', launcher_dic['platform'])
 
         # --- Set ListItem artwork ---
-        kodi_thumb      = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-        thumb_path      = asset_get_default_asset_Category(launcher_dic, 'default_thumb', kodi_thumb)
-        thumb_fanart    = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
-        thumb_banner    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
-        thumb_poster    = asset_get_default_asset_Category(launcher_dic, 'default_poster')
-        listitem.setArt({'thumb' : thumb_path,    'fanart' : thumb_fanart,
-                         'banner' : thumb_banner, 'poster' : thumb_poster})
+        kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
+        icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_thumb', kodi_thumb)
+        fanart_path    = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
+        banner_path    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
+        poster_path    = asset_get_default_asset_Category(launcher_dic, 'default_poster')
+        clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
+        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path,
+                         'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
         # --- Create context menu ---
         # Categories/Launchers/ROMs context menu order
@@ -4257,12 +4258,13 @@ class Main:
             listitem.setInfo('video', {'title'   : collection['m_name'],    'genre'   : collection['m_genre'],
                                        'plot'    : collection['m_plot'],    'rating'  : collection['m_rating'],
                                        'trailer' : collection['s_trailer'], 'overlay' : 4 })
-            thumb_path   = asset_get_default_asset_Category(collection, 'default_thumb', 'DefaultFolder.png')
-            thumb_fanart = asset_get_default_asset_Category(collection, 'default_fanart')
-            thumb_banner = asset_get_default_asset_Category(collection, 'default_banner')
-            thumb_poster = asset_get_default_asset_Category(collection, 'default_poster')
-            listitem.setArt({'thumb'  : thumb_path,   'fanart' : thumb_fanart,
-                             'banner' : thumb_banner, 'poster' : thumb_poster})
+            icon_path      = asset_get_default_asset_Category(collection, 'default_thumb', 'DefaultFolder.png')
+            fanart_path    = asset_get_default_asset_Category(collection, 'default_fanart')
+            banner_path    = asset_get_default_asset_Category(collection, 'default_banner')
+            poster_path    = asset_get_default_asset_Category(collection, 'default_poster')
+            clearlogo_path = asset_get_default_asset_Category(collection, 'default_clearlogo')
+            listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path,
+                             'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
             # --- Extrafanart ---
             collections_asset_dir = FileName(self.settings['collections_asset_dir'])
