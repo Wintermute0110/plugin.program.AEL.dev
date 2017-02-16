@@ -8138,6 +8138,10 @@ class Main:
             self.launchers[s_launcherID]['path_manual']    = Path_assets_FN.pjoin('manuals').getOriginalPath()
             self.launchers[s_launcherID]['path_trailer']   = Path_assets_FN.pjoin('trailers').getOriginalPath()
 
+            log_debug('Imported path_title  = "{0}"'.format(self.launchers[s_launcherID]['path_title']))
+            log_debug('Imported path_snap   = "{0}"'.format(self.launchers[s_launcherID]['path_snap']))
+            log_debug('Imported path_fanart = "{0}"'.format(self.launchers[s_launcherID]['path_fanart']))
+
         # >> Name has changed. Regenerate roms_base_noext and rename old one if necessary.
         # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
         old_roms_base_noext          = self.launchers[s_launcherID]['roms_base_noext']
@@ -8145,19 +8149,18 @@ class Main:
         old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
         old_PClone_index_file_json   = ROMS_DIR.join(old_roms_base_noext + '_PClone_index.json')
         old_PClone_parents_file_json = ROMS_DIR.join(old_roms_base_noext + '_PClone_parents.json')
+        log_debug('old_roms_base_noext "{0}"'.format(old_roms_base_noext))
         new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, s_launcherID)
         new_roms_file_json           = ROMS_DIR.join(new_roms_base_noext + '.json')
         new_roms_file_xml            = ROMS_DIR.join(new_roms_base_noext + '.xml')
         new_PClone_index_file_json   = ROMS_DIR.join(new_roms_base_noext + '_PClone_index.json')
         new_PClone_parents_file_json = ROMS_DIR.join(new_roms_base_noext + '_PClone_parents.json')
-        log_debug('old_roms_base_noext "{0}"'.format(old_roms_base_noext))
         log_debug('new_roms_base_noext "{0}"'.format(new_roms_base_noext))
-
 
         # >> Rename ROMS JSON/XML only if there is a change in filenames.
         if old_roms_base_noext != new_roms_base_noext:
             log_debug('Renaming JSON/XML launcher databases')
-            self.launchers[s_launcherID]['roms_base_noext'] = new_roms_base_noext        
+            self.launchers[s_launcherID]['roms_base_noext'] = new_roms_base_noext
             if old_roms_file_json.exists():
                 old_roms_file_json.rename(new_roms_file_json)
                 log_debug('RENAMED {0}'.format(old_roms_file_json.getOriginalPath()))
@@ -8215,7 +8218,18 @@ class Main:
             else:
                 kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
                 return
-            path_assets = 'not coded yet'
+            log_verb('_command_export_launchers() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
+
+            # >> WORKAROUND Take titles path and remove trailing subdirectory.
+            path_titles = launcher['path_title']
+            log_verb('_command_export_launchers() path_titles "{0}"'.format(path_titles))
+            (head, tail) = os.path.split(path_titles)
+            log_verb('_command_export_launchers() head        "{0}"'.format(head))
+            log_verb('_command_export_launchers() tail        "{0}"'.format(tail))
+            path_assets = head
+            log_verb('_command_export_launchers() path_assets "{0}"'.format(path_assets))
+
+            # >> Export Launcher
             str_list.append('<launcher>\n')
             str_list.append(XML_text('name', launcher['m_name']))
             str_list.append(XML_text('category', category_name))
@@ -8227,15 +8241,20 @@ class Main:
             str_list.append(XML_text('platform', launcher['platform']))
             str_list.append(XML_text('application', launcher['application']))
             str_list.append(XML_text('args', launcher['args']))
-            for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
+            if launcher['args_extra']:
+                for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
+            else:
+                str_list.append(XML_text('args_extra', ''))
             str_list.append(XML_text('rompath', launcher['rompath']))
             str_list.append(XML_text('romext', launcher['romext']))
-            str_list.append(XML_text('thumb', launcher['s_thumb']))
-            str_list.append(XML_text('fanart', launcher['s_fanart']))
-            str_list.append(XML_text('banner', launcher['s_banner']))
-            str_list.append(XML_text('flyer', launcher['s_flyer']))
-            str_list.append(XML_text('clearlogo', launcher['s_clearlogo']))
-            str_list.append(XML_text('trailer', launcher['s_trailer']))
+            # >> Assets not supported yet. Can be changed with the graphical interface.
+            # str_list.append(XML_text('thumb', launcher['s_thumb']))
+            # str_list.append(XML_text('fanart', launcher['s_fanart']))
+            # str_list.append(XML_text('banner', launcher['s_banner']))
+            # str_list.append(XML_text('flyer', launcher['s_flyer']))
+            # str_list.append(XML_text('clearlogo', launcher['s_clearlogo']))
+            # str_list.append(XML_text('trailer', launcher['s_trailer']))
+            # >> path_assets supported
             str_list.append(XML_text('path_assets', path_assets))
             str_list.append('</launcher>\n')
         str_list.append('</advanced_emulator_launcher_configuration>\n')
@@ -8255,7 +8274,7 @@ class Main:
             kodi_notify_warn('(IOError) Cannot write categories.xml file')
         log_verb('_command_export_launchers() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
         log_verb('_command_export_launchers() Exported  P "{0}"'.format(export_FN.getPath()))
-        kody_notify('Exported AEL Launchers configuration')
+        kodi_notify('Exported AEL Launchers configuration')
 
     #
     # Checks all databases and tries to update to newer version if possible
