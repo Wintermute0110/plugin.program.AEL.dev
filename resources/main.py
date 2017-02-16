@@ -4422,24 +4422,28 @@ class Main:
 
         # --- Edit artwork ---
         elif type == 1:
-            label2_thumb   = collection['s_thumb']   if collection['s_thumb']   else 'Not set'
-            label2_fanart  = collection['s_fanart']  if collection['s_fanart']  else 'Not set'
-            label2_banner  = collection['s_banner']  if collection['s_banner']  else 'Not set'
-            label2_poster  = collection['s_flyer']   if collection['s_flyer']   else 'Not set'
-            label2_trailer = collection['s_trailer'] if collection['s_trailer'] else 'Not set'
-            img_thumb      = collection['s_thumb']   if collection['s_thumb']   else 'DefaultAddonNone.png'
-            img_fanart     = collection['s_fanart']  if collection['s_fanart']  else 'DefaultAddonNone.png'
-            img_banner     = collection['s_banner']  if collection['s_banner']  else 'DefaultAddonNone.png'
-            img_flyer      = collection['s_flyer']   if collection['s_flyer']   else 'DefaultAddonNone.png'
-            img_trailer    = 'DefaultAddonVideo.png' if collection['s_trailer'] else 'DefaultAddonNone.png'
+            label2_thumb     = collection['s_thumb']     if collection['s_thumb']     else 'Not set'
+            label2_fanart    = collection['s_fanart']    if collection['s_fanart']    else 'Not set'
+            label2_banner    = collection['s_banner']    if collection['s_banner']    else 'Not set'
+            label2_poster    = collection['s_flyer']     if collection['s_flyer']     else 'Not set'
+            label2_clearlogo = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'
+            label2_trailer   = collection['s_trailer']   if collection['s_trailer']   else 'Not set'
+            img_thumb        = collection['s_thumb']     if collection['s_thumb']     else 'DefaultAddonNone.png'
+            img_fanart       = collection['s_fanart']    if collection['s_fanart']    else 'DefaultAddonNone.png'
+            img_banner       = collection['s_banner']    if collection['s_banner']    else 'DefaultAddonNone.png'
+            img_flyer        = collection['s_flyer']     if collection['s_flyer']     else 'DefaultAddonNone.png'
+            img_clearlogo    = collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'
+            img_trailer      = 'DefaultAddonVideo.png'   if collection['s_trailer']   else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,   'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,  'icon' : img_fanart},
-                {'name' : 'Edit Banner...',       'label2' : label2_banner,  'icon' : img_banner},
-                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,  'icon' : img_flyer},
-                {'name' : 'Edit Trailer...',      'label2' : label2_trailer, 'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,     'icon' : img_thumb},
+                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner...',       'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,    'icon' : img_flyer},
+                {'name' : 'Edit Clearlogo...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Trailer...',      'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Collection Assets/Artwork', img_list)
+            if type2 < 0: return
             if type2 == 0:
                 if not self._gui_edit_asset(KIND_COLLECTION, ASSET_THUMB, collection): return
             elif type2 == 1:
@@ -4449,30 +4453,41 @@ class Main:
             elif type2 == 3:
                 if not self._gui_edit_asset(KIND_COLLECTION, ASSET_FLYER, collection): return
             elif type2 == 4:
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_CLEARLOGO, category): return
+            elif type2 == 5:
                 if not self._gui_edit_asset(KIND_COLLECTION, ASSET_TRAILER, collection): return
-            elif type2 < 0: return
 
         # --- Change default artwork ---
         elif type == 2:
-            asset_thumb_srt  = assets_get_asset_name_str(collection['default_thumb'])
-            asset_fanart_srt = assets_get_asset_name_str(collection['default_fanart'])
-            asset_banner_srt = assets_get_asset_name_str(collection['default_banner'])
-            asset_poster_srt = assets_get_asset_name_str(collection['default_poster'])
-            label2_thumb     = collection[collection['default_thumb']]  if collection[collection['default_thumb']]  else 'Not set'
-            label2_fanart    = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'Not set'
-            label2_banner    = collection[collection['default_banner']] if collection[collection['default_banner']] else 'Not set'
-            label2_poster    = collection[collection['default_poster']] if collection[collection['default_poster']] else 'Not set'
-            img_thumb        = collection[collection['default_thumb']]  if collection[collection['default_thumb']]  else 'DefaultAddonNone.png'
-            img_fanart       = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'DefaultAddonNone.png'
-            img_banner       = collection[collection['default_banner']] if collection[collection['default_banner']] else 'DefaultAddonNone.png'
-            img_poster       = collection[collection['default_poster']] if collection[collection['default_poster']] else 'DefaultAddonNone.png'
+            asset_thumb_srt     = assets_get_asset_name_str(collection['default_thumb'])
+            asset_fanart_srt    = assets_get_asset_name_str(collection['default_fanart'])
+            asset_banner_srt    = assets_get_asset_name_str(collection['default_banner'])
+            asset_poster_srt    = assets_get_asset_name_str(collection['default_poster'])
+            asset_clearlogo_srt = assets_get_asset_name_str(collection['default_clearlogo'])
+            label2_thumb        = collection[collection['default_thumb']]     if collection[collection['default_thumb']]     else 'Not set'
+            label2_fanart       = collection[collection['default_fanart']]    if collection[collection['default_fanart']]    else 'Not set'
+            label2_banner       = collection[collection['default_banner']]    if collection[collection['default_banner']]    else 'Not set'
+            label2_poster       = collection[collection['default_poster']]    if collection[collection['default_poster']]    else 'Not set'
+            label2_clearlogo    = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'Not set'
+            img_thumb           = collection[collection['default_thumb']]     if collection[collection['default_thumb']]     else 'DefaultAddonNone.png'
+            img_fanart          = collection[collection['default_fanart']]    if collection[collection['default_fanart']]    else 'DefaultAddonNone.png'
+            img_banner          = collection[collection['default_banner']]    if collection[collection['default_banner']]    else 'DefaultAddonNone.png'
+            img_poster          = collection[collection['default_poster']]    if collection[collection['default_poster']]    else 'DefaultAddonNone.png'
+            img_clearlogo       = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   'label2' : label2_thumb,  'icon' : img_thumb},
-                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt), 'label2' : label2_fanart, 'icon' : img_fanart},
-                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt), 'label2' : label2_banner, 'icon' : img_banner},
-                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt), 'label2' : label2_poster, 'icon' : img_poster}
+                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),
+                 'label2' : label2_thumb,  'icon' : img_thumb},
+                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt),
+                 'label2' : label2_fanart, 'icon' : img_fanart},
+                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt),
+                 'label2' : label2_banner, 'icon' : img_banner},
+                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt),
+                 'label2' : label2_poster, 'icon' : img_poster},
+                {'name' : 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_srt), 
+                 'label2' : label2_clearlogo, 'icon' : img_clearlogo}
             ]
             type2 = gui_show_image_select('Edit Collection default Assets/Artwork', img_list)
+            if type2 < 0: return
 
             Category_asset_img_list = [
                 {'name'   : 'Thumb',
@@ -4486,7 +4501,10 @@ class Main:
                  'icon'   : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'},
                 {'name'   : 'Poster',
                  'label2' : collection['s_flyer'] if collection['s_flyer'] else 'Not set',
-                 'icon'   : collection['s_flyer'] if collection['s_flyer'] else 'DefaultAddonNone.png'}
+                 'icon'   : collection['s_flyer'] if collection['s_flyer'] else 'DefaultAddonNone.png'},
+                {'name'   : 'Clearlogo',
+                 'label2' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set',
+                 'icon'   : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'}
             ]
 
             if type2 == 0:
@@ -4505,7 +4523,10 @@ class Main:
                 type_s = gui_show_image_select('Choose default Asset for Poster', Category_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(collection, 'default_poster', type_s)
-            elif type2 < 0: return
+            elif type2 == 4:
+                type_s = gui_show_image_select('Choose default Asset for Clearlogo', Category_asset_img_list)
+                if type_s < 0: return
+                assets_choose_category_artwork(collection, 'default_clearlogo', type_s)
 
         # --- Save collection index and refresh view ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)

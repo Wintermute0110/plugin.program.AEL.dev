@@ -64,7 +64,7 @@ FEATURE  Edit clearlogos in Categories.
 
 FEATURE  Edit clearlogos in Launchers.
 
-WIP      Edit clearlogos in ROM Collections.
+FEATURE  Edit clearlogos in ROM Collections.
 
 WIP      Import/Export clearlogos in ROM Collections.
 
