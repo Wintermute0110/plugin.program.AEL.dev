@@ -62,7 +62,7 @@ FEATURE  Clearlogos in Categories, Launchers and ROM Collections.
 
 FEATURE  Edit clearlogos in Categories.
 
-WIP      Edit clearlogos in Launchers.
+FEATURE  Edit clearlogos in Launchers.
 
 WIP      Edit clearlogos in ROM Collections.
 

@@ -658,23 +658,32 @@ class Main:
         elif type == 2:
             category = self.categories[categoryID]
 
-            asset_thumb_srt  = assets_get_asset_name_str(category['default_thumb'])
-            asset_fanart_srt = assets_get_asset_name_str(category['default_fanart'])
-            asset_banner_srt = assets_get_asset_name_str(category['default_banner'])
-            asset_poster_srt = assets_get_asset_name_str(category['default_poster'])
-            label2_thumb     = category[category['default_thumb']]  if category[category['default_thumb']]  else 'Not set'
-            label2_fanart    = category[category['default_fanart']] if category[category['default_fanart']] else 'Not set'
-            label2_banner    = category[category['default_banner']] if category[category['default_banner']] else 'Not set'
-            label2_poster    = category[category['default_poster']] if category[category['default_poster']] else 'Not set'
-            img_thumb        = category[category['default_thumb']]  if category[category['default_thumb']]  else 'DefaultAddonNone.png'
-            img_fanart       = category[category['default_fanart']] if category[category['default_fanart']] else 'DefaultAddonNone.png'
-            img_banner       = category[category['default_banner']] if category[category['default_banner']] else 'DefaultAddonNone.png'
-            img_poster       = category[category['default_poster']] if category[category['default_poster']] else 'DefaultAddonNone.png'
+            asset_thumb_srt     = assets_get_asset_name_str(category['default_thumb'])
+            asset_fanart_srt    = assets_get_asset_name_str(category['default_fanart'])
+            asset_banner_srt    = assets_get_asset_name_str(category['default_banner'])
+            asset_poster_srt    = assets_get_asset_name_str(category['default_poster'])
+            asset_clearlogo_srt = assets_get_asset_name_str(category['default_clearlogo'])
+            label2_thumb        = category[category['default_thumb']]     if category[category['default_thumb']]     else 'Not set'
+            label2_fanart       = category[category['default_fanart']]    if category[category['default_fanart']]    else 'Not set'
+            label2_banner       = category[category['default_banner']]    if category[category['default_banner']]    else 'Not set'
+            label2_poster       = category[category['default_poster']]    if category[category['default_poster']]    else 'Not set'
+            label2_clearlogo    = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'Not set'
+            img_thumb           = category[category['default_thumb']]     if category[category['default_thumb']]     else 'DefaultAddonNone.png'
+            img_fanart          = category[category['default_fanart']]    if category[category['default_fanart']]    else 'DefaultAddonNone.png'
+            img_banner          = category[category['default_banner']]    if category[category['default_banner']]    else 'DefaultAddonNone.png'
+            img_poster          = category[category['default_poster']]    if category[category['default_poster']]    else 'DefaultAddonNone.png'
+            img_clearlogo       = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   'label2' : label2_thumb,  'icon' : img_thumb},
-                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt), 'label2' : label2_fanart, 'icon' : img_fanart},
-                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt), 'label2' : label2_banner, 'icon' : img_banner},
-                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt), 'label2' : label2_poster, 'icon' : img_poster}
+                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   
+                 'label2' : label2_thumb,  'icon' : img_thumb},
+                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt), 
+                 'label2' : label2_fanart, 'icon' : img_fanart},
+                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt), 
+                 'label2' : label2_banner, 'icon' : img_banner},
+                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt), 
+                 'label2' : label2_poster, 'icon' : img_poster},
+                {'name' : 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_srt), 
+                 'label2' : label2_clearlogo, 'icon' : img_clearlogo}
             ]
             type2 = gui_show_image_select('Edit Category default Assets/Artwork', img_list)
             if type2 < 0: return
@@ -691,7 +700,10 @@ class Main:
                  'icon'   : category['s_banner'] if category['s_banner'] else 'DefaultAddonNone.png'},
                 {'name'   : 'Poster',
                  'label2' : category['s_flyer'] if category['s_flyer'] else 'Not set',
-                 'icon'   : category['s_flyer'] if category['s_flyer'] else 'DefaultAddonNone.png'}
+                 'icon'   : category['s_flyer'] if category['s_flyer'] else 'DefaultAddonNone.png'},
+                {'name'   : 'Clearlogo',
+                 'label2' : category['s_clearlogo'] if category['s_clearlogo'] else 'Not set',
+                 'icon'   : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'}
             ]
 
             if type2 == 0:
@@ -710,6 +722,10 @@ class Main:
                 type_s = gui_show_image_select('Choose default Asset for Poster', Category_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_poster', type_s)
+            elif type2 == 4:
+                type_s = gui_show_image_select('Choose default Asset for Clearlogo', Category_asset_img_list)
+                if type_s < 0: return
+                assets_choose_category_artwork(category, 'default_clearlogo', type_s)
 
         # --- Category status ---
         elif type == 3:
@@ -1154,24 +1170,28 @@ class Main:
         if type == type_nb:
             launcher = self.launchers[launcherID]
 
-            label2_thumb   = launcher['s_thumb']     if launcher['s_thumb']   else 'Not set'
-            label2_fanart  = launcher['s_fanart']    if launcher['s_fanart']  else 'Not set'
-            label2_banner  = launcher['s_banner']    if launcher['s_banner']  else 'Not set'
-            label2_poster  = launcher['s_flyer']     if launcher['s_flyer']   else 'Not set'
-            label2_trailer = launcher['s_trailer']   if launcher['s_trailer'] else 'Not set'
-            img_thumb      = launcher['s_thumb']     if launcher['s_thumb']   else 'DefaultAddonNone.png'
-            img_fanart     = launcher['s_fanart']    if launcher['s_fanart']  else 'DefaultAddonNone.png'
-            img_banner     = launcher['s_banner']    if launcher['s_banner']  else 'DefaultAddonNone.png'
-            img_flyer      = launcher['s_flyer']     if launcher['s_flyer']   else 'DefaultAddonNone.png'
-            img_trailer    = 'DefaultAddonVideo.png' if launcher['s_trailer'] else 'DefaultAddonNone.png'
+            label2_thumb     = launcher['s_thumb']     if launcher['s_thumb']     else 'Not set'
+            label2_fanart    = launcher['s_fanart']    if launcher['s_fanart']    else 'Not set'
+            label2_banner    = launcher['s_banner']    if launcher['s_banner']    else 'Not set'
+            label2_poster    = launcher['s_flyer']     if launcher['s_flyer']     else 'Not set'
+            label2_clearlogo = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'Not set'
+            label2_trailer   = launcher['s_trailer']   if launcher['s_trailer']   else 'Not set'
+            img_thumb        = launcher['s_thumb']     if launcher['s_thumb']     else 'DefaultAddonNone.png'
+            img_fanart       = launcher['s_fanart']    if launcher['s_fanart']    else 'DefaultAddonNone.png'
+            img_banner       = launcher['s_banner']    if launcher['s_banner']    else 'DefaultAddonNone.png'
+            img_flyer        = launcher['s_flyer']     if launcher['s_flyer']     else 'DefaultAddonNone.png'
+            img_clearlogo    = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'
+            img_trailer      = 'DefaultAddonVideo.png' if launcher['s_trailer']   else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,   'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,  'icon' : img_fanart},
-                {'name' : 'Edit Banner...',       'label2' : label2_banner,  'icon' : img_banner},
-                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,  'icon' : img_flyer},
-                {'name' : 'Edit Trailer...',      'label2' : label2_trailer, 'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,     'icon' : img_thumb},
+                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner...',       'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,    'icon' : img_flyer},
+                {'name' : 'Edit Clearlogo...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Trailer...',      'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Launcher Assets/Artwork', img_list)
+            if type2 < 0: return
 
             # --- Edit Assets ---
             # >> _gui_edit_asset() returns True if image was changed
@@ -1185,35 +1205,44 @@ class Main:
             elif type2 == 3:
                 if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_FLYER, launcher): return
             elif type2 == 4:
+                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_CLEARLOGO, launcher): return
+            elif type2 == 5:
                 if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_TRAILER, launcher): return
-            # >> User canceled select dialog
-            elif type2 < 0: return
 
         # --- Choose default thumb/fanart/banner/poster ---
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
 
-            asset_thumb_srt  = assets_get_asset_name_str(launcher['default_thumb'])
-            asset_fanart_srt = assets_get_asset_name_str(launcher['default_fanart'])
-            asset_banner_srt = assets_get_asset_name_str(launcher['default_banner'])
-            asset_poster_srt = assets_get_asset_name_str(launcher['default_poster'])
-            label2_thumb     = launcher[launcher['default_thumb']]  if launcher[launcher['default_thumb']]  else 'Not set'
-            label2_fanart    = launcher[launcher['default_fanart']] if launcher[launcher['default_fanart']] else 'Not set'
-            label2_banner    = launcher[launcher['default_banner']] if launcher[launcher['default_banner']] else 'Not set'
-            label2_poster    = launcher[launcher['default_poster']] if launcher[launcher['default_poster']] else 'Not set'
-            img_thumb        = launcher[launcher['default_thumb']]  if launcher[launcher['default_thumb']]  else 'DefaultAddonNone.png'
-            img_fanart       = launcher[launcher['default_fanart']] if launcher[launcher['default_fanart']] else 'DefaultAddonNone.png'
-            img_banner       = launcher[launcher['default_banner']] if launcher[launcher['default_banner']] else 'DefaultAddonNone.png'
-            img_poster       = launcher[launcher['default_poster']] if launcher[launcher['default_poster']] else 'DefaultAddonNone.png'
-
+            asset_thumb_srt     = assets_get_asset_name_str(launcher['default_thumb'])
+            asset_fanart_srt    = assets_get_asset_name_str(launcher['default_fanart'])
+            asset_banner_srt    = assets_get_asset_name_str(launcher['default_banner'])
+            asset_poster_srt    = assets_get_asset_name_str(launcher['default_poster'])
+            asset_clearlogo_srt = assets_get_asset_name_str(launcher['default_clearlogo'])
+            label2_thumb        = launcher[launcher['default_thumb']]     if launcher[launcher['default_thumb']]     else 'Not set'
+            label2_fanart       = launcher[launcher['default_fanart']]    if launcher[launcher['default_fanart']]    else 'Not set'
+            label2_banner       = launcher[launcher['default_banner']]    if launcher[launcher['default_banner']]    else 'Not set'
+            label2_poster       = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'Not set'
+            label2_clearlogo    = launcher[launcher['default_clearlogo']] if launcher[launcher['default_clearlogo']] else 'Not set'
+            img_thumb           = launcher[launcher['default_thumb']]     if launcher[launcher['default_thumb']]     else 'DefaultAddonNone.png'
+            img_fanart          = launcher[launcher['default_fanart']]    if launcher[launcher['default_fanart']]    else 'DefaultAddonNone.png'
+            img_banner          = launcher[launcher['default_banner']]    if launcher[launcher['default_banner']]    else 'DefaultAddonNone.png'
+            img_poster          = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'DefaultAddonNone.png'
+            img_clearlogo       = launcher[launcher['default_clearlogo']] if launcher[launcher['default_clearlogo']] else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   'label2' : label2_thumb,  'icon' : img_thumb},
-                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt), 'label2' : label2_fanart, 'icon' : img_fanart},
-                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt), 'label2' : label2_banner, 'icon' : img_banner},
-                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt), 'label2' : label2_poster, 'icon' : img_poster}
+                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   
+                 'label2' : label2_thumb,  'icon' : img_thumb},
+                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt),
+                 'label2' : label2_fanart, 'icon' : img_fanart},
+                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt),
+                 'label2' : label2_banner, 'icon' : img_banner},
+                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt),
+                 'label2' : label2_poster, 'icon' : img_poster},
+                {'name' : 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_srt), 
+                 'label2' : label2_clearlogo, 'icon' : img_clearlogo}
             ]
             type2 = gui_show_image_select('Edit Launcher default Assets/Artwork', img_list)
+            if type2 < 0: return
 
             Launcher_asset_img_list = [
                 {'name'   : 'Thumb',
@@ -1227,31 +1256,32 @@ class Main:
                  'icon'   : launcher['s_banner'] if launcher['s_banner'] else 'DefaultAddonNone.png'},
                 {'name'   : 'Poster',
                  'label2' : launcher['s_flyer'] if launcher['s_flyer'] else 'Not set',
-                 'icon'   : launcher['s_flyer'] if launcher['s_flyer'] else 'DefaultAddonNone.png'}
+                 'icon'   : launcher['s_flyer'] if launcher['s_flyer'] else 'DefaultAddonNone.png'},
+                {'name'   : 'Clearlogo',
+                 'label2' : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'Not set',
+                 'icon'   : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'}
             ]
 
             if type2 == 0:
                 type_s = gui_show_image_select('Choose default Asset for Thumb', Launcher_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_thumb', type_s)
-
             elif type2 == 1:
                 type_s = gui_show_image_select('Choose default Asset for Fanart', Launcher_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_fanart', type_s)
-
             elif type2 == 2:
                 type_s = gui_show_image_select('Choose default Asset for Banner', Launcher_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_banner', type_s)
-
             elif type2 == 3:
                 type_s = gui_show_image_select('Choose default Asset for Poster', Launcher_asset_img_list)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_poster', type_s)
-
-            # >> User canceled select dialog
-            elif type2 < 0: return
+            elif type2 == 4:
+                type_s = gui_show_image_select('Choose default Asset for Clearlogo', Launcher_asset_img_list)
+                if type_s < 0: return
+                assets_choose_category_artwork(launcher, 'default_clearlogo', type_s)
 
         # --- Change launcher's Category ---
         type_nb = type_nb + 1
