@@ -7947,7 +7947,7 @@ class Main:
                     xml_text = root_child.text if root_child.text is not None else ''
                     xml_text = text_unescape_XML(xml_text)
                     xml_tag  = root_child.tag
-                    if __debug_xml_parser: log_debug('"{0}" --> "{1}"'.format(xml_tag, xml_text))
+                    if __debug_xml_parser: log_debug('"{0:<11s}" --> "{1}"'.format(xml_tag, xml_text))
 
                     # >> Transform list datatype
                     if xml_tag == 'args_extra': launcher[xml_tag].append(xml_text)
@@ -7961,28 +7961,124 @@ class Main:
         # B) If category does not exist create a new one.
         # C) Launchers are matched by name. If launcher name not found then create a new launcherID.
         for i_launcher in imported_launchers_list:
-            log_info('Processing launcher "{0}"'.format(i_launcher['name']))
+            log_info('Processing Launcher "{0}"'.format(i_launcher['name']))
             log_info('      with Category "{0}"'.format(i_launcher['category']))
-            s_category = self._misc_search_category_by_name(i_launcher['category'])
-            s_launcher = self._misc_search_launcher_by_name(i_launcher['name'])
-            log_debug('s_category = "{0}"'.format(s_category))
+            (s_category, s_launcher) = self._misc_search_category_and_launcher_by_name(i_launcher['category'], i_launcher['name'])
             log_debug('s_launcher = "{0}"'.format(s_launcher))
+            log_debug('s_category = "{0}"'.format(s_category))
             
+            # Options
+            # A) Category not found. This implies launcher not found.
+            # B) Category found and Launcher not found.
+            # C) Category and Launcher found.
             # >> If category not found then create a new one for this imported launcher
-            # if not s_category:
+            if not s_category:
+                # >> Create category AND launcher and import.
+                kodi_dialog_OK('Non existing category not coded yet.')
+                return
                 
-            # >> 
-            
+            elif s_category and not s_launcher:
+                # >> Create new launcher inside existing category and import launcher.
+                kodi_dialog_OK('Existing category and non existing launcher not coded yet.')
+                return
 
-    def _misc_search_category_by_name(self, cat_name):
+            else:
+                # >> Both category and launcher exists (by name). Overwrite?
+                cat_name = i_launcher['category'] if i_launcher['category'] != VCATEGORY_ADDONROOT_ID else 'Root Category'
+                ret = kodi_dialog_yesno('Launcher {0} in Category {1} '.format(i_launcher['name'], cat_name) +
+                                        'found in AEL database. Overwrite?')
+                if ret < 1: continue
+
+                # >> Import launcher. Only import fields that are not empty strings.
+                # --- Metadata ---
+                if i_launcher['name']:
+                    self.launchers[s_launcher]['m_name'] = i_launcher['name']
+                    log_debug('Imported m_name      = "{0}"'.format(i_launcher['name']))
+                if i_launcher['year']:
+                    self.launchers[s_launcher]['m_year'] = i_launcher['year']
+                    log_debug('Imported m_year      = "{0}"'.format(i_launcher['name']))
+                if i_launcher['genre']:
+                    self.launchers[s_launcher]['m_genre'] = i_launcher['genre']
+                    log_debug('Imported m_genre     = "{0}"'.format(i_launcher['name']))
+                if i_launcher['studio']:
+                    self.launchers[s_launcher]['m_studio'] = i_launcher['studio']
+                    log_debug('Imported m_studio    = "{0}"'.format(i_launcher['name']))
+                if i_launcher['rating']:
+                    self.launchers[s_launcher]['m_rating'] = i_launcher['rating']
+                    log_debug('Imported m_rating    = "{0}"'.format(i_launcher['name']))
+                if i_launcher['plot']:
+                    self.launchers[s_launcher]['m_plot'] = i_launcher['plot']
+                    log_debug('Imported m_plot      = "{0}"'.format(i_launcher['name']))
+
+                # --- Launcher stuff ---
+                if i_launcher['platform']:
+                    # >> If platform cannot be found set to Unknown
+                    if i_launcher['platform'] in AEL_platform_list:
+                        log_debug('Platform name recognised')
+                        platform = i_launcher['platform']
+                    else:
+                        log_debug('Unrecognised platform name "{0}". Setting to Unknown'.format(i_launcher['platform']))
+                        platform = 'Unknown'
+                    self.launchers[s_launcher]['platform'] = platform
+                    log_debug('Imported platform    = "{0}"'.format(platform))
+                if i_launcher['application']:
+                    self.launchers[s_launcher]['application'] = i_launcher['application']
+                    log_debug('Imported application = "{0}"'.format(i_launcher['application']))
+                if i_launcher['args']:
+                    self.launchers[s_launcher]['args']        = i_launcher['args']
+                    log_debug('Imported args        = "{0}"'.format(i_launcher['args']))
+                # >> For every args_extra item add one entry to the list
+                if i_launcher['args_extra']:
+                    for args in i_launcher['args_extra']:
+                        self.launchers[s_launcher]['args_extra'].append(args)
+                        log_debug('Imported args_extra  = "{0}"'.format(args))
+                if i_launcher['rompath']:
+                    self.launchers[s_launcher]['rompath'] = i_launcher['rompath']
+                    log_debug('Imported rompath     = "{0}"'.format(i_launcher['rompath']))
+                if i_launcher['romext']:
+                    self.launchers[s_launcher]['romext'] = i_launcher['romext']
+                    log_debug('Imported romext      = "{0}"'.format(i_launcher['romext']))
+
+                # --- Assets ---
+                # self.launchers[s_launcher]['s_thumb']     = i_launcher['thumb']
+                # self.launchers[s_launcher]['s_fanart']    = i_launcher['fanart']
+                # self.launchers[s_launcher]['s_banner']    = i_launcher['banner']
+                # self.launchers[s_launcher]['s_flyer']     = i_launcher['flyer']
+                # self.launchers[s_launcher]['s_clearlogo'] = i_launcher['clearlogo']
+                # self.launchers[s_launcher]['s_trailer']   = i_launcher['trailer']
+
+                # self.launchers[s_launcher]['path_title'] = i_launcher['path_assets']
+                # self.launchers[s_launcher]['path_snap']  = i_launcher['path_assets']
+                # ...
+
+                # >> Name has changed. Regenerate roms_base_noext and rename old one if necessary.
+                
+        # >> Save Categories/Launchers
+        kody_notify('Imported AEL Launcher/s configuration')
+
+    def _misc_search_category_and_launcher_by_name(self, cat_name, laun_name):
         s_category = None
-        for categoryID in self.categories:
-            category = self.categories[categoryID]
-            if cat_name == category['m_name']:
-                s_category = category['id']
-                return s_category
+        if cat_name == VCATEGORY_ADDONROOT_ID: s_category = VCATEGORY_ADDONROOT_ID
+        else:
+            for categoryID in self.categories:
+                category = self.categories[categoryID]
+                if cat_name == category['m_name']:
+                    s_category = category['id']
+                    break
 
-        return s_category
+        # >> If the category was found then search the launcher inside that category.
+        if s_category:
+            s_launcher = None
+            for launcherID, launcher in self.launchers.iteritems():
+                if s_category != launcher['categoryID']: continue
+                if laun_name == launcher['m_name']:
+                    s_launcher = launcher['id']
+                    break
+        # >> If the category was not found then launcher does not exist.
+        else:
+            s_launcher = None
+
+        return (s_category, s_launcher)
 
     def _misc_search_launcher_by_name(self, launcher_name):
         s_launcher = None
@@ -8014,7 +8110,13 @@ class Main:
         for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             # >> Data which is not string must be converted to string
             launcher = self.launchers[launcherID]
-            category_name = self.categories[self.launchers['categoryID']]['m_name']
+            if launcher['categoryID'] in self.categories:
+                category_name = self.categories[launcher['categoryID']]['m_name']
+            elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+                category_name = VCATEGORY_ADDONROOT_ID
+            else:
+                kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
+                return
             path_assets = 'not coded yet'
             str_list.append('<launcher>\n')
             str_list.append(XML_text('name', launcher['m_name']))
@@ -8055,6 +8157,7 @@ class Main:
             kodi_notify_warn('(IOError) Cannot write categories.xml file')
         log_verb('_command_export_launchers() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
         log_verb('_command_export_launchers() Exported  P "{0}"'.format(export_FN.getPath()))
+        kody_notify('Exported AEL Launchers configuration')
 
     #
     # Checks all databases and tries to update to newer version if possible
