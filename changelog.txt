@@ -32,7 +32,8 @@ WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of th
 
 [B]Advanced Emulator Launcher | version 0.9.6 | XX February 2017[/B]
 
-PARTIAL  Import and Export of Launchers configurations. Will be very useful for Android users.
+FEATURE  Import and Export of Launchers configurations. Will be very useful especially for 
+         Android users.
 
 FEATURE  Use a Window property to let skins know wheter a launcher OR ROMs are being rendered.
          Set xbmcgui.Window(10001).setProperty('AEL_Content', 'launchers')
