@@ -66,8 +66,6 @@ FEATURE  Edit clearlogos in Launchers.
 
 FEATURE  Edit clearlogos in ROM Collections.
 
-WIP      Import/Export clearlogos in ROM Collections.
-
 FEATURE  Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
@@ -84,11 +82,11 @@ WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires ne
 FEATURE  Add nplayers metadata field to ROMs. Billyc999 database has nplayers NFO.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2407055#pid2407055
 
-WIP      Edit nplayers in ROMs.
+FEATURE  Edit nplayers in ROMs.
          
 FEATURE  Add ESRB/MPAA/PEGI rating? >> User ESRB, new metadata field esrb in ROMs.
 
-WIP      Edit ESRB in ROMs.
+FEATURE  Edit ESRB in ROMs.
 
 FEATURE  Support for multidisc systems. Have a look to NOTES.md for more details about the AEL
          implementation.

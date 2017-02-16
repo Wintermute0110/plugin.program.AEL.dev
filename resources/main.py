@@ -1008,6 +1008,8 @@ class Main:
                          "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
                          "Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
                          "Edit Studio: '{0}'".format(self.launchers[launcherID]['m_studio']),
+                         "Edit NPlayers: '{0}'".format(self.launchers[launcherID]['m_nplayers']),
+                         "Edit ESRB rating: '{0}'".format(self.launchers[launcherID]['m_esrb']),
                          "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
                          "Edit Plot: '{0}'".format(plot_str),
                          'Import NFO file (default, {0})'.format(NFO_str),
@@ -1098,15 +1100,48 @@ class Main:
                 self.launchers[launcherID]['m_studio'] = keyboard.getText().decode('utf-8')
                 kodi_notify('Changed Launcher Studio')
 
-            # --- Edition of the launcher rating ---
+            # --- Edition of launcher NPlayers ---
             elif type2 == 5:
+                # >> Show a dialog select with the most used NPlayer entries, and have one option
+                # >> for manual entry.
+                np_idx = dialog.select('Edit Launcher NPlayers',
+                                      ['Not set', 'Manual entry', NPLAYERS_LIST])
+                if np_idx < 0: return
+
+                if np_idx == 0:
+                    self.launchers[launcherID]['m_nplayers'] = ''
+                    kodi_notify('Launcher NPlayers change to Not Set')
+                    return
+                elif np_idx == 1:
+                    # >> Manual entry. Open a text entry dialog.
+                    keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_nplayers'], 'Edit NPlayers')
+                    keyboard.doModal()
+                    if not keyboard.isConfirmed(): return
+                    self.launchers[launcherID]['m_nplayers'] = keyboard.getText().decode('utf-8')
+                    kodi_notify('Changed Launcher NPlayers')
+                else:
+                    list_idx = np_idx - 2
+                    self.launchers[launcherID]['m_nplayers'] = NPLAYERS_LIST[list_idx]
+                    kodi_notify('Changed Launcher NPlayers')
+
+            # --- Edition of launcher ESRB rating ---
+            elif type2 == 6:
+                # >> Show a dialog select with the available ratings
+                # >> Kodi Krypton: preselect current rating in select list
+                esrb_index = dialog.select('Edit Launcher ESRB rating', ESRB_LIST)
+                if esrb_index < 0: return
+                self.launchers[launcherID]['m_esrb'] = ESRB_LIST[esrb_index]
+                kodi_notify('Changed Launcher ESRB rating')
+
+            # --- Edition of the launcher rating ---
+            elif type2 == 7:
                 rating = dialog.select('Edit Launcher Rating',
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
                 # >> Rating not set, empty string
                 if rating == 0:
                     self.launchers[launcherID]['m_rating'] = ''
-                    kodi_notify('Launcher Rating Not Set')
+                    kodi_notify('Launcher Rating changed to Not Set')
                 elif rating >= 1 and rating <= 11:
                     self.launchers[launcherID]['m_rating'] = '{0}'.format(rating - 1)
                     kodi_notify('Changed Launcher Rating')
@@ -1115,7 +1150,7 @@ class Main:
                     return
 
             # --- Edit launcher description (plot) ---
-            elif type2 == 6:
+            elif type2 == 8:
                 keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_plot'], 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
@@ -1123,7 +1158,7 @@ class Main:
                 kodi_notify('Changed Launcher Plot')
 
             # --- Import launcher metadata from NFO file (automatic) ---
-            elif type2 == 7:
+            elif type2 == 9:
                 # >> Get NFO file name for launcher
                 # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
@@ -1132,7 +1167,7 @@ class Main:
                 kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Browse for NFO file ---
-            elif type2 == 8:
+            elif type2 == 10:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
                 if not NFO_file: return
                 NFO_FileName = FileName(NFO_file)
@@ -1143,7 +1178,7 @@ class Main:
                 kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Export launcher metadata to NFO file ---
-            elif type2 == 9:
+            elif type2 == 11:
                 NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
                 if not fs_export_launcher_NFO(NFO_FileName, self.launchers[launcherID]): return
                 # >> No need to save launchers
@@ -1151,9 +1186,9 @@ class Main:
                 return
 
             # --- Scrape launcher metadata ---
-            elif type2 >= 10:
+            elif type2 >= 12:
                 # --- Use the scraper chosen by user ---
-                scraper_index = type2 - 10
+                scraper_index = type2 - 12
                 scraper_obj   = scraper_obj_list[scraper_index]
                 log_debug('_command_edit_launcher() Scraper index {0}'.format(scraper_index))
                 log_debug('_command_edit_launcher() User chose scraper "{0}"'.format(scraper_obj.name))
