@@ -6430,7 +6430,7 @@ class Main:
             # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
 
             # >> New way of launching, uses subproces module. Also, save child process stdout.
-            with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                 retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
             log_info('_run_process() Process retcode = {0}'.format(retcode))
 
@@ -6442,7 +6442,7 @@ class Main:
             # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
             
             # >> New way.
-            with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                 retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
             log_info('_run_process() Process retcode = {0}'.format(retcode))
 
