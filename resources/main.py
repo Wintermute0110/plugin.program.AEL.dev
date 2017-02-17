@@ -5196,8 +5196,9 @@ class Main:
                 info_text += self._misc_print_string_Category(category)
 
             # --- Show information window ---
+            # textviewer WINDOW_DIALOG_TEXT_VIEWER 10147 DialogTextViewer.xml
             try:
-                xbmc.executebuiltin('ActivateWindow(10147)')
+                xbmc.executebuiltin('ActivateWindow(textviewer)')
                 window = xbmcgui.Window(10147)
                 window.setProperty('FontWidth', 'monospaced')
                 xbmc.sleep(100)
@@ -5205,7 +5206,7 @@ class Main:
                 window.getControl(5).setText(info_text)
             except:
                 log_error('_command_view_Launcher() Exception rendering INFO window')
-        
+
         elif selected_value == 1:
             # --- Standalone launchers do not have reports! ---
             if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
@@ -5265,7 +5266,7 @@ class Main:
 
             # --- Show information window ---
             try:
-                xbmc.executebuiltin('ActivateWindow(10147)')
+                xbmc.executebuiltin('ActivateWindow(textviewer)')
                 window = xbmcgui.Window(10147)
                 window.setProperty('FontWidth', 'monospaced')
                 xbmc.sleep(100)
@@ -5275,9 +5276,17 @@ class Main:
                 log_error('_command_view_Launcher_Report() Exception rendering INFO window')
 
         # --- View last execution output ---
-        # NOT available on Windows. see comments in _run_process()
+        # NOTE NOT available on Windows. See comments in _run_process()
         elif selected_value == 2:
-            # --- Read file ---
+            # --- Ckeck for errors and read file ---
+            if sys.platform == 'win32':
+                kodi_dialog_OK('This feature is not available on Windows.')
+                return
+
+            if not LAUNCH_LOG_FILE_PATH.exists():
+                kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
+                return
+
             info_text = ''
             with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
                 info_text = myfile.read()
@@ -5285,7 +5294,7 @@ class Main:
             # --- Show information window ---
             window_title = 'Launcher last execution stdout'
             try:
-                xbmc.executebuiltin('ActivateWindow(10147)')
+                xbmc.executebuiltin('ActivateWindow(textviewer)')
                 window = xbmcgui.Window(10147)
                 xbmc.sleep(100)
                 window.getControl(1).setLabel(window_title)
@@ -6350,7 +6359,8 @@ class Main:
         # >> Decompose arguments to call subprocess module
         arg_list  = shlex.split(arguments)
         exec_list = [application] + arg_list
-        log_debug('_run_process() arg_list = {0}'.format(arg_list))
+        log_debug('_run_process() arguments = "{0}"'.format(arguments))
+        log_debug('_run_process() arg_list  = {0}'.format(arg_list))
         log_debug('_run_process() exec_list = {0}'.format(exec_list))
 
         # >> Windoze
