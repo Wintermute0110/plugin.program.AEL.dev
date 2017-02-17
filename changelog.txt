@@ -12,6 +12,9 @@ WIP      Include databases for all supported platforms in AEL offline scraper.
 
 WIP      Have a setting to restrict ROMs displayed based on rating.
 
+WIP     Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
+        Copy remote ROMs for external launchers?
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX March 2017[/B]
 
@@ -28,6 +31,9 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
+
+WIP      Platform icons in AEL. Platform icons can be an icon of the console or gamepad.
+         EmulationStation has a lot of material that can be reused for AEL.
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | XX February 2017[/B]
