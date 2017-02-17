@@ -10,6 +10,9 @@
 # Original file from https://github.com/python/cpython/blob/2.7/Lib/subprocess.py
 # Commit f0739cb 25 days ago (on 17 Feb 2017)
 
+# subprocess27_hack.py seems to be not needed anymore. The hardcoded variable in subprocess24.py
+# can be modified as a function argument now.
+
 r"""Subprocesses with accessible I/O streams
 
 This module allows you to spawn processes, connect to their
