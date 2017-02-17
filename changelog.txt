@@ -70,14 +70,14 @@ FEATURE  Edit clearlogos in ROM Collections.
 FEATURE  Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
-WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
+FEATURE  Update launching mechanism. User Python subprocess module on all platforms and not the
          deprecated os.system(). Current patched subprocess_hack module is from Python 2.4. Current 
          Python version in Kodi is 2.7.
          os.system(), os.open(), etc. are deprecated, and the subprocess module should be used 
          instead for all platforms. A parser of arguments must be coded in order to use the 
          subprocess module.
 
-WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
+FEATURE  Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
          mechanism based on subprocess module. Have a look to AML for an implementation.
 
 FEATURE  Add nplayers metadata field to ROMs. Billyc999 database has nplayers NFO.

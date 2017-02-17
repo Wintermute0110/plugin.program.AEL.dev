@@ -19,14 +19,12 @@
 from __future__ import unicode_literals
 import sys, os, shutil, fnmatch, string, time, traceback
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
-import subprocess
 from collections import OrderedDict
 
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- Modules/packages in this plugin ---
-import subprocess_hack
 from disk_IO import *
 from net_IO import *
 from utils import *
@@ -5166,12 +5164,16 @@ class Main:
     # View Launcher command (Launcher context menu)
     #
     def _command_view_Launcher_menu(self, categoryID, launcherID):
+        size_stdout = 0
+        if LAUNCH_LOG_FILE_PATH.exists():
+            stat_stdout = LAUNCH_LOG_FILE_PATH.stat()
+            size_stdout = stat_stdout.st_size
+
         dialog = xbmcgui.Dialog()
         selected_value = dialog.select('View Launcher...', 
                                       ['View Launcher data', 
                                        'View Launcher report',
-                                       'View last execution output (stdout)', 
-                                       'View last execution error output (stderr)'])
+                                       'View last execution output (size {0})'.format(size_stdout)])
         if selected_value < 0: return
 
         # --- View launcher data ---
@@ -5268,11 +5270,24 @@ class Main:
             except:
                 log_error('_command_view_Launcher_Report() Exception rendering INFO window')
 
+        # --- View last execution output ---
+        # NOT available on Windows. see comments in _run_process()
         elif selected_value == 2:
-            kodi_dialog_OK('View stdout not implemented yet. Sorry.')
+            # --- Read file ---
+            info_text = ''
+            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
+                info_text = myfile.read()
 
-        elif selected_value == 3:
-            kodi_dialog_OK('View stderr not implemented yet. Sorry.')
+            # --- Show information window ---
+            window_title = 'Launcher last execution stdout'
+            try:
+                xbmc.executebuiltin('ActivateWindow(10147)')
+                window = xbmcgui.Window(10147)
+                xbmc.sleep(100)
+                window.getControl(1).setLabel(window_title)
+                window.getControl(5).setText(info_text)
+            except:
+                log_error('_command_view_Launcher_Report() Exception rendering INFO window')
 
     #
     # Show raw information about ROMs
@@ -6272,10 +6287,34 @@ class Main:
     # For standalone launchers romext is the extension of the application (only used in Windoze)
     #
     def _run_process(self, application, arguments, apppath, romext):
+        import shlex
+        import subprocess
+
         # >> Determine platform and launch application
         # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
 
+        # >> Decompose arguments to call subprocess module
+        arg_list  = shlex.split(arguments)
+        exec_list = [application] + arg_list
+        log_debug('_run_process() arg_list = {0}'.format(arg_list))
+        log_debug('_run_process() exec_list = {0}'.format(exec_list))
+
         # >> Windoze
+        # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
+        # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling 
+        # process is inherited by the new process. If the parameter is FALSE, the handles are not 
+        # inherited. Note that inherited handles have the same value and access rights as the original handles.
+        # See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
+        #
+        # Same behaviour can be achieved in current version of subprocess with close_fds.
+        # If close_fds is true, all file descriptors except 0, 1 and 2 will be closed before the 
+        # child process is executed. (Unix only). Or, on Windows, if close_fds is true then no handles 
+        # will be inherited by the child process. Note that on Windows, you cannot set close_fds to 
+        # true and also redirect the standard handles by setting stdin, stdout or stderr.
+        #
+        # If I keep old launcher behaviour in Windows (close_fds = Ture) then program output cannot
+        # be redirected to a file.
+        #
         if sys.platform == 'win32':
             app_ext = application.split('.')[-1]
             log_debug('_run_process() (Windows) application = "{0}"'.format(application))
@@ -6286,11 +6325,17 @@ class Main:
             # >> Standalone launcher where application is a LNK file
             if app_ext == 'lnk' or app_ext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK application')
-                os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
-            # >> ROM launchers where ROMs are LNK files
+                # os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
+                retcode = call('start "AEL" /b "{0}"'.format(application).encode('utf-8'), shell = True)
+                log_info('_run_process() (Windows) LNK app retcode = {0}'.format(retcode))
+
+            # >> ROM launcher where ROMs are LNK files
             elif romext == 'lnk' or romext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK ROM')
-                os.system('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'))
+                # os.system('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'))
+                retcode = call('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'), shell = True)
+                log_info('_run_process() (Windows) LNK ROM retcode = {0}'.format(retcode))
+
             else:
                 info = None
                 # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
@@ -6298,39 +6343,44 @@ class Main:
                 # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
                 if app_ext == 'bat' or app_ext == 'BAT':
                     log_debug('_run_process() (Windows) Launching BAT application')
-                    info = subprocess_hack.STARTUPINFO()
+                    info = subprocess.STARTUPINFO()
                     info.dwFlags = 1
                     info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
                 else:
                     log_debug('_run_process() (Windows) Launching regular application (not BAT)')
                 log_debug('_run_process() (Windows) Calling popen()')
-                pr = subprocess_hack.Popen('{0} {1}'.format(application, arguments).encode('utf-8'),
-                                           cwd = apppath.encode('utf-8'), startupinfo = info)
-                pr.wait()
+                # pr = subprocess.Popen('{0} {1}'.format(application, arguments).encode('utf-8'),
+                #                       cwd = apppath.encode('utf-8'), startupinfo = info, close_fds = True)
+                # pr.wait()
+                retcode = subprocess.call('{0} {1}'.format(application, arguments).encode('utf-8'),
+                                          cwd = apppath.encode('utf-8'), 
+                                          startupinfo = info, close_fds = True)
+                log_info('_run_process() Process retcode = {0}'.format(retcode))
 
         # >> Linux and Android
         elif sys.platform.startswith('linux'):
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
 
-            # >> Old way of launching child process
-            os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
+            # >> Old way of launching child process. os.system() is deprecated and should not
+            # >> be used anymore.
+            # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
 
             # >> New way of launching, uses subproces module. Also, save child process stdout.
-            # if arguments:
-            #     if arguments[0] == '"' and arguments[-1] == '"': arguments = arguments[1:-1]
-            #     with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
-            #         subprocess.call([application, arguments], stdout = f, stderr = f)
-            #         f.close()
-            # else:
-            #     with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
-            #         subprocess.call(application, stdout = f, stderr = f)
-            #         f.close()
+            with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+                retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
+            log_info('_run_process() Process retcode = {0}'.format(retcode))
 
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
 
         # >> OS X
         elif sys.platform.startswith('darwin'):
-            os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
+            # >> Old way
+            # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
+            
+            # >> New way.
+            with open(LAUNCH_LOG_FILE_PATH, 'w') as f:
+                retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
+            log_info('_run_process() Process retcode = {0}'.format(retcode))
 
         else:
             kodi_notify_warn('Cannot determine the running platform')
