@@ -9,6 +9,9 @@
 # Licensed to PSF under a Contributor Agreement.
 # See http://www.python.org/2.4/license for licensing details.
 
+# Original file from https://github.com/python/cpython/blob/2.4/Lib/subprocess.py
+# Commit 0cc3ea6 on 3 Mar 2008
+
 r"""subprocess - Subprocesses with accessible I/O streams
 
 This module allows you to spawn processes, connect to their
@@ -340,7 +343,6 @@ except that:
 
 """
 
-# -*- coding: UTF-8 -*-
 import sys
 mswindows = (sys.platform == "win32")
 
