@@ -2825,7 +2825,8 @@ class Main:
         listitem = xbmcgui.ListItem(collections_name)
         listitem.setInfo('video', {'title': collections_name,       'genre'  : 'AEL Collections',
                                    'plot' : 'AEL virtual category', 'overlay': 4 } )
-        listitem.setArt({'thumb' : collections_thumb, 'fanart' : collections_fanart, 'banner' : collections_banner, 'poster' : collections_flyer})
+        listitem.setArt({'thumb'  : collections_thumb,  'fanart' : collections_fanart, 
+                         'banner' : collections_banner, 'poster' : collections_flyer})
 
         commands = []
         commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION')))
@@ -5665,21 +5666,67 @@ class Main:
             kodi_dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
             return
 
+        # --- Make a big dictionary will all the ROMs ---
+        # Pass all_roms dictionary to the catalg create functions so this has not to be
+        # recomputed for every virtual launcher.
+        log_verb('_command_update_virtual_category_db_all() Creating list of all ROMs in all Launchers')
+        all_roms = {}
+        num_launchers = len(self.launchers)
+        i = 0
+        pDialog.create('Advanced Emulator Launcher', 'Making ROM list...')
+        for launcher_id in self.launchers:
+            # >> Update dialog
+            pDialog.update(i * 100 / num_launchers)
+            i += 1
+
+            # >> Get current launcher
+            launcher = self.launchers[launcher_id]
+            categoryID = launcher['categoryID']
+            if categoryID in self.categories:
+                category_name = self.categories[categoryID]['m_name']
+            elif categoryID == VCATEGORY_ADDONROOT_ID:
+                category_name = 'Root category'
+            else:
+                log_error('_command_update_virtual_category_db_all() Wrong categoryID = {0}'.format(categoryID))
+                kodi_dialog_OK('Wrong categoryID = {0}. Report this bug please.'.format(categoryID))
+                return
+
+            # >> If launcher is standalone skip
+            if launcher['rompath'] == '': continue
+
+            # >> Open launcher and add roms to the big list
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+
+            # >> Add additional fields to ROM to make a Favourites ROM
+            # >> Virtual categories/launchers are like Favourite ROMs that cannot be edited.
+            # >> NOTE roms is updated by assigment, dictionaries are mutable
+            fav_roms = {}
+            for rom_id in roms:
+                fav_rom = fs_get_Favourite_from_ROM(roms[rom_id], launcher)
+                # >> Add the category this ROM belongs to.
+                fav_rom['category_name'] = category_name
+                fav_roms[rom_id] = fav_rom
+
+            # >> Update dictionary
+            all_roms.update(fav_roms)
+        pDialog.update(100)
+        pDialog.close()
+
         # --- Update all virtual launchers ---
-        self._command_update_virtual_category_db(VCATEGORY_TITLE_ID)
-        self._command_update_virtual_category_db(VCATEGORY_YEARS_ID)
-        self._command_update_virtual_category_db(VCATEGORY_GENRE_ID)
-        self._command_update_virtual_category_db(VCATEGORY_STUDIO_ID)        
-        self._command_update_virtual_category_db(VCATEGORY_NPLAYERS_ID)
-        self._command_update_virtual_category_db(VCATEGORY_ESRB_ID)
-        self._command_update_virtual_category_db(VCATEGORY_RATING_ID)
-        self._command_update_virtual_category_db(VCATEGORY_CATEGORY_ID)
+        self._command_update_virtual_category_db(VCATEGORY_TITLE_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_YEARS_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_GENRE_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_STUDIO_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_NPLAYERS_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_ESRB_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_RATING_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_CATEGORY_ID, all_roms)
         kodi_notify('All virtual categories updated')
 
     #
     # Makes a virtual category database
     #
-    def _command_update_virtual_category_db(self, virtual_categoryID):
+    def _command_update_virtual_category_db(self, virtual_categoryID, all_roms_external = None):
         # --- Customise function depending on virtual category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
             log_info('_command_update_virtual_category_db() Updating Titles DB')
@@ -5763,50 +5810,54 @@ class Main:
         pDialog_canceled = False
 
         # --- Make a big dictionary will all the ROMs ---
-        log_verb('_command_update_virtual_category_db() Creating list of all ROMs in all Launchers')
-        all_roms = {}
-        num_launchers = len(self.launchers)
-        i = 0
-        pDialog.create('Advanced Emulator Launcher', 'Making ROM list...')
-        for launcher_id in self.launchers:
-            # >> Update dialog
-            pDialog.update(i * 100 / num_launchers)
-            i += 1
+        if all_roms_external:
+            log_verb('_command_update_virtual_category_db() Using cached all_roms dictionary')
+            all_roms = all_roms_external
+        else:
+            log_verb('_command_update_virtual_category_db() Creating list of all ROMs in all Launchers')
+            all_roms = {}
+            num_launchers = len(self.launchers)
+            i = 0
+            pDialog.create('Advanced Emulator Launcher', 'Making ROM list...')
+            for launcher_id in self.launchers:
+                # >> Update dialog
+                pDialog.update(i * 100 / num_launchers)
+                i += 1
 
-            # >> Get current launcher
-            launcher = self.launchers[launcher_id]
-            categoryID = launcher['categoryID']
-            if categoryID in self.categories:
-                category_name = self.categories[categoryID]['m_name']
-            elif categoryID == VCATEGORY_ADDONROOT_ID:
-                category_name = 'Root category'
-            else:
-                log_error('_command_update_virtual_category_db() Wrong categoryID = {0}'.format(categoryID))
-                kodi_dialog_OK('Wrong categoryID = {0}. Report this bug please.'.format(categoryID))
-                return
+                # >> Get current launcher
+                launcher = self.launchers[launcher_id]
+                categoryID = launcher['categoryID']
+                if categoryID in self.categories:
+                    category_name = self.categories[categoryID]['m_name']
+                elif categoryID == VCATEGORY_ADDONROOT_ID:
+                    category_name = 'Root category'
+                else:
+                    log_error('_command_update_virtual_category_db() Wrong categoryID = {0}'.format(categoryID))
+                    kodi_dialog_OK('Wrong categoryID = {0}. Report this bug please.'.format(categoryID))
+                    return
 
-            # >> If launcher is standalone skip
-            if launcher['rompath'] == '': continue
+                # >> If launcher is standalone skip
+                if launcher['rompath'] == '': continue
 
-            # >> Open launcher and add roms to the big list
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+                # >> Open launcher and add roms to the big list
+                roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
 
-            # >> Add additional fields to ROM to make a Favourites ROM
-            # >> Virtual categories/launchers are like Favourite ROMs that cannot be edited.
-            # >> NOTE roms is updated by assigment, dictionaries are mutable
-            fav_roms = {}
-            for rom_id in roms:
-                fav_rom = fs_get_Favourite_from_ROM(roms[rom_id], launcher)
-                # >> Add the category this ROM belongs to.
-                fav_rom['category_name'] = category_name
-                fav_roms[rom_id] = fav_rom
+                # >> Add additional fields to ROM to make a Favourites ROM
+                # >> Virtual categories/launchers are like Favourite ROMs that cannot be edited.
+                # >> NOTE roms is updated by assigment, dictionaries are mutable
+                fav_roms = {}
+                for rom_id in roms:
+                    fav_rom = fs_get_Favourite_from_ROM(roms[rom_id], launcher)
+                    # >> Add the category this ROM belongs to.
+                    fav_rom['category_name'] = category_name
+                    fav_roms[rom_id] = fav_rom
 
-            # >> Update dictionary
-            all_roms.update(fav_roms)
-        pDialog.update(100)
-        pDialog.close()
+                # >> Update dictionary
+                all_roms.update(fav_roms)
+            pDialog.update(100)
+            pDialog.close()
 
-        # --- Create a dictionary that with key the virtual category and value a dictionay of roms
+        # --- Create a dictionary with key the virtual category name and value a dictionay of roms
         #     belonging to that virtual category ---
         # TODO It would be nice to have a progress dialog here...
         log_verb('_command_update_virtual_category_db() Creating hashed database')
