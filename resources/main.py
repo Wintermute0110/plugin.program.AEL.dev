@@ -288,8 +288,6 @@ class Main:
             self._command_add_roms(args['launID'][0])
         elif command == 'EDIT_ROM':
             self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'DELETE_ROM':
-             self._command_remove_rom(args['catID'][0], args['launID'][0], args['romID'][0])
 
         # --- Launch ROM or standalone launcher ---
         elif command == 'LAUNCH_ROM':
@@ -330,19 +328,10 @@ class Main:
 
         # >> Shows info about categories/launchers/ROMs and reports
         elif command == 'VIEW':
-            catID  = args['catID'][0] # >> Mandatory
-            launID = args['launID'][0] if args['launID'][0] else ''
-            romID  = args['romID'][0]  if args['romID'][0]  else ''
+            catID  = args['catID'][0]                               # >> Mandatory
+            launID = args['launID'][0] if args['launID'][0] else '' # >> Optional
+            romID  = args['romID'][0]  if args['romID'][0]  else '' # >> Optional
             self._command_view_menu(catID, launID, romID)
-
-        elif command == 'VIEW_LAUNCHER_MENU':
-            self._command_view_Launcher_menu(args['catID'][0], args['launID'][0])
-        elif command == 'VIEW_ROM':
-            self._command_view_ROM(args['catID'][0], args['launID'][0], args['romID'][0])
-        elif command == 'VIEW_CATEGORY':
-            self._command_view_Category(args['catID'][0])
-        elif command == 'VIEW_COLLECTION':
-            self._command_view_Collection(args['catID'][0], args['launID'][0])
 
         # >> Update virtual categories databases
         elif command == 'UPDATE_VIRTUAL_CATEGORY':
@@ -1980,7 +1969,8 @@ class Main:
                 roms[collection_rom['id']] = collection_rom
         else:
             log_debug('_command_edit_rom() Editing ROM in Launcher')
-            roms_base_noext = self.launchers[launcherID]['roms_base_noext']
+            launcher = self.launchers[launcherID]
+            roms_base_noext = launcher['roms_base_noext']
             roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
 
         # --- Show a dialog with ROM editing options ---
@@ -1989,19 +1979,23 @@ class Main:
         dialog = xbmcgui.Dialog()
         if categoryID == VCATEGORY_FAVOURITES_ID:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
-                                ['Edit Metadata...', 'Edit Assets/Artwork...', finished_display,
-                                 'Advanced Modifications...',
-                                 'Manage Favourite ROM object...'])
+                                ['Edit Metadata ...', 'Edit Assets/Artwork ...', finished_display,
+                                 'Advanced Modifications ...',
+                                 'Delete Favourite ROM'
+                                 'Manage Favourite ROM object ...'])
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
-                                ['Edit Metadata...', 'Edit Assets/Artwork...', finished_display,
-                                 'Advanced Modifications...',
-                                 'Manage Collection ROM object...',
-                                 'Manage Collection ROM position...'])
+                                ['Edit Metadata ...', 'Edit Assets/Artwork ...', finished_display,
+                                 'Advanced Modifications ...',
+                                 'Delete Collection ROM',
+                                 'Manage Collection ROM object ...',
+                                 'Manage Collection ROM position ...'])
         else:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
-                                ['Edit Metadata...', 'Edit Assets/Artwork...', finished_display,
-                                 'Advanced Modifications...'])
+                                ['Edit Metadata ...', 'Edit Assets/Artwork ...', finished_display,
+                                 'Advanced Modifications ...',
+                                 'Delete ROM'])
+        if type < 0: return
 
         # --- Edit ROM metadata ---
         if type == 0:
@@ -2028,6 +2022,7 @@ class Main:
                          'Import metadata from NFO file...',
                          'Save metadata to NFO file']
             type2 = dialog.select('Modify ROM metadata', menu_list + scraper_menu_list)
+            if type2 < 0: return
 
             # --- Edit of the rom title ---
             if type2 == 0:
@@ -2165,9 +2160,6 @@ class Main:
                 # >> If this returns False there were no changes so no need to save ROMs JSON.
                 if not self._gui_scrap_rom_metadata(categoryID, launcherID, romID, roms, scraper_obj): return
 
-            # >> User canceled select dialog
-            elif type2 < 0: return
-
         # --- Edit Launcher Assets/Artwork ---
         elif type == 1:
             rom = roms[romID]
@@ -2288,8 +2280,27 @@ class Main:
                 if not keyboard.isConfirmed(): return
                 roms[romID]['altarg'] = keyboard.getText().decode('utf-8')
 
-        # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
+        # --- Delete ROM ---
         elif type == 4:
+            if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
+                log_info('_command_remove_rom() Deleting ROM from Favourites (id {0})'.format(romID))
+                msg_str = 'Are you sure you want to delete it from Favourites?'
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                log_info('_command_remove_rom() Deleting ROM from Collection (id {0})'.format(romID))
+                msg_str = 'Are you sure you want to delete it from Collection "{0}"?'.format(collection['m_name'])
+            else:
+                log_info('_command_remove_rom() Deleting ROM from Launcher (id {0})'.format(romID))
+                msg_str = 'Are you sure you want to delete it from Launcher "{0}"?'.format(launcher['m_name'])
+
+            # --- Confirm deletion ---
+            rom_name = roms[romID]['m_name']
+            ret = kodi_dialog_yesno('ROM "{0}". '.format(rom_name) + msg_str)
+            if not ret: return
+            roms.pop(romID)
+            kodi_notify('Deleted ROM {0}'.format(rom_name))
+
+        # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
+        elif type == 5:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Manage ROM object',
                                   ['Choose another parent ROM (launcher info only)...', # 0
@@ -2299,6 +2310,7 @@ class Main:
                                    'Copy assets/artwork from parent ROM',               # 4
                                    'Copy all from parent ROM',                          # 5
                                    'Manage default Assets/Artwork...'])
+            if type2 < 0: return
 
             # --- Choose another parent ROM ---
             if type2 == 0 or type2 == 1:
@@ -2497,9 +2509,6 @@ class Main:
                     assets_choose_category_ROM(rom, 'roms_default_clearlogo', type_s)
                 elif type3 < 0: return # User canceled select dialog
 
-            # --- User canceled select dialog ---
-            elif type2 < 0: return
-
         # --- Manage Collection ROM position (ONLY for Favourite/Collection ROMs) ---
         elif type == 5:
             dialog = xbmcgui.Dialog()
@@ -2507,6 +2516,7 @@ class Main:
                                   ['Choose Collection ROM order...',
                                    'Move Collection ROM up',
                                    'Move Collection ROM down'])
+            if type2 < 0: return
 
             # --- Choose ROM order ---
             if type2 == 0:
@@ -2612,14 +2622,8 @@ class Main:
                     new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
                 roms = new_roms
 
-            # --- User canceled select dialog ---
-            elif type2 < 0: return
-
-        # --- User canceled main select dialog ---
-        elif type < 0: return
-
         # --- Save ROMs or Favourites ROMs ---
-        # Always save if we reach this point of the function
+        # >> Always save if we reach this point of the function
         if launcherID == VLAUNCHER_FAVOURITES_ID:
             fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
@@ -2641,74 +2645,6 @@ class Main:
         # It seems that updating the container does more harm than good... specially when having many ROMs
         # By the way, what is the difference between Container.Refresh() and Container.Update()?
         kodi_refresh_container()
-
-    #
-    # Deletes a ROM from a launcher/Favourites/ROM Collection
-    #
-    def _command_remove_rom(self, categoryID, launcherID, romID):
-        if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            log_info('_command_remove_rom() Deleting ROM from Favourites (id {0})'.format(romID))
-            # --- Load Favourite ROMs ---
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            if not roms: return
-
-            # --- Confirm deletion ---
-            ret = kodi_dialog_yesno('ROM {0}. '.format(roms[romID]['m_name']) +
-                                    'Are you sure you want to delete it from Favourites?')
-            if not ret: return
-
-            # --- Delete ROM ---
-            roms.pop(romID)
-            fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
-            kodi_notify('Deleted ROM from Favourites')
-            # >> If Favourites is empty then go to addon root, if not refresh
-            kodi_refresh_container()
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_info('_command_remove_rom() Deleting ROM from Collection (id {0})'.format(romID))
-            # --- Load Collection index and roms ---
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-            if not collection_rom_list: return
-
-            # >> Find index of ROM to be deleted
-            rom_index = -1
-            for idx, rom in enumerate(collection_rom_list):
-                if rom['id'] == romID:
-                    rom_index = idx
-                    break
-            if rom_index < 0: return # ERROR, ROM not found in list
-
-            ret = kodi_dialog_yesno('Collection {0}, '.format(collection['name']) +
-                                    'ROM {0}. '.format(collection_rom_list[rom_index]['m_name']) +
-                                    'Are you sure you want to delete it from Collection {0}?'.format(collection['name']))
-            if not ret: return
-
-            del collection_rom_list[rom_index]
-            json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-            fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
-            kodi_notify('Deleted ROM from Collection')
-            kodi_refresh_container()
-        else:
-            log_info('_command_remove_rom() Deleting ROM from Launcher (id {0})'.format(romID))
-            launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
-            if not roms: return
-
-            ret = kodi_dialog_yesno('Launcher {0}, '.format(launcher['m_name']) +
-                                    'ROM {0}. '.format(roms[romID]['m_name']) +
-                                    'Are you sure you want to delete it from launcher?')
-            if not ret: return
-
-            roms.pop(romID)
-            roms_base_noext = launcher['roms_base_noext']
-            fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, launcher)
-            # >> Also save categories/launchers to update main timestamp and launcher timestamp
-            self.launchers[launcherID]['timestamp_launcher'] = time.time()
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_notify('Deleted ROM from launcher')
-            kodi_refresh_container()
 
     # ---------------------------------------------------------------------------------------------
     # Categories LisItem rendering
@@ -3520,14 +3456,12 @@ class Main:
         if categoryID == VCATEGORY_FAVOURITES_ID:
             commands.append(('View',                       self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
             commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
             commands.append(('Add ROM to Collection',      self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Favourites',  self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             commands.append(('View',                       self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
             commands.append(('Edit ROM in Collection',     self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM from Collection', self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
             commands.append(('Add ROM to AEL Favourites',  self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Collection',  self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Manage Collection ROMs',     self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
@@ -3544,7 +3478,6 @@ class Main:
         else:
             commands.append(('View',                      self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
             commands.append(('Edit ROM',                  self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM',                self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
             commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
             commands.append(('Add ROM to Collection',     self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
