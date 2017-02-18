@@ -12,8 +12,8 @@ WIP      Include databases for all supported platforms in AEL offline scraper.
 
 WIP      Have a setting to restrict ROMs displayed based on rating.
 
-WIP     Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
-        Copy remote ROMs for external launchers?
+WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
+         Copy remote ROMs for external launchers?
 
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX March 2017[/B]
@@ -36,6 +36,14 @@ WIP      Platform icons/clearlogos in AEL. Platform icons can be an icon of the 
          EmulationStation has a lot of material that can be reused for AEL.
 
 WIP      Edit multidisc ROMs.
+
+WIP      Support ERSB and NPlayers in offline scraper.
+
+WIP      Support ERSB and NPlayers in online scraper.
+
+WIP      Split Launcher report into statistics, metadata and asset reports.
+
+WIP      ROM scanner report.
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | XX February 2017[/B]
@@ -112,7 +120,7 @@ FEATURE  Support for multidisc systems. Have a look to NOTES.md for more details
 
          AEL will use a better implementation based on a ROM filename parser. See NOTES.md
 
-FEATURE  Delete ROM integrated in Edit ROM.
+FEATURE  Delete ROM context menu integrated in Edit ROM.
 
 FIX      Fixed crash when editing Collection ROM position.
 
