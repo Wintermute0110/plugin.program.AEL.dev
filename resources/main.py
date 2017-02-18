@@ -1981,7 +1981,7 @@ class Main:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
                                 ['Edit Metadata ...', 'Edit Assets/Artwork ...', finished_display,
                                  'Advanced Modifications ...',
-                                 'Delete Favourite ROM'
+                                 'Delete Favourite ROM',
                                  'Manage Favourite ROM object ...'])
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
