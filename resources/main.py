@@ -329,6 +329,12 @@ class Main:
                                                   args['search_type'][0], args['search_string'][0])
 
         # >> Shows info about categories/launchers/ROMs and reports
+        elif command == 'VIEW':
+            catID  = args['catID'][0] # >> Mandatory
+            launID = args['launID'][0] if args['launID'][0] else ''
+            romID  = args['romID'][0]  if args['romID'][0]  else ''
+            self._command_view_menu(catID, launID, romID)
+
         elif command == 'VIEW_LAUNCHER_MENU':
             self._command_view_Launcher_menu(args['catID'][0], args['launID'][0])
         elif command == 'VIEW_ROM':
@@ -3302,11 +3308,11 @@ class Main:
         rom_raw_name = rom['m_name']
         if categoryID == VCATEGORY_FAVOURITES_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
-            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
-            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             platform        = rom['platform']
 
             # --- Favourite status flag ---
@@ -3325,12 +3331,12 @@ class Main:
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
-            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
-            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform        = rom['platform']
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            platform       = rom['platform']
 
             # --- Favourite status flag ---
             if self.settings['display_fav_status']:
@@ -3348,21 +3354,21 @@ class Main:
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
         elif categoryID == VCATEGORY_RECENT_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
-            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
-            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform        = rom['platform']
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            platform       = rom['platform']
             rom_name = rom_raw_name
         elif categoryID == VCATEGORY_MOST_PLAYED_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
-            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
-            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform        = rom['platform']
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            platform       = rom['platform']
             # >> Render number of number the ROM has been launched
             if rom['launch_count'] == 1:
                 rom_name = '{0} [COLOR orange][{1} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
@@ -3373,12 +3379,12 @@ class Main:
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
              categoryID == VCATEGORY_CATEGORY_ID:
             kodi_def_thumb  = 'DefaultProgram.png'
-            thumb_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
-            thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform        = rom['platform']
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            platform       = rom['platform']
 
             # --- NoIntro status flag ---
             nstat = rom['nointro_status']
@@ -3407,19 +3413,19 @@ class Main:
             kodi_def_fanart = launcher['s_fanart']
             platform        = launcher['platform']
             if parent_launcher:
-                thumb_path      = kodi_def_thumb
-                thumb_fanart    = kodi_def_fanart
-                thumb_banner    = ''
-                thumb_poster    = ''
-                thumb_clearlogo = ''
-                # rom_name        = rom_raw_name
-                rom_name        = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(rom['num_clones_str'])
+                icon_path      = kodi_def_thumb
+                fanart_path    = kodi_def_fanart
+                banner_path    = ''
+                poster_path    = ''
+                clearlogo_path = ''
+                # rom_name       = rom_raw_name
+                rom_name       = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(rom['num_clones_str'])
             else:
-                thumb_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
-                thumb_fanart    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
-                thumb_banner    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
-                thumb_poster    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
-                thumb_clearlogo = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
+                icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
+                fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
+                banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
+                poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
+                clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
 
                 # --- NoIntro status flag ---
                 nstat = rom['nointro_status']
@@ -3480,8 +3486,8 @@ class Main:
                          'map'       : rom['s_map'] })
 
         # >> Kodi official artwork fields
-        listitem.setArt({'icon'   : thumb_path,   'fanart'    : thumb_fanart,
-                         'banner' : thumb_banner, 'clearlogo' : thumb_clearlogo, 'poster' : thumb_poster })
+        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 'banner' : banner_path,
+                         'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
         # --- ROM extrafanart ---
         # >> Build extrafanart dictionary
@@ -3512,38 +3518,37 @@ class Main:
         romID = rom['id']
         commands = []
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            commands.append(('View Favourite ROM data',         self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Favourites',          self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM from Favourites',      self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Favourites',       self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('Manage Favourite ROMs',           self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+            commands.append(('View',                       self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
+            commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Delete ROM from Favourites', self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to Collection',      self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+            commands.append(('Search ROMs in Favourites',  self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+            commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            commands.append(('View Collection ROM data',        self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Collection',          self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM from Collection',      self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Collection',       self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('Manage Collection ROMs',          self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+            commands.append(('View',                       self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
+            commands.append(('Edit ROM in Collection',     self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Delete ROM from Collection', self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to AEL Favourites',  self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
+            commands.append(('Search ROMs in Collection',  self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+            commands.append(('Manage Collection ROMs',     self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_RECENT_ID or categoryID == VCATEGORY_MOST_PLAYED_ID:
-            commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
+            commands.append(('View ROM data', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID  or \
              categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID   or \
              categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
-            commands.append(('View Virtual Launcher ROM data',  self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
+            commands.append(('View',                            self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
             commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
             commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
         else:
-            commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Edit ROM',                        self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Delete ROM',                      self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Launcher',         self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('View Launcher',                   self._misc_url_RunPlugin('VIEW_LAUNCHER_MENU', categoryID, launcherID) ))
-            commands.append(('Edit Launcher',                   self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
+            commands.append(('View',                      self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
+            commands.append(('Edit ROM',                  self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
+            commands.append(('Delete ROM',                self._misc_url_RunPlugin('DELETE_ROM',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
+            commands.append(('Add ROM to Collection',     self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+            commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+            commands.append(('Edit Launcher',             self._misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -5169,19 +5174,40 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
-    # View Launcher command (Launcher context menu)
+    # View all kinds of information
     #
-    def _command_view_Launcher_menu(self, categoryID, launcherID):
-        size_stdout = 0
+    def _command_view_menu(self, categoryID, launcherID, romID):
+        VIEW_CATEGORY = 100
+        VIEW_LAUNCHER = 200
+        VIEW_ROM      = 300
+
+        # >> Determine if we are in a cateogory, launcher or ROM
+        if   launcherID and     romID: view_type = VIEW_ROM
+        elif launcherID and not romID: view_type = VIEW_LAUNCHER
+        else:                          view_type = VIEW_CATEGORY
+        log_debug('_command_view_menu() view_type = {0}'.format(view_type))
+
+        # >> Build menu base on view_type
         if LAUNCH_LOG_FILE_PATH.exists():
             stat_stdout = LAUNCH_LOG_FILE_PATH.stat()
             size_stdout = stat_stdout.st_size
-
+            STD_status = '{0} bytes'.format(size_stdout)
+        else:
+            STD_status = 'not found'
+        if view_type == VIEW_CATEGORY:
+            d_list = ['View Category data',
+                      'View last execution output ({0})'.format(STD_status)]
+        elif view_type == VIEW_LAUNCHER:
+            
+            d_list = ['View Launcher data',
+                      'View Launcher report',
+                      'View last execution output ({0})'.format(STD_status)]
+        elif view_type == VIEW_ROM:
+            d_list = ['View ROM data',
+                      'View Launcher report',
+                      'View last execution output ({0})'.format(STD_status)]
         dialog = xbmcgui.Dialog()
-        selected_value = dialog.select('View Launcher...', 
-                                      ['View Launcher data', 
-                                       'View Launcher report',
-                                       'View last execution output (size {0})'.format(size_stdout)])
+        selected_value = dialog.select('View ...', d_list)
         if selected_value < 0: return
 
         # --- View launcher data ---
