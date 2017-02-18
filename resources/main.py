@@ -5682,6 +5682,8 @@ class Main:
         all_roms = {}
         num_launchers = len(self.launchers)
         i = 0
+        pDialog = xbmcgui.DialogProgress()
+        pDialog_canceled = False
         pDialog.create('Advanced Emulator Launcher', 'Making ROM list...')
         for launcher_id in self.launchers:
             # >> Update dialog
