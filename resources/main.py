@@ -1801,15 +1801,15 @@ class Main:
                                           ['Use Kodi Retroplayer',
                                            'Use Windows LNK launcher',
                                            'Choose launching application'])
+                    if answer < 0: return
                     if   answer == 0: launcher_type = LAUNCHER_RETROPLAYER
                     elif answer == 1: launcher_type = LAUNCHER_LNK
                     elif answer == 2: launcher_type = LAUNCHER_ROM
-                    else: return
                 else:
                     answer = kodi_dialog_yesno('Use Kodi Retroplayer in this launcher? '
                                                'Answer NO to choose a new launching application.')
-                    if not answer: launcher_type = LAUNCHER_RETROPLAYER
-                    else:          launcher_type = LAUNCHER_ROM
+                    if answer: launcher_type = LAUNCHER_RETROPLAYER
+                    else:      launcher_type = LAUNCHER_ROM
 
                 # >> Choose launching application
                 if launcher_type == LAUNCHER_RETROPLAYER:
