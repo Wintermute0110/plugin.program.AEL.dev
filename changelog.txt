@@ -32,8 +32,10 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
-WIP      Platform icons in AEL. Platform icons can be an icon of the console or gamepad.
+WIP      Platform icons/clearlogos in AEL. Platform icons can be an icon of the console or gamepad.
          EmulationStation has a lot of material that can be reused for AEL.
+
+WIP      Edit multidisc ROMs.
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | XX February 2017[/B]
@@ -109,8 +111,6 @@ FEATURE  Support for multidisc systems. Have a look to NOTES.md for more details
          https://github.com/Wintermute0110/plugin.program.advanced.launcher/blob/master/resources/lib/launcher_plugin.py#L1688
 
          AEL will use a better implementation based on a ROM filename parser. See NOTES.md
-
-WIP      Edit multidisc ROMs.
 
 FIX      Fixed crash when editing Collection ROM position.
 
