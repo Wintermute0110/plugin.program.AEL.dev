@@ -112,6 +112,8 @@ FEATURE  Support for multidisc systems. Have a look to NOTES.md for more details
 
          AEL will use a better implementation based on a ROM filename parser. See NOTES.md
 
+FEATURE  Delete ROM integrated in Edit ROM.
+
 FIX      Fixed crash when editing Collection ROM position.
 
 
