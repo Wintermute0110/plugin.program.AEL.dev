@@ -108,8 +108,8 @@ VCATEGORY_CATEGORY_ID    = 'vcat_category'
 VCATEGORY_RECENT_ID      = 'vcat_recent'
 VCATEGORY_MOST_PLAYED_ID = 'vcat_most_played'
 VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
-VLAUNCHER_RECENT_ID      = 'vcat_recent'
-VLAUNCHER_MOST_PLAYED_ID = 'vcat_most_played'
+VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
+VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
 # --- Content type to be used by skins ---
 AEL_CONTENT_WINDOW_ID       = 10001
@@ -5110,14 +5110,33 @@ class Main:
     # View all kinds of information
     #
     def _command_view_menu(self, categoryID, launcherID, romID):
-        VIEW_CATEGORY = 100
-        VIEW_LAUNCHER = 200
-        VIEW_ROM      = 300
+        VIEW_CATEGORY          = 100
+        VIEW_LAUNCHER          = 200
+        VIEW_COLLECTION        = 300
+        VIEW_ROM_LAUNCHER      = 400
+        VIEW_ROM_VLAUNCHER     = 500
 
         # >> Determine if we are in a cateogory, launcher or ROM
-        if   launcherID and     romID: view_type = VIEW_ROM
-        elif launcherID and not romID: view_type = VIEW_LAUNCHER
-        else:                          view_type = VIEW_CATEGORY
+        log_debug('_command_view_menu() categoryID = {0}'.format(categoryID))
+        log_debug('_command_view_menu() launcherID = {0}'.format(launcherID))
+        log_debug('_command_view_menu() romID      = {0}'.format(romID))
+        if launcherID and romID:
+            if categoryID == VCATEGORY_FAVOURITES_ID or \
+               categoryID == VCATEGORY_COLLECTIONS_ID or \
+               categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
+               categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
+               categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
+               categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID or \
+               categoryID == VCATEGORY_RECENT_ID or \
+               categoryID == VCATEGORY_MOST_PLAYED_ID:
+                view_type = VIEW_ROM_VLAUNCHER
+            else:
+                view_type = VIEW_ROM_LAUNCHER
+        elif launcherID and not romID:
+            if categoryID == VCATEGORY_COLLECTIONS_ID: view_type = VIEW_COLLECTION
+            else:                                      view_type = VIEW_LAUNCHER
+        else:
+            view_type = VIEW_CATEGORY
         log_debug('_command_view_menu() view_type = {0}'.format(view_type))
 
         # >> Build menu base on view_type
@@ -5131,32 +5150,192 @@ class Main:
             d_list = ['View Category data',
                       'View last execution output ({0})'.format(STD_status)]
         elif view_type == VIEW_LAUNCHER:
-            
             d_list = ['View Launcher data',
-                      'View Launcher report',
+                      'View last execution output ({0})'.format(STD_status),
+                      'View Launcher report']
+        elif view_type == VIEW_COLLECTION:
+            d_list = ['View Collection data',
                       'View last execution output ({0})'.format(STD_status)]
-        elif view_type == VIEW_ROM:
+        elif view_type == VIEW_ROM_LAUNCHER:
             d_list = ['View ROM data',
-                      'View Launcher report',
+                      'View last execution output ({0})'.format(STD_status),
+                      'View Launcher report']
+        # >> ROM in virtual launcher (no report)
+        else:
+            d_list = ['View ROM data',
                       'View last execution output ({0})'.format(STD_status)]
+
         dialog = xbmcgui.Dialog()
         selected_value = dialog.select('View ...', d_list)
         if selected_value < 0: return
 
-        # --- View launcher data ---
+        # --- View Category/Launcher/ROM data ---
         if selected_value == 0:
-            # --- Grab info ---
-            window_title = 'Launcher data'
-            if categoryID == VCATEGORY_ADDONROOT_ID: category = None
-            else:                                    category = self.categories[categoryID]
-            launcher = self.launchers[launcherID]
-
-            # --- Make info string ---
-            info_text  = '\n[COLOR orange]Launcher information[/COLOR]\n'
-            info_text += self._misc_print_string_Launcher(launcher)
-            if category:
-                info_text += '\n[COLOR orange]Category information[/COLOR]\n'
+            if view_type == VIEW_CATEGORY:
+                window_title = 'Category data'
+                category = self.categories[categoryID]
+                info_text  = '\n[COLOR orange]Category information[/COLOR]\n'
                 info_text += self._misc_print_string_Category(category)
+            
+            elif view_type == VIEW_LAUNCHER:
+                window_title = 'Launcher data'
+                if categoryID == VCATEGORY_ADDONROOT_ID: category = None
+                else:                                    category = self.categories[categoryID]
+                launcher = self.launchers[launcherID]
+                info_text  = '\n[COLOR orange]Launcher information[/COLOR]\n'
+                info_text += self._misc_print_string_Launcher(launcher)
+                if category:
+                    info_text += '\n[COLOR orange]Category information[/COLOR]\n'
+                    info_text += self._misc_print_string_Category(category)
+
+            elif view_type == VIEW_COLLECTION:
+                window_title = 'ROM Collection data'
+                (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+                collection = collections[launcherID]
+                info_text = '\n[COLOR orange]ROM Collection information[/COLOR]\n'
+                info_text += self._misc_print_string_Collection(collection)
+            else:
+                # --- Read ROMs ---
+                regular_launcher = True
+                if categoryID == VCATEGORY_FAVOURITES_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Favourites...')
+                    roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+                    rom = roms[romID]
+                    window_title = 'Favourite ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Favourite'
+
+                elif categoryID == VCATEGORY_MOST_PLAYED_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Recently played ROMs list...')
+                    most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+                    rom = most_played_roms[romID]
+                    window_title = 'Most Played ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Most Played ROM'
+
+                elif categoryID == VCATEGORY_RECENT_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Most played ROMs...')
+                    recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+                    current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
+                    if current_ROM_position < 0:
+                        kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                        return
+                    rom = recent_roms_list[current_ROM_position]
+                    window_title = 'Recently launched ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Recently launched ROM'
+
+                elif categoryID == VCATEGORY_TITLE_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Title Virtual Launcher...')
+                    hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
+                    if not hashed_db_filename.exists():
+                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                        return
+                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+                    rom = roms[romID]
+                    window_title = 'Virtual Launcher Title ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Virtual Launcher Title'
+
+                elif categoryID == VCATEGORY_YEARS_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Year Virtual Launcher...')
+                    hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.join(launcherID + '.json')
+                    if not hashed_db_filename.exists():
+                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                        return
+                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+                    rom = roms[romID]
+                    window_title = 'Virtual Launcher Year ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Virtual Launcher Year'
+
+                elif categoryID == VCATEGORY_GENRE_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Genre Virtual Launcher...')
+                    hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.join(launcherID + '.json')
+                    if not hashed_db_filename.exists():
+                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                        return
+                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+                    rom = roms[romID]
+                    window_title = 'Virtual Launcher Genre ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Virtual Launcher Genre'
+
+                elif categoryID == VCATEGORY_STUDIO_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Studio Virtual Launcher...')
+                    hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.join(launcherID + '.json')
+                    if not hashed_db_filename.exists():
+                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                        return
+                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+                    rom = roms[romID]
+                    window_title = 'Virtual Launcher Studio ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Virtual Launcher Studio'
+
+                elif categoryID == VCATEGORY_CATEGORY_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Category Virtual Launcher ...')
+                    hashed_db_filename = VIRTUAL_CAT_CATEGORY_DIR.join(launcherID + '.json')
+                    if not hashed_db_filename.exists():
+                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                        return
+                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+                    rom = roms[romID]
+                    window_title = 'Virtual Launcher Category ROM data'
+                    regular_launcher = False
+                    vlauncher_label = 'Virtual Launcher Category'
+
+                # --- ROM in Collection ---
+                elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                    log_info('_command_view_ROM() Viewing ROM in Collection...')
+                    (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+                    collection = collections[launcherID]
+                    roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+                    collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+                    current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
+                    if current_ROM_position < 0:
+                        kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                        return
+                    rom = collection_rom_list[current_ROM_position]
+                    window_title = '{0} Collection ROM data'.format(collection['m_name'])
+                    regular_launcher = False
+                    vlauncher_label = 'Collection'
+
+                # --- ROM in regular launcher ---
+                else:
+                    log_info('_command_view_ROM() Viewing ROM in Launcher...')
+                    # Check launcher is OK
+                    if launcherID not in self.launchers:
+                        kodi_dialog_OK('launcherID not found in self.launchers')
+                        return
+                    launcher_in_category = False if categoryID == VCATEGORY_ADDONROOT_ID else True
+                    if launcher_in_category: category = self.categories[categoryID]
+                    launcher = self.launchers[launcherID]
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+                    rom = roms[romID]
+                    window_title = 'Launcher ROM data'
+
+                # --- Make information string ---
+                info_text  = '[COLOR orange]ROM information[/COLOR]\n'
+                info_text += self._misc_print_string_ROM(rom)
+
+                # --- Display category/launcher information ---
+                if regular_launcher:
+                    info_text += '\n[COLOR orange]Launcher information[/COLOR]\n'
+                    info_text += self._misc_print_string_Launcher(launcher)
+                    info_text += '\n[COLOR orange]Category information[/COLOR]\n'
+                    if launcher_in_category:
+                        info_text += self._misc_print_string_Category(category)
+                    else:
+                        info_text += 'No Category (Launcher in addon root)'
+                else:
+                    info_text += '\n[COLOR orange]{0} ROM additional information[/COLOR]\n'.format(vlauncher_label)
+                    info_text += self._misc_print_string_ROM_additional(rom)
 
             # --- Show information window ---
             # textviewer WINDOW_DIALOG_TEXT_VIEWER 10147 DialogTextViewer.xml
@@ -5245,11 +5424,9 @@ class Main:
             if sys.platform == 'win32':
                 kodi_dialog_OK('This feature is not available on Windows.')
                 return
-
             if not LAUNCH_LOG_FILE_PATH.exists():
                 kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
                 return
-
             info_text = ''
             with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
                 info_text = myfile.read()
@@ -5264,211 +5441,6 @@ class Main:
                 window.getControl(5).setText(info_text)
             except:
                 log_error('_command_view_Launcher_Report() Exception rendering INFO window')
-
-    #
-    # Show raw information about ROMs
-    # Idea taken from script.logviewer
-    #
-    def _command_view_ROM(self, categoryID, launcherID, romID):
-        # --- Read ROMs ---
-        regular_launcher = True
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            log_info('_command_view_ROM() Viewing ROM in Favourites...')
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            rom = roms[romID]
-            window_title = 'Favourite ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Favourite'
-
-        elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-            log_info('_command_view_ROM() Viewing ROM in Recently played ROMs list...')
-            most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-            rom = most_played_roms[romID]
-            window_title = 'Most Played ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Most Played ROM'
-
-        elif categoryID == VCATEGORY_RECENT_ID:
-            log_info('_command_view_ROM() Viewing ROM in Most played ROMs...')
-            recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
-            current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
-            if current_ROM_position < 0:
-                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
-                return
-            rom = recent_roms_list[current_ROM_position]
-            window_title = 'Recently launched ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Recently launched ROM'
-
-        elif categoryID == VCATEGORY_TITLE_ID:
-            log_info('_command_view_ROM() Viewing ROM in Title Virtual Launcher...')
-            hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
-            if not hashed_db_filename.exists():
-                log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
-                return
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-            rom = roms[romID]
-            window_title = 'Virtual Launcher Title ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Virtual Launcher Title'
-
-        elif categoryID == VCATEGORY_YEARS_ID:
-            log_info('_command_view_ROM() Viewing ROM in Year Virtual Launcher...')
-            hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.join(launcherID + '.json')
-            if not hashed_db_filename.exists():
-                log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
-                return
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-            rom = roms[romID]
-            window_title = 'Virtual Launcher Year ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Virtual Launcher Year'
-
-        elif categoryID == VCATEGORY_GENRE_ID:
-            log_info('_command_view_ROM() Viewing ROM in Genre Virtual Launcher...')
-            hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.join(launcherID + '.json')
-            if not hashed_db_filename.exists():
-                log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
-                return
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-            rom = roms[romID]
-            window_title = 'Virtual Launcher Genre ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Virtual Launcher Genre'
-
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            log_info('_command_view_ROM() Viewing ROM in Studio Virtual Launcher...')
-            hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.join(launcherID + '.json')
-            if not hashed_db_filename.exists():
-                log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
-                return
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-            rom = roms[romID]
-            window_title = 'Virtual Launcher Studio ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Virtual Launcher Studio'
-
-        elif categoryID == VCATEGORY_CATEGORY_ID:
-            log_info('_command_view_ROM() Viewing ROM in Category Virtual Launcher ...')
-            hashed_db_filename = VIRTUAL_CAT_CATEGORY_DIR.join(launcherID + '.json')
-            if not hashed_db_filename.exists():
-                log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
-                return
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
-            rom = roms[romID]
-            window_title = 'Virtual Launcher Category ROM data'
-            regular_launcher = False
-            vlauncher_label = 'Virtual Launcher Category'
-
-        # --- ROM in Collection ---
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_info('_command_view_ROM() Viewing ROM in Collection...')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-            current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
-            if current_ROM_position < 0:
-                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
-                return
-            rom = collection_rom_list[current_ROM_position]
-            window_title = '{0} Collection ROM data'.format(collection['m_name'])
-            regular_launcher = False
-            vlauncher_label = 'Collection'
-
-        # --- ROM in regular launcher ---
-        else:
-            log_info('_command_view_ROM() Viewing ROM in Launcher...')
-            # Check launcher is OK
-            if launcherID not in self.launchers:
-                kodi_dialog_OK('launcherID not found in self.launchers')
-                return
-            launcher_in_category = False if categoryID == VCATEGORY_ADDONROOT_ID else True
-            if launcher_in_category: category = self.categories[categoryID]
-            launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
-            rom = roms[romID]
-            window_title = 'Launcher ROM data'
-
-        # --- Make information string ---
-        info_text  = '[COLOR orange]ROM information[/COLOR]\n'
-        info_text += self._misc_print_string_ROM(rom)
-
-        # --- Display category/launcher information ---
-        if regular_launcher:
-            info_text += '\n[COLOR orange]Launcher information[/COLOR]\n'
-            info_text += self._misc_print_string_Launcher(launcher)
-            info_text += '\n[COLOR orange]Category information[/COLOR]\n'
-            if launcher_in_category:
-                info_text += self._misc_print_string_Category(category)
-            else:
-                info_text += 'No Category (Launcher in addon root)'
-        else:
-            info_text += '\n[COLOR orange]{0} ROM additional information[/COLOR]\n'.format(vlauncher_label)
-            info_text += self._misc_print_string_ROM_additional(rom)
-
-        # --- Show information window ---
-        try:
-            xbmc.executebuiltin('ActivateWindow(10147)')
-            window = xbmcgui.Window(10147)
-            window.setProperty('FontWidth', 'monospaced')
-            xbmc.sleep(100)
-            window.getControl(1).setLabel(window_title)
-            window.getControl(5).setText(info_text)
-        except:
-            log_error('_command_view_ROM() Exception rendering INFO window')
-
-    #
-    # Only called for regular categories
-    #
-    def _command_view_Category(self, categoryID):
-        # --- Grab info ---
-        window_title = 'Category data'
-        category = self.categories[categoryID]
-
-        # --- Make info string ---
-        info_text  = '\n[COLOR orange]Category information[/COLOR]\n'
-        info_text += self._misc_print_string_Category(category)
-
-        # --- Show information window ---
-        try:
-            xbmc.executebuiltin('ActivateWindow(10147)')
-            window = xbmcgui.Window(10147)
-            window.setProperty('FontWidth', 'monospaced')
-            xbmc.sleep(100)
-            window.getControl(1).setLabel(window_title)
-            window.getControl(5).setText(info_text)
-        except:
-            log_error('_command_view_Category() Exception rendering INFO window')
-
-    #
-    # Only called for ROM Collections
-    #
-    def _command_view_Collection(self, categoryID, launcherID):
-        # --- Grab info ---
-        window_title = 'ROM Collection data'
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
-
-        # --- Make info string ---
-        info_text  = '\n[COLOR orange]ROM Collection information[/COLOR]\n'
-        info_text += self._misc_print_string_Collection(collection)
-
-        # --- Show information window ---
-        try:
-            xbmc.executebuiltin('ActivateWindow(10147)')
-            window = xbmcgui.Window(10147)
-            window.setProperty('FontWidth', 'monospaced')
-            xbmc.sleep(100)
-            window.getControl(1).setLabel(window_title)
-            window.getControl(5).setText(info_text)
-        except:
-            log_error('_command_view_Collection() Exception rendering INFO window')
 
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
