@@ -155,6 +155,20 @@ ESRB_MATURE      = 'M (Mature)'
 ESRB_ADULTS_ONLY = 'AO (Adults Only)'
 ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
                     ESRB_MATURE, ESRB_ADULTS_ONLY]
+# m_nplayers default values
+NP_1P     = '1P'
+NP_2P_SIM = '2P sim'
+NP_2P_ALT = '2P alt'
+NP_3P_SIM = '3P sim'
+NP_3P_ALT = '3P alt'
+NP_4P_SIM = '4P sim'
+NP_4P_ALT = '4P alt'
+NP_6P_SIM = '6P sim'
+NP_6P_ALT = '6P alt'
+NP_8P_SIM = '8P sim'
+NP_8P_ALT = '8P alt'
+NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, NP_4P_ALT, 
+                        NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
 def fs_new_rom():
     r = {'id' : '',
          'm_name' : '',

@@ -12,6 +12,9 @@ WIP      Include databases for all supported platforms in AEL offline scraper.
 
 WIP      Have a setting to restrict ROMs displayed based on rating.
 
+WIP     Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
+        Copy remote ROMs for external launchers?
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX March 2017[/B]
 
@@ -29,10 +32,14 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
+WIP      Platform icons in AEL. Platform icons can be an icon of the console or gamepad.
+         EmulationStation has a lot of material that can be reused for AEL.
+
 
 [B]Advanced Emulator Launcher | version 0.9.6 | XX February 2017[/B]
 
-PARTIAL  Import and Export of Launchers configurations. Will be very useful for Android users.
+FEATURE  Import and Export of Launchers configurations. Will be very useful especially for 
+         Android users.
 
 FEATURE  Use a Window property to let skins know wheter a launcher OR ROMs are being rendered.
          Set xbmcgui.Window(10001).setProperty('AEL_Content', 'launchers')
@@ -62,33 +69,31 @@ FEATURE  Clearlogos in Categories, Launchers and ROM Collections.
 
 FEATURE  Edit clearlogos in Categories.
 
-WIP      Edit clearlogos in Launchers.
+FEATURE  Edit clearlogos in Launchers.
 
-WIP      Edit clearlogos in ROM Collections.
-
-WIP      Import/Export clearlogos in ROM Collections.
+FEATURE  Edit clearlogos in ROM Collections.
 
 FEATURE  Default to launcher icon if ROM icon is missing.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2500040#pid2500040
 
-WIP      Update launching mechanism. User Python subprocess module on all platforms and not the
+FEATURE  Update launching mechanism. User Python subprocess module on all platforms and not the
          deprecated os.system(). Current patched subprocess_hack module is from Python 2.4. Current 
          Python version in Kodi is 2.7.
          os.system(), os.open(), etc. are deprecated, and the subprocess module should be used 
          instead for all platforms. A parser of arguments must be coded in order to use the 
          subprocess module.
 
-WIP      Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
+FEATURE  Log emulator/standalone launcher stdout/stderr into a file. Requires new launching
          mechanism based on subprocess module. Have a look to AML for an implementation.
 
 FEATURE  Add nplayers metadata field to ROMs. Billyc999 database has nplayers NFO.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2407055#pid2407055
 
-WIP      Edit nplayers in ROMs.
+FEATURE  Edit nplayers in ROMs.
          
 FEATURE  Add ESRB/MPAA/PEGI rating? >> User ESRB, new metadata field esrb in ROMs.
 
-WIP      Edit ESRB in ROMs.
+FEATURE  Edit ESRB in ROMs.
 
 FEATURE  Support for multidisc systems. Have a look to NOTES.md for more details about the AEL
          implementation.
