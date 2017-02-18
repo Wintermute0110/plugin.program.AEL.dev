@@ -2251,8 +2251,14 @@ class Main:
                                   ["Change ROM file: '{0}'".format(roms[romID]['filename']),
                                    "Alternative application: '{0}'".format(roms[romID]['altapp']),
                                    "Alternative arguments: '{0}'".format(roms[romID]['altarg']) ])
-            # >> Selection of the item file
+            if type2 < 0: return
+
+            # >> Change ROM file
             if type2 == 0:
+                # >> Abort if multidisc ROM
+                if roms[romID]['disks']:
+                    kodi_dialog_OK('Edition of multidisc ROMs not supported yet.')
+                    return
                 filename = roms[romID]['filename']
                 launcher = self.launchers[launcherID]
                 romext   = launcher['romext']
@@ -2275,9 +2281,6 @@ class Main:
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
                 roms[romID]['altarg'] = keyboard.getText().decode('utf-8')
-            # >> User canceled select dialog
-            elif type2 < 0:
-                return
 
         # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
         elif type == 4:
