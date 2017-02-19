@@ -20,6 +20,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+import xml.etree.ElementTree as ET
 import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch
 import xbmcvfs
 
@@ -537,6 +538,23 @@ class FileName:
             xbmcvfs.rename(self.originalPath, to.getOriginalPath())
         else:
             os.rename(self.path, to.getPath())
+            
+    # ---------------------------------------------------------------------------------------------
+    # File IO functions
+    # ---------------------------------------------------------------------------------------------
+    def write(self, bytes):
+        file = xbmcvfs.File(self.originalPath, 'w', True)
+        file.write(bytes)
+        file.close()
+
+    # opens file and reads xml. Returns the root of the xml!
+    def openXml(self):
+        file = xbmcvfs.File(self.originalPath, 'r')
+        data = file.read()
+        file.close()
+
+        root = ET.fromstring(data)
+        return root
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers

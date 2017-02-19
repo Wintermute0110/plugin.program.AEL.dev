@@ -8042,14 +8042,15 @@ class Main:
         imported_launchers_list = []
         log_verb('_command_import_launchers() Loading {0}'.format(import_FN.getOriginalPath()))
         try:
-            xml_tree = ET.parse(import_FN.getPath())
+            #xml_tree = ET.parse(import_FN.getPath())
+            xml_root = import_FN.openXml()
         except ET.ParseError, e:
             log_error('(ParseError) Exception parsing XML categories.xml')
             log_error('(ParseError) {0}'.format(str(e)))
             kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                            'Maybe XML file is corrupt or contains invalid characters.')
             return
-        xml_root = xml_tree.getroot()
+        #xml_root = xml_tree.getroot()
         for root_element in xml_root:
             if __debug_xml_parser: log_debug('Root child tag <{0}>'.format(root_element.tag))
 
@@ -8376,9 +8377,10 @@ class Main:
         # Strings in the list are Unicode. Encode to UTF-8. Join string, and save categories.xml file
         try:
             full_string = ''.join(str_list).encode('utf-8')
-            file_obj = open(export_FN.getPath(), 'w')
-            file_obj.write(full_string)
-            file_obj.close()
+            export_FN.write(full_string)
+            #file_obj = open(export_FN.getPath(), 'w')
+            #file_obj.write(full_string)
+            #file_obj.close()
         except OSError:
             log_error('(OSError) Cannot write categories.xml file')
             kodi_notify_warn('(OSError) Cannot write categories.xml file')
