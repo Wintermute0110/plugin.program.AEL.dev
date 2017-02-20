@@ -543,7 +543,7 @@ class FileName:
     # File IO functions
     # ---------------------------------------------------------------------------------------------
     def write(self, bytes):
-        file = xbmcvfs.File(self.originalPath, 'w', True)
+        file = xbmcvfs.File(self.originalPath, 'w')
         file.write(bytes)
         file.close()
 
