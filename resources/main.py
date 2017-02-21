@@ -6384,14 +6384,14 @@ class Main:
             if app_ext == 'lnk' or app_ext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK application')
                 # os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
-                retcode = call('start "AEL" /b "{0}"'.format(application).encode('utf-8'), shell = True)
+                retcode = subprocess.call('start "AEL" /b "{0}"'.format(application).encode('utf-8'), shell = True)
                 log_info('_run_process() (Windows) LNK app retcode = {0}'.format(retcode))
 
             # >> ROM launcher where ROMs are LNK files
             elif romext == 'lnk' or romext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK ROM')
                 # os.system('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'))
-                retcode = call('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'), shell = True)
+                retcode = subprocess.call('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'), shell = True)
                 log_info('_run_process() (Windows) LNK ROM retcode = {0}'.format(retcode))
 
             else:
