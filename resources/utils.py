@@ -538,14 +538,37 @@ class FileName:
             xbmcvfs.rename(self.originalPath, to.getOriginalPath())
         else:
             os.rename(self.path, to.getPath())
-            
+
+    def copy(self, to):        
+        xbmcvfs.copy(self.originalPath(), to.getOriginalPath())
+                    
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
+    def writeAll(self, bytes):
+        self.write(bytes, 'w')
+
+    def writeAll(self, flags, bytes):
+        file = xbmcvfs.File(self.originalPath, flags)
+        with file:
+            file.write(bytes)
+            file.close()
+
     def write(self, bytes):
-        file = xbmcvfs.File(self.originalPath, 'w')
-        file.write(bytes)
-        file.close()
+       if self.fileHandle is None:
+           raise OSError('file not opened')
+
+       self.fileHandle.write(bytes)
+
+    def open(self, flags):
+        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
+        
+    def close(self):
+        if self.fileHandle is None:
+           raise OSError('file not opened')
+
+        self.fileHandle.close()
+        self.fileHandle = None
 
     # opens file and reads xml. Returns the root of the xml!
     def openXml(self):

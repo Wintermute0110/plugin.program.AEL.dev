@@ -76,9 +76,7 @@ def net_download_img(img_url, file_path):
         req = urllib2.Request(img_url)
         req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
 
-        f = open(file_path, 'wb')
-        f.write(urllib2.urlopen(req).read())
-        f.close()
+        file_path.writeAll('wb', urllib2.urlopen(req).read())
     except IOError as e:    
         log_error('(IOError) Exception in net_download_img()')
         log_error('(IOError) {0}'.format(str(e)))

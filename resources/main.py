@@ -29,6 +29,7 @@ from disk_IO import *
 from net_IO import *
 from utils import *
 from utils_kodi import *
+from utils_kodi_cache import *
 from scrap import *
 from assets import *
 
@@ -4675,8 +4676,8 @@ class Main:
                 fileData = base64.b64decode(asset_base64_data)
                 log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
                 log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
-                with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
-                    file.write(fileData)
+
+                new_asset_FN.writeAll('wb', fileData) # b is important -> binary
                 statinfo = new_asset_FN.stat()
                 file_size = statinfo.st_size
                 if asset_filesize != file_size:
@@ -4716,8 +4717,7 @@ class Main:
                     fileData = base64.b64decode(asset_base64_data)
                     log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
                     log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
-                    with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
-                        file.write(fileData)
+                    new_asset_FN.writeAll('wb', fileData)
                     statinfo = new_asset_FN.stat()
                     file_size = statinfo.st_size
                     if asset_filesize != file_size:
@@ -6687,9 +6687,7 @@ class Main:
         # >> Step 6: Join string and write TXT file
         try:
             full_string = ''.join(str_list).encode('utf-8')
-            file = open(report_file_name.getPath(), 'w')
-            file.write(full_string)
-            file.close()
+            report_file_name.writeAll(full_string)
         except OSError:
             log_error('Cannot write Launcher Report file (OSError)')
             kodi_notify_warn('Cannot write Launcher Report (OSError)')
@@ -7466,9 +7464,9 @@ class Main:
         # If user chose the local image don't download anything
         if image_url != local_asset_path:
             # ~~~ Download image ~~~
-            image_path = asset_path_noext.append(image_ext).getPath()
+            image_path = asset_path_noext.append(image_ext)
             log_verb('Downloading URL  "{0}"'.format(image_url))
-            log_verb('Into local file  "{0}"'.format(image_path))
+            log_verb('Into local file  "{0}"'.format(image_path.getPath()))
             try:
                 net_download_img(image_url, image_path)
             except socket.timeout:
@@ -7479,7 +7477,7 @@ class Main:
             kodi_update_image_cache(image_path)
 
             # --- Return value is downloaded image ---
-            ret_asset_path = image_path
+            ret_asset_path = image_path.getOriginalPath()
         else:
             log_debug('{0} scraper: user chose local image "{1}"'.format(image_name, image_url))
             ret_asset_path = image_url
@@ -7788,7 +7786,7 @@ class Main:
             log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, AInfo.name, image_file_path.getOriginalPath()))
 
             # --- Update Kodi image cache ---
-            kodi_update_image_cache(image_file_path.getOriginalPath())
+            kodi_update_image_cache(image_file_path)
 
         # --- Import an image ---
         # >> Copy and rename a local image into asset directory
@@ -7834,7 +7832,7 @@ class Main:
             log_info('_gui_edit_asset() Selected {0} {1} "{2}"'.format(object_name, AInfo.name, dest_path_FileName.getOriginalPath()))
 
             # --- Update Kodi image cache ---
-            kodi_update_image_cache(dest_path_FileName.getOriginalPath())
+            kodi_update_image_cache(dest_path_FileName)
 
         # --- Manual scrape and choose from a list of images ---
         # >> Copy asset scrape code into here and remove function _gui_scrap_image_semiautomatic()
@@ -7915,9 +7913,9 @@ class Main:
             # --- If user chose the local image don't download anything ---
             if image_url != current_asset_path:
                 # ~~~ Download image ~~~
-                image_local_path = asset_path_noext.append(image_ext).getPath()
+                image_local_path = asset_path_noext.append(image_ext)
                 log_verb('Downloading URL "{0}"'.format(image_url))
-                log_verb('Into local file "{0}"'.format(image_local_path))
+                log_verb('Into local file "{0}"'.format(image_local_path.getPath()))
 
                 # >> Prevent race conditions
                 kodi_busydialog_ON()
@@ -7939,7 +7937,7 @@ class Main:
 
             # --- Edit using Python pass by assigment ---
             # >> Caller is responsible to save Categories/Launchers/ROMs
-            object_dic[AInfo.key] = image_local_path
+            object_dic[AInfo.key] = image_local_path.getOriginalPath()
 
         # --- User canceled select box ---
         elif type2 < 0:
@@ -8377,10 +8375,7 @@ class Main:
         # Strings in the list are Unicode. Encode to UTF-8. Join string, and save categories.xml file
         try:
             full_string = ''.join(str_list).encode('utf-8')
-            export_FN.write(full_string)
-            #file_obj = open(export_FN.getPath(), 'w')
-            #file_obj.write(full_string)
-            #file_obj.close()
+            export_FN.writeAll(full_string)
         except OSError:
             log_error('(OSError) Cannot write categories.xml file')
             kodi_notify_warn('(OSError) Cannot write categories.xml file')

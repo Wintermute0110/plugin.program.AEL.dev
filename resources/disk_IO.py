@@ -510,9 +510,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         # Strings in the list are Unicode. Encode to UTF-8
         # Join string, and save categories.xml file
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(categories_file.getPath(), 'w')
-        file_obj.write(full_string)
-        file_obj.close()
+        categories_file.writeAll(full_string)
     except OSError:
         log_error('(OSError) Cannot write categories.xml file')
         kodi_notify_warn('(OSError) Cannot write categories.xml file')
@@ -613,11 +611,9 @@ def fs_write_JSON_file(file_dir, file_base_noext, data):
     log_verb('fs_write_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
 
     try:
-        with io.open(json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
-                                   indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
-            file.close()
+        json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        json_file.writeAll(unicode(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(json_file.getPath()))
     except IOError:
@@ -704,9 +700,7 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(roms_xml_file.getPath(), 'w')
-        file_obj.write(full_string)
-        file_obj.close()
+        roms_xml_file.writeAll(full_string)
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_xml_file.getPath()))
         log_error('fs_write_ROMs_JSON() (OSerror) Cannot write file "{0}"'.format(roms_xml_file.getPath()))
@@ -719,14 +713,13 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     # >> a mix of unicode and str objects.
     # >> See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
     try:
-        with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            # >> json_unicode is either str or unicode
-            # >> See https://docs.python.org/2.7/library/json.html#json.dumps
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
-                                   indent = JSON_indent, separators = JSON_separators)
-            # unicode(json_data) auto-decodes data to unicode if str
-            file.write(unicode(json_data))
-            file.close()
+
+        # >> json_unicode is either str or unicode
+        # >> See https://docs.python.org/2.7/library/json.html#json.dumps
+        # unicode(json_data) auto-decodes data to unicode if str
+        json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
+                                indent = JSON_indent, separators = JSON_separators)
+        roms_json_file.writeAll(unicode(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -781,11 +774,9 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
 
     # --- Write JSON file ---
     try:
-        with io.open(roms_json_file.getPath(), 'w', encoding='utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
-                                   indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
-            file.close()
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        roms_json_file.writeAll(unicode(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -856,9 +847,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(collections_xml_file.getPath(), 'w')
-        file_obj.write(full_string)
-        file_obj.close()
+        collections_xml_file.writeAll(full_string)
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(collections_xml_file.getPath()))
     except IOError:
@@ -914,11 +903,9 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
     raw_data.append(roms)
 
     try:
-        with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
-                                   indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
-            file.close()
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        roms_json_file.writeAll(unicode(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -983,11 +970,9 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
 
     # >> Produce nicely formatted JSON when exporting
     try:
-        with io.open(output_filename.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
-                                   indent = 2, separators = (', ', ' : '))
-            file.write(unicode(json_data))
-            file.close()
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = 2, separators = (', ', ' : '))
+        output_filename.writeAll(unicode(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getPath()))
     except IOError:
@@ -1069,11 +1054,9 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
 
     # >> Produce nicely formatted JSON when exporting
     try:
-        with io.open(output_FileName.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
-                                   indent = 2, separators = (', ', ' : '))
-            file.write(unicode(json_data))
-            file.close()
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
+                                indent = 2, separators = (', ', ' : '))
+        output_FileName.writeAll(unicode(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_FileName.getPath()))
     except IOError:
@@ -1183,9 +1166,7 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
             str_list.append('</VLauncher>\n')
         str_list.append('</advanced_emulator_launcher_Virtual_Category_index>\n')
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(roms_xml_file.getPath(), 'w')
-        file_obj.write(full_string)
-        file_obj.close()
+        roms_xml_file.writeAll(full_string)
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_xml_file.getPath()))
     except IOError:
@@ -1242,11 +1223,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = roms_dir.join(roms_base_noext + '.json')
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file.getOriginalPath()))
     try:
-        with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
-                                   indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
-            file.close()
+        json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        roms_json_file.writeAll(unicode(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -1474,7 +1453,7 @@ def fs_fix_launchers_xml(launchers_xml_path, sanitized_xml_path):
     log_info('fs_fix_launchers_xml() Output {0}'.format(sanitized_xml_path.getOriginalPath()))
     with open(launchers_xml_path.getPath()) as f_in:
         lines = f_in.readlines()
-    f_out = open(sanitized_xml_path.getPath(), 'w')
+    sanitized_xml_path.open('w')
     p = re.compile(r'^(\s+)<(.+?)>(.+)</\2>(\s+)')
     line_counter = 1
     for line in lines:
@@ -1505,9 +1484,9 @@ def fs_fix_launchers_xml(launchers_xml_path, sanitized_xml_path):
             # log_debug('New line   "{0}"'.format(line.rstrip()))
 
         # >> Write line
-        f_out.write(line.encode('utf-8'))
+        sanitized_xml_path.write(line.encode('utf-8'))
         line_counter += 1
-    f_out.close()
+    sanitized_xml_path.close()
     log_info('fs_fix_launchers_xml() Processed {0} XML lines'.format(line_counter))
 
 # -------------------------------------------------------------------------------------------------
@@ -1653,9 +1632,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
     nfo_content.append('</game>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        usock = open(nfo_file_path, 'w')
-        usock.write(full_string)
-        usock.close()
+        nfo_file_path.writeAll(full_string)
     except:
         if verbose:
             kodi_notify_warn('Error writing {0}'.format(nfo_file_path))
@@ -1764,9 +1741,7 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     nfo_content.append('</launcher>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_FileName.getPath(), 'w')
-        f.write(full_string)
-        f.close()
+        nfo_FileName.writeAll(full_string)
     except:
         kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
         log_error("fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
@@ -1858,9 +1833,7 @@ def fs_export_category_NFO(nfo_FileName, category):
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_FileName.getPath(), 'w')
-        f.write(full_string)
-        f.close()
+        nfo_FileName.writeAll(full_string)
     except:
         kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
         log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
@@ -1928,9 +1901,7 @@ def fs_export_collection_NFO(nfo_FileName, collection):
     nfo_content.append('</collection>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
-        f = open(nfo_FileName.getPath(), 'w')
-        f.write(full_string)
-        f.close()
+        nfo_FileName.writeAll(full_string)
     except:
         kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_FileName.getName()))
         log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
