@@ -122,6 +122,8 @@ FEATURE  Support for multidisc systems. Have a look to NOTES.md for more details
 
 FEATURE  Delete ROM context menu integrated in Edit ROM.
 
+FEATURE  Display number of ROMs in launcher.
+
 FIX      Fixed crash when editing Collection ROM position.
 
 
