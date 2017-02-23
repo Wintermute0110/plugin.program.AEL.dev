@@ -1537,6 +1537,7 @@ class Main:
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
                     fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'], 
                                        roms, self.launchers[launcherID])
+                    self.launchers[launcherID]['num_roms'] = len(roms)
                     kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
                 # --- Import ROM metadata from NFO files ---
@@ -1614,6 +1615,7 @@ class Main:
                     # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
                     # when user add more ROMs.
                     fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    self.launchers[launcherID]['num_roms'] = 0
                     kodi_notify('Cleared ROMs from launcher database')
 
         # --- Audit ROMs / Launcher view mode ---
@@ -1734,6 +1736,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
+                    self.launchers[launcherID]['num_roms'] = len(roms)
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     kodi_notify('Have {0}/Miss {1}/Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
 
@@ -1743,6 +1746,7 @@ class Main:
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
                     self._roms_reset_NoIntro_status(roms)
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
+                    self.launchers[launcherID]['num_roms'] = len(roms)
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     kodi_notify('No-Intro status reset')
 
@@ -1754,6 +1758,7 @@ class Main:
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
                     num_removed_roms = self._roms_delete_NoIntro_added_ROMs(roms)
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
+                    self.launchers[launcherID]['num_roms'] = len(roms)
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     kodi_notify('Removed {0} No-Intro Added ROMs'.format(num_removed_roms))
 
@@ -6929,6 +6934,7 @@ class Main:
 
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
+        self.launchers[launcherID]['num_roms'] = len(roms)
         launcher['timestamp_launcher'] = time.time()
         fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
@@ -7177,6 +7183,7 @@ class Main:
         #     log_info('No No-Intro DAT configured. No auditing ROMs.')
 
         # ~~~ Save ROMs XML file. Also save categories/launchers to update timestamp. ~~~
+        self.launchers[launcherID]['num_roms'] = len(roms)
         fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
