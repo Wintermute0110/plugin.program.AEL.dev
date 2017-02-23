@@ -412,14 +412,18 @@ class Main:
         self.settings['favourites_asset_dir']     = __addon_obj__.getSetting('favourites_asset_dir').decode('utf-8')
         self.settings['collections_asset_dir']    = __addon_obj__.getSetting('collections_asset_dir').decode('utf-8')
 
+        # --- I/O ---
+        self.settings['log_level']                = int(__addon_obj__.getSetting('log_level'))
+        
         # --- Advanced ---
         self.settings['media_state_action']       = int(__addon_obj__.getSetting('media_state_action'))
         self.settings['lirc_state']               = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
         self.settings['delay_tempo']              = int(round(float(__addon_obj__.getSetting('delay_tempo'))))
         self.settings['suspend_audio_engine']     = True if __addon_obj__.getSetting('suspend_audio_engine') == 'true' else False
         self.settings['escape_romfile']           = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
-        self.settings['log_level']                = int(__addon_obj__.getSetting('log_level'))
         self.settings['show_batch_window']        = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
+        self.settings['windows_close_fds']        = True if __addon_obj__.getSetting('windows_close_fds') == 'true' else False
+        self.settings['windows_cd_apppath']       = True if __addon_obj__.getSetting('windows_cd_apppath') == 'true' else False
 
         # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR.getOriginalPath()
@@ -6412,26 +6416,32 @@ class Main:
                 retcode = subprocess.call('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'), shell = True)
                 log_info('_run_process() (Windows) LNK ROM retcode = {0}'.format(retcode))
 
-            else:
+            # >> CMD/BAT files in Windows
+            elif app_ext == 'bat' or app_ext == 'BAT':
+                log_debug('_run_process() (Windows) Launching BAT application')
                 info = None
+                info = subprocess.STARTUPINFO()
+                info.dwFlags = 1
+                info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
+                retcode = subprocess.call('{0} {1}'.format(application, arguments).encode('utf-8'),
+                                          cwd = apppath.encode('utf-8'), startupinfo = info, close_fds = True)
+                log_info('_run_process() (Windows) Process BAR retcode = {0}'.format(retcode))
+
+            else:
                 # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
                 # >> Workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
                 # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
-                if app_ext == 'bat' or app_ext == 'BAT':
-                    log_debug('_run_process() (Windows) Launching BAT application')
-                    info = subprocess.STARTUPINFO()
-                    info.dwFlags = 1
-                    info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
+                log_debug('_run_process() (Windows) Launching regular application')
+                log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(self.settings['windows_close_fds']))
+                log_debug('_run_process() (Windows) windows_cd_apppath = {0}'.format(self.settings['windows_cd_apppath']))
+                _close_fds_ = True if self.settings['windows_close_fds'] else False
+                if self.settings['windows_cd_apppath']:
+                    retcode = subprocess.call('{0} {1}'.format(application, arguments).encode('utf-8'),
+                                              close_fds = _close_fds_, cwd = apppath.encode('utf-8'))
                 else:
-                    log_debug('_run_process() (Windows) Launching regular application (not BAT)')
-                log_debug('_run_process() (Windows) Calling popen()')
-                # pr = subprocess.Popen('{0} {1}'.format(application, arguments).encode('utf-8'),
-                #                       cwd = apppath.encode('utf-8'), startupinfo = info, close_fds = True)
-                # pr.wait()
-                retcode = subprocess.call('{0} {1}'.format(application, arguments).encode('utf-8'),
-                                          cwd = apppath.encode('utf-8'), 
-                                          startupinfo = info, close_fds = True)
-                log_info('_run_process() Process retcode = {0}'.format(retcode))
+                    retcode = subprocess.call('{0} {1}'.format(application, arguments).encode('utf-8'),
+                                              close_fds = _close_fds_)
+                log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))
 
         # >> Linux and Android
         elif sys.platform.startswith('linux'):

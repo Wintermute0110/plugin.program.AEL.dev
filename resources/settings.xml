@@ -65,14 +65,16 @@
     <setting label="Export launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
     <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
     <setting label="Import AL launchers.xml ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
+    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
 </category>
 <category label="Advanced">
     <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />
     <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
-    <setting label="Delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int"/>
+    <setting label="After/before launch delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int"/>
     <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false"/>
     <setting label="Escape ROMfile quotes" type="bool" id="escape_romfile" default="false" />
     <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
-    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
+    <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true"/>
+    <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
 </category>
 </settings>
