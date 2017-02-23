@@ -3027,8 +3027,9 @@ class Main:
             return
 
         # --- Launcher tags ---
+        # >> Do not plot ROM count on standalone launchers! Launcher is standaloneif rompath = ''
         launcher_name = launcher_raw_name = launcher_dic['m_name']
-        if self.settings['display_launcher_roms']:
+        if self.settings['display_launcher_roms'] and launcher_dic['rompath']:
             num_roms = launcher_dic['num_roms']
             if num_roms == 0:
                 launcher_name = '{0} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
