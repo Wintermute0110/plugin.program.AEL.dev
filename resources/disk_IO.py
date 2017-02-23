@@ -567,7 +567,7 @@ def fs_load_catfile(categories_file):
                 # Now transform data depending on tag name
                 if xml_tag == 'finished':
                     category[xml_tag] = True if xml_text == 'True' else False
-                elif:
+                else:
                     # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
                     category[xml_tag] = xml_text
             # --- Add category to categories dictionary ---

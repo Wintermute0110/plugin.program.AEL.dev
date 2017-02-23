@@ -385,6 +385,8 @@ class Main:
         # --- Display ---
         self.settings['display_launcher_notify']  = True if __addon_obj__.getSetting('display_launcher_notify') == 'true' else False
         self.settings['display_hide_finished']    = True if __addon_obj__.getSetting('display_hide_finished') == 'true' else False
+        self.settings['display_launcher_roms']    = True if __addon_obj__.getSetting('display_launcher_roms') == 'true' else False
+
         self.settings['display_rom_in_fav']       = True if __addon_obj__.getSetting('display_rom_in_fav') == 'true' else False
         self.settings['display_nointro_stat']     = True if __addon_obj__.getSetting('display_nointro_stat') == 'true' else False
         self.settings['display_fav_status']       = True if __addon_obj__.getSetting('display_fav_status') == 'true' else False
@@ -3015,18 +3017,29 @@ class Main:
         if launcher_dic['finished'] and self.settings['display_hide_finished']:
             return
 
+        # --- Launcher tags ---
+        launcher_name = launcher_raw_name = launcher_dic['m_name']
+        if self.settings['display_launcher_roms']:
+            num_roms = launcher_dic['num_roms']
+            if num_roms == 0:
+                launcher_name = '{0} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
+            elif num_roms == 1:
+                launcher_name = '{0} [COLOR orange]({1} ROM)[/COLOR]'.format(launcher_raw_name, num_roms)
+            else:
+                launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
+
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
-        listitem = xbmcgui.ListItem(launcher_dic['m_name'])
+        listitem = xbmcgui.ListItem(launcher_name)
         # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
         # >>     skin. If year is not set then the correct icon is shown.
         if launcher_dic['m_year']:
-            listitem.setInfo('video', {'title'   : launcher_dic['m_name'],    'year'    : launcher_dic['m_year'],
+            listitem.setInfo('video', {'title'   : launcher_name,             'year'    : launcher_dic['m_year'],
                                        'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
                                        'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
                                        'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         else:
-            listitem.setInfo('video', {'title'   : launcher_dic['m_name'],
+            listitem.setInfo('video', {'title'   : launcher_name,
                                        'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
                                        'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
                                        'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })

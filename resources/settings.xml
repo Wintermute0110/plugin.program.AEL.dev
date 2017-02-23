@@ -28,10 +28,11 @@
     <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
 </category>
 <category label="Display">
-    <setting label="Activate 'Launching Application' notification" type="bool" default="true" id="display_launcher_notify" />
+    <setting label="Launching Application notification" type="bool" default="true" id="display_launcher_notify" />
     <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" default="false" id="display_hide_finished" />
+    <setting label="Display number of ROMs in Luancher" type="bool" default="true" id="display_launcher_roms" />
 
-    <setting id="separator" type="lsep" label="ROMs tags"/>
+    <setting id="separator" type="lsep" label="ROM tags"/>
     <setting label="Display ROM in Favourites label" type="bool" default="true" id="display_rom_in_fav" />
     <setting label="Display No-Intro status label" type="bool" default="true" id="display_nointro_stat" />
     <setting label="Display Favourite ROM status label" type="bool" default="true" id="display_fav_status" />
