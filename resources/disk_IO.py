@@ -99,6 +99,7 @@ def fs_new_launcher():
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
          'pclone_launcher' : False,
+         'num_roms' : 0,
          'timestamp_launcher' : 0.0,
          'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
@@ -475,6 +476,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append(XML_text('pclone_launcher', unicode(launcher['pclone_launcher'])))
+            str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
             str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
             str_list.append(XML_text('default_thumb', launcher['default_thumb']))
@@ -559,15 +561,14 @@ def fs_load_catfile(categories_file):
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = category_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
-                # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
-                category[xml_tag] = xml_text
 
                 # Now transform data depending on tag name
                 if xml_tag == 'finished':
-                    xml_bool = False if xml_text == 'False' else True
-                    category[xml_tag] = xml_bool
-
-            # Add category to categories dictionary
+                    category[xml_tag] = True if xml_text == 'True' else False
+                else:
+                    # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
+                    category[xml_tag] = xml_text
+            # --- Add category to categories dictionary ---
             categories[category['id']] = category
 
         elif category_element.tag == 'launcher':
@@ -582,17 +583,18 @@ def fs_load_catfile(categories_file):
                 xml_tag  = category_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
 
-                # >> Transform list datatype
+                # >> Transform list() datatype
                 if xml_tag == 'args_extra':
                     launcher[xml_tag].append(xml_text)
                 # >> Transform Bool datatype
                 elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
-                    xml_bool = True if xml_text == 'True' else False
-                    launcher[xml_tag] = xml_bool
+                    launcher[xml_tag] = True if xml_text == 'True' else False
+                # >> Transform Int datatype
+                elif xml_tag == 'num_roms':
+                    launcher[xml_tag] = int(xml_text)
                 # >> Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
-                    xml_float = float(xml_text)
-                    launcher[xml_tag] = xml_float
+                    launcher[xml_tag] = float(xml_text)
                 else:
                     launcher[xml_tag] = xml_text
             # --- Add launcher to categories dictionary ---
