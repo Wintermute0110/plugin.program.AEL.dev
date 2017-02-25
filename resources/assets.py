@@ -90,8 +90,6 @@ def asset_get_dialog_extension_list(exts):
 # struct.
 # 
 def assets_init_asset_dir(assets_path_FName, launcher):
-    rom_path = launcher['rompath']
-    log_verb('assets_init_asset_dir() rom_path   "{0}"'.format(rom_path))
     log_verb('assets_init_asset_dir() asset_path "{0}"'.format(assets_path_FName.getPath()))
 
     # >> Fill in launcher fields and create asset directories
@@ -108,14 +106,17 @@ def assets_init_asset_dir(assets_path_FName, launcher):
     assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
     assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
 
-def assets_parse_asset_dir(launchers, assets_path_FName, key, pathName):
-    subPath        = assets_path_FName.join(pathName)
-    launchers[key] = subPath.getOriginalPath()
-    log_debug('assets_safe_create_dir() Creating dir "{0}"'.format(subPath.getPath()))
+#
+# Create asset path and assign it to Launcher dictionary.
+#
+def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
+    subPath       = assets_path_FName.pjoin(pathName)
+    launcher[key] = subPath.getOriginalPath()
+    log_debug('assets_parse_asset_dir() Creating dir "{0}"'.format(subPath.getPath()))
     subPath.makedirs()
 
 #
-# Get artwork user configured to be used as thumb/fanart/... for Cateogires/Launchers
+# Get artwork user configured to be used as thumb/fanart/... for Categories/Launchers
 #
 def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]

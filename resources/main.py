@@ -8088,8 +8088,11 @@ class Main:
                     if __debug_xml_parser: log_debug('"{0:<11s}" --> "{1}"'.format(xml_tag, xml_text))
 
                     # >> Transform list datatype
-                    if xml_tag == 'args_extra': launcher[xml_tag].append(xml_text)
-                    else:                       launcher[xml_tag] = xml_text
+                    if xml_tag == 'args_extra' and xml_text:
+                        # >> Only add to the list if string is non empty.
+                        launcher[xml_tag].append(xml_text)
+                    else:
+                        launcher[xml_tag] = xml_text
                 # --- Add launcher to categories dictionary ---
                 log_debug('Adding to list launcher "{0}"'.format(launcher['name']))
                 imported_launchers_list.append(launcher)
@@ -8121,18 +8124,17 @@ class Main:
                 self.categories[categoryID] = category
                 log_debug('New Category "{0}" (ID {1})'.format(i_launcher['category'], categoryID))
 
-                # >> Create new launcher inside existing category and import launcher.
-                log_debug('Case B) Category found and Launcher not found.')
+                # >> Create new launcher inside newly created category and import launcher.
                 launcherID = misc_generate_random_SID()
                 launcherdata = fs_new_launcher()
                 launcherdata['id'] = launcherID
                 launcherdata['categoryID'] = categoryID
                 launcherdata['timestamp_launcher'] = time.time()
                 self.launchers[launcherID] = launcherdata
-                log_debug('New Launcher "{0}" (ID {1})'.format(launcherID))
+                log_debug('New Launcher "{0}" (ID {1})'.format(i_launcher['name'], launcherID))
 
                 # >> Import launcher. Only import fields that are not empty strings.
-                # >> Function edits self.launchers dictionary using key s_launcherID
+                # >> Function edits self.launchers dictionary using first argument key
                 self._misc_import_launcher(launcherID, i_launcher, i_launcher['category'])
 
             elif s_categoryID and not s_launcherID:
@@ -8147,7 +8149,6 @@ class Main:
                 log_debug('New Launcher "{0}" (ID {1})'.format(i_launcher['name'], launcherID))
 
                 # >> Import launcher. Only import fields that are not empty strings.
-                # >> Function edits self.launchers dictionary using key launcherID
                 self._misc_import_launcher(launcherID, i_launcher, i_launcher['category'])
 
             else:
@@ -8159,17 +8160,20 @@ class Main:
                 if ret < 1: continue
 
                 # >> Import launcher. Only import fields that are not empty strings.
-                # >> Function edits self.launchers dictionary using key s_launcher
                 self._misc_import_launcher(s_launcherID, i_launcher, i_launcher['category'])
 
         # >> Save Categories/Launchers
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
-        kodi_notify('Imported AEL Launcher/s configuration')
+        if len(imported_launchers_list) == 1:
+            kodi_notify('Imported Launcher "{0}" configuration'.format(imported_launchers_list[0]['name']))
+        else:
+            kodi_notify('Imported {0} Launcher configurations'.format(len(imported_launchers_list)))
 
     def _misc_search_category_and_launcher_by_name(self, cat_name, laun_name):
         s_category = None
-        if cat_name == VCATEGORY_ADDONROOT_ID: s_category = VCATEGORY_ADDONROOT_ID
+        if cat_name == VCATEGORY_ADDONROOT_ID:
+            s_category = VCATEGORY_ADDONROOT_ID
         else:
             for categoryID in self.categories:
                 category = self.categories[categoryID]
@@ -8205,23 +8209,23 @@ class Main:
             log_debug('Imported m_name      = "{0}"'.format(i_launcher['name']))
         if i_launcher['year']:
             self.launchers[s_launcherID]['m_year'] = i_launcher['year']
-            log_debug('Imported m_year      = "{0}"'.format(i_launcher['name']))
+            log_debug('Imported m_year      = "{0}"'.format(i_launcher['year']))
         if i_launcher['genre']:
             self.launchers[s_launcherID]['m_genre'] = i_launcher['genre']
-            log_debug('Imported m_genre     = "{0}"'.format(i_launcher['name']))
+            log_debug('Imported m_genre     = "{0}"'.format(i_launcher['genre']))
         if i_launcher['studio']:
             self.launchers[s_launcherID]['m_studio'] = i_launcher['studio']
-            log_debug('Imported m_studio    = "{0}"'.format(i_launcher['name']))
+            log_debug('Imported m_studio    = "{0}"'.format(i_launcher['studio']))
         if i_launcher['rating']:
             self.launchers[s_launcherID]['m_rating'] = i_launcher['rating']
-            log_debug('Imported m_rating    = "{0}"'.format(i_launcher['name']))
+            log_debug('Imported m_rating    = "{0}"'.format(i_launcher['rating']))
         if i_launcher['plot']:
             self.launchers[s_launcherID]['m_plot'] = i_launcher['plot']
-            log_debug('Imported m_plot      = "{0}"'.format(i_launcher['name']))
+            log_debug('Imported m_plot      = "{0}"'.format(i_launcher['plot']))
 
         # --- Launcher stuff ---
         if i_launcher['platform']:
-            # >> If platform cannot be found set to Unknown
+            # >> If platform cannot be found in the official list then set it to Unknown
             if i_launcher['platform'] in AEL_platform_list:
                 log_debug('Platform name recognised')
                 platform = i_launcher['platform']
@@ -8241,9 +8245,20 @@ class Main:
             # >> Reset current args_extra
             self.launchers[s_launcherID]['args_extra'] = []
             for args in i_launcher['args_extra']:
+                
                 self.launchers[s_launcherID]['args_extra'].append(args)
                 log_debug('Imported args_extra  = "{0}"'.format(args))
         if i_launcher['rompath']:
+            rompath = FileName(i_launcher['rompath'])
+            log_debug('ROMpath OP "{0}"'.format(rompath.getOriginalPath()))
+            log_debug('ROMpath  P "{0}"'.format(rompath.getPath()))
+            # Warn user if rompath directory does not exist
+            if not rompath.exists():
+                log_debug('ROMpath not found.')
+                kodi_dialog_OK('Launcher "{0}". '.format(i_launcher['name']) +
+                               'ROM path "{0}" not found'.format(rompath.getPath()))
+            else:
+                log_debug('ROMpath found.')
             self.launchers[s_launcherID]['rompath'] = i_launcher['rompath']
             log_debug('Imported rompath     = "{0}"'.format(i_launcher['rompath']))
         if i_launcher['romext']:
@@ -8251,37 +8266,24 @@ class Main:
             log_debug('Imported romext      = "{0}"'.format(i_launcher['romext']))
 
         # --- Assets (not supported at the moment) ---
-        # self.launchers[s_launcherID]['s_thumb']   = i_launcher['thumb']
-        # self.launchers[s_launcherID]['s_fanart']    = i_launcher['fanart']
-        # self.launchers[s_launcherID]['s_banner']    = i_launcher['banner']
-        # self.launchers[s_launcherID]['s_flyer']     = i_launcher['flyer']
-        # self.launchers[s_launcherID]['s_clearlogo'] = i_launcher['clearlogo']
-        # self.launchers[s_launcherID]['s_trailer']   = i_launcher['trailer']
-
         if i_launcher['path_assets']:
             Path_assets_FN = FileName(i_launcher['path_assets'])
             log_debug('Path_assets_FN OP "{0}"'.format(Path_assets_FN.getOriginalPath()))
             log_debug('Path_assets_FN  P "{0}"'.format(Path_assets_FN.getPath()))
 
-            self.launchers[s_launcherID]['path_title']     = Path_assets_FN.pjoin('titles').getOriginalPath()
-            self.launchers[s_launcherID]['path_snap']      = Path_assets_FN.pjoin('snaps').getOriginalPath()
-            self.launchers[s_launcherID]['path_fanart']    = Path_assets_FN.pjoin('fanarts').getOriginalPath()
-            self.launchers[s_launcherID]['path_banner']    = Path_assets_FN.pjoin('banners').getOriginalPath()
-            self.launchers[s_launcherID]['path_clearlogo'] = Path_assets_FN.pjoin('clearlogos').getOriginalPath()
-            self.launchers[s_launcherID]['path_boxfront']  = Path_assets_FN.pjoin('boxfront').getOriginalPath()
-            self.launchers[s_launcherID]['path_boxback']   = Path_assets_FN.pjoin('boxback').getOriginalPath()
-            self.launchers[s_launcherID]['path_cartridge'] = Path_assets_FN.pjoin('cartridges').getOriginalPath()
-            self.launchers[s_launcherID]['path_flyer']     = Path_assets_FN.pjoin('flyers').getOriginalPath()
-            self.launchers[s_launcherID]['path_map']       = Path_assets_FN.pjoin('maps').getOriginalPath()
-            self.launchers[s_launcherID]['path_manual']    = Path_assets_FN.pjoin('manuals').getOriginalPath()
-            self.launchers[s_launcherID]['path_trailer']   = Path_assets_FN.pjoin('trailers').getOriginalPath()
+            # >> Warn user if Path_assets_FN directory does not exist
+            if not Path_assets_FN.exists():
+                log_debug('Asset path not found!')
+                kodi_dialog_OK('Launcher "{0}". '.format(i_launcher['name']) +
+                               'Assets path "{0}" not found.'.format(Path_assets_FN.getPath()) +
+                               'Asset subdirectories will not be created.')
+            # >> Create asset directories if ROM path exists
+            else:
+                log_debug('Asset path found. Creating assets directories.')
+                assets_init_asset_dir(Path_assets_FN, self.launchers[s_launcherID])
 
-            log_debug('Imported path_title  = "{0}"'.format(self.launchers[s_launcherID]['path_title']))
-            log_debug('Imported path_snap   = "{0}"'.format(self.launchers[s_launcherID]['path_snap']))
-            log_debug('Imported path_fanart = "{0}"'.format(self.launchers[s_launcherID]['path_fanart']))
-
-        # >> Name has changed. Regenerate roms_base_noext and rename old one if necessary.
-        # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
+        # >> Name of launcher has changed.
+        #    Regenerate roms_base_noext and rename old one if necessary.
         old_roms_base_noext          = self.launchers[s_launcherID]['roms_base_noext']
         old_roms_file_json           = ROMS_DIR.join(old_roms_base_noext + '.json')
         old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
@@ -8299,6 +8301,7 @@ class Main:
         if old_roms_base_noext != new_roms_base_noext:
             log_debug('Renaming JSON/XML launcher databases')
             self.launchers[s_launcherID]['roms_base_noext'] = new_roms_base_noext
+            # >> Only rename files if originals found.
             if old_roms_file_json.exists():
                 old_roms_file_json.rename(new_roms_file_json)
                 log_debug('RENAMED {0}'.format(old_roms_file_json.getOriginalPath()))
@@ -8307,7 +8310,6 @@ class Main:
                 old_roms_file_xml.rename(new_roms_file_xml)
                 log_debug('RENAMED {0}'.format(old_roms_file_xml.getOriginalPath()))
                 log_debug('   into {0}'.format(new_roms_file_xml.getOriginalPath()))
-            # >> Renamed PClone files if found
             if old_PClone_index_file_json.exists():
                 old_PClone_index_file_json.rename(new_PClone_index_file_json)
                 log_debug('RENAMED {0}'.format(old_PClone_index_file_json.getOriginalPath()))
