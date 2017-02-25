@@ -545,6 +545,16 @@ class FileName:
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
+    
+    def readAll(self):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        with file:
+            contents = file.read()
+            file.close()
+
+        return contents
+    
     def writeAll(self, bytes):
         self.write(bytes, 'w')
 

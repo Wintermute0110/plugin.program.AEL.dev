@@ -5253,9 +5253,7 @@ class Main:
 
             # --- Read report file ---
             try:
-                file = open(report_file_name.getPath(), 'r')
-                info_text = file.read()
-                file.close()
+                info_text = report_file_name.readAll()
             except:
                 log_error('_command_view_Launcher_Report() Exception reading report TXT file')
 
@@ -5287,9 +5285,7 @@ class Main:
                 kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
                 return
 
-            info_text = ''
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
-                info_text = myfile.read()
+            info_text = LAUNCH_LOG_FILE_PATH.readAll()
 
             # --- Show information window ---
             window_title = 'Launcher last execution stdout'
@@ -7992,9 +7988,7 @@ class Main:
 
         # Import file
         log_debug('_gui_import_TXT_file() Importing description from "{0}"'.format(text_file.getOriginalPath()))
-        text_plot = open(text_file.getPath(), 'rt')
-        file_data = text_plot.read()
-        text_plot.close()
+        file_data = text_file.readAll()
 
         return file_data
 
