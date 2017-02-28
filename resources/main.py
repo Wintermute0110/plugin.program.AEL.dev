@@ -2521,7 +2521,7 @@ class Main:
                 elif type3 < 0: return # User canceled select dialog
 
         # --- Manage Collection ROM position (ONLY for Favourite/Collection ROMs) ---
-        elif type == 5:
+        elif type == 6:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Manage ROM position',
                                   ['Choose Collection ROM order...',
