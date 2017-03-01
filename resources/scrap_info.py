@@ -82,6 +82,7 @@ AEL_platform_list = [
     'Commodore VIC-20',
     # --- Magnavox ---
     'Magnavox Odyssey2',
+    'Philips Videopac G7000',
     # --- Microsoft ---
     'Microsoft MSX',
     'Microsoft MSX 2',
@@ -91,7 +92,9 @@ AEL_platform_list = [
     'Microsoft Xbox 360',
     'Microsoft Xbox One',
     # --- NEC ---
-    'NEC PC Engine/TurboGrafx 16',
+    'NEC PC Engine',
+    'NEC TurboGrafx 16',
+    'NEC TurboGrafx CD',
     'NEC PC SuperGrafx',
     'NEC PC-FX',
     # --- Nintendo ---
@@ -105,6 +108,7 @@ AEL_platform_list = [
     'Nintendo DS',
     'Nintendo DSi',
     'Nintendo NES',
+    'Nintendo Famicom',
     'Nintendo SNES',
     'Nintendo Switch',
     'Nintendo Virtual Boy',
@@ -113,9 +117,11 @@ AEL_platform_list = [
     # --- Sega ---
     'Sega 32X',
     'Sega Game Gear',
-    'Sega Master System/Mark III',
+    'Sega Master System',
     'Sega MegaCD',
-    'Sega MegaDrive/Genesis',
+    'Sega SegaCD',
+    'Sega MegaDrive',
+    'Sega Genesis',
     'Sega PICO',
     'Sega SG-1000',
     'Sega Saturn',
