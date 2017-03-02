@@ -447,6 +447,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('s_fanart', category['s_fanart']))
             str_list.append(XML_text('s_banner', category['s_banner']))
             str_list.append(XML_text('s_flyer', category['s_flyer']))
+            str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
             str_list.append(XML_text('s_trailer', category['s_trailer']))
             str_list.append('</category>\n')
 
@@ -492,6 +493,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('s_fanart', launcher['s_fanart']))
             str_list.append(XML_text('s_banner', launcher['s_banner']))
             str_list.append(XML_text('s_flyer', launcher['s_flyer']))
+            str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
             str_list.append(XML_text('s_trailer', launcher['s_trailer']))
             str_list.append(XML_text('path_title', launcher['path_title']))
             str_list.append(XML_text('path_snap', launcher['path_snap']))
