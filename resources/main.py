@@ -520,7 +520,7 @@ class Main:
         dialog = xbmcgui.Dialog()
         finished_display = 'Status: Finished' if self.categories[categoryID]['finished'] == True else 'Status: Unfinished'
         type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['m_name']),
-                             ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
+                             ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                               finished_display, 'Delete Category'])
         if type < 0: return
 
@@ -536,7 +536,7 @@ class Main:
                                    "Edit Rating: '{0}'".format(self.categories[categoryID]['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
                                    'Import NFO file (default, {0})'.format(NFO_str),
-                                   'Import NFO file (browse NFO file)...',
+                                   'Import NFO file (browse NFO file) ...',
                                    'Save NFO file (default location)'])
             if type2 < 0: return
 
@@ -626,12 +626,12 @@ class Main:
             img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,     'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner...',       'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,    'icon' : img_flyer},
-                {'name' : 'Edit Clearlogo...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Trailer...',      'label2' : label2_trailer,   'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail ...',    'label2' : label2_thumb,     'icon' : img_thumb},
+                {'name' : 'Edit Fanart ...',       'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner ...',       'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Flyer / Poster ...', 'label2' : label2_poster,    'icon' : img_flyer},
+                {'name' : 'Edit Clearlogo ...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Trailer ...',      'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Category Assets/Artwork', img_list)
             if type2 < 0: return
@@ -975,15 +975,15 @@ class Main:
             category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
         if self.launchers[launcherID]['rompath'] == '':
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
+                                 ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                                   'Change Category: {0}'.format(category_name), finished_display,
-                                  'Advanced Modifications...', 'Delete Launcher'])
+                                  'Advanced Modifications ...', 'Delete Launcher'])
         else:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata...', 'Edit Assets/Artwork...', 'Choose default Assets/Artwork...',
+                                 ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                                   'Change Category: {0}'.format(category_name), finished_display,
-                                  'Manage ROM List...', 'Audit ROMs / Launcher view mode...',
-                                  'Advanced Modifications...', 'Delete Launcher'])
+                                  'Manage ROM List ...', 'Audit ROMs / Launcher view mode ...',
+                                  'Advanced Modifications ...', 'Delete Launcher'])
         if type < 0: return
 
         # --- Edition of the launcher metadata ---
@@ -994,7 +994,7 @@ class Main:
             scraper_menu_list = []
             for scrap_obj in scrapers_metadata:
                 scraper_obj_list.append(scrap_obj)
-                scraper_menu_list.append('Scrape metadata from {0}...'.format(scrap_obj.name))
+                scraper_menu_list.append('Scrape metadata from {0} ...'.format(scrap_obj.name))
                 log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
 
             # >> Metadata edit dialog
@@ -1188,12 +1188,12 @@ class Main:
             img_clearlogo    = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png' if launcher['s_trailer']   else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,     'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner...',       'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,    'icon' : img_flyer},
-                {'name' : 'Edit Clearlogo...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Trailer...',      'label2' : label2_trailer,   'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail ...',    'label2' : label2_thumb,     'icon' : img_thumb},
+                {'name' : 'Edit Fanart ...',       'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner ...',       'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Flyer / Poster ...', 'label2' : label2_poster,    'icon' : img_flyer},
+                {'name' : 'Edit Clearlogo ...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Trailer ...',      'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Launcher Assets/Artwork', img_list)
             if type2 < 0: return
@@ -1346,8 +1346,8 @@ class Main:
             if type == type_nb:
                 dialog = xbmcgui.Dialog()
                 type2 = dialog.select('Manage ROMs',
-                                      ['Choose ROMs default assets/artwork...',
-                                       'Manage ROMs asset directories...',
+                                      ['Choose ROMs default assets/artwork ...',
+                                       'Manage ROMs asset directories ...',
                                        'Rescan ROMs local assets/artwork',
                                        'Remove dead/missing ROMs',
                                        'Import ROMs metadata from NFO files',
@@ -1485,7 +1485,7 @@ class Main:
 
                 # --- Rescan local assets/artwork ---
                 elif type2 == 2:
-                    log_info('_command_edit_launcher() Rescanning local assets...')
+                    log_info('_command_edit_launcher() Rescanning local assets ...')
                     launcher = self.launchers[launcherID]
 
                     # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
@@ -1640,7 +1640,7 @@ class Main:
                     nointro_xml_file = launcher['nointro_xml_file']
                     add_delete_NoIntro_str = 'Delete No-Intro DAT: {0}'.format(nointro_xml_file)
                 else:
-                    add_delete_NoIntro_str = 'Add No-Intro XML DAT...'
+                    add_delete_NoIntro_str = 'Add No-Intro XML DAT ...'
                 launcher_mode_str = 'PClone mode' if launcher['pclone_launcher'] else 'Normal mode'
                 type2 = dialog.select('Audit ROMs / Launcher view mode',
                                       ['Change launcher view mode (Now {0})'.format(launcher_mode_str),
@@ -1789,14 +1789,14 @@ class Main:
                 type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: {0}".format(launcher_str),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
-                                       "Modify Aditional arguments...",
+                                       "Modify Aditional arguments ...",
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
             # --- Standalone launcher -------------------------------------------------------------
             else:
                 type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: {0}".format(launcher_str),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
-                                       "Aditional arguments...",
+                                       "Aditional arguments ...",
                                        "Change ROM Path: '{0}'".format(self.launchers[launcherID]['rompath']),
                                        "Modify ROM Extensions: '{0}'".format(self.launchers[launcherID]['romext']),
                                        "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
@@ -1854,7 +1854,7 @@ class Main:
                 for extra_arg in launcher['args_extra']:
                     additional_args_list.append("Modify '{0}'".format(extra_arg))
                 type_aux = dialog.select('Launcher additional arguments',
-                                         ['Add new additional arguments...'] + additional_args_list)
+                                         ['Add new additional arguments ...'] + additional_args_list)
                 if type_aux < 0: return
 
                 # >> Add new additional arguments
@@ -1868,7 +1868,7 @@ class Main:
                 elif type_aux >= 1:
                     arg_index = type_aux - 1
                     type_aux_2 = dialog.select('Modify extra arguments {0}'.format(type_aux),
-                                               ["Edit '{0}'...".format(launcher['args_extra'][arg_index]), 
+                                               ["Edit '{0}' ...".format(launcher['args_extra'][arg_index]), 
                                                 'Delete extra arguments'])
                     if type_aux_2 < 0: return
 
@@ -2021,7 +2021,7 @@ class Main:
             scraper_menu_list = []
             for scrap_obj in scrapers_metadata:
                 scraper_obj_list.append(scrap_obj)
-                scraper_menu_list.append('Scrape metadata from {0}...'.format(scrap_obj.name))
+                scraper_menu_list.append('Scrape metadata from {0} ...'.format(scrap_obj.name))
                 log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
 
             # >> Metadata edit dialog
@@ -2036,7 +2036,7 @@ class Main:
                          "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
                          "Edit Plot: '{0}'".format(desc_str),
                          'Load Plot from TXT file ...',
-                         'Import metadata from NFO file...',
+                         'Import metadata from NFO file ...',
                          'Save metadata to NFO file']
             type2 = dialog.select('Modify ROM metadata', menu_list + scraper_menu_list)
             if type2 < 0: return
@@ -2207,18 +2207,18 @@ class Main:
             img_trailer      = 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'
 
             img_list = [
-                {'name' : 'Edit Title...',            'label2' : label2_title,     'icon' : img_title},
-                {'name' : 'Edit Snap...',             'label2' : label2_snap,      'icon' : img_snap},
-                {'name' : 'Edit Fanart...',           'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner/Marquee...',   'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Clearlogo...',        'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Boxfront/Cabinet...', 'label2' : label2_boxfront,  'icon' : img_boxfront},
-                {'name' : 'Edit Boxback/CPanel...',   'label2' : label2_boxback,   'icon' : img_boxback},
-                {'name' : 'Edit Cartridge/PCB...',    'label2' : label2_cartridge, 'icon' : img_cartridge},
-                {'name' : 'Edit Flyer...',            'label2' : label2_flyer,     'icon' : img_flyer},
-                {'name' : 'Edit Map...',              'label2' : label2_map,       'icon' : img_map},
-                {'name' : 'Edit Manual...',           'label2' : label2_manual,    'icon' : img_manual},
-                {'name' : 'Edit Trailer...',          'label2' : label2_trailer,   'icon' : img_trailer}
+                {'name' : 'Edit Title ...',            'label2' : label2_title,     'icon' : img_title},
+                {'name' : 'Edit Snap ...',             'label2' : label2_snap,      'icon' : img_snap},
+                {'name' : 'Edit Fanart ...',           'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner / Marquee ...',   'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Clearlogo ...',        'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Boxfront / Cabinet ...', 'label2' : label2_boxfront,  'icon' : img_boxfront},
+                {'name' : 'Edit Boxback / CPanel ...',   'label2' : label2_boxback,   'icon' : img_boxback},
+                {'name' : 'Edit Cartridge / PCB ...',    'label2' : label2_cartridge, 'icon' : img_cartridge},
+                {'name' : 'Edit Flyer ...',            'label2' : label2_flyer,     'icon' : img_flyer},
+                {'name' : 'Edit Map ...',              'label2' : label2_map,       'icon' : img_map},
+                {'name' : 'Edit Manual ...',           'label2' : label2_manual,    'icon' : img_manual},
+                {'name' : 'Edit Trailer ...',          'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit ROM Assets/Artwork', img_list)
 
@@ -2320,13 +2320,13 @@ class Main:
         elif type == 5:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Manage ROM object',
-                                  ['Choose another parent ROM (launcher info only)...', # 0
-                                   'Choose another parent ROM (update all)...',         # 1
+                                  ['Choose another parent ROM (launcher info only) ...', # 0
+                                   'Choose another parent ROM (update all) ...',         # 1
                                    'Copy launcher info from parent ROM',                # 2
                                    'Copy metadata from parent ROM',                     # 3
                                    'Copy assets/artwork from parent ROM',               # 4
                                    'Copy all from parent ROM',                          # 5
-                                   'Manage default Assets/Artwork...'])
+                                   'Manage default Assets/Artwork ...'])
             if type2 < 0: return
 
             # --- Choose another parent ROM ---
@@ -2530,7 +2530,7 @@ class Main:
         elif type == 6:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Manage ROM position',
-                                  ['Choose Collection ROM order...',
+                                  ['Choose Collection ROM order ...',
                                    'Move Collection ROM up',
                                    'Move Collection ROM down'])
             if type2 < 0: return
@@ -3889,7 +3889,7 @@ class Main:
             # 3) Search for a ROM with same filename or same rom_base.
             #    If found, then replace romID in Favourites with romID of found ROM. Do not copy
             #    any metadata because user maybe customised the Favourite ROM.
-            log_info('Repairing Unlinked Launcher/Broken ROMs (type = {0}...'.format(type))
+            log_info('Repairing Unlinked Launcher/Broken ROMs (type = {0}) ...'.format(type))
 
             # --- Ask user about how to repair the Fav ROMs ---
             dialog = xbmcgui.Dialog()
@@ -3911,7 +3911,7 @@ class Main:
             xbmc.sleep(100)
             num_progress_items = len(roms_fav)
             i = 0
-            pDialog.create('Advanced Emulator Launcher', 'Repairing Unlinked Launcher/Broken ROMs...')
+            pDialog.create('Advanced Emulator Launcher', 'Repairing Unlinked Launcher/Broken ROMs ...')
             repair_rom_list = []
             num_broken_ROMs = 0
             for rom_fav_ID in roms_fav:
@@ -4011,7 +4011,7 @@ class Main:
         elif type == 3:
             # 1) Traverse list of Favourites.
             # 2) If romID not found in launcher, then search for a ROM with same basename.
-            log_info('Repairing Repair Unliked ROMs (type = {0}...'.format(type))
+            log_info('Repairing Repair Unliked ROMs (type = {0}) ...'.format(type))
 
             # --- Ask user about how to repair the Fav ROMs ---
             dialog = xbmcgui.Dialog()
@@ -4141,7 +4141,7 @@ class Main:
         log_debug('_fav_check_favourites() STEP 1: Search unlinked Launchers')
         num_progress_items = len(roms_fav)
         i = 0
-        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 1 of 3...')
+        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 1 of 3 ...')
         for rom_fav_ID in roms_fav:
             pDialog.update(i * 100 / num_progress_items)
             i += 1
@@ -4191,7 +4191,7 @@ class Main:
         log_debug('_fav_check_favourites() STEP 3: Search broken ROMs')
         num_progress_items = len(launchers_fav)
         i = 0
-        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 3 of 3...')
+        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 3 of 3 ...')
         for rom_fav_ID in roms_fav:
             pDialog.update(i * 100 / num_progress_items)
             i += 1
@@ -4340,8 +4340,8 @@ class Main:
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
         type = dialog.select('Select action for ROM Collection {0}'.format(collection['m_name']),
-                            ['Edit Metadata...', 'Edit Assets/Artwork...',
-                             'Choose default Assets/Artwork...'])
+                            ['Edit Metadata ...', 'Edit Assets/Artwork ...',
+                             'Choose default Assets/Artwork ...'])
         # >> User cancelled select dialog
         if type < 0: return
 
@@ -4357,7 +4357,7 @@ class Main:
                                    "Edit Rating: '{0}'".format(collection['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
                                    'Import NFO file (default, {0})'.format(NFO_str),
-                                   'Import NFO file (browse NFO file)...',
+                                   'Import NFO file (browse NFO file) ...',
                                    'Save NFO file (default location)'])
             if type2 < 0: return
 
@@ -4444,12 +4444,12 @@ class Main:
             img_clearlogo    = collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png'   if collection['s_trailer']   else 'DefaultAddonNone.png'
             img_list = [
-                {'name' : 'Edit Thumbnail...',    'label2' : label2_thumb,     'icon' : img_thumb},
-                {'name' : 'Edit Fanart...',       'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner...',       'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Flyer/Poster...', 'label2' : label2_poster,    'icon' : img_flyer},
-                {'name' : 'Edit Clearlogo...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Trailer...',      'label2' : label2_trailer,   'icon' : img_trailer}
+                {'name' : 'Edit Thumbnail ...',    'label2' : label2_thumb,     'icon' : img_thumb},
+                {'name' : 'Edit Fanart ...',       'label2' : label2_fanart,    'icon' : img_fanart},
+                {'name' : 'Edit Banner ...',       'label2' : label2_banner,    'icon' : img_banner},
+                {'name' : 'Edit Flyer / Poster ...', 'label2' : label2_poster,    'icon' : img_flyer},
+                {'name' : 'Edit Clearlogo ...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
+                {'name' : 'Edit Trailer ...',      'label2' : label2_trailer,   'icon' : img_trailer}
             ]
             type2 = gui_show_image_select('Edit Collection Assets/Artwork', img_list)
             if type2 < 0: return
@@ -4624,7 +4624,7 @@ class Main:
             collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
 
             # --- Import Collection assets ---
-            log_info('_command_import_collection() Importing ROM Collection assets...')
+            log_info('_command_import_collection() Importing ROM Collection assets ...')
             for asset_kind in CATEGORY_ASSET_LIST:
                 # >> Get asset filename with no extension
                 AInfo = assets_get_info_scheme(asset_kind)
@@ -4661,7 +4661,7 @@ class Main:
                 collection_dic[AInfo.key] = new_asset_FN.getOriginalPath()
 
             # --- Import ROM assets ---
-            log_info('_command_import_collection() Importing ROM assets...')
+            log_info('_command_import_collection() Importing ROM assets ...')
             for rom_item in collection_rom_list:
                 log_debug('_command_import_collection() ROM "{0}"'.format(rom_item['m_name']))
                 for asset_kind in ROM_ASSET_LIST:
@@ -4754,7 +4754,7 @@ class Main:
                 return
 
             # --- Copy Collection assets to Collection asset directory ---
-            log_info('_command_export_collection() Copying ROM Collection assets...')
+            log_info('_command_export_collection() Copying ROM Collection assets ...')
             collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
             collection_assets_were_copied = False
             for asset_kind in CATEGORY_ASSET_LIST:
@@ -4800,7 +4800,7 @@ class Main:
                     collection_assets_were_copied = True
 
             # --- Copy Collection ROM assets ---
-            log_info('_command_export_collection() Copying parent ROM assets into ROM Collections asset directory...')
+            log_info('_command_export_collection() Copying parent ROM assets into ROM Collections asset directory ...')
             ROM_assets_were_copied = False
             for rom_item in collection_rom_list:
                 log_debug('_command_export_collection() ROM "{0}"'.format(rom_item['m_name']))
@@ -4849,11 +4849,11 @@ class Main:
             # >> Write ROM Collection DB.
             if collection_assets_were_copied:
                 fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
-                log_info('_command_export_collection() Collection assets were copied. Saving Collection index...')
+                log_info('_command_export_collection() Collection assets were copied. Saving Collection index ...')
             if ROM_assets_were_copied:
                 json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
                 fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
-                log_info('_command_export_collection() Collection ROM assets were copied. Saving Collection database...')
+                log_info('_command_export_collection() Collection ROM assets were copied. Saving Collection database ...')
 
         # --- Export collection metadata (Always) ---
         output_FileName = output_dir_FileName.join(collection['m_name'] + '.json')
@@ -4988,13 +4988,13 @@ class Main:
 
         # --- Ask user what field category to search ---
         dialog = xbmcgui.Dialog()
-        type = dialog.select('Search ROMs...', ['By ROM Title', 'By Release Year', 'By Genre', 'By Studio', 'By Rating'])
+        type = dialog.select('Search ROMs ...', ['By ROM Title', 'By Release Year', 'By Genre', 'By Studio', 'By Rating'])
         if type < 0: return
 
         # --- Search by ROM Title ---
         type_nb = 0
         if type == type_nb:
-            keyboard = xbmc.Keyboard('', 'Enter the ROM Title search string...')
+            keyboard = xbmc.Keyboard('', 'Enter the ROM Title search string ...')
             keyboard.doModal()
             if not keyboard.isConfirmed(): return
             search_string = keyboard.getText()
@@ -5005,7 +5005,7 @@ class Main:
         if type == type_nb:
             searched_list = self._search_launcher_field('m_year', roms)
             dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a release year...', searched_list)
+            selected_value = dialog.select('Select a release year ...', searched_list)
             if selected_value < 0: return
             search_string = searched_list[selected_value]
             url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_YEAR', search_string)
@@ -5028,7 +5028,7 @@ class Main:
         if type == type_nb:
             searched_list = self._search_launcher_field('m_genre', roms)
             dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Genre...', searched_list)
+            selected_value = dialog.select('Select a Genre ...', searched_list)
             if selected_value < 0: return
             search_string = searched_list[selected_value]
             url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_GENRE', search_string)
@@ -5038,7 +5038,7 @@ class Main:
         if type == type_nb:
             searched_list = self._search_launcher_field('m_studio', roms)
             dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Studio...', searched_list)
+            selected_value = dialog.select('Select a Studio ...', searched_list)
             if selected_value < 0: return
             search_string = searched_list[selected_value]
             url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_STUDIO', search_string)
@@ -5048,7 +5048,7 @@ class Main:
         if type == type_nb:
             searched_list = self._search_launcher_field('m_rating', roms)
             dialog = xbmcgui.Dialog()
-            selected_value = dialog.select('Select a Rating...', searched_list)
+            selected_value = dialog.select('Select a Rating ...', searched_list)
             if selected_value < 0: return
             search_string = searched_list[selected_value]
             url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_RATING', search_string)
@@ -5232,7 +5232,7 @@ class Main:
                 # --- Read ROMs ---
                 regular_launcher = True
                 if categoryID == VCATEGORY_FAVOURITES_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Favourites...')
+                    log_info('_command_view_ROM() Viewing ROM in Favourites ...')
                     roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
                     rom = roms[romID]
                     window_title = 'Favourite ROM data'
@@ -5240,7 +5240,7 @@ class Main:
                     vlauncher_label = 'Favourite'
 
                 elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Most played ROMs list...')
+                    log_info('_command_view_ROM() Viewing ROM in Most played ROMs list ...')
                     most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
                     rom = most_played_roms[romID]
                     window_title = 'Most Played ROM data'
@@ -5248,7 +5248,7 @@ class Main:
                     vlauncher_label = 'Most Played ROM'
 
                 elif categoryID == VCATEGORY_RECENT_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Recently played ROMs...')
+                    log_info('_command_view_ROM() Viewing ROM in Recently played ROMs ...')
                     recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
                     if current_ROM_position < 0:
@@ -5260,7 +5260,7 @@ class Main:
                     vlauncher_label = 'Recently played ROM'
 
                 elif categoryID == VCATEGORY_TITLE_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Title Virtual Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in Title Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
@@ -5273,7 +5273,7 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Title'
 
                 elif categoryID == VCATEGORY_YEARS_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Year Virtual Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in Year Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
@@ -5286,7 +5286,7 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Year'
 
                 elif categoryID == VCATEGORY_GENRE_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Genre Virtual Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in Genre Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
@@ -5299,7 +5299,7 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Genre'
 
                 elif categoryID == VCATEGORY_STUDIO_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Studio Virtual Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in Studio Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
@@ -5312,7 +5312,7 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Studio'
 
                 elif categoryID == VCATEGORY_NPLAYERS_ID:
-                    log_info('_command_view_ROM() Viewing ROM in NPlayers Virtual Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in NPlayers Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_NPLAYERS_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
@@ -5325,7 +5325,7 @@ class Main:
                     vlauncher_label = 'Virtual Launcher NPlayer'
 
                 elif categoryID == VCATEGORY_ESRB_ID:
-                    log_info('_command_view_ROM() Viewing ROM in ESRB Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in ESRB Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_ESRB_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
@@ -5338,7 +5338,7 @@ class Main:
                     vlauncher_label = 'Virtual Launcher ESRB'
 
                 elif categoryID == VCATEGORY_RATING_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Rating Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in Rating Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_RATING_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
@@ -5365,7 +5365,7 @@ class Main:
 
                 # --- ROM in Collection ---
                 elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Collection...')
+                    log_info('_command_view_ROM() Viewing ROM in Collection ...')
                     (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
                     collection = collections[launcherID]
                     roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
@@ -5381,7 +5381,7 @@ class Main:
 
                 # --- ROM in regular launcher ---
                 else:
-                    log_info('_command_view_ROM() Viewing ROM in Launcher...')
+                    log_info('_command_view_ROM() Viewing ROM in Launcher ...')
                     # Check launcher is OK
                     if launcherID not in self.launchers:
                         kodi_dialog_OK('launcherID not found in self.launchers')
@@ -5705,7 +5705,7 @@ class Main:
         i = 0
         pDialog = xbmcgui.DialogProgress()
         pDialog_canceled = False
-        pDialog.create('Advanced Emulator Launcher', 'Making ROM list...')
+        pDialog.create('Advanced Emulator Launcher', 'Making ROM list ...')
         for launcher_id in self.launchers:
             # >> Update dialog
             pDialog.update(i * 100 / num_launchers)
@@ -5850,7 +5850,7 @@ class Main:
             all_roms = {}
             num_launchers = len(self.launchers)
             i = 0
-            pDialog.create('Advanced Emulator Launcher', 'Making ROM list...')
+            pDialog.create('Advanced Emulator Launcher', 'Making ROM list ...')
             for launcher_id in self.launchers:
                 # >> Update dialog
                 pDialog.update(i * 100 / num_launchers)
@@ -5915,7 +5915,7 @@ class Main:
         vcategory_launchers = {}
         num_vlaunchers = len(virtual_launchers)
         i = 0
-        pDialog.create('Advanced Emulator Launcher', 'Writing {0} hashed database...'.format(vcategory_name))
+        pDialog.create('Advanced Emulator Launcher', 'Writing {0} hashed database ...'.format(vcategory_name))
         for vlauncher_id in virtual_launchers:
             # >> Update progress dialog
             pDialog.update(i * 100 / num_vlaunchers)
@@ -5954,7 +5954,7 @@ class Main:
         ret = kodi_dialog_yesno('Are you sure you want to import Advanced Launcher launchers.xml?')
         if not ret: return
 
-        kodi_notify('Importing AL launchers.xml...')
+        kodi_notify('Importing AL launchers.xml ...')
         AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
         LAUNCHERS_FILE_PATH = AL_DATA_DIR.join('launchers.xml')
         FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.join('fixed_launchers.xml')
@@ -6122,7 +6122,7 @@ class Main:
     def _command_run_rom(self, categoryID, launcherID, romID):
         # --- ROM in Favourites ---
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            log_info('_command_run_rom() Launching ROM in Favourites...')
+            log_info('_command_run_rom() Launching ROM in Favourites ...')
             roms          = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             rom           = roms[romID]
             recent_rom    = rom
@@ -6133,7 +6133,7 @@ class Main:
             args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Recently played ROMs list ---
         elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-            log_info('_command_run_rom() Launching ROM in Recently Played ROMs...')
+            log_info('_command_run_rom() Launching ROM in Recently Played ROMs ...')
             recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
             if current_ROM_position < 0:
@@ -6148,7 +6148,7 @@ class Main:
             args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Most played ROMs ---
         elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
-            log_info('_command_run_rom() Launching ROM in Most played ROMs...')
+            log_info('_command_run_rom() Launching ROM in Most played ROMs ...')
             most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
             rom           = most_played_roms[romID]
             recent_rom    = rom
@@ -6159,7 +6159,7 @@ class Main:
             args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_info('_command_run_rom() Launching ROM in Collection...')
+            log_info('_command_run_rom() Launching ROM in Collection ...')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
             roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
@@ -6180,19 +6180,19 @@ class Main:
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID or \
              categoryID == VCATEGORY_CATEGORY_ID:
             if categoryID == VCATEGORY_TITLE_ID:
-                log_info('_command_run_rom() Launching ROM in Virtual Launcher...')
+                log_info('_command_run_rom() Launching ROM in Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
             elif categoryID == VCATEGORY_YEARS_ID:
-                log_info('_command_run_rom() Launching ROM in Year Virtual Launcher...')
+                log_info('_command_run_rom() Launching ROM in Year Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
             elif categoryID == VCATEGORY_GENRE_ID:
-                log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher...')
+                log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
             elif categoryID == VCATEGORY_STUDIO_ID:
-                log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher...')
+                log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
             elif categoryID == VCATEGORY_CATEGORY_ID:
-                log_info('_command_run_rom() Launching ROM in Category Virtual Launcher...')
+                log_info('_command_run_rom() Launching ROM in Category Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
 
             rom           = roms[romID]
@@ -6204,7 +6204,7 @@ class Main:
             args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in standard ROM launcher ---
         else:
-            log_info('_command_run_rom() Launching ROM in Launcher...')
+            log_info('_command_run_rom() Launching ROM in Launcher ...')
             # --- Check launcher is OK and load ROMs ---
             if launcherID not in self.launchers:
                 kodi_dialog_OK('launcherID not found in self.launchers')
@@ -6343,7 +6343,7 @@ class Main:
         # --- Execute Kodi Retroplayer if launcher configured to do so ---
         # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
         if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
-            log_info('_command_run_rom() Executing Kodi Retroplayer...')
+            log_info('_command_run_rom() Executing Kodi Retroplayer ...')
             bc_romfile = os.path.basename(ROMFileName.getPath())
             bc_listitem = xbmcgui.ListItem(bc_romfile, "0", "", "")
             bc_parameters = {'Platform': 'Test Platform', 'Title': 'Test Game', 'URL': 'testurl'}
@@ -6592,7 +6592,7 @@ class Main:
         roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
         report_file_name = REPORTS_DIR.join(roms_base_noext + '.txt')
         log_verb('_roms_create_launcher_report() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
-        kodi_notify('Creating Launcher report...')
+        kodi_notify('Creating Launcher report ...')
 
         # >> Step 1: Launcher main statistics
         num_roms = len(roms)
@@ -6974,7 +6974,7 @@ class Main:
         launcher      = self.launchers[launcherID]
         launcher_path = FileName(launcher['rompath'])
         launcher_exts = launcher['romext']
-        log_info('_roms_import_roms() Starting ROM scanner...')
+        log_info('_roms_import_roms() Starting ROM scanner ...')
         log_info('launcher name "{0}"'.format(launcher['m_name']))
         log_info('launcher ID   {0}'.format(launcher['id']))
         log_info('ROM path      "{0}"'.format(launcher_path.getPath()))
@@ -7021,7 +7021,7 @@ class Main:
             log_debug('Starting dead items scan')
             i = 0
             self.pDialog.create('Advanced Emulator Launcher',
-                                'Checking for dead entries...', "Path '{0}'".format(launcher_path))
+                                'Checking for dead entries ...', "Path '{0}'".format(launcher_path))
             for key in sorted(roms.iterkeys()):
                 log_debug('Searching {0}'.format(roms[key]['filename']))
                 self.pDialog.update(i * 100 / num_roms)
@@ -7076,7 +7076,7 @@ class Main:
             # ~~~ Update progress dialog ~~~
             self.progress_number = num_files_checked * 100 / num_files
             self.file_text       = 'ROM {0}'.format(ROM.getBase())
-            activity_text        = 'Checking if has ROM extension...'
+            activity_text        = 'Checking if has ROM extension ...'
             self.pDialog.update(self.progress_number, self.file_text, activity_text)
             num_files_checked += 1
 
@@ -7286,7 +7286,7 @@ class Main:
                 log_debug('NFO file not found. Only cleaning ROM name.')
                 romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         elif metadata_action == META_SCRAPER:
-            scraper_text = 'Scraping metadata with {0}. Searching for matching games...'.format(self.scraper_metadata.name)
+            scraper_text = 'Scraping metadata with {0}. Searching for matching games ...'.format(self.scraper_metadata.name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
             # --- Do a search and get a list of games ---
@@ -7316,7 +7316,7 @@ class Main:
                 else:
                     log_error('Invalid metadata_scraper_mode {0}'.format(self.settings['metadata_scraper_mode']))
                     selectgame = 0
-                scraper_text = 'Scraping metadata with {0}. Getting metadata...'.format(self.scraper_metadata.name)
+                scraper_text = 'Scraping metadata with {0}. Getting metadata ...'.format(self.scraper_metadata.name)
                 self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
                 # --- Grab metadata for selected game ---
@@ -7413,7 +7413,7 @@ class Main:
 
         # --- Updated progress dialog ---
         file_text    = 'ROM {0}'.format(ROM.getBase())
-        scraper_text = 'Scraping {0} with {1}. Searching for matching games...'.format(A.name, scraper_obj.name)
+        scraper_text = 'Scraping {0} with {1}. Searching for matching games ...'.format(A.name, scraper_obj.name)
         self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
         log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
@@ -7458,7 +7458,7 @@ class Main:
         else:
             log_error('{0} invalid thumb_mode {1}'.format(A.name, scraping_mode))
             selectgame = 0
-        scraper_text = 'Scraping {0} with {1}. Getting list of images...'.format(A.name, scraper_obj.name)
+        scraper_text = 'Scraping {0} with {1}. Getting list of images ...'.format(A.name, scraper_obj.name)
         self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
         # --- Grab list of images for the selected game ---
@@ -7490,7 +7490,7 @@ class Main:
             if image_selected_index < 0: image_selected_index = 0
 
             # Reopen progress dialog
-            scraper_text = 'Scraping {0} with {1}. Downloading image...'.format(A.name, scraper_obj.name)
+            scraper_text = 'Scraping {0} with {1}. Downloading image ...'.format(A.name, scraper_obj.name)
             self.pDialog.create('Advanced Emulator Launcher')
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         # --- Automatic scraping. Pick first image. ---
@@ -7556,7 +7556,7 @@ class Main:
         log_info('_gui_scrap_rom_metadata() ROM "{0}"'.format(rom_name))
 
         # --- Ask user to enter ROM metadata search string ---
-        keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string...')
+        keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
         search_string = keyboard.getText()
@@ -7893,7 +7893,7 @@ class Main:
             log_debug('_gui_edit_asset() Initialised scraper "{0}"'.format(scraper_obj.name))
 
             # --- Ask user to edit the image search string ---
-            keyboard = xbmc.Keyboard(object_dic['m_name'], 'Enter the string to search for...')
+            keyboard = xbmc.Keyboard(object_dic['m_name'], 'Enter the string to search for ...')
             keyboard.doModal()
             if not keyboard.isConfirmed(): return False
             search_string = keyboard.getText().decode('utf-8')
@@ -8574,7 +8574,7 @@ class Main:
             self.base_url, command, categoryID, launcherID, search_type, search_string)
 
     def _command_buildMenu(self):
-        log_debug('_command_buildMenu() Starting...')
+        log_debug('_command_buildMenu() Starting ...')
 
         hasSkinshortcuts = xbmc.getCondVisibility('System.HasAddon(script.skinshortcuts)') == 1
         if hasSkinshortcuts == False:
