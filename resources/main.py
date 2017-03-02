@@ -1204,7 +1204,7 @@ class Main:
             elif type2 == 3:
                 if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_FLYER, launcher): return
             elif type2 == 4:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_CLEARLOGO, launcher): return
+                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_CLEARLOGO, launcher): return
             elif type2 == 5:
                 if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_TRAILER, launcher): return
 
@@ -7774,23 +7774,19 @@ class Main:
         # --- Show image editing options ---
         # >> Scrape only supported for ROMs (for the moment)
         dialog = xbmcgui.Dialog()
-        common_menu_list = ['Unset artwork/asset',
-                            'Select local {0}'.format(AInfo.kind_str, AInfo.kind_str),
-                            'Import local {0} (copy and rename)'.format(AInfo.kind_str)]
+        common_menu_list = ['Select local {0}'.format(AInfo.kind_str, AInfo.kind_str),
+                            'Import local {0} (copy and rename)'.format(AInfo.kind_str),
+                            'Unset artwork/asset',]
         if object_kind == KIND_ROM:
             type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
                                   common_menu_list + scraper_menu_list)
         else:
             type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str), common_menu_list)
-
-        # --- Unset asset ---
-        if type2 == 0:
-            object_dic[AInfo.key] = ''
-            kodi_notify('{0} {1} has been unset'.format(object_name, AInfo.name))
-            log_info('_gui_edit_asset() Unset {0} {1}'.format(object_name, AInfo.name))
+        # >> User canceled select box ---
+        if type2 < 0: return False
 
         # --- Link to a local image ---
-        elif type2 == 1:
+        if type2 == 0:
             image_dir = FileName(object_dic[AInfo.key]).getDir() if object_dic[AInfo.key] else ''
 
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
@@ -7808,6 +7804,7 @@ class Main:
             if not image_file or not image_file_path.exists(): return False
 
             # --- Update object by assigment. XML/JSON will be save by parent ---
+            log_debug('_gui_edit_asset() AInfo.key "{0}"'.format(AInfo.key))
             object_dic[AInfo.key] = image_file_path.getOriginalPath()
             kodi_notify('{0} {1} has been updated'.format(object_name, AInfo.name))
             log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, AInfo.name, image_file_path.getOriginalPath()))
@@ -7817,7 +7814,7 @@ class Main:
 
         # --- Import an image ---
         # >> Copy and rename a local image into asset directory
-        elif type2 == 2:
+        elif type2 == 1:
             # >> If assets exists start file dialog from current asset directory
             image_dir = ''
             if object_dic[AInfo.key]: image_dir = FileName(object_dic[AInfo.key]).getDir()
@@ -7860,6 +7857,12 @@ class Main:
 
             # --- Update Kodi image cache ---
             kodi_update_image_cache(dest_path_FileName.getOriginalPath())
+
+        # --- Unset asset ---
+        elif type2 == 2:
+            object_dic[AInfo.key] = ''
+            kodi_notify('{0} {1} has been unset'.format(object_name, AInfo.name))
+            log_info('_gui_edit_asset() Unset {0} {1}'.format(object_name, AInfo.name))
 
         # --- Manual scrape and choose from a list of images ---
         # >> Copy asset scrape code into here and remove function _gui_scrap_image_semiautomatic()
@@ -7965,10 +7968,6 @@ class Main:
             # --- Edit using Python pass by assigment ---
             # >> Caller is responsible to save Categories/Launchers/ROMs
             object_dic[AInfo.key] = image_local_path
-
-        # --- User canceled select box ---
-        elif type2 < 0:
-            return False
 
         # >> If we reach this point, changes were made.
         # >> Categories/Launchers/ROMs must be saved, container must be refreshed.
