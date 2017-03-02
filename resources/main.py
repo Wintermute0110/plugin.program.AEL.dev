@@ -1010,7 +1010,7 @@ class Main:
                          "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
                          "Edit Plot: '{0}'".format(plot_str),
                          'Import NFO file (default, {0})'.format(NFO_str),
-                         'Import NFO file (browse NFO file)...',
+                         'Import NFO file (browse NFO file) ...',
                          'Save NFO file (default location)']
             type2 = dialog.select('Edit Launcher Metadata', menu_list + scraper_menu_list)
             if type2 < 0: return
@@ -1035,7 +1035,13 @@ class Main:
                 old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
                 old_PClone_index_file_json   = ROMS_DIR.join(old_roms_base_noext + '_PClone_index.json')
                 old_PClone_parents_file_json = ROMS_DIR.join(old_roms_base_noext + '_PClone_parents.json')
-                category_name                = self.categories[categoryID]['m_name']
+                if launcher['categoryID'] in self.categories:
+                    category_name = self.categories[launcher['categoryID']]['m_name']
+                elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+                    category_name = VCATEGORY_ADDONROOT_ID
+                else:
+                    kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
+                    raise Exception('Launcher category not found. This is a bug, please report it.')
                 new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
                 new_roms_file_json           = ROMS_DIR.join(new_roms_base_noext + '.json')
                 new_roms_file_xml            = ROMS_DIR.join(new_roms_base_noext + '.xml')
