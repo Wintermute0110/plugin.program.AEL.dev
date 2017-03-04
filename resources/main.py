@@ -7013,6 +7013,7 @@ class Main:
         # Put in in object variables so it can be access in helper functions.
         self.pDialog = xbmcgui.DialogProgress()
         self.pDialog_canceled = False
+        self.pDialog_verbose = False
 
         # ~~~~~ Remove dead entries ~~~~~
         num_removed_roms = 0
@@ -7075,9 +7076,12 @@ class Main:
 
             # ~~~ Update progress dialog ~~~
             self.progress_number = num_files_checked * 100 / num_files
-            self.file_text       = 'ROM {0}'.format(ROM.getBase())
-            activity_text        = 'Checking if has ROM extension ...'
-            self.pDialog.update(self.progress_number, self.file_text, activity_text)
+            self.file_text = 'ROM {0}'.format(ROM.getBase())
+            if not self.pDialog_verbose:
+                self.pDialog.update(self.progress_number, self.file_text)
+            else:
+                activity_text = 'Checking if has ROM extension ...'
+                self.pDialog.update(self.progress_number, self.file_text, activity_text)
             num_files_checked += 1
 
             # --- Check if filename matchs ROM extensions ---
@@ -7167,8 +7171,7 @@ class Main:
             if self.pDialog.iscanceled() or self.pDialog_canceled:
                 self.pDialog.close()
                 kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-                log_info('User pressed Cancel button when scanning ROMs')
-                log_info('ROM scanning stopped')
+                log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
                 return
         self.pDialog.close()
         log_info('***** ROM scanner finished. Report ******')
@@ -7265,13 +7268,15 @@ class Main:
 
         # >> Do metadata action based on policy
         if metadata_action == META_TITLE_ONLY:
-            scraper_text = 'Formatting ROM name.'
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+            if self.pDialog_verbose:
+                scraper_text = 'Formatting ROM name.'
+                self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
             nfo_file_path = FileName(ROM.getPath_noext() + ".nfo")
-            scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+            if self.pDialog_verbose:
+                scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
+                self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             log_debug('Trying NFO file "{0}"'.format(nfo_file_path.getPath()))
             if nfo_file_path.exists():
                 log_debug('NFO file found. Reading it')
@@ -7286,8 +7291,9 @@ class Main:
                 log_debug('NFO file not found. Only cleaning ROM name.')
                 romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         elif metadata_action == META_SCRAPER:
-            scraper_text = 'Scraping metadata with {0}. Searching for matching games ...'.format(self.scraper_metadata.name)
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+            if self.pDialog_verbose:
+                scraper_text = 'Scraping metadata with {0}. Searching for matching games ...'.format(self.scraper_metadata.name)
+                self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
             # --- Do a search and get a list of games ---
             rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
@@ -7297,27 +7303,29 @@ class Main:
                 # id="metadata_scraper_mode" values="Semi-automatic|Automatic"
                 if self.settings['metadata_scraper_mode'] == 0:
                     log_debug('Metadata semi-automatic scraping')
-                    # Close progress dialog (and check it was not canceled)
+                    # >> Close progress dialog (and check it was not canceled)
                     if self.pDialog.iscanceled(): self.pDialog_canceled = True
                     self.pDialog.close()
 
-                    # Display corresponding game list found so user choses
+                    # >> Display corresponding game list found so user choses
                     dialog = xbmcgui.Dialog()
                     rom_name_list = []
                     for game in results: rom_name_list.append(game['display_name'])
                     selectgame = dialog.select('Select game for ROM {0}'.format(ROM.getBase_noext()), rom_name_list)
                     if selectgame < 0: selectgame = 0
 
-                    # Open progress dialog again
+                    # >> Open progress dialog again
                     self.pDialog.create('Advanced Emulator Launcher')
+                    if not self.pDialog_verbose: self.pDialog.update(self.progress_number, self.file_text)
                 elif self.settings['metadata_scraper_mode'] == 1:
                     log_debug('Metadata automatic scraping. Selecting first result.')
                     selectgame = 0
                 else:
                     log_error('Invalid metadata_scraper_mode {0}'.format(self.settings['metadata_scraper_mode']))
                     selectgame = 0
-                scraper_text = 'Scraping metadata with {0}. Getting metadata ...'.format(self.scraper_metadata.name)
-                self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+                if self.pDialog_verbose:
+                    scraper_text = 'Scraping metadata with {0}. Getting metadata ...'.format(self.scraper_metadata.name)
+                    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
                 # --- Grab metadata for selected game ---
                 gamedata = self.scraper_metadata.get_metadata(results[selectgame])
@@ -7412,9 +7420,9 @@ class Main:
         platform = launcher['platform']
 
         # --- Updated progress dialog ---
-        file_text    = 'ROM {0}'.format(ROM.getBase())
-        scraper_text = 'Scraping {0} with {1}. Searching for matching games ...'.format(A.name, scraper_obj.name)
-        self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+        if self.pDialog_verbose:
+            scraper_text = 'Scraping {0} with {1}. Searching for matching games ...'.format(A.name, scraper_obj.name)
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
         log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
         log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext))
@@ -7451,15 +7459,18 @@ class Main:
             if selectgame < 0: selectgame = 0
 
             # Open progress dialog again
-            self.pDialog.create('Advanced Emulator Launcher - Scanning ROMs')
+            self.pDialog.create('Advanced Emulator Launcher')
+            if not self.pDialog_verbose: self.pDialog.update(self.progress_number, self.file_text)
+
         elif scraping_mode == 1:
             log_debug('{0} automatic scraping. Selecting first result.'.format(A.name))
             selectgame = 0
         else:
             log_error('{0} invalid thumb_mode {1}'.format(A.name, scraping_mode))
             selectgame = 0
-        scraper_text = 'Scraping {0} with {1}. Getting list of images ...'.format(A.name, scraper_obj.name)
-        self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+        if self.pDialog_verbose:
+            scraper_text = 'Scraping {0} with {1}. Getting list of images ...'.format(A.name, scraper_obj.name)
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
         # --- Grab list of images for the selected game ---
         image_list = scraper_obj.get_images(results[selectgame], asset_kind)
@@ -7489,13 +7500,17 @@ class Main:
             log_debug('{0} dialog returned index {1}'.format(A.name, image_selected_index))
             if image_selected_index < 0: image_selected_index = 0
 
-            # Reopen progress dialog
-            scraper_text = 'Scraping {0} with {1}. Downloading image ...'.format(A.name, scraper_obj.name)
+            # >> Reopen progress dialog
             self.pDialog.create('Advanced Emulator Launcher')
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+            if not self.pDialog_verbose: self.pDialog.update(self.progress_number, self.file_text)
         # --- Automatic scraping. Pick first image. ---
         else:
             image_selected_index = 0
+
+        # Update progress dialog
+        if self.pDialog_verbose:
+            scraper_text = 'Scraping {0} with {1}. Downloading image ...'.format(A.name, scraper_obj.name)
+            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
         # --- Resolve URL ---
         image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
