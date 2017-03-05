@@ -1640,9 +1640,9 @@ class Main:
                     add_delete_NoIntro_str = 'Delete No-Intro DAT: {0}'.format(nointro_xml_file)
                 else:
                     add_delete_NoIntro_str = 'Add No-Intro XML DAT ...'
-                launcher_mode_str = 'PClone mode' if launcher['pclone_launcher'] else 'Normal mode'
+                launcher_mode_str = 'Parent/Clone mode' if launcher['pclone_launcher'] else 'Normal mode'
                 type2 = dialog.select('Audit ROMs / Launcher view mode',
-                                      ['Change launcher view mode (Now {0})'.format(launcher_mode_str),
+                                      ['Change launcher display mode (Now {0})'.format(launcher_mode_str),
                                        add_delete_NoIntro_str,
                                        'Audit ROMs using No-Intro XML PClone DAT',
                                        'Clear No-Intro audit status',
@@ -1655,7 +1655,7 @@ class Main:
                     pclone_launcher = launcher['pclone_launcher']
                     if pclone_launcher: item_list = ['Normal mode', 'PClone mode [Current]']
                     else:               item_list = ['Normal mode [Current]', 'PClone mode']
-                    type_temp = dialog.select('Manage Items List', item_list)
+                    type_temp = dialog.select('Launcher display mode', item_list)
                     if type_temp < 0: return
 
                     if type_temp == 0:
