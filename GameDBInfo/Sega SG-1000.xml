@@ -1,0 +1,1031 @@
+<?xml version="1.0"?>
+<menu>
+  <header>
+    <listname>Sega SG-1000</listname>
+    <lastlistupdate></lastlistupdate>
+    <listversion>test</listversion>
+    <exporterversion></exporterversion>
+  </header>
+  <game name="Bank Panic (Japan)">
+    <description>Bank Panic</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Sanritsu Denki Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.7</score>
+    <player>1-2 Players</player>
+    <story>Bandits are holding up a bank and have taken people hostage, and as a gunslinger, it&apos;s your job to shoot them. The bank has 12 doors, and the bandits are behind each one of them. When they pull a gun out at you when you open a door, you have only a few seconds to shoot them before they shoot you. If you shoot them too early (ie: before he sticks his gun out at you), it is considered unfair, and you won&apos;t score any points, but if you&apos;re too late, he&apos;ll shoot you and you lose one of your three lives. If you waste too much time, a bandit will come out from one of the doors and stick dynamite on it. You must then shoot the dynamite to get rid of it. If you&apos;re lucky, either a man or a woman will throw you a bag of gold coins. If you shoot any of these people by accident, you also lose a life. More often than not, the person will throw his/her hands up, saying I haven&apos;t got anything. That&apos;s when they will be replaced by bandits. Some men will carry three to five pieces of gold on top of their heads, and shooting at all of the gold will award you with a bag of gold coins. Others will be tied up with rope. If you shoot the rope, there&apos;s more money for you, because not only will you receive one bag of gold coins, but you&apos;ll get three bags of gold coins.There are more than ten rounds in Bank Panic, and each one ends when a person behind all 12 doors was able to throw you a bag of gold coins. The rounds get difficult the further you get. For example, in later rounds, a few bandits will block your shot, and you have to then shoot twice. Also, regardless of what round you&apos;re on, you can shoot so many bandits before time </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Black Onyx, The (Japan)">
+    <description>Black Onyx, The</description>
+    <year>1987</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Bullet-Proof Software, Inc.</dev>
+    <genre>Role-Playing</genre>
+    <score>3.2</score>
+    <player>1 Player</player>
+    <story>Rumor says that the legendary Black Onyx, an artifact that grants eternal youth and happiness to those who can find it, lies within the Black Tower near the town of Utsuro. You assemble a party of brave adventurers and venture into the tower, defeating monsters on your way to the great treasure.The Black Onyx is one of the first traditional role-playing games made by a Japanese company. It is similar in gameplay to early Wizardry and Ultima games with killing monsters and exploring dungeons, with dark, realistic visuals. The player creates a party (up to five members) and explores a maze-like 3D dungeon, fighting random enemies on the way. The heroes also meet adventurers who can be convinced to join the party. The combat engine is turn-based.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Bomb Jack (Japan)">
+    <description>Bomb Jack</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Tehkan Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>In Bomb Jack, the player controls Jack, who must collect all the bombs in order to complete the current round and go onto the next one. This sounds easy, right? Wrong! Making Jack&apos;s task difficult are numerous enemies such as birds, mummies, turtles, and orbs.In each round, collecting a number of bombs results in a bonus coin appearing, and collecting this coin will make the player&apos;s score increase 2 to 4 times. More often than not, the power ball appears, and when you collect this, you can defeat enemies and have more time to collect all the bombs. There is also the E coin, which gives Jack one additional life, but rarely does this coin appear.The more you progress through the game, the more difficult it becomes, as enemies travel more quickly to get you.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Borderline (Japan, Europe)">
+    <description>Borderline</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Shooter</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Borderline is an overhead arcade shooter that puts the player in control of a Jeep in a war zone. The Jeep is equipped with a gun that has unlimited ammunition. Each round consists of four stages; after the player has completed all of them, the game proceeds to the next round, with increased difficulty. The first stage is a vertically scrolling shooter: the player can move the Jeep in all directions, shooting at enemies that try to destroy it by collision; the goal is simply to survive. The other stages share a different gameplay concept: the player has to navigate the Jeep towards enemy refineries and destroy them all. Enemy tanks will spawn indefinitely, trying to stop the Jeep. Parts of the stage are covered by bushes, and the Jeep has to furrow through them before advancing. In the third stage rockets can be picked up for bonus score. In the fourth and final stage the sole refinery is well-protected and shoots missiles at the Jeep. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="C_So! (Japan)">
+    <description>C_So!</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Action</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>C-So! is a platform game in which you control a man that has to collect items like flowers, apples and cherries, while he is being chased by hostile monsters. The monsters must be crushed or hurled against the ceiling by using a hand spike. Each level also contains elastic beds and doors. The beds make it possible to jump from platform to platform and the doors make it possible to escape the monsters by leaving through one door and showing up at the other. Before you can continue to the next level all items must have been collected and all monsters killed.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Castle, The (Japan)">
+    <description>Castle, The</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>ASCII Corporation</dev>
+    <genre>Puzzle</genre>
+    <score>4</score>
+    <player>1 Player</player>
+    <story>In the puzzle and platform game The Castle the player controls a prince that has to save the princess. To find his princess he must explore the castle, which has a hundred different rooms. Each room is a puzzle on its own as the prince must avoid enemy knights, fat Tiroler men, hazardous objects and has to use objects to get to the next door. In each room the prince has to collect keys and items, such as rings, gold bars and bottles. The bottles will give the prince an additional life. The keys may have different colors and only opens doors with the corresponding key color.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Chack&apos;n Pop (Japan)">
+    <description>Chack&apos;n Pop</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Taito Corporation</dev>
+    <genre>Action</genre>
+    <score>4</score>
+    <player>1-2 Players</player>
+    <story>Chack&apos;n Pop is considered a predecessor of Bubble Bobble. It is a platform game where a roundish yellow creature, named Chack&apos;n, must fight against Monstas and Mightas in order to reclaim hearts that were stolen during a romantic encounter with Miss Chack&apos;n.The Monstas themselves hatch from eggs hanging from the ceilings and the Mightas push a rock that is used as the game&apos;s timer. The Monsta eggs have three phases: if it&apos;s blue, it&apos;s completely harmless, if it&apos;s yellow it will pop within 10 seconds and if an egg turns red it will pop almost immediately.Chack&apos;n uses bombs to blow up the Monstas and their eggs and he also uses them to release the captured hearts from their cages. When the heart is released, it will fly up and destroy the separator block and reveal the exit to the level.Most versions of the game contain 14 levels to play through, however the Famicom version only includes 9.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Challenge Derby (Japan)">
+    <description>Challenge Derby</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Challenge Derby an horse racing game, Which horse of 256 horses will win the Derby (Tsukuda Award, Satsuki Award, Derby) is raced with 8 horses Furugeto! Exciting horse racing game for 1 - 8 Players</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Baseball (Japan)">
+    <description>Champion Baseball</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Sports/Baseball</genre>
+    <score>3.3</score>
+    <player>1-2 Players</player>
+    <story>This is a fully appealing and thrilling baseball game in which you can enjoy all imaginable kinds of baseball patterns one after another as in an actual game. This game allows you to compete against the computer team (the P team versus the C...</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Billiards (Japan)">
+    <description>Champion Billiards</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Sports</genre>
+    <score>2.8</score>
+    <player>1-2 Players</player>
+    <story>Unlike the other Champion Sports games, Champion Billiards is not an accurate representation of it&apos;s sport. Instead, Champion Billiards is a level-based physics game. The goal of each level is to use the red cue ball to sink the other balls. Trivia: Breaking open the yellow ball can release a yellow Flicky. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Boxing (Japan)">
+    <description>Champion Boxing</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Sports/Boxing</genre>
+    <score>4</score>
+    <player>1-2 Players</player>
+    <story>A straightforward championship boxing game from Sega. You can select several punches during a boxing match: straight, jab or upper. Don&apos;t get cornered and if you get hit then get up your defenses or step back. The matches can be played at four different levels of difficulty. In the game there is a referee, who counts when your opponent or you are down. The matches can be set at four difficulty levels.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Golf (Japan)">
+    <description>Champion Golf</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Logitec</dev>
+    <genre>Sports/Golf</genre>
+    <score>2.9</score>
+    <player>1 Player</player>
+    <story>If it&apos;s raining on Sunday....it&apos;s “CHAMPION GOLF” day, You can enjoy hitting the ball with the appropriate club to match the shot, walking around the coarse with the considerate caddie over its extensive fairways, roughs, green, ponds and bunker areas. Getting a “Birdie”, “Eagle” or an amazing “Hole in One”, or even more miraculous “Albatross” will make you feel like you are on top of the world. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Ice Hockey (Japan)">
+    <description>Champion Ice Hockey</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Pony Canyon</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Sports/Ice Hockey</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>Champion Ice Hockey is a simplistic ice hockey game built for the SG-1000. You play as the Red team vs. the Blue team. One button shoots, while the other button passes. Up and down control not only your goalie, but also the direction of the scoring shot</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Kendou (Japan)">
+    <description>Champion Kendou</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Pony Canyon</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Sports</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>Champion Kendou Is a fighting game involving the kendo martial art</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Pro Wrestling (Japan)">
+    <description>Champion Pro Wrestling</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Pony Canyon</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Sports/Wrestling</genre>
+    <score>1.4</score>
+    <player>1-2 Players</player>
+    <story>A straightforward Pro Wrestling game from Sega in the Champion sport series. You always start at rank C and have to fight your way up to rank B and A. To play for a rank you &apos;ll have to fight three matches. Winning two out of three matches promotes you to an higher rank. During a match several moves can be selected: chop, kick, pile driver, dropkick. The referee does a countdown when your opponent or you are down.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Soccer (Japan)">
+    <description>Champion Soccer</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Pony Canyon</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Sports/Soccer</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>Simplistic soccer game in Sega&apos;s Champion sports series. The game which you can play at three levels of difficulty. There is no referee and no tournament mode. The duration of match can not be set, a match takes ten minutes.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Champion Tennis (Japan)">
+    <description>Champion Tennis</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Sports/Tennis</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>Serve, receive and smash. Attack your rival&apos;s weak point. Use all corners of the court and get glorious victory over your rival. This is a highly intellectual and compeitive sports game which requires sharp nerves and concentration.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Championship Lode Runner (Japan)">
+    <description>Championship Lode Runner</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Puzzle</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>A fighting game involving the kendo martial artChampionship Lode Runner is a puzzle/action game which servers as an update to Lode Runner. It almost exactly the same game, but contains 50 of the most challenging levels divised. The Bungeling Empire has stolen a huge cache of gold from its rightful owners, and your mission is to infiltrate its treasury and recapture it. This entails progressing through 150 screens of platforms, ladders and ropes. The Empire has sent robotic guards down to protect the gold, and contact with any of these will cost you a life. Your method of escaping them is to press fire to dig a hole in their line of movement, thus causing them to fall in briefly, allowing you to move across the gap safely. Once all the gold has been collected, a ladder allowing you to move onto the next screen is added. Completing these screens often requires forward planning and precision.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Choplifter (Japan)">
+    <description>Choplifter</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Brøderbund Software, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.5</score>
+    <player>1 Player</player>
+    <story>Choplifter! is a side-scrolling action/arcade game that puts you in command of an attack chopper. Your mission: Go behind enemy lines and rescue up to 16 hostages per level. Be careful, though, because tanks and enemy aircraft will try to stop you - and they won&apos;t stop shooting while you are rescuing those hostages!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Congo Bongo (Japan, Europe)">
+    <description>Congo Bongo</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.3</score>
+    <player>1 Player</player>
+    <story>Congo Bongo is an arcade platform game similar in many ways to Donkey Kong, but with an isometric perspective. The player takes control of a safari hunter who is searching for an ape named Bongo, determined to punish him for setting the hunter&apos;s tent on fire. The game consists of four one-screen stages, each with an objective to jump on platforms and reach the top. Various animals will try to stop the protagonist: for example, in the first level a large gorilla throws coconuts at him. The hero has no offensive abilities and must jump or otherwise avoid enemy attacks. Stages may contain obstacles or hazardous spots that would kill off the main character.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dokidoki Penguin Land (Japan)">
+    <description>Dokidoki Penguin Land</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Pony Canyon</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>3</score>
+    <player>1-2 Players</player>
+    <story>In Penguin Land, you must control a penguin trying to get his (her?) egg down to the bottom of the level, while tunneling through ice to get there. Special egg and penguin blocks may make things easier, while polar bears and falling rocks will almost certainly slow you down.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dragon Wang (Japan)">
+    <description>Dragon Wang</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>The game was inspired by the arcade classic Kung-Fu Master. It later received a sequel called Kung Fu Kid. The protagonist is Wang (inspired by Jackie Chan and/or his character Thomas), hence the unfortunate title Dragon Wang. Wang is Chinese for King.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Drol (Japan)">
+    <description>Drol</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Brøderbund Software, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Drol is a platform game where you play a cute robot that can fly and shoot. Your goal is to rescue children that are wandering around each level. The levels consist of rows of platforms, with gaps which can be jumped through to go up or down a vertical level. The creatures to avoid and shoot vary from strange hopping, beer-belly aliens, to demons, snakes, and axes flying through the air (we never do find out who&apos;s throwing those axes!).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Elevator Action (Japan)">
+    <description>Elevator Action</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Taito</dev>
+    <genre>Action</genre>
+    <score>4.3</score>
+    <player>1-2 Players</player>
+    <story>You are Agent 17 (codename: Otto). Your mission is to secure all top secret documents from a security building and escape in the getaway car, located in the basement of the building. Enemies spies are scattered throughout the 30-floor building and they have only one mission: execute Agent 17 at all costs. There are several ways in which Agent 17 can kill them: Shooting them with his gun. Kicking them by jumping onto them. Shooting a light on the ceiling while in an elevator, dropping the light onto one of them. Crushing them with an elevator. Whenever a light has been dropped, the hallways will be dark for a short period of time, making the enemy spies harder to see. The same holds true for hallways that are already dark. While Otto is in an elevator, he will have complete control of it by moving up or down. Agent 17 can still get killed if he&apos;s already in an elevator if a bullet&apos;s trajectory is aimed at it.. When Otto is not in an elevator, it will move from floor to floor automatically, even when enemy spies are in it. Otto is able to leap over the elevator gaps, but he must be as close to the edge as possible without falling off in order to make the jump safely. If there is an elevator cable in the way, however, it will block him, causing him to fall. Just because the game is called Elevator Action doesn&apos;t mean that elevators are the only means of travel. There are also escalators which you can ride up or down, useful if you want to avoid gunfire and don&apos;t have time to jump. Otto must go into the rooms with red doors to collect the top secret documents. If he tries to get to his car without getting all the documents, he cannot escape and must go back and collect the remaining documents. Once he has all the documents and drives away, he then proceeds to the next building. If Otto takes too much time to collect the documents, the alarm will go off, and he will have trouble controlling the elevators, which will take time to react. Bad guys will be especially aggressive. The alarm doesn&apos;t go off when Otto loses a life, it only resets after finishing a building. Besides ducking, bad guys may also drop themselves and lay flat on the floor. It&apos;s virtually impossible for Otto to shoot bad guys when they do this. Also, Otto cannot duck when in an elevator.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Exerion (Japan, Europe)">
+    <description>Exerion</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Jaleco</dev>
+    <genre>Shooter</genre>
+    <score>2.7</score>
+    <player>1-2 Players</player>
+    <story>This is a shoot-em-up game with parallax effects in the background. It does have a simulation of inertia in the control of the ship. There are dozens of enemies and two types of shooting: slow and fast. Two weapon systems: one slow double-shot cannon and one fast single-shot cannon. With each enemy hit by the slow cannon you get one shot added to the fast cannon ammunition supply. A challenge stage follows each stage in which you can build up your fast-shot bullet supply.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Flicky (Japan)">
+    <description>Flicky</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>A female blue jay, named Flicky, must collect her chicks and lead them safely back to their nest, while they are chased by two cats. The cats make her chicks wandering off and try to eat her! Each level offers about a dozen objects like watering cans, hammers, and cups, to throw at and knock out the cats. The next level starts when all chicks are returned home safely.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Girl&apos;s Garden (Japan)">
+    <description>Girl&apos;s Garden</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>The simple little country girl Papri has a problem: her boyfriend Minto seems to show signs of interest towards another little girl, Cocco. Papri has to win his love back! The only way she can achieve that is by collecting flower bouquets, presenting them to Minto as a token of her feelings and gradually making him forget the other girl. Girl&apos;s Garden is Yuji Naka&apos;s debut and an early precursor of games with dating gameplay mechanics. Papri has to move through a confined top-down area, collecting flowers on the way. After having collected ten flowers, Papri can enter her boyfriend&apos;s house, completing a round and advancing to the next one, with the same goal but increased difficulty. Flowers must be picked up at full blossom; catching them too early will have no effect, while collecting wilted flowers will make Papri lose half of her bouquet. Papri&apos;s health is called love in the game, and is represented by hearts. She loses a heart if she falls into water or if a bear comes too close to her. Bears are roaming the area and can be temporarily distracted by dropping honey pots on the ground. Bees act as allies and will supply Papri with honey and bonus items that increase the score.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Golgo 13 (Japan)">
+    <description>Golgo 13</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>Golgo 13 is a scrolling shooter based on the manga of the same name, putting the player in control of its main character, the assassin Duke Togo. In this adaptation, however, the protagonist&apos;s goal is, on the contrary, to rescue people. The screen scrolls horizontally, displaying Duke on a car that is moving along the road, trying to keep up with a moving train on top of the screen. The player can move the car left and right, aligning it with the train&apos;s cars. The goal is to shoot the train&apos;s windows, letting the people trapped inside run out. The player controls a crosshair, moving it in all directions, and presses the fire button to shoot. Between the player-controlled character and the train there is another track with a never-ending cargo train on it; tall cars of this train will not only block the crosshair&apos;s path, but also bounce the bullets back at Duke, hurting him. In later stages trucks will appear on the road and helicopters will shoot missiles at Duke.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="GP World (Japan)">
+    <description>GP World</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Pony Canyon</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Driving</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>GP World has a simple premise: the player must race against the clock and computer-controlled Formula 1 opponents in a series of races. Along the way, the player will earn points to upgrade various aspects of his machine, including acceleration, top speed and handling. The game also includes a track editor, which allows players to create their own courses.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gulkave (Japan)">
+    <description>Gulkave</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Pony Canyon</manufacturer>
+    <dev>Compile</dev>
+    <genre>Shooter</genre>
+    <score>3</score>
+    <player>1-2 Players</player>
+    <story>Deviating slightly from Compile&apos;s usual vertically scrolling fashion, Gulkave is a rather orthodox horizontal shooter. Flying across – or inside – a parallax scrolling landscape, your spaceship must singlehandedly take out eight fortresses. In your way stand enemy spaceships that either try to crush you or fire at you, as well as some asteroids thrown in for good measure. For each hit you take, your ship is not destroyed. Instead, you have a power (barrier) bar that decreases gradually until you finally lose a ship. At the end of each level, bonus points are given according to your remaining barrier. Losing a ship means you lose all your weapons upgrades as well. As usual with a shooter from this maker, the powerups come in the shape of numbered pods that are released from Zanac-style blocks. Different upgrades give higher shot counts, more simultaneous bullets or bigger energy waves. At certain score intervals, you&apos;re granted bonus ships.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Guzzler (Japan)">
+    <description>Guzzler</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>Guzzler is an arcade game developed by Tehkan. It was ported to the SG-1000 by Tsukuda Original and given Othello Multivision branding. To this day the SG-1000 version stands as the only home port of Guzzler. You play as a character who needs to absorb water to put out fires dotted around a maze. The fires also spawn fire-based enemies which can be defeated in a similar fashion. You can only store up to three shots at one time. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="H.E.R.O. (Japan)">
+    <description>H.E.R.O.</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Activision</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>The objective of the game is to rescue trapped miners in a volcano. 1 drops a stick of dynamite to blow up barriers and kill enemies. 2 shoots a laser-like thing, which you can use to kill enemies. At the bottom of the screen, there is a Power meter showing you how much energy you have left; energy goes down as time goes on. Simply touch a miner to rescue him and move on to the next level. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Hang-On II (Japan)">
+    <description>Hang-On II</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Driving</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Hang-On II is an SG-1000 sequel to the critically acclaimed Hang-On. Despite the name, the game is meant as a direct sequel to the Mark III version of Hang-On, and is virtually identical to that game. The only difference is downgraded graphics and the addition of music from the arcade version. Meanwhile, Super Hang-On is the direct sequel to the arcade game.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Home Mahjong (Japan)">
+    <description>Home Mahjong</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>As the title suggests, this game lets players play a game of Mahjong. Players receive and discard tiles until they complete hands by forming groups and pairs. Players can choose to play on either a beginner, intermediate, or expert difficulty level. The expert skill level introduces a time limit to the proceedings. The game also keeps track of the score during gameplay.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Hustle Chumy (Japan)">
+    <description>Hustle Chumy</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Action</genre>
+    <score>4.4</score>
+    <player>1 Player</player>
+    <story>You are Chumy, the mouse. You live in the sewer, and you are hungry. Luckily, the sewer is filled with cheese, only it is guarded by menacing creatures such as rabbits, turtles and bats. In order to get his cheese, Chumy must go between platforms connected by ladders, all the time avoiding the other creatures. Luckily, Chumy can jump very far, across and above the nasties. Chumy also has an arsenal of cans to throw at the enemies. Most die after just one hit, whereas others are more impervious to attacks. The rabbits are particularly dangerous, since they may pounce at you unexpectedly, they being able to jump just as far as Chumy. When Chumy eats cheese (or bombs or biscuits), he moves slower due to the extra weight. When the mouse has fed on all the cheese, it can take the dust chute down from the top level to the bottom, and make its way to the exit and on to the next level. Control Chumy with the cursor keys and X for jumping, C for throwing.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Hyper Sports (Japan)">
+    <description>Hyper Sports</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Konami</dev>
+    <genre>Sports/Track &amp; Field</genre>
+    <score>2.6</score>
+    <player>1-2 Players</player>
+    <story>Six tough events await in this joystick-waggling action game. The full sequence of events is - swimming, skeet shooting, gymnastics, archery, triple jumping and weightlifting. You must complete each event in order to be allowed onto the next one. Swimming involves moving left and right as fast as possible, while pressing fire when a breath is required. Skeet shooting and archery both come down to timing - though elevation and wind factors affect the latter. Gymnastics involves timing a succession of presses to ensure that the jump is long and the landing graceful. The triple jump involves one press for each part of the jump, whereas the weightlifting involves merely brute strength.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="James Bond 007 (Japan)">
+    <description>James Bond 007</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>In James Bond 007 you control James Bond in his multi purpose craft. This craft can travel on both land and sea, can jump over danger, or fire at enemies on the many different levels. Each horizontally scrolling level in the game is loosely based on a different James Bond movie. The levels included are Diamonds Are Forever, The Spy Who Loved Me, Moonraker, and For Your Eyes Only. Each level has a variety of enemies trying to destroy you, and a unique goal that must be accomplished to continue on (for example, you may have to land on a hidden oil rig to stop Seraffino, or find Stromberg&apos;s undersea laboratory and destroy it). If you can complete all the missions, you win the game! Good luck, Mr. Bond.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Lode Runner (Japan, Europe)">
+    <description>Lode Runner</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Puzzle</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>The Bungeling Empire has stolen a huge cache of gold from its rightful owners, and your mission is to infiltrate its treasury and recapture it. This entails progressing through 150 screens of platforms, ladders and ropes. The Empire has sent robotic guards down to protect the gold, and contact with any of these will cost you a life. Your method of escaping them is to press fire to dig a hole in their line of movement, thus causing them to fall in briefly, allowing you to move across the gap safely. Once all the gold has been collected, a ladder allowing you to move onto the next screen is added. Completing these screens often requires forward planning and precision.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mahjong (Japan)">
+    <description>Mahjong</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>4.3</score>
+    <player>1 Player</player>
+    <story>As the title suggests, this game lets players play a game of Mahjong. Players receive and discard tiles until they complete hands by forming groups and pairs. Players can choose to play on either a beginner, intermediate, or expert difficulty level. The expert skill level introduces a time limit to the proceedings. The game also keeps track of the score during gameplay.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Monaco GP (Japan)">
+    <description>Monaco GP</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Driving</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Monaco GP by Sega. The game is very simple - all the player needs to do is avoid cars and obstacles on a track. He/she can speed up and slow down and two players may play at the same time. Monaco GP was Sega&apos;s last arcade game to use discrete logic circuits rather than a digital CPU, meaning it cannot be emulated in emulators such as MAME. The player&apos;s score and time are also displayed on external LED displays, so it is impossible to re-create the game perfectly.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="N-Sub (Europe)">
+    <description>N-Sub</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Shooter</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>N-Sub puts the player in control of a submarine in the Cobalt Blue Sea. The action takes place on one screen; the player-controlled submarine can move in all directions and must defend itself against an onslaught of enemy ships and submarines by firing torpedoes at them. Torpedoes can be fired vertically (which is the only way to hit ships) and horizontally (to deal with enemy submarines), activated by two different buttons. Pressing the button down allows firing short bursts of three torpedoes each. A round is over after an enemy fleet of twelve ships and a destroyer has completed a fixed amount of loops. Subsequent rounds increase the difficulty by making enemy ships more aggressive.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ninja Princess (Japan)">
+    <description>Ninja Princess</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Ninja Princess is an action shooter. You play as a female ninja as you fight your way through hordes of enemies on your quest to recapture territories and to take back the Castle all of which have been captured and occupied by the enemy forces. Throwing knives and shuriken are your weapons as you shoot your way through enemy occupied territory. Coming into contact with any enemies or any of their thrown projectile weapons equals instant death. Unlike the original arcade machine, the SG-1000 and MSX ports contain only 13 levels instead of 16.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Okamoto Ayako no Match Play Golf (Japan)">
+    <description>Okamoto Ayako no Match Play Golf</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Sports/Golf</genre>
+    <score>3</score>
+    <player>1-2 Players</player>
+    <story>As the title says, the game was endorsed by the Japanese professional golfer Ayako Okamoto and it takes place in the Ko Olina Golf Club, in Hawaii. This was not the first video game endorsed by her. Ten years earlier, there was an Okamoto video game released for the SG-100</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Orguss (Japan, Europe)">
+    <description>Orguss</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>4.3</score>
+    <player>1 Player</player>
+    <story>Orguss is a horizontally-scrolling shoot-em-up based on the anime series of the same name. The inhabitants of Terram has constructed a terrifying weapon that can destroy space-time. The player character, piloting the Orguss craft, has 2:30 minutes to get to the weapon and deactivate it. This is done by flying either in the native ship form, or transforming into the powerful mecha Orgroid. The mecha shoots repeatedly if the player presses the fire button, while the ship&apos;s gun has to be fire separately for each shot. However, when the protagonist is in mecha form the screen scrolls slower, preventing the player from getting to the weapon in time. Enemies include hostile craft and stationary turrets on the ground. There are no power-ups of any kind, and the only stage of the game repeats itself after completion with increased difficulty.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Othello (Japan)">
+    <description>Othello</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Puzzle</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>Othello is a conversion of the board game. Each player tries to fill the game board with as many discs of his color as possible. On each turn the player places a disc on the board by selecting a location where the opponents discs will become trapped between two of his discs. The trapped discs are flipped over to the players color. The game ends when the board is filled or time runs out, and the player with the greatest number of his color discs on the board wins. Two players can play against each other, or one player against the computer.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pacar (Japan, Europe)">
+    <description>Pacar</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>The player controls Pacar, a mischievous green car through a maze of roads. The objective of the game is to delete all of the small red dots scattered around the playfield, building up points for a high score. The joystick allows Pacar to move in the proposed direction, assuming it is possible to do so. Like Pac-Man, Pacar does not stop moving unless it hits a wall, however unlike Pac-Man, it is not possible to rotate 180 degrees on the spot - moving in the opposite direction causes Pacar to reverse, and reversing is significantly slower than driving normally. Ideally the player should plan his or her route to avoid reversing altogether. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pachinko (Japan)">
+    <description>Pachinko</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>2.5</score>
+    <player>1 Player</player>
+    <story>Pachinko is a popular Japanese gambling pastime of pachinko with added computerised action elements. The main screen resembles a typical pachinko unit with pins for balls to bounce on, spinners for balls to put in motion, and baskets for them to land in.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pachinko II (Japan)">
+    <description>Pachinko II</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>Pachinko is a popular Japanese gambling pastime of pachinko with added computerised action elements. The main screen resembles a typical pachinko unit with pins for balls to bounce on, spinners for balls to put in motion, and baskets for them to land in.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pitfall II - The Lost Caverns (Japan)">
+    <description>Pitfall II - The Lost Caverns</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Activision</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>You play Pitfall Harry searching for the Raj diamond, his niece Rhonda, and a variety of treasures somewhere in the Andes. Poisonous frogs, eels, scorpions, bats and other hazards get in the way. Pitfall II is the sequel to Pitfall!, the original platform game. Gameplay has remained pretty much the same, with each screen presenting a side view of obstacles to get past, and potentially treasures to collect. The landscape is more maze like, with a variety of paths and dead ends to search. Along the way there are checkpoints the player will encounter. When the player dies, Pitfall Harry will be sent back to the most recently crossed checkpoint.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pop Flamer (Japan, Europe)">
+    <description>Pop Flamer</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Jaleco</dev>
+    <genre>Action</genre>
+    <score>2.5</score>
+    <player>1-2 Players</player>
+    <story>Pop Flamer is a mouse which opperates a flamethrower. You as a player attempt to pop balloons and supply fuel for the flamethrower while eliminating 3 kids of enemys.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Q-bert (Japan)">
+    <description>Q-bert</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Gottlieb</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Q*bert is a popular arcade game. The goal is to change all of the tiles on a pyramid to the target color. To do this you guide Q*bert around the pyramid, and every tile he hops on will change color. On early levels, a single hop will change the tile to the desired color, but on later levels you may need to hop on a tile multiple times or even avoid hopping on a tile multiple times! Trying to stop Q*bert are many different creatures which wander around the board, including Coily the snake, Slick and Sam, and falling balls. On the edge of the board are floating discs; if Q*bert jumps on one of these discs when the snake is in pursuit, the snake will fall off the board while Q*bert is safely transported to the top.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Rock n&apos; Bolt (Japan)">
+    <description>Rock n&apos; Bolt</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Activision</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1-2 Players</player>
+    <story>Louie The constructor struts pieces to their location. The Girders are constantly moving back and forth. It is your job to lock them down, and then get back to where you started the level. There are 100 levels, and two types of levels. One is just locking down, the others you have to put them in a specific location. There are three levels of difficulty to choose from, you just get paid more the harder the level, and you have less time to complete the level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Safari Hunting (Japan)">
+    <description>Safari Hunting</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Compile</dev>
+    <genre>Action</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>Safari Hunting is a port of the 1980 arcade machine Tranquilizer Gun. The play area is sort of a maze-like jungle scene with walkable paths and impassible jungle, you can venture into the jungle on foot to hunt the animals and you can also shoot from your truck at any animals that venture out into the 4 edges around the play area where your truck travels. Your task is to tranquilize different animals (snakes, gorillas, lions and elephants). The larger the animal, the more number of tranquilizer darts it takes to put the animal down. As soon as you tranquilize an animal, a timer will begin to count down and you will have to slowly drag the animal back to your truck before the timer reaches zero or the animal will awaken and kill you. Not only do you need to consider the countdown timer for a tranquilized animal, but you also need to watch your trucks fuel gauge, which is basically a time limit counter for the game as you apparently leave your truck running while walking through the jungle.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Safari Race (Japan)">
+    <description>Safari Race</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Driving</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>On the vast savanna plain, the SAFARI RACE has just gotten underway. Keep running at full speed, passing other cars while avoiding various wild animals that cross the road. Drive fast, ever onward, taking into consideration the limited time, fuel consumption and dangerous sharp curves. Pass through the checkpoints. Run your car at full throttle towards the goal with the engine operating at its maximum capacity.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="San-nin Mahjong (Japan)">
+    <description>San-nin Mahjong</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Puzzle</genre>
+    <score>2.9</score>
+    <player>1 Player</player>
+    <story>San-nin Mahjong is a Three-player mahjong variation of mahjong for three players rather than the more common four player variations. It is not a mere adaption of four player mahjong to suit only three players but has its own rules and idiosyncrasies that place it apart from the more standard variations</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sega Flipper (Japan, Europe)">
+    <description>Sega Flipper</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3</score>
+    <player>1-2 Players</player>
+    <story>A catchy rhythmical flipper sound accompanies this computer pinball video game. Featuring a D.T. (drop target) that enables you to earn bonus points and a K.H. (kicker hole) that entitles you to earn bonus points X a multiplication rate! Take good aim, and shoot away! Here&apos;s wishing you success as you merrily flip your way around the playfield in search of the proverbial high score.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sega-Galaga (Japan)">
+    <description>Sega-Galaga</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Namco</dev>
+    <genre>Shooter</genre>
+    <score>2.9</score>
+    <player>1-2 Players</player>
+    <story>Galaga is a vertical arcade shooter from Namco. You control a space fighter at the bottom of the screen, scrolling left and right in order to avoid oncoming bombs and kamikaze attacks from alien invaders--and to fire your own missiles to fight back!There are an infinite number of stages to progress through. Every third level is a challenge stage in which you have a free chance to shoot as many aliens as possible and rack up bonus points.Certain aliens have tractor beams they can use to capture one of your ships. If that wasn&apos;t your last life, you can try to shoot that alien down and recapture your ship, giving you two ships at once and doubling your firepower.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Serizawa Hachidan no Tsumeshogi (Japan)">
+    <description>Serizawa Hachidan no Tsumeshogi</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>Pronounced “show´ gee” (hard “g” as in “geese”) is the traditional chess of Japan. Modern shogi is approximately as old as modern western chess (what we call chess), about 500 years old. The game is probably derived primarily from Chinese chess, xiangqi, but also has interesting similarities to Thai chess, makruk.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Shinnyushain Tooru Kun (Japan)">
+    <description>Shinnyushain Tooru Kun</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Konami</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Mikie puts you in charge of Mikie, a high school student who likes to win hearts of every girl that he can lay his eyes on. There are several classrooms to explore like the Quantum Physics Room, Locker Room, Canteen, the Aerobics Dancing Class, and the Playground. In each classroom, Mikie has to collect all the hearts that are found in each classroom to form a message. In order to collect these hearts, Mikie must stand somewhere near them and shout out. There are two type of hearts: small and large. Mikie needs to shout out only once to collect the small hearts, and multiple times to collect the large ones. When a message is formed, Mikie can exit the classroom through a door marked OUT. Stopping him from collecting the hearts is the teacher, the chef, and the janitor. The teacher is the worst one. When he is unable to catch you, he works up a sweat, and eventually, throws his teeth at you. When his teeth hits Mikie, he loses one of his three lives. In later classrooms, Mikie can throw stuff at his enemies in order to stun them for several seconds (for instance, the basketballs in the locker room, and the chickens in the canteen). The janitor isn&apos;t as bad because he walks much slower than the others. In between levels, you have to enter the next classroom through a door marked IN without being caught, but you can do at least two things to pass time: Steal some lunch, and open one of the unmarked doors to receive a punch, a kick, or the chance to see a naked lady with breasts. Beware that if you take too long in the hallway and don&apos;t travel between floors, a bucket slides across the screen real fast and attempt to slip you.If you&apos;re good enough at the game, you can enter a high score, and if you fail to enter anything, the game will assume that you are Clint Eastwood.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sindbad Mystery (Japan, Europe)">
+    <description>Sindbad Mystery</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.9</score>
+    <player>1 Player</player>
+    <story>Sinbad an adventurous boy, comes to Treasure island. He wants to successfully find the treasure through the clues in the treasure map by opening the ? panels. To challenge him, monsters are here and there, loitering in the maze-like routes on the island. Muster up your courage, roll the stone forward and destroy the monsters. After successfully finding the treasure, let&apos;s go on to the next adventure on another, more wonderous treasure island</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Soukoban (Japan)">
+    <description>Soukoban</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Thinking Rabbit</dev>
+    <genre>Puzzle</genre>
+    <score>4.8</score>
+    <player>1 Player</player>
+    <story>Soko-Ban is a classic puzzle game, the basis of numerous clones in the later years. It is set in a warehouse. On each level, the player must push crates (from square to square) to get them onto designated spots; once each crate is on a marked spot, the level is complete. Crates can only be pushed one at a time (so two crates next to each other cannot be pushed together), and cannot be pulled--so it&apos;s possible to get a crate stuck in a corner, where it cannot be retrieved! By the last levels, you must plan 40 steps in advance.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Armor (Japan)">
+    <description>Space Armor</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Shooter</genre>
+    <score>2.6</score>
+    <player>1-2 Players</player>
+    <story>Space Armor is a shoot-&apos;em-up game developed and published by Tsukuda Original. It was built with the Othello Multivision in mind, but like all Multivision games, is also compatible with the SG-1000.The game is built similarly to Namco&apos;s Xevious, in that it is a vertical shooter where one button fires at flying targets and the other at ground targets. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Invaders (Japan)">
+    <description>Space Invaders</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>2.3</score>
+    <player>1-2 Players</player>
+    <story>Earth is under attack from rows of bomb dropping aliens, and you need to defend it! The rows of aliens begin at the top of the screen, and you control a laser cannon at the bottom of the screen. Your goal is to earn points by shooting the aliens before they can land. The aliens march back and forth, and each time the end of the screen is reached they will drop one row closer to the bottom. Shoot them all, and you move on to the next (tougher) level, but if even one of them lands the game is over. From time to time a flying saucer will pass by along the top of the screen; shoot this to earn extra points. Just above your laser cannon are three shields; these can be used to hide from the alien&apos;s bombs, but will also block your own shots. You begin the game with a limited number of laser cannons, and if all of them are bombed the game ends.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Mountain (Japan)">
+    <description>Space Mountain</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tsukuda Original</manufacturer>
+    <dev>Tsukuda Original</dev>
+    <genre>Shooter</genre>
+    <score>4</score>
+    <player>1-2 Players</player>
+    <story>Space Mountain is an SG-1000 game developed and published by Tsukuda Original with the Othello Multivision in mind. It is a very primitive third-person space ship shooter, in which the player has to gun down enemy craft before infiltrating a base. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Slalom (Japan)">
+    <description>Space Slalom</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Orca</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Space Slalom Though on the surface it appears to be a space-themed vertical shoot-&apos;em-up, there is actually no shooting involved. The player controls a shuttle and must navigate it through a course defined by coloured stars, similar to ski slaloms. The player must also avoid obstacles, and will be awarded with extra points depending on on his/her speed across the course.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Force (Japan)">
+    <description>Star Force</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Tehkan</dev>
+    <genre>Shooter</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>You are a spaceship pilot shooting enemy spacecraft and ground targets. Pick up the special letter symbols for bonuses and additional power-ups. Levels or areas are named after the Greek letter alphabet and the end boss at the end of each area must be defeated before you can continue to the next area.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Jacker (Japan, Europe)">
+    <description>Star Jacker</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Star Jacker is a vertically scrolling shoot &apos;em up where the player controls a Universe Squadron whose job is to attack various enemy space colonies while evading or destroying the enemies UFO forces before returning to the Star Jacker mother ship. The main difference from other shooters is that the player here controls three space ships at once. As the front ship move the others follow its trail. This means that the player can shoot three shots at a time but it also means that enemy projectiles are harder to avoid since the ships take more space. However if hit the size of the squadron will decrease. The player has two means of attack: a regular fire for shooting down UFOs and a bomb attack for taking out ground targets. If a high score is attained a mystery target will appear. By destroying this the squadron will warp to the mother ship. The player will then be granted one extra ship and then game will continue. The game goes on until all ships in the squadron have been lost.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Tank (Japan)">
+    <description>Super Tank</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Super Tank is a shoot-&apos;em-up game for the SG-1000. The player drives a tank and is tasked with shooting at and destroying enemy units and structures.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Wonder Boy (Japan)">
+    <description>Wonder Boy</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Escape</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>Just when things were going great with Tom-Tom and his girlfriend Tanya, some thug of a woodland king had to kidnap her and hide her away, and Tom-Tom doesn&apos;t have a clue where. That&apos;s why he has to explore deep dark forests, cross endless oceans, climb treacherous slopes, survive endless volcanoes, and even walk through clouds. But Tom-Tom will never be totally alone. You see, when he goes through the exotic locations, he has to come face to face with its inhabitants, like bees, spiders, snakes, coal-kids, frogs, bats, snails, coyotes, and octopuses, to name a few. The hatchet is Tom-Tom&apos;s only line of defense against these menaces. There are ten areas, each containing four rounds each, but the tenth area can&apos;t be accessed unless Tom-Tom collects all the dolls during his rescue mission. During his journey, he can break open different eggs that will reveal hatchets, skateboards, mushrooms, milk, and even guardian angels. You can ride the skateboard through each round, as long as you don&apos;t collide with an inhabitant. When you complete each round while still riding the skateboard, you&apos;ll start the next round still riding it. As you progress through each round, your vitality will start to get low, but it can be increased by getting milk, mushrooms, potato chips,or fruit that appear everywhere you go. As well as the normal eggs, there are also speckled eggs that must be avoided, otherwise the God of Death will be released, and once he follows you, you&apos;ll lose vitality much quickly. At the end of every fourth round, there is a king waiting to destroy you with his fireballs or lightning bolts. There are also warp-gates, but you don&apos;t find them, they find you. Warp-gates appear in rounds 1-4 of each area. If you happen to get one fruit, a special item will appear. These special items include handbags, wrist watches, a pair of shoes, a teddy bear, and a bottle of perfume. Another girl will appear and take you up to the clouds where the object is to collect as many hearts as you can without falling down or getting the item again. Once you have collected all the hearts, you can get the item to return to the surface, and more often than not, you&apos;ll get further in the round</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Yamato (Japan, Europe)">
+    <description>Yamato</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>2.8</score>
+    <player>1-2 Players</player>
+    <story>Yamato is a shooter were you sit behind the front of a ship and its guns at the bottom of the screen while the enemy ships and planes are ahead in the distance. The aim is to keep destroying the enemies ships and planes until it is game over but the more you destroy then the higher the round you play on. You take control of two cross-hairs, one for firing bullets and the other for missiles and they both move together when you move them left or right which also moves your ship. When you move them up or down, then they move at different speeds and the bullets are for shooting down the planes and the missiles for the boats which has a short delay between firing. As the boats move across the screen from left to right they will fire missiles and torpedoes at you and these can be shot or avoided and if you are hit by one then you lose one of three lives. Two players can play and each player takes it in turns to play when the other player has been killed.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zaxxon (Japan)">
+    <description>Zaxxon</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Ikegami Tsushinki</dev>
+    <genre>Shooter</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>The Zaxxon defence system must be destroyed in this isometric-viewed shoot &apos;em up. The game has three stages, first taking you through Asteroid City, which is heavily protected by aircraft, guns and missiles. Many barriers are alarmed, leaving you with limited space to progress through, and fire must constantly be dodged. Stage two is a space shoot out against hordes of enemy aircraft - those you failed to destroy in the first part of the task. Complete this and you reach the final battle with Zaxxon, the game looping with increased difficulty if you can survive the first time. There are three distinct skill levels, while controls involve using forward to dive and back to climb, in the manner of flight simulation.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zippy Race (Japan)">
+    <description>Zippy Race</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Driving</genre>
+    <score>4</score>
+    <player>1 Player</player>
+    <story>In a game reminiscent of both Road Fighter and Rally Bike, the player takes control of a motorcyclist who&apos;s in a race to be the first to traverse the United States from the west to the east coast, starting in Los Angeles and ending up in New York City. Gameplay consists of the player dodging cars and other roadway hazards on their way to the next checkpoint. Players can either accelerate or hit the brakes on their motorcycle so they can avoid getting into an accident. Accidents cause the player to lose fuel and running out of fuel can end the game. So players must keep an eye out on the fuel gauge, which can be refilled by fuel barrels littered throughout each stage. Each car the player passes betters their ranks which increases their score.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zoom 909 (Japan)">
+    <description>Zoom 909</description>
+    <year>1985</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.9</score>
+    <player>1 Player</player>
+    <story>Loosely based on the Buck Rogers comic strips, Buck Rogers: Planet of Zoom is a fast-paced arcade racing game taking place on a futuristic racetrack. Guide your spaceship between pylons and shoot down other enemy racers.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+</menu>

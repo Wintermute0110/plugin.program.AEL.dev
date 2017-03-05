@@ -1,0 +1,1969 @@
+<?xml version="1.0"?>
+<menu>
+  <header>
+    <listname>Colecovision</listname>
+    <lastlistupdate></lastlistupdate>
+    <listversion>test</listversion>
+    <exporterversion></exporterversion>
+  </header>
+  <game name="2010 - The Graphic Action Game (USA, Europe)">
+    <description>2010 - The Graphic Action Game</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Coleco Industries, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1 Player</player>
+    <story>This is a game based on the movie, 2010: The Year We Made Contact. You are an astronaut aboard the Discovery and need to repair its systems before it crashes into Jupiter&apos;s moon, Io. Time is limited so do not dawdle or the Discovery will be destroyed. You move the reticule over a trouble spot and press the A button to begin repairs. You must then select a path for the power to run so it powers all the components on that circuit board then move on. If the floating ring touches a component while you are at it or you create a feedback loop, you will damage the component and will need to repair it before you can continue, costing you time. Sometimes, you will need to return to a circuit to repair a component then restart it.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Alcazar - The Forgotten Fortress (USA)">
+    <description>Alcazar - The Forgotten Fortress</description>
+    <year>1985</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>In this adventure game you control an explorer who&apos;s on his way to fortress Alcazar. To reach Alcazar you are travelling through a countryside of fortresses and you need to collect several items that you can find along the way. Once you enter the Alcazar fortress you have to search for the crown. The strategy map gives you an overview of the countryside, it&apos;s fortresses and your location in it. What perils lurk in these mysterious castles? Which path is quick and safe? The Alcazar castle is three stories high, all other castles have only two stories. To enter a castle you just have to follow the path. Each castle has it&apos;s own sought-after objects and these objects are always guarded by the castles main demon. Objects to look for are for example: a rope, a gun, raw meat, water or a raft. Collect them and use them properly to master the legendary Alcazar fortress. The game gives you clues and tells, for example, which monsters are nearby. Some monsters are really hard to kill. The game can be played at four difficulty levels.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Alphabet Zoo (USA)">
+    <description>Alphabet Zoo</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spinnaker Software Corporation</manufacturer>
+    <dev>Spinnaker Software Corporation</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Alphabet Zoo is a top-view game where the player races around a maze, avoiding enemy creatures. The twist however is that each maze has a graphic representation of an object in the middle... and it is up to the player to collect the letters scattered around the maze, in the correct order, to spell the name of the object. Difficulty can be adjusted to focus on consonants, vowels or the entire alphabet.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Amazing Bumpman (USA)">
+    <description>Amazing Bumpman</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>Telegames, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>Amazing Bumpman is an educational game that focuses on teaching children number recognition and simple addition and subtraction. After selecting your degree of difficulty you&apos;ll see a set of green numbers in the middle oh a hexagonal grid. The object of the game is to bump the screen in one direction or another (which also moves the green number) so that the green number is directly over the same number in white. To bump a screen you must chew your way through all of the walls on one side of the screen which bumps it in the other direction. To impede you in this quest will be impassable hexagons in which you must instead shoot each side out with the X button. Be careful, you only have a limited number of shots. Also, depending on the difficulty setting you selected, there will be numerous enemies hindering you. Some will attack you directly, others will chew threw random walls, possibly bumping the screen in the wrong direction, and others destroy the white numbers you&apos;re searching for.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Antarctic Adventure (USA, Europe)">
+    <description>Antarctic Adventure</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Driving</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>As a penguin, you must travel around Antarctica, making your way between bases before time runs out. This sounds easy, right? Wrong. Hindering your progress will be ice crevices and leopard seals. You can jump over the crevices, but jumping over the leopard seals may be difficult. You can speed up or slow down the penguin to avoid both of these hazards. The bases include Australia, France, New Zealand, USA, Argentina, UK, and Japan. You can collect flags and eat fish for points. Collecting a flashing flag will allow you to wear a propeller that enable you to fly over those hazards.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Aquattack (USA)">
+    <description>Aquattack</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Interphase Technologies Inc.</manufacturer>
+    <dev>Interphase Technologies Inc.</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>You, as agent Captain Blitztek, have to find a way through enemy territory to prevent the Axtoatles from taking control of the world. The mission will be aborted if the defenders inflict more than nine damage points on you. A game point system has been devised to further measure your skills as a navigator and survivor.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Artillery Duel (USA)">
+    <description>Artillery Duel</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Perkins Engineering</dev>
+    <genre>Strategy</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>In this two player game each player controls an artillery gun set in a mountain landscape with the goal of destroying the other player. Players take turns firing at each other; on each turn you have a limited amount of time in which the barrel angle and powder level can be set in order to control the direction and distance of the shot. When deciding on your shot, you will need to take the current conditions into account, which includes wind speed/direction and any mountains that may get in your way. Successfully destroying your opponents gun will earn you a point, and the first player to reach the set number of points wins the game. There are multiple skill levels available which set the amount of time you have to make a shot.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="BC&apos;s Quest for Tires (USA, Europe)">
+    <description>BC&apos;s Quest for Tires</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sierra On-Line, Inc.</manufacturer>
+    <dev>Sydney Development Corp.</dev>
+    <genre>Action</genre>
+    <score>4.5</score>
+    <player>1 Player</player>
+    <story>Cute Chick is in trouble! She is being held captive by the dinosaur, and it is up to Thor to ride his trusty wheel to the rescue. There are many obstacles in the way which Thor will need to jump and duck, including rocks, trees, rivers, lava pits, cliffs, and of course Fat Broad. When you duck, the character bounces up and down, so don&apos;t duck too soon. BC&apos;s Quest For Tires is a side scrolling action game resembling Moon Patrol in some ways, featuring characters from the comic strip BC.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="BC&apos;s Quest for Tires II - Grog&apos;s Revenge (USA, Europe)">
+    <description>BC&apos;s Quest for Tires II - Grog&apos;s Revenge</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sierra On-Line, Inc.</manufacturer>
+    <dev>Sydney Development Corp.</dev>
+    <genre>Action</genre>
+    <score>4.3</score>
+    <player>1-2 Players</player>
+    <story>Thor has completed his Quest for Tires. Now he must discover the Meaning of Life. But it won&apos;t be easy. The Meaning of Life is hidden away; somewhere in a long maze of mountains. Each mountain is covered with clams and Thor needs to gather 100 clams in order to pay the tolls and advance through each mountain. The only way to Peter and the toll bridge is through the &amp;quot;real scary caves&amp;quot;. There are lots of clams in the caves but watch out for stalagmites. Keep Thor&apos;s headlight sweeping back and forth for maximum clams. Out of the cave, watch out for Grog, who saves clams from Thor. Thor also has contend with rocks, potholes and pterodactyls (they&apos;ll eat his wheel) in his Quest for Clams and the Meaning of Life.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Beamrider (USA)">
+    <description>Beamrider</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Cheshire Engineering</dev>
+    <genre>Shooter</genre>
+    <score>3.9</score>
+    <player>1-4 Players</player>
+    <story>Beamrider is a 3-D arcade action game. You control a beam riding spaceship on a mission to clear 99 sectors of space from hostile aliens. The spaceship is located at the bottom of the screen and it can only stop on one of five beams. You are armed with both lasers and torpedoes; torpedoes are more powerful and can destroy more enemies compared to lasers, however you only get three per level. To complete a sector, you need to destroy fifteen white flying saucers. After all saucers are destroyed, the sector sentinel passes by which can be destroyed for extra points. Each even number sector up until sector 16 will add a new type of enemy to deal with. These additional enemies will just try to slow your mission, though, only the saucers need to be destroyed to advance. Occassionally a rejeuvinator will appear; if this is collected, you can earn an extra life. But be careful, because if you accidentally shoot the rejeuvinator it will turn into an enemy!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Blockade Runner (USA)">
+    <description>Blockade Runner</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Interphase Technologies Inc.</manufacturer>
+    <dev>Interphase Technologies Inc.</dev>
+    <genre>Simulation</genre>
+    <score>2.4</score>
+    <player>1 Player</player>
+    <story>A 3D shoot &apos;em up. You have to guide a fleet of four merchant space freighters to Earth with vital supplies. Hostile aliens have sighted you and forced you enter a dangerous asteroid belt. And now, you must try to avoid these asteroids, to destroy the Robot mines and alien space ships and also contend with fuel shortages and prevent the deflector shields from over-heating.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Boulder Dash (USA)">
+    <description>Boulder Dash</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Micro Fun</manufacturer>
+    <dev>First Star Software, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>You&apos;re Rockford and have to dig through monster infested caves in search of diamonds. In each level you must collect a certain number of these diamonds, in order to open a portal to the next stage. Enemies can be squashed by falling boulders, which are released when the ground below them is removed or they are pushed onto empty ground, but be careful because these can also squash you. In later levels, difficulty is increased by many puzzle elements and shorter time limits.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Brain Strainers (USA, Europe)">
+    <description>Brain Strainers</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Carousel Software</dev>
+    <genre>Puzzle</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>A collection of two separate games/learning tools. The first game is Follow The Leader where a pattern is repeated using a 4-color circle. By keeping track of either the tones generated or the colors flashing, the player can copy the sequence to continue. Higher difficulties increase speed and allow only tone identification of sequences. Additionally it keeps track of your best number of correct identifications in a row. The second game is Clef Climber where the player is given a tone that corresponds to a certain musical note and must match the note being played. Lower difficulties provide a constant tone to refer to and visual help on the note being used. Higher difficulties provide a single playing of the tone and no visual help.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Buck Rogers - Planet Of Zoom (USA, Europe)">
+    <description>Buck Rogers - Planet Of Zoom</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Fast and furious racing game taking place on a futuristic racetrack. Guide your spaceship between the pylons and shoot down other enemy racers. Based on the arcade game (which is even more loosely based on the Buck Rogers comic strips).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Bump &apos;N&apos; Jump (USA, Europe)">
+    <description>Bump &apos;N&apos; Jump</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Data East Corporation</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Bump &apos;N&apos; Jump is an action racing game played from a top down point of view. As you race through the treacherous and ever changing roadways, the numerous enemy cars will be trying to bump you off the road. You need to make sure you bump the cars out of the way before you get bumped and crash into the sides yourself! Your car also has the ability to jump quite high if you have enough speed. This is useful to jump over enemy cars if there are too many in the way, and must also be used to jump gaps in the roadway and other highway obstacles. As the levels progress, the road becomes narrower with more obstacles in the way, and the other cars increase in number and in aggressiveness.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="BurgerTime (USA, Europe)">
+    <description>BurgerTime</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Data East Corporation</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>You play as Chef Pepper and your goal is to make giant hamburgers while evil eggs, sausages and pickles chase you around the game area. To properly make a hamburger you must assemble all of the ingredients together, dropping them from higher up onto the the burger area below. To actually do this you have to let Chef Pepper step all over the burger ingredients. As soon as an ingredient (a piece of lettuce for instance) has been stepped on, it will fall to the next level below. Falling food will squish any enemy following you and will alsobump any other ingredient bellow it farther down. Also, as an emergency defense against the enemy food, you can collect pepper shakers which will allow you to puff out a small pepper cloud which will momentarily stun enemies, allowing you to walk past them. Higher levels result in new level design, faster enemies and more ingredients to assemble. The PlayStation 2 version is a port of the original arcade game and comes with a soundtrack disc, a DVD, a guide book and some other bonuses.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cabbage Patch Kids - Adventures in the Park (USA, Europe)">
+    <description>Cabbage Patch Kids - Adventures in the Park</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>Your player is a Cabbage Patch kid with pigtails who is having a day at the park. A day that includes jumping onto vines and leaping over holes and bouncing onto correct platforms. A misplaced jump will lose a life and additionally there are a few creatures such as bees who end the player&apos;s turn when touched. There are several screens of challenge with different combinations of obstacles.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cabbage Patch Kids Picture Show (USA, Europe)">
+    <description>Cabbage Patch Kids Picture Show</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Original Artworks Aplication</dev>
+    <genre>Action</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>players can draw and create their own scenes, or choose from any one of four background scenes and start to add clip-art objects, furniture and free form design. Create any number of decorated scenarios and then use either controller to change into one of four Cabbage Patch Kids characters and play around in the graphic you have created. Characters are able to move left, right, up, down... jump and drop. Though you can record your animations and play them back, there is no method of saving your work, so it all disappears when the power goes off. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Campaign &apos;84 (USA)">
+    <description>Campaign &apos;84</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sunrise Software Inc.</manufacturer>
+    <dev>Sunrise Software Inc.</dev>
+    <genre>Action</genre>
+    <score>2.4</score>
+    <player>1-2 Players</player>
+    <story>Campaign &apos;84 is a political simulator in which the player must run for president in the 1984 American presidential elections. The plot involves the player campaigning in the continental U.S. to become the president of the United States. The player has a limited amount of time to play as well as random events which may come up. The player must focus on many comical issues like reducing Pet Rock unemployment or controlling water guns.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Carnival (USA, Europe)">
+    <description>Carnival</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>You are at the carnival, and are going to take a chance at the shooting gallery! Your goal is to earn as many points as possible by shooting the various targets before you run out of bullets. In addition to the assorted targets that float by, there are boxes which can be shot to earn additional bullets. You also need to be careful of the ducks! From time to time, a duck will fly down and eat some of your bullets if you don&apos;t shoot it first. You move on to the next round of gameplay when the rack has been cleared of all the targets, and the game ends when you use up all of your bullets.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Centipede (USA)">
+    <description>Centipede</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Atarisoft</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>In Centipede, the player is trapped in the Enchanted Forest. Armed with only a magic wand to ward off the forest&apos;s insect denizens, all of which apparently are attacking in the player in continuous waves. The player must use the magic wand to shoot sparks at approaching insects to score points by pressing the controller button. Holding down the controller button will set the wand to rapid fire shots. If the player is bitten by an insect, the player will be temporarily paralyzed and lose one of the three starting magic wands. Insect Opponents and Mushrooms All enemy insects have a distinctive sound before attacking, which may help the player identify which insect is attacking. Enemies and objects in the game are as the following: 1. The Centipede The Centipede will attack in 12 waves. In the first wave, the Centipede will have a head attached to 11 body segments. In the second wave, the Centipede will have a head attached to 10 body segments, in addition to a detached head. The third wave will have the Centipede with an attached head, 9 body segments, plus two detached heads. These body segments will transform into heads and continue to do so until Wave 12. In the last wave, the Centipede will have 12 detached heads, independently attacking the player. Centipede heads are worth more points than body segments. Attacks from the Centipede will come from the top of the screen, moving downward. If a spark hits any part of the Centipede, that particular body segment will transform into a mushroom, while the body segment behind it will become the new Centipede head. When the Centipede is destroyed, it will briefly disappear and re-appear from the top of the screen again. The Spider The Spider will attempt to distract the player from attacking the Centipede. It will destroy any mushroom it touches. Spiders will score more points if it is hit in closer distances. The Flea The Flea will appear if the player has destroyed most of the existing mushrooms. It will drop down creating a new batch of mushrooms where it falls. The Flea will disappear after two hits. After the first hit, the Flea will drop down much faster. The Scorpion The Scorpion will appear in the third wave. It moves slowly but will pick up speed, moving faster. While doing so, it will poison any mushroom it touches. Mushrooms Mushrooms fill the Enchanted Forest and may act as obstacles or cover for the player, with added effects to enemy insects. It takes for shots to complete destroy a mushroom. There are two type of mushrooms: Magic Mushrooms and Poisonous mushrooms. Magic mushrooms are the default mushrooms in the game and are also the the result of the player destroying an insect or Centipede body segment. Poisonous Mushrooms are the result of the Scorpion touching a mushroom. Poisonous Mushrooms will prompt the Centipede near it to move straight towards the player through any mushroom. Losing a wand will restore any partially damaged mushroom</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Choplifter (USA, Europe)">
+    <description>Choplifter</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Coleco Industries, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Choplifter is a side-scrolling action/arcade game that puts you in command of an attack chopper. Your mission: Go behind enemy lines and rescue up to 16 hostages per level. Be careful, though, because tanks and enemy aircraft will try to stop you -- and they won&apos;t stop shooting while you are rescuing those hostages! Originally released for Apple II home computers, Choplifter was later ported to the arcades and a number of video game consoles. Many imitators and homages would follow.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Chuck Norris - Super Kicks (USA)">
+    <description>Chuck Norris - Super Kicks</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Beat-&apos;Em-Up</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>In this action game you play the part of Chuck Norris on a quest to reach a monastery where an important leader is kept hostage. The game consists of several different screens: when beginning and between fights you will see a view of the path that leads to the monastery. Walking along the path, you will encounter numerous enemies. When fighting, the view switches to a close up of your current location. By pressing the joystick button and moving the joystick in one of four directions you can perform various kicks, punches, and blocks. The enemies you encounter are varied, and some can only be defeated by certain moves. The path you walk along will occasionally split up into two or more choices; when this happens, only one choice is correct and the others are dead ends. If you choose incorrectly, you&apos;ll have to back track a bit and try again. Beginning as a white belt, you will slowly increase in rank as you win fights. By the time you reach the monastery you need to earn black belt status in order to defeat the deadly ninjas inside! Your quest must be completed within a time limit, or the game is over. Walking off of the path or losing fights will also cause you to lose even more time.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Congo Bongo (USA, Europe)">
+    <description>Congo Bongo</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>An extremely faithful port of the famous jump-n-run platform arcade game. Run, jump, and climb your way through a dangerous jungle while avoiding various animals and projectiles. Includes the introductory animations and features the arcade version&apos;s sliding screen transitions.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cosmic Avenger (USA, Europe)">
+    <description>Cosmic Avenger</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Universal Co., Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Cosmic Avenger is a side scrolling shooter based on the arcade game. You are the pilot of a space fighter on a dangerous mission above a hostile alien planet. Your goal is to earn as many points as possible by using your missiles and bombs to destroy the various enemies you&apos;ll encounter. The aliens are armed with deadly missiles, ufo&apos;s, fuel domes, barrage guns, torpedoes, mines, tanks and more. You need to destroy as many of these as you can before they destroy you!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cosmic Crisis (USA)">
+    <description>Cosmic Crisis</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>Telegames, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Demons have invaded and must be conquered if mankind is to survive. Fighting them is futile. The only way to defeat them is to trap them and let them fall to their deaths. You have the ability to trap these demons and let them fall through the floors. If they fall far enough you will succeed in winning control of your planet&apos;s future.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dam Busters, The (USA, Europe)">
+    <description>Dam Busters, The</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Sydney Development Corp.</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Dam Busters is an early flight simulation, set in World War II. It focuses on Dam Busters who historically were used to heavily bombard strategic objectives, in this case dams. This task is not easy, as en route you will face heavy opposition forces. Fortunately, you won&apos;t be a sitting bomber in the air. Your aircraft is equipped with machine guns (left and right) with unlimited rounds of fire power, so fire at will as the enemy approaches. When the time comes, you will have to bomb the target manually. So, get ready to unload the cargo and give them hell!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dance Fantasy (USA)">
+    <description>Dance Fantasy</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Fisher-Price</manufacturer>
+    <dev>Fisher-Price</dev>
+    <genre>Action</genre>
+    <score>2.9</score>
+    <player>1-2 Players</player>
+    <story>There are eight dance steps to choose from and endless ways to put them together. You decide how long your dance is, where the dancers move, and how they dance together. And that creates the freedom children need to stretch their imaginations and create their own special works of art. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Decathlon (USA)">
+    <description>Decathlon</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Sports/Olympic</genre>
+    <score>3.3</score>
+    <player>1-2 Players</player>
+    <story>The Activision Decathlon is a series of Olympic games similar to the Epyx games series. Up to four players can compete in the ten different events of a real-life decathlon, either in sequence or individually. Included are the 100-meter dash, long jump, shot put, high jump, 400-meter race, 110-meter hurdles, discus throw, pole vault, javelin throw, and 1500-meter race. The flat running events involve simple joystick waggling, which must be balanced with accurately-timed button presses to clear the hurdles - hitting them or breaking stride causes a loss of momentum and thus time. For jumping and throwing events, you must build momentum by waggling and then press the button to throw or jump at what you feel is the appropriate moment. For each event, points are earned based on how well you do (this can be based on your running time, or how far you throw the javelin or discus, etc...), and the player with the most points at the end of the decathlon wins the gold medal.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Defender (USA)">
+    <description>Defender</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Atarisoft</manufacturer>
+    <dev>Williams Electronics Inc.</dev>
+    <genre>Shooter</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>Defender put players in charge of a ship sent to protect mankind from wave after wave of attacking alien forces. Armed with smart bombs, and the ability to use hyperspace to move quickly around the planet, the player ship must fight against Bombers, Pods, Swarmers, Baiters, and Landers - that can capture the humanoids and transform them into deadly and relentless Mutants. Fail to save the humanoids from freefall or Mutant transformation, and the planet is destroyed. Eugene Jarvis&apos; Defender has been widely regarded as one of the most popular and addictive space shooters of the early 1980&apos;s</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Destructor (USA, Europe)">
+    <description>Destructor</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Coleco Industries, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>Your starcruiser lands in the hostile city of Araknid to collect precious Crystals needed desperately on earth. Your equipment: the mighty Ram-car. Use your Ram-car to bump Krystaloids, transforming them into precious Crystals! But watch out for the evil Destructor and deadly Insektoids, protectors of the Krystaloids! Can you collect the invaluable jewel-like Crystals and fly home? This is one of the few Colecovision games to make use of the Expansion Module #2, the Steering Wheel Controller. You steer your armored Ram-car through Araknid&apos;s maze searching for Krystaloid insects. Ram them to form Crystals, then push the Crystals to the starcruiser.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Donkey Kong (USA, Europe)">
+    <description>Donkey Kong</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Nintendo Co., Ltd.</dev>
+    <genre>Platform</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>Released in the arcades in 1981, Donkey Kong was not only Nintendo&apos;s first real smash hit for the company, but marked the introduction for two of their most popular mascots: Mario (originally Jumpman) and Donkey Kong. Donkey Kong is a platform-action game that has Mario scale four different industrial themed levels (construction zone, cement factory, an elevator-themed level, and removing rivets from girders) in an attempt to save the damsel in distress, Pauline, from the big ape before the timer runs out. Once the rivets are removed from the final level, Donkey Kong falls, and the two lovers are reunited. From there, the levels start over at a higher difficulty. Along the way, Mario must dodge a constant stream of barrels, living fireballs, and spring-weights. Although not as powerful as in other future games, Mario can find a hammer which allows him to destroy the barrels and fireballs for a limited amount of time. Additionally, Mario can also find Pauline&apos;s hat, purse and umbrella for additional bonus points. Donkey Kong is also notable for being one of the first complete narratives in video game form, told through simplistic cut scenes that advance the story. It should also be noted that in versions of the game for early 1980&apos;s consoles, Donkey Kong only used 2-3 of the original levels, with the cement factory usually omitted.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Donkey Kong Jr (USA, Europe)">
+    <description>Donkey Kong Jr</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Nintendo Co., Ltd.</dev>
+    <genre>Platform</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Mario has kidnapped Junior&apos;s Papa! Donkey Kong Jr. was originally released in the arcades in 1982 as a sequel to Donkey Kong. In this game, Mario plays the antagonist, finally having captured Donkey Kong, and has put the ape in a locked cage. As Donkey Kong Jr., players will have to make their way through four different levels (Vines, Springboard, Chains and Mario&apos;s Hideout) in an attempt to find keys to free the little monkey&apos;s Father. Along the way, Mario will send out Snapjaws, swooping purple birds, and electric sparks in an attempt to stop Junior. Junior can defend himself by dropping fruit found around the levels on the heads of his foes. The more foes a piece of fruit hits in a falling sequence, the higher bonus points can be scored. Junior can also avoid enemies more easily by grabbing hold of two chains or vines at a time to climb away faster, or by jumping over his foes. However, any long fall or falling into the water on certain levels will mean the loss of a life for Junior. In the final cut scene, Junior will free Donkey Kong and both will escape after giving Mario the boot. Once all four levels are cleared, the game levels will start over at a higher difficulty. Like the original Donkey Kong, the earlier 1980&apos;s console versions do not have all of the levels and animations from the arcade.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dr. Seuss&apos;s Fix-Up The Mix-Up Puzzler (USA, Europe)">
+    <description>Dr. Seuss&apos;s Fix-Up The Mix-Up Puzzler</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Coleco Industries, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>On the screen are three images of Dr.Seuss characters (such as the Cat in the Hat, the Grinch and more...) standing upright next to each other. At the touch of a button all their parts (head, body, feet) are scrambled up and it&apos;s up to the player to put them back together again. The game board is displayed as a 3x3 grid. Only one piece may be &apos;held&apos; at a time, leaving a blank space on the board which other pieces of the puzzle can move in to. Harder levels introduce concepts such as rotation to the mix. Matching two or three parts of any creature together produces an animated acknowledgment in the form of movement. Matching all the parts of all the creatures together wins.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="DragonFire (USA)">
+    <description>DragonFire</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Imagic</manufacturer>
+    <dev>Imagic</dev>
+    <genre>Action</genre>
+    <score>4.4</score>
+    <player>1-2 Players</player>
+    <story>The king&apos;s treasures have been stolen! As the daring young prince, your goal is to recover them all. The treasures are being kept in various castles, each one guarded by a fire breathing dragon. Each level in the game has two parts; first you will need to cross the castle&apos;s drawbridge. You will have to jump and duck the dragons fireballs as well as avoid flying arrows to reach the other side! In the second part you need to collect all of the treasures on the screen and make it to the exit while avoiding the dragon who runs across the bottom of the screen. The dragons on each level have different patterns of movement and firing, and as the levels progress will become faster and trickier.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dukes of Hazzard, The (USA, Europe)">
+    <description>Dukes of Hazzard, The</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco Industries, Inc.</manufacturer>
+    <dev>Coleco Industries, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>Driving around in the car known as the General Lee, you must avoid all sorts of obstacles in an attempt to catch up to Jeremiah Stinge. Beware though as Boss Hog and his police force are trying to chase you. The Duke boys are as usual on the side of right in this scenario and it&apos;s Jeremiah who has orchestrated things to put them on the wrong side of the law. The gameplay is a top-down view of your vehicle heading down a path vertically across the screen. Also on the screen is your speedometer, a bonus timer (faster times mean more points!) and a gear shift. The General Lee itself has gears 1 through 4 and higher gears mean MORE SPEED. As for obstacles, the path ahead of you is full of hills and oil slicks making it difficult to catch up to (and pass) your prey. Successful completion of levels results in faster chases and more obstacles on the road. Also an increased Boss Hogg presence.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Evolution (USA)">
+    <description>Evolution</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sydney Development Corp.</manufacturer>
+    <dev>Sydney Development Corp.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>Evolution is an arcade style action game with six levels where you need to evolve from an amoeba to a human. Each level is a different stage in evolution with it&apos;s own unique goals. The first level is the amoeba stage where you need to eat all the DNA on the screen while avoiding the spores, microbes, and antibodies that are trying to stop you. The second level is the tadpole stage. The tadpole needs to eat three flies to move on to the next stage while avoiding the very hungry fish. Next is the rodent stage, where you need to eat five blocks of cheese while avoiding the snakes. In level four you need to guide a beaver across alligator infested waters to retrieve sticks and build a dam. The fifth level is the gorilla stage, where your gorilla has to use coconuts to fight off monkeys that are trying to steel its orange stash. And finally is the human stage, where you have to use a laser gun to fight off mutants that are trying to take over the earth.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Facemaker (USA)">
+    <description>Facemaker</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spinnaker Software Corporation</manufacturer>
+    <dev>Spinnaker Software Corporation</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>Everyone&apos;s mothers always say Don&apos;t make those faces! They&apos;ll stay like that! But now you have the chance to make the silliest looking faces anyone&apos;s ever seen! Choose from a wide assortment of eyes, ears, noses, and mouths. Then make your newly created faces blink, wiggle their ears, wink, or razz you. You can even play a Simon Says.. type game where your face will do some kind of action and you have to follow along!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Fathom (USA)">
+    <description>Fathom</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Imagic</manufacturer>
+    <dev>Imagic</dev>
+    <genre>Action</genre>
+    <score>2.2</score>
+    <player>1 Player</player>
+    <story>Neptina, Neptune&apos;s daughter, has been imprisoned at the bottom of the sea by Titans. Your goal is to rescue her by locating the scattered pieces of a magical trident! You will need to take the form of a dolphin and a bird in order to locate the pieces that are hidden in the ocean and clouds. When flying in the air, there are several screens that have clouds flying by. Touch all of the clouds, and the trident piece appears! Other birds which are flying around will cause you to lose energy if you touch them accidentally. Underwater, trident pieces can be found by touching the sea horses. Octopuses, sharks, and a deadly maze of seaweed will get in your way and cause you to lose energy if caught! When you have located all of the trident pieces, the cage holding Neptina can be unlocked, but if you run out of energy first the game will be over.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Flipper Slipper (USA)">
+    <description>Flipper Slipper</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spectravision</manufacturer>
+    <dev>Spectravision</dev>
+    <genre>Action</genre>
+    <score>2.3</score>
+    <player>1 Player</player>
+    <story>Flipper Slipper is a game for the Colecovision and MSX2 platforms. It is a water-themed Breakout-like game, with the unique mechanic of having curved paddles, which can cause the ball to roll off them and bounce off at unconventional angles.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Fortune Builder (USA, Europe)">
+    <description>Fortune Builder</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Circuits and Sytems</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>Gameplay involves developing businesses to drive overall revenue, with different levels available with different amounts of start-up money and time to reach a financial goal. Proximity to other kinds of businesses as well as random events impact the profitability of individual businesses. Two players can compete to reach their financial goal first and hinder the other player&apos;s efforts.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Fraction Fever (USA)">
+    <description>Fraction Fever</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spinnaker Software Corporation</manufacturer>
+    <dev>Tom Snyder Productions, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>In Fraction Fever, the player&apos;s goal is to advance floors up to the twentieth with the help of his pogo stick and the Fraction Elevators located on each floor. To find them, the player needs to look for the correct fraction pictures, matching what is shown at the top of the screen, while a radar shows the layout of floors at the bottom. Incorrect fractions can be knocked down for scoring points, but this leaves holes in the floors. When the player doesn&apos;t manage to jump over these and falls down far enough or several times, the game will end. There is also a time limit to look out for, if the clock reaches zero the Fraction Elevator of the current floor cannot be reached, and the player has to jump down a floor to be able to try again.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Frantic Freddy (USA)">
+    <description>Frantic Freddy</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spectravision</manufacturer>
+    <dev>Spectravision</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>A tall building is on fire, and while all the human inhabitants seem to be safe, their cats are trapped in the flames. It is up to the brave fireman Frantic Freddy to save all the cats, floor by floor. Frantic Freddy is an arcade action game where Freddy must run back and forth on the ground, dodging falling rubbish while shooting water at flames in the windows of a building. When all fires are extinguished, the game progresses to the next floor, where Freddy can climb between the floors, shooting to the left and right instead of upwards. On these levels, there are two kinds of flames – the red and the purple ones. The purple ones are more aggressive, following Freddy around the screen, and can only be put out once all the red ones are extinguished. The game progresses in this way, alternating between the upwards-shooting levels and the sideways-shooting levels. On the higher difficulty levels, cats turn up at intervals in the windows, falling down after a while. Freddy must catch the cats, or he will lose a life. Similarly, he loses a life if hit by a fire or falling rubbish.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Frenzy! (USA, Europe)">
+    <description>Frenzy!</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Stern Electronics</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Frenzy is the sequel to Berzerk and gameplay is similar. You are chased around a maze of rooms by various robots and your player must avoid their lasers and shoot them back to destroy them. There&apos;s only so much time the player can stay in a room before a Robot Attacks occurs and a smiley face of death moves in on the player. In Frenzy there are also reflective mirrors in place of certain walls which reflects shots back and allow you to ricochet your fire. Also unique to Frenzy are four device rooms with a special icon in the center of the room that may be destroyed for bonus points and a special effect within that room.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Frogger (USA)">
+    <description>Frogger</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>Your task in this arcade conversion is to guide a frog across a treacherous road and river, and to safety at the top of the screen. Both these sections are fraught with a variety of hazards, each of which will kill the frog and cost you a life if contact is made. The road is full of cars and trucks, at variable speeds. The river water itself is fatal, as are the snakes which hover within on later levels. Frogger must use the arrangement of logs, turtles (which are only there for a short time) and alligators (but stay away form their faces), and then jump into one of the open home-cells, ideally one containing a fly for extra points. Once all holes have been filled, you move onto the next, harder, level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Frogger II - ThreeDeep! (USA)">
+    <description>Frogger II - ThreeDeep!</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>In Frogger II, you need to guide your frog to safety in three different locations. Starting out underwater, reach the top of the pond while avoiding dangerous alligators and fish (you can ride a turtle for safety!). Once on top of the pond, hop across logs, birds, and even a whale to the life preserver trailing behind a tugboat. In the third location you have to hop across a flock of birds to reach a cloud at the top of the screen. Each frog has a time limit to safely reach one of the homes on each of the three screens. You move on to the next level when a frog has safely reached each of the homes on all screens.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="From Out Of The Jungle - Tarzan (USA)">
+    <description>From Out Of The Jungle - Tarzan</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Action</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>Journey to the heart of darkest Africa on a thrilling adventure with Tarzan, Lord of the Jungle. Cruel hunters and the Beastmen of Opar have abducted Tarzan&apos;s tribe of Great Apes and imprisoned them in cages throughout the jungle. It&apos;s up to you to save the apes from being shipped out of their jungle home to zoos</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Frontline (USA, Europe)">
+    <description>Frontline</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Taito Corporation</dev>
+    <genre>Action</genre>
+    <score>1.5</score>
+    <player>1-2 Players</player>
+    <story>Front Line is a vertically scrolling action game. Your mission is to infiltrate enemy territory and destroy their fortress. To reach the fortress, you will have to make your way through varied and dangerous terrain. Jungles, deserts, brush, and rocks all slow your progress, plus each area has numerous enemy fighters and tanks trying to stop you. To help get past these obstacles, you are armed with a machine gun and grenades; at some points in the game you may even come across an abandoned tank which you can control to increase your odds of survival. When you reach the end of the level and successfully destroy the fortress, the game will repeat at a higher level of difficulty. Gameplay is for one or two players, and four different skill levels are available.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Galaxian (USA)">
+    <description>Galaxian</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Atarisoft</manufacturer>
+    <dev>Namco Limited</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Galaxian is a shoot &apos;em up in which the player is at the bottom of the screen, with an arrangement of aliens at the top. The player moves left and right to aim at an alien, then shoots a bullet up the screen, and the alien it hits is killed. The aliens are classed as Drones, Emissaries, Hornets and Commanders, with those higher up the screen scoring more points when destroyed. At set intervals an enemy will move down the screen towards you, escorting a bomber, which is a moment of high danger. Clear a wave and another is generated.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gateway to Apshai (USA)">
+    <description>Gateway to Apshai</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Epyx, Inc.</manufacturer>
+    <dev>Epyx, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1 Player</player>
+    <story>Turmoil rocks the land and the only salvation lies in the magic of the Temple of Apshai. Unfortunately the location of this temple has gotten lost in time. Furthermore, many heros dispatched to seek it have been slain. A legend speaks that only the blood of the greatest hero of Apshai&apos;s greatest hero will be able to reclaim the lost Temple of Apshai. Unfortunately this greatest hero has also perished. But all hope is not lost, for the wise man, Merlis has found the hero&apos;s son, whose blood is still able to fulfill the prophesy. With great haste, Merlis brings the youngster to the dungeon pits and leaves him to fend for himself. It is this youngster&apos;s destiny to find safe passage through the 8 levels, each of which contains passage to 99 different areas, Gateway to Apshai is a top-down action-RPG. As the desendant of a hero, the player starts with basic stats in 4 areas, Strength, Agility, Luck and Health. and basic equipment, a dagger and leather armor. Then it&apos;s time to choose a number between 1 and 99 to generate the dungeon. Once begun, the player must explore the dungeon, hidden until explored and revealed. The player can move in four directions and has standard abilities, each mapped to a different control. There are several different actions available to the player. These include: fighting with the equipped weapon, a LOCATE spell to discover traps in the room, a SEARCH spell to discover hidden doors inside of room which would otherwise look like ordinary walls. Players may also use many of the items and scrolls that can be picked up in the dungeon. The treasure can be picked up which include weaponry (swords, bows and arrows), healing slaves, precious items and magical scrolls. Most items are only good for a single use. The Gateway to Apshai is guarded by an assortment of creatures including snakes, swamp rats, bats and many more. These enemies are only visible when they are in the same room as the player and are otherwise hidden. After 6 minutes and 30 seconds has passed, the player is teleported to the next dungeon, many versions of the game also offer the option to manually leave the dungeon at any time. Dungeons get progressively more difficult with faster and more vicious enemies.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gorf (USA, Europe)">
+    <description>Gorf</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Bally Midway Manufacturing Co.</manufacturer>
+    <dev>CBS Electronics|Coleco</dev>
+    <genre>Shooter</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>Gorf is a game similar to Space Invaders, alien vessels approach closer and closer in their threatening row formation. The game itself consists of four levels: 1. The first level has you behind a defensive shield, defending against an alien attack. The level is a top-down view, with your ship &amp; shield on one side and the aliens on the other side; The second level is similar to the first, only your defensive shield is gone, and the enemies tend to swoop down over the level as opposed to those row formations. Bonus ships also tend to appear in this level; The third level is a change, and has you entering hyperspace. Your only goal is to survive to the end of your journey. The viewpoint switches from a top-down view to a behind-the-ship view and in effect you are heading towards your destination. Alien vessels flying in circular formation try to stop you; The fourth and final level is similar to the first again, with some key differences. You do not fight a wave of enemies, but a single one. A mothership with a glowing weak spot. Hitting the weak spot will instantly destroy it. The mothership also has that same shield that was yours in the first level. Finishing the game increases your rank and starts the game over at level 1 with a faster game speed for more challenge.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gust Buster (USA)">
+    <description>Gust Buster</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sunrise Software Inc.</manufacturer>
+    <dev>Sunrise Software Inc.</dev>
+    <genre>Action</genre>
+    <score>2.9</score>
+    <player>1 Player</player>
+    <story>In Gust Buster, the player must navigate through the skies of an amusement park by inflating or deflating balloons. Movement is achieved by catching currents that go in different directions depending on height. This game is notable for being one of the only games of that era not to use the joystick. One gains points by landing in crowded areas and selling balloons, and one can restock his balloon supply by landing on a popcorn truck. The player must be careful not to overinflate the balloons or they will bust, in which case they must be replaced by drawing some from his pocket. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gyruss (USA)">
+    <description>Gyruss</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Konami Industry Co. Ltd.</manufacturer>
+    <dev>Parker Brothers</dev>
+    <genre>Action</genre>
+    <score>2.2</score>
+    <player>1-2 Players</player>
+    <story>The entire solar system is being attacked by the vicious Gyrusians, and it&apos;s up to you to save the day! You will need to fly your spaceship to each of the nine planets and then clear three stages of enemies to rid that planet of the Gyrusians. You start the game with a single canon, and can gain a double canon after shooting a power up satelite. After clearing each planet, there is another bonus stage where additional weapons and bonus points can be collected. Gyruss is an arcade action shooter, however instead of piloting your spaceship horizontally or vertically, you move in a circle around the perimeter of the screen. The NES version of Gyruss adds to the original arcade version additional music, additional weapons, new enemies, and a large boss at the end of each level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="H.E.R.O (USA)">
+    <description>H.E.R.O</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>There is trouble in the mines! Volcanic activity has trapped numerous miners, and it is your job to save them. As Roderick Hero, you need to make your way through the dangerous mineshaft avoiding the dangerous creatures and lava, and find out where the miners are located before you run out of energy. To help on your mission, Roderick Hero has several useful types of equipment. A prop pack will allow you to hover and fly around the mineshaft and (hopefully) avoid the many dangers within. Your helmet features a short range microlaser beam which can be used to destroy the bats, spiders, snakes, and other creatures you&apos;ll encounter in the mines. From time to time, your path through the mine may be blocked by stone or lava walls. You begin each mission with six sticks of dynamite which can be used to destroy these obstacles (be careful you don&apos;t blow yourself up, though!) If you run out of dynamite, your laser beam can also be used to destroy the walls, though this will take longer and use up more energy. As the levels progress, the mine shaft will become longer and more maze-like, creatures will more frequently block the path, and lava walls and pools will appear which are dangerous to the touch.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Heist, The (USA)">
+    <description>Heist, The</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Livesay Computer Games, Inc.</manufacturer>
+    <dev>Micro Fun</dev>
+    <genre>Action</genre>
+    <score>4.5</score>
+    <player>1-2 Players</player>
+    <story>As a cat burglar, it&apos;s up to you to collect all of the valuable paintings from each level while avoiding security systems, pits and robotic sentries which move back and forth. Each level is comprised of three floors and ladders connecting them. Your cat burglar has only the ability to jump, and you must rely entirely on that to keep you alive.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Illusions (USA, Europe)">
+    <description>Illusions</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Nice Ideas</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Illusions is a surreal ColecoVision video game in which the player maneuvers blobs around the screen, trying to get them to merge, or, alternatively, split apart. At times, lizards may chase the blobs around. The water bucket, when spilled, can cause the lizard to turn into a fish. If the fish remains there too long, however, it turns into a bird. The game was created by Nice Ideas, a division of Mattel that was located midway between Cannes and Nice.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Its Only Rock &apos;N&apos; Roll (USA)">
+    <description>Its Only Rock &apos;N&apos; Roll</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>Its Only Rock &apos;N&apos; Roll us a text and graphics game, you start with a guitar, a few bucks and enough raw talent to sit in with the Stones or the Police. Now you&apos;ve got some big decisions to make as you pick one of three levels and let IT&apos;S ONLY ROCK &apos;N ROLL take you down a whirlwind road seeking the unbelievable wealth, status and popularity points you&apos;ll need to succeed. If you&apos;re really good if you can avoid exhausting tours, bad managers. lousy material and too much fun — if you can keep your money, stay happy, and interpret the record charts and newspaper headlines — you&apos;ll be the all time reigning KING OF ROCK AND ROLL! Fail and you&apos;ll be playing the opening act blues. But whether you end up a superstar or a has-been, ITS ONLY ROCK &apos;N ROLL AND YOU&apos;LL LIKE IT! LOVE IT! YES YOU WILL! </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="James Bond (USA)">
+    <description>James Bond</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Parker Brothers</dev>
+    <genre>Action</genre>
+    <score>1.2</score>
+    <player>1-2 Players</player>
+    <story>In James Bond 007 you control James Bond in his multi purpose craft. This craft can travel on both land and sea, can jump over danger, or fire at enemies on the many different levels. Each horizontally scrolling level in the game is loosely based on a different James Bond movie. The levels included are Diamonds Are Forever, The Spy Who Loved Me, Moonraker, and For Your Eyes Only. Each level has a variety of enemies trying to destroy you, and a unique goal that must be accomplished to continue on (for example, you may have to land on a hidden oil rig to stop Seraffino, or find Stromberg&apos;s undersea laboratory and destroy it). If you can complete all the missions, you win the game! Good luck, Mr. Bond.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Juke Box (USA)">
+    <description>Juke Box</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spinnaker Software</manufacturer>
+    <dev>Spinnaker Software</dev>
+    <genre>Action</genre>
+    <score>2.6</score>
+    <player>1-2 Players</player>
+    <story>JUKEBOX is a musical strategy game that&apos;s kind of a cross between a chess match and a dance contest. During the game the jukebox plays lots of terrific songs—songs so good you never want them to stop. But to keep the music playing. you&apos;ve got to create gold records. Use your dancing shoes to jump from square to square. creating hit records as you go. The more gold records you get, the more coins you earn. Use the coins to keep the music bopping and the game from stowing. And not only is JUKEBOX fun to play. it&apos;s also a challenging learning game. By studying the size and configuration of records. players develop strategies to avoid being trapped. Memory and concentration skills are tested as players plan their moves from square to square. And by recognizing patterns. players sharpen their prediction skills. All together. JUKEBOX is an exciting challenge with plenty of fun for young and old alike.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Jumpman Junior (USA)">
+    <description>Jumpman Junior</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Epyx</manufacturer>
+    <dev>Epyx</dev>
+    <genre>Action</genre>
+    <score>4.3</score>
+    <player>1-4 Players</player>
+    <story>Jumpman Junior is the sequel to Jumpman and features similar gameplay with all new levels. As Jumpman, your goal is to disarm all of the bombs on the level before time runs out. Each level consists of a variety of platforms, ladders, and ropes you will need to jump and climb to reach the bombs. To make the game more challenging, a bullet will fire on the screen from time to time which will cause Jumpman to lose a life if hit. Each level has a different theme to it, and a few also have additional dangers as well. You will encounter deadly fires, the bouncing hellstones, moving ladders, disappearing platforms, and more.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Jungle Hunt (USA)">
+    <description>Jungle Hunt</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Atarisoft</manufacturer>
+    <dev>Taito Corporation</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Jungle Hunt offers four unique adventure experiences, which repeat with greater difficulty once all four have been survived. If you don&apos;t survive these adventures, you will not only lose your own life but that of the lovely Penelope, who has been captured by cannibals! The first part challenges your Tarzan skills - can you swing on the vines without plummeting to your doom? The second part pits you against a whole bunch of nasty crocodiles in a mighty river. Fortunately, you have a knife to fight back with. Don&apos;t forget to go up for air! In the third part, you face a battle against oncoming boulders of varying sizes and physics. Once you&apos;ve cleared all these treacherous hazards, you still must confront the dreaded cannibal, who is armed with a wicked spear. Can you get past him and save the lovely Penelope? Gameplay involves much strategic jumping and knife play (in the river/crocodile phase). The view is always a side view, much like Pitfall! and later platform games.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ken Uston&apos;s Blackjack-Poker (USA, Europe)">
+    <description>Ken Uston&apos;s Blackjack-Poker</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Casino</genre>
+    <score>3.9</score>
+    <player>1-4 Players</player>
+    <story>Feeling Lucky? Pull up a chair and play a few hands of Blackjack or Poker. Minimum bet is $1 and maximum is $499 at the BlackJack table, whereas over on the 5-Card Stud Poker table the sky is the limit. Up to 4 people can play simultaneously, or if you&apos;re a little shy you can always go one-on-one with the dealer. Speaking of which, don&apos;t forget to give Max, your dealer, a nice tip, or you never know what kind of cards he&apos;ll deal out in your next hand.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Keystone Kapers (USA)">
+    <description>Keystone Kapers</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>The notorious thief Harry Hooligan is on the loose! You play the part of Officer Keystone Kelly, sent in to capture Harry. Harry is trapped in a four story mall, and is running as fast as he can to reach the exit at the top. Your job is to catch up to him and send him to prison. You will need to use either the escalators at the end of each floor, or the elevator in the middle to go from floor to floor. The escalators may be further away, but the elevator moves pretty slowly so you will need to decide which route will be faster in getting you closer to your goal. If Harry can make it to the top before you catch him, you will have to retry that level. Harry has no intention of letting you catch him easily, and is hurling everything he can find in an attempt to slow you down. Shopping carts, bouncing balls, biplanes, and more will all be flying past on the screen and will either slow you down or send you back to the beginning if you get hit. As the levels progress, Harry will run faster and faster, and more objects will be tossed your way to duck and jump over.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Lady Bug (USA, Europe)">
+    <description>Lady Bug</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Universal Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>An action game in the same style as Pac-Man but very very different. Players control a ladybug who must venture around different mazes collecting all of the food pellet x&apos;s. In addition to there being regular lines of wall in the maze, there are also several rotating doors that can be used to trap enemies and escape. In fact these rotating doors are the key to survival in this game. In the center of each maze is a different enemy insect hive that will spawn out enemy creatures. An new enemy creature is spawned every time the border around the screen makes a complete lap. Timers for the border vary upon the level, so later levels will generate new enemies faster, thus progression through the game brings smarter, faster and more quickly spawning enemies. In addition to the collection of X&apos;s, each maze also contains a variety of powerups that come in three types: Poison, Letters and Hearts. Poison is deadly both to the player and the enemy. If the player is able to lure and enemy creature into a poison powerup, it will die and be removed from gameplay. Letters and hearts are powerups with multiple conditions: Collected at the right time they will add letters that will eventually spell words providing bonuses. However collected during the the improper time will only earn the player a few points. For most of the gameplay the colour of all powerups (except skulls which are unaffected) will be blue. But every few seconds it will cycle through yellow and then red colours. Grabbing a letter when flashing the colour will add it to that colour&apos;s word. The red word is SPECIAL and the yellow word is EXTRA. Spelling the word, EXTRA gains the player an extra life, and spelling the word, SPECIAL brings the player to a special bonus round. Hearts are best used as blue powerups as they will act as multipliers for the X&apos;s being picked up, first as 2x, then as 3x and finally as 5x. Multipliers are lost when the player dies, but letter powerups are not.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Learning With Leeper (USA)">
+    <description>Learning With Leeper</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sierra Entertainment</manufacturer>
+    <dev>Sierra Entertainment</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>In Learning With Leeper, one of Sierra&apos;s earlier arcade games, players had to rescue prisoners on a planet&apos;s surface while avoiding the Leepers, who would leap into the air in an attempt to grab them, and one of the Leepers feature in this game. Similar to Learning with FuzzyWOMP, the player can select one of four games, by moving the Leeper to the icon and pressing the fire button to select it. Clockwise from the top, the first game encourages the player to select a series of bones that match the number of dogs on the left side. In the second, the player matches a series of items at the bottom of the screen (including letters, shapes, people, and three-letter words) with the one shown on a platform. In these first two games, the correct answer will flash if a wrong one is given. In the third game, players have to make their way through a maze while they are assisted by a caterpillar. The mazes are randomly generated. Finally, the fourth one has players paint a series of pictures ranging from a house and mountains to a human figure. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Linking Logic (USA)">
+    <description>Linking Logic</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Fisher Price</manufacturer>
+    <dev>Fisher Price</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>LINKING LOGIC challenges children to improve their logical reasoning and pluming skills. These skills play a key role in developing a child&apos;s ability to approach and solve problems. A child learns to identify different ways to approach a problem. plan actions to be taken. and evaluate the outcome of a solution. In LINKING LOGIC, your child places -tools- along a path to guide Ruddy or Betty down through five floors of a building. Along the way, your child helps the character collect the patterned tiles that are missing from the bottom floor. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Logic Levels (USA)">
+    <description>Logic Levels</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Fisher-Price</manufacturer>
+    <dev>Fisher-Price</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>LOGIC LEVELS provides players with the opportunity to exercise logic and planning skills in exciting and challenging ways. These skills are essential in understanding how one action causes something else to happen and learning how to use these relationships in reaching a planned outcome. In LOGIC LEVELS. players learn to position -tools- throughout the building to create a path that directs a rolling ball past numerous prizes. But only careful and creative planning will get you to the highest score.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Looping (USA, Europe)">
+    <description>Looping</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Venture Line, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1-2 Players</player>
+    <story>Looping is an arcade action game for one or two players. Your goal is to guide a plane from the runway to a docking station. To do this, there are several screens you need to get past. In the first area, you need to destroy a rocket which will open the gate to the next area. Enemy balloons and city terrain all get in your way! Once you&apos;ve opened the gate and flown through, you will enter a maze made of pipes. There are no enemies trying to destroy you here, but be careful not to crash into the walls! Bonus points can be earned by staying in the maze for longer periods of time or by flying faster. Once you near the end of the pipe maze, the docking station will be in sight. There will now be several twinkle monsters, green drops, and bouncing balls in the way, all of which destroy your plane on contact. If you successfully reach the goal, the game will repeat at a more difficult skill level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="M.A.S.H (Europe)">
+    <description>M.A.S.H</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Fox Interactive</manufacturer>
+    <dev>Fox Interactive</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>M.A.S.H. is loosely based off of the hit TV show of the same name. It is actually two separate games that can be played four different ways. In each game you play Hawkeye and play against Trapper who is either player 2 or the computer. The object of either game is to get 1,000 points first. The first game is a Choplifter style game where you must maneuver your helicopter through the jungles of Korea picking up the wounded until your chopper is full and then return them safely to base. You will have to compete with Trapper in collecting the limited number of wounded while navigating through the trees and past tanks who are trying to shoot your copter down. In the second game you&apos;re in the operating room and must remove the bullets from your fallen comrades without further injuring him, much like the board game Operation. Style one is Welcome to Korea which features both styles of game switching back and forth. Style two is Operating Room which is just the Operation challenge. Style three is Chopper Challenge is just the Choplifter style game. Style four is Heavy Flak which is just like style three but with many more injured to rescue and more tanks to avoid.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Memory Manor (USA)">
+    <description>Memory Manor</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Fisher-Price</manufacturer>
+    <dev>Fisher-Price</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1 Player</player>
+    <story>Wee Willie is a window washer at an apartment who wants to keep his customers happy. Some of the customers welcome him and want their windows washed while others are worrisome about his wet work and would not want him washing their windows. There&apos;s only so much water for Willie to wield in his bucket, so he must only waste it on the welcoming window wash customers. It&apos;s also raining so Willie will have to remember who lives where.Memory Manor is a memory matching game played from a side-view perspective. Players take control of Wee Willie who can move left and right, climb ladders and choose to wash a window he is in front of. The game relies on memory, after a brief glimpse of the people in the manor the windows fog up, hiding the occupants. The player must remember which windows contain happy customers and wash their windows. Willie has a limited water supply and so must not waste washing on anyone who doesn&apos;t want their windows washed. The game is over if Willie uses up all of his water.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Meteoric Shower (USA)">
+    <description>Meteoric Shower</description>
+    <year>1986</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Bit Corp.</dev>
+    <genre>Platform</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>Meteoric Shower is a Galaga style vertical arcade shooter from Bit Corp. You control a space fighter at the bottom of the screen, scrolling left and right in order to avoid oncoming bombs and kamikaze attacks from alien invaders--and to fire your own missiles to fight back!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Miner 2049er (USA)">
+    <description>Miner 2049er</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Micro Fun</manufacturer>
+    <dev>Big Five Software</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>You play the part of Bounty Bob, and it is your mission to explore every inch of an abandoned mine. As you walk over floor sections in the mine, the floor will change color. When all of the floor sections have been changed in color, you can move on to the next, more challenging level. To reach all of the floor sections, you will need to figure out how to get there! You can jump (be careful not to fall too far though, or you will be squished), climb up and down ladders, and use different transportation devices that can be found on the levels (such as an elevator, slides, a springboard, or a canon!) Wandering around the mine are numerous radioactive creatures which get in Bounty Bobs way. Also scattered throughout the mines are various artifacts left behind; if Bounty Bob collects one of these, the creatures will temporarily become vulnerable. If Bounty Bob runs into one of the creatures in this state the creature will be destroyed, but if he runs into a creature while it is glowing Bounty Bob will be destroyed! There is a total of ten different levels, and to complete them all you will need quick reflexes as well as figure out a unique strategy for each level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Monkey Academy (USA, Europe)">
+    <description>Monkey Academy</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1-2 Players</player>
+    <story>This platform game is about solving arithmetic problems. In the equation one number is missing, you &apos;ll have to find the right number. This game is aimed at young children to help them learn arithmetic problem solving or playing with numbers. Some monkeys are minding their own business when they see a number missing from their arithmetic problem. Who took it? Another monkey, a crab? And where could it be? The only way to find that out is to go looking for it. Guide your monkey across the screen and up and down platform levels. Watch out for the crab! If its claws bite you, you lose a monkey. Jump up and pull down shades to find the missing number. When you find it, catch the number bar. Then send it up to your helper monkey. Find three missing numbers and earn bonus points!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Montezuma&apos;s Revenge (USA)">
+    <description>Montezuma&apos;s Revenge</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Bros</manufacturer>
+    <dev>Parker Bros</dev>
+    <genre>Action</genre>
+    <score>4.3</score>
+    <player>1 Player</player>
+    <story>You play as a treasure hunter named Panama Joe, whose goal is to find an ancient treasure hidden by Aztec warrior deep inside catacombs. But beware, the catacombs are a large maze inhabited by monsters. Bouncing and rolling skulls, dancing spiders, disappearing and re-appearing chains and tons of fire await you. You&apos;ll have to find many keys and unlock doors in order to reach your goal. Panama Joe can jump and climb ladders, but doesn&apos;t have much to offer in terms of combat. That&apos;s why the monsters in the game should be avoided: a collision with an enemy leads to a premature death.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Moonsweeper (USA)">
+    <description>Moonsweeper</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Imagic</manufacturer>
+    <dev>Imagic</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>In Moonsweeper your goal is to rescue miners from the moons in Star Quadrant Jupiter. You begin your mission in space where you must avoid deadly aurora flares, photon torches and space bullets from the sun in this quadrant. From time to time you will see a moon pass by, and by flying near it you can descend to the surface. As you sweep along the surface, you will see stranded miners which need to be rescued by flying over them. Also on the moons surface are various obstacles which must be avoided or destroyed, such as towers and lunar satellites as well as alien surface destroyers. Should you survive and rescue six miners (the maximum your ship can carry), then you may take off from the surface by using the accelerator rings. There are several different types of moons found in this quadrant, each with a different level of difficulty. To help out, your ship is equipped with photon torpedoes and shields (though you will lose points while using the shield).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Motocross Racer (USA)">
+    <description>Motocross Racer</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Action</genre>
+    <score>2.9</score>
+    <player>1 Player</player>
+    <story>Motocross Racer is a bike racing game where you need to race through three different scenes in the shortest amount of time possible. Each scene takes place in a different location with a different perspective. First you will race through the desert with a 3-D behind the bike point of view. Rocks, cacti, scorpions, and other obstacles should be avoided or you&apos;ll crash and lose valuable time. Next you&apos;ll race a winding path uphill through the woods. This section has a top down view, and you&apos;ll lose time if you wander off the track or crash into obstacles. The final segment of the race takes place on the beach with a side scrolling point of view. Various obstacles and other racers will all get in your way here! If you crash too many times, or take too long the game will be over.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mountain King (USA)">
+    <description>Mountain King</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sunrise Software Inc.</manufacturer>
+    <dev>E.F. Dreyer, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>Deep within a multi platformed diamond mine is a valuable crown. Your goal is to locate and retrieve the crown, then make it to the top of the mine alive! There are several steps that need to be completed before you can retrieve the crown. First you need to collect enough diamonds to earn 1,000 points. After you have enough points, you need to locate the flame spirit which is hidden somewhere within the mine. Since the mine is rather dark, you carry a flashlight with you which can be used to locate objects (such as treasure chests full of diamonds and the flame spirit.) Once you have the flame spirit, you need to find the entrance to the temple the crown is in. Offer the flame spirit to the skull spirit guarding the entrance, and you can get in and take the crown. Once you have the crown, you need to make it to the top of the mine before time runs out. To make this task more challenging, numerous cave bats fly around which can steal the crown. If this happens, you need to begin again! At the very bottom of the mine is a deadly spider; if you&apos;re not careful while exploring this region of the mine, you could become caught in it&apos;s web and be eaten. Each level has a time limit, and the more levels you complete the shorter the time limit becomes!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mousetrap (USA, Europe)">
+    <description>Mousetrap</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Exidy, Inc.</dev>
+    <genre>Action</genre>
+    <score>4.4</score>
+    <player>1-2 Players</player>
+    <story>Mouse Trap is an arcade action game similar to Pac-Man. You control a mouse in a maze; your goal is to eat all of the bits of cheese in order to score points and move on to the next maze. Wandering throughout the maze are several cats who are trying to catch you! Your mouse has the ability to temporarily turn into a dog and be able to chase the cats. To do so, however, he will need to eat the dog bones which are located throughout the maze. The maze also contains numerous doors. The mouse can move these doors to reconfigure the maze in an attempt to outsmart the cats.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mr Do!&apos;s Castle (USA)">
+    <description>Mr Do!&apos;s Castle</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Bros</manufacturer>
+    <dev>Universal Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.7</score>
+    <player>1 Player</player>
+    <story>Mr. Do!&apos;s Castle is an action platform game which has you in a castle consisting of several floors, each of which contain a variety of blocks. You control Mr. Do! the clown who has a hammer which can be used to knock out the blocks in the floor. Wandering throughout the castle are deadly unicorns which are constantly trying to catch you. Your goal is to earn as many points as possible and to progress through the increasingly difficult castles. There are two ways to complete a castle; you can either destroy all of the deadly unicorns by crushing them with blocks, or you can knock out all of the blocks which have a cherry symbol on them. In addition to the cherry blocks, there are three blocks with a key. If all three key blocks are knocked out, the door on the roof of the castle unlocks. If you make it to the door, all of the unicorns will temporarily become harmless and will contain a letter. If you hit a letter unicorn, you will earn a letter in the word EXTRA. Spell the complete word, and you will earn an extra life. The last type of block you&apos;ll encounter has a skull on it. If you knock out two skull blocks, all of the blocks between them will also be knocked out and replaced with a bridge. As the castles progress, the castle layout will become trickier and the unicorns become faster and more numerous.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mr. Do! (USA, Europe)">
+    <description>Mr. Do!</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Universal Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>You control Mr. Do has he tries to harvest all of the cherries on the screen. However, there are numerous bad guys out to get him! Mr. Do can defend himself from the badguys in two ways: first he can push the apples located throughout the playfield on top of the enemies and crush them. Secondly, Mr. Do is armed with a power ball. This can be thrown to destroy an enemy. Mr. Do has only one power ball, though, so he will need to wait for it to return to him before it can be used again. From time to time an alpha monster will appear on the screen bearing one of the letters in EXTRA. If you use the power ball to destroy an alpha monster you earn that letter; when you&apos;ve earned the complete word EXTRA you receive an extra life. When you successfully collect all of the cherries, you will move on to the next, more difficult level. The mobile version of the game includes the original arcade version, as well as an enhanced mode with new levels, power-ups and graphics.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Nova Blast (USA)">
+    <description>Nova Blast</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Imagic</manufacturer>
+    <dev>Imagic</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Nova Blast is a side-scrolling sci-fi shooter in which your must defend 4 shielded cities from invaders that attack from both in the air and on the ground. Each city has a bubble shield that can sustain one hit; another hit to an unshielded city will destroy it. Players control a ship that can fire lasers horizontally and drop bomb vertically. The ship is also equipped with an energy beam that can absorb energy from energy tanks, and can also use that energy to create temporary shields around unprotected cities. The ship can also sustain up to 10 blows in each round. If all 4 cities are destroyed or the ship takes 10 hits in a round, the game ends. Nova Blast is a single player game with 3 difficulty levels.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Oil&apos;s Well (USA)">
+    <description>Oil&apos;s Well</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sierra Entertainment</manufacturer>
+    <dev>Sierra Entertainment</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>Extend your oil-mining robotic arm deep below the earth&apos;s crust to mine oil and line your pockets. But watch out for the monstrous bugs that lie in wait for you -- one touch of them to the robotic arm and you lose a life!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Omega Race (USA, Europe)">
+    <description>Omega Race</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Bally Midway Manufacturing Co.</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>This is a remake of a Bally-Midway arcade game. You control a spaceship and shoot down the enemy Droid ships that attack you. Your ship must survive Droid-dropped mines too--but you can shoot them too. The last ship of the Droid flights goes into a spiraling pattern. There is no end to this game. Rather, it is a game in which you try to get the highest score, or complete the highest number of levels. You control a small triangle that is your ship. The ship can turn, move forward (with thrusters) and fire. Movement is one of the games challenges; once the ship is moving, it can only be slowed by turning the nose in the opposite direction and use the thrusters. While doing that, the ship is unable to fire toward anything it is in motion toward. Bouncing also comes into play during movement. When the ship hits the side of the screen, a wall of force appears, and the ship bounces. You don&apos;t have control over where the ship bounces, and must take time to regain control, before you run into an enemy ship and die.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="One on One (USA)">
+    <description>One on One</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Micro Fun</manufacturer>
+    <dev>Micro Fun</dev>
+    <genre>Action</genre>
+    <score>2.2</score>
+    <player>1-2 Players</player>
+    <story>Control either Julius Erving or Larry Bird in front of a single basket, in a game of one on one. The user can select to play either to a certain score or for a certain amount of time. When on offense, the player can rotate to keep away from his rival, take a shot from a distance or move in to the basket for special up-close slam-dunks. When on defense, you can try to take your rival&apos;s ball or jump up to block a shot. Particularly good set-ups get a slow-motion replay. You can even smash the glass on the backboard, which will send an irate janitor onto the court to clean up the mess.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pepper II (USA, Europe)">
+    <description>Pepper II</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Exidy, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>Pepper II is a maze game with zip! The object of Pepper II is simple enough, all you do is zip closed sections of the maze and they will become filled with color. Zip in all the sections of the maze and it&apos;s complete. However if you back track you might unzip your path, so be careful! Each stage has four mazes you must complete to move on, but you can move from maze to maze by using the exits located at the top, bottom and sides of the screen. And don&apos;t forget about the bad guys trying to take you out all the while. If one touches you you&apos;re toast! You can fight back by zipping sections of the maze closed that contain power-ups that will make you invincible for a short time or clear all the screen of the baddies. The game keeps getting harder as you progress to higher stages.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pitfall II - Lost Caverns (USA)">
+    <description>Pitfall II - Lost Caverns</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision</manufacturer>
+    <dev>Activision</dev>
+    <genre>Platform</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>You play Pitfall Harry searching for the Raj diamond, his niece Rhonda, and a variety of treasures somewhere in the Andes. Poisonous frogs, eels, scorpions, bats and other hazards get in the way. Pitfall II is the sequel to Pitfall, the original platform game. Gameplay has remained pretty much the same, with each screen presenting a side view of obstacles to get past, and potentially treasures to collect. The landscape is more maze like, with a variety of paths and dead ends to search. Along the way there are checkpoints the player will encounter. When the player dies, Pitfall Harry will be sent back to the most recently crossed checkpoint.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pitfall! (USA)">
+    <description>Pitfall!</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision</manufacturer>
+    <dev>Activision</dev>
+    <genre>Platform</genre>
+    <score>4.1</score>
+    <player>1 Player</player>
+    <story>Pitfall! is a platform action game. You play Pitfall Harry who is on a quest to locate treasure deep in the jungle. With a little luck you&apos;ll be able to find money bags, silver bars, gold bars, and diamond rings. But many obstacles will get in the way, some of which merely deduct points from your score, while others are fatal. Rolling logs and falling down a hole will deduct points, and scorpions, alligators, snakes, bottomless pits, swamps, and fires will cause Pitfall Harry to lose a life. You have 20 minutes to try to collect all of the treasures on the numerous screens, if you can live that long!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pitstop (USA)">
+    <description>Pitstop</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Epyx</manufacturer>
+    <dev>Epyx</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-4 Players</player>
+    <story>Pitstop is an action racing game featuring six different race tracks. Your goal is to earn as much money as possible by winning races in the Grand Circuit which consists of a race on each of the six tracks; each time a race is completed, you&apos;ll earn money based on how you placed and the number of laps completed before moving on. While you are racing, keep an eye on your tires and fuel; if your tires become too worn (causing a blowout) or you run out of fuel, the game will be over. To prevent this from happening, you&apos;ll need to make a pitstop. Here you control the pit crew and can replace tires and refuel. While in the pit the race is still going on, of course, so repairs need to be made as quickly as possible to get back into the race without losing too much ground. Several game options are available to control the level of difficulty and the number of laps. In addition to the Grand Circuit which is the full race, you can also practice a track in a single race or enter the mini circuit which consists of three races.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Popeye (USA)">
+    <description>Popeye</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Bros</manufacturer>
+    <dev>Nintendo Co., Ltd.</dev>
+    <genre>Platform</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>Popeye is a conversion of the arcade action/platform game. As Popeye, you are trying to win Olive Oyl&apos;s love! She is at the top of the screen dropping tokens of her love, and you need to collect them before they hit the ground. After you have collected the required number of items, you can move on to the next, more difficult level. There are many obstacles trying to stop you from completing your task, though! Brutus wanders around the screen and is constantly trying to catch you. If you collect a can of spinach, you can temporarily knock him out, otherwise Brutus will knock you out. Other objects such as bottles or birds are also flying around the screen and will cause you to lose one of your lives if you are hit. Each level features a different layout of platforms and ladders, and will have you collecting different items as they float towards the bottom of the screen!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Q-bert (USA)">
+    <description>Q-bert</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>D. Gottlieb &amp; Co.</dev>
+    <genre>Platform</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Q*bert is a conversion of the popular arcade game. The goal is to change all of the tiles on a pyramid to the target color. To do this you guide Q*bert around the pyramid, and every tile he hops on will change color. On early levels, a single hop will change the tile to the desired color, but on later levels you may need to hop on a tile multiple times or even avoid hopping on a tile multiple times! Trying to stop Q*bert are many different creatures which wander around the board, including Coily the snake, Slick and Sam, and falling balls. On the edge of the board are floating discs; if Q*bert jumps on one of these discs when the snake is in pursuit, the snake will fall off the board while Q*bert is safely transported to the top.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Q-bert II (USA)">
+    <description>Q-bert II</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Mylstar Electronics, Inc.</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Q*Bert&apos;s Qubes is the sequel to the game Q*Bert and features similar gameplay, but is now in three dimensions. Once again your goal is to change multicolored blocks to a target color, but now you must make sure all three visible sides of the blocks match the target color. You control Q*Bert on the playfield of blocks; Q*Bert changes the colors by jumping to a block which will cause it to rotate in the direction of his jump. Unlike the original game, you don&apos;t need to change the colors of the whole playfield, but rather need to form straight line(s) of the target colors, and when you do you can move on to the next round. Of course, to make this task more challenging are a variety of creatures (including a giant rat!) that chase you around the playfield. Each creature is a different color, and if it lands on a block where the top face is the same color then the creature falls off of the playfield, but if Q*Bert gets caught by a creature then a life is lost! As the game progresses, more creatures chase Q*Bert and additional colors are added to the playfield making it tougher to find the target color. There are no longer any discs on the sides of the playfield to carry you to safety, so make sure you don&apos;t jump off the edge! To help out, a green ball may appear from time to time; if you catch this, all the enemies become frozen temporarily.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Quest for Quintana Roo (USA)">
+    <description>Quest for Quintana Roo</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sunrise Software Inc.</manufacturer>
+    <dev>VSS, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.3</score>
+    <player>1 Player</player>
+    <story>You are Yucatan Sam on a quest to explore the temple of Quintana Roo. Your goal is to find the vault which is hidden somewhere within and return with the treasure that is inside. You begin your quest outside the temple; climb your way up the side of the temple in order to get inside. Poisonous snakes and deadly lightning bolts will block your progress here. Once inside the temple, you have a limited air supply so you need to explore quickly. Hidden in various rooms of the temple are numerous keys which are needed to unlock the vault. The keys and some other useful items are hidden in secret rooms which you need to locate by using your trusty pick axe or the flasks of acid you carry. To help figure out which rooms may contain hidden objects, you carry a geiger counter with you; the higher the reading, the closer you are to something of interest! The rooms you&apos;ll be exploring are guarded by snakes, spiders, and even mummies! To deal with these enemies you carry a gun, and you can also use the acid flasks against them (ammo is limited, so use it wisely). If you are successful in your mission, you may receive a secret code which can be used to begin the game at later levels. Good luck!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="River Raid (USA)">
+    <description>River Raid</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision</manufacturer>
+    <dev>Activision</dev>
+    <genre>Shooter</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>River Raid is a vertically scrolling action game. You fly a jet up a river in an attempt to destroy bridges which are vital to the enemy. The river is heavily guarded, however, with balloons, ships, choppers, and enemy aircraft trying to stop you. Along the way you will need to fly over fuel stations to refuel your jet and keep flying. The plane is armed with a cannon with unlimited ammo. It can be used to destroy the enemy vehicles and bridges, but a careless player can accidentally destroy a fuel station. Colliding with the riverbanks or with the enemy aircraft destroys your plane and makes you lose a life.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Robin Hood (USA)">
+    <description>Robin Hood</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Robin Hood is an action game where you need to rescue Maid Marian who is being held by the Sheriff of Nottingham in a castle (and while you&apos;re at it, steal some gold to give to the poor)! Gameplay takes place on several different screens which have different objectives. First you will need to make your way through Sherwood Forest; numerous henchman are hiding here, so use your arrows to shoot them. Surviving the forest, the next section takes place outside of the castle; naturally, numerous henchman guard the castle gate. While dodging incoming arrows, you need to shoot enough of the henchman to cause the gate to open. Once it opens, you can enter the castle for the final scene. Inside the castle you will be able to find Maid Marian behind one of the many doors, and gold behind another. The rest of the doors have henchman hiding behind them, but if you can find the Maid Marian or the gold then you win this round and the game repeats at a tougher skill level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Roc &apos;N Rope (USA, Europe)">
+    <description>Roc &apos;N Rope</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>Your player is a mountain climber who must avoid cavemen, dinosaurs and pterodactyls as he climbs up the cliff-sides. Your goal in each level is to climb up and reach a mystical bird with great plumage, while staying one step above the bonus timer which determines how long you may stay on each level. The mountain climber has only one ability; to shoot rope at 45 degree angles which he may then climb up to other platforms. His other action is a stun beam which will allow him to walk past enemies who get too close; but will only work horizontally from him. As for power-ups, on each level is (usually 2) a flashing diamond power-up which will make him invincible and allow him to defeat monsters. Also as a power-up are glowing treasures of some kind which are worth extra points. Your player also cannot take a fall, except for extremely small ones unless he is able to climb down vines. This means that when you shoot your rope and are climbing it, you are vulnerable. Even more so because enemies are allowed to shake the rope until you fall off if they reach the base of the rope. Pterodactyls fly overhead and drop eggs on the player. There are 4 distinct levels; the cliff-side, the windmill, the waterfall and the peak. Completing all of these levels will restart the game with faster enemies and power-ups located in different places.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Rock &apos;N&apos; Bolt (USA)">
+    <description>Rock &apos;N&apos; Bolt</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>Activision</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Louie The constructor struts pieces to their location. The Girders are constantly moving back and forth. It is your job to lock them down, and then get back to where you started the level. There are 100 levels, and two types of levels. One is just locking down, the others you have to put them in a specific location. There are three levels of difficulty to choose from, you just get paid more the harder the level, and you have less time to complete the level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Rocky Super-Action Boxing (USA, Europe)">
+    <description>Rocky Super-Action Boxing</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Sports/Boxing</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Coleco&apos;s foray into the boxing realm is based on the 1982 film Rocky III. Players have the option of playing as either Rocky Balboa or Clubber Lang as one battles the opponent in 10 rounds of boxing action. The game utilizes Coleco&apos;s Super Action Controller letting players use the buttons to throw various punches and blocks, while using the joystick to move around the ring. The computer opponent can be set at 4 different skill levels, or play head-to-head with a second player. The winner of a match does a victory strut to Eye Of The Tiger, the theme song from the movie.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Rolloverture (USA)">
+    <description>Rolloverture</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sunrise Software Inc.</manufacturer>
+    <dev>Sunrise Software Inc.</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1 Player</player>
+    <story>The hall is at a hush. The maestro takes the baton and readies the orchestra. But wait! All the notes have been scrambled and you must help the maestro scurry madly around the orchestra pit directing the notes back to their proper order. Climb ladders, throw levers, reverse the conveyor belt, and step on rollovers to guide the music ball to the correct notemaker slot. Proper placement rewards you with the overture, but incorrect placement results in a speed increase and greater difficulty. A variety of melodies and random scrambling of the notes guarantees to keep your interest, while you painlessly learn about music. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sammy Lightfoot (USA)">
+    <description>Sammy Lightfoot</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sierra Entertainment</manufacturer>
+    <dev>Sierra Entertainment</dev>
+    <genre>Action</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>Go through three levels jumping over obstacles that get in your way. Use trampolines and swings to get to hard-to-reach places and avoid hazards or falling down gaps. Get to the top of the screen in order to proceed to the next level. Once three levels are completed, the game restarts with increased difficulty. Before you start the game, you can access the options screen which lets you customize the screen to include another player, turn off the sound or the scene music, or let either player start at any particular level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sector Alpha (USA)">
+    <description>Sector Alpha</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spectravision</manufacturer>
+    <dev>Spectravision</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1-2 Players</player>
+    <story>You&apos;re volunteered for hazardous space duty in SECTOR ALPHA, a remote part of the Earth&apos;s Galactic Alliance. You knew that it would be tough and that perhaps you would not return. But someone has to defend the perimeters against the robot Penetrators from the alien Throgg Empire! Besides, the pay is great, assuming, that is, you survive to collect it. The objective of the game (it is only a game, isn&apos;t it?) is to successfully defend SECTOR ALPHA by destroying as many robot Penetrator ships as possible. The Penetrators fire missiles which you must either avoid or destroy as described below. Scoring depends on the level of play. One or two people may play and compete against each other for the highest score.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sewer Sam (USA)">
+    <description>Sewer Sam</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Interphase Technologies</manufacturer>
+    <dev>Interphase Technologies</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>It&apos;s a lovely day and Sam is waiting in Central Park to meet his girlfriend Sally. He sees her and walks to her. He only has eyes for her and before he realizes it he finds himself in the New York sewer system. Three Russian submarines have been located in the New York sewer system and they have blocked off the system. Sam&apos;s only way out of the sewer system is to destroy the Russian submarines. Luckily, Sam carries his revolver. Sam can&apos;t go back... once he&apos;s gone through the City Sewer Department seals the tunnel. Luckily, Sam carries his revolver. The sewer system has three types of sewer tunnels. Tunnels with solid dry floors, tunnels with a water passage in the middle and tunnels with pits. Sam can walk, run and creep through the tunnels but Sam can&apos;t move as quickly in water. Sam can move from tunnel to tunnel by entering one of the passages that appear occasionally on his way. Each time he enters a new sewer, Sam receives a fresh supply of oxygen. On it&apos;s way through the sewer system Sam is under attack by nasties like rats, bats, spiders and more. The ultimate nasties are the Russian submarines. They are located only in water canals. The status bar at the top of the screen contains a distance indicator. It tells you how far Sam has traveled into the sewer. If it&apos;s red, it means there&apos;s a dreaded submarine at the end of the sewer. The more nasty elements you shoot, the higher you&apos;ll score.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sir Lancelot (USA)">
+    <description>Sir Lancelot</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Action</genre>
+    <score>1.8</score>
+    <player>1-2 Players</player>
+    <story>A damsel in distress is being held in a castle by a fire breathing dragon! As Sir Lancelot, you need to ride your winged horse Pegasus to the rescue. Each level in this action game consists of two screens. First you are outside the castle which is guarded by numerous flying creatures. You need to fly around the screen and destroy all of the creatures by hitting them with your lance (careful, if they hit you instead you&apos;ll lose a life). After all of the creatures are gone, you enter the second screen which is inside the castle. Here there is a large pit of lava and a flying dragon. To destroy the dragon you need to hit it&apos;s stomach with your lance. If you are hit by one of the dragon&apos;s fireballs you&apos;ll be temporarily stunned and unable to fly. If you end up falling into the lava, you&apos;ll lose a life. If you can defeat the dragon, the game repeats at a higher difficulty level. The game ends when you lose all of your lives.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Skiing (USA)">
+    <description>Skiing</description>
+    <year>1986</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>Telegames, Inc.</dev>
+    <genre>Sports/Skiing</genre>
+    <score>3.5</score>
+    <player>1-4 Players3.5</player>
+    <story>The object of the SKIING&apos;. game is to successfully negotiate the course in the feast amount of time</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Slither (USA)">
+    <description>Slither</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Slither is similar in nature to the hit arcade game Centipede by Atari. You control your snake as it slither&apos;s around the screen. Where this game differs greatly from Centipede is that you can shoot in 4 different directions at the same time to take out the baddies trying to hunt you down. The bad snakes hunting you down will appear from various angles on the screen, often several at a time. The game was bundled with Coleco&apos;s Roller Controller and can&apos;t be played without it.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Slurpy (USA)">
+    <description>Slurpy</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Far beneath the earth&apos;s crust, for a thousand years, a titanic struggle between good and evil has raged. The CAVE PHANTOM, an angry demon, wanders through the black caverns just below the surface — ever searching for a way to take revenge on the outer world after Merlin banished him to darkness Just below the PHANTOM&apos;S kingdom lies Middle Earth, where friendly creatures called VUCUMUSES dart through the colorful stalactites and stalagmites Every 100 years, one brave VACUMUS is dispatched to the upper kingdom of the CAVE PHANTOM to keep watch and prevent it from spreading evil to the outer world. Today, the VACUMUS is SLURPY! SLURPY&apos;S only strength lies in his long snout, which enables him to suck in and swallow nearly every living creature within the caves Now, the CAVE PHANTOM has brought to life a hoard of demon-mutants! They are multiplying quickly! And when their numbers grow to sufficient strength, they will pour out of all the caves on the surface, spreading poison and death! Your task — slurp up these viperous devils while avoiding their vicious attacks. And BEWARE —the CAVE PHANTOM is ever lurking — invisible — ready to strike!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Smurf Paint &apos;n Play Workshop (USA, Europe)">
+    <description>Smurf Paint &apos;n Play Workshop</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Action</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>Choose any one of four background scenes and start to add clip-art objects, furniture and free form design. The four scenes are: -Outside a mushroom house -Inside a mushroom house -The River crossing -Gargamel&apos;s Castle Create any number of decorated scenarios and then use either controller to change into one of four characters: Smurf, Papa Smurf, Smurfette or Gargamel and play around in the graphic you have created. Characters are able to move left, right, up, down... jump and drop. There is no method of saving your work, so it all disappears when the power goes off.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Smurf Rescue (USA, Europe)">
+    <description>Smurf Rescue</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Smurfette has been kidnapped and is being held atop a platform in Gargamel&apos;s castle. The player controls a smurf across the screen and must jump over obstacles, away from spiders, eventually up to smurfette to rescue her. Completing of this task restarts the game with faster moving obstacles and it also takes longer (more scenes) to get to Gargamel&apos;s castle.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Fury (USA, Europe)">
+    <description>Space Fury</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>So! A creature for my amusement! Prepare for Battle! These are the words uttered by the alien commander upon starting a game of Space Fury. The gameplay is similiar to Asteroids in that you have one screen of space that wraps back on itself and your ship can only thrust and fire. However, whereas in Asteroids you faced pieces of rock that couldn&apos;t give chase, Space Fury instead provides alien vessels that will hunt you down. Each alien vessel starts in 4 pieces at diagonal corners which will try to join together. Shooting any of these pieces before is possible and will make things easier for your player. When one or more pieces reaches the center point, it combines with other pieces there and begins to fire upon and give chase to your vessel. There&apos;s only one screen of space, so your tactics are limited. However your vessel is not completely basic. Provided from the beginning are three superstructures, of which you can choose one, that provide additional firepower to your ship.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Panic (USA, Europe)">
+    <description>Space Panic</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Universal Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>A game remarkably similar to Lode Runner, you play an astronaut with limited oxygen (time) chased around by various space aliens. Your only method of dealing with these multicolored threats from space is to dig a hole, lure it into a hole and then manually fill up the hole with the alien in it. Dropping aliens on top of other aliens earns you extra points and eliminates both. Levels get progressively harder and enemies grow faster.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Spectron (USA)">
+    <description>Spectron</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spectravision</manufacturer>
+    <dev>Spectravision</dev>
+    <genre>Action</genre>
+    <score></score>
+    <player>1-2 Players3.4</player>
+    <story>The planetary clust Shalix is plagued by an intergalactic dust cloud that blocked out their sun. Now the Shalix have built a fleet to colonize new worlds. Unfortunately they set their eyes on Spectron, the player&apos;s home world. It&apos;s up to the player to repel the invading forces from Shalix. Spectron is a single-screen shoot &apos;em up in the vain of Space Invaders. The player controls a Spectron fighter, a land-based vehicle that can fire high speed rockets. The player is protected by a shield that consists of various segments above the player. Each segment can be destroyed by enemy fire when hit often enough, but the player cannot shoot through it. Invaders will appear at the top of the screen and must be destroyed. Some invaders can plant bombs in the city backdrop. When more than nine bombs have been planted the game ends immediately, irregardless of the remaining lives of the player. Alien forces are brought in by a transport ship, if the player manages to destroy it it&apos;ll destroy up to eighteen ships at once. The various invaders have two different types of behavior, representing the untrained cannon fodder and the elite Shalix. There are various difficulty levels and modes included and a two player mode is included. The player earns points for every enemy killed and the goal is to reach a high-score.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Spy Hunter (USA, Europe)">
+    <description>Spy Hunter</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Bally/Midway</dev>
+    <genre>Driving</genre>
+    <score>1.8</score>
+    <player>1-2 Players3.4</player>
+    <story>A conversion of the arcade game, Spy Hunter is a driving action game played from an overhead point of view. Your car is equipped with machine guns to help you get past the numerous enemies out on the road (be careful not to shoot any civilians, though!) Occasionally you will come across a weapons van, and if you drive into the back of the van your car becomes equipped with a second weapon (such as smoke screen, oil slick, or missiles.) At several points the road splits and you can enter a boathouse which transforms your car into a boat temporarily. If you drive far enough the seasons change as well (watch out for icy conditions during winter!) The enemy cars will do anything to stop you, including running you off the road, firing guns from the back of a limmo, or dropping bombs from a helicopter.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Squish &apos;Em Sam! (USA)">
+    <description>Squish &apos;Em Sam!</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sirius Software.</manufacturer>
+    <dev>Interphase</dev>
+    <genre>Action</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>Climb up the side of a series of 48-story buildings to collect suitcases full of money, while avoiding creepy monsters and falling objects that try to knock you off. Fortunately, you can strike back against the monsters by smashing them flat, by smashing them on the head. Don&apos;t linger too long, though, since they are soon resurrected, white and unsquishable. Squish &apos;Em is similar to Crazy Climber, with much faster gameplay.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Trek (USA, Europe)">
+    <description>Star Trek</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score></score>
+    <player>1-2 Players3.4</player>
+    <story>Star Trek: Strategic Operations Simulator is an arcade action game where you take control of the Starship Enterprise. Your mission is to save the Federation from NOMAD! Before you get a chance at destroying NOMAD, you&apos;ll have to battle your way through ten levels (each consisting of multiple rounds). In each round you may encounter Klingon fighters, deadly anti-matter saucers, asteroid fields, and deadly meteors, all of which are capable of depleting the Enterprises energy. The game ends when your energy supply has completely run out. To fight these dangers, the Enterprise is equipped with an unlimited supply of phasers and a limited supply of photon torpedoes. Each round also contains one or more starbases; if you dock at a starbase, some of your supplies (such as energy and torpedoes) will be replenished. The game is played from two points of view; the top of the screen contains a third person view of the Enterprise (along with the ships gauges), and on the bottom of the screen is a first person point of view</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Wars (USA)">
+    <description>Star Wars</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Atari Inc.</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1 Player</player>
+    <story>Conversion of Atari Games&apos; first-person shoot &apos;em up based around the original Star Wars film. You take on the role of Luke Skywalker, aiming to destroy the Death Star - which, as any fan knows, involves attacking the &apos;weak spot&apos; near the exhaust. To even get to this you have to pass swarms of TIE Fighters. Complete the game and it loops back around at ever-increasing difficulty. The game uses vector graphics, which allow lots of action at high speed on comparatively slow systems.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Strike It! (USA)">
+    <description>Strike It!</description>
+    <year>1986</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Bit Corp.</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>Strike! Strike! Strike! Our Strike It is the most interesting TV game between various varieties and high techniques uses the simplest regulation. It is not so easy to hold your pin pon racket to hit the ball and reflecting to the bricks to get high points. So speedy reflection and judgment are necessary. Then you most pay your full attention to the direction and angle of reflection of the ball. Sharp eyesight, speddy hand control and smart judgment are principals to win the game </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Subroc (USA, Europe)">
+    <description>Subroc</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>SEGA Enterprises Ltd.</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Action</genre>
+    <score></score>
+    <player>1-2 Players2.9</player>
+    <story>SubRoc 3-D is a shooter, where you look through a periscope and shoot at both sea and air-targets. The arcade version features 3-D effects.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Action Baseball (USA, Europe)">
+    <description>Super Action Baseball</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Sports/Baseball</genre>
+    <score>3.3</score>
+    <player>1-2 Players</player>
+    <story>Colecovision&apos;s only baseball game and first of the Super Action series, Super Action baseball was specially designed to work with the Super Action controllers Batting is done with an angled view wherein you see your batter in the bottom-left of the screen and the pitcher at center-right. The top part of the screen is reserved for keeping an eye on the bases. As the ball approaches, your player attempts to hit the ball with his bat to send it flying. A successful hit will result in your player having to run around the bases. Running is done with the wheel on the top of the Super Action Controllers. Stealing is also possible. Fielding is simple, using the Super Action controllers, players have 4 buttons to correspond to each base. Thus the ball can be thrown at any of the bases instantly.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Action Football (USA, Europe)">
+    <description>Super Action Football</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Sports/Football</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>Another game in the Super Action series that makes use of Coleco&apos;s Super Action Controllers. Play against the computer or go head-to-head with a friend over 4 quarters of football action. Step back and throw the long bomb to your wide receiver dancing in the end zone, kick the field goal, or lay down a bone-crunching tackle as you control one of 3 offensive or 3 defensive players. What victory dance will you do as you dive across the goal line in the final seconds of the game?</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Action Soccer (USA, Europe)">
+    <description>Super Action Soccer</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>CBS Electronics</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Sports/Soccer</genre>
+    <score></score>
+    <player>1-2 Players2.8</player>
+    <story>The world&apos;s most popular sport finally comes to America! Super Action Soccer gives you the chance to be the most accomplished star player of any team that ever was. You will be the goal-keeper diving to make incredible saves, the full back with fierce last minute tackles, the mid-field general directing shrewd passes and the centre forward scoring great goals. You will be involved all the time in the most exciting moments of the game. You will score the winning goal! Team Pixelboy released Super Action Soccer for the North American audience.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Cobra (USA)">
+    <description>Super Cobra</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Bros</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>2.2</score>
+    <player>1 Player</player>
+    <story>Super Cobra is a side scrolling shooter based on the arcade game. You&apos;re a chopper pilot on a surveillance mission in enemy territory; your goal is to make it through the various obstacle courses alive and score as many points as possible. Tall buildings, mountains, narrow tunnels, and various enemies (such as tanks, rockets, mines, and more) can all get in the way and destroy your chopper if you aren&apos;t careful. To help defend yourself, the chopper is armed with a machine gun and bombs which can be used to destroy the enemy tanks and rockets. To make the task more difficult, your chopper has a limited amount of fuel. Throughout the landscapes are fuel tanks; if one of these is shot or bombed, you will be awarded extra fuel. As the levels progress, the enemies become more aggressive, fuel becomes more scarce, and the landscape becomes trickier to navigate.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Cross Force (USA)">
+    <description>Super Cross Force</description>
+    <year>1986</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Spectravision</manufacturer>
+    <dev>Spectravision</dev>
+    <genre>Action</genre>
+    <score></score>
+    <player>1-2 Players3.2</player>
+    <story>There’s a new menace in the galaxy! It’s the evil Morplus from the planet Tzoris. Morplus are without question the fiercest warriors east of the Libra Super-Galactic Cluster. They arrive in teams of two to four members, and in waves with the more dangerous squadrons arriving later. In the more advanced skill levels, they’re impossible to stop! Both their flight patterns and bombing maneuvers are highly unpredictable. What can you do against odds like these? There’s only one hope: you must catch them in a devastating super cross force. The key is your awesome Spectron weapon, which creates a dual holographic laser blast. You can get them coming and going, and if you run low on energy, you can deftly swing your joystick to the left or right to catch the energy packs dropped by your mother ship.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Tank Wars (USA)">
+    <description>Tank Wars</description>
+    <year>1986</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Bit Corp.</manufacturer>
+    <dev>Telegames, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1-2 Players3.2</player>
+    <story>Protect the Radar Base and yourself from being hit by various enemy tanks, and further trace to defeat every enemy you confront. In this game, you fight by five of your own tanks against 20 enemy tanks in each scene.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Tapper (USA, Europe)">
+    <description>Tapper</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Bally/Midway</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Tapper is an action game where you&apos;re a beer tapper (barman) and have to serve beer to demanding customers. There are four customers, each has its own lane lengthier than the previous one, whom you have to keep at bay. If they reach the end of the lane without receiving their beer, you&apos;re a goner; if you miss one and accidentally spill beer needlessly you lose a life and should one of them throw you back the mug and you fail to catch it, you lose a life as well. Occasionally a bizarre icon will appear on one of the lines and, should you grab it, will invoke a &amp;quot;cabarette&amp;quot;-style show which will keep some of the customers occupied. The Xbox 360 version includes bonus rounds, as well as co-op and versus multiplayer modes, also online, along with achievements.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Telly Turtle (USA, Europe)">
+    <description>Telly Turtle</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Carousel Software</dev>
+    <genre>Action</genre>
+    <score>2.3</score>
+    <player>1 Player</player>
+    <story>Telly Turtle is basically a port of the LOGO programming language with the main character being a turtle. The keypad buttons of the Colecovision are used to issue commands from a selection presented on-screen and eventually, programs can be formed to move Telly Turtle around the screen in a series of directions. Music and Sound Effects are also added into the mix to broaden the programming experience</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Threshold (USA)">
+    <description>Threshold</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sierra Entertainment</manufacturer>
+    <dev>Sierra Entertainment</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>Threshold is a simple Shoot&apos;em up game. You are in control of a spaceship at the bottom of the screen and have to shoot several formations of enemies on the top of the screen. To make things more difficult you have limited time in form of a fuel tank which will get refilled after you cleared a number of waves. Besides that your spacecraft is equipped with a laser that tends to overheat. Every shot make the heat bar of the laser increase a bit. Once it reached its maximum you can&apos;t fire anymore and are forced to wait until it cooled down while slowly running out of fuel.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Time Pilot (USA, Europe)">
+    <description>Time Pilot</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>Time Pilot is an arcade style shooter. Piloting your trusty spaceship, you need to destroy the squadrons of enemy craft that are attacking! On each level you have a quota of enemies that need to be destroyed. After fulfilling your quota, a final boss of the level will appear; when destroyed, you will move on to the next level. The game begins in the year 1910, and each time a level is completed you advance in time. In 1910 you only have to face relatively unarmed biplanes, but as the levels advance so does the technology. Each new level brings with it tougher, more heavily armed aircraft including jets, helicopters, and even flying saucers! From time to time, you will encounter a parachute; if you run into this, you will earn bonus points.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Tomarc the Barbarian (USA)">
+    <description>Tomarc the Barbarian</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Action</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>In Tomarc the Barbarian Senta is being held captive in a magical cage, and Tomarc needs to rescue her! In this action game you will control both Tomarc and Senta simultaneously. Tomarc is lost in a series of caves somewhere searching for his magic sword, and then must locate Senta to set her free. Deadly rats and other dangers must be avoided as you run and jump around the caves. Meanwhile, Senta must defend herself from giant bats and other creatures while trapped in the cage; although she can&apos;t move, she is capable of firing magic at enemies to destroy them. You are able to switch screens between the two characters to select which character to control. Listening to the sound effects can help you determine when the other character is in trouble and you should switch screens.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Tournament Tennis (USA)">
+    <description>Tournament Tennis</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Imagic</manufacturer>
+    <dev>D&amp;L Research</dev>
+    <genre>Sports/Tennis</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>Most of the conventions that became standard for tennis simulations appear in this early title - indeed many were pioneered by it. Matches can be played at quarter-final, semi-final or final level - winning at one level automatically moves you onto the next one. They can last for 3 or 5 sets, with a player requiring a 2-game lead to win a set, although a tie-break comes in at 6-6 in all but the final set. The view is pseudo-3D, from above the court, and features a shadow on the ball to give a more realistic appearance and make it easier to judge its height. Spectators turn their heads to view the action, and ball-boys run on to the court to retrieve a dead ball. Shot speed, direction and spin can all be applied, and forehand and backhand strokes are both available.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Turbo (USA, Europe)">
+    <description>Turbo</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>SEGA Corporation</dev>
+    <genre>Action</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>It&apos;s you and several other cars racing through a variety of landscapes in Turbo. From the starting line onward, you need to maneuver around and pass various cars in your way while racing towards the finish line. Some of the landscapes you&apos;ll travel through include city streets, long roads in the country, seaside highways and dark tunnels.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Tutankham (USA)">
+    <description>Tutankham</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Parker Bros</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>Tutankham is an arcade action game played from a top down point of view. You are an explorer in King Tut&apos;s tomb on a mission to retrieve as many of the valuable treasures as you can find. In addition to the treasures, you will also find a key in each of the chambers. This is needed in order to unlock the entrance to the next, more difficult chamber. Be careful, for the tomb is guarded by many dangerous creatures! Cobras, bats, scorpions, and more all appear in the maze and will cause you to lose a life if you&apos;re caught! To defend yourself you are armed with a laser gun which you can fire left or right, but not up or down. In each of the mazes you are also give one flash which can be used to destroy all creatures currently on the screen.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Up &apos;N Down (USA)">
+    <description>Up &apos;N Down</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sega</manufacturer>
+    <dev>Sega</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1-2 Players</player>
+    <story>This is a home port of a 1983 Sega arcade game that was distributed by Bally Midway. The object is to drive around a twisty course and collect all the colored flags. You can jump over gaps and over or onto other cars. If you land on another car, you kill them and collect points. You can also collect things like balloons and ice cream cones for bonus points. The faster you collect all the flags, the bigger a time bonus you get. In later levels, there are dead-ends or gaps and a vehicle that is carrying a flag you need, so you will need to jump on him. If you are hit by another vehicle or go off the course, you lose a life. In two player games, play alternates.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Venture (USA, Europe)">
+    <description>Venture</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Exidy</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Venture is a conversion of the popular arcade game. You control Winky, the heroic adventurer. Your goal is to collect as many treasures as you can which are scattered throughout numerous dungeons. In each dungeon, there are several chambers which each contain a treasure. Armed only with your crossbow, you need to get past the varied creatures which guard the chamber, snag the treasure, and make it out again. When you collect the treasure from each of the chambers in a dungeon, you can then move on to the next, more difficult dungeon.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Victory (USA, Europe)">
+    <description>Victory</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Exidy, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.9</score>
+    <player>1 Player</player>
+    <story>Victory is based on the Arcade game of the same name. Use your Coleco Roller Controller to rotate your ship as the space around you scrolls by, smack your fire button to take out anything that moves and snag a power-up or two along the way to aid in your quest. Similar in style to Asteroids, but with a moving background.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="War Games (USA, Europe)">
+    <description>War Games</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>Coleco</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>Greetings, Professor Falken. Shall we play a game? This strategic game is based on the popular 1983 movie of the same name, starring Matthew Broderick. It might remind people of Missile Command but the action is slower and spread over six screens which represent different areas of the U.S.A. Enemy missiles, planes, and subs will attack and you must direct your own forces, which include missiles, planes, subs, and satellites, to intercept them. Each type of defense has strengths and weaknesses (missiles are fast but limited in range, planes are slower but have unlimited range). Satellites are a better all-around defense but are only available every so often. Some weapons aren&apos;t available in certain areas, and some enemies are resistant to certain weapons, so you must alter your strategy accordingly. As your bases and cities are struck, a DefCon indicator for each area will count down and when the overall DefCon reaches 1 for a minute or when all cities and bases are destroyed, a counterstrike is launched and the game is over. The game is won by preventing a counterstrike long enough for a cease-fire to be reached. There&apos;s eight different difficulty levels to progress through as you get the hang of it. A two-player mode on the Colecovision lets one player to use the Roller Controller to guide and fire weapons, while the second player inputs keypad commands.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="War Room (USA)">
+    <description>War Room</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Nap Consumer Electronics.</manufacturer>
+    <dev>Probe 2000</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>War Room is a simulation of the computerized war game scenarios played out at the highest level of the world superpowers. It is an extremely graphic and realistic representation of a nuclear confrontation between the United States and Russia.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Wing War (USA)">
+    <description>Wing War</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Imagic</manufacturer>
+    <dev>Imagic</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Wing War is an action game where you control a dragon. Beginning in your underground cave, your goal is to capture a sparkling diamond. To do this, you will first need to unlock the secret passage by bringing a fire, water and air crystal back to your cave. Crystals can be found by exploring the various locations available, usually you will need to destroy one of the many enemies so they turn into a crystal. Fire and water crystals can not be in the cave alone at the same time, an air crystal must be placed between them; so you will need to bring back the crystals in the order fire, air, water or water, air, fire. Once you&apos;ve done this a super crystal is formed unlocking the secret passage so you can try to get the diamond! Your dragon has a limited amount of energy; being hit by enemies will cause the energy to deplete, and the game ends when all of your dragons have lost all their energy.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Wizard of Id&apos;s Wizmath (USA)">
+    <description>Wizard of Id&apos;s Wizmath</description>
+    <year>1983</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Sierravision</manufacturer>
+    <dev>Sydney Development Corp.</dev>
+    <genre>Action</genre>
+    <score>2.6</score>
+    <player>1-2 Players</player>
+    <story>Spook needs to escape from the King of Id&apos;s dungeons. He slips out but Turnkey is in pursuit. He needs to solve math problems to open the way to his escape. Wizard of Id&apos;s WizMath is an educational game to teach mathematics. Using your joystick, you must move blocks into place so they complete a correct math problem and answer. If you push against a block, you will send it flying until it hits a wall or another block. You can also face a block and hold down the button. While keeping the button down, you can then slide the block as needed. There is a sixty second time limit and you are being pursued by Turnkey. Early levels require only one math problem to exit but later levels require two or more. Early in the game, you can select a floor on an elevator. The higher the floor, the more difficult the math problems. The game also asks your age. The older you say you are, the higher a floor it tries to start you on, although you can select a lower floor.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Word Feud (USA)">
+    <description>Word Feud</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Xonox</manufacturer>
+    <dev>Xonox</dev>
+    <genre>Action</genre>
+    <score>2.0</score>
+    <player>1-2 Players</player>
+    <story>Word Feud is a simple game where 1 or 2 players can play at matching words aginst each other</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zaxxon (USA, Europe)">
+    <description>Zaxxon</description>
+    <year>1982</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Coleco</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>The Zaxxon defence system must be destroyed in this isometric-viewed shoot &apos;em up which was originally hugely successful in the arcades. The game has 3 stages, first taking you through Asteroid City, which is heavily protected by aircraft, guns and missiles. Many barriers are alarmed, leaving you with limited space to progress through, and fire must constantly be dodged. Stage two is a space shoot out against hordes of enemy aircraft - those you failed to destroy in the first part of the task. Complete this and you reach the final battle with Zaxxon, with the game looping with increased difficulty if you can survive the first time. There are 3 distinct skill levels, while controls involve using forward to dive and back to climb, in the manner of flight simulation.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zenji (USA)">
+    <description>Zenji</description>
+    <year>1984</year>
+    <rating>HSRS - GA (General Audience)</rating>
+    <manufacturer>Activision</manufacturer>
+    <dev>Activision</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Zenji is an action/strategy game where you control a rolling face throughout a maze. Each section of the maze can be rotated by the face. The goal is to turn the entire maze green by connecting each section of the maze to the source at the center of the screen. After all sections of the maze have been connected, you can move on to the next, more challenging level. In addition to having a time limit to complete your task, you need to avoid the flames and sparks which wander about the maze. From time to time a number will appear in a maze section and count down from 9 to 0. If you touch the number before it disappears, bonus points are earned. As the levels progress, the mazes become larger, trickier and more flames will appear.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+</menu>

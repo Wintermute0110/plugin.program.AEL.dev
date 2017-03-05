@@ -8,7 +8,7 @@ WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorith
          online and offline scrapers. There is a Python implementation of the algorithm here,
          https://github.com/seatgeek/fuzzywuzzy
 
-WIP      Include databases for all supported platforms in AEL offline scraper.
+WIP      Massive upgrade of the AEL Offline scraper database.
 
 WIP      Have a setting to restrict ROMs displayed based on rating.
 
@@ -41,7 +41,10 @@ WIP      Support ERSB and NPlayers in online scraper.
 WIP      ROM scanner report.
 
 
-[B]Advanced Emulator Launcher | version 0.9.6 | XX February 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.6 | xx March 2017[/B]
+
+
+[B]Advanced Emulator Launcher | version 0.9.6-beta1 | 5 March 2017[/B]
 
 FEATURE  Import and Export of Launchers configurations. Will be very useful especially for 
          Android users.
@@ -132,9 +135,14 @@ FEATURE  Print number of parent and clones in PClone launchers.
 
 FEATURE  Split Launcher report into statistics, metadata and asset reports.
 
+FEATURE  Include databases for all supported platforms in AEL offline scraper (well... at least
+         included more databases).
+
+FEATURE  Updated Offline scraper MAME database from 0.173 to 0.183.
+
 FIX      Fixed crash when editing Collection ROM position.
 
-WIP      Keep order when Collection ROM is relinked.
+FIX      Keep order when Collection ROM is relinked.
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
