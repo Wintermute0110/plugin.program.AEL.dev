@@ -100,6 +100,8 @@ def fs_new_launcher():
          'nointro_xml_file' : '',
          'pclone_launcher' : False,
          'num_roms' : 0,
+         'num_parents' : 0,
+         'num_clones' : 0,
          'timestamp_launcher' : 0.0,
          'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
@@ -477,6 +479,8 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append(XML_text('pclone_launcher', unicode(launcher['pclone_launcher'])))
             str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
+            str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
+            str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))            
             str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
             str_list.append(XML_text('default_thumb', launcher['default_thumb']))
@@ -593,7 +597,7 @@ def fs_load_catfile(categories_file):
                 elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
-                elif xml_tag == 'num_roms':
+                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones':
                     launcher[xml_tag] = int(xml_text)
                 # >> Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
@@ -1402,14 +1406,12 @@ def fs_generate_parent_ROMs_index(roms, roms_pclone_index):
                 's_boxback'      : '',
                 's_cartridge'    : '',
                 's_map'          : '',
-                's_trailer'      : '',
-                'num_clones_str' : unicode(len(roms_pclone_index[rom_id]))
+                's_trailer'      : ''
             }
         else:
             # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
             # >> Clean parent ROM name tags from ROM Name
             p_roms[rom_id] = dict(roms[rom_id])
-            p_roms[rom_id]['num_clones_str'] = unicode(len(roms_pclone_index[rom_id]))
             p_roms[rom_id]['m_name'] = text_format_ROM_title(p_roms[rom_id]['m_name'], True)
 
     return p_roms

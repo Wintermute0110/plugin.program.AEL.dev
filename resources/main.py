@@ -1653,8 +1653,8 @@ class Main:
                 if type2 == 0:
                     launcher = self.launchers[launcherID]
                     pclone_launcher = launcher['pclone_launcher']
-                    if pclone_launcher: item_list = ['Normal mode', 'PClone mode [Current]']
-                    else:               item_list = ['Normal mode [Current]', 'PClone mode']
+                    if pclone_launcher: item_list = ['Normal mode', 'Parent/Clone mode [Current]']
+                    else:               item_list = ['Normal mode [Current]', 'Parent/Clone mode']
                     type_temp = dialog.select('Launcher display mode', item_list)
                     if type_temp < 0: return
 
@@ -1745,7 +1745,6 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
-                    self.launchers[launcherID]['num_roms'] = len(roms)
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
                     kodi_notify('Have {0}/Miss {1}/Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
 
@@ -3034,7 +3033,7 @@ class Main:
         # --- Launcher tags ---
         # >> Do not plot ROM count on standalone launchers! Launcher is standaloneif rompath = ''
         launcher_name = launcher_raw_name = launcher_dic['m_name']
-        if self.settings['display_launcher_roms'] and launcher_dic['rompath']:
+        if self.settings['display_launcher_roms'] and launcher_dic['rompath']and not launcher_dic['pclone_launcher']:
             num_roms = launcher_dic['num_roms']
             if num_roms == 0:
                 launcher_name = '{0} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
@@ -3042,6 +3041,10 @@ class Main:
                 launcher_name = '{0} [COLOR orange]({1} ROM)[/COLOR]'.format(launcher_raw_name, num_roms)
             else:
                 launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
+        elif self.settings['display_launcher_roms'] and launcher_dic['rompath'] and launcher_dic['pclone_launcher']:
+            num_parents = launcher_dic['num_parents']
+            num_clones  = launcher_dic['num_clones']
+            launcher_name = '{0} [COLOR orange]({1} Par / {2} Clo)[/COLOR]'.format(launcher_raw_name, num_parents, num_clones)
 
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
@@ -5602,6 +5605,9 @@ class Main:
         info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
         info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
         info_text += "[COLOR skyblue]pclone_launcher[/COLOR]: {0}\n".format(launcher['pclone_launcher'])
+        info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher['num_roms'])
+        info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher['num_parents'])
+        info_text += "[COLOR skyblue]num_clones[/COLOR]: {0}\n".format(launcher['num_clones'])
         info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
         info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
 
@@ -6886,11 +6892,10 @@ class Main:
         pDialog.update(100)
         pDialog.close()
 
-        # --- Make a Parent/Clone list based on romID ---
+        # --- Make a Parent/Clone list and parent list and save DBs ---
         pDialog.create('Advanced MAME Launcher', 'Building Parent/Clone indices ...')
-        roms_pclone_index = fs_generate_PClone_index(roms, roms_nointro)
-        parent_roms       = fs_generate_parent_ROMs_index(roms, roms_pclone_index)
-        # >> Save PClone index and parent list
+        roms_pclone_index       = fs_generate_PClone_index(roms, roms_nointro)
+        parent_roms             = fs_generate_parent_ROMs_index(roms, roms_pclone_index)
         roms_base_noext         = launcher['roms_base_noext']
         index_roms_base_noext   = roms_base_noext + '_PClone_index'
         parents_roms_base_noext = roms_base_noext + '_PClone_parents'
@@ -6898,6 +6903,11 @@ class Main:
         fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
         pDialog.update(100)
         pDialog.close()
+
+        # --- Update launcher number of ROMs ---
+        launcher['num_roms']    = len(roms)
+        launcher['num_parents'] = len(roms_pclone_index)
+        launcher['num_clones']  = len(roms) - len(roms_pclone_index)
 
     #
     # Manually add a new ROM instead of a recursive scan.

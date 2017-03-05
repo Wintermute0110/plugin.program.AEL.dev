@@ -128,6 +128,8 @@ FEATURE  Remove No-Intro Added status.
 
 FEATURE  New style Parent/Clone launchers, ala Advanced MAME Launcher.
 
+FEATURE  Print number of parent and clones in PClone launchers.
+
 WIP      Split Launcher report into statistics, metadata and asset reports.
 
 FIX      Fixed crash when editing Collection ROM position.
