@@ -5230,7 +5230,7 @@ class Main:
                 # --- Read ROMs ---
                 regular_launcher = True
                 if categoryID == VCATEGORY_FAVOURITES_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Favourites ...')
+                    log_info('_command_view_menu() Viewing ROM in Favourites ...')
                     roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
                     rom = roms[romID]
                     window_title = 'Favourite ROM data'
@@ -5238,7 +5238,7 @@ class Main:
                     vlauncher_label = 'Favourite'
 
                 elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Most played ROMs list ...')
+                    log_info('_command_view_menu() Viewing ROM in Most played ROMs list ...')
                     most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
                     rom = most_played_roms[romID]
                     window_title = 'Most Played ROM data'
@@ -5246,7 +5246,7 @@ class Main:
                     vlauncher_label = 'Most Played ROM'
 
                 elif categoryID == VCATEGORY_RECENT_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Recently played ROMs ...')
+                    log_info('_command_view_menu() Viewing ROM in Recently played ROMs ...')
                     recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
                     if current_ROM_position < 0:
@@ -5258,10 +5258,10 @@ class Main:
                     vlauncher_label = 'Recently played ROM'
 
                 elif categoryID == VCATEGORY_TITLE_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Title Virtual Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
@@ -5271,10 +5271,10 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Title'
 
                 elif categoryID == VCATEGORY_YEARS_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Year Virtual Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
@@ -5284,10 +5284,10 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Year'
 
                 elif categoryID == VCATEGORY_GENRE_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Genre Virtual Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
@@ -5297,10 +5297,10 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Genre'
 
                 elif categoryID == VCATEGORY_STUDIO_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Studio Virtual Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in Studio Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
@@ -5310,10 +5310,10 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Studio'
 
                 elif categoryID == VCATEGORY_NPLAYERS_ID:
-                    log_info('_command_view_ROM() Viewing ROM in NPlayers Virtual Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_NPLAYERS_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
@@ -5323,10 +5323,10 @@ class Main:
                     vlauncher_label = 'Virtual Launcher NPlayer'
 
                 elif categoryID == VCATEGORY_ESRB_ID:
-                    log_info('_command_view_ROM() Viewing ROM in ESRB Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_ESRB_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_ESRB_DIR, launcherID)
@@ -5336,10 +5336,10 @@ class Main:
                     vlauncher_label = 'Virtual Launcher ESRB'
 
                 elif categoryID == VCATEGORY_RATING_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Rating Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_RATING_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_RATING_DIR, launcherID)
@@ -5349,10 +5349,10 @@ class Main:
                     vlauncher_label = 'Virtual Launcher Rating'
 
                 elif categoryID == VCATEGORY_CATEGORY_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Category Virtual Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
                     hashed_db_filename = VIRTUAL_CAT_CATEGORY_DIR.join(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_ROM() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
@@ -5363,7 +5363,7 @@ class Main:
 
                 # --- ROM in Collection ---
                 elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                    log_info('_command_view_ROM() Viewing ROM in Collection ...')
+                    log_info('_command_view_menu() Viewing ROM in Collection ...')
                     (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
                     collection = collections[launcherID]
                     roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
@@ -5379,7 +5379,7 @@ class Main:
 
                 # --- ROM in regular launcher ---
                 else:
-                    log_info('_command_view_ROM() Viewing ROM in Launcher ...')
+                    log_info('_command_view_menu() Viewing ROM in Launcher ...')
                     # Check launcher is OK
                     if launcherID not in self.launchers:
                         kodi_dialog_OK('launcherID not found in self.launchers')
@@ -5418,7 +5418,7 @@ class Main:
                 window.getControl(1).setLabel(window_title)
                 window.getControl(5).setText(info_text)
             except:
-                log_error('_command_view_Launcher() Exception rendering INFO window')
+                log_error('_command_view_menu() Exception rendering INFO window')
 
         # --- View last execution output ---
         # NOTE NOT available on Windows. See comments in _run_process()
@@ -5443,10 +5443,10 @@ class Main:
                 window.getControl(1).setLabel(window_title)
                 window.getControl(5).setText(info_text)
             except:
-                log_error('_command_view_Launcher_Report() Exception rendering INFO window')
+                log_error('_command_view_menu() Exception rendering INFO window')
 
         # --- Launcher statistics ---
-        elif selected_value == 2:
+        elif selected_value == 2 or selected_value == 3 or selected_value == 4:
             # --- Standalone launchers do not have reports! ---
             if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
             else:                             category_name = VCATEGORY_ADDONROOT_ID
@@ -5454,54 +5454,48 @@ class Main:
             if not launcher['rompath']:
                 kodi_notify_warn('Cannot create report for standalone launcher')
                 return
-
-            # --- Get report filename ---
-            roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
-            report_file_name = REPORTS_DIR.join(roms_base_noext + '.txt')
-            window_title = 'Launcher {0} Report'.format(launcher['m_name'])
-            log_verb('_command_view_Launcher_Report() Dir  "{0}"'.format(REPORTS_DIR.getOriginalPath()))
-            log_verb('_command_view_Launcher_Report() File "{0}"'.format(roms_base_noext + '.txt'))
-
             # --- If no ROMs in launcher do nothing ---
             launcher = self.launchers[launcherID]
             roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
             if not roms:
                 kodi_notify_warn('No ROMs in launcher. Report not created')
                 return
+            # --- Regenerate reports if don't exist or are outdated ---
+            self._roms_regenerate_launcher_reports(categoryID, launcherID, roms)
 
-            # --- If report doesn't exists create it automatically ---
-            log_debug('_command_view_Launcher_Report() Testing report file "{0}"'.format(report_file_name.getPath()))
-            if not report_file_name.exists():
-                kodi_dialog_OK('Report file not found. Will be generated now.')
-                self._roms_create_launcher_report(categoryID, launcherID, roms)
-                xbmc.sleep(250)
-                # >> Update report timestamp
-                self.launchers[launcherID]['timestamp_report'] = time.time()
-                # >> Save Categories/Launchers
-                # >> DO NOT update the timestamp of categories/launchers of report will always be obsolete!!!
-                # >> Keep same timestamp as before.
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
-
-            # --- If report timestamp is older than launchers last modification, recreate it ---
-            if self.launchers[launcherID]['timestamp_report'] <= self.launchers[launcherID]['timestamp_launcher']:
-                kodi_dialog_OK('Report is outdated. Will be regenerated now.')
-                self._roms_create_launcher_report(categoryID, launcherID, roms)
-                xbmc.sleep(250)
-                self.launchers[launcherID]['timestamp_report'] = time.time()
-                fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+            # --- Get report filename ---
+            roms_base_noext  = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
+            report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
+            report_meta_FN   = REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
+            report_assets_FN = REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
+            log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
+            log_verb('_command_view_menu() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
+            log_verb('_command_view_menu() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
 
             # --- Read report file ---
             try:
-                file = open(report_file_name.getPath(), 'r')
-                info_text = file.read()
-                file.close()
-            except:
-                log_error('_command_view_Launcher_Report() Exception reading report TXT file')
-
-            # --- Eye candy ---
-            info_text = info_text.replace('<Launcher Information>', '[COLOR orange]<Launcher Information>[/COLOR]')
-            info_text = info_text.replace('<Metadata/Audit Information>', '[COLOR orange]<Metadata Information>[/COLOR]')
-            info_text = info_text.replace('<Asset/Artwork Information>', '[COLOR orange]<Artwork Information>[/COLOR]')
+                if selected_value == 2:
+                    window_title = 'Launcher {0} Statistics Report'.format(launcher['m_name'])
+                    file = open(report_stats_FN.getPath(), 'r')
+                    info_text = file.read()
+                    file.close()
+                elif selected_value == 3:
+                    window_title = 'Launcher {0} Metadata Report'.format(launcher['m_name'])
+                    file = open(report_meta_FN.getPath(), 'r')
+                    info_text = file.read()
+                    file.close()
+                elif selected_value == 4:
+                    window_title = 'Launcher {0} Asset Report'.format(launcher['m_name'])
+                    file = open(report_assets_FN.getPath(), 'r')
+                    info_text = file.read()
+                    file.close()
+            except IOError:
+                log_error('_command_view_menu() (IOError) Exception reading report TXT file')
+                window_title = 'Error'
+                info_text = '[COLOR red]Exception reading report TXT file.[/COLOR]'
+            info_text = info_text.replace('<No-Intro Audit Statistics>', '[COLOR orange]<No-Intro Audit Statistics>[/COLOR]')
+            info_text = info_text.replace('<Metadata statistics>', '[COLOR orange]<Metadata statistics>[/COLOR]')
+            info_text = info_text.replace('<Asset statistics>', '[COLOR orange]<Asset statistics>[/COLOR]')
 
             # --- Show information window ---
             try:
@@ -5512,15 +5506,7 @@ class Main:
                 window.getControl(1).setLabel(window_title)
                 window.getControl(5).setText(info_text)
             except:
-                log_error('_command_view_Launcher_Report() Exception rendering INFO window')
-
-        # --- Launcher metadata/audit report ---
-        elif selected_value == 3:
-            kodi_dialog_OK('Metadata/audit report not coded yet. Sorry.')
-
-        # --- Launcher assets report ---
-        elif selected_value == 4:
-            kodi_dialog_OK('Assets report not coded yet. Sorry.')
+                log_error('_command_view_menu() Exception rendering INFO window')
 
         # --- Launcher scanner report ---
         elif selected_value == 5:
@@ -6577,30 +6563,66 @@ class Main:
         log_debug('_run_after_execution() function ENDS')
 
     #
+    # Check if Launcher reports must be created/regenrated
+    #
+    def _roms_regenerate_launcher_reports(self, categoryID, launcherID, roms):
+        # --- Get report filename ---
+        if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
+        else:                             category_name = VCATEGORY_ADDONROOT_ID
+        roms_base_noext  = fs_get_ROMs_basename(category_name, self.launchers[launcherID]['m_name'], launcherID)
+        report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
+        log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
+
+        # --- If report doesn't exists create it automatically ---
+        log_debug('_command_view_Launcher_Report() Testing report file "{0}"'.format(report_stats_FN.getPath()))
+        if not report_stats_FN.exists():
+            kodi_dialog_OK('Report file not found. Will be generated now.')
+            self._roms_create_launcher_reports(categoryID, launcherID, roms)
+            # >> Update report timestamp
+            self.launchers[launcherID]['timestamp_report'] = time.time()
+            # >> Save Categories/Launchers
+            # >> DO NOT update the timestamp of categories/launchers of report will always be obsolete!!!
+            # >> Keep same timestamp as before.
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+
+        # --- If report timestamp is older than launchers last modification, recreate it ---
+        if self.launchers[launcherID]['timestamp_report'] <= self.launchers[launcherID]['timestamp_launcher']:
+            kodi_dialog_OK('Report is outdated. Will be regenerated now.')
+            self._roms_create_launcher_reports(categoryID, launcherID, roms)
+            self.launchers[launcherID]['timestamp_report'] = time.time()
+            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+
+    #
     # Creates a Launcher report having:
     #  1) Launcher statistics
     #  2) Report of ROM metadata
     #  3) Report of ROM artwork
     #  4) If No-Intro file, then No-Intro audit information.
     #
-    def _roms_create_launcher_report(self, categoryID, launcherID, roms):
+    def _roms_create_launcher_reports(self, categoryID, launcherID, roms):
         ROM_NAME_LENGHT = 50
 
         # >> Report file name
         if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
         else:                             category_name = VCATEGORY_ADDONROOT_ID
         launcher = self.launchers[launcherID]
+        roms_base_noext  = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
+        report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
+        report_meta_FN   = REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
+        report_assets_FN = REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
+        log_verb('_roms_create_launcher_reports() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
+        log_verb('_roms_create_launcher_reports() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
+        log_verb('_roms_create_launcher_reports() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
         roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
         report_file_name = REPORTS_DIR.join(roms_base_noext + '.txt')
-        log_verb('_roms_create_launcher_report() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
-        kodi_notify('Creating Launcher report ...')
+        log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
 
-        # >> Step 1: Launcher main statistics
+        # >> Progress dialog
+        
+        # >> Step 1: Build report data
         num_roms = len(roms)
-
-        # >> Step 2: ROM metadata and fanart
-        missing_m_year      = missing_m_genre = missing_m_studio = missing_m_rating = 0
-        missing_m_plot      = 0
+        missing_m_year = missing_m_genre  = missing_m_studio = missing_m_nplayers = 0
+        missing_m_esrb = missing_m_rating = missing_m_plot   = 0
         missing_s_title     = missing_s_snap     = missing_s_fanart  = missing_s_banner    = 0
         missing_s_clearlogo = missing_s_boxfront = missing_s_boxback = missing_s_cartridge = 0
         missing_s_flyer     = missing_s_map      = missing_s_manual  = missing_s_trailer   = 0
@@ -6612,16 +6634,20 @@ class Main:
             rom_info['m_name'] = rom['m_name']
             rom_info['m_nointro_status'] = rom['nointro_status']
             # >> Metadata
-            if rom['m_year']:   rom_info['m_year']   = 'YES'
-            else:               rom_info['m_year']   = '---'; missing_m_year += 1
-            if rom['m_genre']:  rom_info['m_genre']  = 'YES'
-            else:               rom_info['m_genre']  = '---'; missing_m_genre += 1
-            if rom['m_studio']: rom_info['m_studio'] = 'YES'
-            else:               rom_info['m_studio'] = '---'; missing_m_studio += 1
-            if rom['m_rating']: rom_info['m_rating'] = 'YES'
-            else:               rom_info['m_rating'] = '---'; missing_m_rating += 1
-            if rom['m_plot']:   rom_info['m_plot']   = 'YES'
-            else:               rom_info['m_plot']   = '---'; missing_m_plot += 1
+            if rom['m_year']:                 rom_info['m_year']     = 'YES'
+            else:                             rom_info['m_year']     = '---'; missing_m_year += 1
+            if rom['m_genre']:                rom_info['m_genre']    = 'YES'
+            else:                             rom_info['m_genre']    = '---'; missing_m_genre += 1
+            if rom['m_studio']:               rom_info['m_studio']   = 'YES'
+            else:                             rom_info['m_studio']   = '---'; missing_m_studio += 1
+            if rom['m_nplayers']:             rom_info['m_nplayers'] = 'YES'
+            else:                             rom_info['m_nplayers'] = '---'; missing_m_nplayers += 1
+            if rom['m_esrb'] == ESRB_PENDING: rom_info['m_esrb']     = '---'; missing_m_esrb += 1
+            else:                             rom_info['m_studio']   = 'YES'
+            if rom['m_rating']:               rom_info['m_rating']   = 'YES'
+            else:                             rom_info['m_rating']   = '---'; missing_m_rating += 1
+            if rom['m_plot']:                 rom_info['m_plot']     = 'YES'
+            else:                             rom_info['m_plot']     = '---'; missing_m_plot += 1
             # >> Assets
             if rom['s_title']:     rom_info['s_title']     = 'Y'
             else:                  rom_info['s_title']     = '-'; missing_s_title += 1
@@ -6648,10 +6674,10 @@ class Main:
             if rom['s_trailer']:   rom_info['s_trailer']   = 'Y'
             else:                  rom_info['s_trailer']   = '-'; missing_s_trailer += 1
             # >> ROM audit
-            if   rom['nointro_status'] == 'None':    audit_none += 1
-            elif rom['nointro_status'] == 'Have':    audit_have += 1
-            elif rom['nointro_status'] == 'Miss':    audit_miss += 1
-            elif rom['nointro_status'] == 'Unknown': audit_unknown += 1
+            if   rom['nointro_status'] == NOINTRO_STATUS_NONE:    audit_none += 1
+            elif rom['nointro_status'] == NOINTRO_STATUS_HAVE:    audit_have += 1
+            elif rom['nointro_status'] == NOINTRO_STATUS_MISS:    audit_miss += 1
+            elif rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN: audit_unknown += 1
             else:
                 log_error('Unknown audit status {0}.'.format(rom['nointro_status']))
                 kodi_dialog_OK('Unknown audit status {0}. This is a bug, please report it.'.format(rom['nointro_status']))
@@ -6659,72 +6685,82 @@ class Main:
             # >> Add to list
             check_list.append(rom_info)
 
-        # >> Step 5: Make report
+        # >> Step 2: Statistics report
         str_list = []
-        str_list.append('<Launcher Information>\n')
         str_list.append('Launcher name  {0}\n'.format(launcher['m_name']))
         str_list.append('Number of ROMs {0}\n'.format(num_roms))
+        # >> Audit statistics
+        str_list.append('\n<No-Intro Audit Statistics>\n')
+        str_list.append('Have ROMs           {0:5d}\n'.format(audit_have))
+        str_list.append('Missing ROMs        {0:5d}\n'.format(audit_miss))
+        str_list.append('Unknown ROMs        {0:5d}\n'.format(audit_unknown))
+        str_list.append('Not checked ROMs    {0:5d}\n'.format(audit_none))
         # >> Metadata
-        str_list.append('ROMs with Year   {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_year, missing_m_year) +
-                        'ROMs with Title     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_title, missing_s_title))
-        str_list.append('ROMs with Genre  {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_genre, missing_m_genre) +
-                        'ROMS with Snap      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_snap, missing_s_snap))        
-        str_list.append('ROMs with Studio {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_studio, missing_m_studio) +
-                        'ROMs with Fanart    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_fanart, missing_s_fanart))        
-        str_list.append('ROMs with Rating {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_rating, missing_m_rating) +
-                        'ROMS with Banner    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_banner, missing_s_banner))        
-        str_list.append('ROMs with Plot   {0:5d} ({1:5d} missing) | '.format(num_roms - missing_m_plot, missing_m_plot) +
-                        'ROMs with Clearlogo {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_clearlogo, missing_s_clearlogo))        
-        
-        # >> Assets
-        str_null_offset = 15
-        str_null = ' ' * str_null_offset
-        str_list.append('Have ROMs        {0:5d} {1} | '.format(audit_have, str_null) +
-                        'ROMS with Boxfront  {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxfront, missing_s_boxfront))
+        str_list.append('\n<Metadata statistics>\n')
+        str_list.append('ROMs with Year      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_year, missing_m_year))
+        str_list.append('ROMs with Genre     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_genre, missing_m_genre))
+        str_list.append('ROMs with Studio    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_studio, missing_m_studio))
+        str_list.append('ROMs with NPlayers  {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_nplayers, missing_m_nplayers))
+        str_list.append('ROMs with ESRB      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_esrb, missing_m_esrb))
+        str_list.append('ROMs with Rating    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_rating, missing_m_rating))
+        str_list.append('ROMs with Plot      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_plot, missing_m_plot))
+        # >> Assets statistics
+        str_list.append('\n<Asset statistics>\n')
+        str_list.append('ROMs with Title     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_title, missing_s_title))
+        str_list.append('ROMS with Snap      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_snap, missing_s_snap))        
+        str_list.append('ROMs with Fanart    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_fanart, missing_s_fanart))        
+        str_list.append('ROMS with Banner    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_banner, missing_s_banner))        
+        str_list.append('ROMs with Clearlogo {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_clearlogo, missing_s_clearlogo))
+        str_list.append('ROMS with Boxfront  {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxfront, missing_s_boxfront))
+        str_list.append('ROMs with Boxback   {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxback, missing_s_boxback))
+        str_list.append('ROMS with Cartridge {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_cartridge, missing_s_cartridge))
+        str_list.append('ROMs with Flyer     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_flyer, missing_s_flyer))
+        str_list.append('ROMS with Map       {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_map, missing_s_map))
+        str_list.append('ROMs with Manual    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_manual, missing_s_manual))
+        str_list.append('ROMS with Trailer   {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_trailer, missing_s_trailer))
 
-        str_list.append('Missing ROMs     {0:5d} {1} | '.format(audit_miss, str_null) +
-                        'ROMs with Boxback   {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxback, missing_s_boxback))
-
-        str_list.append('Unknown ROMs     {0:5d} {1} | '.format(audit_unknown, str_null) +
-                        'ROMS with Cartridge {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_cartridge, missing_s_cartridge))
-
-        str_list.append('Not checked ROMs {0:5d} {1} | '.format(audit_none, str_null) +        
-                        'ROMs with Flyer     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_flyer, missing_s_flyer))
-
-        str_null_offset = 40
-        str_null = ' ' * str_null_offset
-        str_list.append('{0} ROMS with Map       {1:5d} ({2:5d} missing)\n'.format(str_null, num_roms - missing_s_map,       missing_s_map))
-        str_list.append('{0} ROMs with Manual    {1:5d} ({2:5d} missing)\n'.format(str_null, num_roms - missing_s_manual,    missing_s_manual))
-        str_list.append('{0} ROMS with Trailer   {1:5d} ({2:5d} missing)\n'.format(str_null, num_roms - missing_s_trailer,   missing_s_trailer))
-
-        # >> Info
-        str_list.append('\n<Metadata/Audit Information>\n')
-        str_list.append('{0} Year Genre Studio Rating Plot Audit\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_list.append('{0}\n'.format('-' * 86))
+        # >> Step 3: Metadata report
+        str_meta_list = []
+        str_meta_list.append('{0} Year Genre Studio Rating Plot Audit\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
+        str_meta_list.append('{0}\n'.format('-' * 86))
         for m in check_list:
             # >> Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_list.append('{0} {1}  {2}   {3}    {4}    {5}  {6}\n'.format(
+            str_meta_list.append('{0} {1}  {2}   {3}    {4}    {5}  {6}\n'.format(
                             name_str.ljust(ROM_NAME_LENGHT),
                             m['m_year'], m['m_genre'], m['m_studio'],
                             m['m_rating'], m['m_plot'], m['m_nointro_status']))
 
-        str_list.append('\n<Asset/Artwork Information>\n')
-        str_list.append('{0} Tit Snap Fan Ban Clr Boxf Boxb Cart Fly Map Man Tra\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_list.append('{0}\n'.format('-' * 102))
+        # >> Step 4: Asset report
+        str_asset_list = []
+        str_asset_list.append('{0} Tit Sna Fan Ban Clr Bxf Bxb Car Fly Map Man Tra\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
+        str_asset_list.append('{0}\n'.format('-' * 102))
         for m in check_list:
             # >> Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_list.append('{0} {1}   {2}    {3}   {4}   {5}   {6}    {7}    {8}    {9}   {10}   {11}   {12}\n'.format(
+            str_asset_list.append('{0} {1}   {2}   {3}   {4}   {5}   {6}   {7}   {8}   {9}   {10}   {11}   {12}\n'.format(
                             name_str.ljust(ROM_NAME_LENGHT),
                             m['s_title'],     m['s_snap'],     m['s_fanart'],  m['s_banner'],
                             m['s_clearlogo'], m['s_boxfront'], m['s_boxback'], m['s_cartridge'],
                             m['s_flyer'],     m['s_map'],      m['s_manual'],  m['s_trailer']))
 
-        # >> Step 6: Join string and write TXT file
+        # >> Step 5: Join string and write TXT reports
         try:
+            # >> Stats report
             full_string = ''.join(str_list).encode('utf-8')
-            file = open(report_file_name.getPath(), 'w')
+            file = open(report_stats_FN.getPath(), 'w')
+            file.write(full_string)
+            file.close()
+
+            # >> Metadata report
+            full_string = ''.join(str_meta_list).encode('utf-8')
+            file = open(report_meta_FN.getPath(), 'w')
+            file.write(full_string)
+            file.close()
+
+            # >> Asset report
+            full_string = ''.join(str_asset_list).encode('utf-8')
+            file = open(report_assets_FN.getPath(), 'w')
             file.write(full_string)
             file.close()
         except OSError:
