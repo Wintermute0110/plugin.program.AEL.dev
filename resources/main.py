@@ -136,7 +136,6 @@ AEL_FAV_STAT_VALUE_BROKEN            = 'Fav_Broken'
 AEL_FAV_STAT_VALUE_NONE              = 'Fav_None'
 AEL_NOINTRO_STAT_VALUE_HAVE          = 'NoIntro_Have'
 AEL_NOINTRO_STAT_VALUE_MISS          = 'NoIntro_Miss'
-AEL_NOINTRO_STAT_VALUE_ADDED         = 'NoIntro_Added'
 AEL_NOINTRO_STAT_VALUE_UNKNOWN       = 'NoIntro_Unknown'
 AEL_NOINTRO_STAT_VALUE_NONE          = 'NoIntro_None'
 AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
@@ -3356,7 +3355,6 @@ class Main:
             if self.settings['display_nointro_stat']:
                 if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
                 elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-                elif nstat == NOINTRO_STATUS_ADDED:   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
                 elif nstat == NOINTRO_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
                 elif nstat == NOINTRO_STATUS_NONE:    rom_name = rom_raw_name
                 else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
@@ -3364,7 +3362,6 @@ class Main:
                 rom_name = rom_raw_name
             if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
             elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
-            elif nstat == NOINTRO_STATUS_ADDED:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_ADDED
             elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
             elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
 
@@ -3397,7 +3394,6 @@ class Main:
                 if self.settings['display_nointro_stat']:
                     if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
                     elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-                    elif nstat == NOINTRO_STATUS_ADDED:   rom_name = '{0} [COLOR purple][Added][/COLOR]'.format(rom_raw_name)
                     elif nstat == NOINTRO_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
                     elif nstat == NOINTRO_STATUS_NONE:    rom_name = rom_raw_name
                     else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
@@ -3405,7 +3401,6 @@ class Main:
                     rom_name = rom_raw_name
                 if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
                 elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
-                elif nstat == NOINTRO_STATUS_ADDED:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_ADDED
                 elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
                 elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
 
