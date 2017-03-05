@@ -141,11 +141,10 @@ def fs_new_launcher():
 # nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
 NOINTRO_STATUS_HAVE    = 'Have'
 NOINTRO_STATUS_MISS    = 'Miss'
-NOINTRO_STATUS_ADDED   = 'Added'
 NOINTRO_STATUS_UNKNOWN = 'Unknown'
 NOINTRO_STATUS_NONE    = 'None'
-NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE,    NOINTRO_STATUS_MISS, NOINTRO_STATUS_ADDED,
-                          NOINTRO_STATUS_UNKNOWN, NOINTRO_STATUS_NONE]
+NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE, NOINTRO_STATUS_MISS, NOINTRO_STATUS_UNKNOWN, 
+                          NOINTRO_STATUS_NONE]
 # m_esrb string ESRB_LIST default ESRB_PENDING
 ESRB_PENDING     = 'RP (Rating Pending)'
 ESRB_EARLY       = 'EC (Early Childhood)'
@@ -1328,15 +1327,12 @@ def fs_generate_PClone_index(roms, roms_nointro):
     # roms_pclone_index_by_name = {}
     roms_pclone_index_by_id = {}
 
-    # --- Create a dictionary to convert ROM names into IDs ---
+    # --- Create a dictionary to convert ROMbase_noext names into IDs ---
     names_to_ids_dic = {}
     for rom_id in roms:
         rom = roms[rom_id]
-        if rom['nointro_status'] == 'Added':
-            rom_name = rom['m_name']
-        else:
-            ROMFileName = FileName(rom['filename'])
-            rom_name = ROMFileName.getBase_noext()
+        ROMFileName = FileName(rom['filename'])
+        rom_name = ROMFileName.getBase_noext()
         # log_debug('{0} --> {1}'.format(rom_name, rom_id))
         # log_debug('{0}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
@@ -1345,25 +1341,22 @@ def fs_generate_PClone_index(roms, roms_nointro):
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
+        rom_nointro_name = ROMFileName.getBase_noext()
         # log_debug('rom_id {0}'.format(rom_id))
         # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
         # log_debug('  filename         "{0}"'.format(rom['filename']))
         # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
+        # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
 
-        if rom['nointro_status'] == 'Unknown':
+        #  Add Unknown ROMs to their own set.
+        if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
             clone_id = rom['id']
             if 'Unknown ROMs' not in roms_pclone_index_by_id:
                 roms_pclone_index_by_id['Unknown ROMs'] = []
                 roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
             else:
                 roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
-        # If status is Have, Miss  or Added then ROM is guaranteed to be in the No-Intro file, so
-        # Parent/Clone data is available.
         else:
-            # Added No-Intro ROMs always have all No-Intro tags
-            if rom['nointro_status'] == 'Added': rom_nointro_name = rom['m_name']
-            else:                                rom_nointro_name = ROMFileName.getBase_noext()
-            # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
             nointro_rom = roms_nointro[rom_nointro_name]
 
             # >> ROM is a parent
@@ -1387,20 +1380,29 @@ def fs_generate_PClone_index(roms, roms_nointro):
 #
 # parent_roms = { AEL ROM dictionary having parents only }
 #
-def fs_generate_parent_ROMs(roms, roms_pclone_index):
+def fs_generate_parent_ROMs_index(roms, roms_pclone_index):
     p_roms = {}
 
     for rom_id in roms_pclone_index:
         if rom_id == 'Unknown ROMs':
+            # >> Special Paren ROM for Unknown ROMs
             p_roms[rom_id] = {
-                'id' : 'Unknown ROMs',
-                'm_name' : '[Unknown ROMs]',
-                'finished' : False,
-                'nointro_status' : 'Have',
-                'm_year' : '2016', 'm_genre' : 'Special genre', 'm_plot' : '',
-                'm_studio' : 'Various', 'm_rating' : '',
-                's_title' : '', 's_snap' : '', 's_boxfront' : '', 's_boxback' : '',
-                's_cartridge' : '', 's_map' : '', 's_trailer' : '',
+                'id'             : 'Unknown_ROMs_Parent',
+                'm_name'         : '[Unknown ROMs]',
+                'finished'       : False,
+                'nointro_status' : NOINTRO_STATUS_HAVE,
+                'm_year'         : '2017', 
+                'm_genre'        : 'Special genre', 
+                'm_plot'         : '',
+                'm_studio'       : 'Various',
+                'm_rating'       : '',
+                's_title'        : '',
+                's_snap'         : '',
+                's_boxfront'     : '',
+                's_boxback'      : '',
+                's_cartridge'    : '',
+                's_map'          : '',
+                's_trailer'      : '',
                 'num_clones_str' : unicode(len(roms_pclone_index[rom_id]))
             }
         else:
