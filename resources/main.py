@@ -4264,12 +4264,14 @@ class Main:
 
             # --- Create context menu ---
             commands = []
-            commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
-            commands.append(('Export Collection',        self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
-            commands.append(('Edit Collection',          self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
+            commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
+            commands.append(('Export Collection',        self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
+            commands.append(('Edit Collection',          self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
             commands.append(('Delete Collection',        self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
-            commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-            commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+            commands.append(('Create New Collection',    self._misc_url_RunPlugin('ADD_COLLECTION')))
+            commands.append(('Import Collection',        self._misc_url_RunPlugin('IMPORT_COLLECTION')))
+            commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+            commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
             listitem.addContextMenuItems(commands, replaceItems = True)
 
             # >> Use ROMs renderer to display collection ROMs
@@ -4322,10 +4324,11 @@ class Main:
         log_debug('_command_add_collection() id              "{0}"'.format(collection['id']))
         log_debug('_command_add_collection() m_name          "{0}"'.format(collection['m_name']))
         log_debug('_command_add_collection() roms_base_noext "{0}"'.format(collection['roms_base_noext']))
-        kodi_dialog_OK("Created new Collection named '{0}'.".format(collection_name))
 
         # --- Save collections XML database ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        kodi_refresh_container()
+        kodi_notify('Created ROM Collection "{0}"'.format(collection_name))
 
     #
     # Edits collection artwork
@@ -4551,8 +4554,8 @@ class Main:
 
         # --- Confirm deletion ---
         num_roms = len(collection_rom_list)
-
-        ret = kodi_dialog_yesno('Collection {0} has {1} ROMs. '.format(collection['m_name'], num_roms) +
+        collection_name = collection['m_name']
+        ret = kodi_dialog_yesno('Collection "{0}" has {1} ROMs. '.format(collection_name, num_roms) +
                                 'Are you sure you want to delete it?')
         if not ret: return
 
@@ -4567,6 +4570,7 @@ class Main:
         collections.pop(launcherID)
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
         kodi_refresh_container()
+        kodi_notify('Deleted ROM Collection "{0}"'.format(collection_name))
 
     #
     # Imports a ROM Collection.
@@ -4904,7 +4908,7 @@ class Main:
         dialog = xbmcgui.Dialog()
         collections_id = []
         collections_name = []
-        for key in collections:
+        for key in sorted(collections, key = lambda x : collections[x]['m_name']):
             collections_id.append(collections[key]['id'])
             collections_name.append(collections[key]['m_name'])
         selected_idx = dialog.select('Select the collection', collections_name)
@@ -4950,6 +4954,7 @@ class Main:
         json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
         fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
+        kodi_notify('Added ROM to Collection "{0}"'.format(collection['m_name']))
 
     #
     # Search ROMs in launcher
