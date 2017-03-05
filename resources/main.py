@@ -2385,8 +2385,21 @@ class Main:
                 else:
                     kodi_dialog_OK('Manage ROM object, relink, wrong type2 = {0}. Please report this bug.'.format(type2))
                     return
-                roms.pop(old_fav_rom_ID)
-                roms[new_fav_rom['id']] = new_fav_rom
+                if categoryID == VCATEGORY_COLLECTIONS_ID:
+                    # >> Insert the new ROM in a specific position of the OrderedDict.
+                    old_fav_position = roms.keys().index(old_fav_rom_ID)
+                    dic_index = 0
+                    new_roms_orderded_dict = roms.__class__()
+                    for key, value in roms.items():
+                        # >> Replace old ROM by new ROM
+                        if dic_index == old_fav_position: new_roms_orderded_dict[new_fav_rom['id']] = new_fav_rom
+                        else:                             new_roms_orderded_dict[key] = value
+                        dic_index += 1
+                    roms.clear()
+                    roms.update(new_roms_orderded_dict)
+                else:
+                    roms.pop(old_fav_rom_ID)
+                    roms[new_fav_rom['id']] = new_fav_rom
 
                 # >> Notify user
                 if categoryID == VCATEGORY_FAVOURITES_ID:    kodi_notify('Relinked Favourite ROM')
