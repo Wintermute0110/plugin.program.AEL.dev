@@ -473,7 +473,7 @@ class Main:
     def _misc_set_all_sorting_methods(self):
         # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
         if self.addon_handle < 0: return
-        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_VIDEO_YEAR)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_STUDIO)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_GENRE)
@@ -3239,7 +3239,8 @@ class Main:
         rendering_ticks_start = time.time()
         if selectedLauncher['pclone_launcher']:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, True)
+                num_clones = len(pclone_index[key])
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, True, num_clones)
         else:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
                 self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
@@ -3255,7 +3256,7 @@ class Main:
     # Note that if we are rendering favourites, categoryID = VCATEGORY_FAVOURITES_ID
     # Note that if we are rendering virtual launchers, categoryID = VCATEGORY_*_ID
     #
-    def _gui_render_rom_row(self, categoryID, launcherID, rom, rom_in_fav, parent_launcher = False):
+    def _gui_render_rom_row(self, categoryID, launcherID, rom, rom_in_fav, parent_launcher = False, num_clones = 0):
         # --- Do not render row if ROM is finished ---
         if rom['finished'] and self.settings['display_hide_finished']: return
 
@@ -3374,14 +3375,13 @@ class Main:
             kodi_def_thumb  = launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultProgram.png'
             kodi_def_fanart = launcher['s_fanart']
             platform        = launcher['platform']
-            if parent_launcher:
+            if parent_launcher and num_clones > 0:
                 icon_path      = kodi_def_thumb
                 fanart_path    = kodi_def_fanart
                 banner_path    = ''
                 poster_path    = ''
                 clearlogo_path = ''
-                # rom_name       = rom_raw_name
-                rom_name       = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(rom['num_clones_str'])
+                rom_name       = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(num_clones)
             else:
                 icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
                 fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
@@ -3512,7 +3512,7 @@ class Main:
         # --- Add row ---
         # URLs must be different depending on the content type. If not Kodi log will be filled with:
         # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
-        if parent_launcher:
+        if parent_launcher and num_clones > 0:
             url_str = self._misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
         else:

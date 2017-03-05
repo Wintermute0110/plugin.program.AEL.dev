@@ -32,16 +32,11 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
          class. This need Krypton Beta 4 to run!
 
-WIP      Platform icons/clearlogos in AEL. Platform icons can be an icon of the console or gamepad.
-         EmulationStation has a lot of material that can be reused for AEL.
-
 WIP      Edit multidisc ROMs.
 
 WIP      Support ERSB and NPlayers in offline scraper.
 
 WIP      Support ERSB and NPlayers in online scraper.
-
-WIP      Split Launcher report into statistics, metadata and asset reports.
 
 WIP      ROM scanner report.
 
@@ -124,7 +119,20 @@ FEATURE  Delete ROM context menu integrated in Edit ROM.
 
 FEATURE  Display number of ROMs in launcher.
 
+FEATURE  Platform icons/clearlogos in AEL. Platform icons can be an icon of the console or gamepad.
+         EmulationStation has a lot of material that can be reused for AEL.
+
+FEATURE  Improved No-Intro audit.
+
+FEATURE  Remove No-Intro Added status.
+
+FEATURE  New style Parent/Clone launchers, ala Advanced MAME Launcher.
+
+WIP      Split Launcher report into statistics, metadata and asset reports.
+
 FIX      Fixed crash when editing Collection ROM position.
+
+WIP      Keep order when Collection ROM is relinked.
 
 
 [B]Advanced Emulator Launcher | version 0.9.5 | 12 January 2017[/B]
