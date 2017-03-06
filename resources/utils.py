@@ -549,20 +549,15 @@ class FileName:
     def readAll(self):
         contents = None
         file = xbmcvfs.File(self.originalPath)
-        with file:
-            contents = file.read()
-            file.close()
+        contents = file.read()
+        file.close()
 
         return contents
     
-    def writeAll(self, bytes):
-        self.write(bytes, 'w')
-
-    def writeAll(self, flags, bytes):
+    def writeAll(self, bytes, flags='w'):
         file = xbmcvfs.File(self.originalPath, flags)
-        with file:
-            file.write(bytes)
-            file.close()
+        file.write(bytes)
+        file.close()
 
     def write(self, bytes):
        if self.fileHandle is None:

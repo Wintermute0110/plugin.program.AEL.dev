@@ -615,7 +615,7 @@ def fs_write_JSON_file(file_dir, file_base_noext, data):
     try:
         json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        json_file.writeAll(unicode(json_data))
+        json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(json_file.getPath()))
     except IOError:
@@ -721,7 +721,7 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
         # unicode(json_data) auto-decodes data to unicode if str
         json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                 indent = JSON_indent, separators = JSON_separators)
-        roms_json_file.writeAll(unicode(json_data))
+        roms_json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -778,7 +778,7 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
     try:
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        roms_json_file.writeAll(unicode(json_data))
+        roms_json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -907,7 +907,7 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
     try:
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        roms_json_file.writeAll(unicode(json_data))
+        roms_json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -974,7 +974,7 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
     try:
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = 2, separators = (', ', ' : '))
-        output_filename.writeAll(unicode(json_data))
+        output_filename.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getPath()))
     except IOError:
@@ -1058,7 +1058,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
     try:
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                 indent = 2, separators = (', ', ' : '))
-        output_FileName.writeAll(unicode(json_data))
+        output_FileName.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_FileName.getPath()))
     except IOError:
@@ -1227,7 +1227,7 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     try:
         json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        roms_json_file.writeAll(unicode(json_data))
+        roms_json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
     except IOError:

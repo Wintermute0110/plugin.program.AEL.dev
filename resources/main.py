@@ -4642,7 +4642,7 @@ class Main:
                 log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
                 log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
 
-                new_asset_FN.writeAll('wb', fileData) # b is important -> binary
+                new_asset_FN.writeAll(fileData, 'wb') # b is important -> binary
                 statinfo = new_asset_FN.stat()
                 file_size = statinfo.st_size
                 if asset_filesize != file_size:
@@ -4682,7 +4682,7 @@ class Main:
                     fileData = base64.b64decode(asset_base64_data)
                     log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
                     log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
-                    new_asset_FN.writeAll('wb', fileData)
+                    new_asset_FN.writeAll(fileData, 'wb')
                     statinfo = new_asset_FN.stat()
                     file_size = statinfo.st_size
                     if asset_filesize != file_size:
