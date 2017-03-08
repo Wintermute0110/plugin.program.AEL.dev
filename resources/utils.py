@@ -554,6 +554,14 @@ class FileName:
 
         return contents
     
+    def readAllUnicode(self, encoding='utf-8'):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        contents = file.read()
+        file.close()
+
+        return unicode(contents, encoding)
+    
     def writeAll(self, bytes, flags='w'):
         file = xbmcvfs.File(self.originalPath, flags)
         file.write(bytes)

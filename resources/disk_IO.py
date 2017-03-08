@@ -1767,20 +1767,19 @@ def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
     log_debug('fs_import_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # --- Import data ---
-    if os.path.isfile(nfo_FileName.getPath()):
+    if nfo_FileName.isfile():
         # >> Read NFO file data
         try:
-            file = codecs.open(nfo_FileName.getPath(), 'r', 'utf-8')
-            item_nfo = file.read().replace('\r', '').replace('\n', '')
-            file.close()
+            item_nfo = nfo_FileName.readAllUnicode()
+            item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
-            log_error("fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getOriginalPath()))
+            log_error("fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
             return False
         # log_debug("fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getPath())))
-        log_info("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+        kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
+        log_info("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
         return False
 
     # Find data
@@ -1823,7 +1822,7 @@ def fs_get_launcher_NFO_name(settings, launcher):
 #
 def fs_export_category_NFO(nfo_FileName, category):
     # --- Get NFO file name ---
-    log_debug('fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_export_category_NFO() Exporting launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -1837,16 +1836,16 @@ def fs_export_category_NFO(nfo_FileName, category):
     try:
         nfo_FileName.writeAll(full_string)
     except:
-        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
-        log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
+        kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_FileName.getBase()))
+        log_error("fs_export_category_NFO() Exception writing'{0}'".format(nfo_FileName.getOriginalPath()))
         return False
-    log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_FileName.getPath()))
+    log_debug("fs_export_category_NFO() Created '{0}'".format(nfo_FileName.getOriginalPath()))
 
     return True
 
 def fs_import_category_NFO(nfo_FileName, categories, categoryID):
     # --- Get NFO file name ---
-    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
 
     # --- Import data ---
     if nfo_FileName.isfile():
@@ -1855,12 +1854,12 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
             item_nfo = file.read().replace('\r', '').replace('\n', '')
             file.close()
         except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
-            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getBase()))
+            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
             return False
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getPath())))
-        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+        kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
+        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
         return False
 
     item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
@@ -1871,7 +1870,7 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
     if item_rating: categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
     if item_plot:   categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
 
-    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getPath()))
+    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
 
     return True
 
@@ -1927,7 +1926,7 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
             log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
             return False
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getOriginalPath())))
+        kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
         log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
         return False
 
