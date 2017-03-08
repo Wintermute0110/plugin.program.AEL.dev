@@ -5449,8 +5449,7 @@ class Main:
                 kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
                 return
             info_text = ''
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
-                info_text = myfile.read()
+            info_text = LAUNCH_LOG_FILE_PATH.readAll()
 
             # --- Show information window ---
             window_title = 'Launcher last execution stdout'
@@ -5494,19 +5493,13 @@ class Main:
             try:
                 if selected_value == 2:
                     window_title = 'Launcher {0} Statistics Report'.format(launcher['m_name'])
-                    file = open(report_stats_FN.getPath(), 'r')
-                    info_text = file.read()
-                    file.close()
+                    info_text = report_stats_FN.readAll()
                 elif selected_value == 3:
                     window_title = 'Launcher {0} Metadata Report'.format(launcher['m_name'])
-                    file = open(report_meta_FN.getPath(), 'r')
-                    info_text = file.read()
-                    file.close()
+                    info_text = report_meta_FN.readAll()
                 elif selected_value == 4:
                     window_title = 'Launcher {0} Asset Report'.format(launcher['m_name'])
-                    file = open(report_assets_FN.getPath(), 'r')
-                    info_text = file.read()
-                    file.close()
+                    info_text = report_assets_FN.readAll()
             except IOError:
                 log_error('_command_view_menu() (IOError) Exception reading report TXT file')
                 window_title = 'Error'
