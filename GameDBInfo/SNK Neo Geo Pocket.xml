@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<menu>
+  <header>
+    <listname>SNK Neo Geo Pocket</listname>
+    <lastlistupdate></lastlistupdate>
+    <listversion>test</listversion>
+    <exporterversion></exporterversion>
+  </header>
+  <game name="Baseball Stars (Japan, Europe)">
+    <description>Baseball Stars</description>
+    <year>1998</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>SNK</manufacturer>
+    <dev>SNK</dev>
+    <genre>Baseball/Sports</genre>
+    <score>2.8</score>
+    <player>1-2 Players</player>
+    <story>Baseball Stars is sports game about baseball. Game is similar to Baseball Stars from NES but has less realistic characters and gameplay&apos;s style. You manage own baseball team and play in series of matches. Game has typical baseball rules - one player throws the ball, second hits the ball, someone else grabs it etc. Each character has own statistics, like stamina.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dokodemo Mahjong (Japan)">
+    <description>Dokodemo Mahjong</description>
+    <year>1999</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>ADK</manufacturer>
+    <dev>ADK</dev>
+    <genre>Mahjong</genre>
+    <score>3</score>
+    <player>1 Player</player>
+    <story>As the title suggests, this game lets players play a game of Mahjong. Players receive and discard tiles until they complete hands by forming groups and pairs. Players can choose to play on either a beginner, intermediate, or expert difficulty level. The expert skill level introduces a time limit to the proceedings. The game also keeps track of the score during gameplay</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="King of Fighters R-1 (Japan, Europe)">
+    <description>King of Fighters R-1</description>
+    <year>1999</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>SNK</manufacturer>
+    <dev>SNK</dev>
+    <genre>Fighter</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>Using the Japanese SD (Super-Deformed) artwork style, the KOF Series makes your debut in SNK&apos;s monochrome handheld bringing the same gameplay characteristics found in its arcade/console counter-part The King of Fighters &apos;97, like the possibility of choose between two game modes (Advanced or Extra), an identical adaptation of the battle stages, the chance to battle against Leona and Iori in their Orochi-versions and the same storyline involving the New Faces Team (Yashiro Nanakase, Shermie and Chris), that are using the tournament to accumulate enough energy to wake up his supreme master: Orochi.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Melon-chan no Seichou Nikki (Japan)">
+    <description>Melon-chan no Seichou Nikki</description>
+    <year>1998</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>ADK</manufacturer>
+    <dev>SNK</dev>
+    <genre>Simulation</genre>
+    <score>2.5</score>
+    <player>1 Player</player>
+    <story>Melon-Chan&apos;s Growth Diary is a life simulation game (similar to small Tamagotchi games), the player controls the small girl Melon-chan. He manages her behaviour — food, rest, entertainment and shopping. Melon can walk around the city to buy new things. The game has a clock — in night shops are closed.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Neo Cherry Master - Real Casino Series (Japan, Europe)">
+    <description>Neo Cherry Master - Real Casino Series</description>
+    <year>1999</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>Dyna Corporation</manufacturer>
+    <dev>Dyna Corporation</dev>
+    <genre>Casino</genre>
+    <score>2.2</score>
+    <player>1 Player</player>
+    <story>Neo Cherry Master (or Real Casino Series: Neo Cherry Master) is a fruit machine/one-armed bandit simulator. Simple - spin the reels and wait for luck - identical fruits in the row. Controls are simple: player push A button to spin the reels and the B button to increase credits. No real gambling – player can&apos;t lose real money.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Neo Geo Cup &apos;98 (Japan, Europe)">
+    <description>Neo Geo Cup &apos;98</description>
+    <year>1999</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>SNK</manufacturer>
+    <dev>SNK</dev>
+    <genre>Soccer/Sports</genre>
+    <score>2.5</score>
+    <player>1-2 Players</player>
+    <story>Neo Geo Cup &apos;98 is a football/soccer game for the Neo Geo Pocket. This version is different from Neo Geo Cup &apos;98: The Road to the Victory — here playing field is vertical-scrolling, not side-scrolling. The game has less national teams than the bigger version — the player can choose one from 16 teams. Neo Geo Cup &apos;98 is an unofficial adaptation of the World Cup - SNK has made a fictional Neo Geo Cup. Gameplay is quite simple; the player controls a football team and must win matches against rival teams. The game uses simple 2-buttons and stick controls (limits of the Neo Geo Pocket).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pocket Tennis - Pocket Sports Series (Japan, Europe)">
+    <description>Pocket Tennis - Pocket Sports Series</description>
+    <year>1999</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>SNK</manufacturer>
+    <dev>Yumekobo</dev>
+    <genre>Tennis/Sports</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Pocket Tennis a simple tennis game with two play modes: Exhibition and Tournament. Exhibition is a single match against computer or human opponent (requires link cable). There do exist eight player characters with different skills (human player must select one of those eight characters too) and four (five in the color version) different courts. Also amount of sets per game can be selected (1, 3 or 5). Tournament is only against computer. Human player can pick his/her character but not the computer opponent. Also selection of courts and amount of sets is missing. Three games will be played: quarter and semifinals and of course the final.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Renketsu Puzzle Tsunagete Pon! (Japan)">
+    <description>Renketsu Puzzle Tsunagete Pon!</description>
+    <year>1999</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>SNK</manufacturer>
+    <dev>Yumekobo</dev>
+    <genre>Puzzle</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Puzzle Link is a game where blocks of matching color have to be dissolved. New blocks constantly scroll into the screen from the top. The game is over when the first blocks reach the bottom of the screen. You can dissolve blocks by shooting at them. The shots form a line where they impact. If that line connects otherwise unconnected blocks of the same color they will dissolve. There are three different modes: In Normal you have to link two special blocks that appear after some time. If you manage to finish the level within the time limit you will unlock one of 50 collectible cards. In Clear Mode you have to clear a given constellation of blocks. Battle Mode is a two player link-cable mode.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Samurai Shodown! - Pocket Fighting Series (Japan, Europe)">
+    <description>Samurai Shodown! - Pocket Fighting Series</description>
+    <year>1998</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>SNK</manufacturer>
+    <dev>SNK</dev>
+    <genre>Fighter</genre>
+    <score>4.5</score>
+    <player>1-2 Players</player>
+    <story>In early feudal Japan, a man named Shiro Tokisada Amakusa preaches a heretic religion. Little does anyone know that Amakusa is really a servant of the evil Ambrosia, who had possessed and taken over Amakusa&apos;s body, as Ambrosia wishes to shroud the world into eternal darkness. Now, the player must select from out of 12 fierce warriors and plus 3 bonus characters in order to fight for the honor of defeating Amakusa once and for all, while fulfilling a specific mission for each and every warrior in the game.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Shougi no Tatsujin (Japan)">
+    <description>Shougi no Tatsujin</description>
+    <year>1999</year>
+    <rating>ESRB - RP (Rating Pending)</rating>
+    <manufacturer>SNK</manufacturer>
+    <dev>ADK</dev>
+    <genre>Strategy</genre>
+    <score>3</score>
+    <player>1-2 Players</player>
+    <story>Syougi (usually transliterated as shōgi) is Japanese chess - a turn-based board game (the board has 9x9 squares) very similar to normal chess, but all pieces are different. There we have: -1 king -1 rook -1 bishop -2 gold generals -2 silver generals -2 knights -2 lances -9 pawns. Each unit has own move and all units are weaker than chess counterparts (for example Knight/Horse can&apos;t go backward), but all figures can be promoted and gain new moves. The player must defeat the enemy&apos;s king. Master of Syougi is an electronic version of this classic board game, where players can choose fight characters to fight and change several rules.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+</menu>

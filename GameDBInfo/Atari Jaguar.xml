@@ -1,0 +1,765 @@
+<?xml version="1.0"?>
+<menu>
+  <header>
+    <listname>Atari Jaguar</listname>
+    <lastlistupdate></lastlistupdate>
+    <listversion>test</listversion>
+    <exporterversion></exporterversion>
+  </header>
+  <game name="Air Cars (World)">
+    <description>Air Cars</description>
+    <year>1997</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>ICD</manufacturer>
+    <dev>MidNite Entertainment Group Inc.</dev>
+    <genre>Driving</genre>
+    <score>1.9</score>
+    <player>1-8 Players</player>
+    <story>AirCars takes place in the future after a nuclear holocaust. The large organization E.B.N.E.R.S. is plotting to take over the world and has developed advanced forcefield and teleportation systems, and nuclear powered AirCars. To stop the plot, your group steals plans, builds its own AirCar, and sets out to destroy all of the bases, 28 known and countless unknown ones, stationed around the globe. You can choose to play a single player game, the 2-player game using a JagLink, or up to 8 players using ICD&apos;s CatBoxes. On screen and on radar, each player&apos;s AirCar is displayed in a different color to help identify the good guys from the bad guys. There are 3 difficulty settings. You will be using the cockpit&apos;s instrument panel to fly the AirCar, select weapons and view radar, as well as combating the enemy in the air and shooting ground targets. Features include true 3D sound, a computer voice (which can be turned off if desired), and music during the introduction and level intermissions.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Alien vs Predator (World)">
+    <description>Alien vs Predator</description>
+    <year>1994</year>
+    <rating>ESRB - K-A (Kids to Adults)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Rebellion Developments Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>The Jaguar version of Alien vs. Predator is completely different from the Arcade and SNES games of the same name. The Jaguar version takes place entirely on a Colonial Marine Training base. A ship infested with Aliens is found floating near the outer-space training facility. Of course, once the Aliens get inside the base, they kill off nearly everyone. Meanwhile, the Predators dock their ship on the training base as well. They see this as an opportunity to catch an Alien Queen, and bring honor to their clan. So there are three scenarios in which to play: First, you can play as a Marine. Your job is to find a way to self-destruct the base, and make your way to an escape pod before it blows. The second scenario allows you to play as an Alien. Here, your job is to find and protect the Queen from the Marines and the Predators. Finally, you can play as the Predator. The Predator must simply find and kill the Alien Queen. The game plays like a first person shooter. The play field consists of the 5 levels of the training base, plus areas for the Predator and Alien ships. All the areas of the ship are inter-connected, giving the game a huge virtual environment. Depending on the scenario you choose, you will have to choose different strategies based on the capabilities of your character. For example, the Marine will have to make use of his weapons and his ability to use the ship&apos;s computer terminals. The Aliens, on the other hand, will have to make use of their great numbers and ability to cocoon their enemies. And finally the Predator must fight with honor, and not over-use his invisibility capability.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Atari Karts (World)">
+    <description>Atari Karts</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Miracle Designs</dev>
+    <genre>Driving</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Atari Karts is a character-based go-kart racing game. It plays very similarly to Super Mario Kart. The emphasis in this game, like most kart games, is on making use of pick-up items found around the track to knock out your opponents. There is only one game mode, a points based cup series. There are four difficulty levels, each with 3 cups to race for. After completing all the cups for a difficulty level, you get to challenge a boss kart in a single race match. If you beat the boss, he becomes a playable character. The various cup races can be played in either single player or two player split screen modes.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Attack of the Mutant Penguins (World)">
+    <description>Attack of the Mutant Penguins</description>
+    <year>1996</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Sunrise Games Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Your job is to guide Rodney or Bernard through a series of levels in order to stop the attacking mutants. The mutant penguins win the level if they are able to get more soldiers to the scale and tip it in their favor. You win if you are able to lead the good penguins to the scale.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Battle Sphere Gold (World)">
+    <description>Battle Sphere Gold</description>
+    <year>2000</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>ScatoLogic</manufacturer>
+    <dev>ScatoLogic</dev>
+    <genre>Flying</genre>
+    <score>2.8</score>
+    <player>1-8 Players</player>
+    <story>A 3D space combat simulator, BattleSphere&apos;s story was based upon an episode in the original Star Trek television series and it plays similarly to Star Raiders. Seven alien races vie against each other - the victor will control the galaxy. They meet in an arena in Sector 51, a spherical sector of space formerly used by the Earth government to secretly test new weapons and starships. Gameplay consists of 5 different play modes with different scenarios and goals. Choose from various starships (each with unique weapons systems) and battle the aliens, who have also chosen their best fighters and have many space ships of their own.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Brutal Sports Football (World)">
+    <description>Brutal Sports Football</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Teque London Ltd.</dev>
+    <genre>Football/Sports</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Similar to Speedball 2 in many ways, this is an ultra-violent sports game. Matches last 7 minutes, and the aim is to get the ball into a goal at each end, guarded by a net-minder. The ball can be thrown or kicked, and is an oval, resulting in frequent up-and-under type kicks. The gameplay is fast and flowing, and has one rule - if you can&apos;t get the ball, get the man, and decapitate him if possible. Bonus and non-bonus items appear on the pitch, such as bombs to throw at opponents, rabbits to speed up the current player, or tortoises to slow him down. Teams consist of humans and aliens, many of which have their own unique skills. There&apos;s a lot of blood and flailing limbs, giving things a gruesomely humorous edge. There are four leagues to progress through, plus a knockout cup and single matches.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Bubsy in Fractured Furry Tales (World)">
+    <description>Bubsy in Fractured Furry Tales</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Accolade</manufacturer>
+    <dev>Imagitec Design Inc.</dev>
+    <genre>Platform</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Bubsy in Fractured Furry Tales is the only Bubsy game to appear on the Atari Jaguar. It&apos;s a side scrolling platform game similar to the Genesis and SNES Bubsy series. Bubsy is a bobcat superhero who can defeat all enemies by jumping on top of them. In Fractured Furry Tales, he finds himself in a series of childrens stories. These aren&apos;t the Disney-style happy fairy tales, though. These are the dark, disturbing Grimm-style fairy tales. So, Bubsy has to travel through 15 levels and set things right.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cannon Fodder (World)">
+    <description>Cannon Fodder</description>
+    <year>1995</year>
+    <rating>ESRB - T (Teen)</rating>
+    <manufacturer>Virgin Interactive</manufacturer>
+    <dev>Sensible Software</dev>
+    <genre>Strategy</genre>
+    <score>4.1</score>
+    <player>1 Player</player>
+    <story>Guide a team of up to four soldiers through 72 levels of combat in this innovative top-down action/strategy hybrid, best thought of as Lemmings crossed with Commando crossed with Dune 2. The characters are controlled indirectly using the mouse, as you activate each soldier or group of them by highlighting them, click the left button to move them to a particular spot, and the right button for them to fire guns at an enemy. You can also pick up grenades, which can be used to destroy groups of enemies or buildings (by pressing both buttons at once). Each mission has a specific objective, and some feature vehicles such as tanks to make things easier. Your troops can cross water but can&apos;t shoot within it, so finding and controlling bridges is often crucial. You can use the arrangement of trees to find hiding places to shoot from, and should watch out for CPU soldiers also doing so.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Checkered Flag (World)">
+    <description>Checkered Flag</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Rebellion Developments Ltd.</dev>
+    <genre>Driving</genre>
+    <score>2.4</score>
+    <player>1 Player</player>
+    <story>Checkered Flag for the Jaguar is a 3D F1-style racing game. The racing game staples are here: single race, practice, and tournament. You can choose to set up a variety of options for each race, also. You can choose various weather conditions. Or, you can set up your car to change it&apos;s handling characteristics. There are 10 different tracks on which to race, each with a different theme. Some take place on sunny beaches, others take place in the arctic.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Club Drive (World)">
+    <description>Club Drive</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari</manufacturer>
+    <dev>Atari Corporation</dev>
+    <genre>Driving</genre>
+    <score>1.9</score>
+    <player>1-2 Players</player>
+    <story>It is the future, and the most popular theme park around is Club Drive. Scientists have managed to invent indestructible cars. Patrons to Club Drive can drive these cars around imaginative environments and play outrageous driving games. Club Drive as a Jaguar game is a simple driving simulator. You are put in the drivers seat, and can race through some large environments. The racing areas available are: an old west ghost town, San Francisco, a giant house, and a simple hot-wheels style track. In addition to the racing modes, there are object collection and 2-player tag modes. These modes are played out in smaller versions of the areas described above.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cybermorph (World) (Rev 2)">
+    <description>Cybermorph</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari</manufacturer>
+    <dev>Attention to Detail Limited</dev>
+    <genre>Shooter</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Cybermorph was the first game released for Atari&apos;s Jaguar console. It&apos;s a 3d sci-fi shoot-&apos;em-up. The story goes like this: The evil Pernitia Empire is swallowing up the galaxy&apos;s planets left and right. What&apos;s worse, the resistance forces have had their secret weapons stolen from them and put into pods spread out on many different planets. You must pilot the T-Griffon morphing attack craft to each planet and recover the pods to stop the Pernitians. So, in each planet, or level, you must collect a certain number of pods and make it to the exit before the enemies shoot you down. Fortunately, there are power-ups that can strategically enhance the T-Griffon&apos;s offensive capabilities. After clearing 8 planets, you take on a boss creature/ship before moving on to the next sector. There are 4 levels like this to clear, each with progressively increasing difficulty.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Defender 2000 (World)">
+    <description>Defender 2000</description>
+    <year>1996</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Atari Corporation</dev>
+    <genre>Shooter</genre>
+    <score>4.4</score>
+    <player>1-2 Players</player>
+    <story>Defender 2000 is an update of the classic arcade game by Eugene Jarvis. This Jaguar game features a port of the original game, and two updated versions: Defender Plus and Defender 2000. Defender combines a side scrolling shooter with a search and rescue game. You control a ship that travels left and right above the planets surface. Alien lander craft warp into the play area, and begin to descend to the surface. Along the surface, there are humanoids ripe for the picking. The alien landers grab the humanoids and begin to carry them up the screen. You have to shoot the landers before they reach the top of the screen, and catch the humanoids before they fall to the surface. The Defender Plus update features gameplay that is very similar to the original, and graphics that have a crazy, psychedelic look. The Defender 2000 update adds playfields that scroll in both directions, weapon power-ups, bonus rounds, improved graphics, and extremely high speed gameplay.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Doom (World)">
+    <description>Doom</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>id Software, Inc.</dev>
+    <genre>Shooter</genre>
+    <score>4.4</score>
+    <player>1-2 Players</player>
+    <story>The Union Aerospace Corporation has been experimenting with teleportation technology on Mars&apos; moons Phobos and Deimos. After early successes, something goes wrong. It seems the scientists have opened a gateway straight to Hell. Phobos base is overrun with demonic creatures, and the whole of Deimos simply vanishes. A squad of marines is sent to Phobos, but all except one are quickly slaughtered. It falls to the surviving marine to grab some guns and strike back at the demons. id Software&apos;s follow-up to their genre-defining Wolfenstein 3D, DOOM is another first person shooter: full-on action seen from the space marine&apos;s perspective. Like Wolfenstein, the game consists of distinct episodes, playable in any order. The first episode, Knee-Deep in the Dead, takes place in the Phobos base and is freely available as shareware. The full game continues on Deimos in The Shores of Hell and culminates in Inferno, the final episode which takes place in Hell itself. Each episode consists of nine levels, one of which is a hidden level. The basic objective in each level is simply to reach the exit. Since dozens of enemies stand in the way, the only way to get there is through killing them. Switches and buttons must be pressed to advance at certain points and often color-coded locked doors will block the way - matching keycards or skull keys must be found to pass. DOOM&apos;s engine technology is more advanced than Wolfenstein&apos;s, and thus the levels are more varied and complex. The engine simulates different heights (stairs and lifts appear frequently) and different lighting conditions (some rooms are pitch black, others only barely illuminated). There are outdoor areas, pools of radioactive waste that hurt the player, ceilings that come down and crush him, and unlike Wolfenstein&apos;s orthogonally aligned corridors, the walls in DOOM can be in any angle to each other. An automap helps in navigating the levels. Stylistically, the levels begin with a futuristic theme in the military base on Phobos and gradually change to a hellish environment, complete with satanic symbols (pentagrams, upside-down-crosses and portraits of horned demons), hung-up mutilated corpses and the distorted faces of the damned. DOOM features a large weapon arsenal, with most weapons having both advantages and drawbacks. The starting weapons are the fists and a simple pistol. Also available are a shotgun (high damage, slow reload, not good at distances), a chaingun (high firing rate, but slightly inaccurate in longer bursts) and a plasma rifle (combining a high firing rate and large damage). The rocket launcher also deals out lots of damage, but the explosion causes blast damage and must be used with care in confined areas or it might prove deadly to the player as well as the enemies. Two further (in)famous weapons in DOOM are the chainsaw for close-quarter carnage, and the BFG9000 energy gun, that, while taking some practice to fire correctly, can destroy most enemies in a single burst. The different weapons use four different ammunition types (bullets, shells, rockets and energy cells), so collecting the right type for a certain gun is important. DOOM drops some of Wolfenstein&apos;s arcade-inspired aspects, so there are no extra lives or treasures to be collected for points, but many other powerups are still available. Medpacks heal damage while armor protects from receiving it in the first place. Backpacks allow more ammunition to be carried, a computer map reveals the whole layout of the level on the automap (including any secret areas), light amplification visors illuminate dark areas and radiation suits allow travel over waste without taking damage. Also available are berserk packs (which radically increase the damage inflicted by the fists) as well as short-time invisibility and invulnerability powerups. The enemies to be destroyed include former humans corrupted during the invasion, plus demons in all shapes and sizes: fireball-throwing imps, floating skulls, pink-skinned demons with powerful bite attacks and large one-eyed flying monstrosities called Cacodemons. Each episode ends with a boss battle against one or two especially powerful creatures. DOOM popularized multiplayer in the genre with two different modes: Cooperative allows up to four players to move through the single-player game together, while Deathmatch is a competitive game type where players blast at each other to collect &apos;frag&apos; points for a kill and re-spawn in a random location after being killed.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Double Dragon V - The Shadow Falls (World)">
+    <description>Double Dragon V - The Shadow Falls</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Tradewest</manufacturer>
+    <dev>Leland Interactive Media</dev>
+    <genre>Beat-&apos;Em-Up</genre>
+    <score>1.9</score>
+    <player>1-2 Players</player>
+    <story>Double Dragon returns, this time as a VS. fighter, in the same mold as Street Fighter. Based on the Double Dragon animated series, which is loosely based on the original arcade game, Jimmy and Billy and a host of other characters fight it out in a tournament fighter. The Shadow Master, who has created a deadly virus which he plans to destroy the world with, is waiting for you at the end of the path to victory. You&apos;ll have to fight your way through many evil characters before you face the Shadow Master. Beat him, and the world is saved for another day.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dragon - The Bruce Lee Story (World)">
+    <description>Dragon - The Bruce Lee Story</description>
+    <year>1994</year>
+    <rating>ESRB - T (Teen)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Virgin Interactive Entertainment (Europe) Ltd.</dev>
+    <genre>Platform</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Dragon: The Bruce Lee Story is a action/fighting game in which you play Bruce Lee, the infamous martial arts master. As you go through the different levels, the game follows the format of the 1993 Universal movie of the same name, but is not identical to it. As Bruce Lee, you can perform a wide variety of high-flying martial arts moves, roundhouse kicks, flying kicks, flying chops and throws. Defeat a multitude of new opponents and build up your Chi in order to gain special abilities and weapons.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Evolution - Dino Dudes (World)">
+    <description>Evolution - Dino Dudes</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari</manufacturer>
+    <dev>Imagitec Design Inc.</dev>
+    <genre>Puzzle</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>Your job in this action puzzler is to help prehistoric man to evolve by helping them discover tools, the wheel, weapons, or even fire. Each level in the game will have a given task to help in this, and you are allotted a number of characters who must accomplish the task. The player can switch from person to person while moving the characters around each scrolling puzzle, and teamwork is essential to success. Tasks can include finding objects (like a spear) on the screen, or trying to reach a specific destination which may require the use of objects you have discovered so far. Each level has a time limit, when time runs out the level can be restarted.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Fever Pitch Soccer (World) (En,Fr,De,Es,It)">
+    <description>Fever Pitch Soccer</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>U.S. Gold Ltd.</dev>
+    <genre>Soccer/Sports</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>In this isometric football game, 50 national teams are represented to play in two game modes: Exhibition and Tournament (a series of seven games on four continents, with a final against the World All-Stars), with the ability to set time, difficulty level, see cutscenes after goals and if players are free to kick each other around without (many) fouls. While the game seems short-featured for 1995 standards, the tournament mode includes a twist: depending on how well the player defeats his opponents, he can trade his standard players, who won&apos;t do anything spectacular (but at least fill up the ranks) for star players, who not only look different, are able to cross and backheel the ball but also have a unique ability at the disposal of the player: 1. The Marker: can latch on an opposing player, stopping him from running away with the ball; 2. Goalkeeper 1: more capable of stopping shots than the regular goalkeeper; 3. Barger: this large, muscular player is able to shove everyone in his path; 4. Tricky: capable of jumping (or bunny-hopping, to be more precise) with the ball tucked between his feet, avoiding tackles; 5. The Cheat: while it&apos;s hard to talk about fair play in a game where kicking a defenders&apos; leg to gain a corner is (mostly) a legitimate play, this player takes the whole thing into the next level, being able to dig fouls out of nowhere, at the expense of the ball (if he&apos;s carrying it or the referee waves play on) or just some stains in his shirt (if he&apos;s trying to pull an offensive foul), with the odds of 50/50 (25% for penalties); 6. Passer: capable of feeding forwards with laser-precision passes; 7. Striker 1: capable of unleashing impossibly-sliced shots, scoring from virtually any position in the offensive area; 8. Striker 2: best used from positions directly in front of goal, this striker features a shot that is so powerful the ball ignites as it approaches the goal; 9. Goalkeeper 2: features a better chance of stopping special shots from both Strikers; In Exhibition games teams start with their own setup of start players, from none to a full team. The playing surface also affects gameplay - playing in wet grass removes all ball bounce, the opposite occurring with sand, and the most dramatic change, a rocky field where the ball can change direction after hitting the ground, turning throw-ins into corners, poor attempts on goals and vice-versa.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Fight for Life (World)">
+    <description>Fight for Life</description>
+    <year>1996</year>
+    <rating>ESRB - T (Teen)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Atari Corporation</dev>
+    <genre>Fighter</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>Fight for Life is a 3D fighting game that takes place in hell. The player controls one of eight deceased fighters competing to earn a chance to escape and return to the world of the living. After they defeat an opponent they not only move on to the next round, but also learn two of the opponent&apos;s moves. This is the only 3D fighting game released for the Jaguar. It features brightly-colored texture mapped fighters and arenas. Gameplay is very similar to Virtua Fighter, in that the moves more-or-less look like real martial arts.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Flashback - The Quest for Identity (World) (En,Fr)">
+    <description>Flashback - The Quest for Identity</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>U.S. Gold</manufacturer>
+    <dev>Delphine Software International</dev>
+    <genre>Platform</genre>
+    <score>3.2</score>
+    <player>1 Player</player>
+    <story>The year is 2142. You play as Conrad B. Hart, a man who has lost his memory. After barely escaping from hostile aliens, Conrad&apos;s bike crashes on an unknown planet. Conrad finds himself in the jungle, and from now on his quest for survival and his lost identity begins. Flashback is a platform action adventure. You navigate Conrad over the platforms, performing various moves. You can simply jump or do a longer run-and-jump, run, climb, hang off ledges, and pick up objects lying on the ground. To defend yourself, you shoot enemies with your gun and also use various objects (such as stones) to harm or to distract them.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Flip Out! (World)">
+    <description>Flip Out!</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Gorilla Systems Corporation</dev>
+    <genre>Puzzle</genre>
+    <score>3.1</score>
+    <player>1 Player</player>
+    <story>FlipOut! is a puzzle game starring aliens from the planet Phrohmaj. Your objective in each puzzle is simple: you must place all the colored tiles into the correct spaces on the board. The tricky part is that there is always one more tile than there are spaces. That means you are always juggling at least one tile in the air. The game becomes more difficult as you have to juggle more tiles, and the Phrohmajians try to interfere. This game features nine bizarre areas, each with multiple puzzles. The graphics feature a lot of crazy animation of the Phrohmaj onlookers and lots of bright and colorful tiles.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Hover Strike (World)">
+    <description>Hover Strike</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Atari Corporation</dev>
+    <genre>Flying</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Terrakian Pirates have taken over a colonized planet under Federation control. They&apos;ve set up an atmospheric cannon, making invasion impossible. Your job, as a hovercraft pilot, is to launch a pre-emptive strike on the planet&apos;s surface. Hover Strike for the Jaguar is a mission-based tank game. In each mission, you will drop to the surface of the planet, destroy some targets, and then return to your ship in orbit. The hovercraft you pilot is heavily armored and includes various weapons systems to take out enemies and targets.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Hyper Force (World)">
+    <description>Hyper Force</description>
+    <year>2000</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Songbird Productions</manufacturer>
+    <dev>Visual Impact</dev>
+    <genre>Platform</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>HyperForce is an action sci-fi platform game with 2D graphics. You play a warrior who has been sent to destroy Trans Con, a deadly outfit that plans to attack Terran. There is plenty of fighting to do - shooting soldiers, security drones and robots. You&apos;ll also be avoiding traps, finding switches to open doors and shooting down breakable walls to find hidden areas with goodies and bonus points. In between levels, spend the money you&apos;ve found to upgrade your weapon by visiting a shopkeeper. Exploration is a major part of the game, so the levels can be larger than they first appear.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="I-War (World)">
+    <description>I-War</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Imagitec Design Inc.</dev>
+    <genre>Driving</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>The giant supercomputer that controls the world&apos;s information has been infected with viruses. You must enter the virtual world known as the I-Way, and clear them out with your anti-virus tank. I-War is a 3D virtual reality tank game. In each of the 21 levels, you must find all the data pods and make your way to the exit. Enemy tanks, turrets, and bombers stand in your way, as well as occasional traps or locked doors controlled by hidden switches. Levels are divided into simple, enclosed rooms, linearly connected by one-way teleporters. You can select a fast, medium, or heavy tank at the beginning of the game, with its abilities reflected in the strength of its guns or the amount of punishment it can absorb. Throughout the game, you will also find weapon power-ups and tank upgrades (such as shields, radar, and auto-targeting) to help you stay effective against the increasing numbers of enemy defenders. You can save your progress to the cart at the end of each level. Between levels are bonus rounds where you pilot your tank through a corridor and try to collect a set percentage of data pods. Meeting that percentage earns you an extra life.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Iron Soldier (World) (v1.04)">
+    <description>Iron Soldier</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Eclipse Software Design</dev>
+    <genre>Simulation</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>It is the future, and the earth has been covered with wastelands and cities. The powerful, faceless Iron First Corporation has replaced the last forms of free government. Now, they are developing a new, 42-foot, armed robot known as the Iron Soldier. With the Iron Soldier, no one will be able to stop the Iron First Corporation. The only hope is the Resistance, a group that has managed to capture one of the Iron Soldier prototypes. You are a pilot for the Resistance. It&apos;s up to you to pilot the robot and bring down the Iron Fist. Iron Soldier is mech sim played from an in-cockpit view. There are 16 single player missions. Objectives involve taking out certain targets, defending convoys, collecting items, and so on.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Kasumi Ninja (World)">
+    <description>Kasumi Ninja</description>
+    <year>1994</year>
+    <rating>ESRB - M (Mature)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Hand Made Software, Ltd.</dev>
+    <genre>Fighter</genre>
+    <score>2.6</score>
+    <player>1-2 Players</player>
+    <story>On the tiny island of Kasumi, there exists a portal between this world and the Netherworld. For many centuries, this portal has been kept closed by the balance between good and evil forces. Now, the dark ninja lord Gyaku has defeated the forces of good, and opened the portal to the netherworld. It is up to you, a Kasumi ninja, to stop Gyaku and restore balance to the world. Kasumi Ninja is a one-on-one fighting game featuring digitized character graphics. There are 8 fighters for you to choose from, each with their own fighting environments.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Missile Command 3D (World)">
+    <description>Missile Command 3D</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Virtuality Entertainment Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Missile Command 3D is an update to the classic Atari arcade game. The goal in Missile Command is to defend your cities against an onslaught of missiles coming from the sky. Your arsenal consists of three anti-missile flak cannons. You have to position the anti-missile clouds in the path of the incoming missiles to stop them from impacting. This Jaguar game has 3 modes. First, there is a port of the original arcade game. There are neat extras for this mode like graphic backdrops and the ability to resize or scale the screen. The second mode is Missile Command 3D. This mode retains the gameplay of the original, but adds 3D graphics to the mix. The final mode, Virtual Missile Command, changes things up quite a lot. Instead of anti-missile flak, your cannons shoot lasers. This means you don&apos;t need to lead your targets anymore. You play the game from a first-person perspective, and must switch between the three cannons via buttons on the keypad. There are nine levels in this mode, each with a boss at the end.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="NBA Jam T.E. (World)">
+    <description>NBA Jam T.E.</description>
+    <year>1996</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Acclaim</manufacturer>
+    <dev>Midway Games, Inc.</dev>
+    <genre>Basketball/Sports</genre>
+    <score>4.3</score>
+    <player>1-4 Players</player>
+    <story>This game lets you play two-on-two arcade basketball with players from all the NBA teams. Gameplay is fast and action-packed, with few rules, no fouls, and deliberately unrealistic jamming. Players are rated on eight ability categories, from steals and blocks, to dunks and 3-pointers. Up to four human players can take part, each always controlling a single player for their team, and AI for missing players. This allows for four players to face each other in teams of two, or for two players to team up against a third player with a CPU team-mate. The Tournament Edition ups each team&apos;s roster to three players, and allows for substitutions between quarters. Shoving players now results in injuries, which lower a player&apos;s stats; encouraging you to sub them out and let them recover. Aside from the usual secret characters and cheat modes, the T.E. also includes four new additions you can individually enable from the special options menu: 1. &amp;quot;Hot Spots&amp;quot; are randomized zones on the court that reward extra points (up to a 9-point shot!) for making a basket while standing within them. Powerup icons appear randomly, and convey temporary arcade-like benefits when picked up. Some examples are instant &amp;quot;on-fire,&amp;quot; enhanced 3-point accuracy, monster dunks from anywhere on the court, or a bomb that knocks all other players to the ground. &amp;quot;Juice Mode&amp;quot; increases the speed of the game up to 4x. &amp;quot;Tournament Mode&amp;quot; disables all other modes, special characters, and cheats, and challenges you to defeat all the NBA teams to unlock extra players (2 extra players for almost every team). Winning Tournament Mode also unlocks a higher CPU difficulty level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pinball Fantasies (World)">
+    <description>Pinball Fantasies</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>21st Century Entertainment</manufacturer>
+    <dev>Digital Illusions CE AB</dev>
+    <genre>Pinball</genre>
+    <score>2.4</score>
+    <player>1-8 Players</player>
+    <story>After the success of Pinball Dreams on several systems, a sequel featuring four new tables was created. The gameplay is much the same as the first game, with realistic physics, multi-player options and a high score table to aim for. The tables are Partyland, Speed Devils, Billion Dollar Gameshow and Stones &apos;n&apos; Bones, taking in a funfair, racing cars, a tacky game-show, and a graveyard. Each one has a range of ramps, combos, light sequences and targets to shoot, as well as general themes which are less influenced by real tables than those in Pinball Dreams.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pitfall - The Mayan Adventure (World)">
+    <description>Pitfall - The Mayan Adventure</description>
+    <year>1995</year>
+    <rating>ESRB - T (Teen)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Platform</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Pitfall: The Mayan Adventure is a side-scrolling action game in which you play adventurer Pitfall Harry Jr in search of his father Pitfall Harry. You battle your way through the Mayan jungles, waterfalls, deserted mines and can bungee jump and boomerang your way to safety. There are 13 levels and the action is fast and gripping. You will need to be attentive—and quick. Or prepare to die.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Power Drive Rally (World)">
+    <description>Power Drive Rally</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Time Warner Interactive</manufacturer>
+    <dev>Rage Software Ltd.</dev>
+    <genre>Driving</genre>
+    <score>3.8</score>
+    <player>1-8 Players</player>
+    <story>Power Drive Rally is a view into the exciting world of rally racing. This game is an overhead-view racer featuring real cars and tracks based on locations around the world. The main game mode portrays a season of championship racing. There are several types of races that you will encounter. First, there is the special stage, which is a timed qualifying round. Second, there is the rally cross stage, in which you race against one other computer-controlled racer. Finally, there is the skill stage, where you have to perform a series of tricky driving maneuvers. After each round, you earn money for qualifying or winning. You can then use this money to repair your car, or save the money to purchase a new, faster car.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Protector - Special Edition (World)">
+    <description>Protector - Special Edition</description>
+    <year>2002</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Songbird Productions</manufacturer>
+    <dev>Bethesda Softworks LLC</dev>
+    <genre>Shooter</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>Haven-7 is a planetoid near Earth whose inhabitants are in grave danger. Aliens will arrive soon and plan to terraform Haven-7 which will annihilate every living thing. You, with the last remaining spaceship, are the only one left to protect Haven-7 from the aliens. Protector features 3 difficulty levels and fast-paced shooting action as you blast swarms of aliens all at once in fierce battle. Purchase ship upgrades and find powerups to help you blast the alien starships.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Raiden (World)">
+    <description>Raiden</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Fabtek</manufacturer>
+    <dev>Seibu Kaihatsu Inc.</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>In the year 2090, Earth is invaded by extra-terrestrials. The World Alliance of Nations has developed a supersonic attack fighter, Raiden, to defend the Earth. A pilot must take control of the experimental fighter to destroy the alien warships that just happen to look like odd variations of typical military tanks and planes with gadgets attached to them. Raiden (called Raiden Trad on the Genesis and SNES) is an over-head vertical-scrolling shooter, based on an arcade game of the same title. It features two forms of weapon upgrades and two types of missiles (normal or homing). You start the game with several bombs which you can use to destroy most enemies on the screen to get yourself out of a jam. Each level ends with a large boss or bosses.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Rayman (World)">
+    <description>Rayman</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Ubisoft</manufacturer>
+    <dev>Ubi Soft Entertainment Software</dev>
+    <genre>Platform</genre>
+    <score>4.7</score>
+    <player>1 Player</player>
+    <story>When a villain known only as Mr. Dark appears, trouble brews in Rayman&apos;s world. Mr. Dark captures the Toons - source of light and Rayman&apos;s friends. With no more light, evil creatures begin to roam, making the world unsafe for everyone. Its up to you, as Rayman, to free your friends and put an end to Mr. Dark&apos;s dastardly schemes! Rayman is side-scrolling platformer starring the titular Rayman, a big-nosed chap with no arms or legs. Rayman can jump and use his hair to hover for a short period of time. He can also attack by throwing his fists, or winding up his fists for a more powerful punch. He can occasionally find special power ups that grant him unlimited flying power, giving him the ability to navigate through tricky mazes. Aside from the platforming action, the other notable feature of Rayman is its large, detailed and vibrant graphics, which have helped it to stand out from most other similar games in the genre.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ruiner Pinball (World)">
+    <description>Ruiner Pinball</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>High Voltage Software</manufacturer>
+    <dev>High Voltage Software, Inc.</dev>
+    <genre>Pinball</genre>
+    <score>3.0</score>
+    <player>1-4 Players</player>
+    <story>Ruiner Pinball is a collection of two fantasy pinball tables: Ruiner and Tower. Ruiner is a two screen wide table that features flashy scaling and rotation effects. There are lots of ramps and animated moving targets to score on. Ruiner has a cold war nuclear holocaust theme. Tower is an extra-tall table that features a medieval horror motif. Like Ruiner, it contains animated targets and scaling effects. Both tables contain missions, or series of targets to increase the scoring opportunities available.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sensible Soccer - International Edition (World)">
+    <description>Sensible Soccer - International Edition</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>Williams Entertainment Inc.</dev>
+    <genre>Soccer/Sports</genre>
+    <score>4.2</score>
+    <player>1-16 Players</player>
+    <story>With the original Sensible Soccer having sold hugely, this updated version was released some months later (and then used as the basis for the later console versions). The teams are updated, with the sides present in the 92-93 European tournaments included, and the player names updated to take transfers into account. The game was tidied up and changed in a number of areas. The most significant change is the addition of red and yellow cards for discipline (2 yellow card offenses or one ‘professional foul’ (denying your opponent a clear goal-scoring opportunity) results in that player being sent off). The goalkeepers have been improved in skill, and the 1994 World Cup Qualifying tournament was added.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Skyhammer (World)">
+    <description>Skyhammer</description>
+    <year>2000</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Songbird Productions</manufacturer>
+    <dev>Rebellion Developments Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>In a futuristic city, you are a mercenary pilot flying a helicopter-like craft in cyberspace. Hired by the large corporation Cytox, you are to defend its corporate holdings from those who seek to destroy all it has accomplished. The numerous missions involve flying to several large cities and hunting down the renegades who threaten them. You have a cockpit view of the city as you hunt down your enemies and dock at the Cyber Mart for repairs. As you destroy your enemies and complete missions, you can earn credits for buying more supplies, weapons and ship upgrades at the Cyber Mart. Play in Mission Mode or Battle Mode. To win the game, you must complete each mission successfully. The enemies become more tough as you progress through the levels of gameplay.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Soccer Kid (World)">
+    <description>Soccer Kid</description>
+    <year>2000</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Songbird Productions</manufacturer>
+    <dev>Krisalis Software Ltd.</dev>
+    <genre>Soccer/Sports</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>Aliens attempting to steal the World Cup have crashed as they tried to flee, and the Cup has been broken, its pieces scattered around the globe. As Soccer Kid, you must retrieve it. During your journey you will visit Britain, Italy, Russia, Japan, and finally the States. Soccer Kid is a platform game with some unique elements. As the name implies, you have to kill your enemies with your ball. Football-style tricks of keeping the ball in the air and under control are especially useful - headers and overhead kicks can be played with practice. You gain access to the pieces by collecting 11 Player Cards across each world. There is a saving feature that gives you the ability to save between each country (but not between individual levels).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Burnout (World)">
+    <description>Super Burnout</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Shen Technologies SARL</dev>
+    <genre>Motorcycle</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>Super Burnout is an arcade-style superbike racing game inspired by Super Hang-On. Players control an ultra-fast motorcycle through races that take place on famous tracks throughout the world. There are six bikes to choose from with races on a total of eight different tracks. The usual racing game modes are present. There is a single race mode, a practice mode, and a championship mode. Players can also compete against a friend in a single-race versus mode.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="SuperCross 3D (World)">
+    <description>SuperCross 3D</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Tiertex Design Studios</dev>
+    <genre>Motorcycle</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Supercross 3D brings the excitement of arena supercross racing to the Jaguar. Not only do you get to race ahead of your competitors, you can catch big air on the huge jumps and perform a few tricks. There are three game modes: Practice, Single Race, and Tournament. In practice mode, you can race around any track for as long as you like. In single race mode, you compete in one race against the computer. Finally, in tournament mode, you compete in a series of races to accumulate points and become the Supercross champion.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Syndicate (World)">
+    <description>Syndicate</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Ocean</manufacturer>
+    <dev>Bullfrog Productions, Ltd.</dev>
+    <genre>Strategy</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>In the future, the world is controlled by a handful of global corporations (syndicates). You are the Marketing director (hit man) for one of these companies. It is your job to take control away from the competitors. The job is not one of diplomacy, but one of brute force and physical control. Advance your way to the top of the corporation by successfully completing your missions and managing the money you make from your territories. The gameplay is visually reminiscent of X-Com, with an angled top-down perspective, but it is real time rather than turn based. You have missions ranging from infiltrate and capture, to seek and destroy. In each of these you direct a team of four agents as they move through the world shooting at anything that gets in their way. You can upgrade and modify your agents, as well as equip them with tools you have researched or liberated from opposing syndicates. As you complete missions, you gain more funds to use for purchasing agents or researching upgrades and equipment.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Tempest 2000 (World)">
+    <description>Tempest 2000</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari</manufacturer>
+    <dev>Llamasoft Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>4.3</score>
+    <player>1-2 Players</player>
+    <story>Tempest 2000 is a remake/upgrade of the popular Atari vector graphics-based shooter. Blast your way through over 100+ levels, shooting the creatures that come out from the other side of the web to drag you in. Collect power-ups (jump, AI robots and more) to trippy graphics and colorful explosions as a thumping techno-house soundtrack blasts in the background. Collect enough bonuses, and be subjected to two different types of bonus rounds as you navigate through rings, or try to ride a spiral tube. Also included in the gameplay is an intense two-player mode to team up with or go head to head against another player, or even play a version of the original arcade game. There are four modes of gameplay in all: Traditional Tempest, Tempest Duel, Tempest Plus and Tempest 2000. Face the web....</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Theme Park (World)">
+    <description>Theme Park</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Ocean</manufacturer>
+    <dev>Bullfrog Productions, Ltd.</dev>
+    <genre>Strategy</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>Dominating the exciting world of Theme Park ownership is your goal in this strategy game from Bullfrog. The first task is to set up your rides within the available land, structuring convenient paths and queues and ideally leaving some space for bigger rides once they become available, and include some lakes and trees to increase the park&apos;s allure. Rides range from Teacups and Haunted Houses to the biggest most elaborate roller-coaster you can design, and water rides that loop around other rides. Shops must also be included, so that the visitors can buy food, drinks and souvenirs - the cunning player will combine salt, sugar and caffeine settings to maximize consumer interest. Staff must be hired to keep everything running smoothly, and they will only work for what they consider a fair rate of pay. You are competing against other Theme Parks, so don&apos;t let them get an advantage over you - monitor your success in attracting customers and financial viability closely using the supplied statistics pages. More important, ensure that research is adequately funded to produce new rides. It can be played in three modes - Sandbox level lets you concentrate on the park design elements, while Sim and Full add more strategic features.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Total Carnage (World)">
+    <description>Total Carnage</description>
+    <year>2005</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Songbird Productions</manufacturer>
+    <dev>Midway</dev>
+    <genre>Shooter</genre>
+    <score>2.0</score>
+    <player>1-16 Players</player>
+    <story>The war of 1999 left the country of Kookistan in shambles. Naturally, a dictator named General Akhboob took control of the beleagured nation and began creating an army of radioactive mutants. With a virtually impenetrable stronghold, a bunch of hostages, and a legion of mutants under his command, the evil despot will stop at nothing but world domination. Only two men have the courage and idealistic naivete to take on Akhboob and his forces: Captain Carnage and Major Mayhem, also known as the Doomsday Squad. As Captain Carnage or Major Mayhem, it is up to you or you and a friend (in simultaneous action) to rescue the hostages while shooting hundreds of mutants bent on your destruction. As you walk and run forward, backward, left, right, and diagonally through 20 battlezones of nonstop action, you&apos;ll always have your machine gun by your side. Additional weapons which you can find along the way include grenade launchers, rocket launchers, plasma machine guns, flame throwers, spray-fire rifles, defensive blades, and an assortment of bombs.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Towers II (World)">
+    <description>Towers II</description>
+    <year>1996</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>JV Games, Inc.</dev>
+    <genre>Role-Playing</genre>
+    <score>3.9</score>
+    <player>1 Player</player>
+    <story>Towers II, Plight of the Stargazer, a single-player, single-character, first-person RPG, is the sequel to Towers which was released for the Falcon system. This game begins where the first one left off - you and your party are shipwrecked on the island of Lamini. The crew has spent several months making repairs to their ship, but before they are able to leave the Sheriff of Lamini pleads for help. It seems that one of the island&apos;s highest ranking council members, the wizard Lord Daggan, has completely lost his senses. All sorts of strange and unusual things have been happening. He has been ranting and raving, blowing things up, and digging up the corpses of dead mystics. Daggan has remained locked up inside his castle and no one sent to confront him has been heard from since. So naturally you accept the quest. Begin by selecting a character from the four available: Merton, the wizard; Tasler, the boy; Andros, the circus performer; or Gerand, the fighter. Then roll until you get the statistics you like for Strength, Intelligence, Wisdom, Dexterity and Constitution. Each of the characters has his own specialty. The entire game takes place within Daggan&apos;s tower. There are 11 floors, which you can move between freely via stairs, teleporters, and the occasional levitation through a hole in the floor. There are no shops for buying and selling, so you must use what you find in the castle. As you progress through the levels, various mini-quests present themselves (charging an artifact, forging a sword, for instance). Most puzzles have been designed so they can be solved two different ways. Music plays throughout the game and the sounds of doors opening and closing, your footsteps, monster footsteps, etc. can be heard.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Trevor McFur in the Crescent Galaxy (World)">
+    <description>Trevor McFur in the Crescent Galaxy</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Atari Corporation</dev>
+    <genre>Shooter</genre>
+    <score>2.3</score>
+    <player>1 Player</player>
+    <story>The Crescent Galaxy has been attacked by an entity known as Odd-it. This creatures goal is to make everything odd, like it. You play Trevor McFur, a corporal in the Crescent Galaxy&apos;s chapter of the Interplanetary Defense squad and are sent in along with your feline partner Cutter to defeat Odd-it. The game is a side scrolling shooter featuring a wide variety of worlds and enemies to conquer. Throughout the game you can power your ship with newer and better weapons by shooting certain enemies and collecting the bonuses left behind.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Troy Aikman NFL Football (World)">
+    <description>Troy Aikman NFL Football</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Williams</manufacturer>
+    <dev>Williams</dev>
+    <genre>Football/Sports</genre>
+    <score>2.6</score>
+    <player>1-2 Players</player>
+    <story>You and a friend can become star NFL players or choose to coach a team in this realistic rendition of the game of American football, endorsed by former Dallas Cowboys quarterback and Super Bowl champ, Troy Aikman. Choose to play alone against the system, or play against each other. Pick from 3 play modes: Pre-season, Season, or Custom Generated (editable) season. There are also three skill levels: Rookie, Pro and Veteran. You can design your own plays, customize your team, and save your team&apos;s stats. True-to-life playing surfaces have an effect on how your team performs and include grass, mud, dirt, snow, rain and turf. Listen to the roar of the crowd and other authentic stadium sounds as your plays are followed through.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ultra Vortek (World)">
+    <description>Ultra Vortek</description>
+    <year>1995</year>
+    <rating>ESRB - M (Mature)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Beyond Games</dev>
+    <genre>Fighter</genre>
+    <score>3.7</score>
+    <player>1-2 Players</player>
+    <story>Civilization has fallen into a deep decline. Gangs and warlords are gaining power and influence all over the world. Then out of nowhere, a powerful being known as the Gaurdian appears with a challenge. Unless a warrior meets his challenge, he will destroy the Earth. So, 7 warriors from around the world fight to re-open the Ultra Vortek and restore the Earth. Ultra Vortek is a one-on-one fighting game similar to Mortal Kombat. Some of the fighters are digitzed actors, other are stop motion or computer animated. You have at your control an array of punches and kicks, and a large number of special moves. The game also features several finishing moves for each of the 7 warriors.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Val d&apos;Isere Skiing and Snowboarding (World)">
+    <description>Val d&apos;Isere Skiing and Snowboarding</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Virtual Studio</dev>
+    <genre>Skiing/Sports</genre>
+    <score>2.7</score>
+    <player>1-2 Players</player>
+    <story>This is and skiing a snowboarding game that takes place entirely at the French Val d&apos;Isère resort. Both sports are represented equally. There are three events: downhill, slalom, and giant slalom. There are also three game modes, free ride, training, and competition. Competition mode provides a series of timed events in which to compete leading up to a final timed event. The other two modes are self-explanatory. Game play is presented with scaled 2D sprites that present a 3D effect, similar to many early racing games. Everything wooshes by at extremely high speed, and winning requires the player to have great reflexes.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="White Men Can&apos;t Jump (World)">
+    <description>White Men Can&apos;t Jump</description>
+    <year>1995</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Trimark Interactive</dev>
+    <genre>Basketball/Sports</genre>
+    <score>2.1</score>
+    <player>1-4 Players</player>
+    <story>This is the game of basketball the way many people learn to play it - in the city streets - with loose rules and in various suburban locales. Inspired by the 1992 film about high stakes street basketball gambling, in this game you can wager how much you want on each game. The action is seen from the half court line, with a screen view that pans and zooms to follow the action. Aside from a goal tending penalty and the need to clear the ball, anything goes. For instance, steals are effected by shoving an opponent and making a grab for the ball. Your goal is to get enough money to enter, and win, the tournament. If you make $5000, you instantly get entered into the tournament. You have the ability to save your game in this mode so that you can come back later if you run short on time and don&apos;t want to lose all your money. Opt for a single game or the Slam City tournament, while game options determine time limits, scoring system, and control schemes. There are fifteen teams to choose from, and up to four players can get in on the action (with the Jaguar Team Tap adapter included with the game).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Wolfenstein 3D (World)">
+    <description>Wolfenstein 3D</description>
+    <year>1994</year>
+    <rating>ESRB - M (Mature)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>id Software, Inc.</dev>
+    <genre>Shooter</genre>
+    <score>3.9</score>
+    <player>1 Player</player>
+    <story>id software&apos;s adaptation of their classic first-person shooter Wolfenstein 3D to consoles is not a straight port, but a remix with substantial changes as well as new additions. While the basic gameplay of exploring levels, shooting enemies, collecting treasures, keys and power-ups remain the same, only half of the original game&apos;s 60 levels have been retained. Each of those 30 levels (grouped into six missions, with two levels being secret ones) is a simplified version of an original level. The end bosses for the missions are taken from both Wolf3D as well as its sequel, Spear of Destiny. Other changes from the original include new power-ups: an ammo box (taken from Spear of Destiny) and backpack that increases the maximum amount of ammo that can be carried. The original&apos;s weapons (knife, pistol, machine gun, chaingun) all return, but there are also two completely new tools of destruction: a flame thrower and a rocket launcher.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Worms (World)">
+    <description>Worms</description>
+    <year>1998</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>Team17 Software Limited</dev>
+    <genre>Strategy</genre>
+    <score>3.8</score>
+    <player>1-16 Players</player>
+    <story>Worms is a turn-based strategy game. It features up to 4 teams of 4 worms, aiming to destroy the others on a generated terrain. Each worm has 100 hit points, and dies when his hit points fall to 0. Upon death, a worm explodes, causing damage to everyone around. Gameplay is turn-based. Each turn, the player can control one specific worm from his team. The worm can crawl left and right or jump. However, there is a time limit to make a move; also, if the worm falls from a great height, it loses health and the turn ends immediately; and if a worm falls into water or offscreen, it dies. Each turn, a worm can also make a single attack: the player can aim up and down, choose a weapon and then fire it. After attacking, the turn ends. There&apos;s a lot of weapons available - the standard ones as bazookas (which is affected by the (random) wind settings and gravity) and grenades. The others include a Fire Punch, dynamite, air strikes, and utilities such as ropes and girders. There are 10 styles of terrain, ranging from forests and deserts to Candy land and the moon (complete with affected gravity). Shots leave craters in the ground, and complex tunnels can be formed.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zero 5 (World)">
+    <description>Zero 5</description>
+    <year>1997</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Telegames, Inc.</manufacturer>
+    <dev>Caspian Software Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Zero 5 was one of the last Telegames releases for the Jaguar, right before Worms. It is a wild space-shooter, placing you in control of a small and manuverable fighter craft, or a powerful warship, depending upon which level you play. Taking on the role of a pilot, you must defend the earth from alien attack with dozens of missions needed to succeed. Your tour of duty includes travelling through deep space to meet enemy convoys head on and shooting across asteroid and planet surfaces taking out installations. There are 3 different play modes: 1. HIT-PAK Mode - Somewhat like a variation on the Missle Command 3D VR mode. You are in a turret with four guns to blast everything in sight, including asteroids in several levels. No powerups make it more difficult. 2. BAMBAM Mode - Consists of piloting around in the fighter, shooting every object that moves, in 360 degrees. Includes power-ups for weapons, shields, and score. 3. TRENCH Mode - Star Wars style shooting in your BAMBAM fighter, you run along a trench. Also includes power-ups.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zool 2 (World)">
+    <description>Zool 2</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Gremlin Graphics Software Ltd.</dev>
+    <genre>Platform</genre>
+    <score>3.1</score>
+    <player>1-2 Players</player>
+    <story>The sequel to Zool sees him take on the bad guys Mental Block and Krool across 15 levels. Zool 2 is a platform game where you control the titular Ninja of the Nth Dimension (or his girlfriend, Zooz, who can complete each level in a slightly different way) as he rampages through a variety of levels, collecting countless tasty treats, shooting any enemies that he encounters and finding bonuses (there&apos;s a variety of special power-ups Zool can find - for example, a bomb that follows him and can be blown up at any time to remove on-screen enemies, or a temporary invulnerability). New to the sequel is Zool&apos;s ability to scale walls and his new spinning attacks. On each level you have to collect a certain amount of the featured fruit within an allocated time limit, and then find the exit across the multi-directionally-scrolling levels. There are lots of hidden areas to see, including a bonus Breakout game starring Zool&apos;s pet 2-headed dog.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zoop! (World)">
+    <description>Zoop!</description>
+    <year>1996</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari Games</manufacturer>
+    <dev>Hookstone Ltd.</dev>
+    <genre>Puzzle</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Fast-paced action-puzzle game where the player eliminates colored shapes that are approaching his alter ego, another colored shape, before they reach the top, ala Tetris. In order to eliminate the other shapes, you must point your piece at it and &apos;fire&apos;. If the shape is the same color as your piece, the shape is eliminated, as well as all of the shapes of the same color behind it, until your piece hits a piece of a different color. If the shape is of a different color, or it is hit when collecting a line of similar shapes, your piece exchanges colors with the shape.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+</menu>

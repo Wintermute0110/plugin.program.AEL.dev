@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<menu>
+  <header>
+    <listname>NEC SuperGrafx</listname>
+    <lastlistupdate></lastlistupdate>
+    <listversion>test</listversion>
+    <exporterversion></exporterversion>
+  </header>
+  <game name="1941 - Counter Attack (Japan)">
+    <description>1941 - Counter Attack</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Capcom</manufacturer>
+    <dev>Capcom</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>The prequel to 1942, like the other games in the 194x series, is a top down shooter set in WWII. One or two players control a P-38 (for player 1) or a Mosquito (for player 2), shooting enemy airplanes and ships. As in the previous games, one button shoots the airplane&apos;s weapon (which is upgradeable by collecting power ups left by enemies) and the other makes the airplane loop, destroying everything on screen (or causing extra damage to bosses, fought at the end of each level). The regular ammo is infinite, while the upgraded weapons have limited ammo. When the weapon button is held down, a bar at the bottom of the screen is charged and a special shot can be released, which varies in effect from weapon to weapon. The airplane has a life bar which starts with three points. Each hit taken or loop used will consume one life point. The player will earn new life points at the end of levels or by collecting proper power ups. Other power ups available are auxiliary side and ghost airplanes. Three continues can be used, and one point is added to the score when one of them is used (a feature first introduced by this game and then copied by other shoot-em-ups).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Aldynes (Japan)">
+    <description>Aldynes</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft</manufacturer>
+    <dev>Produce</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1 player</player>
+    <story>The year is 2020, and global depression has descended upon the societies of the Earth. When humans least expect it, aliens from a mechanical planetoid attack seemingly without any reason. The League of Nations collaborates with NASA to produce a powerful space fighter under project name Aldynes. When a pilot known as Fox-A is killed, his girlfriend Hiroko heads to the air base where works on Project Aldynes took place. As the aliens launch their attack, Hiroko hijacks one of the fighters and enters the battle. Aldynes is a horizontally-scrolling sci-fi shoot-em-up. Player-controlled spaceship can acquire power-ups that either change its default vulcan gun to lasers that shoot either straight ahead or in different directions, or enhance the shot of an already equipped weapon. A special power-up adds a small ship that fights alongside the player-controlled one; collecting more power-ups of the same kind adds more ships. These ships can be ordered to stay behind and repeat the shooting patterns of the player-controlled craft, or shoot at enemies following their own AI. The player-controlled fighter does not have hit points and loses a life every time it is hit. There are seven stages altogether, each ending with a massive boss battle.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Battle Ace (Japan)">
+    <description>Battle Ace</description>
+    <year>1989</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft</manufacturer>
+    <dev>Hudson Soft</dev>
+    <genre>Shooter</genre>
+    <score>2.8</score>
+    <player>1 player</player>
+    <story>Battle Ace is an action-oriented flight game in a first-person perspective. The player mans a space ship, including a radar which shows enemies, and the goal is to reach the end of each level where an end boss waits. As usually, the main occupation is to blast a lot of aliens which approach the player. The available weapons are bombs and a machine gun, both unlimited. Getting hit is a bad idea because it results in death. The player has three lives which can be raised by scoring 20.000 points.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dai Makaimura (Japan)">
+    <description>Dai Makaimura</description>
+    <year>1990</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Avenue</manufacturer>
+    <dev>Capcom</dev>
+    <genre>Action</genre>
+    <score>4.7</score>
+    <player>1 player</player>
+    <story>Three years have passed since Arthur defeated the Demon King Astaroth and rescued his beloved Princess Prin-Prin (see Ghosts &apos;N Goblins). A new villain, the Great Demon King Lucifer (Loki in some versions) has become the new leader of Ghoul Realm. While returning from a journey, Arthur sees the Princess&apos; castle and her village under attack by Lucifer&apos;s forces. While rushing towards her beloved knight, the Princess is struck by one of Lucifer&apos;s laser beams. Now, Arthur must venture back to the Lucifer&apos;s palace and destroy the demon in order to rescue the Princess&apos; soul and bring her back to life! And it won&apos;t matter whether he fights in his shining armor or in his underwear alone...the bravest Knight in the land isn&apos;t going to be stopped by some monsters! Although the game starts with graveyard and marsh territory familiar from the first game, later levels are set in a tower, a mass of skeletons, and a castle. Players progress from left to right (from bottom to top in level 3), and have to hack down the aforementioned monsters with a sword. The journey includes ledges, ladders, lava pits and slippery slopes. Different weapons can be collected, by finding suits of armor inside chests. Each of the five stages has its own setting and a final boss.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Madou Ou Granzort (Japan)">
+    <description>Madou Ou Granzort</description>
+    <year>1990</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft</manufacturer>
+    <dev>Hudson Soft</dev>
+    <genre>Action</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>Madō King Granzort is based on the anime of the same name. The story takes place in science-fiction scenario in which a few kids get special powers to save the world from the evil Jadou Clan. To be more exact, they can summon three powerful creatures: The Madou kings of earth, water and wind. The player takes the role of those kings to defeat the Jadou Clan. The player needs to find the way through the levels while solving basic platforming challenges and a lot of fighting, either with a sword or by shooting. The player can switch between the Madou kings which have different abilities. It is important to look after the energy bar and the time limit: both result in the loss of a life when running out.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+</menu>

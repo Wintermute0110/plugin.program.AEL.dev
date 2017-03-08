@@ -1,0 +1,653 @@
+<?xml version="1.0"?>
+<menu>
+  <header>
+    <listname>NEC TurboGrafx-CD</listname>
+    <lastlistupdate></lastlistupdate>
+    <listversion>test</listversion>
+    <exporterversion></exporterversion>
+  </header>
+  <game name="4 in 1 Super CD (USA)">
+    <description>4 in 1 Super CD</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>Hudson Entertainment Inc</dev>
+    <genre>Miscellaneous</genre>
+    <score>3.9</score>
+    <player>1 Player</player>
+    <story>4 in 1 Super CD is a four-game compilation developed by Hudson and Turbo Technologies, Hudson and NEC&apos;s US distributor for the TurboDuo and its Super CD games. It was included with the TurboDuo as a bundle. The compilation contains: Bonk&apos;s Adventure (Hudson, 1989) Bomberman (Hudson, 1990) Bonk&apos;s Revenge (Hudson, 1991) Gate of Thunder (RED Entertainment/Hudson, 1992) Despite appearing to contain only three games, Bomberman can be accessed by pressing Up, Right, Down, Left, II at the game select menu. Bonk&apos;s Adventure, Bomberman and Bonk&apos;s Revenge had seen prior US releases, though not in the CD format. Gate of Thunder had been a Japanese exclusive until this release and, until it was added to the US Wii Virtual Console in October 2007, the 4 in 1 Super CD was the only means of playing the game in the US without importing a Japanese copy. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Addams Family, The (USA)">
+    <description>Addams Family, The</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>ICOM Simulations, Inc.</dev>
+    <genre>Platform</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Based on the Addams Family movie, this game is quite different from the other Addams Family variants. The player is cast in the role of Tully Alford, the crooked lawyer of the Addams family. He finds out that somewhere in the family mansion, a great treasure is stored in a vault. He decides to venture into the mansion and retrieve the treasure. Naturally, this is going to be anything but easy, as the insane Addams family members and a legion of ghosts and monsters are there to make sure the lawyer fails... Like most other Addams Family incarnations, this is a side-scrolling action game. Tully Alford&apos;s only weapon is an umbrella that fires energy shots at enemies. Tully can also jump and duck to avoid enemy blows. The game world consists of a hub area, the hall of Addams Family mansion, and many rooms, most of which are locked in the beginning of the game. The gameplay consists mainly of exploring the accessible rooms and collecting keys that are needed to open other doors in the process. Some of the rooms contain treasure and power-ups, while others are infested by monsters or require the player to defeat a boss enemy in order to advance.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Beyond Shadowgate (USA)">
+    <description>Beyond Shadowgate</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>ICOM Simulations, Inc.</dev>
+    <genre>Adventure</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>This is a sequel to the adventure game Shadowgate. You control Prince Eric, the descendant of the hero of the first game. You return to your home country, only to discover that your father was murdered. You should become the new king, but the minister of the late king has other plans, frames you for killing your own father, and throws you into jail, where your adventure begins. Unlike the first Shadowgate, this is a platform game - not an action game, but a classical point-and-click adventure viewed from a platform perspective. You can move your hero around, examine, manipulate, and take objects. You can also duck and have a punch command. Find the correct solutions to the game&apos;s puzzles, otherwise a gruesome death awaits you!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Bonk 3 - Bonk&apos;s Big Adventure (USA)">
+    <description>Bonk 3 - Bonk&apos;s Big Adventure</description>
+    <year>1994</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>A.I Co., Ltd.</dev>
+    <genre>Platform</genre>
+    <score>3.7</score>
+    <player>1-2 Players</player>
+    <story>Bonk&apos;s Big Adventure is the third instalment in the side-scrolling platformer series. As in previous games, the player assumes the role of a caveman named Bonk who headbutts his way through various enemies in order to defeat King Drool. Familiar moves include swinging on trees, bouncing off walls, breaking blocks and climbing walls with his teeth. Compared to the previous games, he walks and moves a little faster. Bonk has the new ability to pick up red and blue candy power-ups that make him grow or shrink and grab a flower copter. As always, there is plenty of platforming and enemies to discover. The game consists of seven rounds, set in the Dinosaur Kingdom, finished off with a boss. At the end of each stage, 16 smileys can be exchanged to play up to eight different bonus stages (2 smileys per stage needed). New level elements include ziplines and sewer pipes. The game also features a cooperative multiplayer mode.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Buster Bros. (USA)">
+    <description>Buster Bros.</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Hudson Soft Company, Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Busater Bros. is a platform game which consists of 50 levels in total. It can be played with one or two players on the same screen, and the other player can join anytime within the game. Your goal is to destroy the balloons which bounce around the playfield. To accomplish this, you can shoot hooks which travel upwards, and blow up any balloon they touch. Depending on their size, they either split on two smaller ones, or evaporate if they&apos;re at their minimum size. Apart from balloons, some levels also have barriers that have to be destroyed with your hooks, since they often block your access to balloons. There are also some barriers which cannot ever be destroyed. Your character has the ability to climb ladders, but cannot jump. You can also pick up power-ups such as: the ability to fire two shots at once, the hook that attaches to the ceiling and waits &apos;til something bumps into it, a gun which has a high rate of fire but cannot destroy barriers. Beside extra weapons, you can also pick certain things like clock (halting time for a small period), dynamite (reducing all balls to minimum size, thus making you able to reach more points), life, and such.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Camp California (USA)">
+    <description>Camp California</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>ICOM Simulations, Inc.</dev>
+    <genre>Platform</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>Camp California is the second and last game based on the short-lived multimedia property of the same name, featuring a group of anthropomorphic animals who are the official mascots of surf rock group The Beach Boys. In the game, the gnarly surfer dudes of the Camp California crew find that their favorite beach has been sold to a villain called the Big Cheese who plans to build a nuclear power plant in the area. The gang&apos;s plan: hold a benefit concert to raise enough money to buy back the beach. Unfortunately, the Big Cheese gets wind of the plan and sends his henchmen, the Ratz, to kidnap the crew, steal their instruments and take the tires off Woody, the gang&apos;s trusty vehicle. Luckily, Byron the bear was out surfing while this happened, and it now falls to him to rescue his friends and get back the tires and the instruments. The game is a side-scrolling platformer consisting of nine levels, with such areas as a beach, a junkyard, an amusement park, an army base and a mall. The levels are reached via an overview map of California that players drive along in Woody. To start the car, the tires must be found in the first level. All other levels then contain instruments or members of the crew to rescue. At the start, players can only control Byron, but once a new friend has been rescued, they can be selected to be played at the beginning of a level. All characters differ in abilities. Byron punches and kicks to defeat enemies while Lil&apos; Bro (the star of the previous game) uses his skateboard to skid or jump on top of the bad guys. Shred can turn into a tornado, Pouch headbutts and is also the only one who can swim underwater, and Scream&apos;r uses a boomerang and is the only one who can fly. Besides many enemies (mostly the Ratz gang, but also robotic dogs and other critters) the levels include recyclables to pick up, like soda cans and banana peels. When a level is completed, the trash is converted into fuel for Woody. If the fuel runs out on the overview map, the car can only be restarted at the loss of a life. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cosmic Fantasy 2 (USA)">
+    <description>Cosmic Fantasy 2</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Working Designs</manufacturer>
+    <dev>Shin-Nihon Laser Soft Co., Ltd.</dev>
+    <genre>Role-Playing</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>The second game in Cosmic Fantasy series tells the story of a young boy Van, who lives on a planet Idea, a place where technology has not yet reached a high level. One day his sweetheart Laura gets kidnapped by an unknown villain. Van soon discovers that Laura is in fact a princess who can grant immortality to the one who marries her. That&apos;s exactly what the evil wizard Galam has in mind. Van sets off to rescue Laura, on a quest that involves intergalactic journeys and travel through time! This is an old-school Japanese RPG with random encounters and turn-based battles. The game is heavy on dungeon exploration. Utilizing the early CD format of Turbo CD, it allows the usage of animé-style cut scenes to advance the story. It is also one of the earliest console RPG to feature voice acting.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Cotton - Fantastic Night Dreams (USA)">
+    <description>Cotton - Fantastic Night Dreams</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Success Corp.</dev>
+    <genre>Shoot-&apos;Em-Up</genre>
+    <score>4.6</score>
+    <player>1 Player</player>
+    <story>Fantastic Night Dreams: Cotton is a 2D side-scrolling shooter in which the player takes the role of the young witch Cotton, who sets out on her magical broom on a quest to get her favorite candy. Fortunately for us her obsession gets her in the way of several world-threatening terrors that she must destroy in standard shooter fare. The game features an experience-earning system in which the more enemies the player kills the more he can upgrade his weapon by collecting power crystals. Players can also charge their weapon for special attacks and enlist the aid of Silk, Cotton&apos;s magical fairy friend who can form up in different option configurations.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dragon Slayer - The Legend of Heroes (USA)">
+    <description>Dragon Slayer - The Legend of Heroes</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Nihon Falcom Corp.</dev>
+    <genre>Role-Playing</genre>
+    <score>4.3</score>
+    <player>1 Player</player>
+    <story>Dragon Slayer tells the story of a young prince named Selios. One day his old teacher Raiyas sends him to a nearby cave to retrieve a magic weapon. When the prince returns, he finds the house attacked by monsters. Raiyas tells him to seek help in the castle of a baron, whose country has always been allies with theirs for a long time. However, the baron betrays Selios&apos; trust and imprisons him. The young prince manages to escape, but without the possibility to return he has no choice but to wander through the land, trying to find trustworthy companions who would help him to save his country. This is a traditional medieval-themed Japanese RPG with turn-based combat viewed from first-person perspective (like in Dragon Warrior games). The enemies are semi-random: they do appear out of nowhere and attack suddenly, but they are visible on the screen, and if you flee from a battle they will still be there to pursue you. The Genesis release has updated graphics; gameplay-wise it is identical to the SNES version.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dungeon Explorer II (USA)">
+    <description>Dungeon Explorer II</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Hudson Soft Company, Ltd.</dev>
+    <genre>Role-Playing</genre>
+    <score>4.4</score>
+    <player>1-5 Players</player>
+    <story>Dungeon Explorer II is a continuation of the story told in Dungeon Explorer. After the fall of the Darklord Natas, Orb of Oras was once again in the hands of the good people of Oddesia. It prevented evil from entering Oddeasia for a century, thus, peace was restored. Now the evil once again threatens the world. Fades, as he calls himself, faithful to Natas, enters the throne of King Oddesia and demands the relinquishment of the Orb. With King Earl II dead and the Orb in the hands of evil, Oddesia was once again in grave danger. At the same time, Princess Miriam of Solis was visiting Ardeen and was taken hostage by Mynos the Man-Bull. As the game supports five players, you enter the throne room of Ardeen as one or more of the five to-be Immortals, with a character class of your choice: Fighter, Thief, Wizard, Cleric, Bard, Hunter, Dwarf or the Elf. Dungeon Explorer II plays very similarly to its prequel. You move around and talk to people in a regular RPG fashion. Since the movement is not limited to squares and you can move diagonally, the game has very action-oriented gameplay. You fight enemies as you would in The Legend of Zelda or Gauntlet, from a top-town view. Enemies spawn from Generators and drop usable items, power-ups and provide experience as you kill them. Items are used in real-time and leveling up gives you more health. New to Dungeon Explorer II, the game takes full advantage of the CD format. It includes full voice-acted dialogue instead of common subtitled dialogue. The game also includes fully digitalized music tracks, played from the game CD, as well as video sequences as introductional videos in TurboGrafx-CD fashion.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dungeon Master - Theron&apos;s Quest (USA)">
+    <description>Dungeon Master - Theron&apos;s Quest</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Victor Entertainment Inc.</manufacturer>
+    <dev>FTL Games</dev>
+    <genre>Role-Playing</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Theron&apos;s Quest is a part of the Dungeon Master series for the PC Engine/TurboGrafx. It differs from the PC releases of Dungeon Master in a few aspects. The most important differences are: 1. You always play as Theron and can hire three additional champions. 2. Instead of a single big dungeon there are seven smaller ones, that you each have to traverse in order to find seven special items. 3. You can only save in-between dungeons, and your three companions lose all their skills and items after completing each dungeon. Theron also loses his items, but not his skills. Due to only being able to save between dungeons and the loss of skills after each one the game has also been made easier than its PC equivalents. Apart from that, it&apos;s a classic Dungeon Master title.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dynastic Hero, The (USA)">
+    <description>Dynastic Hero, The</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>AlfaSystem Co., Ltd.</dev>
+    <genre>Role-Playing</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Dynastic Hero: Monster World was once a peaceful region. Then, the peace was shattered by an invading army of monsters. A young man named Shion vowed to defeat them and make his land peaceful again. Wonder Boy In Monster World is the third game in the Monster World spin-off series, originally known as Wonder Boy 5: Monster World 3. It puts the player in control of Shion in his quest to save Monster World from the evil hands of BioMeka. It controls like a standard platform game - run, jump, and kill enemies. The game has light RPG elements such as talking to townsfolk, collecting money to buy items, upgrading your life, and equipping a variety of armor and weapons - staying very close to the Zelda format. You can save your game to continue your quest at a later time.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Exile (USA)">
+    <description>Exile</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Working Designs</manufacturer>
+    <dev>Renovation Game</dev>
+    <genre>Role-Playing</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>Exile concerns the desert adventures of Sadler, the great hero whose revolt years before led to the downfall of a powerful empire. Recently, however, peace was broken in Sadler&apos;s home country, as the rival Luciel empire has been launching attacks on the Village of Dunes. Exile is a hybrid action/role-playing game. Travel and exploration occurs in the traditional overhead view of RPGs, while the battles and dungeons are side-scrolling mazes, similar to Wanderers from Ys. Characters gain experience and levels, buy equipment, and use magic.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Exile 2 - Wicked Phenomenon (USA)">
+    <description>Exile 2 - Wicked Phenomenon</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Working Designs</manufacturer>
+    <dev>AlfaSystem Co., Ltd.</dev>
+    <genre>Role-Playing</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>Exile: Wicked Phenomenon is a sequel to Exile, following once again the adventures of the series&apos; protagonist, the Middle Eastern assassin. Separated from his companions in the end of the previous game, Sadler encounters a mysterious prophet who tells him a curse has fallen upon Baghdad, and the destiny of the world lies in his hands. Sadler travels to Baghdad, where he encounters old friends and old enemies, and learns about a great threat that stirs hatred and turns people into monsters... Like its predecessors, Exile: Wicked Phenomenon is an action RPG. The game is viewed from top-down perspective when exploring towns and other peaceful locations, but switches to side-scrolling view for hostile areas. The player controls one character at a time, but is able to switch between Sadler and his friends (Rumi, Kindi, and Fakhyle), whenever they travel together. Each of the characters has advantages and disadvantages (strength, ranged weapons, spells, limited mobility, etc.). Characters gain experience points and money upon defeating enemies. Leveling up is automatic, increases the characters&apos; parameters and hit points. In towns, characters can buy and equip weapons, armor, as well as healing and supportive items.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Fantasy Star Soldier (USA)">
+    <description>Fantasy Star Soldier</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Kaneko Co., Ltd.</dev>
+    <genre>Shoot-&apos;Em-Up</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>Fantasy Star Soldier is a cute-&apos;em-up top-down shooter that lampoons the Star Soldier games by replacing most sci-fi elements with humorous graphics and sounds. The player can choose to play the game as the starfighter from the Star Soldier games, a flying Bomberman and a giant, laser-toting PC-Engine, each featuring their own weapon combinations which can be swapped at will in-game by collecting the right power-ups. The game features fully-animated cutscenes and CD music.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Fighting Street (USA)">
+    <description>Fighting Street</description>
+    <year>1989</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Home Electronics Inc.</manufacturer>
+    <dev>Capcom Co., Ltd.</dev>
+    <genre>Fighter</genre>
+    <score>3.3</score>
+    <player>1-2 Players</player>
+    <story>You are Ryu, a Street Fighter. Your goal is to travel to 5 countries (Japan, USA, England, China and Thailand) and beat 2 enemies at each of them. Many of these characters, such as Adon, Gen, and Birdie, are later seen in the Street Fighter Alpha series. After each country you will have the chance to get additional points in a little bonus round, a feature seen later in most Street Fighter games. The final boss in the game is Sagat, who is the second to the last boss in Street Fighter 2. The goal is to become the greatest fighter in the world. As with most tournament fighting games once you have defeated the boss the game will reset and start from the beginning with a harder difficulty level. It is possible to start a two player game but there will be only one fight (between the two players) which will determine who will travel the globe to fight the computer controlled opponents.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Final Zone II (USA)">
+    <description>Final Zone II</description>
+    <year>1990</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Renovation Game</dev>
+    <genre>Shoot-&apos;Em-Up</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>Final Zone II is a top down shooter in which you controls a soldier on some levels and vehicle on other levels. As a soldier you don a New Age Power Suit and have a choice of playing several different characters, though it is only a one player game. The object of the game is to fight an enemy army led by ZOD who is a mass murderer and killed some of your commando friends. There are various armaments and shields that you can pick up along the way. There are several manga-style animation sequences in the game. This is the sequel to a Mega Drive game called Final Zone which was released in 1990 also.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Forgotten Worlds (USA)">
+    <description>Forgotten Worlds</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Avenue, Ltd.</manufacturer>
+    <dev>Capcom Co., Ltd.</dev>
+    <genre>Shoot-&apos;Em-Up</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>Forgotten Worlds features two characters known as The Nameless Ones, who both look like Arnold Schwarzenegger, one even has a mohawk. It&apos;s their job to rid the planet of the attacking aliens. Guiding your character around the screen as they fly with jet-packs, guns on full auto, you control a satellite which you rotate around your character for the direction in which your gun is firing. At the end of each level is a boss which needs to be killed to progress. Enemies that have been killed drop money. At the end of every level is a shop where you can buy weapons, armour, items and first-aid packs.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Godzilla (USA)">
+    <description>Godzilla</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Toho Co.,Ltd.</manufacturer>
+    <dev>Hudson Soft Company, Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1-2 Players</player>
+    <story>This interpretation of the famous giant monster from the Japanese cinematic industry takes form of a fighting game, only instead of the usual brave martial artists the players control horrifying monsters from the traditional Toho lineage: the titular beast itself, Rodan, Anguirus, Ghidorah, and others. The game has two modes: Normal and Vs. The latter is essentially a two-player mode, which allows the players to engage in giant monster battles in a variety of scenarios. Most of the monsters, however, are locked in the Vs. mode before the player has completed the Normal mode. The Normal mode puts the player in control of Godzilla, who has to go through five stages before reaching the final boss. Each stage has two battles against two different creatures in two different locations, from which the player has to complete only one in order to proceed to the next stage. Depending on the player&apos;s performance, points are awarded; in order to be able to compete against different final bosses, the player has to accumulate more points. If the player only has the minimum required points, only one final boss will be available. The combat system is similar to other fighting games, with various combinations of buttons executing different moves. Naturally, the normal &amp;quot;punch-kick&amp;quot; scheme is modified to suit the monsters&apos; shapes and biological peculiarities. For example, monsters with tails can use tail spin attacks; fire-breathing monsters have a range fire attack, etc. Most of the monsters (including Godzilla) have a move when they hold the opponent and suck its blood.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Implode (USA)">
+    <description>Implode</description>
+    <year>2002</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Mindrec Communications</manufacturer>
+    <dev>Mindrec Communications</dev>
+    <genre>Puzzle</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>Implode is a homebrew puzzle game. It plays like a falling block puzzle in all respects, with the exception of the fact that the blocks appear from below instead of falling. All the blocks have the same shape and are only distinguished by their color. The player must selects groups of three or more identically colored blocks in order to make them disappear. The goal is to not let the blocks stack up and pass the upper border of the screen. Bombs would sometimes appear and clear out adjacent blocks if the player selects them. The game gradually advances to higher difficulty levels, with more colors and faster speed. Also included on the CD are two games previously only released in downloadable emulation format: Crash and Humpball. The first is a single-screen overhead arcade racing game. Two cars race automatically on a maze-like screen in circular movement. Players must press directional buttons to switch between the tracks. The goal is to move over all the dots scattered in the stage while avoiding crashing into the other car. Humpball can be described as a cross between Pong and a volleyball game. Two hump-like creatures are positioning on either side of a pole, tossing a ball towards the opponent&apos;s side by moving to the sides and jumping. The goal is to make the ball touch the opponent&apos;s floor, which results in scoring a point. Power-ups that move the pole to left or right, change the speed of the ball, gravity rules, etc., appear randomly and are activated when touched by the ball.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="It Came From The Desert (USA)">
+    <description>It Came From The Desert</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Cinemaware Corporation</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>It Came from the Desert is a remake of the the original 1989 Amiga game of the same name, but with a vast amount of changes and improvements. The basic setting was kept identical. It is a mix of action and adventure elements, largely inspired from cult-horror B-Movies of the 50&apos;s and 60&apos;s, and the 1954 film Them in particular. The player plays the part of Dr. Greg Bradley, a geologist and the newest resident in town. Eager to satisfy his scientific mind, Bradley sets out to examine the crash-site of a mysterious meteor, but what he finds is not at all what he had been looking for. The game was commissioned by NEC for the TurboGrafx CD console to show off the abilities of the new CD-ROM format. With a team that included many developers of the original game, the graphic, drawn sequences of the original game were turned into full-motion video. These were acted out by real actors, filmed, and then imported into the game, also using full speech. These recorded actors were then imposed on still photos of real locations. The player&apos;s input mainly determines the next sequence to trigger or the next location to travel to, and the conversation trees of the original game were not re-used. The live footage is mixed with drawn, side-scrolling sequences where the player battles ants in tunnels, along with top-down, drawn action sequences that were also used in the original version. There are also a few events where the player has to aim a crosshair to take out other characters.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="J. B. Harold Murder Club (USA)">
+    <description>J. B. Harold Murder Club</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Riverhillsoft</dev>
+    <genre>Adventure</genre>
+    <score>2.5</score>
+    <player>1 Player</player>
+    <story>Murder Club is an adventure game with simulation elements. The player controls the private detective J.B. Harold, who must investigate the murder of a wealthy businessman named Bill Robbins and bring the murderer to court. The player has to do all the work a real detective would do: find clues, gather evidence, interrogate suspects, establish the motive for the crime — and in the end, make sure the case will stand up in the court. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Jack Nicklaus Turbo Golf (USA)">
+    <description>Jack Nicklaus Turbo Golf</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Accolade</manufacturer>
+    <dev>Sculptured Software, Inc.</dev>
+    <genre>Sports/Golf</genre>
+    <score>2.8</score>
+    <player>1-4 Players</player>
+    <story>Jack Nicklaus&apos; Turb Golf is 18 hole&apos;s of Major Championship Golf is a 3D golf simulation featuring an 18 Hole course created by Jack Nicklaus himself. Each of the 18 holes are from famous courses around the world and include number 8 at Pebble Beach, number 18 from Muirfield, number 12 from St. Andrews, number 12 from Augusta, number 10 at Riviera, and more. Gameplay is for one to four players and can be either stroke play or a skins game.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="John Madden Duo CD Football (USA)">
+    <description>John Madden Duo CD Football</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Hudson Soft Company, Ltd.</dev>
+    <genre>Sports/Football</genre>
+    <score>1.8</score>
+    <player>1-2 Players</player>
+    <story>The first and only Madden game to appear on the TurboGrafx, it features the standard game modes such as exhibition and season and features full-motion video of plays, fans and many other important events happening on and off the field. It also features digitized voices of the quarterbacks, referees and fans, but the most important being the games namesake, John Madden, who lends his voice talent to the game.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Last Alert (USA)">
+    <description>Last Alert</description>
+    <year>1990</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Shin-Nihon Laser Soft Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.1</score>
+    <player>1 Player</player>
+    <story>In the near future, a cabal of 4 very evil, powerful men known as The Force is planning world domination through the use of a Super Weapon known and Indra. You are Guy Kazama, a general-purpose bad-ass soldier who can stop these guys. You must take out each of the conspirators one by one and destroy the Indra before it becomes fully operational. Last Alert is a shoot-em up played from a top-down perspective. You move Guy around more than 20 levels and shoot everything that stands in your way.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Loom (USA)">
+    <description>Loom</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>LucasArts Entertainment Company LLC</dev>
+    <genre>Adventure</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>The Age of the Great Guilds has arrived. Communities and states comprised of people united by a common trade were created. The Guild of Weavers has achieved such mastery in their trade that they discovered the secret of weaving the very fabric of reality. They were treated with suspicion by other guilds, who eventually accused them of practicing witchcraft and banned them to a secluded island, which they called Loom. Bobbin Threadbare is a young man from the Guild of Weavers. He is outcast from the guild and blamed for the lack of prosperity in recent times, though he does not know why. On his seventeenth birthday he is summoned by the Elders of the guild, who intend to decide his fate. However, shortly thereafter all the inhabitants of the village except Bobbin are turned into swans. Bobbin finds out that he is the child of the Great Loom, found by Lady Cygna, who tried to use the loom&apos;s powers to save the guild. Bobbin&apos;s stepmother Dame Hetchel teaches him the art of weaving magical drafts, and Bobbin embarks on a journey to find the lost flock, and the answers to his questions. Loom is an adventure game that sets itself apart from other titles in the genre through its unique gameplay system: the player character does not carry items around, but rather manipulates objects through the use of spells (called drafts in the game). The drafts themselves are woven by playing magical notes on a special instrument called distaff. All the puzzles in the game are solved by learning and correctly applying these drafts. Each draft is a sequence of four notes within one octave. The player learns new drafts by exploring the environment and interacting with it through a simple point-and-click interface. Once a draft has been learned, it may be applied in a different situation in order to solve a problem. Drafts range from simple general actions (such as opening) to more specific and complex commands, e.g. turning straw into gold. Drafts can also be reversed, i.e. played backwards, in order to execute the opposite action (for example, closing something instead of opening). As the game progresses Bobbin learns to play higher notes on the distaff, allowing him to access more drafts. The game features three difficulty levels, differentiating them by changing the way the interface works. The easiest level displays names of the notes as well as marking the correspondent areas on the distaff; Standard level features the distaff with the marks at the bottom of the screen, but no written notes; whereas Expert does not display the marks at all, requiring the player to memorize and play the drafts by ear.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Lords of the Rising Sun (USA)">
+    <description>Lords of the Rising Sun</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Cinemaware Corporation</dev>
+    <genre>Strategy</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Japan, 12th century. After your father has been murdered, you set out on a quest to become Shogun to restore the honor of your family. You&apos;ll have to defeat all your enemies - including your brother. Most of the time, you&apos;ll move your troops through the big map of Japan - as soon as something happens, you&apos;ll have to fight your enemies in action sequences, such as a Gauntlet-like fortress attack or defending against a Ninja assassin. If two troops collide, a battle might ensue in which you&apos;ll have to use all your strategical wits to guide your men to victory.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Lords of Thunder (USA)">
+    <description>Lords of Thunder</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Hudson Soft Company, Ltd.</dev>
+    <genre>Shoot-&apos;Em-Up</genre>
+    <score>3.9</score>
+    <player>1 Player</player>
+    <story>In the once peaceful land of Mistral, legend holds of a brave knight named Drak who has sealed an evil god named Deoric beneath the six continents of the land. However, peace never lasts. The Garuda Empire has invaded the lands of Mistral, and the six Dark Generals, led by Sornbul, have conquered the continents. Sornbul&apos;s ambition is nothing less than to resurrect Deoric and plunge the land into chaos. Duran, descendant of Drak, is the only one who can stop the Garuda Empire&apos;s mad plan, and with the power of Drak&apos;s mystic armors, he heads off to stop Sornbul at any cost. The six continents of Mistral can be challenged in any order, each of which are filled with hordes of demons and one of Sornbul&apos;s Dark Generals. After completing all six continents the player will face Sornbul on the final island. Before a level the player can choose from one of four elemental armors, each with its own bullet spread and unique bomb. The armor&apos;s attack can be powered up several levels by finding jewels dropped by enemies. This power level, as well as the armor&apos;s health, is reduced when hit. Enemies also drop crystals that are used in a between-level shop to buy additional health, bombs, and continues.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Magical Dinosaur Tour (USA)">
+    <description>Magical Dinosaur Tour</description>
+    <year>1990</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Victor Musical Industries</dev>
+    <genre>Miscellaneous</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>The Magical Dinosaur Tour is an extensive dinosaur database. Several modes may be accessed from the main menu, most of which lead to visual presentations and descriptions of various dinosaurs. Individual dinosaur data can be accessed by viewing geological periods and geographical areas (e.g. China of the Cretaceous period) and selecting dinosaurs appearing on the screen; browsing a dinosaur list alphabetically; viewing a genealogical tree; and finally viewing dinosaurs by phylum and family. Most areas can be scrolled to the sides and some of the dinosaurs present themselves with voice-overs. There is also a variety section that allows viewing various dinosaur-related records and specifications (such as the tallest dinosaurs, inhabitants of cold areas, etc.). Another section is dedicated to animated sequences depicting various locations and dinosaurs.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Might and Magic III - Isles of Terra (USA)">
+    <description>Might and Magic III - Isles of Terra</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>New World Computing, Inc.</dev>
+    <genre>Role-Playing</genre>
+    <score>4.2</score>
+    <player>1 Player</player>
+    <story>A party of brave heroes managed to defeat the corrupted guardian Sheltem as he attempted to destroy the world of CRON. However, the great battle between the guardians Corak and Sheltem continued in another place - the world of Terra, where Sheltem was originally appointed as a guardian. Revolting against the powerful race of the Ancients, Sheltem takes possession of their space-traveling nacelles, hurling them at the suns of other planets. It is now up to a group of local adventurers to help Corak and vanquish Sheltem once and for all. Isles of Terra is the third installment in the Might and Magic series, and a sequel to Gates to Another World. Like its predecessors, it is a role-playing game focusing on first-person exploration of vast pseudo-3D environments, character building, and turn-based combat. The five selectable races remain the same as in the previous games, as well as the eight character classes with the addition of two new ones: Druid and Ranger. Like in the second game, characters may learn unique skills such as thievery, swimming, merchant, and others. This installment does away with random or pre-set enemy encounters, featuring instead enemies dynamically roaming the game world, allowing to initiate combat from a distance (for example with ranged attacks or spells). There is no option to bribe or surrender to enemies, and escaping combat can be accomplished simply by moving away, unless the enemies have already locked on the party. An automap feature is available at all times, and the player is also allowed to save the game at any time.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Prince of Persia (USA)">
+    <description>Prince of Persia</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>Agenda</dev>
+    <genre>Platform</genre>
+    <score>4.4</score>
+    <player>1 Player</player>
+    <story>While the Sultan of Persia is fighting a war in a foreign country, his Grand Vizier Jaffar orchestrates a coup d&apos;état. His way to the throne lies through the Sultan&apos;s lovely daughter. Jaffar kidnaps her and threatens to kill her if she refuses to marry him. Meanwhile, the man the Princess loves is thrown into the dungeon. He has only one hour to escape from his prison, defeat the guards on his way, and stop Jaffar before the terrible marriage takes place. Prince of Persia is a 2D platformer that is commonly regarded as a progenitor of the cinematic platform genre. Rather than following the more common jump-and-run mechanics, it focuses on careful advancement through fairly complex levels, emphasizing the protagonist&apos;s vulnerability and survival aspect. Rotoscoping technique is used to give more realism to the animation of the characters&apos; movements. The protagonist must avoid deadly traps, solve some simple jumping and environmental puzzles (such as stepping on pressure plates to raise portcullis), and engage in sword fights with the guards. The player character has an infinite amount of lives, but has to restart at the beginning of a level each time he dies, and must complete the game within an hour. The hero starts with three units of health, which can be replenished with small health potions or permanently increased with large jars.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Riot Zone (USA)">
+    <description>Riot Zone</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>Agenda</dev>
+    <genre>Beat-&apos;Em-Up</genre>
+    <score>2.9</score>
+    <player>1-2 Players</player>
+    <story>The police is afraid to deal with a criminal organization known as the Dragon Zone. Street punks and leaders of Chinese crime syndicates dominate the area where its headquarters are supposedly located. The young fighter Hawk has his own score to settle with the Dragon Zone: they have kidnapped his girlfriend Candy. Together with his friend, the punk Tony, Hawk enters the dangerous districts and is determined to rescue his sweetheart and put an end to the organization. Riot Zone (Crest of Wolf in Japan) is a rather simple brawler in which the player can choose to control either Hawk or Tony. Hawk is faster, but doesn&apos;t hit quite as hard as Tony. Both characters fight entirely unarmed, using kicks and punches to deal with the enemies; both also possess a powerful all-screen attack that depletes a portion of their health bar. Each stage culminates with a boss battle as Hawk and Tony gradually defeat the wanted criminals of the city.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Shadow of the Beast (USA)">
+    <description>Shadow of the Beast</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>Reflections Interactive Limited</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1 Player</player>
+    <story>While very young, Aarbron was kidnapped and enslaved by the Priests of the Beast Lord. He grew up on drugs made to destroy his own will and turn him into the Beast Messenger, a powerful creature serving Maletoth, The Beast Lord himself. He did his job, until one day he noticed a man about to be sacrificed in a ritual, his face triggering ancient memories. As the sacrificial knife descended into the man&apos;s body, Aarbron recognizes his father&apos;s face. As his father dies in the altar, memories of his childhood and tormented past at the hands of the Beast Lord emerged, and as feelings of hate over his captors took over him, he swore revenge and fled the temple, knowing the road to avenge his father and redemption would be hard. Shadow of the Beast is a side-scrolling platformer. The player has to navigate through several areas filled with enemies and traps, collecting keys and activating triggers than open new areas or give Aarbron the means to overcome a sub-boss. The number of moves the player has at disposal is limited: duck, jump and only two attacks: punch and a flying kick. While most enemies die with just one hit, the player must time each attack accurately. However, there are also traps of objects that cannot be destroyed, and these require the player to jump, duck or move according the sequence. The player has only one life with 12 hit points that can be replenished by collecting some objects hidden in the level (like an off-route location or a under a megalith), which also contributes to the difficulty level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Shape Shifter (USA)">
+    <description>Shape Shifter</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>ICOM Simulations, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>The Dark Ones have captured the Ring of Five and imprisoned the wizards that guard it. A barbarian named Lykos has the power to transform into different creatures. He needs to rescue the wizards and the Ring of Five from the Dark Ones before they invade his home, Krellion. Shape Shifter is a side-scrolling action game with platforming and light role-playing elements. Much of the game consists of traversing hostile areas, fighting regular enemies on the way and defeating bosses. The game&apos;s hub area is a town where Lykos can replenish his health and buy any of the three available weapons (axe, mace, or bow). These weapons can be upgraded by enchanting them or picking up power-ups. After Lykos rescues a wizard he gains access to a transformation power. Transformations require special gems and cannot be performed if Lykos runs out of them. There are four transformations in the game: the panther can jump over large gaps; the shark can swim; the golem can jump higher; and the golden dragon can fly. Each of these forms can also collect power-ups that unlocks a few other attack abilities. The game&apos;s stages are interconnected, but usually a new form must be acquired before Lykos can access a new area. Lykos has eight lives consisting of smaller health units (hearts). The game can only be saved in the town.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sherlock Holmes Consulting Detective (USA)">
+    <description>Sherlock Holmes Consulting Detective</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Victor Musical Industries</manufacturer>
+    <dev>ICOM Simulations, Inc.</dev>
+    <genre>Adventure</genre>
+    <score>2.8</score>
+    <player>1 Player</player>
+    <story>In this game, the player is cast into the roles of Sherlock Holmes, the greatest fictional detective of all times, and his friend and partner Dr. Watson, as they have to investigate and successfully solve three criminal cases: The Mummy&apos;s Curse deals with the horrifying death of three men, which were apparently murdered by an ancient mummy; The Mystified Murderess involves a woman who has been convicted for murdering her beloved one, but cannot seem to recall anything of what had happened to her; The Tin Soldier concerns the murder of an old general, whose past must be investigated in order to find the killer. Sherlock Holmes: Consulting Detective can be described as a hybrid of adventure game and simulation. Gameplay process involves traveling to various locations in London, interrogating suspects, gathering clues, checking out the newspapers, and eventually presenting all the evidence to the judge; if the latter finds the circumstances incriminating, he will accept the results of the investigation, and the case will be considered solved. Though the basic gameplay is rather typical for adventure games, the amount of real detective work and the focus of the game on purely case-related actions rather than exploration and manipulation of items makes it comparable to a simulation of a criminal investigation. The game is notable for being one of the earliest multimedia titles, having been released on a CD ROM and featuring rather long (though windowed) video sequences with live actors as introductions and cutscenes, which frequently occur when the heroes investigate suspects.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sherlock Holmes Consulting Detective Vol 2 (USA)">
+    <description>Sherlock Holmes Consulting Detective Vol 2</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Victor Musical Industries</manufacturer>
+    <dev>ICOM Simulations, Inc.</dev>
+    <genre>Adventure</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>What they said about Sherlock I, you&apos;ll say about Sherlock II...reads the advert in the box, based on the nice critics about Volume I. - The same video technology (this is 1992), keeps offering true interactive environment: actually letting you feel the traffic in the streets of the old London… - The same structure brings a familiar look, inviting to channel all attention to the task of solving mysteries: your intelligence, skills and patience are required to find clues by listening to people, observing details, or even reading the London Times - but don&apos;t let yourself be misguided by a wrong hint. - The same number of cases: 3 But, each situation is completely different: “The Two Lions” involving the murder of circus lions, “The Pilfered Paintings” just bought by The National Gallery...and “The Murdered Munitions Magnate”, where hints reveal different possible motives...have nothing in common, except the detective in charge: you…</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Sim Earth - The Living Planet (USA)">
+    <description>Sim Earth - The Living Planet</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Hudson Soft Company, Ltd.</manufacturer>
+    <dev>Maxis Software Inc.</dev>
+    <genre>Strategy</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>SimEarth puts you in charge of an entire planet throughout its 10 billion year lifespan. Your ultimate task is to guide the planet’s inhabitants into the stars, from its humble single-celled roots. The main threats you face include pollution, disease, famine, war and global warming. The controls available to you include the chance to move mountains and continents, creating different levels of species, and unleash tidal waves and earthquakes so as to reshape your planet. All of these things take from your limited energy, which must be replenished.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Splash Lake (USA)">
+    <description>Splash Lake</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Turbo Technologies, Inc.</manufacturer>
+    <dev>Bits Laboratory</dev>
+    <genre>Puzzle</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>Splash Lake is an action strategy puzzle game. Each round consists of a single screen play area composed of tiles suspended over a lake. You control an Ostrich that can crack the tiles and cause them to fall into the water. Your goal is to use this ability to make all the bad guys on the screen fall into the water. The game features more than 60 levels, a simultaneous two-player mode, and humorous cutscenes every 10 levels.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Air Zonk (USA)">
+    <description>Super Air Zonk</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Home Electronics Inc.</manufacturer>
+    <dev>Dual Corporation</dev>
+    <genre>Shoot-&apos;Em-Up</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>Super Air Zonk: Rockabilly Paradise is the sequel to Air Zonk where once again the player takes control of the titular character in a battle against his arch nemesis, the evil SandroVitch. The gameplay is similar to the first, a 2-D side scrolling shooter where the player advances throughout the stage, destroying enemies and collecting power-ups to make it to the end of the stage and advance to the next. The standard huge bosses are still present along with the cartoonish-style of graphics that was present in its predecessor. Zonk can also transform in nine different super-powered alter egos by collecting a meat icon. They include Sushi Zonk (who hurls sushi at opponents), Mini Air-Zonk, Mr. Heli Zonk, Elvis Zonk and even Gamera Zonk. He can also morph into other forms with powers and more weaponry by combining with friends that are scattered throughout the stage.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Syd Mead&apos;s Terra Forming (USA)">
+    <description>Syd Mead&apos;s Terra Forming</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Home Electronics Inc.</manufacturer>
+    <dev>Right Stuff Corp.</dev>
+    <genre>Shoot-&apos;Em-Up</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>In Terraforming, the human race has fled into the depths of space after Earth has become uninhabitable. As a result, they travel from planet to planet in an attempt to find a planet suitable enough to terraform into a new Earth. Along the way they encounter alien races which they must destroy in an attempt to survive and continue the human race. The gameplay is a basic side-scrolling shooter, shooting down enemy space ships, picking up power-ups and health icons and upgrading main and secondary weapons along with the obligatory huge stage bosses. The most notable feature of the game is the work done by Syd Mead, a special effects artist for such films as Star Trek: The Motion Picture, Blade Runner, Aliens, 2010 and as recent as Mission Impossible III.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Valis II (USA)">
+    <description>Valis II</description>
+    <year>1990</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Telenet Japan Co., Ltd.</manufacturer>
+    <dev>Riot</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>Valis II has the same basic plot as its computer counterpart: Rogles, the tyrant of the magical world Vecanti, was defeated, and a new emperor named Megas is terrorizing its inhabitants. It&apos;s up to the Japanese schoolgirl Yuko to take on her persona of the Valis Soldier and vanquish Megas. Gameplay-wise, this version differs from the computer releases significantly. Though it has six stages that end with the same boss enemies, its level design, layout, and many regular enemies are different. This release also completely removes two key gameplay features of the computer version: the ability to equip different weapons and armor, and the flying side-scrolling shooter stages. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Valis III (USA)">
+    <description>Valis III</description>
+    <year>1992</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Telenet Japan Co., Ltd.</manufacturer>
+    <dev>Shin-Nihon Laser Soft Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.5</score>
+    <player>1 Player</player>
+    <story>After Yuko has defeated the evil Rogles, peace descended upon Earth and the magical world of Vecanti. But a new threat has arisen: an enigmatic man named Glames from the Dark World, possessor of a sword named Leethus, is planning to conquer both Earth and Vecanti, convinced that there is no other way to save his world from imminent destruction. A young girl from the Dark World named Cham escapes from Glames, and asks Yuko to help her stop him with the aid of her Valis sword. Like its predecessors in the series, Valis III is a side-scrolling platform action game. Unlike the previous installments, the player can control three characters in the game: Yuko, Cham (who uses a whip and fights similarly to Castlevania protagonists), and princess Valna from Vecanti, who is weaker physically, but can cast more powerful magic. Each of the characters can equip different weapons and has access to her own magic spells.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Vasteel (USA)">
+    <description>Vasteel</description>
+    <year>1993</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Working Designs</manufacturer>
+    <dev>Human Entertainment, Inc.</dev>
+    <genre>Strategy</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>The governing planet of the Vasteel Solar System is called Belose. Emperors of the Faracia dynasty have been ruling the planet for hundreds of years. However, the last emperor turned out to be rather unpopular with the people, and they began talking about changing the government system. Unexpectedly, the emperor becomes gravely ill and dies soon thereafter. His elder son, Faliall, is proclaimed the heir. However, Faliall&apos;s younger brother, Stefan, cares for the wishes of the simple folk, and is willing to change things. Hence, the bloody war between the two brothers for power and justice begins... Vasteel is a hex-based war strategy game in its core. The story mode takes the player (who controls either Stefan&apos;s or Faliall&apos;s armies) through various top-down maps, on which the two armies will try to annihilate each other, advance to a better position, conquer enemy cities, etc. There is also a versus mode, which allows two-player gameplay, as well as access to all the maps regardless of the story. The armies of the two princes are entirely robotic; even tanks, cannons, and spaceships are shaped like transformer robots. Both armies have factories, which can produce new robots, even several times per turn; each such productions costs money, of which there is limited amount. The player navigates the robots in turn-based fashion over the map. Combat ensues when two robots are on the same grid. Unlike in most games of this kind, the actual battles in Vasteel are interactive and action-based. The players must quickly move their robots and shoot at each other. Same applies to robots which enter factories and cities with the intention to destroy their protective mechanisms; the defending side uses stationary turrets to fire at the robot, while the latter tries to avoid them and get to the core before being destroyed.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Wonder Boy III - Monster Lair (USA)">
+    <description>Wonder Boy III - Monster Lair</description>
+    <year>1989</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Home Electronics (U.S.A.) Inc.</manufacturer>
+    <dev>Westone Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>Wonder Boy III: Monster Lair is a quite different game to most of the games in the Wonder Boy series. You play a green-haired dude who must attack the invaders that attempt to collect weapons and use them to destroy the land. The game starts out like a simple platform game, but it&apos;s just when Wonder Boy enters the skull further on that the game is transformed into a shoot &apos;em up, so basically the gameplay consists of action and shooter scenes. In the action scenes, your vitality decreases as you make your way towards the skull, but this can be restored by collecting fruit. A wide variety of weapons can be picked up, and not only does these allow you to use the weapons for a limited amount of time, but they also increase your vitality. In the shooter scenes, you ride your pink friend as you make your way through the scene. Here, your vitality remains static unless you are hit by an enemy passing by. As usual, there is a boss waiting for you at the end which you must defeat. Every boss changes color to show how much damage has been done to it. You have to defeat some bosses in two stages. If your vitality gets low in each scene, you&apos;ll lose a life. You can also choose to have Wonder Girl join you, as two players can play the game. </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ys Book I &amp; II - Ancient Ys Vanished (USA)">
+    <description>Ys Book I &amp; II - Ancient Ys Vanished</description>
+    <year>1989</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Nihon Falcom Corp.</dev>
+    <genre>Role-Playing</genre>
+    <score>4.5</score>
+    <player>1 Player</player>
+    <story>Ys: Book I &amp; II contains enhanced remakes of two games: Ys: The Vanished Omens and its sequel, Ys II: Ancient Ys Vanished: The Final Chapter. The enhanced versions were not released separately. The players controls a young red-haired hero named Adol Christin, whose task is to find the six books of Ys, an ancient paradise-like land that mysteriously disappeared long time ago. It is said that whoever possesses the six books can gain access into Ys. In the first game, Adol is on the quest to find the books and to enter Ys. The second game takes place in Ys itself, and Adol must defeat an even greater evil and liberate the land. This release features enhanced CD-quality sound, higher-quality graphics, and new anime-style cutscenes.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ys III - Wanderers from Ys (USA)">
+    <description>Ys III - Wanderers from Ys</description>
+    <year>1991</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>NEC Technologies, Inc.</manufacturer>
+    <dev>Nihon Falcom Corp.</dev>
+    <genre>Role-Playing</genre>
+    <score>4.2</score>
+    <player>1 Player</player>
+    <story>Adol Christin&apos;s long-time friend, Dogi, wishes to return to his home town of Redmont after hearing about strange disturbances that are happening there. Always looking for an adventure, Adol joins him and soon finds out the cause of this new evil. Ys III: Wanderers from Ys breaks away from the bumping into enemies battle system of the first two games, allowing Adol to control his sword in a variety of directions. Beside changing the battle system, the game&apos;s perspective switches to a side-scrolling view, as opposed to the top-down one of the previous games. Adol also has the ability to jump now. New to the series is the use of magical rings, which give Adol different powering-up abilities such as healing and shielding. The game also uses various key items found along the way to solve minor puzzles and progress the story.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+</menu>

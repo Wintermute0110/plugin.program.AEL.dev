@@ -1,0 +1,1017 @@
+<?xml version="1.0"?>
+<menu>
+  <header>
+    <listname>Atari 5200</listname>
+    <lastlistupdate></lastlistupdate>
+    <listversion>test</listversion>
+    <exporterversion></exporterversion>
+  </header>
+  <game name="Activision Decathlon, The (USA)">
+    <description>Activision Decathlon, The</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Olympic/Sports</genre>
+    <score>3.6</score>
+    <player>1-4 Players</player>
+    <story>The Activision Decathlon is a series of Olympic games similar to the Epyx games series. Up to four players can compete in the ten different events of a real-life decathlon, either in sequence or individually. Included are the 100-meter dash, long jump, shot put, high jump, 400-meter race, 110-meter hurdles, discus throw, pole vault, javelin throw, and 1500-meter race. The flat running events involve simple joystick waggling, which must be balanced with accurately-timed button presses to clear the hurdles - hitting them or breaking stride causes a loss of momentum and thus time. For jumping and throwing events, you must build momentum by waggling and then press the button to throw or jump at what you feel is the appropriate moment. For each event, points are earned based on how well you do (this can be based on your running time, or how far you throw the javelin or discus, etc...), and the player with the most points at the end of the decathlon wins the gold medal.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Astro Chase (USA)">
+    <description>Astro Chase</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>First Star Software, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.5</score>
+    <player>1 Player</player>
+    <story>As pilot of a spaceship, your job is to save the planet Earth! Eight mega mines are slowly homing in, and you need to destroy them all before they reach Earth. Trying to stop you are a variety of flying saucers which will constantly be chasing you around the planet. Your ship is equipped with lasers which can be used to destroy enemy saucers and the mega mines. Located throughout the space around Earth are eight shield depots; if you fly through one of these, you will temporarily become invincible. Your spaceship also has a limited energy supply; if you get too low on energy, it can be resupplied at one of the generators located in the four corners of the play area. When all of the mega mines have been destroyed, you will move on to the next, faster chase!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ballblazer (USA)">
+    <description>Ballblazer</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Lucasfilm Games LLC</dev>
+    <genre>Sports</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>In the year 3037, the most competitive sport in the known universe is Ballblazer. For the first time ever, humans from the planet Earth have won the right to compete in the final round of the Ballblazer Championship, to fight for Earth&apos;s honor and the title Masterblazer! Ballblazer is a 3D futuristic soccer-like game, where the player (inside a Rotofoil) is set on a one-on-one 1,155 square playing field (the Grid). The objective of the player to kick a floating ball (Plasmorb) inside the opponent&apos;s goal (Goalbeams). A player may compete against a human or computer opponent. The Rotofoil is equipped with a multi-purpose forcefield. This forcefield when in short distance of the Plasmorb will act as a pull field, automatically pulling the Plasmorb towards to player. When a player in possession of the Plasmorb shoots, the forcefield will act as push field and launches the ball. When the match starts, the player must move down field and attempt to gain possession of the Plasmorb using the joystick and blast the Plasmorb to an intended direction. The player should also be aware that the Goldbeams move slightly every second and the distance between them will shrink. The highest scoring goals are goals made when Goldbeams have disappeared across the horizon (Over The Horizon/OTH shots). A player may also attempt to steal possession of a Plasmorb by rushing beside the opponent and blast the Plasmorb away. The game ends when time runs out or a player wins 10 consecutive goals. If the game ends in a draw, over-time will apply and the first player to score will win the game. Scoring Close-in goals - 1 point Goals near Goldbeams - 2 points OTH shots - 3 points Players may steal points from each other by making goals. The total combined score of both players cannot accede more than 10 points. A player winning 10 consecutive points automatically </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Beamrider (USA)">
+    <description>Beamrider</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision</manufacturer>
+    <dev>Cheshire Engineering</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1-4 Players</player>
+    <story>Beamrider is a 3-D arcade action game. You control a beam riding spaceship on a mission to clear 99 sectors of space from hostile aliens. The spaceship is located at the bottom of the screen and it can only stop on one of five beams. You are armed with both lasers and torpedoes; torpedoes are more powerful and can destroy more enemies compared to lasers, however you only get three per level. To complete a sector, you need to destroy fifteen white flying saucers. After all saucers are destroyed, the sector sentinel passes by which can be destroyed for extra points. Each even number sector up until sector 16 will add a new type of enemy to deal with. These additional enemies will just try to slow your mission, though, only the saucers need to be destroyed to advance. Occassionally a rejeuvinator will appear; if this is collected, you can earn an extra life. But be careful, because if you accidentally shoot the rejeuvinator it will turn into an enemy!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="BerZerk (USA)">
+    <description>BerZerk</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Stern Electronics, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>You have been sent into a building infested with robots, and must do your best to clear it out. Each rooms has a number of walls through the middle, which restrict your movement. There will be a number of bad guys in the room - on early screens they may be immobile and not shoot at you, but after a few levels they become capable of shooting in multiple directions. You can shoot at them in 8 directions, but can&apos;t shoot diagonally while moving. There are gaps at the side of each room, through which you exit, before or after clearing the room (there is a bonus for clearance). You get an extra life every 2000 points.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Blue Print (USA)">
+    <description>Blue Print</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>CBS Electronics</manufacturer>
+    <dev>Zilec Electronics</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Your girlfriend Daisy is in trouble! Ollie Org is chasing her across the top of the screen, and you need to come to the rescue. To stop Ollie before time runs out, you need to construct a machine. The blue print for the machine is at the bottom of the screen, so all you need to do is locate the parts which are hidden in the numerous houses in a maze like town. When you locate a part, drag it back and place it on the blue print. When all parts have been located, press the start button and the machine is ready to go! To make your task more difficult, there are several obstacles that get in the way. If you enter a house which doesn&apos;t contain a part, you will instead be stuck with a bomb. You will need to hurry and diffuse any bombs in the bomb pit before they explode! From time to time, a flower pot will fall from above and then hop off the screen. Get hit by a flower pot, and you lose a life. You also need to be careful of Fuzzy Wuzzy, who wanders around the neighborhood randomly. An encounter with Fuzzy Wuzzy will also be deadly! Hiding in the bomb pit is Sneaky Pete; while he isn&apos;t deadly, he will occasionally appear and press the start butt</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Bounty Bob Strikes Back! (USA)">
+    <description>Bounty Bob Strikes Back!</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Big Five Software</manufacturer>
+    <dev>Big Five Software</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Bounty Bob Strikes Back! is the sequel to Miner 2049er and features similar gameplay. As Bounty Bob, your goal is to claim every inch of 25 challenging mines. To do this, you must walk over each segment of the framework in the mines. To reach each segment of framework, you will need to figure out a way to jump, climb, or use one of the many devices occasionally available to get there. To you help you get around (or sometimes hinder progress) are ladders, slides, suction tubes, cannons, transporters, and other devices. Wandering about the mines are many dangerous mutants. If you come in contact with one of these, you will lose a life. Scattered throughout each mine are special food items; collect one of these, and you will temporarily be able to eliminate the mutants by walking into them. You will need to figure out a unique strategy for each level in order to complete it, plus there is a time limit so claim all the territory quickly!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Buck Rogers - Planet of Zoom (USA)">
+    <description>Buck Rogers - Planet of Zoom</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises, Inc.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>Fast and furious racing game taking place on a futuristic racetrack. Guide your spaceship between the pylons and shoot down other enemy racers. Based on the arcade game (which is even more loosely based on the Buck Rogers comic strips).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Carol Shaw&apos;s River Raid (USA)">
+    <description>Carol Shaw&apos;&apos;s River Raid</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1-2 Players</player>
+    <story>River Raid is a vertically scrolling action game. You fly a jet up a river in an attempt to destroy bridges which are vital to the enemy. The river is heavily guarded, however, with balloons, ships, choppers, and enemy aircraft trying to stop you. Along the way you will need to fly over fuel stations to refuel your jet and keep flying. The plane is armed with a cannon with unlimited ammo. It can be used to destroy the enemy vehicles and bridges, but a careless player can accidentally destroy a fuel station. Colliding with the riverbanks or with the enemy aircraft destroys your plane and makes you lose a life.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Castle Blast (USA) (Unl)">
+    <description>Castle Blast (Unl)</description>
+    <year>2002</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Self-Published</manufacturer>
+    <dev>Ronen Habot</dev>
+    <genre>Shooter</genre>
+    <score>1.4</score>
+    <player>1 Player</player>
+    <story>This game is based on the fifth screen of the coin-op game Phoenix. The object of this game is to destroy the Castle on the Mothership. You fire Vertical Trajectory Missiles, or VTMs, at the shield on the bottom of the Mothership. When you penetrate the shield, then blast the Castle. To score extra points, you can also shoot the enemy spaceships flying overhead. If you destroy the Castle, you advance to the next level, where you will need to contend with Focused Energy Beams, or FEBs, fired from the Mothership. There will also be stars appearing in the sky, making it harder to target the spaceships. If you manage to obliterate the Castle again, you will proceed to the next level, which adds ground-based tanks assaulting you. You have Horizontal Trajectory Missiles, or HTMs, to deal with this new enemy but do not lose sight of your primary goal. Your joystick moves you left or right. The lower button fires VTMs, the upper button fires HTMs.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Castle Crisis (USA) (Unl)">
+    <description>Castle Crisis (Unl)</description>
+    <year>2004</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>AtariAge</manufacturer>
+    <dev>Bryan Edewaard</dev>
+    <genre>Action</genre>
+    <score>5.0</score>
+    <player>1-4 Players</player>
+    <story>This is a version of the Atari coin-op game Warlords, designed to look and play as much like the coin-op version as possible. Use your shield to deflect fireballs away from your castle and towards your opponents. You can also capture fireballs and launch them at your opponents with even greater force.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Centipede (USA)">
+    <description>Centipede</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Action</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>In Centipede, the player is trapped in the Enchanted Forest. Armed with only a magic wand to ward off the forest&apos;s insect denizens, all of which apparently are attacking in the player in continuous waves. The player must use the magic wand to shoot sparks at approaching insects to score points by pressing the controller button. Holding down the controller button will set the wand to rapid fire shots. If the player is bitten by an insect, the player will be temporarily paralyzed and lose one of the three starting magic wands. Insect Opponents and Mushrooms All enemy insects have a distinctive sound before attacking, which may help the player identify which insect is attacking. Enemies and objects in the game are as the following: 1. The Centipede The Centipede will attack in 12 waves. In the first wave, the Centipede will have a head attached to 11 body segments. In the second wave, the Centipede will have a head attached to 10 body segments, in addition to a detached head. The third wave will have the Centipede with an attached head, 9 body segments, plus two detached heads. These body segments will transform into heads and continue to do so until Wave 12. In the last wave, the Centipede will have 12 detached heads, independently attacking the player. Centipede heads are worth more points than body segments. Attacks from the Centipede will come from the top of the screen, moving downward. If a spark hits any part of the Centipede, that particular body segment will transform into a mushroom, while the body segment behind it will become the new Centipede head. When the Centipede is destroyed, it will briefly disappear and re-appear from the top of the screen again. The Spider The Spider will attempt to distract the player from attacking the Centipede. It will destroy any mushroom it touches. Spiders will score more points if it is hit in closer distances. The Flea The Flea will appear if the player has destroyed most of the existing mushrooms. It will drop down creating a new batch of mushrooms where it falls. The Flea will disappear after two hits. After the first hit, the Flea will drop down much faster. The Scorpion The Scorpion will appear in the third wave. It moves slowly but will pick up speed, moving faster. While doing so, it will poison any mushroom it touches. Mushrooms Mushrooms fill the Enchanted Forest and may act as obstacles or cover for the player, with added effects to enemy insects. It takes for shots to complete destroy a mushroom. There are two type of mushrooms: Magic Mushrooms and Poisonous mushrooms. Magic mushrooms are the default mushrooms in the game and are also the the result of the player destroying an insect or Centipede body segment. Poisonous Mushrooms are the result of the Scorpion touching a mushroom. Poisonous Mushrooms will prompt the Centipede near it to move straight towards the player through any mushroom. Losing a wand will restore any partially damaged mushroom. Game Difficulty and Variations The game offers four difficulty levels: Novice, Standard, Advanced, and Expert. Game Variations are as the following: 1. One Player Two Player Alternating Two players will take turns when the active player is bitten. Dual Player Competition Two players will appear on the screen at the same time. Scoring is separate. Shots fired from one player will paralyze the other player. Team Play Two players will appear on the screen at the same time. Scoring is combined. Shots fired from one player will not paralyze the other player. Scoring The player will win a bonus magic wand for every 12,000 points to a maximum of six wands. The game will end when all wands are lost. Scoring are as the following: Centipede Head - 100 points Centipede Body Segment - 10 points Spider at close range - 900 points Spider at medium range - 600 points Flea - 200 points Scorpion - 1,000 points Flea - 200 points Restored mushroom - 5 points Destroyed mushroom - 1 points</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Choplifter! (USA)">
+    <description>Choplifter!</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Midway Games West, Inc.</manufacturer>
+    <dev>Brøderbund Software, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1 Player</player>
+    <story>Choplifter is a side-scrolling action/arcade game that puts you in command of an attack chopper. Your mission: Go behind enemy lines and rescue up to 16 hostages per level. Be careful, though, because tanks and enemy aircraft will try to stop you -- and they won&apos;t stop shooting while you are rescuing those hostages! Originally released for Apple II home computers, Choplifter was later ported to the arcades and a number of video game consoles. Many imitators and homages would follow.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Congo Bongo (USA)">
+    <description>Congo Bongo</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Corporation</manufacturer>
+    <dev>SEGA Corporation</dev>
+    <genre>Action</genre>
+    <score>2.3</score>
+    <player>1-2 Players</player>
+    <story>An extremely faithful port of the famous jump-n-run platform arcade game. Run, jump, and climb your way through a dangerous jungle while avoiding various animals and projectiles. Includes the introductory animations and features the arcade version&apos;s sliding screen transitions.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Countermeasure (USA)">
+    <description>Countermeasure</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Midway Games West, Inc.</manufacturer>
+    <dev>Midway Games West, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.2</score>
+    <player>1-2 Players</player>
+    <story>Terrorists have seized control of several missile silos and are planning on launching missiles to blow up Washington D.C. Your job is to stop them! From a top down point of view, you control a tank over varied, scrolling terrain. To stop the missiles, you have two options: you can destroy all of the missiles, or attempt to guess the fail safe code. If you try to destroy all the missiles, you must do so in under ten minutes. The missiles silos have many defenses which the terrorists also control; pillboxes, tanks, jeeps, and cruise missiles are all capable of destroying your tank. Should you attempt to guess the fail safe code, clues can be found by docking at supply depots. The code is three letters long, and can consist of any combination of L, E and O. When you enter a war room, you have a very short time to enter the code correctly or the missiles will launch. When the missiles have been stopped (by either means), the level is complete and you continue on to the next, more difficult round.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="David Crane&apos;s Pitfall II - Lost Caverns (USA)">
+    <description>David Crane&apos;&apos;s Pitfall II - Lost Caverns</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Platform</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>You play Pitfall Harry searching for the Raj diamond, his niece Rhonda, and a variety of treasures somewhere in the Andes. Poisonous frogs, eels, scorpions, bats and other hazards get in the way. Pitfall II is the sequel to Pitfall, the original platform game. Gameplay has remained pretty much the same, with each screen presenting a side view of obstacles to get past, and potentially treasures to collect. The landscape is more maze like, with a variety of paths and dead ends to search. Along the way there are checkpoints the player will encounter. When the player dies, Pitfall Harry will be sent back to the most recently crossed checkpoint.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Defender (USA)">
+    <description>Defender</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Williams Electronics Inc.</dev>
+    <genre>Shooter</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>Defender put players in charge of a ship sent to protect mankind from wave after wave of attacking alien forces. Armed with smart bombs, and the ability to use hyperspace to move quickly around the planet, the player ship must fight against Bombers, Pods, Swarmers, Baiters, and Landers - that can capture the humanoids and transform them into deadly and relentless Mutants. Fail to save the humanoids from freefall or Mutant transformation, and the planet is destroyed. Eugene Jarvis&apos; Defender has been widely regarded as one of the most popular and addictive space shooters of the early 1980&apos;s</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dig Dug (USA)">
+    <description>Dig Dug</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Namco Limited</dev>
+    <genre>Puzzle</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Dig Dug is a 1-2 player arcade game in which you have to use your shovel to dig your way through the earth. Stopping you from doing this are two monsters, called Pooka and Fygar, who will continually chase you around. The only weapon that you carry is an air pump, which you can use to inflate the monsters to the point where they explode. (if you start to inflate them but stop doing so, the monsters will get turned back to their normal selves.) Furthermore, rocks are scattered throughout the earth, and you can use these rocks to squash them. If the monsters do not find you for several seconds, they will eventually get turned into ghosts, which are able to walk through the earth. They are invincible and cannot be killed. From time to time, vegetables will appear in the center, and you can get these for points.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Dreadnaught Factor, The (USA)">
+    <description>Dreadnaught Factor, The</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Cheshire Engineering</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1 Player</player>
+    <story>The Zorban Dreadnaughts are spaceships that are 140,000 feet long and weigh 970 megatons, making them the largest, most heavily armoured spaceships ever created. A fleet of these large battlecraft are now heading towards your home planet, and it is your job to stop them! The game is played from a side scrolling overhead point of view as your small but agile spaceship flies past the dreadnaughts. On each pass your spaceship makes, you need to try and bomb as many of the energy vents as possible. When all energy vents on a dreadnaught are destroyed, that dreadnaught will explode. Time is limited, though, and if you make too many passes to destroy the energy vents the dreadnaught will be within firing range of your home planet and will destroy it. Each of the dreadnaughts are heavily armed; guns, canons, missiles, and other weapons are located on each dreadnaught and will be trying their best to end your mission. Multiple skill levels are included which alter the number of dreadnaughts you must destroy, as well as their speed and firing capabilities.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Frogger (USA)">
+    <description>Frogger</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>Your task in this arcade conversion is to guide a frog across a treacherous road and river, and to safety at the top of the screen. Both these sections are fraught with a variety of hazards, each of which will kill the frog and cost you a life if contact is made. The road is full of cars and trucks, at variable speeds. The river water itself is fatal, as are the snakes which hover within on later levels. Frogger must use the arrangement of logs, turtles (which are only there for a short time) and alligators (but stay away form their faces), and then jump into one of the open home-cells, ideally one containing a fly for extra points. Once all holes have been filled, you move onto the next, harder, level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Frogger II - Threeedeep! (USA)">
+    <description>Frogger II - Threeedeep!</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Parker Brothers</dev>
+    <genre>Action</genre>
+    <score>4.2</score>
+    <player>1 Player</player>
+    <story>In Frogger II, you need to guide your frog to safety in three different locations. Starting out underwater, reach the top of the pond while avoiding dangerous alligators and fish (you can ride a turtle for safety!). Once on top of the pond, hop across logs, birds, and even a whale to the life preserver trailing behind a tugboat. In the third location you have to hop across a flock of birds to reach a cloud at the top of the screen. Each frog has a time limit to safely reach one of the homes on each of the three screens. You move on to the next level when a frog has safely reached each of the homes on all screens.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Galaxian (USA)">
+    <description>Galaxian</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Namco Limited</dev>
+    <genre>Shooter</genre>
+    <score>4.0</score>
+    <player>1-2 Players</player>
+    <story>Galaxian is a shoot &apos;em up in which the player is at the bottom of the screen, with an arrangement of aliens at the top. The player moves left and right to aim at an alien, then shoots a bullet up the screen, and the alien it hits is killed. The aliens are classed as Drones, Emissaries, Hornets and Commanders, with those higher up the screen scoring more points when destroyed. At set intervals an enemy will move down the screen towards you, escorting a bomber, which is a moment of high danger. Clear a wave and another is generated.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gorf (USA)">
+    <description>Gorf</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>CBS Electronics</manufacturer>
+    <dev>Bally Midway Manufacturing Co., Inc.</dev>
+    <genre>Action</genre>
+    <score>2.9</score>
+    <player>1-2 Players</player>
+    <story>Gorf is a game similar to Space Invaders, alien vessels approach closer and closer in their threatening row formation. The game itself consists of four levels: 1. The first level has you behind a defensive shield, defending against an alien attack. The level is a top-down view, with your ship &amp; shield on one side and the aliens on the other side; The second level is similar to the first, only your defensive shield is gone, and the enemies tend to swoop down over the level as opposed to those row formations. Bonus ships also tend to appear in this level; The third level is a change, and has you entering hyperspace. Your only goal is to survive to the end of your journey. The viewpoint switches from a top-down view to a behind-the-ship view and in effect you are heading towards your destination. Alien vessels flying in circular formation try to stop you; The fourth and final level is similar to the first again, with some key differences. You do not fight a wave of enemies, but a single one. A mothership with a glowing weak spot. Hitting the weak spot will instantly destroy it. The mothership also has that same shield that was yours in the first level. Finishing the game increases your rank and starts the game over at level 1 with a faster game speed for more challenge.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gremlins (USA)">
+    <description>Gremlins</description>
+    <year>1987</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Gremlins is an action game based on the Steven Spielberg movie of the same name. The game takes place just after midnight when there are Gremlins and Mogwai running around Billy&apos;s living room! You control Billy from a 3rd person point of view. On each level, your goal is to catch all of the Mogwai and return them to their cage (located in the upper right corner of the screen) and to destroy all of the Gremlins with a sword. Each level has a time limit - at 6:00 am when the sun rises. You move on to the next level by completing your tasks or just surviving until 6:00, although more points are awarded for the former. You will also receive bonus points for each Mogwai returned to the cage. On many of the levels there will be various types of food lying about the screen. If a Mogwai eats any food, it will turn into a gremlin. There may also be puddles of water; if a Gremlin or Mogwai runs into the water, it will split into two. Some levels also contain a refrigerator or popcorn machine which will throw food out onto the screen, or a television which will distract the Gremlins. You also begin the game with a limited number of flash cubes; if you get into trouble, you can use these to temporarily stun all of the Gremlins and Mogwai. As the levels progress gameplay becomes faster and the Gremlins and Mogwai more numerous.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Gyruss (USA)">
+    <description>Gyruss</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Bros</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Shooter</genre>
+    <score>2.2</score>
+    <player>1-2 Players</player>
+    <story>The entire solar system is being attacked by the vicious Gyrusians, and it&apos;s up to you to save the day! You will need to fly your spaceship to each of the nine planets and then clear three stages of enemies to rid that planet of the Gyrusians. You start the game with a single canon, and can gain a double canon after shooting a power up satelite. After clearing each planet, there is another bonus stage where additional weapons and bonus points can be collected. Gyruss is an arcade action shooter, however instead of piloting your spaceship horizontally or vertically, you move in a circle around the perimeter of the screen. The NES version of Gyruss adds to the original arcade version additional music, additional weapons, new enemies, and a large boss at the end of each level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="H.E.R.O. (USA)">
+    <description>H.E.R.O.</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>4.1</score>
+    <player>1 Player</player>
+    <story>There is trouble in the mines! Volcanic activity has trapped numerous miners, and it is your job to save them. As Roderick Hero, you need to make your way through the dangerous mineshaft avoiding the dangerous creatures and lava, and find out where the miners are located before you run out of energy. To help on your mission, Roderick Hero has several useful types of equipment. A prop pack will allow you to hover and fly around the mineshaft and (hopefully) avoid the many dangers within. Your helmet features a short range microlaser beam which can be used to destroy the bats, spiders, snakes, and other creatures you&apos;ll encounter in the mines. From time to time, your path through the mine may be blocked by stone or lava walls. You begin each mission with six sticks of dynamite which can be used to destroy these obstacles (be careful you don&apos;t blow yourself up, though!) If you run out of dynamite, your laser beam can also be used to destroy the walls, though this will take longer and use up more energy. As the levels progress, the mine shaft will become longer and more maze-like, creatures will more frequently block the path, and lava walls and pools will appear which are dangerous to the touch.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="James Bond 007 (USA)">
+    <description>James Bond 007</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Parker Brothers</dev>
+    <genre>Action</genre>
+    <score>1.5</score>
+    <player>1-2 Players</player>
+    <story>In James Bond 007 you control James Bond in his multi purpose craft. This craft can travel on both land and sea, can jump over danger, or fire at enemies on the many different levels. Each horizontally scrolling level in the game is loosely based on a different James Bond movie. The levels included are Diamonds Are Forever, The Spy Who Loved Me, Moonraker, and For Your Eyes Only. Each level has a variety of enemies trying to destroy you, and a unique goal that must be accomplished to continue on (for example, you may have to land on a hidden oil rig to stop Seraffino, or find Stromberg&apos;s undersea laboratory and destroy it). If you can complete all the missions, you win the game! Good luck, Mr. Bond.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Joust (USA)">
+    <description>Joust</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Williams Electronics Inc.</dev>
+    <genre>Platform</genre>
+    <score>4.2</score>
+    <player>1-2 Players</player>
+    <story>In Joust, players take control of a knight with a lance who rides their flying ostrich (or stork, for Player 2) to do battle against computer-controlled evil knights who ride atop vultures. Players must flap their steed&apos;s wings to hit the enemy from a higher jousting point to destroy the vulture and its rider. Once the enemy has been hit, an egg falls to one of the platforms below. The heroic knights must destroy the eggs before they hatch and release new and increasingly more difficult knights. The three strengths of enemy knights are Bounder (red knight), Hunter (white knight), and Shadow Lord (blue knight). These enemy knights are not the only challenge to be found in the game. Players must also contend with crumbling platforms, lava trolls who attempt to pull knights into the fire, and the dreaded unbeatable(?) pterodactyl. The game was novel for its time for being one of the few two-player simultaneous games in the arcade.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Jungle Hunt (USA)">
+    <description>Jungle Hunt</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Taito Corporation</dev>
+    <genre>Platform</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>Jungle Hunt offers four unique adventure experiences, which repeat with greater difficulty once all four have been survived. If you don&apos;t survive these adventures, you will not only lose your own life but that of the lovely Penelope, who has been captured by cannibals! The first part challenges your Tarzan skills - can you swing on the vines without plummeting to your doom? The second part pits you against a whole bunch of nasty crocodiles in a mighty river. Fortunately, you have a knife to fight back with. Don&apos;t forget to go up for air! In the third part, you face a battle against oncoming boulders of varying sizes and physics. Once you&apos;ve cleared all these treacherous hazards, you still must confront the dreaded cannibal, who is armed with a wicked spear. Can you get past him and save the lovely Penelope? Gameplay involves much strategic jumping and knife play (in the river/crocodile phase). The view is always a side view, much like Pitfall! and later platform games.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="K-Razy Shoot-Out (USA)">
+    <description>K-Razy Shoot-Out</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>CBS Electronics</manufacturer>
+    <dev>K-Byte</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>K-Razy Shootout is an arcade action game similar to Berzerk. You are in a maze filled with dangerous robots. Your goal is to shoot as many of the robots as you can to earn points. If you collide with a robot, robot fire, or the maze walls you lose a life. The game ends when all of your reserve lives have been lost. Each sector of the game has a timer bar; if you complete a sector while the bar is in the green or yellow section, bonus points are earned. If the timer runs out, you lose a life. Each sector will have one or more exits in the maze; you may exit a maze at any time, but if you leave before all of the robots are destroyed then you will have to go back two sectors.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Kaboom! (USA)">
+    <description>Kaboom!</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1-2 Players</player>
+    <story>The mad bomber is on the loose! As he races back and forth at the top of the screen, you need to catch the bombs he drops in buckets of water. One point is earned for each bomb caught, but miss one of the bombs, and Kaboom! As the levels progress, the mad bomber will move faster and faster and drop more and more bombs. You start the game with three buckets, and lose one each time a bomb is missed. The game ends when all of your water buckets are gone.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Kangaroo (USA)">
+    <description>Kangaroo</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Sun Electronics Corp.</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>Baby Roo has been kidnapped by monkeys, and it&apos;s up to Mama Roo to come to the rescue! Your kangaroo starts out at the bottom of the screen. You need to guide the kangaroo up the various ladders and platforms to the top where Baby Roo is being held captive. The monkeys will be trying to stop you by throwing or dropping apples and knocking you off the platforms. Your kangaroo has boxing gloves, however, and can knock out the monkeys with a single punch! Along the way various types of fruit can be collected to earn bonus points.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Keystone Kapers (USA)">
+    <description>Keystone Kapers</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.1</score>
+    <player>1 Player</player>
+    <story>The notorious thief Harry Hooligan is on the loose! You play the part of Officer Keystone Kelly, sent in to capture Harry. Harry is trapped in a four story mall, and is running as fast as he can to reach the exit at the top. Your job is to catch up to him and send him to prison. You will need to use either the escalators at the end of each floor, or the elevator in the middle to go from floor to floor. The escalators may be further away, but the elevator moves pretty slowly so you will need to decide which route will be faster in getting you closer to your goal. If Harry can make it to the top before you catch him, you will have to retry that level. Harry has no intention of letting you catch him easily, and is hurling everything he can find in an attempt to slow you down. Shopping carts, bouncing balls, biplanes, and more will all be flying past on the screen and will either slow you down or send you back to the beginning if you get hit. As the levels progress, Harry will run faster and faster, and more objects will be tossed your way to duck and jump over.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Koffi - Yellow Kopter (USA) (Unl)">
+    <description>Koffi - Yellow Kopter (Unl)</description>
+    <year>2002</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>AtariAge</manufacturer>
+    <dev>Ron Lloyd</dev>
+    <genre>Shooter</genre>
+    <score>2.5</score>
+    <player>1 Player</player>
+    <story>Koffi is a little kopter so when the emergencies came, the big kopters wouldn&apos;t let him go. But now he has heard that Pyro the thundercloud is using lightning to start fires in the forest. The fire needs to be put out, the animals need saving. Koffi wasn&apos;t allowed to help the big kopters but he can&apos;t just ignore this until they return. You, as Koffi, must gather water from the raindrops or snowflakes and destroy Pyro. You destroy him by bumping into him but watch out for his lightning. After Pyro is gone, you must hover close to the fire then press your button to release water to put out. If you don&apos;t have enough water, grab more raindrops or snowflakes but don&apos;t delay or the fire will rage out of control. You can get bonus points by shoving the animal under the trees off the screen. The forest areas are mountain valley, coniferous forest and windy vines, where you have to watch that you are not blown into lightning. After you clear the three forest areas, you must face Pyro&apos;s mom, and she is not happy that you beat up on her son. You kill her the same way as her son but she throws longer and faster lightning and there is an angry cloud moving up and down and slowly towards you. Once she is dead, you restart mountain valley at a harder level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mario Bros. (USA)">
+    <description>Mario Bros.</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Nintendo Co. Ltd.</dev>
+    <genre>Platform</genre>
+    <score>3.6</score>
+    <player>1-2 Players</player>
+    <story>Mario and Luigi, the best plumbers in the world, have a real job on their hands. A host of characters have taken over the sewers, and the brothers must clear them out of the pipes. The platform puzzle which first introduced Luigi to the world has both single and multiplayer action with two differing game types, but with the same objective. Crabs, turtles and fighter flies must be cleared out by jumping underneath the platform they sit on, then kicking them away. Each level is cleared when a set number of coins is collected. For the two player mode, the first to collect the set amount of coins wins.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="MegaMania (USA)">
+    <description>MegaMania</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Shooter</genre>
+    <score>2.6</score>
+    <player>1-2 Players</player>
+    <story>Megamania is an arcade action game with gameplay similar to Space Invaders. You control a spaceship at the bottom of the screen and need to defend yourself from numerous waves of attackers. But in Megamania, the attackers much more bizarre than invading aliens. There are hamburgers, diamonds, steam irons, bow ties, space dice, and more! You need to earn points by destroying as many of these strange attackers as you can before your energy supply becomes depleted.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Meteorites (USA)">
+    <description>Meteorites</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Electra Concepts International Corp.</manufacturer>
+    <dev>Electra Concepts International Corp.</dev>
+    <genre>Action</genre>
+    <score>2.5</score>
+    <player>1-2 Players</player>
+    <story>Meteorites is an arcade action game featuring gameplay similar to Asteroids. You control a spaceship surrounded by numerous asteroids; your goal is to destroy them! Each time you shoot an asteroid, it will break up into smaller asteroids. Eventually the pieces will be small enough that you can destroy them. When you have destroyed all of the asteroids, you will move on to the next, more difficult level. To make the game more difficult, a flying saucer will also appear from time to time and try to shoot your spaceship. To get out of trouble quickly, your spaceship also may enter hyperspace transporting you to a new location on the screen. Be careful, though, sometimes the new location is worse than the one you left!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Miner 2049er Starring Bounty Bob (USA)">
+    <description>Miner 2049er Starring Bounty Bob</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Big Five Software</manufacturer>
+    <dev>Big Five Software</dev>
+    <genre>Action</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>You play the part of Bounty Bob, and it is your mission to explore every inch of an abandoned mine. As you walk over floor sections in the mine, the floor will change color. When all of the floor sections have been changed in color, you can move on to the next, more challenging level. To reach all of the floor sections, you will need to figure out how to get there! You can jump (be careful not to fall too far though, or you will be squished), climb up and down ladders, and use different transportation devices that can be found on the levels (such as an elevator, slides, a springboard, or a canon!) Wandering around the mine are numerous radioactive creatures which get in Bounty Bobs way. Also scattered throughout the mines are various artifacts left behind; if Bounty Bob collects one of these, the creatures will temporarily become vulnerable. If Bounty Bob runs into one of the creatures in this state the creature will be destroyed, but if he runs into a creature while it is glowing Bounty Bob will be destroyed! There is a total of ten different levels, and to complete them all you will need quick reflexes as well as figure out a unique strategy for each level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Missile Command (USA)">
+    <description>Missile Command</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Shooter</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>Aliens from the planet of Krytol are attacking your cities!! As the commander of a missile base, it is your responsibility to defend them. A variety of enemy weapons and planes will be incoming trying to destroy the six cities at the bottom of the screen. You need to fire missiles to destroy the incoming weapons. If anything gets through, one of your cities could be destroyed. When all of the cities are gone, the game is over. On each level you have a limited amount of ammo, so make sure most (if not all) of your shots are accurate or you could run out of ammo and leave your cities at risk! As the levels progress, there are more and more enemy weapons to destroy which come in at an increasingly faster rate.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Montezuma&apos;s Revenge featuring Panama Joe (USA)">
+    <description>Montezuma&apos;&apos;s Revenge featuring Panama Joe</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Parker Brothers</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1 Player</player>
+    <story>You play as a treasure hunter named Panama Joe, whose goal is to find an ancient treasure hidden by Aztec warrior deep inside catacombs. But beware, the catacombs are a large maze inhabited by monsters. Bouncing and rolling skulls, dancing spiders, disappearing and re-appearing chains and tons of fire await you. You&apos;ll have to find many keys and unlock doors in order to reach your goal. Panama Joe can jump and climb ladders, but doesn&apos;t have much to offer in terms of combat. That&apos;s why the monsters in the game should be avoided: a collision with an enemy leads to a premature death.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Moon Patrol (USA)">
+    <description>Moon Patrol</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Irem Corp.</dev>
+    <genre>Action</genre>
+    <score>4.5</score>
+    <player>1-2 Players</player>
+    <story>The moon is under attack from a horde of aliens, and you must stop them in your armed buggy. Drive along the surface shooting the aliens and avoiding their bullets. The surface is not flat, there are craters and rocks to avoid contact with, and landmines on the surface. Flying saucers create new craters when they crash. The 25 restart points are letter-coded.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mountain King (USA)">
+    <description>Mountain King</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>CBS Electronics</manufacturer>
+    <dev>E.F. Dreyer, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.1</score>
+    <player>1 Player</player>
+    <story>Deep within a multi platformed diamond mine is a valuable crown. Your goal is to locate and retrieve the crown, then make it to the top of the mine alive! There are several steps that need to be completed before you can retrieve the crown. First you need to collect enough diamonds to earn 1,000 points. After you have enough points, you need to locate the flame spirit which is hidden somewhere within the mine. Since the mine is rather dark, you carry a flashlight with you which can be used to locate objects (such as treasure chests full of diamonds and the flame spirit.) Once you have the flame spirit, you need to find the entrance to the temple the crown is in. Offer the flame spirit to the skull spirit guarding the entrance, and you can get in and take the crown. Once you have the crown, you need to make it to the top of the mine before time runs out. To make this task more challenging, numerous cave bats fly around which can steal the crown. If this happens, you need to begin again! At the very bottom of the mine is a deadly spider; if you&apos;re not careful while exploring this region of the mine, you could become caught in it&apos;s web and be eaten. Each level has a time limit, and the more levels you complete the shorter the time limit becomes!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Mr. Do!&apos;s Castle (USA)">
+    <description>Mr. Do!&apos;&apos;s Castle</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Universal Co., Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.3</score>
+    <player>1 Player</player>
+    <story>Mr. Do!&apos;s Castle is an action platform game which has you in a castle consisting of several floors, each of which contain a variety of blocks. You control Mr. Do! the clown who has a hammer which can be used to knock out the blocks in the floor. Wandering throughout the castle are deadly unicorns which are constantly trying to catch you. Your goal is to earn as many points as possible and to progress through the increasingly difficult castles. There are two ways to complete a castle; you can either destroy all of the deadly unicorns by crushing them with blocks, or you can knock out all of the blocks which have a cherry symbol on them. In addition to the cherry blocks, there are three blocks with a key. If all three key blocks are knocked out, the door on the roof of the castle unlocks. If you make it to the door, all of the unicorns will temporarily become harmless and will contain a letter. If you hit a letter unicorn, you will earn a letter in the word EXTRA. Spell the complete word, and you will earn an extra life. The last type of block you&apos;ll encounter has a skull on it. If you knock out two skull blocks, all of the blocks between them will also be knocked out and replaced with a bridge. As the castles progress, the castle layout will become trickier and the unicorns become faster and more numerous.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Ms. Pac-Man (USA)">
+    <description>Ms. Pac-Man</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>General Computer Corporation|Midway</dev>
+    <genre>Action</genre>
+    <score>3.7</score>
+    <player>1-2 Players</player>
+    <story>In 1982, a sequel to the incredibly popular Pac-Man was introduced in the form of his girlfriend, Ms. Pac-Man. This sequel continued on the eat the dots/avoid the ghosts gameplay of the original game, but added new features to keep the title fresh. Like her boyfriend, Ms. Pac-Man attempts to clear four various and challenging mazes filled with dots and ever-moving bouncing fruit while avoiding Inky, Blinky, Pinky and Sue, each with their own personalities and tactics. One touch from any of these ghosts means a loss of life for Ms. Pac-Man. Ms. Pac-Man can turn the tables on her pursuers by eating one of the four Energizers located within the maze. During this time, the ghosts turn blue, and Ms. Pac-Man can eat them for bonus points (ranging from 200, 400, 800 and 1600, progressively). The Energizer power only lasts for a limited amount of time, as the ghost&apos;s eyes float back to their center box, and regenerate to chase after Ms. Pac-Man again. Survive a few rounds of gameplay, and the player will be treated to humorous intermissions showing the growing romantic relationship between Pac-Man and Ms. Pac-Man, leading all the way up to the arrival of Junior.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pac-Man (USA)">
+    <description>Pac-Man</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Namco Limited</dev>
+    <genre>Action</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>One of the most popular and influential games of the 1980&apos;s, Pac-Man stars a little, yellow dot-muncher who works his way around to clear a maze of the various dots and fruit which inhabit the board. Pac-Man&apos;s goal is continually challenged by four ghosts: The shy blue ghost Bashful (Inky), the trailing red ghost Shadow (Blinky), the fast pink ghost Speedy (Pinky), and the forgetful orange ghost Pokey (Clyde). One touch from any of these ghosts means a loss of life for Pac-Man. Pac-Man can turn the tables on his pursuers by eating of the four Energizers located within the maze. During this time, the ghosts turn blue, and Pac-Man can eat them for bonus points. This only lasts for a limited amount of time, as the ghost&apos;s eyes float back to their center box, and regenerate to chase after Pac-Man again. Survive a few rounds of gameplay, and be treated to humorous intermissions between Pac-Man and the ghosts.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pengo (USA)">
+    <description>Pengo</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>4.1</score>
+    <player>1-2 Players</player>
+    <story>In this translation of the classic arcade-game Pengo, you must defeat the enemy by pushing ice blocks together to crush them. You also can capture one if they are shocked and dizzy. There is also a time limit to make it a bit more difficult (you must do it in one minute).</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pitfall! (USA)">
+    <description>Pitfall!</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Platform</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Pitfall! is a platform action game. You play Pitfall Harry who is on a quest to locate treasure deep in the jungle. With a little luck you&apos;ll be able to find money bags, silver bars, gold bars, and diamond rings. But many obstacles will get in the way, some of which merely deduct points from your score, while others are fatal. Rolling logs and falling down a hole will deduct points, and scorpions, alligators, snakes, bottomless pits, swamps, and fires will cause Pitfall Harry to lose a life. You have 20 minutes to try to collect all of the treasures on the numerous screens, if you can live that long!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Pole Position (USA)">
+    <description>Pole Position</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Namco Limited</dev>
+    <genre>Driving</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Pole Position is the conversion of the arcade racing game. Enter the Grand Prix, race against other racing cars to achieve the highest score possible in the shortest amount of time. Before the player can enter the Grand Prix, the player must first qualify by competing in the Qualifying Lap within 73 seconds or less. If the player however, does not qualify in the Qualifying Lap, the player may continue to race until the Race Timer runs after 90 seconds. The player will score 50 point per 5 meters and additionally 50 points for every racing car passed. When the time runs out - Game Over. The player will have to restart the Qualifying Lap. Qualifying will enable the player to start in one of the eight available positions. The faster the lap time was, the better the starting position in addition to bonus score points. The number one starting position, is the Pole Position. During the Grand Prix, the player will compete against the Race Timer as well as against other racing cars. If the player fails to beat the Race Timer in any lap, the player drops out of the race - Game Over. Completing the race by reaching finishing line will grant the player 200 points per each second left on the Race Timer, bonus score for distance covered, and passing bonus points. Scoring 1. Every 5 meters driven: 50 points Passing Car Bonus: 50 points per racing car Time Bonus: 200 points per second left on the Race Timer Positions 1. Pole Position - Lap Time: 5850 seconds - 4,000 points 2nd Position - Lap Time: 6000 seconds - 2,000 points 3rd Position - Lap Time: 6200 seconds - 1,400 points 4th Position - Lap Time: 6400 seconds - 1,000 points 5th Position - Lap Time: 6600 seconds - 800 points 6th Position - Lap Time: 6800 seconds - 600 points 7th Position - Lap Time: 7000 seconds - 400 points 8th Position - Lap Time: 7300 seconds - 200 points</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Popeye (USA)">
+    <description>Popeye</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Nintendo Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>Popeye is a conversion of the arcade action/platform game. As Popeye, you are trying to win Olive Oyl&apos;s love! She is at the top of the screen dropping tokens of her love, and you need to collect them before they hit the ground. After you have collected the required number of items, you can move on to the next, more difficult level. There are many obstacles trying to stop you from completing your task, though! Brutus wanders around the screen and is constantly trying to catch you. If you collect a can of spinach, you can temporarily knock him out, otherwise Brutus will knock you out. Other objects such as bottles or birds are also flying around the screen and will cause you to lose one of your lives if you are hit. Each level features a different layout of platforms and ladders, and will have you collecting different items as they float towards the bottom of the screen!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Q-bert (USA)">
+    <description>Q-bert</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>D. Gottlieb &amp; Co.</dev>
+    <genre>Action</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>Q*bert is a conversion of the popular arcade game. The goal is to change all of the tiles on a pyramid to the target color. To do this you guide Q*bert around the pyramid, and every tile he hops on will change color. On early levels, a single hop will change the tile to the desired color, but on later levels you may need to hop on a tile multiple times or even avoid hopping on a tile multiple times! Trying to stop Q*bert are many different creatures which wander around the board, including Coily the snake, Slick and Sam, and falling balls. On the edge of the board are floating discs; if Q*bert jumps on one of these discs when the snake is in pursuit, the snake will fall off the board while Q*bert is safely transported to the top.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Qix (USA)">
+    <description>Qix</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Taito America Corporation</dev>
+    <genre>Puzzle</genre>
+    <score>3.7</score>
+    <player>1-2 Players</player>
+    <story>In this game, you guide a marker which must draw rectangles and other weird objects in order to claim your territory, and you can either draw these rectangles fast or slow. Drawing the rectangles using the slow method awards you the most points. Once a rectangle has been made, it will be colored in to show that you have claimed your territory. While drawing the rectangles, you need to watch out for Qix (pronounced kicks), a series of colored lines that crawl the screen. In addition to Qix, you also need to avoid the Sparks who travel around the border, as well as any lines that you have made, as well as The Fuse, who travels along the line that you are drawing. Once you have claimed enough territory, you proceed to the next level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Quest for Quintana Roo (USA)">
+    <description>Quest for Quintana Roo</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Sunrise Software Inc.</manufacturer>
+    <dev>VSS, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.5</score>
+    <player>1 Player</player>
+    <story>You are Yucatan Sam on a quest to explore the temple of Quintana Roo. Your goal is to find the vault which is hidden somewhere within and return with the treasure that is inside. You begin your quest outside the temple; climb your way up the side of the temple in order to get inside. Poisonous snakes and deadly lightning bolts will block your progress here. Once inside the temple, you have a limited air supply so you need to explore quickly. Hidden in various rooms of the temple are numerous keys which are needed to unlock the vault. The keys and some other useful items are hidden in secret rooms which you need to locate by using your trusty pick axe or the flasks of acid you carry. To help figure out which rooms may contain hidden objects, you carry a geiger counter with you; the higher the reading, the closer you are to something of interest! The rooms you&apos;ll be exploring are guarded by snakes, spiders, and even mummies! To deal with these enemies you carry a gun, and you can also use the acid flasks against them (ammo is limited, so use it wisely). If you are successful in your mission, you may receive a secret code which can be used to begin the game at later levels. Good luck!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="RealSports Baseball (USA)">
+    <description>RealSports Baseball</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Baseball/Sports</genre>
+    <score>3.5</score>
+    <player>1-2 Players</player>
+    <story>Baseball is an action game which can be played by two players or one player against the computer. The game allows you to bunt the ball or try for a homerun, steal bases, and throw several types of pitches from a fast ball to a curve ball. Several game variations are included which allow you to select whether the home or visiting team is at bat first, and whether or not a player can swing only at pitches that are a strike, or they can swing at any pitch.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="RealSports Football (USA)">
+    <description>RealSports Football</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Football/Sports</genre>
+    <score>1.4</score>
+    <player>1-2 Players</player>
+    <story>Football is an action football game for two players or one player against the computer. The game is played from a top down point of view of the field which scrolls to follow the action. There is a variety of offensive and defensive plays that can be called, along with several skill levels for each player. Each game will last for one fifteen minute quarter, whichever team has the most points at the end wins!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="RealSports Soccer (USA)">
+    <description>RealSports Soccer</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Soccer/Sports</genre>
+    <score>2.4</score>
+    <player>1-2 Players</player>
+    <story>The game is played from an angled overhead point of view of the field which scrolls to follow the action. If your team has the ball, you control whichever player is currently dribbling the ball, otherwise you can control any one player at a time while the computer controls the rest of your team. Various time lengths can be selected for each game, you can kick the ball low, medium or high, and there are throw-ins, corner kicks, goal kicks. When playing against the computer several different skill levels are available.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="RealSports Tennis (USA)">
+    <description>RealSports Tennis</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Sports/Tennis</genre>
+    <score>2.1</score>
+    <player>1-2 Players</player>
+    <story>Realsports Tennis is a tennis game for two players or one player against the computer. The game follows standard tennis rules, and allows you to hit forehand or backhand shots to all areas of the court as well as serves and lobs. You can play a game of singles or doubles, and multiple skill levels are included.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Rescue on Fractalus! (USA)">
+    <description>Rescue on Fractalus!</description>
+    <year>1986</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Lucasfilm Games LLC</dev>
+    <genre>Action</genre>
+    <score>2.7</score>
+    <player>1 Player</player>
+    <story>Rescue on Fractalus is an action game played from a 3D first person point of view. Your mission is to rescue stranded pilots on the planet of Fractalus. You begin each mission from the mother ship, and when your quota of pilots has been rescued you must return there so you can move on to the next level. To help locate the pilots and navigate the tricky terrain, your spaceship is equipped with various instruments, such as a compass, altimeter, and scanner. Your enemy, the Jaggi&apos;s, have numerous forces on this planet and will be attempting to stop you. Gun emplacements, flying saucers, and the Jaggi themselves are all capable of destroying your ship if you don&apos;t destroy them first. To defend yourself from these threats, your ship is equipped with torpedoes. As the levels progress, the Jaggi defenses become more aggressive, and you will even need to fly some night missions where visibility is limited!</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Robotron 2084 (USA)">
+    <description>Robotron 2084</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Williams Electronic Games, Inc.</dev>
+    <genre>Shooter</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>This is a port of the arcade game of the same name. You are a mutant human, who by some freak of nature has the ability to shoot energy pulses from his body in eight different directions! Your job is simple: save humanity from their own creation -- the ROBOTRONS! The gameplay is pretty unique for the time. You can move and fire in any of eight directions. You get thrown in a room with various evil baddies strewn about, you&apos;ve got to kill all the robots while at the same time finding some way to grab humans and avoid death.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Dungeon (USA)">
+    <description>Space Dungeon</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Taito America Corporation</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1-2 Players</player>
+    <story>Space Dungeon is an arcade style shooter. You control a spaceship within the space dungeon which consists of numerous rooms. Located throughout are treasures, and your goal is to collect as many of these treasures as you can and then proceed to the dungeons exit (called collect bonus). You don&apos;t need to collect every treasure to complete a level, but more bonus points are earned the more treasures you collect. Many of the rooms contain dangerous enemies, including death squares, guards, enforcers, pikers, and more. To fight off the enemies, your spaceship is equipped with a laser which can fire in eight different directions. To help find your way around, a map at the top of the screen will indicate where you are, where you&apos;ve been, and what rooms visited so far still have enemies in them. Also located in the dungeons is a thief; the thief has the same goal as you, and will try to steal the treasures before you can. The thief can&apos;t be destroyed, but shooting it will cause it to drop any treasures it may be carrying. If you lose a spaceship at any point by crashing into an enemy or enemy fire, you will be sent back to the starting location and all the treasure you were carrying will be left in the room where you died. The game ends when you have lost all of your reserve spaceships.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Invaders (USA)">
+    <description>Space Invaders</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Taito Corporation</dev>
+    <genre>Shooter</genre>
+    <score>3.9</score>
+    <player>1-2 Players</player>
+    <story>Earth is under attack from rows of bomb dropping aliens, and you need to defend it! The rows of aliens begin at the top of the screen, and you control a laser cannon at the bottom of the screen. Your goal is to earn points by shooting the aliens before they can land. The aliens march back and forth, and each time the end of the screen is reached they will drop one row closer to the bottom. Shoot them all, and you move on to the next (tougher) level, but if even one of them lands the game is over. From time to time a flying saucer will pass by along the top of the screen; shoot this to earn extra points. Just above your laser canon are three shields; these can be used to hide from the alien&apos;s bombs, but will also block your own shots. You begin the game with a limited number of laser canons, and if all of them are bombed the game ends.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Space Shuttle - A Journey Into Space (USA)">
+    <description>Space Shuttle - A Journey Into Space</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>4.0</score>
+    <player>1 Player</player>
+    <story>Space Shuttle is a simulation game where you are the pilot of space shuttle Discovery. Your goal is to launch the Discovery, establish an orbit around the Earth, open the cargo bay doors and recover a satellite to perform repairs, and finally land the Discovery successfully, all while using as little fuel as possible. Each time the complete mission is accomplished, it will then repeat at a higher difficulty level (in the higher difficulty levels the satellite has a more erratic flight path). The game is played from a first person perspective in the space shuttle cockpit where you can control everything from the shuttles engines to cargo bay doors. When the game is over you will be given a ranking which is based on the number of successful dockings and the amount of fuel that was used. In addition to the full flight mode, two easier game variations (autosimulator and simulator mode) are included. The autosimulator mode is the easiest; the computer will control the flight (you can take over at any point you wish) and the controls are simplified. The simulation mode is closer to the full game, however you have an unlimited amount of fuel so there is no time pressure, and the computer will help compensate for inaccurate maneuvering.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Raiders (USA)">
+    <description>Star Raiders</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Action</genre>
+    <score>3.6</score>
+    <player>1 Player</player>
+    <story>As the pilot of an interstellar starship, your mission is to destroy all of the Krylon fighters which are closing in on your starbases! There are three different types of fighters roaming throughout the galaxy; cruisers, fighters, and basestars. With the help of your galactic map, you can find the sectors of the galaxy where these fighters are located and then warp there to destroy them. When all of the fighters in a sector are destroyed, you can warp to a new location for the next battle. Be sure to keep an eye on your starships energy; warping to new locations, being hit by enemy fire, or colliding with an asteroid will drain your energy. If you completely run out of energy, your starship will be destroyed, however you can warp back to a starbase to refuel at any time. Returning to a starbase will also repair other types of damage your starship can receive, such as faulty engines, loss of your shield, and faulty photon torpedoes. When all of the Krylon that are visible on your galactic map have been destroyed, you win this round and can advance in rank (or even be demoted if you performed poorly on a mission). The games difficulty will gradually increase as you rise in rank from ships cook up to captain.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Trek - Strategic Operations Simulator (USA)">
+    <description>Star Trek - Strategic Operations Simulator</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises, Inc.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.8</score>
+    <player>1 Player</player>
+    <story>Star Trek: Strategic Operations Simulator is an arcade action game where you take control of the Starship Enterprise. Your mission is to save the Federation from NOMAD! Before you get a chance at destroying NOMAD, you&apos;ll have to battle your way through ten levels (each consisting of multiple rounds). In each round you may encounter Klingon fighters, deadly anti-matter saucers, asteroid fields, and deadly meteors, all of which are capable of depleting the Enterprises energy. The game ends when your energy supply has completely run out. To fight these dangers, the Enterprise is equipped with an unlimited supply of phasers and a limited supply of photon torpedoes. Each round also contains one or more starbases; if you dock at a starbase, some of your supplies (such as energy and torpedoes) will be replenished. The game is played from two points of view; the top of the screen contains a third person view of the Enterprise (along with the ships gauges), and on the bottom of the screen is a first person point of view</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Wars - Return of the Jedi - Death Star Battle (USA)">
+    <description>Star Wars - Return of the Jedi - Death Star Battle</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Parker Brothers</dev>
+    <genre>Action</genre>
+    <score>1.6</score>
+    <player>1-2 Players</player>
+    <story>Death Star Battle is loosely based on the events of Star Wars, Part 6: Return of the Jedi. Your task is to destroy the Death Star before its construction is finished. You start the task outside the shield perimeter of the Death Star. There you&apos;ll have to combat different imperial vessels and avoid the death ray while waiting for an opportunity to slip through one of the random openings in the energy shield. After reaching the Death Star you must reduce its structure up to the point where you can hit the core. In the following blow up of the station you must avoid collision with Death Star debris. After successful destruction the game will restart with increased difficulty (faster enemies, faster Death Star build up, etc). Overall difficulty can also be adjusted before starting the game.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Star Wars - The Arcade Game (USA)">
+    <description>Star Wars - The Arcade Game</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.1</score>
+    <player>1 Player</player>
+    <story>Conversion of Atari Games&apos; first-person shoot &apos;em up based around the original Star Wars film. You take on the role of Luke Skywalker, aiming to destroy the Death Star - which, as any fan knows, involves attacking the &apos;weak spot&apos; near the exhaust. To even get to this you have to pass swarms of TIE Fighters. Complete the game and it loops back around at ever-increasing difficulty. The game uses vector graphics, which allow lots of action at high speed on comparatively slow systems.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Breakout (USA)">
+    <description>Super Breakout</description>
+    <year>1982</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>Atari, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.8</score>
+    <player>1-4 Players</player>
+    <story>Super Breakout features similar gameplay to the original, but with several new game variations. Your goal is to earn as many points as possible by destroying the bricks at the top of the playfield. To do this, you need to use the paddle at the bottom of the screen to keep a bouncing ball within the playfield. There are four different game variations included. The first is &apos;Breakout&apos;, and plays the same as the original game. This leaves three new gameplay concepts. In &apos;Progressive&apos; the brick walls will slowly drop towards the bottom of the screen and the ball moves progressively faster and faster. When there&apos;s room, a new layer of bricks will appear at the top. The other two games add a second paddle. In &apos;Double Breakout&apos; you have two balls to keep in play and score with. In &apos;Cavity&apos; there is a single ball in play when you start, but two additional balls trapped within the bricks. These are freed when their surrounding bricks are destroyed.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Super Cobra (USA)">
+    <description>Super Cobra</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Parker Brothers</manufacturer>
+    <dev>Konami Industry Co. Ltd.</dev>
+    <genre>Action</genre>
+    <score>2.5</score>
+    <player>1-2 Players</player>
+    <story>Super Cobra is a side scrolling shooter based on the arcade game. You&apos;re a chopper pilot on a surveillance mission in enemy territory; your goal is to make it through the various obstacle courses alive and score as many points as possible. Tall buildings, mountains, narrow tunnels, and various enemies (such as tanks, rockets, mines, and more) can all get in the way and destroy your chopper if you aren&apos;t careful. To help defend yourself, the chopper is armed with a machine gun and bombs which can be used to destroy the enemy tanks and rockets. To make the task more difficult, your chopper has a limited amount of fuel. Throughout the landscapes are fuel tanks; if one of these is shot or bombed, you will be awarded extra fuel. As the levels progress, the enemies become more aggressive, fuel becomes more scarce, and the landscape becomes trickier to </story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Vanguard (USA)">
+    <description>Vanguard</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Atari, Inc.</manufacturer>
+    <dev>SNK Corporation</dev>
+    <genre>Shooter</genre>
+    <score>4.3</score>
+    <player>1-2 Players</player>
+    <story>Vanguard is an arcade style shooter for one or two players. Your goal is to pilot your spaceship to the City of Mystery which is located at the end of a heavily guarded tunnel, and once there destroy the creature Gond. The tunnel is broken up into several different zones, called the mountain zone, rainbow zone, stick zone, stripe zone, bleak zone, and City of Mystery. Each zone features different types of enemy spaceships to deal with, and can scroll either horizontally or vertically. In the mountain zone or stripe zone, you may also come across an energy pod marked with an &apos;E&apos;. If you fly through this, your ship temporarily becomes invincible to the deadly cave walls and numerous enemies which are trying to stop you. When not invincible, your space ship is equipped with lasers to help destroy enemies. You can fire in four different directions, however your speed is decreased when firing. You also need to keep an eye on your fuel gauge; your fuel will deplete at a rapid rate, and your ship will crash if it runs out. Fuel is gained each time you destroy an enemy, so make sure you destroy as many as you can! When you finally make it through all the various zones of the tunnel and defeat Gond, the game will repeat at a more difficult skill level.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Wizard of Wor (USA)">
+    <description>Wizard of Wor</description>
+    <year>1981</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>CBS Electronics</manufacturer>
+    <dev>Bally Midway Manufacturing Co., Inc.</dev>
+    <genre>Shooter</genre>
+    <score>3.4</score>
+    <player>1-2 Players</player>
+    <story>Wizard of Wor is an arcade shooter played from a top-down point of view. The player controls a warrior who is trapped in a dungeon. The goal is to earn as many points as possible by shooting the numerous enemy creatures which wander about the maze like corridors. The creatures wander about at various speeds, may shoot darts at the player, and some even have the ability to disappear temporarily. At the bottom of the screen the player has a radar which can be used to locate creatures that are invisible. When the the player completes a maze, a Worluk sometimes appears. This creature moves rapidly and will only be on the screen momentarily. If the player destroys the creature before it escapes, the next dungeon will become a double score dungeon and all creatures will be worth twice as many points. Occasionally the Wizard of Wor himself may appear! He moves quickly and can teleport around the maze. If they destroy him, the player will earn a large amount of points. The game may be played by one player or two players simultaneously.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zaxxon (USA)">
+    <description>Zaxxon</description>
+    <year>1983</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>SEGA Enterprises, Inc.</manufacturer>
+    <dev>SEGA Enterprises Ltd.</dev>
+    <genre>Action</genre>
+    <score>3.0</score>
+    <player>1-2 Players</player>
+    <story>The Zaxxon defence system must be destroyed in this isometric-viewed shoot &apos;em up which was originally hugely successful in the arcades. The game has 3 stages, first taking you through Asteroid City, which is heavily protected by aircraft, guns and missiles. Many barriers are alarmed, leaving you with limited space to progress through, and fire must constantly be dodged. Stage two is a space shoot out against hordes of enemy aircraft - those you failed to destroy in the first part of the task. Complete this and you reach the final battle with Zaxxon, with the game looping with increased difficulty if you can survive the first time. There are 3 distinct skill levels, while controls involve using forward to dive and back to climb, in the manner of flight simulation.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zenji (USA)">
+    <description>Zenji</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>4.5</score>
+    <player>1-2 Players</player>
+    <story>Zenji is an action/strategy game where you control a rolling face throughout a maze. Each section of the maze can be rotated by the face. The goal is to turn the entire maze green by connecting each section of the maze to the source at the center of the screen. After all sections of the maze have been connected, you can move on to the next, more challenging level. In addition to having a time limit to complete your task, you need to avoid the flames and sparks which wander about the maze. From time to time a number will appear in a maze section and count down from 9 to 0. If you touch the number before it disappears, bonus points are earned. As the levels progress, the mazes become larger, trickier and more flames will appear.</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+  <game name="Zone Ranger (USA)">
+    <description>Zone Ranger</description>
+    <year>1984</year>
+    <rating>ESRB - E (Everyone)</rating>
+    <manufacturer>Activision, Inc.</manufacturer>
+    <dev>Activision, Inc.</dev>
+    <genre>Action</genre>
+    <score>2.2</score>
+    <player>1-2 Players</player>
+    <story>Zone Ranger is an arcade action game somewhat similar to Asteroids. You are the pilot of a spaceship in a deadly region of space. Large killer rocks, rogue satellites, boomerangs, and more all fill this region of space. Using your ships lasers you need to destroy as many of these as you can to earn points. Each level also contains some warp holes; enter one of these and you will be transported to a new location, which could be useful if you get in trouble. You will also occasionally come across some sonic sparklers; touch one of these, and you will temporarily become invincible. Another oddity you may come across is a super portal, which will transport you to the inner sanctum where bonus dots can be found. Lastly, on level one only a warp to the s</story>
+    <enabled>Yes</enabled>
+    <crc></crc>
+    <cloneof></cloneof>
+  </game>
+</menu>
