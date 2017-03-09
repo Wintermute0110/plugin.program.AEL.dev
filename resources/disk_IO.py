@@ -1321,12 +1321,13 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
 # Creates a Parent/Clone dictionary.
 #
 # roms_pclone_index = {
-#   'parent_id_1'  : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#   'parent_id_2'  : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#   'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#   'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
 #    ... ,
-#   'Unknown ROMs' : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
+#   UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
 # }
 #
+UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 def fs_generate_PClone_index(roms, roms_nointro):
     # roms_pclone_index_by_name = {}
     roms_pclone_index_by_id = {}
@@ -1342,6 +1343,8 @@ def fs_generate_PClone_index(roms, roms_nointro):
         names_to_ids_dic[rom_name] = rom_id
 
     # --- Build PClone dictionary using ROM base_noext names ---
+    # >> Create fake ROM later because dictionaries cannot be modified when being iterated
+    Found_Unknown_ROMs = False
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
@@ -1354,12 +1357,13 @@ def fs_generate_PClone_index(roms, roms_nointro):
 
         #  Add Unknown ROMs to their own set.
         if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
+            Found_Unknown_ROMs = True
             clone_id = rom['id']
-            if 'Unknown ROMs' not in roms_pclone_index_by_id:
-                roms_pclone_index_by_id['Unknown ROMs'] = []
-                roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
+            if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
+                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
+                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(clone_id)
             else:
-                roms_pclone_index_by_id['Unknown ROMs'].append(clone_id)
+                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(clone_id)
         else:
             nointro_rom = roms_nointro[rom_nointro_name]
 
@@ -1379,6 +1383,18 @@ def fs_generate_PClone_index(roms, roms_nointro):
                     roms_pclone_index_by_id[parent_id] = []
                     roms_pclone_index_by_id[parent_id].append(clone_id)
 
+    # >> If Unknown ROMs also creates a fake parent ROM for all Unknown ROMs
+    if Found_Unknown_ROMs:
+        # >> Special Parent ROM for Unknown ROMs
+        u_rom = fs_new_rom()
+        u_rom['id']             = UNKNOWN_ROMS_PARENT_ID
+        u_rom['m_name']         = '[Unknown ROMs]'
+        u_rom['nointro_status'] = NOINTRO_STATUS_HAVE
+        u_rom['m_genre']        = 'Special genre' 
+        u_rom['m_studio']       = 'Special studio'
+        u_rom['m_plot']         = 'Special plot'
+        roms[u_rom['id']] = u_rom
+
     return roms_pclone_index_by_id
 
 #
@@ -1388,31 +1404,10 @@ def fs_generate_parent_ROMs_index(roms, roms_pclone_index):
     p_roms = {}
 
     for rom_id in roms_pclone_index:
-        if rom_id == 'Unknown ROMs':
-            # >> Special Paren ROM for Unknown ROMs
-            p_roms[rom_id] = {
-                'id'             : 'Unknown_ROMs_Parent',
-                'm_name'         : '[Unknown ROMs]',
-                'finished'       : False,
-                'nointro_status' : NOINTRO_STATUS_HAVE,
-                'm_year'         : '2017', 
-                'm_genre'        : 'Special genre', 
-                'm_plot'         : '',
-                'm_studio'       : 'Various',
-                'm_rating'       : '',
-                's_title'        : '',
-                's_snap'         : '',
-                's_boxfront'     : '',
-                's_boxback'      : '',
-                's_cartridge'    : '',
-                's_map'          : '',
-                's_trailer'      : ''
-            }
-        else:
-            # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
-            # >> Clean parent ROM name tags from ROM Name
-            p_roms[rom_id] = dict(roms[rom_id])
-            p_roms[rom_id]['m_name'] = text_format_ROM_title(p_roms[rom_id]['m_name'], True)
+        # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
+        # >> Clean parent ROM name tags from ROM Name
+        p_roms[rom_id] = dict(roms[rom_id])
+        # p_roms[rom_id]['m_name'] = text_format_ROM_title(p_roms[rom_id]['m_name'], True)
 
     return p_roms
 

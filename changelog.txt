@@ -43,6 +43,8 @@ WIP      ROM scanner report.
 
 [B]Advanced Emulator Launcher | version 0.9.6 | xx March 2017[/B]
 
+FIX      Fix crash when displaying a Launcher in Parent/Clone view with Unknown ROMs.
+
 
 [B]Advanced Emulator Launcher | version 0.9.6-beta1 | 5 March 2017[/B]
 
