@@ -21,7 +21,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 import xml.etree.ElementTree as ET
-import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch
+import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch, json
 import xbmcvfs
 
 # --- Kodi modules ---
@@ -514,9 +514,11 @@ class FileName:
     def exists(self):
         return xbmcvfs.exists(self.originalPath)
 
+    # Warning: not suitable for xbmcvfs paths yet
     def isdir(self):
         return os.path.isdir(self.path)
         
+    # Warning: not suitable for xbmcvfs paths yet
     def isfile(self):
         return os.path.isfile(self.path)
 
@@ -584,13 +586,25 @@ class FileName:
         self.fileHandle = None
 
     # opens file and reads xml. Returns the root of the xml!
-    def openXml(self):
+    def readXml(self):
         file = xbmcvfs.File(self.originalPath, 'r')
         data = file.read()
         file.close()
 
         root = ET.fromstring(data)
         return root
+    
+    # opens file and reads to JSON
+    def readJson(self):
+        contents = self.readAllUnicode()
+        return json.loads(contents)
+    
+    # --- Configure JSON writer ---
+    # NOTE More compact JSON files (less blanks) load faster because size is smaller.
+    def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        self.writeAll(unicode(json_data).encode("utf-8"))
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers

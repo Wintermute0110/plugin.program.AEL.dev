@@ -8165,15 +8165,14 @@ class Main:
         imported_launchers_list = []
         log_verb('_command_import_launchers() Loading {0}'.format(import_FN.getOriginalPath()))
         try:
-            #xml_tree = ET.parse(import_FN.getPath())
-            xml_root = import_FN.openXml()
+            xml_root = import_FN.readXml()
         except ET.ParseError, e:
             log_error('(ParseError) Exception parsing XML categories.xml')
             log_error('(ParseError) {0}'.format(str(e)))
             kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                            'Maybe XML file is corrupt or contains invalid characters.')
             return
-        #xml_root = xml_tree.getroot()
+
         for root_element in xml_root:
             if __debug_xml_parser: log_debug('Root child tag <{0}>'.format(root_element.tag))
 
