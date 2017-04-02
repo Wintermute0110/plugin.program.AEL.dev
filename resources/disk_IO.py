@@ -530,11 +530,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
 #
 # Loads categories.xml from disk and fills dictionary self.categories
 #
-def fs_load_catfile(categories_file):
+def fs_load_catfile(categories_file, categories, launchers):
     __debug_xml_parser = 0
     update_timestamp = 0.0
-    categories = {}
-    launchers = {}
 
     # --- Parse using cElementTree ---
     # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
@@ -546,7 +544,7 @@ def fs_load_catfile(categories_file):
         log_error('(ParseError) {0}'.format(str(e)))
         kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                        'Maybe XML file is corrupt or contains invalid characters.')
-        return (update_timestamp, categories, launchers)
+        return update_timestamp
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))
@@ -606,8 +604,10 @@ def fs_load_catfile(categories_file):
                     launcher[xml_tag] = xml_text
             # --- Add launcher to categories dictionary ---
             launchers[launcher['id']] = launcher
+    # log_verb('fs_load_catfile() Loaded {0} categories'.format(len(categories)))
+    # log_verb('fs_load_catfile() Loaded {0} launchers'.format(len(launchers)))
 
-    return (update_timestamp, categories, launchers)
+    return update_timestamp
 
 # -------------------------------------------------------------------------------------------------
 # Generic JSON loader/writer

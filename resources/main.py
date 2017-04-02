@@ -112,7 +112,7 @@ VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
 # --- Content type to be used by skins ---
-AEL_CONTENT_WINDOW_ID       = 10001
+AEL_CONTENT_WINDOW_ID       = 10000
 AEL_CONTENT_LABEL           = 'AEL_Content'
 AEL_CONTENT_VALUE_LAUNCHERS = 'launchers'
 AEL_CONTENT_VALUE_ROMS      = 'roms'
@@ -142,23 +142,55 @@ AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
 AEL_PCLONE_STAT_VALUE_CLONE          = 'PClone_Clone'
 AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 
-# --- Main code ---
-class Main:
-    update_timestamp = 0.0
-    settings         = {}
-    categories       = {}
-    launchers        = {}
-    roms             = {}
-    scraper_metadata = None
-    scraper_asset    = None
 
-    #
+#
+# Make AEL to run only 1 single instance
+# See http://forum.kodi.tv/showthread.php?tid=310697
+#
+monitor           = xbmc.Monitor()
+main_window       = xbmcgui.Window(10000)
+AEL_LOCK_PROPNAME = 'AEL_instance_lock'
+AEL_LOCK_VALUE    = 'True'
+
+class SingleInstance:
+    def __enter__(self):
+        # --- If property is True then another instance of AEL is running ---
+        if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
+            log_debug('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
+            kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
+                           'or close the launched application before launching a new one and try '
+                           'again.')
+            raise SystemExit
+        if monitor.abortRequested(): 
+            log_debug('monitor.abortRequested() is True. Exiting plugin ...')
+            raise SystemExit
+
+        # --- Acquire lock for this instance ---
+        log_debug('SingleInstance::__enter__() Lock not in use. Setting lock')
+        main_window.setProperty(AEL_LOCK_PROPNAME, AEL_LOCK_VALUE)
+        return True
+
+    def __exit__(self, type, value, traceback):
+        # --- Print information about exception if any ---
+        # >> If type == value == tracebak == None no exception happened
+        if type:
+            log_error('SingleInstance::__exit__() Unhandled excepcion in protected code')
+
+        # --- Release lock even if an exception happened ---
+        log_debug('SingleInstance::__exit__() Releasing lock')
+        main_window.setProperty(AEL_LOCK_PROPNAME, '')
+
+#
+# Main code
+#
+class Main:
+    # ---------------------------------------------------------------------------------------------
     # This is the plugin entry point.
-    #
+    # ---------------------------------------------------------------------------------------------
     def run_plugin(self):
         # --- Initialise log system ---
-        # Force DEBUG log level for development.
-        # Place it before setting loading so settings can be dumped during debugging.
+        # >> Force DEBUG log level for development.
+        # >> Place it before settings loading so settings can be dumped during debugging.
         # set_log_level(LOG_DEBUG)
 
         # --- Fill in settings dictionary using __addon_obj__.getSetting() ---
@@ -199,17 +231,25 @@ class Main:
         if not COLLECTIONS_DIR.exists():          COLLECTIONS_DIR.makedirs()
         if not REPORTS_DIR.exists():              REPORTS_DIR.makedirs()
 
-        # ~~~~~ Process URL ~~~~~
+        # --- Process URL ---
         self.base_url     = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
         args              = urlparse.parse_qs(sys.argv[2][1:])
-        log_debug('args = {0}'.format(args))
-        # Interestingly, if plugin is called as type executable then args is empty.
-        # However, if plugin is called as type video then Kodi adds the following
-        # even for the first call: 'content_type': ['video']
+        # log_debug('args = {0}'.format(args))
+        # >> Interestingly, if plugin is called as type executable then args is empty.
+        # >> However, if plugin is called as type video then Kodi adds the following
+        # >> even for the first call: 'content_type': ['video']
         self.content_type = args['content_type'] if 'content_type' in args else None
         # log_debug('content_type = {0}'.format(self.content_type))
 
+        # --- Ensure AEL only runs one instance at a time ---
+        with SingleInstance(): self.run_protected(args)
+        log_debug('Advanced Emulator Launcher run_plugin() exit')
+
+    #
+    # This function is guaranteed to run with no concurrency.
+    #
+    def run_protected(self, args):
         # --- Addon first-time initialisation ---
         # When the addon is installed and the file categories.xml does not exist, just
         # create an empty one with a default launcher.
@@ -220,15 +260,15 @@ class Main:
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # --- Load categories.xml and fill categories and launchers dictionaries ---
-        (self.update_timestamp, self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
+        self.categories = {}
+        self.launchers = {}
+        self.update_timestamp = fs_load_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # --- If no com parameter display addon root directory ---
         if 'com' not in args:
             self._command_render_categories()
-            log_debug('Advanced Emulator Launcher exit (addon root)')
+            log_debug('Advanced Emulator Launcher run_protected() exit (addon root)')
             return
-
-        # --- Process command ---------------------------------------------------------------------
         command = args['com'][0]
 
         # --- Category management ---
@@ -349,8 +389,7 @@ class Main:
             self._command_buildMenu()
         else:
             kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
-
-        log_debug('Advanced Emulator Launcher exit')
+        log_debug('Advanced Emulator Launcher run_protected() exit')
 
     #
     # Get Addon Settings
@@ -8534,7 +8573,10 @@ class Main:
         # >> Open Categories/Launchers XML.
         #    XML should be updated automatically on load.
         pDialog.create('Advanced Emulator Launcher', 'Checking Categories/Launchers ...')
-        (self.update_timestamp, self.categories, self.launchers) = fs_load_catfile(CATEGORIES_FILE_PATH)
+        self.categories = {}
+        self.launchers = {}
+        self.update_timestamp = fs_load_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        pDialog.update(100)
         pDialog.close()
 
         # >> Traverse all launchers. Load ROMs and check every ROMs.
