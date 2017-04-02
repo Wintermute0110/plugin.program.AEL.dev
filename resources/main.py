@@ -158,9 +158,10 @@ class SingleInstance:
         if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
             log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
             # >> Apparently this message pulls the focus out of the launcher app. Disable it.
-            # kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
-            #                'or close the launched application before launching a new one and try '
-            #                'again.')
+            # >> Has not effect. Kodi steals the focus from the launched app even if not message.
+            kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
+                           'or close the launched application before launching a new one and try '
+                           'again.')
             raise SystemExit
         if monitor.abortRequested(): 
             log_info('monitor.abortRequested() is True. Exiting plugin ...')
