@@ -156,13 +156,14 @@ class SingleInstance:
     def __enter__(self):
         # --- If property is True then another instance of AEL is running ---
         if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
-            log_debug('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
-            kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
-                           'or close the launched application before launching a new one and try '
-                           'again.')
+            log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
+            # >> Apparently this message pulls the focus out of the launcher app. Disable it.
+            # kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
+            #                'or close the launched application before launching a new one and try '
+            #                'again.')
             raise SystemExit
         if monitor.abortRequested(): 
-            log_debug('monitor.abortRequested() is True. Exiting plugin ...')
+            log_info('monitor.abortRequested() is True. Exiting plugin ...')
             raise SystemExit
 
         # --- Acquire lock for this instance ---
