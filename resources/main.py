@@ -8127,16 +8127,16 @@ class Main:
     # CAREFUL deletes current categories!
     #
     def _cat_create_default(self):
-        # The key in the categories dictionary is an MD5 hash generate with current time plus some random number.
-        # This will make it unique and different for every category created.
+        # The key in the categories dictionary is an MD5 hash generate with current time plus some 
+        # random number. This will make it unique and different for every category created.
         category = fs_new_category()
         category_key = misc_generate_random_SID()
         category['id']      = category_key
         category['m_name']  = 'Emulators'
         category['m_genre'] = 'Emulators'
         category['m_plot']  = 'Initial AEL category.'
-        # category['m_rating'] = '10'
         self.categories = {}
+        self.launchers = {}
         self.categories[category_key] = category
 
     #
