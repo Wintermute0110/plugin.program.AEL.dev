@@ -8141,14 +8141,12 @@ class Main:
 
     #
     # Checks if the category is empty (no launchers defined)
-    #
+    # Returns True if the category is empty. Returns False if non-empty
     def _cat_is_empty(self, categoryID):
-        empty_category = True
-        for cat in self.launchers.iterkeys():
-            if self.launchers[cat]['categoryID'] == categoryID:
-                empty_category = False
+        for launcherID in self.launchers.iterkeys():
+            if self.launchers[launcherID]['categoryID'] == categoryID: return False
 
-        return empty_category
+        return True
 
     #
     # Reads a text file with category/launcher plot. 
