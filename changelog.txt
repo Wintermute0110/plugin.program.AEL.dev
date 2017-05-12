@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.8 | XX June 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.8 | XX July 2017[/B]
 
 WIP      Full Extranafart support for Categories/Launchers.
 
@@ -16,7 +16,7 @@ WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          Copy remote ROMs for external launchers?
 
 
-[B]Advanced Emulator Launcher | version 0.9.7 | XX May 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.7 | XX Jun 2017[/B]
 
 WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
 
@@ -36,12 +36,23 @@ WIP      Edit multidisc ROMs.
 
 WIP      Support ERSB and NPlayers in offline scraper.
 
-WIP      Support ERSB and NPlayers in online scraper.
+WIP      Support ERSB and NPlayers in online scrapers.
 
-WIP      ROM scanner report.
+WIP      ROM scanner reports.
 
 
-[B]Advanced Emulator Launcher | version 0.9.6 | xx April 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.6 | 12 May 2017[/B]
+
+WIP      Changes and suggestions propoed by Atsumori.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
+
+WIP      Added a "Display ROMs" setting valid only in Parent/Clone display mode.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2581878#pid2581878
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2582004#pid2582004
+
+WIP      Update NFO files after scraping. This is useful to interrup the scanner when scanning
+         large collections and resume scanning later.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2548998#pid2548998
 
 FEATURE  Allow only one instance of AEL running at a time.
          This prevents multiple launcher execution and also get rids forever of any database
