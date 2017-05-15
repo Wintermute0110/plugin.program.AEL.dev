@@ -40,17 +40,20 @@ WIP      Support ERSB and NPlayers in online scrapers.
 
 WIP      ROM scanner reports.
 
+WIP      Changes and suggestions propoed by Atsumori.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2586596#pid2586596
+
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 12 May 2017[/B]
 
-WIP      Changes and suggestions propoed by Atsumori.
-         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
+WIP      New platform Panasonic 3DO.
 
 WIP      Added a "Display ROMs" setting valid only in Parent/Clone display mode.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2581878#pid2581878
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2582004#pid2582004
 
-WIP      Update NFO files after scraping. This is useful to interrup the scanner when scanning
+WIP      Update NFO files after scraping. This is useful to interrupt the scanner when scanning
          large collections and resume scanning later.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2548998#pid2548998
 
@@ -60,6 +63,8 @@ FEATURE  Allow only one instance of AEL running at a time.
          See http://forum.kodi.tv/showthread.php?tid=310697
 
 FIX      Fix crash when displaying a Launcher in Parent/Clone view with Unknown ROMs.
+
+WIP      Fix the number of ROMs counter when importing AL launchers.xml
 
 
 [B]Advanced Emulator Launcher | version 0.9.6-beta1 | 5 March 2017[/B]
