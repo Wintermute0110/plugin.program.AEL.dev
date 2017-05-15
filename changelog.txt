@@ -47,13 +47,13 @@ WIP      Changes and suggestions propoed by Atsumori.
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 12 May 2017[/B]
 
-FEATURE  New platform Panasonic 3DO.
-
 WIP      Added a "Display ROMs" setting valid only in Parent/Clone display mode.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2581878#pid2581878
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2582004#pid2582004
 
-WIP      Update NFO files after scraping. This is useful to interrupt the scanner when scanning
+FEATURE  New platform Panasonic 3DO.
+
+FEATURE  Update NFO files after scraping. This is useful to interrupt the scanner when scanning
          large collections and resume scanning later.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2548998#pid2548998
 
@@ -62,9 +62,11 @@ FEATURE  Allow only one instance of AEL running at a time.
          corruption issues due to concurrency! Thanks Roman_V_M for ideas about the fix.
          See http://forum.kodi.tv/showthread.php?tid=310697
 
-FIX      Fix crash when displaying a Launcher in Parent/Clone view with Unknown ROMs.
+FIX      Fixed crash when displaying a Launcher in Parent/Clone view with Unknown ROMs.
 
-FIX      Fix the number of ROMs counter when importing AL launchers.xml
+FIX      Fixed the number of ROMs counter when importing AL launchers.xml
+
+FIX      ROM scanner ignores NFO files if option "NFO Files + Scrapers" is set.
 
 
 [B]Advanced Emulator Launcher | version 0.9.6-beta1 | 5 March 2017[/B]
