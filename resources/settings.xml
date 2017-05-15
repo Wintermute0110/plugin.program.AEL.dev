@@ -8,6 +8,7 @@
     <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers only" />
 
     <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
+    <setting label="Update NFO files after ROM scraping" type="bool" default="true" id="scan_update_NFO_files" />
     <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="true" id="scan_ignore_scrap_title" />
     <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" default="false" id="scan_clean_tags" />
 </category>

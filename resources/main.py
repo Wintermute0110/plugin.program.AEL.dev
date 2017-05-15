@@ -405,6 +405,7 @@ class Main:
         self.settings['scan_ignore_bios']         = True if __addon_obj__.getSetting('scan_ignore_bios') == 'true' else False
         self.settings['scan_metadata_policy']     = int(__addon_obj__.getSetting('scan_metadata_policy'))
         self.settings['scan_asset_policy']        = int(__addon_obj__.getSetting('scan_asset_policy'))
+        self.settings['scan_update_NFO_files']    = True if __addon_obj__.getSetting('scan_update_NFO_files') == 'true' else False
         self.settings['scan_ignore_scrap_title']  = True if __addon_obj__.getSetting('scan_ignore_scrap_title') == 'true' else False
         self.settings['scan_clean_tags']          = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
 
@@ -7213,7 +7214,9 @@ class Main:
                 if ROM.getExt() == '.' + ext:
                     log_debug("Expected '{0}' extension detected".format(ext))
                     processROM = True
-            if not processROM: continue
+            if not processROM: 
+                log_debug('File has not an expected extension. Skipping file.')
+                continue
 
             # --- Check if ROM belongs to a multidisc set ---
             MultiDiscInROMs = False
@@ -7264,10 +7267,10 @@ class Main:
             for rom_id in roms:
                 if roms[rom_id]['filename'] == f_path: repeatedROM = True
             if repeatedROM:
-                log_debug('File already into launcher list')
+                log_debug('File already into launcher ROM list. Skipping file.')
                 continue
             else:
-                log_debug('File not in launcher list. Processing it.')
+                log_debug('File not in launcher ROM list. Processing it ...')
 
             # --- Ignore BIOS ROMs ---
             # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
@@ -7356,7 +7359,7 @@ class Main:
 
         # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # >> Test if NFO file exists
-        NFO_file = FileName(ROM.getBase_noext() + '.nfo')
+        NFO_file = FileName(ROM.getPath_noext() + '.nfo')
         log_debug('Testing NFO file "{0}"'.format(NFO_file.getPath()))
         found_NFO_file = True if NFO_file.exists() else False
 
@@ -7396,12 +7399,12 @@ class Main:
         elif metadata_action == META_NFO_FILE:
             nfo_file_path = FileName(ROM.getPath_noext() + ".nfo")
             if self.pDialog_verbose:
-                scraper_text = 'Reading NFO file {0}'.format(nfo_file_path.getOriginalPath())
+                scraper_text = 'Loading NFO file {0}'.format(nfo_file_path.getOriginalPath())
                 self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-            log_debug('Trying NFO file "{0}"'.format(nfo_file_path.getPath()))
+            log_debug('Testing NFO file "{0}"'.format(nfo_file_path.getPath()))
             if nfo_file_path.exists():
-                log_debug('NFO file found. Reading it')
-                nfo_dic = fs_load_NFO_file_scanner(nfo_file_path)
+                log_debug('NFO file found. Loading it.')
+                nfo_dic = fs_import_NFO_file_scanner(nfo_file_path)
                 # NOTE <platform> is chosen by AEL, never read from NFO files
                 romdata['m_name']   = nfo_dic['title']     # <title>
                 romdata['m_year']   = nfo_dic['year']      # <year>
@@ -7453,17 +7456,20 @@ class Main:
 
                 # --- Put metadata into ROM dictionary ---
                 if scan_ignore_scrapped_title:
-                    # Ignore scraped title
                     romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
                     log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['m_name']))
                 else:
-                    # Use scraped title
                     romdata['m_name'] = gamedata['title']
-                    log_debug('User wants scrapped name. Setting name to "{0}"'.format(romdata['m_name']))
+                    log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
                 romdata['m_year']   = gamedata['year']
                 romdata['m_genre']  = gamedata['genre']
                 romdata['m_studio'] = gamedata['studio']
                 romdata['m_plot']   = gamedata['plot']
+
+                # --- Update ROM NFO file after scraping ---
+                if self.settings['scan_update_NFO_files']:
+                    log_debug('User wants to update NFO file after scraping')
+                    fs_export_ROM_NFO(romdata, False)
             else:
                 log_verb('Metadata scraper found no games after searching. Only cleaning ROM name.')
                 romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
