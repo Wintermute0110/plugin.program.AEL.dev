@@ -47,9 +47,15 @@ WIP      Changes and suggestions propoed by Atsumori.
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 12 May 2017[/B]
 
+WIP      Refurbish ROM auditing and Parent/Clone view display mode.
+
 WIP      Added a "Display ROMs" setting valid only in Parent/Clone display mode.
+
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2581878#pid2581878
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2582004#pid2582004
+
+FEATURE  Support Redump DAT files. Note that Redump does not include Parent/Clone data so all
+         ROMs are Parent ROMs.
 
 FEATURE  New platform Panasonic 3DO.
 

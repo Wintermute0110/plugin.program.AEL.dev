@@ -1679,16 +1679,16 @@ class Main:
                 has_NoIntro_DAT = True if launcher['nointro_xml_file'] else False
                 if has_NoIntro_DAT:
                     nointro_xml_file = launcher['nointro_xml_file']
-                    add_delete_NoIntro_str = 'Delete No-Intro DAT: {0}'.format(nointro_xml_file)
+                    add_delete_NoIntro_str = 'Delete No-Intro/Redump DAT: {0}'.format(nointro_xml_file)
                 else:
-                    add_delete_NoIntro_str = 'Add No-Intro XML DAT ...'
+                    add_delete_NoIntro_str = 'Add No-Intro/Redump XML DAT ...'
                 launcher_mode_str = 'Parent/Clone mode' if launcher['pclone_launcher'] else 'Normal mode'
                 type2 = dialog.select('Audit ROMs / Launcher view mode',
                                       ['Change launcher display mode (Now {0})'.format(launcher_mode_str),
                                        add_delete_NoIntro_str,
-                                       'Audit ROMs using No-Intro XML PClone DAT',
-                                       'Clear No-Intro audit status',
-                                       'Remove No-Intro Added ROMs'])
+                                       'Audit ROMs using No-Intro/Redump XML PClone DAT',
+                                       'Clear No-Intro/Redump audit status',
+                                       'Remove No-Intro/Redump added ROMs'])
                 if type2 < 0: return # User canceled select dialog
 
                 # --- Change launcher view mode (Normal or PClone) ---
@@ -1754,8 +1754,8 @@ class Main:
                         dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
                         if not FileName(dat_file).exists(): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
-                        kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update No-Intro status.')
-                        kodi_notify('Added No-Intro PClone DAT')
+                        kodi_dialog_OK('DAT file successfully added. Audit your ROMs to update ROM status.')
+                        kodi_notify('Added No-Intro/Redump DAT file')
 
                 # --- Audit ROMs with No-Intro DAT ---
                 # >> This code is similar to the one in the ROM scanner _roms_import_roms()
