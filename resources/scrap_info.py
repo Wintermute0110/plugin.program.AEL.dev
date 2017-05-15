@@ -27,7 +27,7 @@ def emudata_get_program_arguments( app ):
     applications = {
         'mame'        : '"$rom$"',
         'mednafen'    : '-fs 1 "$rom$"',
-        'mupen64plus' : '--nogui --noask --noosd --fullscreen "%rom%"',
+        'mupen64plus' : '--nogui --noask --noosd --fullscreen "$rom$"',
         'nestopia'    : '"$rom$"',
         'xbmc'        : 'PlayMedia($rom$)',
         'kodi'        : 'PlayMedia($rom$)',
@@ -116,6 +116,8 @@ AEL_platform_list = [
     'Nintendo Wii',
     'Nintendo Wii U',
     'Nintendo Switch',
+    # --- 3DO ---
+    'Panasonic 3DO',
     # --- Sega ---
     'Sega SG-1000',
     'Sega Master System',
@@ -198,6 +200,8 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Nintendo Wii U'              : '',
     'Nintendo Switch'             : '',
 
+    'Panasonic 3DO'               : '',
+
     'Sega SG-1000'                : 'GameDBInfo/Sega SG-1000.xml',
     'Sega Master System'          : 'GameDBInfo/Sega Master System.xml',
     'Sega Game Gear'              : 'GameDBInfo/Sega Game Gear.xml',
@@ -224,7 +228,7 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
 
 #
 # Get platform list from http://thegamesdb.net/api/GetPlatformsList.php
-# Platform name is inside <name> tag. Spaces must be converted into '+'.
+# Platform name is inside <name> tag.
 #
 platform_AEL_to_TheGamesDB_dic = {
     'MAME'                        : 'Arcade',
@@ -274,6 +278,8 @@ platform_AEL_to_TheGamesDB_dic = {
     'Nintendo Wii U'              : 'Nintendo Wii U',
     'Nintendo Switch'             : 'Nintendo Switch',
 
+    'Panasonic 3DO'               : '3DO',
+    
     'Sega SG-1000'                : 'SEGA SG-1000',
     'Sega Master System'          : 'Sega Master System',
     'Sega Game Gear'              : 'Sega Game Gear',
@@ -349,6 +355,8 @@ platform_AEL_to_GameFAQs_dic = {
     'Nintendo Wii'                : '114', # <option label="Wii" value="114">Wii</option>
     'Nintendo Wii U'              : '118', # <option label="Wii U" value="118">Wii U</option>
     'Nintendo Switch'             : '124', # <option label="Nintendo Switch" value="124">Nintendo Switch</option>
+
+    'Panasonic 3DO'               : '61',  # <option label="3DO" value="61">3DO</option>
 
     'Sega SG-1000'                : '43',  # <option label="SG-1000" value="43">SG-1000</option>
     'Sega Master System/Mark III' : '49',  # <option label="Sega Master System" value="49">Sega Master System</option>
@@ -426,6 +434,8 @@ platform_AEL_to_MobyGames_dic = {
     'Nintendo Wii'                : '82',  # <option value="82">Wii</option>
     'Nintendo Wii U'              : '132', # <option value="132">Wii U</option>
     'Nintendo Switch'             : '203', # <option value="203">Nintendo Switch</option>
+
+    'Panasonic 3DO'               : '35',  # <option value="35">3DO</option>
 
     'Sega SG-1000'                : '114', # <option value="114">SG-1000</option>
     'Sega Master System'          : '26',  # <option value="26">SEGA Master System</option>

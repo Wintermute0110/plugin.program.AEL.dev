@@ -47,7 +47,7 @@ WIP      Changes and suggestions propoed by Atsumori.
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 12 May 2017[/B]
 
-WIP      New platform Panasonic 3DO.
+FEATURE  New platform Panasonic 3DO.
 
 WIP      Added a "Display ROMs" setting valid only in Parent/Clone display mode.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2581878#pid2581878
