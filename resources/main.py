@@ -4274,7 +4274,7 @@ class Main:
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
-        # --- Render collections as categories ---
+        # --- Render ROM Collections as Categories ---
         for collection_id in collections:
             # --- Create listitem ---
             collection = collections[collection_id]
@@ -4319,7 +4319,7 @@ class Main:
 
             # --- Create context menu ---
             commands = []
-            commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
+            commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
             commands.append(('Export Collection',        self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
             commands.append(('Edit Collection',          self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
             commands.append(('Delete Collection',        self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
