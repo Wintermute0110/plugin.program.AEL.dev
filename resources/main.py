@@ -5266,25 +5266,23 @@ class Main:
             if view_type == VIEW_CATEGORY:
                 window_title = 'Category data'
                 category = self.categories[categoryID]
-                info_text  = '\n[COLOR orange]Category information[/COLOR]\n'
+                info_text  = '[COLOR orange]Category information[/COLOR]\n'
                 info_text += self._misc_print_string_Category(category)
-            
             elif view_type == VIEW_LAUNCHER:
                 window_title = 'Launcher data'
                 if categoryID == VCATEGORY_ADDONROOT_ID: category = None
                 else:                                    category = self.categories[categoryID]
                 launcher = self.launchers[launcherID]
-                info_text  = '\n[COLOR orange]Launcher information[/COLOR]\n'
+                info_text  = '[COLOR orange]Launcher information[/COLOR]\n'
                 info_text += self._misc_print_string_Launcher(launcher)
                 if category:
                     info_text += '\n[COLOR orange]Category information[/COLOR]\n'
                     info_text += self._misc_print_string_Category(category)
-
             elif view_type == VIEW_COLLECTION:
                 window_title = 'ROM Collection data'
                 (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
                 collection = collections[launcherID]
-                info_text = '\n[COLOR orange]ROM Collection information[/COLOR]\n'
+                info_text = '[COLOR orange]ROM Collection information[/COLOR]\n'
                 info_text += self._misc_print_string_Collection(collection)
             else:
                 # --- Read ROMs ---
