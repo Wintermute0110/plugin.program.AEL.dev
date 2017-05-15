@@ -6068,7 +6068,6 @@ class Main:
             launcher['path_title']   = AL_launcher['thumbpath']
             launcher['path_fanart']  = AL_launcher['fanartpath']
             launcher['path_trailer'] = AL_launcher['trailerpath']
-
             # --- Import ROMs if ROMs launcher ---
             AL_roms = AL_launcher['roms']
             if AL_roms:
@@ -6076,6 +6075,7 @@ class Main:
                 category_name = self.categories[launcher['categoryID']]['m_name']
                 roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcher['id'])
                 launcher['roms_base_noext'] = roms_base_noext
+                launcher['num_roms'] = len(AL_roms)
                 for AL_rom_ID in AL_roms:
                     num_ROMs += 1
                     AL_rom = AL_roms[AL_rom_ID]
@@ -6102,7 +6102,7 @@ class Main:
                 fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, launcher)
             else:
                 launcher['roms_xml_file'] = ''
-            # >> Add launcher to AEL launchers
+            # --- Add launcher to AEL launchers ---
             launcher['timestamp_launcher'] = time.time()
             self.launchers[launcher['id']] = launcher
 

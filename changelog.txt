@@ -64,7 +64,7 @@ FEATURE  Allow only one instance of AEL running at a time.
 
 FIX      Fix crash when displaying a Launcher in Parent/Clone view with Unknown ROMs.
 
-WIP      Fix the number of ROMs counter when importing AL launchers.xml
+FIX      Fix the number of ROMs counter when importing AL launchers.xml
 
 
 [B]Advanced Emulator Launcher | version 0.9.6-beta1 | 5 March 2017[/B]
