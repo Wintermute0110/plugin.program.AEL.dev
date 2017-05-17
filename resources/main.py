@@ -5467,16 +5467,10 @@ class Main:
                     info_text += self._misc_print_string_ROM_additional(rom)
 
             # --- Show information window ---
-            # textviewer WINDOW_DIALOG_TEXT_VIEWER 10147 DialogTextViewer.xml
-            try:
-                xbmc.executebuiltin('ActivateWindow(textviewer)')
-                window = xbmcgui.Window(10147)
-                window.setProperty('FontWidth', 'monospaced')
-                xbmc.sleep(100)
-                window.getControl(1).setLabel(window_title)
-                window.getControl(5).setText(info_text)
-            except:
-                log_error('_command_view_menu() Exception rendering INFO window')
+            # >> textviewer WINDOW_DIALOG_TEXT_VIEWER 10147 DialogTextViewer.xml
+            xbmcgui.Window(10147).setProperty('FontWidth', 'monospaced')
+            dialog = xbmcgui.Dialog()
+            dialog.textviewer(window_title, info_text)
 
         # --- View last execution output ---
         # NOTE NOT available on Windows. See comments in _run_process()
@@ -5494,14 +5488,9 @@ class Main:
 
             # --- Show information window ---
             window_title = 'Launcher last execution stdout'
-            try:
-                xbmc.executebuiltin('ActivateWindow(textviewer)')
-                window = xbmcgui.Window(10147)
-                xbmc.sleep(100)
-                window.getControl(1).setLabel(window_title)
-                window.getControl(5).setText(info_text)
-            except:
-                log_error('_command_view_menu() Exception rendering INFO window')
+            xbmcgui.Window(10147).setProperty('FontWidth', 'monospaced')
+            dialog = xbmcgui.Dialog()
+            dialog.textviewer(window_title, info_text)
 
         # --- Launcher statistics ---
         elif selected_value == 2 or selected_value == 3 or selected_value == 4:
@@ -5556,15 +5545,9 @@ class Main:
             info_text = info_text.replace('<Asset statistics>', '[COLOR orange]<Asset statistics>[/COLOR]')
 
             # --- Show information window ---
-            try:
-                xbmc.executebuiltin('ActivateWindow(textviewer)')
-                window = xbmcgui.Window(10147)
-                window.setProperty('FontWidth', 'monospaced')
-                xbmc.sleep(100)
-                window.getControl(1).setLabel(window_title)
-                window.getControl(5).setText(info_text)
-            except:
-                log_error('_command_view_menu() Exception rendering INFO window')
+            xbmcgui.Window(10147).setProperty('FontWidth', 'monospaced')
+            dialog = xbmcgui.Dialog()
+            dialog.textviewer(window_title, info_text)
 
         # --- Launcher scanner report ---
         elif selected_value == 5:
