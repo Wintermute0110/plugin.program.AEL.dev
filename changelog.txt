@@ -38,14 +38,14 @@ WIP      Support ERSB and NPlayers in offline scraper.
 
 WIP      Support ERSB and NPlayers in online scrapers.
 
-WIP      ROM scanner reports.
-
 WIP      Changes and suggestions propoed by Atsumori.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2586596#pid2586596
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 12 May 2017[/B]
+
+WIP      ROM scanner reports.
 
 WIP      Refurbish ROM auditing and Parent/Clone view display mode.
 

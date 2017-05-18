@@ -142,7 +142,6 @@ AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
 AEL_PCLONE_STAT_VALUE_CLONE          = 'PClone_Clone'
 AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 
-
 #
 # Make AEL to run only 1 single instance
 # See http://forum.kodi.tv/showthread.php?tid=310697
@@ -5233,6 +5232,15 @@ class Main:
             STD_status = '{0} bytes'.format(size_stdout)
         else:
             STD_status = 'not found'
+        if view_type == VIEW_LAUNCHER or view_type == VIEW_ROM_LAUNCHER:
+            launcher = self.launchers[launcherID]
+            launcher_report_FN = REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
+            if launcher_report_FN.exists():
+                stat_stdout = launcher_report_FN.stat()
+                size_stdout = stat_stdout.st_size
+                Report_status = '{0} bytes'.format(size_stdout)
+            else:
+                Report_status = 'not found'
         if view_type == VIEW_CATEGORY:
             d_list = ['View Category data',
                       'View last execution output ({0})'.format(STD_status)]
@@ -5242,14 +5250,14 @@ class Main:
                       'View Launcher statistics',
                       'View Launcher metadata/audit report',
                       'View Launcher assets report',
-                      'View Launcher scanner report']
+                      'View Launcher scanner report ({0})'.format(Report_status)]
         elif view_type == VIEW_ROM_LAUNCHER:
             d_list = ['View ROM data',
                       'View last execution output ({0})'.format(STD_status),
                       'View Launcher statistics',
                       'View Launcher metadata/audit report',
                       'View Launcher assets report',
-                      'View Launcher scanner report']
+                      'View Launcher scanner report ({0})'.format(Report_status)]
         elif view_type == VIEW_COLLECTION:
             d_list = ['View Collection data',
                       'View last execution output ({0})'.format(STD_status)]
@@ -5557,9 +5565,24 @@ class Main:
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
-        # --- Launcher scanner report ---
+        # --- ROM scanner report ---
         elif selected_value == 5:
-            kodi_dialog_OK('ROM scanner report not coded yet. Sorry.')
+            # --- Ckeck for errors and read file ---
+            if not launcher_report_FN.exists():
+                kodi_dialog_OK('ROM scanner report not found.')
+                return
+            info_text = ''
+            with open(launcher_report_FN.getPath(), 'r') as myfile:
+                info_text = myfile.read()
+
+            # --- Show information window ---
+            window_title = 'ROM scanner report'
+            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+            dialog = xbmcgui.Dialog()
+            dialog.textviewer(window_title, info_text)
+            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
