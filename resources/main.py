@@ -1804,8 +1804,9 @@ class Main:
                     launcher = self.launchers[launcherID]
                     type_temp = dialog.select('Launcher display mode', NOINTRO_DMODE_LIST)
                     if type_temp < 0: return
-                    self.launchers[launcherID]['nointro_display_mode'] = NOINTRO_DMODE_LIST[type_temp]
-                    kodi_notify('Display ROMs changed to "{0}"'.format(NOINTRO_DMODE_LIST[type_temp]))
+                    launcher['nointro_display_mode'] = NOINTRO_DMODE_LIST[type_temp]
+                    kodi_notify('Display ROMs changed to "{0}"'.format(launcher['nointro_display_mode']))
+                    log_info('Launcher display mode changed to "{0}"'.format(launcher['nointro_display_mode']))
 
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
@@ -1980,7 +1981,8 @@ class Main:
         # >> If this point is reached then changes to launcher metadata/assets were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
         # NOTE Update edited launcher timestamp only if launcher was not deleted!
-        if launcherID in self.launchers: self.launchers[launcherID]['timestamp_launcher'] = time.time()
+        if launcherID in self.launchers:
+            self.launchers[launcherID]['timestamp_launcher'] = time.time()
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
@@ -3226,7 +3228,7 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
-    # Renders the roms listbox for a given launcher
+    # Renders the ROMs listbox for a given standard launcher.
     #
     def _command_render_roms(self, categoryID, launcherID):
         # --- Set content type and sorting methods ---
@@ -3285,14 +3287,43 @@ class Main:
             # log_debug('key   = {0}'.format(key))
             # log_debug('value = {0}'.format(roms[key]))
 
+        # --- ROM display filter ---
+        dp_mode = selectedLauncher['nointro_display_mode']
+        if selectedLauncher['nointro_xml_file'] and dp_mode != NOINTRO_DMODE_ALL:
+            filtered_roms = {}
+            for rom_id in roms:
+                rom = roms[rom_id]
+                if rom['nointro_status'] == NOINTRO_STATUS_HAVE:
+                    if dp_mode == NOINTRO_DMODE_HAVE or \
+                       dp_mode == NOINTRO_DMODE_HAVE_UNK or \
+                       dp_mode == NOINTRO_DMODE_HAVE_MISS:
+                        filtered_roms[rom_id] = rom
+                elif rom['nointro_status'] == NOINTRO_STATUS_MISS:
+                    if dp_mode == NOINTRO_DMODE_HAVE_MISS or \
+                       dp_mode == NOINTRO_DMODE_MISS or \
+                       dp_mode == NOINTRO_DMODE_MISS_UNK:
+                        filtered_roms[rom_id] = rom
+                elif rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
+                    if dp_mode == NOINTRO_DMODE_HAVE_UNK or \
+                       dp_mode == NOINTRO_DMODE_MISS_UNK or \
+                       dp_mode == NOINTRO_DMODE_UNK:
+                        filtered_roms[rom_id] = rom
+                elif rom['nointro_status'] == NOINTRO_STATUS_NONE:
+                    filtered_roms[rom_id] = rom
+            roms = filtered_roms
+            if not roms:
+                kodi_notify('No ROMs to show with current filtering settings.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+
         # --- Load favourites ---
         # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
         #    when checking if an element exists.
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
-        loading_ticks_end = time.time()
 
         # --- Display ROMs ---
+        loading_ticks_end = time.time()
         rendering_ticks_start = time.time()
         if selectedLauncher['pclone_launcher']:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
@@ -5661,7 +5692,8 @@ class Main:
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
         info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
-        info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
+        info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])        
+        info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher['nointro_display_mode'])        
         info_text += "[COLOR skyblue]pclone_launcher[/COLOR]: {0}\n".format(launcher['pclone_launcher'])
         info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher['num_roms'])
         info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher['num_parents'])

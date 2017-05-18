@@ -81,10 +81,10 @@ def fs_new_category():
 
 NOINTRO_DMODE_ALL       = 'All ROMs'
 NOINTRO_DMODE_HAVE      = 'Have ROMs'
-NOINTRO_DMODE_HAVE_UNK  = 'Have and Unknown ROMs'
-NOINTRO_DMODE_HAVE_MISS = 'Have and Missing ROMs'
+NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
+NOINTRO_DMODE_HAVE_MISS = 'Have or Missing ROMs'
 NOINTRO_DMODE_MISS      = 'Missing ROMs'
-NOINTRO_DMODE_MISS_UNK  = 'Missing and Unknown ROMs'
+NOINTRO_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
 NOINTRO_DMODE_UNK       = 'Unknown ROMs'
 NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
                            NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
@@ -488,6 +488,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
+            str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
             str_list.append(XML_text('pclone_launcher', unicode(launcher['pclone_launcher'])))
             str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
             str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
