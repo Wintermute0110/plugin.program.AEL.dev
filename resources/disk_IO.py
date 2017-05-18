@@ -79,6 +79,16 @@ def fs_new_category():
 
     return c
 
+NOINTRO_DMODE_ALL       = 'All ROMs'
+NOINTRO_DMODE_HAVE      = 'Have ROMs'
+NOINTRO_DMODE_HAVE_UNK  = 'Have and Unknown ROMs'
+NOINTRO_DMODE_HAVE_MISS = 'Have and Missing ROMs'
+NOINTRO_DMODE_MISS      = 'Missing ROMs'
+NOINTRO_DMODE_MISS_UNK  = 'Missing and Unknown ROMs'
+NOINTRO_DMODE_UNK       = 'Unknown ROMs'
+NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
+                           NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
+                           NOINTRO_DMODE_UNK]
 def fs_new_launcher():
     l = {'id' : '',
          'm_name' : '',
@@ -98,6 +108,7 @@ def fs_new_launcher():
          'minimize' : False,
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
+         'nointro_display_mode' : NOINTRO_DMODE_ALL,
          'pclone_launcher' : False,
          'num_roms' : 0,
          'num_parents' : 0,
