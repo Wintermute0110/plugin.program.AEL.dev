@@ -8,9 +8,7 @@ WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorith
          online and offline scrapers. There is a Python implementation of the algorithm here,
          https://github.com/seatgeek/fuzzywuzzy
 
-WIP      Massive upgrade of the AEL Offline scraper database.
-
-WIP      Have a setting to restrict ROMs displayed based on rating.
+WIP      Massive upgrade of AEL Offline scraper database.
 
 WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          Copy remote ROMs for external launchers?

@@ -19,24 +19,21 @@
 from __future__ import unicode_literals
 
 # --- Modules/packages in this plugin ---
-import resources.main
+import resources.main as main
 
 # -------------------------------------------------------------------------------------------------
 # Hacks and tests
 # -------------------------------------------------------------------------------------------------
 # --- Test SHOW_ALL_CATEGORIES / SHOW_ALL_LAUNCHERS / SHOW_ALL_ROMS command ---
-# plugin = resources.main.Main()
 # sys.argv[2] = '?com=SHOW_ALL_ROMS'
-# plugin.run_plugin()
-# sys.exit()
+# main.Main().run_plugin()
 
 # -------------------------------------------------------------------------------------------------
 # main()
 # -------------------------------------------------------------------------------------------------
 # Put the main bulk of the code in files inside /resources/, which is a package directory. 
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
-# loading time is faster compared to PY files.
+# loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
 #
-plugin = resources.main.Main()
-plugin.run_plugin()
+main.Main().run_plugin()
