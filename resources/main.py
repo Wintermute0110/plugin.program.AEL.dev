@@ -6806,11 +6806,11 @@ class Main:
         # >> Step 4: Asset report
         str_asset_list = []
         str_asset_list.append('{0} Tit Sna Fan Ban Clr Bxf Bxb Car Fly Map Man Tra\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_asset_list.append('{0}\n'.format('-' * 102))
+        str_asset_list.append('{0}\n'.format('-' * 98))
         for m in check_list:
             # >> Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_asset_list.append('{0} {1}   {2}   {3}   {4}   {5}   {6}   {7}   {8}   {9}   {10}   {11}   {12}\n'.format(
+            str_asset_list.append('{0}  {1}   {2}   {3}   {4}   {5}   {6}   {7}   {8}   {9}   {10}   {11}   {12}\n'.format(
                             name_str.ljust(ROM_NAME_LENGHT),
                             m['s_title'],     m['s_snap'],     m['s_fanart'],  m['s_banner'],
                             m['s_clearlogo'], m['s_boxfront'], m['s_boxback'], m['s_cartridge'],
@@ -7379,8 +7379,11 @@ class Main:
         report_fobj.write('*** END of the ROM scanner report ***\n')
         report_fobj.close()
 
-        # ~~~ Save ROMs XML file. Also save categories/launchers to update timestamp. ~~~
+        # ~~~ Save ROMs XML file ~~~
+        # >> Also save categories/launchers to update timestamp.
+        # >> Update launcher timestamp to update VLaunchers and reports.
         self.launchers[launcherID]['num_roms'] = len(roms)
+        self.launchers[launcherID]['timestamp_launcher'] = time.time()
         fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
