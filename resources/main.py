@@ -5467,10 +5467,12 @@ class Main:
                     info_text += self._misc_print_string_ROM_additional(rom)
 
             # --- Show information window ---
-            # >> textviewer WINDOW_DIALOG_TEXT_VIEWER 10147 DialogTextViewer.xml
-            xbmcgui.Window(10147).setProperty('FontWidth', 'monospaced')
+            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
             dialog = xbmcgui.Dialog()
             dialog.textviewer(window_title, info_text)
+            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
         # --- View last execution output ---
         # NOTE NOT available on Windows. See comments in _run_process()
@@ -5488,9 +5490,12 @@ class Main:
 
             # --- Show information window ---
             window_title = 'Launcher last execution stdout'
-            xbmcgui.Window(10147).setProperty('FontWidth', 'monospaced')
+            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
             dialog = xbmcgui.Dialog()
             dialog.textviewer(window_title, info_text)
+            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
         # --- Launcher statistics ---
         elif selected_value == 2 or selected_value == 3 or selected_value == 4:
@@ -5545,9 +5550,12 @@ class Main:
             info_text = info_text.replace('<Asset statistics>', '[COLOR orange]<Asset statistics>[/COLOR]')
 
             # --- Show information window ---
-            xbmcgui.Window(10147).setProperty('FontWidth', 'monospaced')
+            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
             dialog = xbmcgui.Dialog()
             dialog.textviewer(window_title, info_text)
+            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
         # --- Launcher scanner report ---
         elif selected_value == 5:
