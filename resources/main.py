@@ -7099,7 +7099,6 @@ class Main:
 
     #
     # ROM scanner. Called when user chooses "Add items" -> "Scan items"
-    # Note that actually this command is "Add/Update" ROMs.
     #
     def _roms_import_roms(self, launcherID):
         log_debug('========== _roms_import_roms() BEGIN ==================================================')
@@ -7109,16 +7108,31 @@ class Main:
         launcher_path = FileName(launcher['rompath'])
         launcher_exts = launcher['romext']
         log_info('_roms_import_roms() Starting ROM scanner ...')
-        log_info('launcher name "{0}"'.format(launcher['m_name']))
-        log_info('launcher ID   {0}'.format(launcher['id']))
+        log_info('Launcher name "{0}"'.format(launcher['m_name']))
+        log_info('launcher ID   "{0}"'.format(launcher['id']))
         log_info('ROM path      "{0}"'.format(launcher_path.getPath()))
         log_info('ROM ext       "{0}"'.format(launcher_exts))
-        log_info('platform      "{0}"'.format(launcher['platform']))
+        log_info('Platform      "{0}"'.format(launcher['platform']))
+
+        # --- Open ROM scanner report file ---
+        launcher_report_FN = REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
+        log_info('Report file OP "{0}"'.format(launcher_report_FN.getOriginalPath()))
+        log_info('Report file  P "{0}"'.format(launcher_report_FN.getPath()))
+        report_fobj = open(launcher_report_FN.getPath(), "w")
+        report_fobj.write('*** Starting ROM scanner ... ***\n'.format())
+        report_fobj.write('  Launcher name "{0}"\n'.format(launcher['m_name']))
+        report_fobj.write('  launcher ID   "{0}"\n'.format(launcher['id']))
+        report_fobj.write('  ROM path      "{0}"\n'.format(launcher_path.getPath()))
+        report_fobj.write('  ROM ext       "{0}"\n'.format(launcher_exts))
+        report_fobj.write('  Platform      "{0}"\n'.format(launcher['platform']))
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
+        report_fobj.write('Loading launcher ROMs ...\n')
         roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
         num_roms = len(roms)
+        report_fobj.write('  {0} ROMs currently in database\n'.format(num_roms))
+        log_info('Launcher ROM database contain {0} items'.format(num_roms))
 
         # --- Load metadata/asset scrapers ---
         self._load_metadata_scraper()
@@ -7150,8 +7164,9 @@ class Main:
         self.pDialog_verbose = False
 
         # ~~~~~ Remove dead entries ~~~~~
+        log_info('Removing dead ROMs ...'.format())
+        report_fobj.write('Removing dead ROMs ...\n')
         num_removed_roms = 0
-        log_info('Launcher ROM database contain {0} items'.format(len(roms)))
         if num_roms > 0:
             log_debug('Starting dead items scan')
             i = 0
@@ -7181,6 +7196,8 @@ class Main:
         kodi_busydialog_ON()
         files = []
         log_info('Scanning files in {0}'.format(launcher_path.getPath()))
+        report_fobj.write('Scanning files ...\n')
+        report_fobj.write('  Directory {0}\n'.format(launcher_path.getPath()))
         if self.settings['scan_recursive']:
             log_info('Recursive scan activated')
             files = launcher_path.recursiveScanFilesInPath('*.*')
@@ -7190,10 +7207,12 @@ class Main:
         kodi_busydialog_OFF()
         num_files = len(files)
         log_info('Found {0} files'.format(num_files))
+        report_fobj.write('  Found {0} files\n'.format(num_files))
 
         # ~~~ Now go processing file by file ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.pDialog.create('Advanced Emulator Launcher', 'Scanning {0}'.format(launcher_path))
         log_debug('==================== Processing ROMs ====================')
+        report_fobj.write('Processing files ...\n')
         num_new_roms = 0
         num_files_checked = 0
         for f_path in files:
@@ -7207,6 +7226,7 @@ class Main:
             # log_debug('ROM.getBase()         "{0}"'.format(ROM.getBase()))
             # log_debug('ROM.getBase_noext()   "{0}"'.format(ROM.getBase_noext()))
             # log_debug('ROM.getExt()          "{0}"'.format(ROM.getExt()))
+            report_fobj.write('>>> {0}\n'.format(ROM.getPath()))
 
             # ~~~ Update progress dialog ~~~
             self.progress_number = num_files_checked * 100 / num_files
@@ -7225,9 +7245,11 @@ class Main:
             for ext in launcher_exts.split("|"):
                 if ROM.getExt() == '.' + ext:
                     log_debug("Expected '{0}' extension detected".format(ext))
+                    report_fobj.write("  Expected '{0}' extension detected\n".format(ext))
                     processROM = True
             if not processROM: 
                 log_debug('File has not an expected extension. Skipping file.')
+                report_fobj.write('  File has not an expected extension. Skipping file.\n')
                 continue
 
             # --- Check if ROM belongs to a multidisc set ---
@@ -7240,7 +7262,8 @@ class Main:
                 log_info('discName    "{0}"'.format(MDSet.discName))
                 log_info('extension   "{0}"'.format(MDSet.extension))
                 log_info('order       "{0}"'.format(MDSet.order))
-                
+                report_fobj.write('  ROM belongs to a multidisc set.\n')
+
                 # >> Check if the set is already in launcher ROMs.
                 MultiDisc_rom_id = None
                 for rom_id, rom_dic in roms.iteritems():
@@ -7272,6 +7295,7 @@ class Main:
                     continue
             else:
                 log_info('ROM does not belong to a multidisc set.')
+                report_fobj.write('  ROM does not belong to a multidisc set.\n')
 
             # --- Check that ROM is not already in the list of ROMs ---
             # >> If file already in ROM list skip it
@@ -7280,9 +7304,11 @@ class Main:
                 if roms[rom_id]['filename'] == f_path: repeatedROM = True
             if repeatedROM:
                 log_debug('File already into launcher ROM list. Skipping file.')
+                report_fobj.write('  File already into launcher ROM list. Skipping file.\n')
                 continue
             else:
                 log_debug('File not in launcher ROM list. Processing it ...')
+                report_fobj.write('  File not in launcher ROM list. Processing it ...\n')
 
             # --- Ignore BIOS ROMs ---
             # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
@@ -7314,6 +7340,10 @@ class Main:
         log_info('Removed dead ROMs {0:6d}'.format(num_removed_roms))
         log_info('Files checked     {0:6d}'.format(num_files_checked))
         log_info('New added ROMs    {0:6d}'.format(num_new_roms))
+        report_fobj.write('***** ROM scanner finished ******\n')
+        report_fobj.write('Removed dead ROMs {0:6d}\n'.format(num_removed_roms))
+        report_fobj.write('Files checked     {0:6d}\n'.format(num_files_checked))
+        report_fobj.write('New added ROMs    {0:6d}\n'.format(num_new_roms))
 
         if len(roms) == 0:
             kodi_dialog_OK('No ROMs found! Make sure launcher directory and file extensions are correct.')
@@ -7344,6 +7374,10 @@ class Main:
         #     log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
         # else:
         #     log_info('No No-Intro DAT configured. No auditing ROMs.')
+
+        # --- Close ROM scanner report file ---
+        report_fobj.write('*** END of the ROM scanner report ***\n')
+        report_fobj.close()
 
         # ~~~ Save ROMs XML file. Also save categories/launchers to update timestamp. ~~~
         self.launchers[launcherID]['num_roms'] = len(roms)
