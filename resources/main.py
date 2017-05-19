@@ -1771,8 +1771,9 @@ class Main:
                         launcher = self.launchers[launcherID]
                         roms_base_noext = launcher['roms_base_noext']
                         roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
-                        self._roms_reset_NoIntro_status(roms)
+                        self._roms_reset_NoIntro_status(launcher, roms)
                         fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                        launcher['num_roms'] = len(roms)
                         kodi_notify('Removed No-Intro/Redump XML DAT file')
 
                     else:
@@ -1800,6 +1801,7 @@ class Main:
                             # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                             self.launchers[launcherID]['nointro_xml_file'] = ''
                             kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
+                        launcher['num_roms'] = len(roms)
 
                 # --- Display ROMs ---
                 elif type2 == 2:
@@ -1836,6 +1838,7 @@ class Main:
                         # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                         self.launchers[launcherID]['nointro_xml_file'] = ''
                         kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
+                    launcher['num_roms'] = len(roms)
 
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
@@ -7114,10 +7117,15 @@ class Main:
     # Helper function to update ROMs No-Intro status if user configured a No-Intro DAT file.
     # Dictionaries are mutable, so roms can be changed because passed by assigment.
     # This function also creates the Parent/Clone indices:
-    #  1) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_index.json
-    #  2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_parents.json
+    #   1) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_index.json
+    #   2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_parents.json
     #
-    # Returns:
+    # A) If there are Unkown ROMs, a fake rom with name [Unknown ROMs] and id UNKNOWN_ROMS_PARENT_ID
+    #    is created. This fake ROM is the parent of all Unknown ROMs.
+    #    This fake ROM is added to roms_base_noext_parents.json database.
+    #    This fake ROM is not present in the main JSON ROM database.
+    # 
+    # Returns)
     #   True  -> ROM audit was OK
     #   False -> There was a problem with the audit.
     #
@@ -7256,7 +7264,7 @@ class Main:
         # --- Make a Parent/Clone index and a parent ROMs list and save DBs ---
         pDialog.create('Advanced Emulator Launcher', 'Building Parent/Clone indices ...')
         roms_pclone_index       = fs_generate_PClone_index(roms, roms_nointro)
-        parent_roms             = fs_generate_parent_ROMs_index(roms, roms_pclone_index)
+        parent_roms             = fs_generate_parent_ROMs_dic(roms, roms_pclone_index)
         roms_base_noext         = launcher['roms_base_noext']
         index_roms_base_noext   = roms_base_noext + '_PClone_index'
         parents_roms_base_noext = roms_base_noext + '_parents'

@@ -1329,8 +1329,12 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
 
     return nointro_roms
 
+# id of the fake ROM parent of all Unknown ROMs
+UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
+
 #
-# Creates a Parent/Clone dictionary.
+# Creates and returns Parent/Clone MD5 index dictionary.
+# This dictionary will be save in database roms_base_noext_PClone_index.json.
 #
 # roms_pclone_index = {
 #   'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
@@ -1339,9 +1343,7 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
 #   UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
 # }
 #
-UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 def fs_generate_PClone_index(roms, roms_nointro):
-    # roms_pclone_index_by_name = {}
     roms_pclone_index_by_id = {}
 
     # --- Create a dictionary to convert ROMbase_noext names into IDs ---
@@ -1356,7 +1358,6 @@ def fs_generate_PClone_index(roms, roms_nointro):
 
     # --- Build PClone dictionary using ROM base_noext names ---
     # >> Create fake ROM later because dictionaries cannot be modified when being iterated
-    Found_Unknown_ROMs = False
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
@@ -1369,7 +1370,6 @@ def fs_generate_PClone_index(roms, roms_nointro):
 
         #  Add Unknown ROMs to their own set.
         if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
-            Found_Unknown_ROMs = True
             clone_id = rom['id']
             if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
                 roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
@@ -1395,31 +1395,32 @@ def fs_generate_PClone_index(roms, roms_nointro):
                     roms_pclone_index_by_id[parent_id] = []
                     roms_pclone_index_by_id[parent_id].append(clone_id)
 
-    # >> If Unknown ROMs also creates a fake parent ROM for all Unknown ROMs
-    if Found_Unknown_ROMs:
-        # >> Special Parent ROM for Unknown ROMs
-        u_rom = fs_new_rom()
-        u_rom['id']             = UNKNOWN_ROMS_PARENT_ID
-        u_rom['m_name']         = '[Unknown ROMs]'
-        u_rom['nointro_status'] = NOINTRO_STATUS_HAVE
-        u_rom['m_genre']        = 'Special genre' 
-        u_rom['m_studio']       = 'Special studio'
-        u_rom['m_plot']         = 'Special plot'
-        roms[u_rom['id']] = u_rom
-
     return roms_pclone_index_by_id
 
 #
-# parent_roms = { AEL ROM dictionary having parents only }
+# Returns a dictionary with parent ROMs to be stored in database roms_base_noext_parents.json
+# If Unkown ROMs detected, the fake ROM [Unknown ROMs] is added.
 #
-def fs_generate_parent_ROMs_index(roms, roms_pclone_index):
+def fs_generate_parent_ROMs_dic(roms, roms_pclone_index):
     p_roms = {}
 
+    # --- Build parent ROM dictionary ---
     for rom_id in roms_pclone_index:
-        # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
-        # >> Clean parent ROM name tags from ROM Name
-        p_roms[rom_id] = dict(roms[rom_id])
-        # p_roms[rom_id]['m_name'] = text_format_ROM_title(p_roms[rom_id]['m_name'], True)
+        # >> roms_pclone_index make contain the fake ROM id. Skip it if so because the fake
+        # >> ROM is not in roms dictionary (KeyError exception)
+        if rom_id == UNKNOWN_ROMS_PARENT_ID:
+            rom = fs_new_rom()
+            rom['id']                      = UNKNOWN_ROMS_PARENT_ID
+            rom['m_name']                  = '[Unknown ROMs]'
+            rom['m_genre']                 = 'Special genre' 
+            rom['m_studio']                = 'Special studio'
+            rom['m_plot']                  = 'Special plot'
+            rom['nointro_status']          = NOINTRO_STATUS_HAVE
+            p_roms[UNKNOWN_ROMS_PARENT_ID] = rom
+        else:
+            # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
+            # >> Clean parent ROM name tags from ROM Name
+            p_roms[rom_id] = dict(roms[rom_id])
 
     return p_roms
 
