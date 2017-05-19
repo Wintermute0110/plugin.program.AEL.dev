@@ -43,6 +43,8 @@ WIP      Changes and suggestions propoed by Atsumori.
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 12 May 2017[/B]
 
+FEATURE  Virtual category to browse the Offline Scraper database.
+
 FEATURE  ROM scanner reports.
 
 WIP      Refurbish ROM auditing and Parent/Clone view display mode.
