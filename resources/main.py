@@ -7686,10 +7686,12 @@ class Main:
                 else:
                     romdata['m_name'] = gamedata['title']
                     log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
-                romdata['m_year']   = gamedata['year']
-                romdata['m_genre']  = gamedata['genre']
-                romdata['m_studio'] = gamedata['studio']
-                romdata['m_plot']   = gamedata['plot']
+                romdata['m_year']     = gamedata['year']
+                romdata['m_genre']    = gamedata['genre']
+                romdata['m_studio']   = gamedata['studio']
+                romdata['m_nplayers'] = gamedata['nplayers']
+                romdata['m_esrb']     = gamedata['esrb']
+                romdata['m_plot']     = gamedata['plot']
 
                 # --- Update ROM NFO file after scraping ---
                 if self.settings['scan_update_NFO_files']:
@@ -7964,10 +7966,12 @@ class Main:
         else:
             roms[romID]['m_name'] = gamedata['title']
             log_debug('User wants scrapped name. Setting name to "{0}"'.format(roms[romID]['m_name']))
-        roms[romID]['m_year']   = gamedata['year']
-        roms[romID]['m_genre']  = gamedata['genre']
-        roms[romID]['m_studio'] = gamedata['studio']
-        roms[romID]['m_plot']   = gamedata['plot']
+        roms[romID]['m_year']     = gamedata['year']
+        roms[romID]['m_genre']    = gamedata['genre']
+        roms[romID]['m_studio']   = gamedata['studio']
+        roms[romID]['m_nplayers'] = gamedata['nplayers']
+        roms[romID]['m_esrb']     = gamedata['esrb']
+        roms[romID]['m_plot']     = gamedata['plot']
 
         # >> Changes were made
         kodi_notify('ROM metadata updated')
