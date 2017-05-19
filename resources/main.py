@@ -2035,6 +2035,11 @@ class Main:
     # a ROM in Favourites.
     #
     def _command_edit_rom(self, categoryID, launcherID, romID):
+        # --- ---
+        if romID == UNKNOWN_ROMS_PARENT_ID:
+            kodi_dialog_OK('You cannot edit this ROM!')
+            return
+
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
             log_debug('_command_edit_rom() Editing Favourite ROM')
@@ -3290,10 +3295,10 @@ class Main:
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
-        # --- Build clone dictionary of ROMs ---
+        # --- Build parent and clones dictionary of ROMs ---
         roms = {}
-        # >> Add parent ROM
-        roms[romID] = all_roms[romID]
+        # >> Add parent ROM except if the parent if the fake paren ROM
+        if romID != UNKNOWN_ROMS_PARENT_ID: roms[romID] = all_roms[romID]
         # >> Add clones, if any
         for rom_id in pclone_index[romID]:
             roms[rom_id] = all_roms[rom_id]
@@ -3302,6 +3307,36 @@ class Main:
         # for key in roms:
         #     log_debug('key   = {0}'.format(key))
         #     log_debug('value = {0}'.format(roms[key]))
+
+        # --- ROM display filter ---
+        dp_mode = selectedLauncher['nointro_display_mode']
+        if selectedLauncher['nointro_xml_file'] and dp_mode != NOINTRO_DMODE_ALL:
+            filtered_roms = {}
+            for rom_id in roms:
+                rom = roms[rom_id]
+                if rom['nointro_status'] == NOINTRO_STATUS_HAVE:
+                    if dp_mode == NOINTRO_DMODE_HAVE or \
+                       dp_mode == NOINTRO_DMODE_HAVE_UNK or \
+                       dp_mode == NOINTRO_DMODE_HAVE_MISS:
+                        filtered_roms[rom_id] = rom
+                elif rom['nointro_status'] == NOINTRO_STATUS_MISS:
+                    if dp_mode == NOINTRO_DMODE_HAVE_MISS or \
+                       dp_mode == NOINTRO_DMODE_MISS or \
+                       dp_mode == NOINTRO_DMODE_MISS_UNK:
+                        filtered_roms[rom_id] = rom
+                elif rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
+                    if dp_mode == NOINTRO_DMODE_HAVE_UNK or \
+                       dp_mode == NOINTRO_DMODE_MISS_UNK or \
+                       dp_mode == NOINTRO_DMODE_UNK:
+                        filtered_roms[rom_id] = rom
+                # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
+                else:
+                    filtered_roms[rom_id] = rom
+            roms = filtered_roms
+            if not roms:
+                kodi_notify('No ROMs to show with current filtering settings.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
 
         # --- Render ROMs ---
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
@@ -3312,7 +3347,7 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
-    # Renders the ROMs listbox for a given standard launcher.
+    # Renders the ROMs listbox for a given standard launcher or the Parent ROMs of a PClone launcher.
     #
     def _command_render_roms(self, categoryID, launcherID):
         # --- Set content type and sorting methods ---
@@ -3330,27 +3365,28 @@ class Main:
         loading_ticks_start = time.time()
         if selectedLauncher['pclone_launcher']:
             # --- Load parent ROMs ---
-            parents_roms_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_parents'
+            parents_roms_base_noext = selectedLauncher['roms_base_noext'] + '_parents'
             parents_file_path = ROMS_DIR.join(parents_roms_base_noext + '.json')
             if not parents_file_path.exists():
-                kodi_notify('Parent list JSON not found.')
+                kodi_notify('Parent ROMs JSON not found.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
             roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
             if not roms:
-                kodi_notify('Parent list is empty.')
+                kodi_notify('Parent ROMs JSON is empty.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
+
             # --- Load parent/clone index ---
             index_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_index'
             index_file_path = ROMS_DIR.join(index_base_noext + '.json')
             if not index_file_path.exists():
-                kodi_notify('Parent list JSON not found.')
+                kodi_notify('PClone index JSON not found.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
             pclone_index = fs_load_JSON_file(ROMS_DIR, index_base_noext)
             if not pclone_index:
-                kodi_notify('Parent list is empty.')
+                kodi_notify('PClone index dict is empty.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
         else:
@@ -3377,6 +3413,11 @@ class Main:
             filtered_roms = {}
             for rom_id in roms:
                 rom = roms[rom_id]
+                # >> Always include a parent ROM regardless of filters.
+                if selectedLauncher['pclone_launcher'] and len(pclone_index[rom_id]):
+                    filtered_roms[rom_id] = rom
+                    continue
+                # >> Filter ROM
                 if rom['nointro_status'] == NOINTRO_STATUS_HAVE:
                     if dp_mode == NOINTRO_DMODE_HAVE or \
                        dp_mode == NOINTRO_DMODE_HAVE_UNK or \
@@ -3392,7 +3433,8 @@ class Main:
                        dp_mode == NOINTRO_DMODE_MISS_UNK or \
                        dp_mode == NOINTRO_DMODE_UNK:
                         filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == NOINTRO_STATUS_NONE:
+                # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
+                else:
                     filtered_roms[rom_id] = rom
             roms = filtered_roms
             if not roms:
@@ -5616,7 +5658,10 @@ class Main:
                 # --- ROM in regular launcher ---
                 else:
                     log_info('_command_view_menu() Viewing ROM in Launcher ...')
-                    # Check launcher is OK
+                    if romID == UNKNOWN_ROMS_PARENT_ID:
+                        kodi_dialog_OK('You cannot view this ROM!')
+                        return
+                    # >> Check launcher is OK
                     if launcherID not in self.launchers:
                         kodi_dialog_OK('launcherID not found in self.launchers')
                         return

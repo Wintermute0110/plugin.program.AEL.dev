@@ -47,9 +47,9 @@ FEATURE  Virtual category to browse the Offline Scraper database.
 
 FEATURE  ROM scanner reports.
 
-WIP      Refurbish ROM auditing and Parent/Clone view display mode.
+FEATURE  Refurbish ROM auditing and Parent/Clone view display mode.
 
-WIP      Added a "Display ROMs" setting valid only in Parent/Clone display mode.
+FEATURE  Added a "Display ROMs" setting valid only in Parent/Clone display mode.
 
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2581878#pid2581878
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2582004#pid2582004
