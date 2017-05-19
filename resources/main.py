@@ -377,6 +377,8 @@ class Main:
             launID = args['launID'][0] if 'launID' in args else '' # >> Optional
             romID  = args['romID'][0]  if 'romID'  in args else '' # >> Optional
             self._command_view_menu(catID, launID, romID)
+        elif command == 'VIEW_OS_ROM':
+            self._command_view_offline_scraper_rom(args['catID'][0], args['launID'][0])
 
         # >> Update virtual categories databases
         elif command == 'UPDATE_VIRTUAL_CATEGORY':
@@ -3687,7 +3689,7 @@ class Main:
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
-        url_str = self._misc_url('VIEW', VCATEGORY_OFF_SCRAPER_ID, platform, game['name'])
+        url_str = self._misc_url('VIEW_OS_ROM', platform, game['name'])
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     #
@@ -3863,6 +3865,7 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load offline scraper XML file ---
+        loading_ticks_start = time.time()
         xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
         xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
@@ -3870,10 +3873,16 @@ class Main:
         games = fs_load_GameInfo_XML(xml_path)
 
         # --- Display offline scraper ROMs ---
+        loading_ticks_end = time.time()
+        rendering_ticks_start = time.time()
         for key in sorted(games, key= lambda x : games[x]['name']):
             self._gui_render_offline_scraper_rom_row(platform, games[key])
-
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        rendering_ticks_end = time.time()
+
+        # --- DEBUG Data loading/rendering statistics ---
+        log_debug('Loading seconds   {0}'.format(loading_ticks_end - loading_ticks_start))
+        log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
 
     #
     # Render the Recently played and Most Played virtual launchers.
@@ -5882,6 +5891,46 @@ class Main:
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(collection['s_trailer'])
 
         return info_text
+
+    def _command_view_offline_scraper_rom(self, platform, game_name):
+        log_debug('_command_view_offline_scraper_rom() platform  "{0}"'.format(platform))
+        log_debug('_command_view_offline_scraper_rom() game_name "{0}"'.format(game_name))
+
+        # --- Load Offline Scraper database ---
+        # --- Load offline scraper XML file ---
+        loading_ticks_start = time.time()
+        xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
+        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+        log_debug('xml_file = {0}'.format(xml_file))
+        log_debug('Loading XML {0}'.format(xml_path))
+        games = fs_load_GameInfo_XML(xml_path)
+        game = games[game_name]
+
+        info_text  = '[COLOR orange]ROM information[/COLOR]\n'
+        info_text += "[COLOR violet]game_name[/COLOR]: '{0}'\n".format(game_name)
+        info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(platform)
+        info_text += '\n[COLOR orange]Metadata[/COLOR]\n'
+        info_text += "[COLOR violet]description[/COLOR]: '{0}'\n".format(game['description'])
+        info_text += "[COLOR violet]year[/COLOR]: '{0}'\n".format(game['year'])
+        info_text += "[COLOR violet]rating[/COLOR]: '{0}'\n".format(game['rating'])
+        info_text += "[COLOR violet]manufacturer[/COLOR]: '{0}'\n".format(game['manufacturer'])
+        info_text += "[COLOR violet]dev[/COLOR]: '{0}'\n".format(game['dev'])
+        info_text += "[COLOR violet]genre[/COLOR]: '{0}'\n".format(game['genre'])
+        info_text += "[COLOR violet]score[/COLOR]: '{0}'\n".format(game['score'])
+        info_text += "[COLOR violet]player[/COLOR]: '{0}'\n".format(game['player'])
+        info_text += "[COLOR violet]story[/COLOR]: '{0}'\n".format(game['story'])
+        info_text += "[COLOR violet]enabled[/COLOR]: '{0}'\n".format(game['enabled'])
+        info_text += "[COLOR violet]crc[/COLOR]: '{0}'\n".format(game['crc'])
+        info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(game['cloneof'])
+        window_title = 'Offline Scraper ROM information'
+
+        # --- Show information window ---
+        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+        dialog = xbmcgui.Dialog()
+        dialog.textviewer(window_title, info_text)
+        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
     #
     # Updated all virtual categories DB
