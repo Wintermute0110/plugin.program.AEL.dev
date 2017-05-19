@@ -7084,7 +7084,7 @@ class Main:
     # 1) Remove all ROMs which does not exist.
     # 2) Set status of remaining ROMs to nointro_status = NOINTRO_STATUS_NONE
     #
-    def _roms_reset_NoIntro_status(self, roms):
+    def _roms_reset_NoIntro_status(self, launcher, roms):
         log_info('_roms_reset_NoIntro_status() Launcher has {0} ROMs'.format(len(roms)))
         if len(roms) < 1: return
 
@@ -7098,7 +7098,17 @@ class Main:
         log_info('_roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
 
         # >> Step 3) Delete PClone index and Parent ROM list.
-        
+        roms_base_noext        = launcher['roms_base_noext']
+        index_roms_base_noext  = roms_base_noext + '_PClone_index'
+        parent_roms_base_noext = roms_base_noext + '_parents'
+        index_roms_file        = ROMS_DIR.join(index_roms_base_noext + '.json')
+        parent_roms_file       = ROMS_DIR.join(parent_roms_base_noext + '.json')
+        if index_roms_file.exists():
+            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(index_roms_file.getPath()))
+            index_roms_file.unlink()
+        if parent_roms_file.exists():
+            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(parent_roms_file.getPath()))
+            parent_roms_file.unlink()
 
     #
     # Helper function to update ROMs No-Intro status if user configured a No-Intro DAT file.
@@ -7118,7 +7128,7 @@ class Main:
         pDialog = xbmcgui.DialogProgress()
         pDialog.create('Advanced Emulator Launcher', 'Deleting Missing/Dead ROMs and clearing flags ...')
         self.audit_have = self.audit_miss = self.audit_unknown = 0
-        self._roms_reset_NoIntro_status(roms)
+        self._roms_reset_NoIntro_status(launcher, roms)
         if __debug_progress_dialogs:
             pDialog.update(50)
             time.sleep(0.5)
@@ -7249,7 +7259,7 @@ class Main:
         parent_roms             = fs_generate_parent_ROMs_index(roms, roms_pclone_index)
         roms_base_noext         = launcher['roms_base_noext']
         index_roms_base_noext   = roms_base_noext + '_PClone_index'
-        parents_roms_base_noext = roms_base_noext + '_PClone_parents'
+        parents_roms_base_noext = roms_base_noext + '_parents'
         fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
         fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
         if __debug_progress_dialogs: time.sleep(0.5)
