@@ -7141,6 +7141,30 @@ class Main:
             log_warning('_roms_update_NoIntro_status() Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
             return False
 
+        # --- Remove BIOSes from No-Intro ROMs ---
+        if self.settings['scan_ignore_bios']:
+            log_info('_roms_update_NoIntro_status() Removing BIOSes from No-Intro ROMs ...')
+
+            pDialog.create('Advanced Emulator Launcher', 'Removing BIOSes from No-Intro ROMs ...')
+            num_items = len(roms_nointro)
+            item_counter = 0
+            filtered_roms_nointro = {}
+            for rom_id in roms_nointro:
+                rom = roms_nointro[rom_id]
+                BIOS_str_list = re.findall('\[BIOS\]', rom['name'])
+                if not BIOS_str_list:
+                    filtered_roms_nointro[rom_id] = rom
+                else:
+                    log_debug('_roms_update_NoIntro_status() Removing BIOS {0}'.format(rom['name']))
+                item_counter += 1
+                pDialog.update((item_counter*100)/num_items)
+                if __debug_progress_dialogs: time.sleep(0.01)
+            roms_nointro = filtered_roms_nointro
+            pDialog.update(100)
+            pDialog.close()
+        else:
+            log_info('_roms_update_NoIntro_status() User wants to include BIOSes.')
+
         # --- Put No-Intro ROM names in a set ---
         # >> Set is the fastest Python container for searching elements (implements hashed search).
         # >> No-Intro names include tags
@@ -7212,7 +7236,7 @@ class Main:
                 roms[rom_id]          = rom
                 self.audit_miss += 1
                 log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom['m_name']))
-                log_debug('_roms_update_NoIntro_status()    OP   "{0}"'.format(rom['filename']))
+                # log_debug('_roms_update_NoIntro_status()    OP   "{0}"'.format(rom['filename']))
             item_counter += 1
             pDialog.update((item_counter*100)/num_items)
             if __debug_progress_dialogs: time.sleep(0.01)
