@@ -66,6 +66,8 @@ def emudata_get_program_extensions( app ):
 AEL_platform_list = [
     # --- MAME/Arcade ---
     'MAME',
+    # --- Amstrad ---
+    # 'Amstrad CPC',
     # --- Atari ---
     'Atari 2600',
     'Atari 5200',
@@ -83,7 +85,7 @@ AEL_platform_list = [
     'Commodore VIC-20',
     # --- Magnavox ---
     'Magnavox Odyssey2',
-    'Philips Videopac+ G7000',
+    'Philips Videopac G7000',
     # --- Microsoft ---
     'Microsoft MSX',
     'Microsoft MSX 2',
@@ -170,7 +172,7 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Commodore VIC-20'            : 'GameDBInfo/Commodore VIC-20.xml',
 
     'Magnavox Odyssey2'           : 'GameDBInfo/Magnavox Odyssey2.xml',
-    'Philips Videopac+ G7000'     : '',
+    'Philips Videopac G7000'      : 'GameDBInfo/Magnavox Odyssey2.xml',
 
     'Microsoft MSX'               : '',
     'Microsoft MSX 2'             : 'GameDBInfo/Microsoft MSX 2.xml',
@@ -193,9 +195,9 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Nintendo DS'                 : 'GameDBInfo/Nintendo DS.xml',
     'Nintendo DSi'                : '',
     'Nintendo 3DS'                : '',
-    'Nintendo Famicom Disk System': 'Nintendo Famicom Disk System.xml',
+    'Nintendo Famicom Disk System': 'GameDBInfo/Nintendo Famicom Disk System.xml',
     'Nintendo NES'                : 'GameDBInfo/Nintendo NES.xml',
-    'Nintendo Famicom'            : 'GameDBInfo/Nintendo Entertainment System.xml',
+    'Nintendo Famicom'            : 'GameDBInfo/Nintendo NES.xml',
     'Nintendo SNES'               : 'GameDBInfo/Nintendo SNES.xml',
     'Nintendo Virtual Boy'        : 'GameDBInfo/Nintendo Virtual Boy.xml',
     'Nintendo 64'                 : 'GameDBInfo/Nintendo 64.xml',    
@@ -252,7 +254,7 @@ platform_AEL_to_TheGamesDB_dic = {
     'Commodore Plus-4'            : '', #  Not found in TheGamesDB
     'Commodore VIC-20'            : 'Commodore VIC-20',
     'Magnavox Odyssey2'           : 'Magnavox Odyssey 2',
-    'Philips Videopac+ G7000'     : 'Magnavox Odyssey 2',    
+    'Philips Videopac G7000'      : 'Magnavox Odyssey 2',    
     'Microsoft MSX'               : 'MSX',
     'Microsoft MSX 2'             : 'MSX',
     'Microsoft MS-DOS'            : 'PC',
@@ -329,7 +331,7 @@ platform_AEL_to_GameFAQs_dic = {
     'Commodore Plus-4'            : '0',   # Not found in GameFAQs
     'Commodore VIC-20'            : '11',  # <option label="VIC-20" value="11">VIC-20</option>
     'Magnavox Odyssey2'           : '9',   # <option label="Odyssey^2" value="9">Odyssey^2</option>
-    'Philips Videopac+ G7000'     : '9',   # Not found in GameFAQs
+    'Philips Videopac G7000'      : '9',   # Not found in GameFAQs
 
     'Microsoft MSX'               : '40',  # <option label="MSX" value="40">MSX</option>
     'Microsoft MSX 2'             : '40',
@@ -406,7 +408,7 @@ platform_AEL_to_MobyGames_dic = {
     'Commodore Plus-4'            : '115', # <option value="115">Commodore 16, Plus/4</option>
     'Commodore VIC-20'            : '43',  # <option value="43">VIC-20</option>
     'Magnavox Odyssey2'           : '78',  # <option value="78">Odyssey 2</option>
-    'Philips Videopac+ G7000'     : '78',  # Not found on MobyGames
+    'Philips Videopac G7000'      : '78',  # Not found on MobyGames
 
     'Microsoft MSX'               : '57',  # <option value="57">MSX</option>
     'Microsoft MSX 2'             : '57',
