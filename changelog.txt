@@ -39,11 +39,15 @@ WIP      Changes and suggestions propoed by Atsumori.
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 19 May 2017[/B]
 
+FEATURE  Set Parent/Clone property so skins can display flag.
+
 FEATURE  Support ERSB and NPlayers in offline scraper.
 
 FEATURE  Support ERSB and NPlayers in online scrapers.
 
 FEATURE  Virtual category to browse the Offline Scraper database.
+
+FEATURE  Updated the number of databases in the Offline Scraper.
 
 FEATURE  ROM scanner reports.
 
