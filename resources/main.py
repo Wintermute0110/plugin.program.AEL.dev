@@ -1555,13 +1555,17 @@ class Main:
                         log_info('No duplicated asset dirs found')
 
                     # >> Traverse ROM list and check local asset/artwork
+                    pDialog = xbmcgui.DialogProgress()
+                    pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+                    num_items = len(roms)
+                    item_counter = 0
                     for rom_id in roms:
                         rom = roms[rom_id]
                         ROMFile = FileName(rom['filename'])
                         rom_basename_noext = ROMFile.getBase_noext()
-                        log_info('Checking ROM "{0}"'.format(ROMFile.getBase()))
+                        log_verb('Checking ROM "{0}"'.format(ROMFile.getBase()))
                         for i, asset in enumerate(ROM_ASSET_LIST):
                             AInfo = assets_get_info_scheme(asset)
                             if not enabled_asset_list[i]: continue
@@ -1569,10 +1573,23 @@ class Main:
                             local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
                             if local_asset:
                                 rom[AInfo.key] = local_asset.getOriginalPath()
-                                log_verb('Found   {0:<10} "{1}"'.format(AInfo.name, local_asset.getPath()))
+                                log_debug('Found   {0:<10} "{1}"'.format(AInfo.name, local_asset.getPath()))
                             else:
                                 rom[AInfo.key] = ''
-                                log_verb('Missing {0:<10}'.format(AInfo.name))
+                                log_debug('Missing {0:<10}'.format(AInfo.name))
+                        item_counter += 1
+                        pDialog.update((item_counter*100)/num_items)
+                    pDialog.update(100)
+                    pDialog.close()
+
+                    # --- If there is a No-Intro XML configured audit ROMs ---
+                    if launcher['nointro_xml_file']:
+                        log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
+                        nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+                        if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
+                            self.launchers[launcherID]['nointro_xml_file'] = ''
+                            self.launchers[launcherID]['pclone_launcher'] = False
+                            kodi_dialog_OK('Error auditing ROMs. XML DAT file unset.')
 
                     # ~~~ Save ROMs XML file ~~~
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
@@ -1580,7 +1597,12 @@ class Main:
 
                 # --- Remove Remove dead/missing ROMs ROMs ---
                 elif type2 == 3:
-                    ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
+                    if self.launchers[launcherID]['nointro_xml_file']:
+                        ret = kodi_dialog_yesno('This launcher has an XML DAT configured. Removing '
+                                                'dead ROMs will disable the DAT file. '
+                                                'Are you sure you want to remove missing/dead ROMs?')
+                    else:
+                        ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
                     if not ret: return
 
                     # --- Load ROMs for this launcher ---
@@ -1588,7 +1610,12 @@ class Main:
 
                     # --- Remove dead ROMs ---
                     num_removed_roms = self._roms_delete_missing_ROMs(roms)
-                    kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
+
+                    # --- If there is a No-Intro XML DAT configured remove it ---
+                    if self.launchers[launcherID]['nointro_xml_file']:
+                        log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
+                        self.launchers[launcherID]['nointro_xml_file'] = ''
+                        self.launchers[launcherID]['pclone_launcher'] = False
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
@@ -1668,6 +1695,12 @@ class Main:
                                        "Launcher '{0}' has {1} ROMs. Are you sure you want to delete them "
                                        "from AEL database?".format(self.launchers[launcherID]['m_name'], num_roms))
                     if not ret: return
+
+                    # --- If there is a No-Intro XML DAT configured remove it ---
+                    if self.launchers[launcherID]['nointro_xml_file']:
+                        log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
+                        self.launchers[launcherID]['nointro_xml_file'] = ''
+                        self.launchers[launcherID]['pclone_launcher'] = False
 
                     # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
                     # when user add more ROMs.
@@ -1760,10 +1793,8 @@ class Main:
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro/Redump XML DAT file?')
                         if not ret: return
                         self.launchers[launcherID]['nointro_xml_file'] = ''
-                        kodi_dialog_OK('No-Intro DAT deleted. No-Intro Missing ROMs will be removed now.')
-
-                        # >> If Parent/Clone view display mode is on set display mode to normal
                         self.launchers[launcherID]['pclone_launcher'] = False
+                        kodi_dialog_OK('No-Intro DAT deleted. No-Intro Missing ROMs will be removed now.')
 
                         # --- Remove No-Intro status and delete missing/dead ROMs to revert launcher to normal ---
                         # Note that roms dictionary is updated using Python pass by assigment.
@@ -1800,6 +1831,7 @@ class Main:
                         else:
                             # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                             self.launchers[launcherID]['nointro_xml_file'] = ''
+                            self.launchers[launcherID]['pclone_launcher'] = False
                             kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
                         launcher['num_roms'] = len(roms)
 
@@ -1837,6 +1869,7 @@ class Main:
                     else:
                         # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                         self.launchers[launcherID]['nointro_xml_file'] = ''
+                        self.launchers[launcherID]['pclone_launcher'] = False
                         kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
                     launcher['num_roms'] = len(roms)
 
@@ -2372,21 +2405,41 @@ class Main:
 
         # --- Delete ROM ---
         elif type == 4:
+            is_Normal_Launcher = True
             if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
                 log_info('_command_remove_rom() Deleting ROM from Favourites (id {0})'.format(romID))
                 msg_str = 'Are you sure you want to delete it from Favourites?'
+                is_Normal_Launcher = False
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_command_remove_rom() Deleting ROM from Collection (id {0})'.format(romID))
                 msg_str = 'Are you sure you want to delete it from Collection "{0}"?'.format(collection['m_name'])
+                is_Normal_Launcher = False
             else:
-                log_info('_command_remove_rom() Deleting ROM from Launcher (id {0})'.format(romID))
-                msg_str = 'Are you sure you want to delete it from Launcher "{0}"?'.format(launcher['m_name'])
+                if launcher['nointro_xml_file'] and roms[romID]['nointro_status'] == NOINTRO_STATUS_MISS:
+                    kodi_dialog_OK('You are trying to remove a Missing ROM. You cannot delete '
+                                   'a ROM that does not exist! If you want to get rid of all missing '
+                                   'ROMs then delete the XML DAT file.')
+                    return
+                else:
+                    log_info('_command_remove_rom() Deleting ROM from Launcher (id {0})'.format(romID))
+                    msg_str = 'Are you sure you want to delete it from Launcher "{0}"?'.format(launcher['m_name'])
 
             # --- Confirm deletion ---
             rom_name = roms[romID]['m_name']
             ret = kodi_dialog_yesno('ROM "{0}". '.format(rom_name) + msg_str)
             if not ret: return
             roms.pop(romID)
+
+            # --- If there is a No-Intro XML configured audit ROMs ---
+            if is_Normal_Launcher and launcher['nointro_xml_file']:
+                log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
+                nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+                if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
+                    self.launchers[launcherID]['nointro_xml_file'] = ''
+                    self.launchers[launcherID]['pclone_launcher'] = False
+                    kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
+
+            # --- Notify user ---
             kodi_notify('Deleted ROM {0}'.format(rom_name))
 
         # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
@@ -2739,16 +2792,12 @@ class Main:
             fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
         else:
             # >> Save categories/launchers to update timestamp
-            # >> Also update changed launcher timestamp
+            #    Also update changed launcher timestamp
+            self.launchers[launcherID]['num_roms'] = len(roms)
             self.launchers[launcherID]['timestamp_launcher'] = _t = time.time()
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
             fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-
-            # >> ROMs in launcher have changed.
-            # >> If DAT is available update No-Intro status?
-            # >> If PCLone display mode update PClone database.
-            
 
         # It seems that updating the container does more harm than good... specially when having many ROMs
         # By the way, what is the difference between Container.Refresh() and Container.Update()?
@@ -7443,10 +7492,10 @@ class Main:
             nointro_xml_FN = FileName(launcher['nointro_xml_file'])
             if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                 self.launchers[launcherID]['nointro_xml_file'] = ''
-                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
+                self.launchers[launcherID]['pclone_launcher'] = False
+                kodi_dialog_OK('Error auditing ROMs. XML DAT file unset.')
         else:
             log_info('No No-Intro/Redump DAT configured. Do not audit ROMs.')
-            kodi_notify('Added ROMs. Launcher has now {0} ROMs'.format(len(roms)))
 
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
@@ -7454,6 +7503,8 @@ class Main:
         launcher['timestamp_launcher'] = time.time()
         fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, self.launchers[launcherID])
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        kodi_refresh_container()
+        kodi_notify('Added ROM. Launcher has now {0} ROMs'.format(len(roms)))
 
     #
     # ROM scanner. Called when user chooses "Add items" -> "Scan items"
@@ -7731,6 +7782,7 @@ class Main:
             else:
                 # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                 self.launchers[launcherID]['nointro_xml_file'] = ''
+                self.launchers[launcherID]['pclone_launcher'] = False
                 kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
         else:
             log_info('No No-Intro/Redump DAT configured. Do not audit ROMs.')
