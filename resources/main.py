@@ -7437,11 +7437,22 @@ class Main:
         log_verb('_roms_add_new_rom() s_manual    "{0}"'.format(romdata['s_manual']))
         log_verb('_roms_add_new_rom() s_trailer   "{0}"'.format(romdata['s_trailer']))
 
+        # --- If there is a No-Intro XML configured audit ROMs ---
+        if launcher['nointro_xml_file']:
+            log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
+            nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+            if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
+                self.launchers[launcherID]['nointro_xml_file'] = ''
+                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
+        else:
+            log_info('No No-Intro/Redump DAT configured. Do not audit ROMs.')
+            kodi_notify('Added ROMs. Launcher has now {0} ROMs'.format(len(roms)))
+
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
         self.launchers[launcherID]['num_roms'] = len(roms)
         launcher['timestamp_launcher'] = time.time()
-        fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
+        fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, self.launchers[launcherID])
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
     #
