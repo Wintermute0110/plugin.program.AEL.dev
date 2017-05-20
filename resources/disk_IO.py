@@ -158,6 +158,12 @@ NOINTRO_STATUS_UNKNOWN = 'Unknown'
 NOINTRO_STATUS_NONE    = 'None'
 NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE, NOINTRO_STATUS_MISS, NOINTRO_STATUS_UNKNOWN, 
                           NOINTRO_STATUS_NONE]
+
+PCLONE_STATUS_PARENT = 'Parent'
+PCLONE_STATUS_CLONE  = 'Clone'
+PCLONE_STATUS_NONE   = 'None'
+PCLONE_STATUS_LIST   = [PCLONE_STATUS_PARENT, PCLONE_STATUS_CLONE, PCLONE_STATUS_NONE]
+
 # m_esrb string ESRB_LIST default ESRB_PENDING
 ESRB_PENDING     = 'RP (Rating Pending)'
 ESRB_EARLY       = 'EC (Early Childhood)'
@@ -168,6 +174,7 @@ ESRB_MATURE      = 'M (Mature)'
 ESRB_ADULTS_ONLY = 'AO (Adults Only)'
 ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
                     ESRB_MATURE, ESRB_ADULTS_ONLY]
+
 # m_nplayers default values
 NP_1P     = '1P'
 NP_2P_SIM = '2P sim'
@@ -198,6 +205,7 @@ def fs_new_rom():
          'altarg' : '',
          'finished' : False,
          'nointro_status' : NOINTRO_STATUS_NONE,
+         'pclone_status' : PCLONE_STATUS_NONE,
          's_title' : '',
          's_snap' : '',
          's_fanart' : '',
@@ -627,7 +635,7 @@ def fs_load_catfile(categories_file, categories, launchers):
 # Look at the ROMs JSON code for reference/comments to these functions.
 def fs_write_JSON_file(file_dir, file_base_noext, data):
     # >> Get file names
-    json_file = file_dir.join(file_base_noext + '.json')
+    json_file = file_dir.pjoin(file_base_noext + '.json')
     log_verb('fs_write_JSON_file() Dir  {0}'.format(file_dir.getOriginalPath()))
     log_verb('fs_write_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
 
@@ -646,7 +654,7 @@ def fs_load_JSON_file(file_dir, file_base_noext):
     data = {}
 
     # --- If file does not exist return empty dictionary ---
-    json_file = file_dir.join(file_base_noext + '.json')
+    json_file = file_dir.pjoin(file_base_noext + '.json')
     if not json_file.exists(): return data
 
     # --- Parse using json module ---
@@ -1412,10 +1420,8 @@ def fs_generate_parent_ROMs_dic(roms, roms_pclone_index):
             rom = fs_new_rom()
             rom['id']                      = UNKNOWN_ROMS_PARENT_ID
             rom['m_name']                  = '[Unknown ROMs]'
-            rom['m_genre']                 = 'Special genre' 
-            rom['m_studio']                = 'Special studio'
-            rom['m_plot']                  = 'Special plot'
-            rom['nointro_status']          = NOINTRO_STATUS_HAVE
+            rom['m_plot']                  = 'Special virtual ROM parent of all Unknown ROMs'
+            rom['nointro_status']          = NOINTRO_STATUS_NONE
             p_roms[UNKNOWN_ROMS_PARENT_ID] = rom
         else:
             # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!

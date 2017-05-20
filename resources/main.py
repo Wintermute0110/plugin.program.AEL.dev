@@ -3256,7 +3256,7 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     #
     # Render clone ROMs. romID is the parent ROM.
-    # This is only called in PClone display mode.
+    # This is only called in Parent/Clone display mode.
     #
     def _command_render_clone_roms(self, categoryID, launcherID, romID):
         # --- Set content type and sorting methods ---
@@ -3342,7 +3342,6 @@ class Main:
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-            if key != romID: roms[key]['isClone'] = True
             self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3583,28 +3582,24 @@ class Main:
             # --- In Favourites ROM flag ---
             if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
             if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+        # --- Standard launcher ---
         else:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
-            kodi_def_thumb  = launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultProgram.png'
-            kodi_def_fanart = launcher['s_fanart']
-            platform        = launcher['platform']
-            if parent_launcher and num_clones > 0:
-                icon_path      = kodi_def_thumb
-                fanart_path    = kodi_def_fanart
-                banner_path    = ''
-                poster_path    = ''
-                clearlogo_path = ''
-                rom_name       = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(num_clones)
-            else:
-                icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
-                fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', kodi_def_fanart)
-                banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
-                poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
-                clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
+            kodi_def_thumb = launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultProgram.png'
+            platform = launcher['platform']
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
+            fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
+            banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
+            poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
+            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
 
-                # --- NoIntro status flag ---
-                nstat = rom['nointro_status']
+            # --- parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode ---
+            nstat = rom['nointro_status']
+            if parent_launcher and num_clones > 0:
+                rom_name = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(num_clones)
+            else:
+                # --- Do not render No-Intro flag for parents when showing Parent ROMs ---
                 if self.settings['display_nointro_stat']:
                     if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
                     elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
@@ -3613,13 +3608,15 @@ class Main:
                     else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
                 else:
                     rom_name = rom_raw_name
-                if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
-                elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
-                elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
-                elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
-
-                # --- Mark clone ROMs ---
-                if 'isClone' in rom: rom_name += ' [COLOR orange][Clo][/COLOR]'
+            if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
+            elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
+            elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
+            elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
+            # --- Mark clone ROMs ---
+            pclone_status = rom['pclone_status']
+            if pclone_status == PCLONE_STATUS_CLONE: rom_name += ' [COLOR orange][Clo][/COLOR]'
+            if   pclone_status == PCLONE_STATUS_PARENT: AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
+            elif pclone_status == PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
             # --- In Favourites ROM flag ---
             if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
             if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
@@ -7140,9 +7137,12 @@ class Main:
         num_removed_roms = self._roms_delete_missing_ROMs(roms)
         log_info('_roms_reset_NoIntro_status() Removed {0} dead/missing ROMs'.format(num_removed_roms))
 
-        # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE
+        # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE and
+        #            set PClone status to PCLONE_STATUS_NONE
         log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
-        for rom_id in sorted(roms.iterkeys()): roms[rom_id]['nointro_status'] = NOINTRO_STATUS_NONE
+        for rom_id in sorted(roms.iterkeys()): 
+            roms[rom_id]['nointro_status'] = NOINTRO_STATUS_NONE
+            roms[rom_id]['pclone_status']  = PCLONE_STATUS_NONE
         log_info('_roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
 
         # >> Step 3) Delete PClone index and Parent ROM list.
@@ -7176,30 +7176,24 @@ class Main:
     #
     def _roms_update_NoIntro_status(self, launcher, roms, nointro_xml_file_FileName):
         __debug_progress_dialogs = False
+        __debug_time_step = 0.0005
 
         # --- Reset the No-Intro status and removed No-Intro missing ROMs ---
+        audit_have = audit_miss = audit_unknown = 0
         pDialog = xbmcgui.DialogProgress()
         pDialog.create('Advanced Emulator Launcher', 'Deleting Missing/Dead ROMs and clearing flags ...')
-        self.audit_have = self.audit_miss = self.audit_unknown = 0
         self._roms_reset_NoIntro_status(launcher, roms)
-        if __debug_progress_dialogs:
-            pDialog.update(50)
-            time.sleep(0.5)
         pDialog.update(100)
-        pDialog.close()
+        if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Check if DAT file exists ---
         if not nointro_xml_file_FileName.exists():
             log_warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_FileName.getPath()))
             return False
-        pDialog = xbmcgui.DialogProgress()
-        pDialog.create('Advanced Emulator Launcher', 'Loading No-Intro/Redump XML DAT file ...')
+        pDialog.update(0, 'Loading No-Intro/Redump XML DAT file ...')
         roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file_FileName)
-        if __debug_progress_dialogs:
-            pDialog.update(50)
-            time.sleep(0.5)
         pDialog.update(100)
-        pDialog.close()
+        if __debug_progress_dialogs: time.sleep(0.5)
         if not roms_nointro:
             log_warning('_roms_update_NoIntro_status() Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
             return False
@@ -7207,8 +7201,7 @@ class Main:
         # --- Remove BIOSes from No-Intro ROMs ---
         if self.settings['scan_ignore_bios']:
             log_info('_roms_update_NoIntro_status() Removing BIOSes from No-Intro ROMs ...')
-
-            pDialog.create('Advanced Emulator Launcher', 'Removing BIOSes from No-Intro ROMs ...')
+            pDialog.update(0, 'Removing BIOSes from No-Intro ROMs ...')
             num_items = len(roms_nointro)
             item_counter = 0
             filtered_roms_nointro = {}
@@ -7221,67 +7214,63 @@ class Main:
                     log_debug('_roms_update_NoIntro_status() Removing BIOS {0}'.format(rom['name']))
                 item_counter += 1
                 pDialog.update((item_counter*100)/num_items)
-                if __debug_progress_dialogs: time.sleep(0.01)
+                if __debug_progress_dialogs: time.sleep(__debug_time_step)
             roms_nointro = filtered_roms_nointro
             pDialog.update(100)
-            pDialog.close()
         else:
             log_info('_roms_update_NoIntro_status() User wants to include BIOSes.')
 
         # --- Put No-Intro ROM names in a set ---
         # >> Set is the fastest Python container for searching elements (implements hashed search).
         # >> No-Intro names include tags
-        pDialog.create('Advanced Emulator Launcher', 'Creating No-Intro and ROM sets ...')
+        pDialog.update(0, 'Creating No-Intro and ROM sets ...')
         roms_nointro_set = set(roms_nointro.keys())
         roms_set = set()
         for rom_id in roms:
             # >> Use the ROM basename.
             ROMFileName = FileName(roms[rom_id]['filename'])
             roms_set.add(ROMFileName.getBase_noext())
-        if __debug_progress_dialogs: time.sleep(0.5)
         pDialog.update(100)
-        pDialog.close()
+        if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Traverse Launcher ROMs and check if they are No-Intro ROMs ---
-        pDialog.create('Advanced Emulator Launcher', 'Audit Step 1/3: Checking Have and Unknown ROMs ...')
+        pDialog.update(0, 'Audit Step 1/4: Checking Have and Unknown ROMs ...')
         num_items = len(roms)
         item_counter = 0
         for rom_id in roms:
             ROMFileName = FileName(roms[rom_id]['filename'])
             if ROMFileName.getBase_noext() in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = NOINTRO_STATUS_HAVE
-                self.audit_have += 1
+                audit_have += 1
                 log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBase_noext()))
             else:
                 roms[rom_id]['nointro_status'] = NOINTRO_STATUS_UNKNOWN
-                self.audit_unknown += 1
+                audit_unknown += 1
                 log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBase_noext()))
             item_counter += 1
             pDialog.update((item_counter*100)/num_items)
-            if __debug_progress_dialogs: time.sleep(0.01)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
-        pDialog.close()
 
         # --- Mark Launcher dead ROMs as missing ---
-        pDialog.create('Advanced Emulator Launcher', 'Audit Step 2/3: Checking Missing ROMs ...')
+        pDialog.update(0, 'Audit Step 2/4: Checking Missing ROMs ...')
         num_items = len(roms)
         item_counter = 0
         for rom_id in roms:
             ROMFileName = FileName(roms[rom_id]['filename'])
             if not ROMFileName.exists():
                 roms[rom_id]['nointro_status'] = NOINTRO_STATUS_MISS
-                self.audit_miss += 1
+                audit_miss += 1
                 log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBase_noext()))
             item_counter += 1
             pDialog.update((item_counter*100)/num_items)
-            if __debug_progress_dialogs: time.sleep(0.01)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
-        pDialog.close()
 
         # --- Now add missing ROMs to Launcher ---
         # >> Traverse the No-Intro set and add the No-Intro ROM if it's not in the Launcher
         # >> Added/Missing ROMs have their own romID.
-        pDialog.create('Advanced Emulator Launcher', 'Audit Step 3/3: Adding Missing ROMs ...')
+        pDialog.update(0, 'Audit Step 3/4: Adding Missing ROMs ...')
         num_items = len(roms_nointro_set)
         item_counter = 0
         ROMPath = FileName(launcher['rompath'])
@@ -7297,32 +7286,58 @@ class Main:
                 rom['m_name']         = nointro_rom
                 rom['nointro_status'] = NOINTRO_STATUS_MISS
                 roms[rom_id]          = rom
-                self.audit_miss += 1
+                audit_miss += 1
                 log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom['m_name']))
                 # log_debug('_roms_update_NoIntro_status()    OP   "{0}"'.format(rom['filename']))
             item_counter += 1
             pDialog.update((item_counter*100)/num_items)
-            if __debug_progress_dialogs: time.sleep(0.01)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
-        pDialog.close()
 
-        # --- Make a Parent/Clone index and a parent ROMs list and save DBs ---
-        pDialog.create('Advanced Emulator Launcher', 'Building Parent/Clone indices ...')
-        roms_pclone_index       = fs_generate_PClone_index(roms, roms_nointro)
-        parent_roms             = fs_generate_parent_ROMs_dic(roms, roms_pclone_index)
-        roms_base_noext         = launcher['roms_base_noext']
-        index_roms_base_noext   = roms_base_noext + '_PClone_index'
-        parents_roms_base_noext = roms_base_noext + '_parents'
+        # --- Make a Parent/Clone index and save JSON file ---
+        pDialog.update(0, 'Building Parent/Clone index ...')
+        roms_pclone_index     = fs_generate_PClone_index(roms, roms_nointro)
+        index_roms_base_noext = launcher['roms_base_noext'] + '_PClone_index'
         fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
-        fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
+        pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Set pclone_status flag ---
+        pDialog.update(0, 'Audit Step 4/4: Setting Parent/Clone status ...')
+        num_items = len(roms)
+        item_counter = 0
+        audit_parents = audit_clones = 0
+        for rom_id in roms:
+            if rom_id in roms_pclone_index:
+                roms[rom_id]['pclone_status'] = PCLONE_STATUS_PARENT
+                audit_parents += 1
+            else:
+                roms[rom_id]['pclone_status'] = PCLONE_STATUS_CLONE
+                audit_clones += 1
+            item_counter += 1
+            pDialog.update((item_counter*100)/num_items)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
         pDialog.close()
+        launcher['num_roms']    = len(roms)
+        launcher['num_parents'] = audit_parents
+        launcher['num_clones']  = audit_clones
+
+        # --- Make a Parent only ROM list and save JSON ---
+        pDialog.update(0, 'Building Parent/Clone index and Parent dictionary ...')
+        parent_roms             = fs_generate_parent_ROMs_dic(roms, roms_pclone_index)
+        parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
+        fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
+        pDialog.update(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Update launcher number of ROMs ---
-        self.audit_total   = launcher['num_roms']    = len(roms)
-        self.audit_parents = launcher['num_parents'] = len(roms_pclone_index)
-        self.audit_clones  = launcher['num_clones']  = len(roms) - len(roms_pclone_index)
+        self.audit_have    = audit_have
+        self.audit_miss    = audit_miss
+        self.audit_unknown = audit_unknown
+        self.audit_total   = len(roms)
+        self.audit_parents = audit_parents
+        self.audit_clones  = audit_clones
 
         # --- Report ---
         log_info('********** No-Intro/Redump audit finished. Report ***********')
@@ -8962,16 +8977,20 @@ class Main:
         processed_launchers = 0
         for launcher_id in self.launchers:
             log_debug('_command_edit_rom() Checking Launcher "{0}"'.format(self.launchers[launcher_id]['m_name']))
-            # >> Load ROMs
+            # --- Load standard ROM database ---
             roms_base_noext = self.launchers[launcher_id]['roms_base_noext']
             roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
-            for rom_id in roms:
-                # >> Get ROM object
-                rom = roms[rom_id]
-                self._misc_fix_rom_object(rom)
-            # >> Save ROMs
+            for rom_id in roms: self._misc_fix_rom_object(roms[rom_id])
             fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcher_id])
-            
+
+            # --- If exists, load Parent ROM database ---
+            parents_roms_base_noext = self.launchers[launcher_id]['roms_base_noext'] + '_parents'
+            parents_FN = ROMS_DIR.join(parents_roms_base_noext + '.json')
+            if parents_FN.exists():
+                roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
+                for rom_id in roms: self._misc_fix_rom_object(roms[rom_id])
+                fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, roms)
+
             # >> Also Save Categories/Launchers XML.
             # >> This updates timestamps and forces regeneration of Virtual Launchers.
             self.launchers[launcher_id]['timestamp_launcher'] = time.time()            
@@ -9047,17 +9066,23 @@ class Main:
     #
     def _misc_fix_rom_object(self, rom):
         # >> Add empty string fields m_nplayers, m_esrb if not present.
-        if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
-        if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
-        if not 'disks'      in rom: rom['disks']      = []
-        
+        if not 'm_nplayers'    in rom: rom['m_nplayers']    = ''
+        if not 'm_esrb'        in rom: rom['m_esrb']        = ESRB_PENDING
+        if not 'disks'         in rom: rom['disks']         = []
+        if not 'pclone_status' in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
+        # >> Delete unwanted stuff
+        if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
+
     def _misc_fix_Favourite_rom_object(self, rom):
         # >> Add empty string fields m_nplayers, m_esrb, disks if not present.
-        if not 'm_nplayers' in rom: rom['m_nplayers'] = ''
-        if not 'm_esrb'     in rom: rom['m_esrb']     = ESRB_PENDING
-        if not 'disks'      in rom: rom['disks']      = []
+        if not 'm_nplayers'    in rom: rom['m_nplayers']    = ''
+        if not 'm_esrb'        in rom: rom['m_esrb']        = ESRB_PENDING
+        if not 'disks'         in rom: rom['disks']         = []
+        if not 'pclone_status' in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
+        # >> Delete unwanted stuff
+        if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
         # >> args_extra empty list
-        if not 'args_extra' in rom: rom['args_extra'] = []
+        if not 'args_extra'    in rom: rom['args_extra']    = []
 
     #
     # A set of functions to help making plugin URLs
