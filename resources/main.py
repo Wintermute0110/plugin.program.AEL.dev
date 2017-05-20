@@ -3939,7 +3939,7 @@ class Main:
         # >> If XML DB not available tell user and leave
         xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
         if not xml_file:
-            kodi_notify_warn('Database not available yet. Sorry.')
+            kodi_notify_warn('{0} database not available yet.'.format(platform))
             # kodi_refresh_container()
             return
 
