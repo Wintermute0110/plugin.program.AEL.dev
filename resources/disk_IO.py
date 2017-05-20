@@ -1449,7 +1449,7 @@ def fs_load_GameInfo_XML(xml_file):
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
-        return roms
+        return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
