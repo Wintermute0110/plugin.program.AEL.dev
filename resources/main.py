@@ -3084,21 +3084,26 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_offline_scraper_launchers(self):
-        self._misc_set_all_sorting_methods()
+        self._misc_set_default_sorting_method()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # >> Loop the list of platforms and render a virtual launcher for each platform that
         # >> has a valid XML database.
         for platform in AEL_platform_list:
+            # >> Do not show Unknown platform
+            if platform == 'Unknown': continue
             db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            if db_suffix:
-                self._gui_render_offline_scraper_launchers_row(platform)
+            self._gui_render_offline_scraper_launchers_row(platform, db_suffix)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    def _gui_render_offline_scraper_launchers_row(self, platform):
+    def _gui_render_offline_scraper_launchers_row(self, platform, db_suffix):
+        # >> Mark platform whose XML DB is not available
+        title_str = platform
+        if not db_suffix: title_str += ' [COLOR red][Not available][/COLOR]'
+
         plot_text = 'Offline Scraper {0} database ROMs.'.format(platform)
-        listitem = xbmcgui.ListItem(platform)
-        listitem.setInfo('video', {'title' : platform,         
+        listitem = xbmcgui.ListItem(title_str)
+        listitem.setInfo('video', {'title' : title_str,
                                    'genre' : 'Offline Scraper database',
                                    'plot'  : plot_text, 'overlay': 4 } )
         # >> Set platform property to render platform icon on skins.
@@ -3931,9 +3936,15 @@ class Main:
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
+        # >> If XML DB not available tell user and leave
+        xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
+        if not xml_file:
+            kodi_notify_warn('Database not available yet. Sorry.')
+            # kodi_refresh_container()
+            return
+
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
         xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
         log_debug('Loading XML {0}'.format(xml_path))
