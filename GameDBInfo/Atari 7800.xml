@@ -1,835 +1,835 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <menu>
-  <header>
-    <listname>Atari 7800</listname>
-    <lastlistupdate></lastlistupdate>
-    <listversion>test</listversion>
-    <exporterversion></exporterversion>
-  </header>
-  <game name="32 in 1 (USA)">
-    <description>32 in 1</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Compilation</genre>
-    <score>3.3</score>
-    <player>1-3 Players</player>
-    <story>This was a cart that was released in PAL format in Europe, Australia and New Zealand. Most were the pack in game with the Atari 2600 in the UK and Atari 7800 in Australia and New Zealand but it was also released as a boxed separate game for the Atari 2600. A different game was selected every time the Atari 2600 or Atari 7800 was turned on.The games were: 1.UFO (a renaming of U. S. Game&apos;s Space Jockey) 2.Flag Capture 3.Human Cannonball 4.Reversi (a renaming of Atari&apos;s Othello) 5.Activision&apos;s Checkers 6.Slot Racers 7.Blackjack 8.Fishing (a graphic hack of Activision&apos;s Fishing Derby in which you are fishing for crabs) 9.Freeway Rabbit (a graphic hack of Activision&apos;s Freeway in which you are a rabbit) 10.Space War 11.Fun with Numbers 12.Golf 13.3-D Tic-Tac-Toe 14.Surround 15.Miniature Golf 16.Activision&apos;s Boxing 17.Football 18.Air-Sea Battle 19.Freeway Chicken (a renaming of Activision&apos;s Freeway) 20.Activision&apos;s Tennis 21.Activision&apos;s Skiing 22.Activision&apos;s Fishing Derby 23.Sky Diver 24.Bowling 25.Combat 26.Activision&apos;s Stampede 27.Activision&apos;s Laser Blast 28.Outlaw 29.Slot Machine 30.Basketball 31.Home Run 32.Ant Party (a renaming of CommaVid&apos;s Cosmic Swarm)</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Ace of Aces (USA)">
-    <description>Ace of Aces</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Artech</dev>
-    <genre>Flying</genre>
-    <score>2.0</score>
-    <player>1 Player</player>
-    <story>Ace of Aces is a 1st person, 2D flight simulation. You&apos;re onboard a British RAF Mosquito, maverick fighter bomber. Your mission ... stop enemy trains, intercept the terrible german V-1 buzz bombs, sink the german U-boats and down the Nazi bombers. Are you ready for this challenge?</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Alien Brigade (USA)">
-    <description>Alien Brigade</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Shooter</genre>
-    <score>4.0</score>
-    <player>1 Player</player>
-    <story>Alien Brigade is a side scrolling shooter similar to Operation Wolf. Aliens have arrived on earth and have brainwashed both soldiers and civilians in order to take over the world. Your job is to stop them! On each of the five levels you will have a different objective to complete, including saving civilians and destroying alien installations. Throughout the levels there will be numerous aliens and brainwashed people you will need to shoot, as well as attacking tanks, helicopters, and more. After shooting enemies a bonus may sometimes be left behind; if you shoot this, you can earn additional ammo, more powerful weapons, or increased health. If you don&apos;t shoot fast enough and are hit by enemy fire your health will slowly decrease; the game ends when all of your health is gone.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Asteroids (USA)">
-    <description>Asteroids</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>tari, Inc.</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>3.8</score>
-    <player>1-2 Players</player>
-    <story>Asteroids is a conversion of the arcade game of the same name. Play the role of a spaceship pilot trapped in a gigantic asteroid cloud and pulverize incoming asteroids with the ship&apos;s photon cannon. When all asteroids are destroyed, the play can them move to the next round. In addition to asteroid, the player will also face an Alien Robot Saucer which shoots randomly across the screen. The player using the controller may rotate the ship (left or right) to any direction or move the ship forward. Shots will be fired according to the ship direction. The player has three reserved ships available to replace a destroyed spaceship. The spaceship is destroyed if an asteroid collides with the spaceship or is shot by an Alien Robot Saucer. Additionally, the player may opt to use the hyperspace warp to avoid collision. The warp however, may also destroy the spaceship in the process. Asteroids when shot will break-up into smaller pieces or be destroyed.. There are three types of asteroids: large asteroids, medium asteroids, and small asteroids. Large asteroids and medium asteroids when shot, will break-up into two smaller sized asteroids. Small asteroids when shot will be destroyed. Alien Robot Saucers come in two sizes: small and large. Both use photon lasers to shoot and will explode when destroyed. Alien Robot Saucers will not appear at the Novice Level. Game Difficulty and Variations There are 4 available difficulty settings: Novice, Intermediate, Advanced, and Expert. The game also offers three different game variations: 1. Standard Play - For one or two players, taking turns when a player&apos;s ship is destroyed. 2. Competition Asteroids - Two players appear on the screen at the same time. Friendly fire is in affect, which means shots fired from one player&apos;s spaceship will destroy the other player&apos;s spaceship. Each player has separate ship reserves. 3. Team Asteroids - Two players on the screen at the same time. Friendly fire is disabled, which means shots fired from one player&apos;s spaceship will not destroy the other player&apos;s spaceship and just pass through. Ship reserves for both players are combined. Scoring The score of the Player 1 is viewable on the upper left side of the screen, while Player 2 on the opposite upper right side. A player will be awarded a new reserve ship for every 10,000 points. 1. Small saucer - 1,000 points 2. Other player&apos;s ship - 500 points 3. Large saucer - 200 points 4. Small asteroid - 100 points 5. Medium asteroid - 50 points 6. Large asteroid - 20 points</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Ballblazer (USA)">
-    <description>Ballblazer</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Lucasfilm Games LLC</dev>
-    <genre>Sports</genre>
-    <score>3.8</score>
-    <player>1-2 Players</player>
-    <story>In the year 3037, the most competitive sport in the known universe is Ballblazer. For the first time ever, humans from the planet Earth have won the right to compete in the final round of the Ballblazer Championship, to fight for Earth&apos;s honor and the title Masterblazer! Ballblazer is a 3D futuristic soccer-like game, where the player (inside a Rotofoil) is set on a one-on-one 1,155 square playing field (the Grid). The objective of the player to kick a floating ball (Plasmorb) inside the opponent&apos;s goal (Goalbeams). A player may compete against a human or computer opponent. The Rotofoil is equipped with a multi-purpose forcefield. This forcefield when in short distance of the Plasmorb will act as a pull field, automatically pulling the Plasmorb towards to player. When a player in possession of the Plasmorb shoots, the forcefield will act as push field and launches the ball. When the match starts, the player must move down field and attempt to gain possession of the Plasmorb using the joystick and blast the Plasmorb to an intended direction. The player should also be aware that the Goldbeams move slightly every second and the distance between them will shrink. The highest scoring goals are goals made when Goldbeams have disappeared across the horizon (Over The Horizon/OTH shots). A player may also attempt to steal possession of a Plasmorb by rushing beside the opponent and blast the Plasmorb away. The game ends when time runs out or a player wins 10 consecutive goals. If the game ends in a draw, over-time will apply and the first player to score will win the game. Scoring Close-in goals - 1 point Goals near Goldbeams - 2 points OTH shots - 3 points Players may steal points from each other by making goals. The total combined score of both players cannot accede more than 10 points. A player winning 10 consecutive points automatically </story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Barnyard Blaster (USA)">
-    <description>Barnyard Blaster</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Gun</genre>
-    <score>2.2</score>
-    <player>1-2 Players</player>
-    <story>You and your grandpa just put your life savings into buying a small farm a few acres for growing vegetables and raising horses, a place to get away from the battle of city life. But you discover that the entire farm is full of things that are determined to drive you away. Barnyard Blaster is a shooting gallery type game for use with the Atari XG-1 light gun or the joystick. There are three levels plus one bonus level.Your goal is to rid your farm of vermin by shooting targets in each of three levels. Between each level you&apos;ll play Gramps&apos; bonus screen where you can brush up on your shooting. But in order to proceed through each level, you must achieve a certain percentage of shooting accuracy. At the end of the game you&apos;re given a ranking depending on how well you did.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Basketbrawl (USA)">
-    <description>Basketbrawl</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Basketball/Sports</genre>
-    <score>2.2</score>
-    <player>1-2 Players</player>
-    <story>In a desperate attempt to stop inner-city gang wars, the city leaders organized a basketball league. The league is scheduled to play on three courts: a street, a junkyard, and a rooftop. The mayor figured that a friendly game of hoops would be a much more peaceful way to settle disputes. He was wrong. You can choose 1-on-1 or 2-on-2 game modes. There are six characters to choose from (ten in Atari Lynx version); each with their own health, speed, and power attributes. Each player without the ball can jump to block a shot or punch there opponent to get the ball. There&apos;s also an option to perform a power throw on an opposing player. Players with the ball can shoot or pass. Power ups appear on the court at random instances. These power up one attribute for the player. For example, the lightning power up increases the player&apos;s speed. The referee does not call fouls, but does hurl knives at the players.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Centipede (USA)">
-    <description>Centipede</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>4.2</score>
-    <player>1-2 Players</player>
-    <story>In Centipede, the player is trapped in the Enchanted Forest. Armed with only a magic wand to ward off the forest&apos;s insect denizens, all of which apparently are attacking in the player in continuous waves. The player must use the magic wand to shoot sparks at approaching insects to score points by pressing the controller button. Holding down the controller button will set the wand to rapid fire shots. If the player is bitten by an insect, the player will be temporarily paralyzed and lose one of the three starting magic wands. Insect Opponents and Mushrooms All enemy insects have a distinctive sound before attacking, which may help the player identify which insect is attacking. Enemies and objects in the game are as the following: 1. The Centipede The Centipede will attack in 12 waves. In the first wave, the Centipede will have a head attached to 11 body segments. In the second wave, the Centipede will have a head attached to 10 body segments, in addition to a detached head. The third wave will have the Centipede with an attached head, 9 body segments, plus two detached heads. These body segments will transform into heads and continue to do so until Wave 12. In the last wave, the Centipede will have 12 detached heads, independently attacking the player. Centipede heads are worth more points than body segments. Attacks from the Centipede will come from the top of the screen, moving downward. If a spark hits any part of the Centipede, that particular body segment will transform into a mushroom, while the body segment behind it will become the new Centipede head. When the Centipede is destroyed, it will briefly disappear and re-appear from the top of the screen again. The Spider The Spider will attempt to distract the player from attacking the Centipede. It will destroy any mushroom it touches. Spiders will score more points if it is hit in closer distances. The Flea The Flea will appear if the player has destroyed most of the existing mushrooms. It will drop down creating a new batch of mushrooms where it falls. The Flea will disappear after two hits. After the first hit, the Flea will drop down much faster. The Scorpion The Scorpion will appear in the third wave. It moves slowly but will pick up speed, moving faster. While doing so, it will poison any mushroom it touches. Mushrooms Mushrooms fill the Enchanted Forest and may act as obstacles or cover for the player, with added effects to enemy insects. It takes for shots to complete destroy a mushroom. There are two type of mushrooms: Magic Mushrooms and Poisonous mushrooms. Magic mushrooms are the default mushrooms in the game and are also the the result of the player destroying an insect or Centipede body segment. Poisonous Mushrooms are the result of the Scorpion touching a mushroom. Poisonous Mushrooms will prompt the Centipede near it to move straight towards the player through any mushroom. Losing a wand will restore any partially damaged mushroom. Game Difficulty and Variations The game offers four difficulty levels: Novice, Standard, Advanced, and Expert. Game Variations are as the following: 1. One Player Two Player Alternating Two players will take turns when the active player is bitten. Dual Player Competition Two players will appear on the screen at the same time. Scoring is separate. Shots fired from one player will paralyze the other player. Team Play Two players will appear on the screen at the same time. Scoring is combined. Shots fired from one player will not paralyze the other player. Scoring The player will win a bonus magic wand for every 12,000 points to a maximum of six wands. The game will end when all wands are lost. Scoring are as the following: Centipede Head - 100 points Centipede Body Segment - 10 points Spider at close range - 900 points Spider at medium range - 600 points Flea - 200 points Scorpion - 1,000 points Flea - 200 points Restored mushroom - 5 points Destroyed mushroom - 1 points</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Choplifter! (USA)">
-    <description>Choplifter!</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Brøderbund Software, Inc.</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>2.4</score>
-    <player>1 Player</player>
-    <story>Choplifter is a side-scrolling action/arcade game that puts you in command of an attack chopper. Your mission: Go behind enemy lines and rescue up to 16 hostages per level. Be careful, though, because tanks and enemy aircraft will try to stop you -- and they won&apos;t stop shooting while you are rescuing those hostages! Originally released for Apple II home computers, Choplifter was later ported to the arcades and a number of video game consoles. Many imitators and homages would follow.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Commando (USA)">
-    <description>Commando</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Capcom Co., Ltd.</dev>
-    <genre>Shooter</genre>
-    <score>4.2</score>
-    <player>1-2 Players</player>
-    <story>Several levels await your super-tough Commando in this arcade conversion. Armed with only a standard rifle and a few grenades you must take on hordes of Nazis. Some are wandering around in the open, while others have picked out hiding places, which you must approach from certain angles. Trees, rivers and bridges create a varied combat-like terrain and must be incorporated into your thinking. Extra grenades can be collected, and will definitely be required, as they allow you to kill form distance and thus avoid some enemy shots.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Crack&apos;ed (USA)">
-    <description>Crack&apos;ed</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Shooter</genre>
-    <score>3.0</score>
-    <player>1 Player</player>
-    <story>As a professional ornithologist, you&apos;re thrilled to find out that some rare South American hornbills have nested in your old yolk tree. But while the hornbills are out feeding, a group of mischievous bluebirds, owls, and snakes begin raiding their nests and stealing eggs. You get out your slingshot and begin hitting the marauding creatures. But you have to be careful. If you hit an egg-carrying bird, it drops the egg and you have to act fast to catch it before it hits the ground and return it to a nest. At the same time, you have to watch for snakes that may be sneaking up to nests and gobbling eggs. If you can protect the eggs long enough, you can take them to another nesting site.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Crossbow (USA)">
-    <description>Crossbow</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Exidy, Inc.</dev>
-    <genre>Shooter</genre>
-    <score>2.9</score>
-    <player>1 Player</player>
-    <story>In Crossbow, you and several friends are trying to cross many treacherous landscapes in order to retrieve stolen treasures from the castle of the Evil Master. All of the members of your party are unarmed, however you carry a crossbow. Using this, you need to shoot any obstacles or hostile enemies that may get in the way of your friends as they cross the screen. You see the landscape from a first person point of view, and one by one each member of the party will walk from the left to right on the screen. There are many different landscapes that need to be crossed, each with its own variety of dangers. There are deserts with scorpions, ice caverns, jungles with hostile monkeys, a lava spewing volcano, and even the heavily guarded castle. The game starts with two friends in your party, with additional friends joining after clearing certain parts of the game. The game ends when everyone in your party has been killed.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Dark Chambers (USA)">
-    <description>Dark Chambers</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Maze</genre>
-    <score>2.0</score>
-    <player>1-2 Players</player>
-    <story>Dark Chambers is an arcade action game similar to Gauntlet. You are an explorer in an underground maze; your goal is to survive the 26 different levels and collect as many of the hidden treasures as you can. Hidden somewhere in each of the levels is an exit which will take you on to the next level. Trying to stop you from completing your quest are a wide variety of creatures, including zombies, wraiths, skeletons, wizards, and the grim reaper. Each of the creatures in the game has a different strength; when you shoot a creature, it will transform into the next weaker creature. Eventually a creature will become the weakest one (a zombie) at which point it can be destroyed. In addition to the creatures and treasures, other items that can be found in the maze are keys (to open doors), potions (to restore health), poison (drains health), guns (increases your firing rate), traps, shields, and bombs. The game is played from an overhead point of view, and is for one player or two players simultaneously.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Desert Falcon (USA)">
-    <description>Desert Falcon</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>3.2</score>
-    <player>1 Player</player>
-    <story>Desert Falcon is an arcade style shooter. Many of the Pharaoh&apos;s great treasures are lost throughout the desert, and your goal is to steal as many as you can to earn points. The game features a scrolling, isometric point of view as you control your falcon through the various desert landscapes. The treasures you are after are guarded of course. Many desert creatures including vultures, warriors, flying fish, sphinxes and more will all attempt to stop you from succeeding in your task. Also, at the end of each level you will need to face a large, howling sphinx before you can continue on. Your falcon isn&apos;t completely unarmed, and has the ability to fire darts which can be used to destroy the assorted enemies and the sphinx. In the sand, you will occasionally come across some hieroglyphs. Several different superpowers can be gained by landing and hopping over three of these hieroglyphs. Depending on which hieroglyphs are collected, you may become invincible, warp to the end of the level, earn free points, trick enemies into attacking a decoy instead of you, or even get an air bomb which destroys all airborne enemies.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Dig Dug (USA)">
-    <description>Dig Dug</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Namco Limited</dev>
-    <genre>Maze</genre>
-    <score>3.8</score>
-    <player>1-2 Players</player>
-    <story>Dig Dug is a 1-2 player arcade game in which you have to use your shovel to dig your way through the earth. Stopping you from doing this are two monsters, called Pooka and Fygar, who will continually chase you around. The only weapon that you carry is an air pump, which you can use to inflate the monsters to the point where they explode. (if you start to inflate them but stop doing so, the monsters will get turned back to their normal selves.) Furthermore, rocks are scattered throughout the earth, and you can use these rocks to squash them. If the monsters do not find you for several seconds, they will eventually get turned into ghosts, which are able to walk through the earth. They are invincible and cannot be killed. From time to time, vegetables will appear in the center, and you can get these for points.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Donkey Kong (USA)">
-    <description>Donkey Kong</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Nintendo Co., Ltd.</dev>
-    <genre>Platform</genre>
-    <score>3.6</score>
-    <player>1-2 Players</player>
-    <story>Released in the arcades in 1981, Donkey Kong was not only Nintendo&apos;s first real smash hit for the company, but marked the introduction for two of their most popular mascots: Mario (originally Jumpman) and Donkey Kong. Donkey Kong is a platform-action game that has Mario scale four different industrial themed levels (construction zone, cement factory, an elevator-themed level, and removing rivets from girders) in an attempt to save the damsel in distress, Pauline, from the big ape before the timer runs out. Once the rivets are removed from the final level, Donkey Kong falls, and the two lovers are reunited. From there, the levels start over at a higher difficulty. Along the way, Mario must dodge a constant stream of barrels, living fireballs, and spring-weights. Although not as powerful as in other future games, Mario can find a hammer which allows him to destroy the barrels and fireballs for a limited amount of time. Additionally, Mario can also find Pauline&apos;s hat, purse and umbrella for additional bonus points. Donkey Kong is also notable for being one of the first complete narratives in video game form, told through simplistic cut scenes that advance the story. It should also be noted that in versions of the game for early 1980&apos;s consoles, Donkey Kong only used 2-3 of the original levels, with the cement factory usually omitted.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Donkey Kong Junior (USA)">
-    <description>Donkey Kong Junior</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Nintendo Co., Ltd.</dev>
-    <genre>Platform</genre>
-    <score>2.9</score>
-    <player>1-2 Players</player>
-    <story>Mario has kidnapped Junior&apos;s Papa! Donkey Kong Jr. was originally released in the arcades in 1982 as a sequel to Donkey Kong. In this game, Mario plays the antagonist, finally having captured Donkey Kong, and has put the ape in a locked cage. As Donkey Kong Jr., players will have to make their way through four different levels (Vines, Springboard, Chains and Mario&apos;s Hideout) in an attempt to find keys to free the little monkey&apos;s Father. Along the way, Mario will send out Snapjaws, swooping purple birds, and electric sparks in an attempt to stop Junior. Junior can defend himself by dropping fruit found around the levels on the heads of his foes. The more foes a piece of fruit hits in a falling sequence, the higher bonus points can be scored. Junior can also avoid enemies more easily by grabbing hold of two chains or vines at a time to climb away faster, or by jumping over his foes. However, any long fall or falling into the water on certain levels will mean the loss of a life for Junior. In the final cut scene, Junior will free Donkey Kong and both will escape after giving Mario the boot. Once all four levels are cleared, the game levels will start over at a higher difficulty. Like the original Donkey Kong, the earlier 1980&apos;s console versions do not have all of the levels and animations from the arcade.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Double Dragon (USA)">
-    <description>Double Dragon</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Activision, Inc.</manufacturer>
-    <dev>Technos Japan Corp.</dev>
-    <genre>Beat-&apos;Em-Up</genre>
-    <score>2.9</score>
-    <player>1-2 Players</player>
-    <story>Set in a post-apocalyptic New York, Double Dragon is the story of Billy and Jimmy Lee, twin brothers trained in the fighting style of Sou-Setsu-Ken. Together, they manage a small martial arts training school, teaching their students in self-defense. One day, Billy&apos;s girlfriend, Marian, is kidnapped off the street by the Black Warriors, a savage street gang led by a man named Willy. The Black Warriors demand the Lee brothers disclose their martial arts secrets in exchange for Marian&apos;s freedom. The Lee brothers set out on a rescue mission to crush the Black Warriors and save Marian. Using whatever techniques they have at their disposal, from the basic punches and kicks to the invulnerable elbow strike, as well any weapon that comes into their hands, the Lee brothers must pursue the gang through the city slum, industrial area and the forest before reaching their hideout to confront the big boss, Willy.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="F-18 Hornet (USA)">
-    <description>F-18 Hornet</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Absolute Entertainment, Inc.</manufacturer>
-    <dev>Absolute Entertainment, Inc.</dev>
-    <genre>Flying</genre>
-    <score>2.8</score>
-    <player>1 Player</player>
-    <story>F-18 Hornet is a one-player fighter simulator in which the player pilots a Navy F-18/A Jet through a series of simulated combat situations including carrier take-offs and landings, bombings, strafings, and air combat. In each of four missions, you are confronted with a variety of opponents and must perform a series of combat objectives in order from the Naval Aviator rank.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Fatal Run (USA)">
-    <description>Fatal Run</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Sculptured Software, Inc.</dev>
-    <genre>Driving</genre>
-    <score>2.2</score>
-    <player>1 Player</player>
-    <story>In this post-apocalyptic driving/racing game you must travel to various towns delivering medicine, while on your way to a missile base which houses a rocket that can save the world. While driving through the 32 levels, you&apos;ll meet countless enemies who want to stop you from achieving your goal. Your car boasts many weapons to help you out, including dynamite, rockets, oil slicks, smoke screens, and machine guns. You can also upgrade your vehicle within the city shops. Upgrading your gas tank provides better mileage while upgrading your bumper protects you during collisions. A password feature let&apos;s you continue where you left off.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Fight Night (USA)">
-    <description>Fight Night</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Sydney Development Corp.</dev>
-    <genre>Boxing/Sports</genre>
-    <score>3.2</score>
-    <player>1-2 Players</player>
-    <story>Fight Night is a boxing game in which players box 11 different opponents on the way to the final match with the champ, Bronx Bomber. Each boxer has unique strengths and weaknesses, along with one specialised super punch. There are four different modes of play; the single-player Main Event and the multi-player Tournament (on disk/cartridge versions only), and also Training and Sparring modes. Players can also create their own boxer, setting the appearance and abilities.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Food Fight (USA)">
-    <description>Food Fight</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Fighter</genre>
-    <score>3.8</score>
-    <player>1-2 Players</player>
-    <story>You play as Charley trying to eat an ice cream cone. But first you must avoid the chefs that are out to get you: Angelo, Zorba, Oscar, and Jacques. Avoid the food thrown at you by the chefs to get the cone. You can also throw your own food at the chefs to slow them down.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Galaga (USA)">
-    <description>Galaga</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Namco Limited</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>3.3</score>
-    <player>1-2 Players</player>
-    <story>Galaga is a vertical arcade shooter from Namco. You control a space fighter at the bottom of the screen, scrolling left and right in order to avoid oncoming bombs and kamikaze attacks from alien invaders--and to fire your own missiles to fight back! There are an infinite number of stages to progress through. Every third level is a challenge stage in which you have a free chance to shoot as many aliens as possible and rack up bonus points. Certain aliens have tractor beams they can use to capture one of your ships. If that wasn&apos;t your last life, you can try to shoot that alien down and recapture your ship, giving you two ships at once and doubling your firepower. A summary screen appears when the game is over, giving you both your final score and you final hit ratio--the number of missiles fired, enemies destroyed, and the percentage of targets hit.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Hat Trick (USA)">
-    <description>Hat Trick</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Bally Sente</dev>
-    <genre>Hockey/Sports</genre>
-    <score>1.0</score>
-    <player>1-2 Players</player>
-    <story>Hat Trick is a two-on-two hockey game based on the 1984 coin-op of the same name. Each player controls a goalie and a skater. The object is to shoot the puck into the opposing teams goal. Each game lasts two minutes.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Ikari Warriors (USA)">
-    <description>Ikari Warriors</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>SNK Corporation</dev>
-    <genre>Shooter</genre>
-    <score>3.0</score>
-    <player>1-2 Players</player>
-    <story>A conversion of the arcade game, Ikari Warriors is a vertically scrolling action game. One or two players fight their way through a variety of terrain, such as jungles, rivers, and ruins. Along the way different weapons can be found, including machine guns, grenades, and rocket launchers.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Impossible Mission (USA)">
-    <description>Impossible Mission</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Epyx, Inc.</dev>
-    <genre>Platform</genre>
-    <score>1.9</score>
-    <player>1 Player</player>
-    <story>You play a secret agent on a quest to stop the evil Professor Elvin Atombender, who is believed to be tampering with national security computers. You must penetrate Atombender&apos;s stronghold, avoid his deadly robot creations, and acquire various pieces of a password to use in the main control room. The robots, rooms, and puzzle pieces will be switched around when starting over which provides replay value.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Jinks (USA)">
-    <description>Jinks</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Diamond Software</dev>
-    <genre>Breakout</genre>
-    <score>1.5</score>
-    <player>1 Player</player>
-    <story>Jinks added a largely new concept to the Breakout type games,offering much freer paddle movement ( both horizontally and vertically), a horizontally scrolling screen and the ability to flip the triangular paddle as needed. The objective is to survive on the planet Jinks - an exploration mission on this resource-rich planet has gone wrong. As hazards, there are objects that can destroy the paddle or make it smaller. There is also the ability to shake the screen if the ball is in a looping position.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Joust (USA)">
-    <description>Joust</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Williams Electronics Inc.</dev>
-    <genre>Platform</genre>
-    <score>4.6</score>
-    <player>1-2 Players</player>
-    <story>In Joust, players take control of a knight with a lance who rides their flying ostrich (or stork, for Player 2) to do battle against computer-controlled evil knights who ride atop vultures. Players must flap their steed&apos;s wings to hit the enemy from a higher jousting point to destroy the vulture and its rider. Once the enemy has been hit, an egg falls to one of the platforms below. The heroic knights must destroy the eggs before they hatch and release new and increasingly more difficult knights. The three strengths of enemy knights are Bounder (red knight), Hunter (white knight), and Shadow Lord (blue knight). These enemy knights are not the only challenge to be found in the game. Players must also contend with crumbling platforms, lava trolls who attempt to pull knights into the fire, and the dreaded unbeatable(?) pterodactyl. The game was novel for its time for being one of the few two-player simultaneous games in the arcade.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Karateka (USA)">
-    <description>Karateka</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Brøderbund Software, Inc.</dev>
-    <genre>Fighter</genre>
-    <score>3.0</score>
-    <player>1 Player</player>
-    <story>The evil Akuma has destroyed your homeland, killed many of your friends and kidnapped your Princess Mariko. Fortunately, you are skilled in Martial Arts, so your inevitable quest to reach Akuma&apos;s palace has a chance of success. The game is viewed from the side and features a succession of increasingly-difficult opponents. All the standard karate kicks and punches are available to both you and your foes. The game&apos;s design was serious and realistic, and the game featured lots of cutscenes to develop the story.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Kung-Fu Master (USA)">
-    <description>Kung-Fu Master</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Absolute Entertainment, Inc.</manufacturer>
-    <dev>Irem Corp.</dev>
-    <genre>Fighter</genre>
-    <score>4.5</score>
-    <player>1-2 Players</player>
-    <story>A conversion of the arcade game of the same name, which itself is loosely based on a movie, Kung-Fu Master is a side scrolling action game for one or two players, who alternate turns. Mr. X has captured the pickpocket Sylvia and it is up to Thomas, a kung-fu master who owns a restaurant, to get her back. She is located on the top floor of Mr. X&apos;s castle and Thomas will need to fight his way to the top. Of course, this won&apos;t be easy as each floor has many opponents to get past and a floor boss at the end of each level. Thomas is able to move left and right, jump, duck, and punch and kick. Enemy projectiles such as knives can be kicked in the air to rebound them towards the enemy. On the top floor resides Mr. X himself.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Mario Bros. (USA)">
-    <description>Mario Bros.</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Nintendo Co., Ltd.</dev>
-    <genre>Platform</genre>
-    <score>3.4</score>
-    <player>1-2 Players</player>
-    <story>Mario and Luigi, the best plumbers in the world, have a real job on their hands. A host of characters have taken over the sewers, and the brothers must clear them out of the pipes. The platform puzzle which first introduced Luigi to the world has both single and multiplayer action with two differing game types, but with the same objective. Crabs, turtles and fighter flies must be cleared out by jumping underneath the platform they sit on, then kicking them away. Each level is cleared when a set number of coins is collected. For the two player mode, the first to collect the set amount of coins wins.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Mat Mania Challenge (USA)">
-    <description>Mat Mania Challenge</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>American Technos Inc.</dev>
-    <genre>Sports/Wrestling</genre>
-    <score>1.8</score>
-    <player>1-2 Players</player>
-    <story>Tie up those wrestling boots and climb into the Atari Wrestling Federation Championship ring. Based on the Technos coin-op of 1985, Mat Mania challenge features two player head-to-head action, or a one player journey to the championship belt. Each match lasts three minutes. The object is to either outscore, pin, or get your opponent counted out. You can perform such moves as the Overhead Slam or the Piledriver and many more; but your opponent has the same abilities.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Mean 18 Ultimate Golf (USA)">
-    <description>Mean 18 Ultimate Golf</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Accolade, Inc.</dev>
-    <genre>Golf/Sports</genre>
-    <score>2.0</score>
-    <player>1-2 Players</player>
-    <story>Pebbele Beach and St. Andrews are two of the courses on offer in this golf simulation, released in the early years of 16-bit technology. The three-click control system was used, whereby the first click starts the swing, the second sets the power, and the third sets draw or fade. Beginner and Expert difficulty options are given - the latter mode has more pronounced draw and fade effects, making the timing of the third click even more crucial. You can also choose between regular and professional tees - in the latter option the distance on the holes is longer, and the computer doesn&apos;t choose the best club automatically. Because long drives aren&apos;t a crucial aspect of many of the holes, the Begginer/Expert setting is a bigger factor on your likely scoring. A uniquie feature for the day was the course designer, which was quite versatile with practice.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Meltdown (USA)">
-    <description>Meltdown</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Shooter</genre>
-    <score>2.0</score>
-    <player>1 Player</player>
-    <story>Meltdown is an arcade action game similar to Reactor. On the screen you will see a representation of a nuclear reactor; numerous control rods are located in the center of the screen, with the reactor walls around the edges. Inside the reactor are numerous (and dangerous) particles which will damage the control rods if they collide. Using the light gun, you need to shoot and destroy the various particles before the control rods are destroyed. As the control rods take damage, the walls of the reactor will slowly cave inward, decreasing the amount of space available. From time to time power crystals may appear; if shot, these will provide bonuses such as extra points, control rod repair, temporarily freeze the particles, more powerful shots, and more. The game ends when the control rods have been completely destroyed causing the reactor to meltdown.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Midnight Mutants (USA)">
-    <description>Midnight Mutants</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Radioactive Software</dev>
-    <genre>Adventure</genre>
-    <score>4.2</score>
-    <player>1 Player</player>
-    <story>You play the part of Jimmy visiting Grampa on Halloween. Unfortunately, on this Halloween Dr. Evil has returned from the grave and captured Grampa in a pumpkin, and now you have to save him! Midnight Mutants is an action adventure game. As Jimmy you&apos;ll need to explore Grampa&apos;s mansion and the surrounding lands in order to find items which can be used to defeat enemies (including Dr. Evil) as well as safely reach new areas. The lands have become cursed, however, and there will be many obstacles on your quest including killer bats, zombies, werewolves and more. Jimmy has two life meters, one for health and one for blood. Some creatures are poisonous on contact and reduce the blood meter, while others reduce the health meter. If either runs out, the game is over. Throughout the game, Grampa&apos;s spirit will be in contact with Jimmy and can occasionally provide clues or other useful information. The game features an isometric point of view, and in some larger areas the screen will scroll horizontally or vertically to follow the action. Good luck on your quest to save Grampa and survive this Halloween!</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Motor Psycho (USA)">
-    <description>Motor Psycho</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>BlueSky Software, Inc.</dev>
-    <genre>Driving</genre>
-    <score>1.8</score>
-    <player>1 Player</player>
-    <story>MotorPsycho is similar in feel to Pole Position, but with motorcycles substituting the cars. The object is to complete each race within the alloted time while dodging other motorcycles. Ramps strewn throughout the track allow the motorcycle to jump over obstacles and the other motorcyclists. You can shift between high and low gears, but there are no brakes. A player can customize their motorcycle by adjusting the straighten and turn response times before the race.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Ms. Pac-Man (USA)">
-    <description>Ms. Pac-Man</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Midway</dev>
-    <genre>Maze</genre>
-    <score>3.5</score>
-    <player>1-2 Players</player>
-    <story>In 1982, a sequel to the incredibly popular Pac-Man was introduced in the form of his girlfriend, Ms. Pac-Man. This sequel continued on the eat the dots/avoid the ghosts gameplay of the original game, but added new features to keep the title fresh. Like her boyfriend, Ms. Pac-Man attempts to clear four various and challenging mazes filled with dots and ever-moving bouncing fruit while avoiding Inky, Blinky, Pinky and Sue, each with their own personalities and tactics. One touch from any of these ghosts means a loss of life for Ms. Pac-Man. Ms. Pac-Man can turn the tables on her pursuers by eating one of the four Energizers located within the maze. During this time, the ghosts turn blue, and Ms. Pac-Man can eat them for bonus points (ranging from 200, 400, 800 and 1600, progressively). The Energizer power only lasts for a limited amount of time, as the ghost&apos;s eyes float back to their center box, and regenerate to chase after Ms. Pac-Man again. Survive a few rounds of gameplay, and the player will be treated to humorous intermissions showing the growing romantic relationship between Pac-Man and Ms. Pac-Man, leading all the way up to the arrival of Junior.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Ninja Golf (USA)">
-    <description>Ninja Golf</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>BlueSky Software, Inc.</dev>
-    <genre>Golf/Sports</genre>
-    <score>3.6</score>
-    <player>1 Player</player>
-    <story>Ninja Golf is an arcade action game which combines a golf game with a side scrolling fighting game. You are a ninja, and your goal is to survive nine holes of ninja golf! On each of the holes, you alternate between the golf and action parts. First you hit the ball by selecting the direction and distance from the overhead view on the bottom of the screen; next you will need to run to the location your ball was hit while defending yourself from the many enemies. Depending on the terrain you need to cross, various enemy ninjas, giant frogs, killer sharks, snakes, and other enemies will all get in your way. To eliminate the enemies, you can kick, punch, or use a throwing star. Several bonuses may be found from time to time; temporary invincibility, an extra life, health restoration, or a magic transport to the green may all appear on the screen. Once you have reached the green, you will need to defeat a fire breathing dragon which guards the hole. The nine hole course progressively increases in difficulty and features par 3, par 4, and par 5 holes.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="One-on-One Basketball (USA)">
-    <description>One-on-One Basketball</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Basketball/Sports</genre>
-    <score>2.6</score>
-    <player>1-2 Players</player>
-    <story>Control either Julius Erving or Larry Bird in front of a single basket, in a game of one on one. The user can select to play either to a certain score or for a certain amount of time. When on offense, the player can rotate to keep away from his rival, take a shot from a distance or move in to the basket for special up-close slam-dunks. When on defense, you can try to take your rival&apos;s ball or jump up to block a shot. Particularly good set-ups get a slow-motion replay. You can even smash the glass on the backboard, which will send an irate janitor onto the court to clean up the mess.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Pete Rose Baseball (USA)">
-    <description>Pete Rose Baseball</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Absolute Entertainment, Inc.</manufacturer>
-    <dev>Absolute Entertainment, Inc.</dev>
-    <genre>Baseball/Sports</genre>
-    <score>4.0</score>
-    <player>1-2 Players</player>
-    <story>This baseball game licenses former Cincinnati Reds player Pete Rose. It allows the player to play every position on the field. Different batting and pitching styles are available. It has digitized voice and sound, and provides a variety of play options including One or Two-player action, season play or exhibition. In a somewhat ahead-of-its-time move, eight different perspectives are offered. There are also some team management capabilities, as you select and order your team, and hire new players. This can run over ten seasons, making for one of the first Career modes.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Planet Smashers (USA)">
-    <description>Planet Smashers</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>2.6</score>
-    <player>1-2 Players</player>
-    <story>Planet Smashers is a vertically scrolling shooter similar to Xevious. Power ups can be captured by destroying cargo ships. Power ups include improved weapons, shield restoration, and cloaking ability. Cargo ships also drop warp capsules that the player needs to collect in order to proceed to the level boss. One difference in this game that sets it apart from others of the same type is the Earth Shield. Every time the player lets a ship go by unscathed the Earth Shield depletes a little. If the shield is destroyed, it&apos;s game over.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Pole Position II (USA)">
-    <description>Pole Position II</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Namco Limited</dev>
-    <genre>Driving</genre>
-    <score>3.6</score>
-    <player>1 Player</player>
-    <story>In Pole Position II, based on the arcade sequel to Pole Position, you are again driving an F-1 racer in a timed qualifying run, trying to achieve the pole position. Then it is off to the race, in hopes of taking that top spot. The difference in Pole Position II and it&apos;s predecessor is that now you have four tracks to select from.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Rampage (USA)">
-    <description>Rampage</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Activision, Inc.</manufacturer>
-    <dev>Bally Midway Manufacturing Co., Inc.</dev>
-    <genre>Platform</genre>
-    <score>3.0</score>
-    <player>1-2 Players</player>
-    <story>George, Lizzy and Ralph were just ordinary Americans, until an experiment went wrong, turning them into a Gorilla, Lizard and Werewolf respectively. Following this, the three of them plan to go round destroying buildings, and up to 3 human players can join in. Smashing at the edges of the buildings for long enough will make them collapse. The police and military are after you, and will shoot at you, so try to destroy them (failing that, you can avoid the bullets). You will need to eat regularly, with things like plants on offer, to avoid shrinking back to being human</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="RealSports Baseball (USA)">
-    <description>RealSports Baseball</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Baseball/Sports</genre>
-    <score>2.0</score>
-    <player>1-2 Players</player>
-    <story>Baseball is an action game which can be played by two players or one player against the computer. The game allows you to bunt the ball or try for a homerun, steal bases, and throw several types of pitches from a fast ball to a curve ball. Several game variations are included which allow you to select whether the home or visiting team is at bat first, and whether or not a player can swing only at pitches that are a strike, or they can swing at any pitch.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Robotron - 2084 (USA)">
-    <description>Robotron - 2084</description>
-    <year>1986</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Williams Electronic Games, Inc.</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>4.4</score>
-    <player>1-2 Players</player>
-    <story>This is a port of the arcade game of the same name. You are a mutant human, who by some freak of nature has the ability to shoot energy pulses from his body in eight different directions! Your job is simple: save humanity from their own creation -- the ROBOTRONS! The gameplay is pretty unique for the time. You can move and fire in any of eight directions. You get thrown in a room with various evil baddies strewn about, you&apos;ve got to kill all the robots while at the same time finding some way to grab humans and avoid death.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Scrapyard Dog (USA)">
-    <description>Scrapyard Dog</description>
-    <year>1990</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>BlueSky Software, Inc.</dev>
-    <genre>Platform</genre>
-    <score>1.8</score>
-    <player>1 Player</player>
-    <story>In Scrapyard Dog you play the role of Louie, the junkyard guy, who&apos;s companion Scraps has been dognapped by the dastardly Mr. Big. Louie has bombs and cans at his disposal to use against the enemies, which include gangsters, rats, and mice. He can also use shields to protect himself on route to the sixteen checkpoints in the game. Louie must reach each checkpoint in a certain amount of time in order to save Scraps.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Sentinel (Europe)">
-    <description>Sentinel (Europe)</description>
-    <year>1991</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Atari Corporation</dev>
-    <genre>Gun</genre>
-    <score>2.5</score>
-    <player>1-2 Players</player>
-    <story>Sentinel is a side scrolling action game. Several worlds have fallen victim of an alien attack, and you need to free them. To do this, a glowing orb called the Sentinel has been sent which can absorb the alien energy. As the Sentinel floats above the various, scrolling landscapes, you need to protect it from attacks by using the light gun to destroy enemies and enemy fire. If you don&apos;t destroy an enemy, it will deplete the Sentinels energy supply which will eventually destroy it. There are four levels of increasing difficulty, each with a large boss at the end. To help out on your mission, several bonuses may be encountered from time to time; increased firepower and energy can be acquired when you shoot the bonus capsules that appear. Three levels of difficulty are available.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Summer Games (USA)">
-    <description>Summer Games</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Epyx, Inc.</dev>
-    <genre>Sports</genre>
-    <score>2.0</score>
-    <player>1-8 Players</player>
-    <story>Summer Games allows up to eight players to compete in a series of summer themed Olympic events. The gameplay is similar to the other entries in Epyx games series. Each player can choose a country to represent, and then takes turns competing in various events to see who will win the gold medal! The game allows you to compete in all of the events sequentially, choose a few events, choose just one event, or practice an event. The events available vary slightly depending on the platform, and may include: 1. Pole vault 2. Platform diving 3. 4x400 meter relay 4. 100 meter dash 5. Gymnastics 6. Freestyle swimming 7. Skeet shooting 8. 100 meter freestyle 9. Rowing</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Super Huey UH-1X (USA)">
-    <description>Super Huey UH-1X</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Cosmi Corporation</dev>
-    <genre>Flying</genre>
-    <score>1.4</score>
-    <player>1 Player</player>
-    <story>Super Huey UH-IX is a helicopter simulation game. You are the pilot of the experimental helicopter UH-1XA and you need to test it out in several game modes. In the flight school mode, you can learn how to fly. The computer will guide you through takeoff, flight, and landing. In reality mode, you will need to fly a mission to locate and bomb an enemy base and return home safely. The last mode is arcade mode where you have an unlimited amount of ammo to try and shoot down as many enemy aircraft as possible. The game is played from a first person view of the cockpit which is complete with radar and various instruments to help you fly.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Super Skateboardin&apos; (USA)">
-    <description>Super Skateboardin\&apos;</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Absolute Entertainment, Inc.</manufacturer>
-    <dev>Absolute Entertainment, Inc.</dev>
-    <genre>Skateboarding/Sports</genre>
-    <score>2.0</score>
-    <player>1 Player</player>
-    <story>Super Skateboardin&apos; is a game where a young skateboarder is hired by his dad&apos;s company to do what he does best, Skateboard. Your job is to navigate the many rooms of the factory and turn off all the electrical equipment in 15 minutes, or else the electricity bill will skyrocket. Your wage is based on how fast you complete the task, and you need that money to enter the Skateboarding Championship. Super Skateboardin&apos; is a straightforward game from the designer of Pitfall!, David Crane.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Tank Command (USA)">
-    <description>Tank Command</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Froggo Games Corporation</manufacturer>
-    <dev>Froggo Games Corporation</dev>
-    <genre>Shooter</genre>
-    <score>2.0</score>
-    <player>1 Player</player>
-    <story>Tank Command is a vertically scrolling action game. You control a tank on a mission to capture the enemy flag as well as earn as many points as possible. To do this, you will need to blast your way through their defenses on three levels of increasing difficulty. Blocking your progress are enemy tanks, pillboxes, missiles, jeeps, infantry, huts, and more, all of which earn you points when destroyed. Your tank is equipped with a limited amount of fuel and ammo, however it can be replenished occasionally by collecting the bonus icons when they appear on the screen. If you can make it past all of the obstacles and capture the flag, then you win the game!</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Title Match Pro Wrestling (USA)">
-    <description>Title Match Pro Wrestling</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Absolute Entertainment, Inc.</manufacturer>
-    <dev>Absolute Entertainment, Inc.</dev>
-    <genre>Sports/Wrestling</genre>
-    <score>1.8</score>
-    <player>1-2 Players</player>
-    <story>Title Match is a wrestling game which can be played by one or two players. There are four different wrestlers you can choose from, and two modes of gameplay (one on one, or tag team). Each wrestler can kick, punch, and perform several moves such as the airplane spin, body slam, power lift, and more. Using the available moves you need to deplete your opponents energy and pin him for three counts (though be careful, as some of the more powerful moves also use up a bit of your own energy). If your opponents energy is low enough and you successfully pin him that will count as a fall, and the best out of three falls will win the match!</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Tomcat - The F-14 Fighter Simulator (USA)">
-    <description>Tomcat - The F-14 Fighter Simulator</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Absolute Entertainment, Inc.</manufacturer>
-    <dev>Absolute Entertainment, Inc.</dev>
-    <genre>Flying</genre>
-    <score>5.0</score>
-    <player>1 Player</player>
-    <story>To be born with wings... Become a F-14 Naval Aviator undergoing seek and destroy missions while dodging and gunning enemy bogeys in deadly dogfights with your 20mm cannon and air-to-air missiles. You cockpit comes with state of the art technology, courtesy of the U.S. Air Force: Display and main computer, Bogey Alert Indicator, G-Force Indicator, Electronic Counter Measures, and a Cannon Overheat Indicator (yes, it can overheat!)...and if your feeling up to it, give the ol&apos;bird a boost to Mach 1.0! The gameplay like other simulation games consists of taking off, flying, combat and landing. Though most of the gameplay focuses around dogfighting with enemy bogeys (dodging missiles). In addition to that, there are also night-flying missions that add difficulty due to limited vision. Taking off and landing however, also required additional skill as your doing it on the USS Enterprise (No relation to Star Trek), not on your standard airstrip. Pay attention to the F.D. officer as your preparing to take off (since he&apos;s the boss when it comes to this stuff...and try no to run over him...yet). Your weaponry consists of a M 61 Machine Gun and 3 different AIM Missiles (AIM 7, 9, 54) each packed with 15 missiles (that&apos;s a lot of missiles!). After each mission you will receive a Mission Rating which is based on your flying skill, number of bogey kill and number of weapons fired.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Touchdown Football (USA)">
-    <description>Touchdown Football</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Imagic</dev>
-    <genre>Football/Sports</genre>
-    <score>2.9</score>
-    <player>1-2 Players</player>
-    <story>A very capable football simulation, given the year and technology. Call the plays, then run them using the keyboard or joystick. Digitized voices enhance the game, including the crowd, calling the numbers, and referee&apos;s calls.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Tower Toppler (USA)">
-    <description>Tower Toppler</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Hewson Consultants Ltd.</dev>
-    <genre>Action</genre>
-    <score>2.8</score>
-    <player>1-2 Players</player>
-    <story>You play a small green guy who needs to blow up eight towers, because their presence is somehow poisoning the water of planets which could potentially be ideal colonies. Unfortunately you need to get to the top of these towers to blow them up. You make your way up to the top of the tower via walkways around the outside of the towers. You need to jump over, kick, and run from various enemies in your journey to the top. Most vertical movement is achieved by jumping onto moving ledges at the right moment. The game was considered revolutionary in its time for its graphic technique. As the main character walked around the outside of the tower, the character was fixed in the middle of the screen while the tower itself rotated. This gave it a pseudo-3D effect. Towers are linked together via a voyage through the sea in your trusty MK.7 submarine. This plays out as a side-scrolling collect-&apos;em-up in which bonus points can be obtained.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Water Ski (USA)">
-    <description>Water Ski</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Froggo Games Corporation</manufacturer>
-    <dev>Froggo Games Corporation</dev>
-    <genre>Sports</genre>
-    <score>2.0</score>
-    <player>1 Player</player>
-    <story>In Water Ski you are water skiing on the Pharonna River. You control both the boat and skier in this vertically scrolling action game. Your goal is to reach the finish line before time runs out and also to earn as many points as possible. The river is quite dangerous, and features many twists and turns along with rocks, logs and other obstacles. For bonus points there are numerous ramps located throughout the river which your skier can jump over (and if you can manage to ski over every ramp on the level, you&apos;ll earn even more points!). You start the game with four skiers, and the game ends when all of you skiers have crashed.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Winter Games (USA)">
-    <description>Winter Games</description>
-    <year>1987</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Action Graphics</dev>
-    <genre>Sports</genre>
-    <score>2.8</score>
-    <player>1-8 Players</player>
-    <story>Another in the series of Epyx Olympic sports games. Compete in many different sporting events like: Ski Jump, Hot Dog, Biathlon, Bobsled, Free Skating, Figure Skating and more.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Xenophobe (USA)">
-    <description>Xenophobe</description>
-    <year>1989</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Bally Midway Manufacturing Co., Inc.</dev>
-    <genre>Action</genre>
-    <score>1.5</score>
-    <player>1-2 Players</player>
-    <story>Xenos. The very name strikes fear into every colonist&apos;s heart. A distress call is received from space stations orbiting your homeworld, then silence. A single ship escapes, piloted by a battered man who tells the tale of pods that hatch into acid-spitting Xenos. A small band of engineers has been dispatched to combat the Xeno threat before it takes over all the space stations and, eventually, your homeworld. Assemble your band of engineers and fight the Xenos on each station, striving to either clear it or abandon it. You start out with a standard issue laser, but can pick up additiona weapons as you find them, including Phasers, Lightning Rifles, Poofer guns, and bombs. Xenophobe was originally an arcade coin-op by Bally/Midway, released in 1987. Gameplay premise and setting is heavily inspired/influenced by the movie Aliens.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
-  <game name="Xevious (USA)">
-    <description>Xevious</description>
-    <year>1988</year>
-    <rating>ESRB - E (Everyone)</rating>
-    <manufacturer>Atari Corporation</manufacturer>
-    <dev>Namco Limited</dev>
-    <genre>Shoot-&apos;Em-Up</genre>
-    <score>3.8</score>
-    <player>1-2 Players</player>
-    <story>It is discovered that the actual aliens on earth are human beings, and the ruthless Xevions want their planet back; but without us. Our only defense is the prototype Solvalou Fighter Plane. With this plane we can fight the deadly Domogram Rovers; the Toroid Patrol Fleets and the Zoshi Death Squads. Xevious is a vertically scrolling shooter based on the 1982 coin-op of the same name. It was innovative in that it was the first vertically scrolling shooter to feature dual-level attacks; both ground and air.</story>
-    <enabled>Yes</enabled>
-    <crc></crc>
-    <cloneof></cloneof>
-  </game>
+<header>
+  <listname>Atari 7800</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>test</listversion>
+  <exporterversion></exporterversion>
+</header>
+<game name="32 in 1 (USA)">
+  <description>32 in 1 </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Compilation</genre>
+  <score>3.3</score>
+  <player>1-3 Players</player>
+  <story>This was a cart that was released in PAL format in Europe, Australia and New Zealand. Most were the pack in game with the Atari 2600 in the UK and Atari 7800 in Australia and New Zealand but it was also released as a boxed separate game for the Atari 2600. A different game was selected every time the Atari 2600 or Atari 7800 was turned on.The games were: 1.UFO (a renaming of U. S. Game&apos;s Space Jockey) 2.Flag Capture 3.Human Cannonball 4.Reversi (a renaming of Atari&apos;s Othello) 5.Activision&apos;s Checkers 6.Slot Racers 7.Blackjack 8.Fishing (a graphic hack of Activision&apos;s Fishing Derby in which you are fishing for crabs) 9.Freeway Rabbit (a graphic hack of Activision&apos;s Freeway in which you are a rabbit) 10.Space War 11.Fun with Numbers 12.Golf 13.3-D Tic-Tac-Toe 14.Surround 15.Miniature Golf 16.Activision&apos;s Boxing 17.Football 18.Air-Sea Battle 19.Freeway Chicken (a renaming of Activision&apos;s Freeway) 20.Activision&apos;s Tennis 21.Activision&apos;s Skiing 22.Activision&apos;s Fishing Derby 23.Sky Diver 24.Bowling 25.Combat 26.Activision&apos;s Stampede 27.Activision&apos;s Laser Blast 28.Outlaw 29.Slot Machine 30.Basketball 31.Home Run 32.Ant Party (a renaming of CommaVid&apos;s Cosmic Swarm)</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ace of Aces (USA)">
+  <description>Ace of Aces </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Artech</dev>
+  <genre>Flying</genre>
+  <score>2.0</score>
+  <player>1 Player</player>
+  <story>Ace of Aces is a 1st person, 2D flight simulation. You&apos;re onboard a British RAF Mosquito, maverick fighter bomber.**Your mission ... stop enemy trains, intercept the terrible german V-1 buzz bombs, sink the german U-boats and down the Nazi bombers. Are you ready for this challenge?</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Alien Brigade (USA)">
+  <description>Alien Brigade </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Shooter</genre>
+  <score>4.0</score>
+  <player>1 Player</player>
+  <story>Alien Brigade is a side scrolling shooter similar to Operation Wolf. Aliens have arrived on earth and have brainwashed both soldiers and civilians in order to take over the world. Your job is to stop them! On each of the five levels you will have a different objective to complete, including saving civilians and destroying alien installations. Throughout the levels there will be numerous aliens and brainwashed people you will need to shoot, as well as attacking tanks, helicopters, and more. After shooting enemies a bonus may sometimes be left behind; if you shoot this, you can earn additional ammo, more powerful weapons, or increased health. If you don&apos;t shoot fast enough and are hit  by enemy fire your health will slowly decrease; the game ends when all of your health is gone.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Asteroids (USA)">
+  <description>Asteroids </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>tari, Inc.</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>3.8</score>
+  <player>1-2 Players</player>
+  <story>Asteroids is a conversion of the arcade game of the same name.****Play the role of a spaceship pilot trapped in a gigantic asteroid cloud and pulverize incoming asteroids with the ship&apos;s photon cannon.  When all asteroids are destroyed, the play can them move to the next round. In addition to asteroid, the player will also face an Alien Robot Saucer which shoots randomly across the screen.****The player using the controller may rotate the ship (left or right) to any direction or move the ship forward. Shots will be fired according to the ship direction. The player has three reserved ships available to replace a destroyed spaceship. The spaceship is destroyed if an asteroid collides with the spaceship or is shot by an Alien Robot Saucer. Additionally, the player may opt to use the hyperspace warp to avoid collision. The warp however, may also destroy the spaceship in the process.****Asteroids when shot will break-up into smaller pieces or be destroyed.. There are three types of asteroids: large asteroids, medium asteroids, and small asteroids. Large asteroids and medium asteroids when shot, will break-up into two smaller sized asteroids. Small asteroids when shot will be destroyed. ****Alien Robot Saucers come in two sizes: small and large. Both use photon lasers to shoot and will explode when destroyed. Alien Robot Saucers will not appear at the Novice Level.****Game Difficulty and Variations**There are 4 available difficulty settings: Novice, Intermediate, Advanced, and Expert. ****The game also offers three different game variations:****1. Standard Play - For one or two players, taking turns when a player&apos;s ship is destroyed.****2. Competition Asteroids - Two players appear on the screen at the same time. Friendly fire is in affect, which means shots fired from one player&apos;s spaceship will destroy the other player&apos;s spaceship. Each player has separate ship reserves.****3. Team Asteroids - Two players on the screen at the same time. Friendly fire is disabled, which means shots fired from one player&apos;s spaceship will not destroy the other player&apos;s spaceship and just pass through. Ship reserves for both players are combined.****Scoring**The score of the Player 1 is viewable on the upper left side of the screen, while Player 2 on the opposite upper right side. A player will be awarded a new reserve ship for every 10,000 points.****1. Small saucer - 1,000 points**2. Other player&apos;s ship - 500 points**3. Large saucer - 200 points**4. Small asteroid - 100 points**5. Medium asteroid  - 50 points**6. Large asteroid - 20 points</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ballblazer (USA)">
+  <description>Ballblazer </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Lucasfilm Games LLC</dev>
+  <genre>Sports</genre>
+  <score>3.8</score>
+  <player>1-2 Players</player>
+  <story>In the year 3037, the most competitive sport in the known universe is Ballblazer. For the first time ever, humans from the planet Earth have won the right to compete in the final round of the Ballblazer Championship, to fight for Earth&apos;s honor and the title Masterblazer!****Ballblazer is a 3D futuristic soccer-like game, where the player (inside a Rotofoil) is set on a one-on-one 1,155 square playing field (the Grid). The objective of the player to kick a floating ball (Plasmorb) inside the opponent&apos;s goal (Goalbeams). A player may compete against a human or computer opponent.****The Rotofoil is equipped with a multi-purpose forcefield. This forcefield when in short distance of the Plasmorb will act as a pull field, automatically pulling the Plasmorb towards to player. When a player in possession of the Plasmorb shoots, the forcefield will act as push field and launches the ball. When the match starts, the player must move down field and attempt to gain possession of the Plasmorb using the joystick and blast the Plasmorb to an intended direction. ****The player should also be aware that the Goldbeams move slightly every second and the distance between them will shrink. The highest scoring goals are goals made when Goldbeams have disappeared across the horizon (Over The Horizon/OTH shots). A player may also attempt to steal possession of a Plasmorb by rushing beside the opponent and blast the Plasmorb away. The game ends when time runs out or a player wins 10 consecutive goals. If the game ends in a draw, over-time will apply and the first player to score will win the game.****Scoring****Close-in goals - 1 point**Goals near Goldbeams - 2 points**OTH shots - 3 points**Players may steal points from each other by making goals. **The total combined score of both players cannot accede more than 10 points.**A player winning 10 consecutive points automatically</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Barnyard Blaster (USA)">
+  <description>Barnyard Blaster </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Gun</genre>
+  <score>2.2</score>
+  <player>1-2 Players</player>
+  <story>You and your grandpa just put your life savings into buying a small farm a few acres for growing vegetables and raising horses, a place to get away from the battle of city life. But you discover that the entire farm is full of things that are determined to drive you away.****Barnyard Blaster is a shooting gallery type game for use with the Atari XG-1 light gun or the joystick. There are three levels plus one bonus level.Your goal is to rid your farm of vermin by shooting targets in each of three levels. Between each level you&apos;ll play Gramps&apos; bonus screen where you can brush up on your shooting. But in order to proceed through each level, you must achieve a certain percentage of shooting accuracy. At the end of the game you&apos;re given a ranking depending on how well you did.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Basketbrawl (USA)">
+  <description>Basketbrawl </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Basketball/Sports</genre>
+  <score>2.2</score>
+  <player>1-2 Players</player>
+  <story>In a desperate attempt to stop inner-city gang wars, the city leaders organized a basketball league.  The league is scheduled to play on three courts: a street, a junkyard, and a rooftop.  The mayor figured that a friendly game of hoops would be a much more peaceful way to settle disputes. He was wrong.****You can choose 1-on-1 or 2-on-2 game modes. There are six characters to choose from (ten in Atari Lynx version); each with their own health, speed, and power attributes. Each player without the ball can jump to block a shot or punch there opponent to get the ball. There&apos;s also an option to perform a power throw on an opposing player. Players with the ball can shoot or pass. Power ups appear on the court at random instances. These power up one attribute for the player. For example, the lightning power up increases the player&apos;s speed. ****The referee does not call fouls, but does hurl knives at the players.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Centipede (USA)">
+  <description>Centipede </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>4.2</score>
+  <player>1-2 Players</player>
+  <story>In Centipede, the player is trapped in the Enchanted Forest. Armed with only a magic wand to ward off the forest&apos;s insect denizens, all of which apparently are attacking in the player in continuous waves. ****The player must use the magic wand to shoot sparks at approaching insects to score points by pressing the controller button. Holding down the controller button will set the wand to rapid fire shots. If the player is bitten by an insect, the player will be temporarily paralyzed and lose one of the three starting magic wands. ****Insect Opponents and Mushrooms**All enemy insects have a distinctive sound before attacking, which may help the player identify which insect is attacking. Enemies and objects in the game are as the following:****1. The Centipede**The Centipede will attack in 12 waves. In the first wave, the Centipede will have a head attached to 11 body segments. In the second wave, the Centipede will have a head attached to 10 body segments, in addition to a detached head. The third wave will have the Centipede with an attached head, 9 body segments, plus two detached heads. These body segments will transform into heads and continue to do so until Wave 12. In the last wave, the Centipede will have 12 detached heads, independently attacking the player. Centipede heads are worth more points than body segments.****Attacks from the Centipede will come from the top of the screen, moving downward. If a spark hits any part of the Centipede, that particular body segment will transform into a mushroom, while the body segment behind it will become the new Centipede head. When the Centipede is destroyed, it will briefly disappear and re-appear from the top of the screen again.****The Spider**The Spider will attempt to distract the player from attacking the Centipede. It will destroy any mushroom it touches. Spiders will score more points if it is hit in closer distances.****The Flea**The Flea will appear if the player has destroyed most of the existing mushrooms. It will drop down creating a new batch of mushrooms where it falls. The Flea will disappear after two hits. After the first hit, the Flea will drop down much faster.****The Scorpion**The Scorpion will appear in the third wave. It moves slowly but will pick up speed, moving faster. While doing so, it will poison any mushroom it touches.****Mushrooms**Mushrooms fill the Enchanted Forest and may act as obstacles or cover for the player, with added effects to enemy insects. It takes for shots to complete destroy a mushroom. There are two type of mushrooms: Magic Mushrooms and Poisonous mushrooms. Magic mushrooms are the default mushrooms in the game and are also the the result of the player destroying an insect or Centipede body segment. Poisonous Mushrooms are the result of the Scorpion touching a mushroom. Poisonous Mushrooms will prompt the Centipede near it to move straight towards the player through any mushroom. Losing a wand will restore any partially damaged mushroom.****Game Difficulty and Variations**The game offers four difficulty levels: Novice, Standard, Advanced, and Expert. Game Variations are as the following:****1. One Player**Two Player Alternating**Two players will take turns when the active player is bitten.**Dual Player Competition**Two players will appear on the screen at the same time. Scoring is separate. Shots fired from one player will paralyze the other player.**Team Play**Two players will appear on the screen at the same time. Scoring is combined. Shots fired from one player will not paralyze the other player.****Scoring**The player will win a bonus magic wand for every 12,000 points to a maximum of six wands. The game will end when all wands are lost. Scoring are as the following:****Centipede Head - 100 points**Centipede Body Segment - 10 points**Spider at close range - 900 points**Spider at medium range - 600 points**Flea - 200 points**Scorpion - 1,000 points**Flea - 200 points**Restored mushroom - 5 points**Destroyed mushroom - 1 points</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Choplifter! (USA)">
+  <description>Choplifter! </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Br��derbund Software, Inc.</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>2.4</score>
+  <player>1 Player</player>
+  <story>Choplifter is a side-scrolling action/arcade game that puts you in command of an attack chopper.  Your mission: Go behind enemy lines and rescue up to 16 hostages per level.  Be careful, though, because tanks and enemy aircraft will try to stop you -- and they won&apos;t stop shooting while you are rescuing those hostages!****Originally released for Apple II home computers, Choplifter was later ported to the arcades and a number of video game consoles.  Many imitators and homages would follow.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Commando (USA)">
+  <description>Commando </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Capcom Co., Ltd.</dev>
+  <genre>Shooter</genre>
+  <score>4.2</score>
+  <player>1-2 Players</player>
+  <story>Several levels await your super-tough Commando in this arcade conversion. Armed with only a standard rifle and a few grenades you must take on hordes of Nazis. Some are wandering around in the open, while others have picked out hiding places, which you must approach from certain angles. Trees, rivers and bridges create a varied combat-like terrain and must be incorporated into your thinking. Extra grenades can be collected, and will definitely be required, as they allow you to kill form distance and thus avoid some enemy shots.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Crack'ed (USA)">
+  <description>Crack&apos;ed </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Shooter</genre>
+  <score>3.0</score>
+  <player>1 Player</player>
+  <story>&quot;As a professional ornithologist, you&apos;re thrilled to find out that some rare South American hornbills have nested in your &quot;&quot;old yolk tree.&quot;&quot; But while the hornbills are out feeding, a group of mischievous bluebirds, owls, and snakes begin raiding their nests and stealing eggs.****You get out your slingshot and begin hitting the marauding creatures. But you have to be careful. If you hit an egg-carrying bird, it drops the egg and you have to act fast to catch it before it hits the ground and return it to a nest. At the same time, you have to watch for snakes that may be sneaking up to nests and gobbling eggs. If you can protect the eggs long enough, you can take them to another nesting site.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Crossbow (USA)">
+  <description>Crossbow </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Exidy, Inc.</dev>
+  <genre>Shooter</genre>
+  <score>2.9</score>
+  <player>1 Player</player>
+  <story>In Crossbow, you and several friends are trying to cross many treacherous landscapes in order to retrieve stolen treasures from the castle of the Evil Master. All of the members of your party are unarmed, however you carry a crossbow. Using this, you need to shoot any obstacles or hostile enemies that may get in the way of your friends as they cross the screen. You see the landscape from a first person point of view, and one by one each member of the party will walk from the left to right on the screen. There are many different landscapes that need to be crossed, each with its own variety of dangers. There are deserts with scorpions, ice caverns, jungles with hostile monkeys, a lava spewing volcano, and even the heavily guarded castle. The game starts with two friends in your party, with additional friends joining after clearing certain parts of the game. The game ends when everyone in your party has been killed.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Dark Chambers (USA)">
+  <description>Dark Chambers </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Maze</genre>
+  <score>2.0</score>
+  <player>1-2 Players</player>
+  <story>Dark Chambers is an arcade action game similar to Gauntlet. You are an explorer in an underground maze; your goal is to survive the 26 different levels and collect as many of the hidden treasures as you can. Hidden somewhere in each of the levels is an exit which will take you on to the next level. Trying to stop you from completing your quest are a wide variety of creatures, including zombies, wraiths, skeletons, wizards, and the grim reaper. Each of the creatures in the game has a different strength; when you shoot a creature, it will transform into the next weaker creature. Eventually a creature will become the weakest one (a zombie) at which point it can be destroyed. In addition to the creatures and treasures, other items that can be found in the maze are keys (to open doors), potions (to restore health), poison (drains health), guns (increases your firing rate), traps, shields, and bombs. The game is played from an overhead point of view, and is for one player or two players simultaneously.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Desert Falcon (USA)">
+  <description>Desert Falcon </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>3.2</score>
+  <player>1 Player</player>
+  <story>Desert Falcon is an arcade style shooter. Many of the Pharaoh&apos;s great treasures are lost throughout the desert, and your goal is to steal as many as you can to earn points. The game features a scrolling, isometric point of view as you control your falcon through the various desert landscapes. The treasures you are after are guarded of course. Many desert creatures including vultures, warriors, flying fish, sphinxes and more will all attempt to stop you from succeeding in your task. Also, at the end of each level you will need to face a large, howling sphinx before you can continue on. Your falcon isn&apos;t completely unarmed, and has the ability to fire darts which can be used to destroy the assorted enemies and the sphinx. In the sand, you will occasionally come across some hieroglyphs. Several different superpowers can be gained by landing and hopping over three of these hieroglyphs. Depending on which hieroglyphs are collected, you may become invincible, warp to the end of the level, earn free points, trick enemies into attacking a decoy instead of you, or even get an air bomb which destroys all airborne enemies.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Dig Dug (USA)">
+  <description>Dig Dug </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Namco Limited</dev>
+  <genre>Maze</genre>
+  <score>3.8</score>
+  <player>1-2 Players</player>
+  <story>Dig Dug is a 1-2 player arcade game in which you have to use your shovel to dig your way through the earth. Stopping you from doing this are two monsters, called Pooka and Fygar, who will continually chase you around. The only weapon that you carry is an air pump, which you can use to inflate the monsters to the point where they explode. (if you start to inflate them but stop doing so, the monsters will get turned back to their normal selves.) Furthermore, rocks are scattered throughout the earth, and you can use these rocks to squash them. If the monsters do not find you for several seconds, they will eventually get turned into ghosts, which are able to walk through the earth. They are invincible and cannot be killed. From time to time, vegetables will appear in the center, and you can get these for points.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Donkey Kong (USA)">
+  <description>Donkey Kong </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Nintendo Co., Ltd.</dev>
+  <genre>Platform</genre>
+  <score>3.6</score>
+  <player>1-2 Players</player>
+  <story>&quot;Released in the arcades in 1981, Donkey Kong was not only Nintendo&apos;s first real smash hit for the company, but marked the introduction for two of their most popular mascots: Mario (originally &quot;&quot;Jumpman&quot;&quot;) and Donkey Kong.****Donkey Kong is a platform-action game that has Mario scale four different industrial themed levels (construction zone, cement factory, an elevator-themed level, and removing rivets from girders) in an attempt to save the damsel in distress, Pauline, from the big ape before the timer runs out.  Once the rivets are removed from the final level, Donkey Kong falls, and the two lovers are reunited.  From there, the levels start over at a higher difficulty.****Along the way, Mario must dodge a constant stream of barrels, &quot;&quot;living&quot;&quot; fireballs, and spring-weights.  Although not as powerful as in other future games, Mario can find a hammer which allows him to destroy the barrels and fireballs for a limited amount of time.  Additionally, Mario can also find Pauline&apos;s hat, purse and umbrella for additional bonus points.****Donkey Kong is also notable for being one of the first complete narratives in video game form, told through simplistic cut scenes that advance the story.  It should also be noted that in versions of the game for early 1980&apos;s consoles, Donkey Kong only used 2-3 of the original levels, with the cement factory usually omitted.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Donkey Kong Junior (USA)">
+  <description>Donkey Kong Junior </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Nintendo Co., Ltd.</dev>
+  <genre>Platform</genre>
+  <score>2.9</score>
+  <player>1-2 Players</player>
+  <story>Mario has kidnapped Junior&apos;s Papa!****Donkey Kong Jr. was originally released in the arcades in 1982 as a sequel to Donkey Kong.  In this game, Mario plays the antagonist, finally having captured Donkey Kong, and has put the ape in a locked cage.  As Donkey Kong Jr., players will have to make their way through four different levels (Vines, Springboard, Chains and Mario&apos;s Hideout) in an attempt to find keys to free the little monkey&apos;s Father.****Along the way, Mario will send out Snapjaws, swooping purple birds, and electric sparks in an attempt to stop Junior.  Junior can defend himself by dropping fruit found around the levels on the heads of his foes.  The more foes a piece of fruit hits in a falling sequence, the higher bonus points can be scored.****Junior can also avoid enemies more easily by grabbing hold of two chains or vines at a time to climb away faster, or by jumping over his foes.  However, any long fall or falling into the water on certain levels will mean the loss of a life for Junior.****In the final cut scene, Junior will free Donkey Kong and both will escape after giving Mario the boot.  Once all four levels are cleared, the game levels will start over at a higher difficulty.****Like the original Donkey Kong, the earlier 1980&apos;s console versions do not have all of the levels and animations from the arcade.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Double Dragon (USA)">
+  <description>Double Dragon </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Activision, Inc.</manufacturer>
+  <dev>Technos Japan Corp.</dev>
+  <genre>Beat-&apos;Em-Up</genre>
+  <score>2.9</score>
+  <player>1-2 Players</player>
+  <story>&quot;Set in a post-apocalyptic New York, Double Dragon is the story of Billy and Jimmy Lee, twin brothers trained in the fighting style of Sou-Setsu-Ken. Together, they manage a small martial arts training school, teaching their students in self-defense. One day, Billy&apos;s girlfriend, Marian, is kidnapped off the street by the &quot;&quot;Black Warriors&quot;&quot;, a savage street gang led by a man named Willy. The Black Warriors demand the Lee brothers disclose their martial arts secrets in exchange for Marian&apos;s freedom. The Lee brothers set out on a rescue mission to crush the Black Warriors and save Marian.****Using whatever techniques they have at their disposal, from the basic punches and kicks to the invulnerable elbow strike, as well any weapon that comes into their hands, the Lee brothers must pursue the gang through the city slum, industrial area and the forest before reaching their hideout to confront the big boss, Willy.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="F-18 Hornet (USA)">
+  <description>F-18 Hornet </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Absolute Entertainment, Inc.</manufacturer>
+  <dev>Absolute Entertainment, Inc.</dev>
+  <genre>Flying</genre>
+  <score>2.8</score>
+  <player>1 Player</player>
+  <story>F-18 Hornet is a one-player fighter simulator in which the player pilots a Navy F-18/A Jet through a series of simulated combat situations including carrier take-offs and landings, bombings, strafings, and air combat. ****In each of four missions, you are confronted with a variety of opponents and must perform a series of combat objectives in order from the Naval Aviator rank.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fatal Run (USA)">
+  <description>Fatal Run </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Sculptured Software, Inc.</dev>
+  <genre>Driving</genre>
+  <score>2.2</score>
+  <player>1 Player</player>
+  <story>In this post-apocalyptic driving/racing game you must travel to various towns delivering medicine, while on your way to a missile base which houses a rocket that can save the world.** **While driving through the 32 levels, you&apos;ll meet countless enemies who want to stop you from achieving your goal. Your car boasts many weapons to help you out, including dynamite, rockets, oil slicks, smoke screens, and machine guns. You can also upgrade your vehicle within the city shops. Upgrading your gas tank provides better mileage while upgrading your bumper protects you during collisions.**A password feature let&apos;s you continue where you left off.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fight Night (USA)">
+  <description>Fight Night </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Sydney Development Corp.</dev>
+  <genre>Boxing/Sports</genre>
+  <score>3.2</score>
+  <player>1-2 Players</player>
+  <story>&quot;Fight Night is a boxing game in which players box 11 different opponents on the way to the final match with the champ, Bronx Bomber. Each boxer has unique strengths and weaknesses, along with one specialised &quot;&quot;super punch&quot;&quot;. There are four different modes of play; the single-player Main Event and the multi-player Tournament (on disk/cartridge versions only), and also Training and Sparring modes. Players can also create their own boxer, setting the appearance and abilities.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Food Fight (USA)">
+  <description>Food Fight </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Fighter</genre>
+  <score>3.8</score>
+  <player>1-2 Players</player>
+  <story>You play as Charley trying to eat an ice cream cone. But first you must avoid the chefs that are out to get you: Angelo, Zorba, Oscar, and Jacques. Avoid the food thrown at you by the chefs to get the cone. You can also throw your own food at the chefs to slow them down.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Galaga (USA)">
+  <description>Galaga </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Namco Limited</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>3.3</score>
+  <player>1-2 Players</player>
+  <story>&quot;Galaga is a vertical arcade shooter from Namco.  You control a space fighter at the bottom of the screen, scrolling left and right in order to avoid oncoming bombs and kamikaze attacks from alien invaders--and to fire your own missiles to fight back!****There are an infinite number of stages to progress through.  Every third level is a &quot;&quot;challenge stage&quot;&quot; in which you have a free chance to shoot as many aliens as possible and rack up bonus points.****Certain aliens have tractor beams they can use to capture one of your ships.  If that wasn&apos;t your last &quot;&quot;life,&quot;&quot; you can try to shoot that alien down and recapture your ship, giving you two ships at once and doubling your firepower.****A summary screen appears when the game is over, giving you both your final score and you final &quot;&quot;hit ratio&quot;&quot;--the number of missiles fired, enemies destroyed, and the percentage of targets hit.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Hat Trick (USA)">
+  <description>Hat Trick </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Bally Sente</dev>
+  <genre>Hockey/Sports</genre>
+  <score>1.0</score>
+  <player>1-2 Players</player>
+  <story>Hat Trick is a two-on-two hockey game based on the 1984 coin-op of the same name. Each player controls a goalie and a skater. The object is to shoot the puck into the opposing teams goal. Each game lasts two minutes.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ikari Warriors (USA)">
+  <description>Ikari Warriors </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>SNK Corporation</dev>
+  <genre>Shooter</genre>
+  <score>3.0</score>
+  <player>1-2 Players</player>
+  <story>A conversion of the arcade game, Ikari Warriors is a vertically scrolling action game. One or two players fight their way through a variety of terrain, such as jungles, rivers, and ruins. Along the way different weapons can be found, including machine guns, grenades, and rocket launchers.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Impossible Mission (USA)">
+  <description>Impossible Mission </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Epyx, Inc.</dev>
+  <genre>Platform</genre>
+  <score>1.9</score>
+  <player>1 Player</player>
+  <story>You play a secret agent on a quest to stop the evil Professor**Elvin Atombender, who is believed to be tampering with national security computers. You must penetrate Atombender&apos;s stronghold, avoid his deadly robot creations, and acquire various pieces of a password to use in the main control room.****The robots, rooms, and puzzle pieces will be switched around when starting over which provides replay value.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Jinks (USA)">
+  <description>Jinks </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Diamond Software</dev>
+  <genre>Breakout</genre>
+  <score>1.5</score>
+  <player>1 Player</player>
+  <story>Jinks added a largely new concept to the Breakout type games,offering much freer paddle movement ( both horizontally and vertically), a horizontally scrolling screen and the ability to flip the triangular paddle as needed.****The objective is to survive on the planet Jinks - an exploration mission on this resource-rich planet has gone wrong. As hazards, there are objects that can destroy the paddle or make it smaller. There is also the ability to shake the screen if the ball is in a looping position.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Joust (USA)">
+  <description>Joust </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Williams Electronics Inc.</dev>
+  <genre>Platform</genre>
+  <score>4.6</score>
+  <player>1-2 Players</player>
+  <story>&quot;In Joust, players take control of a knight with a lance who rides their flying ostrich (or stork, for Player 2) to do battle against computer-controlled evil knights who ride atop vultures.****Players must flap their steed&apos;s wings to hit the enemy from a higher jousting point to destroy the vulture and its rider. Once the enemy has been hit, an egg falls to one of the platforms below. The heroic knights must destroy the eggs before they hatch and release new and increasingly more difficult knights. The three strengths of enemy knights are Bounder (red knight), Hunter (white knight), and Shadow Lord (blue knight). These enemy knights are not the only challenge to be found in the game. Players must also contend with crumbling platforms, lava trolls who attempt to pull knights into the fire, and the dreaded &quot;&quot;unbeatable&quot;&quot;(?) pterodactyl.****The game was novel for its time for being one of the few two-player simultaneous games in the arcade.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Karateka (USA)">
+  <description>Karateka </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Br��derbund Software, Inc.</dev>
+  <genre>Fighter</genre>
+  <score>3.0</score>
+  <player>1 Player</player>
+  <story>The evil Akuma has destroyed your homeland, killed many of your friends and kidnapped your Princess Mariko. Fortunately, you are skilled in Martial Arts, so your inevitable quest to reach Akuma&apos;s palace has a chance of success.****The game is viewed from the side and features a succession of increasingly-difficult opponents. All the standard karate kicks and punches are available to both you and your foes. The game&apos;s design was serious and realistic, and the game featured lots of cutscenes to develop the story.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kung-Fu Master (USA)">
+  <description>Kung-Fu Master </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Absolute Entertainment, Inc.</manufacturer>
+  <dev>Irem Corp.</dev>
+  <genre>Fighter</genre>
+  <score>4.5</score>
+  <player>1-2 Players</player>
+  <story>A conversion of the arcade game of the same name, which itself is loosely based on a movie, Kung-Fu Master is a side scrolling action game for one or two players, who alternate turns.****Mr. X has captured the pickpocket Sylvia and it is up to Thomas, a kung-fu master who owns a restaurant, to get her back. She is located on the top floor of Mr. X&apos;s castle and Thomas will need to fight his way to the top. Of course, this won&apos;t be easy as each floor has many opponents to get past and a floor boss at the end of each level. ****Thomas is able to move left and right, jump, duck, and punch and kick. Enemy projectiles such as knives can be kicked in the air to rebound them towards the enemy. On the top floor resides Mr. X himself.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Mario Bros. (USA)">
+  <description>Mario Bros. </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Nintendo Co., Ltd.</dev>
+  <genre>Platform</genre>
+  <score>3.4</score>
+  <player>1-2 Players</player>
+  <story>Mario and Luigi, the best plumbers in the world, have a real job on their hands. A host of characters have taken over the sewers, and the brothers must clear them out of the pipes.****The platform puzzle which first introduced Luigi to the world has both single and multiplayer action with two differing game types, but with the same objective.**Crabs, turtles and fighter flies must be cleared out by jumping underneath the platform they sit on, then kicking them away. Each level is cleared when a set number of coins is collected.****For the two player mode, the first to collect the set amount of coins wins.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Mat Mania Challenge (USA)">
+  <description>Mat Mania Challenge </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>American Technos Inc.</dev>
+  <genre>Sports/Wrestling</genre>
+  <score>1.8</score>
+  <player>1-2 Players</player>
+  <story>Tie up those wrestling boots and climb into the Atari **Wrestling Federation Championship ring. Based on the Technos coin-op of 1985, Mat Mania challenge features two player head-to-head action, or a one player journey to the championship belt. Each match lasts three minutes. The object is to either outscore, pin, or get your opponent counted out. You can perform such moves as the Overhead Slam or the Piledriver and many more; but your opponent has the same abilities.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Mean 18 Ultimate Golf (USA)">
+  <description>Mean 18 Ultimate Golf </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Accolade, Inc.</dev>
+  <genre>Golf/Sports</genre>
+  <score>2.0</score>
+  <player>1-2 Players</player>
+  <story>Pebbele Beach and St. Andrews are two of the courses on offer in this golf simulation, released in the early years of 16-bit technology. The three-click control system was used, whereby the first click starts the swing, the second sets the power, and the third sets draw or fade.****Beginner and Expert difficulty options are given - the latter mode has more pronounced draw and fade effects, making the timing of the third click even more crucial. You can also choose between regular and professional tees - in the latter option the distance on the holes is longer, and the computer doesn&apos;t choose the best club automatically. Because long drives aren&apos;t a crucial aspect of many of the holes, the Begginer/Expert setting is a bigger factor on your likely scoring. A uniquie feature for the day was the course designer, which was quite versatile with practice.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Meltdown (USA)">
+  <description>Meltdown </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Shooter</genre>
+  <score>2.0</score>
+  <player>1 Player</player>
+  <story>Meltdown is an arcade action game similar to Reactor. On the screen you will see a representation of a nuclear reactor; numerous control rods are located in the center of the screen, with the reactor walls around the edges. Inside the reactor are numerous (and dangerous) particles which will damage the control rods if they collide. Using the light gun, you need to shoot and destroy the various particles  before the control rods are destroyed. As the control rods take damage, the walls of the reactor will slowly cave inward, decreasing the amount of space available. From time to time power crystals may appear; if shot, these will provide bonuses such as extra points, control rod repair, temporarily freeze the particles, more powerful shots, and more. The game ends when the control rods have been completely destroyed causing the reactor to meltdown.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Midnight Mutants (USA)">
+  <description>Midnight Mutants </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Radioactive Software</dev>
+  <genre>Adventure</genre>
+  <score>4.2</score>
+  <player>1 Player</player>
+  <story>You play the part of Jimmy visiting Grampa on Halloween. Unfortunately, on this Halloween Dr. Evil has returned from the grave and captured Grampa in a pumpkin, and now you have to save him! Midnight Mutants is an action adventure game. As Jimmy you&apos;ll need to explore Grampa&apos;s mansion and the surrounding lands in order to find items which can be used to defeat enemies (including Dr. Evil) as well as safely reach new areas. The lands have become cursed, however, and there will be many obstacles on your quest including killer bats, zombies, werewolves and more. Jimmy has two life meters, one for health and one for blood. Some creatures are poisonous on contact and reduce the blood meter, while others reduce the health meter. If either runs out, the game is over. Throughout the game, Grampa&apos;s spirit will be in contact with Jimmy and can occasionally provide clues or other useful information. The game features an isometric point of view, and in some larger areas the screen will scroll horizontally or vertically to follow the action. Good luck on your quest to save Grampa and survive this Halloween!</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Motor Psycho (USA)">
+  <description>Motor Psycho </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>BlueSky Software, Inc.</dev>
+  <genre>Driving</genre>
+  <score>1.8</score>
+  <player>1 Player</player>
+  <story>&quot;MotorPsycho is similar in feel to Pole Position, but with motorcycles substituting the cars. The object is to complete each race within the alloted time while dodging other motorcycles. Ramps strewn throughout the track allow the motorcycle to jump over obstacles and the other motorcyclists. You can shift between high and low gears, but there are no brakes. A player can customize their motorcycle by adjusting the &quot;&quot;straighten&quot;&quot; and &quot;&quot;turn&quot;&quot; response times before the race.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ms. Pac-Man (USA)">
+  <description>Ms. Pac-Man </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Midway</dev>
+  <genre>Maze</genre>
+  <score>3.5</score>
+  <player>1-2 Players</player>
+  <story>&quot;In 1982, a sequel to the  incredibly popular Pac-Man was introduced in the form of his girlfriend, Ms. Pac-Man.  This sequel continued on the &quot;&quot;eat the dots/avoid the ghosts&quot;&quot; gameplay of the original game, but added new features to keep the title fresh.****Like her boyfriend, Ms. Pac-Man attempts to clear four various and challenging mazes filled with dots and ever-moving bouncing fruit  while avoiding Inky, Blinky, Pinky and Sue, each with their own personalities and tactics.  One touch from any of these ghosts means a loss of life for Ms. Pac-Man.****Ms. Pac-Man can turn the tables on her pursuers by eating one of the four Energizers located within the maze. During this time, the ghosts turn blue, and Ms. Pac-Man can eat them for bonus points (ranging from 200, 400, 800 and 1600, progressively). The Energizer power only lasts for a limited amount of time, as the ghost&apos;s eyes float back to their center box, and regenerate to chase after Ms. Pac-Man again.****Survive a few rounds of gameplay, and the player will be treated to humorous intermissions showing the growing romantic relationship between Pac-Man and Ms. Pac-Man, leading all the way up to the arrival of &quot;&quot;Junior&quot;&quot;.&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ninja Golf (USA)">
+  <description>Ninja Golf </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>BlueSky Software, Inc.</dev>
+  <genre>Golf/Sports</genre>
+  <score>3.6</score>
+  <player>1 Player</player>
+  <story>Ninja Golf is an arcade action game which combines a golf game with a side scrolling fighting game. You are a ninja, and your goal is to survive nine holes of ninja golf! On each of the holes, you alternate between the golf and action parts. First you hit the ball by selecting the direction and distance from the overhead view on the bottom of the screen; next you will need to run to the location your ball was hit while defending yourself from the many enemies. Depending on the terrain you need to cross, various enemy ninjas, giant frogs, killer sharks, snakes, and other enemies will all get in your way. To eliminate the enemies, you can kick, punch, or use a throwing star. Several bonuses may be found from time to time; temporary invincibility, an extra life, health restoration, or a magic transport to the green may all appear on the screen. Once you have reached the green, you will need to defeat a fire breathing dragon which guards the hole. The nine hole course progressively increases in difficulty and features par 3,  par 4, and par 5 holes.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="One-on-One Basketball (USA)">
+  <description>One-on-One Basketball </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Basketball/Sports</genre>
+  <score>2.6</score>
+  <player>1-2 Players</player>
+  <story>Control either Julius Erving or Larry Bird in front of a single basket, in a game of one on one.  The user can select to play either to a certain score or for a certain amount of time.  When on offense, the player can rotate to keep away from his rival, take a shot from a distance or move in to the basket for special up-close slam-dunks.  When on defense, you can try to take your rival&apos;s ball or jump up to block a shot.  Particularly good set-ups get a slow-motion replay.  You can even smash the glass on the backboard, which will send an irate janitor onto the court to clean up the mess.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pete Rose Baseball (USA)">
+  <description>Pete Rose Baseball </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Absolute Entertainment, Inc.</manufacturer>
+  <dev>Absolute Entertainment, Inc.</dev>
+  <genre>Baseball/Sports</genre>
+  <score>4.0</score>
+  <player>1-2 Players</player>
+  <story>This baseball game licenses former Cincinnati Reds player Pete Rose. It allows the player to play every position on the field. Different batting and pitching styles are available.****It has digitized voice and sound, and provides a variety of play options including One or Two-player action, season play or exhibition. In a somewhat ahead-of-its-time move, eight different perspectives are offered. ****There are also some team management capabilities, as you select and order your team, and hire new players. This can run over ten seasons, making for one of the first Career modes.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Planet Smashers (USA)">
+  <description>Planet Smashers </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>2.6</score>
+  <player>1-2 Players</player>
+  <story>Planet Smashers is a vertically scrolling shooter similar to Xevious. Power ups can be captured by destroying cargo ships. Power ups include improved weapons, shield restoration, and cloaking ability. Cargo ships also drop warp capsules that the player needs to collect in order to proceed to the level boss.****One difference in this game that sets it apart from others of the same type is the Earth Shield. Every time the player lets a ship go by unscathed the Earth Shield depletes a little. If the shield is destroyed, it&apos;s game over.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pole Position II (USA)">
+  <description>Pole Position II </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Namco Limited</dev>
+  <genre>Driving</genre>
+  <score>3.6</score>
+  <player>1 Player</player>
+  <story>In Pole Position II, based on the arcade sequel to Pole Position, you are again driving an F-1 racer in a timed qualifying run, trying to achieve the pole position. Then it is off to the race, in hopes of taking that top spot. The difference in Pole Position II and it&apos;s predecessor is that now you have four tracks to select from.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Rampage (USA)">
+  <description>Rampage </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Activision, Inc.</manufacturer>
+  <dev>Bally Midway Manufacturing Co., Inc.</dev>
+  <genre>Platform</genre>
+  <score>3.0</score>
+  <player>1-2 Players</player>
+  <story>George, Lizzy and Ralph were just ordinary Americans, until an experiment went wrong, turning them into a Gorilla, Lizard and Werewolf respectively. Following this, the three of them plan to go round destroying buildings, and up to 3 human players can join in.****Smashing at the edges of the buildings for long enough will make them collapse. The police and military are after you, and will shoot at you, so try to destroy them (failing that, you can avoid the bullets). You will need to eat regularly, with things like plants on offer, to avoid shrinking back to being human</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="RealSports Baseball (USA)">
+  <description>RealSports Baseball </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Baseball/Sports</genre>
+  <score>2.0</score>
+  <player>1-2 Players</player>
+  <story>Baseball is an action game which can be played by two players or one player against the computer. The game allows you to bunt the ball or try for a homerun, steal bases, and throw several types of pitches from a fast ball to a curve ball. Several game variations are included which allow you to select whether the home or visiting team is at bat first, and whether or not a player can swing only at pitches that are a strike, or they can swing at any pitch.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Robotron - 2084 (USA)">
+  <description>Robotron - 2084 </description>
+  <year>1986</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Williams Electronic Games, Inc.</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>4.4</score>
+  <player>1-2 Players</player>
+  <story>This is a port of the arcade game of the same name.****You are a mutant human, who by some freak of nature has the ability to shoot energy pulses from his body in eight different directions! Your job is simple: save humanity from their own creation -- the ROBOTRONS! The gameplay is pretty unique for the time. You can move and fire in any of eight directions. You get thrown in a room with various evil baddies strewn about, you&apos;ve got to kill all the robots while at the same time finding some way to grab humans and avoid death.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Scrapyard Dog (USA)">
+  <description>Scrapyard Dog </description>
+  <year>1990</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>BlueSky Software, Inc.</dev>
+  <genre>Platform</genre>
+  <score>1.8</score>
+  <player>1 Player</player>
+  <story>In Scrapyard Dog you play the role of Louie, the junkyard guy, who&apos;s companion Scraps has been dognapped by the dastardly Mr. Big. Louie has bombs and cans at his disposal to use against the enemies, which include gangsters, rats, and mice. He can also use shields to protect himself on route to the sixteen checkpoints in the game. Louie must reach each checkpoint in a certain amount of time in order to save Scraps.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sentinel (Europe)">
+  <description>Sentinel (Europe)</description>
+  <year>1991</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Atari Corporation</dev>
+  <genre>Gun</genre>
+  <score>2.5</score>
+  <player>1-2 Players</player>
+  <story>Sentinel is a side scrolling action game. Several worlds have fallen victim of an alien attack, and you need to free them. To do this, a glowing orb called the Sentinel has been sent which can absorb the alien energy. As the Sentinel floats above the various, scrolling landscapes, you need to protect it from attacks by using the light gun to destroy enemies and enemy fire. If you don&apos;t destroy an enemy, it will deplete the Sentinels energy supply which will eventually destroy it. There are four levels of increasing difficulty, each with a large boss at the end. To help out on your mission, several bonuses may be encountered from time to time; increased firepower and energy can be acquired when you shoot the bonus capsules that appear. Three levels of difficulty are available.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Summer Games (USA)">
+  <description>Summer Games </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Epyx, Inc.</dev>
+  <genre>Sports</genre>
+  <score>2.0</score>
+  <player>1-8 Players</player>
+  <story>&quot;Summer Games allows up to eight players to compete in a series of summer themed Olympic events. The gameplay is similar to the other entries in Epyx &quot;&quot;games&quot;&quot; series. Each player can choose a country to represent, and then takes turns competing in various events to see who will win the gold medal! The game allows you to compete in all of the events sequentially, choose a few events, choose just one event, or practice an event. The events available vary slightly depending on the platform, and may include:****1. Pole vault**2. Platform diving**3. 4x400 meter relay**4. 100 meter dash**5. Gymnastics**6. Freestyle swimming**7. Skeet shooting**8. 100 meter freestyle**9. Rowing&quot;</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Huey UH-1X (USA)">
+  <description>Super Huey UH-1X </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Cosmi Corporation</dev>
+  <genre>Flying</genre>
+  <score>1.4</score>
+  <player>1 Player</player>
+  <story>Super Huey UH-IX is a helicopter simulation game. You are the pilot of the experimental helicopter UH-1XA and you need to test it out in several game modes. In the flight school mode, you can learn how to fly. The computer will guide you through takeoff, flight, and landing. In reality mode, you will need to fly a mission to locate and bomb an enemy base and return home safely. The last mode is arcade mode where you have an unlimited amount of ammo to try and shoot down as many enemy aircraft as possible. The game is played from a first person view of the cockpit which is complete with radar and various instruments to help you fly.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Skateboardin' (USA)">
+  <description>Super Skateboardin\&apos; </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Absolute Entertainment, Inc.</manufacturer>
+  <dev>Absolute Entertainment, Inc.</dev>
+  <genre>Skateboarding/Sports</genre>
+  <score>2.0</score>
+  <player>1 Player</player>
+  <story>Super Skateboardin&apos; is a game where a young skateboarder is hired by his dad&apos;s company to do what he does best, Skateboard. Your job is to navigate the many rooms of the factory and turn off all the electrical equipment in 15 minutes, or else the electricity bill will skyrocket. Your wage is based on how fast you complete the task, and you need that money to enter the Skateboarding **Championship. Super Skateboardin&apos; is a straightforward game from the designer of Pitfall!, David Crane.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Tank Command (USA)">
+  <description>Tank Command </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Froggo Games Corporation</manufacturer>
+  <dev>Froggo Games Corporation</dev>
+  <genre>Shooter</genre>
+  <score>2.0</score>
+  <player>1 Player</player>
+  <story>Tank Command is a vertically scrolling action game. You control a tank on a mission to capture the enemy flag as well as earn as many points as possible. To do this, you will need to blast your way through their defenses on three levels of increasing difficulty. Blocking your progress are enemy tanks, pillboxes, missiles, jeeps, infantry, huts, and more, all of which earn you points when destroyed. Your tank is equipped with a limited amount of fuel and ammo, however it can be replenished occasionally by collecting the bonus icons when they appear on the screen. If you can make it past all of the obstacles and capture the flag, then you win the game!</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Title Match Pro Wrestling (USA)">
+  <description>Title Match Pro Wrestling </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Absolute Entertainment, Inc.</manufacturer>
+  <dev>Absolute Entertainment, Inc.</dev>
+  <genre>Sports/Wrestling</genre>
+  <score>1.8</score>
+  <player>1-2 Players</player>
+  <story>Title Match is a wrestling game which can be played by one or two players. There are four different wrestlers you can choose from, and two modes of gameplay (one on one, or tag team). Each wrestler can kick, punch, and perform several moves such as the airplane spin, body slam, power lift, and more. Using the available moves you need to deplete your opponents energy  and pin him for three counts (though be careful, as some of the more powerful moves also use up a bit of your own energy). If your opponents energy is low enough and you successfully pin him that will count as a fall, and the best out of three falls will win the match!</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Tomcat - The F-14 Fighter Simulator (USA)">
+  <description>Tomcat - The F-14 Fighter Simulator </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Absolute Entertainment, Inc.</manufacturer>
+  <dev>Absolute Entertainment, Inc.</dev>
+  <genre>Flying</genre>
+  <score>5.0</score>
+  <player>1 Player</player>
+  <story>To be born with wings...****Become a F-14 Naval Aviator undergoing seek and destroy missions while dodging and gunning enemy bogeys in deadly dogfights with your 20mm cannon and air-to-air missiles.****You cockpit comes with state of the art technology, courtesy of the U.S. Air Force: Display and main computer, Bogey Alert Indicator, G-Force Indicator, Electronic Counter Measures, and a Cannon Overheat Indicator (yes, it can overheat!)...and if your feeling up to it, give the ol&apos;bird a boost to Mach 1.0!****The gameplay like other simulation games consists of taking off, flying, combat and landing. Though most of the gameplay focuses around dogfighting with enemy bogeys (dodging missiles). In addition to that, there are also night-flying missions that add difficulty due to limited vision.****Taking off and landing however, also required additional skill as your doing it on the USS Enterprise (No relation to Star Trek), not on your standard airstrip. Pay attention to the F.D. officer as your preparing to take off (since he&apos;s the boss when it comes to this stuff...and try no to run over him...yet).****Your weaponry consists of a M 61 Machine Gun and 3 different AIM Missiles (AIM 7, 9, 54) each packed with 15 missiles (that&apos;s a lot of missiles!).****After each mission you will receive a Mission Rating which is based on your flying skill, number of bogey kill and number of weapons fired.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Touchdown Football (USA)">
+  <description>Touchdown Football </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Imagic</dev>
+  <genre>Football/Sports</genre>
+  <score>2.9</score>
+  <player>1-2 Players</player>
+  <story>A very capable football simulation, given the year and technology.  Call the plays, then run them using the keyboard or joystick.  Digitized voices enhance the game, including the crowd, calling the numbers, and referee&apos;s calls.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Tower Toppler (USA)">
+  <description>Tower Toppler </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Hewson Consultants Ltd.</dev>
+  <genre>Action</genre>
+  <score>2.8</score>
+  <player>1-2 Players</player>
+  <story>You play a small green guy who needs to blow up eight towers, because their presence is somehow poisoning the water of planets which could potentially be ideal colonies. Unfortunately you need to get to the top of these towers to blow them up. ****You make your way up to the top of the tower via walkways around the outside of the towers. You need to jump over, kick, and run from various enemies in your journey to the top. Most vertical movement is achieved by jumping onto moving ledges at the right moment. ****The game was considered revolutionary in its time for its graphic technique. As the main character walked around the outside of the tower, the character was fixed in the middle of the screen while the tower itself rotated. This gave it a pseudo-3D effect.****Towers are linked together via a voyage through the sea in your trusty MK.7 submarine. This plays out as a side-scrolling collect-&apos;em-up in which bonus points can be obtained.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Water Ski (USA)">
+  <description>Water Ski </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Froggo Games Corporation</manufacturer>
+  <dev>Froggo Games Corporation</dev>
+  <genre>Sports</genre>
+  <score>2.0</score>
+  <player>1 Player</player>
+  <story>In Water Ski you are water skiing on the Pharonna River. You control both the boat and skier in this vertically scrolling action game. Your goal is to reach the finish line before time runs out and also to earn as many points as possible. The river is quite dangerous, and features many twists and turns along with rocks, logs and other obstacles. For bonus points there are numerous ramps located throughout the river which your skier can jump over (and if you can manage to ski over every ramp on the level, you&apos;ll earn even more points!). You start the game with four skiers, and the game ends when all of you skiers have crashed.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Winter Games (USA)">
+  <description>Winter Games </description>
+  <year>1987</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Action Graphics</dev>
+  <genre>Sports</genre>
+  <score>2.8</score>
+  <player>1-8 Players</player>
+  <story>Another in the series of Epyx Olympic sports games. Compete in many different sporting events like: Ski Jump, Hot Dog, Biathlon, Bobsled, Free Skating, Figure Skating and more.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Xenophobe (USA)">
+  <description>Xenophobe </description>
+  <year>1989</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Bally Midway Manufacturing Co., Inc.</dev>
+  <genre>Action</genre>
+  <score>1.5</score>
+  <player>1-2 Players</player>
+  <story>Xenos.  The very name strikes fear into every colonist&apos;s heart.  A distress call is received from space stations orbiting your homeworld, then silence.  A single ship escapes, piloted by a battered man who tells the tale of pods that hatch into acid-spitting Xenos.****A small band of engineers has been dispatched to combat the Xeno threat before it takes over all the space stations and, eventually, your homeworld.  Assemble your band of engineers and fight the Xenos on each station, striving to either clear it or abandon it.  You start out with a standard issue laser, but can pick up additiona weapons as you find them, including Phasers, Lightning Rifles, Poofer guns, and bombs.****Xenophobe was originally an arcade coin-op by Bally/Midway, released in 1987.  Gameplay premise and setting is heavily inspired/influenced by the movie Aliens.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Xevious (USA)">
+  <description>Xevious </description>
+  <year>1988</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Atari Corporation</manufacturer>
+  <dev>Namco Limited</dev>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score>3.8</score>
+  <player>1-2 Players</player>
+  <story>It is discovered that the actual aliens on earth are human beings, and the ruthless Xevions want their planet back; but without us. Our only defense is the prototype Solvalou Fighter Plane. With this plane we can fight the deadly Domogram Rovers; the Toroid Patrol Fleets and the Zoshi Death Squads. ****Xevious is a vertically scrolling shooter based on the 1982 coin-op of the same name. It was innovative in that it was the first vertically scrolling shooter to feature dual-level attacks; both ground and air.</story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
 </menu>
