@@ -3096,10 +3096,13 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_offline_scraper_launchers_row(self, platform):
+        plot_text = 'Offline Scraper {0} database ROMs.'.format(platform)
         listitem = xbmcgui.ListItem(platform)
         listitem.setInfo('video', {'title' : platform,         
                                    'genre' : 'Offline Scraper database',
-                                   'plot'  : 'AEL Offline Scraper database', 'overlay': 4 } )
+                                   'plot'  : plot_text, 'overlay': 4 } )
+        # >> Set platform property to render platform icon on skins.
+        listitem.setProperty('platform', platform)
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
