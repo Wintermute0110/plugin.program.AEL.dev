@@ -7669,44 +7669,51 @@ class Main:
                 log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
                 return
         self.pDialog.close()
-        log_info('***** ROM scanner finished. Report ******')
+        log_info('********** ROM scanner finished. Report **********')
         log_info('Removed dead ROMs {0:6d}'.format(num_removed_roms))
         log_info('Files checked     {0:6d}'.format(num_files_checked))
         log_info('New added ROMs    {0:6d}'.format(num_new_roms))
-        report_fobj.write('***** ROM scanner finished ******\n')
+        report_fobj.write('********** ROM scanner finished **********\n')
         report_fobj.write('Removed dead ROMs {0:6d}\n'.format(num_removed_roms))
         report_fobj.write('Files checked     {0:6d}\n'.format(num_files_checked))
         report_fobj.write('New added ROMs    {0:6d}\n'.format(num_new_roms))
 
         if len(roms) == 0:
+            report_fobj.write('WARNING Launcher has no ROMs!\n')
+            report_fobj.close()
             kodi_dialog_OK('No ROMs found! Make sure launcher directory and file extensions are correct.')
             return
 
-        # --- Notify user ---
-        if num_new_roms == 0: kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
-        else:                 kodi_notify('Added {0} new ROMs'.format(num_new_roms))
 
         # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
         if launcher['nointro_xml_file']:
-            kodi_dialog_OK('Launcher has a No-Intro PClone DAT. It is recommended to audit your ROMs.')
-
-        # >> NOTE disable No-Intro auditing in scanner. User can do the audit in the Edit Launcher menu.
-        # if launcher['nointro_xml_file'] != '':
-        #     nointro_xml_file = launcher['nointro_xml_file']
-        #     log_info('Auditing ROMs using No-Intro DAT {0}'.format(nointro_xml_file))
-
-        #     # --- Update No-Intro status for ROMs ---
-        #     # Note that roms dictionary is updated using Python pass by assigment.
-        #     # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
-        #     (num_have, num_miss, num_unknown) = self._roms_update_NoIntro_status(roms, nointro_xml_file)
-
-        #     # Report
-        #     log_info('***** No-Intro audit finished. Report ******')
-        #     log_info('No-Intro Have ROMs    {0:6d}'.format(num_have))
-        #     log_info('No-Intro Miss ROMs    {0:6d}'.format(num_miss))
-        #     log_info('No-Intro Unknown ROMs {0:6d}'.format(num_unknown))
-        # else:
-        #     log_info('No No-Intro DAT configured. No auditing ROMs.')
+            log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
+            report_fobj.write('No-Intro/Redump DAT configured. Starting ROM audit ...\n')
+            roms_base_noext = launcher['roms_base_noext']
+            nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+            if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
+                fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                kodi_notify('ROM scanner and audit finished. '
+                            'Have {0} / Miss {1} / Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
+                # >> _roms_update_NoIntro_status() already prints and audit report on Kodi log
+                report_fobj.write('********** No-Intro/Redump audit finished. Report ***********\n')
+                report_fobj.write('Have ROMs    {0:6d}\n'.format(self.audit_have))
+                report_fobj.write('Miss ROMs    {0:6d}\n'.format(self.audit_miss))
+                report_fobj.write('Unknown ROMs {0:6d}\n'.format(self.audit_unknown))
+                report_fobj.write('Total ROMs   {0:6d}\n'.format(self.audit_total))
+                report_fobj.write('Parent ROMs  {0:6d}\n'.format(self.audit_parents))
+                report_fobj.write('Clone ROMs   {0:6d}\n'.format(self.audit_clones))
+            else:
+                # >> ERROR when auditing the ROMs. Unset nointro_xml_file
+                self.launchers[launcherID]['nointro_xml_file'] = ''
+                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
+        else:
+            log_info('No No-Intro/Redump DAT configured. Do not audit ROMs.')
+            report_fobj.write('No No-Intro/Redump DAT configured. Do not audit ROMs.\n')
+            if num_new_roms == 0:
+                kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
+            else:
+                kodi_notify('Added {0} new ROMs'.format(num_new_roms))
 
         # --- Close ROM scanner report file ---
         report_fobj.write('*** END of the ROM scanner report ***\n')
