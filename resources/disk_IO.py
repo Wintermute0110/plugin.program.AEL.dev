@@ -113,6 +113,9 @@ def fs_new_launcher():
          'num_roms' : 0,
          'num_parents' : 0,
          'num_clones' : 0,
+         'num_have' : 0,
+         'num_miss' : 0,
+         'num_unknown' : 0,
          'timestamp_launcher' : 0.0,
          'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
@@ -490,7 +493,10 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('pclone_launcher', unicode(launcher['pclone_launcher'])))
             str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
             str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
-            str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))            
+            str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))
+            str_list.append(XML_text('num_have', unicode(launcher['num_have'])))
+            str_list.append(XML_text('num_miss', unicode(launcher['num_miss'])))
+            str_list.append(XML_text('num_unknown', unicode(launcher['num_unknown'])))
             str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
             str_list.append(XML_text('default_thumb', launcher['default_thumb']))
@@ -605,7 +611,8 @@ def fs_load_catfile(categories_file, categories, launchers):
                 elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
-                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones':
+                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
+                     xml_tag == 'num_have' or xml_tag == 'num_miss'    or xml_tag == 'num_unknown':
                     launcher[xml_tag] = int(xml_text)
                 # >> Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':

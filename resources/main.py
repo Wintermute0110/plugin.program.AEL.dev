@@ -25,12 +25,13 @@ from collections import OrderedDict
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- Modules/packages in this plugin ---
-from disk_IO import *
-from net_IO import *
 from utils import *
 from utils_kodi import *
-from scrap import *
 from assets import *
+from rom_audit import *
+from disk_IO import *
+from net_IO import *
+from scrap import *
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
@@ -3225,9 +3226,10 @@ class Main:
             return
 
         # --- Launcher tags ---
-        # >> Do not plot ROM count on standalone launchers! Launcher is standaloneif rompath = ''
+        # >> Do not plot ROM count on standalone launchers! Launcher is standalone if rompath = ''
         launcher_name = launcher_raw_name = launcher_dic['m_name']
-        if self.settings['display_launcher_roms'] and launcher_dic['rompath']and not launcher_dic['pclone_launcher']:
+        if self.settings['display_launcher_roms'] and launcher_dic['rompath'] \
+           and not launcher_dic['nointro_xml_file'] and not launcher_dic['pclone_launcher']:
             num_roms = launcher_dic['num_roms']
             if num_roms == 0:
                 launcher_name = '{0} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
@@ -3235,7 +3237,15 @@ class Main:
                 launcher_name = '{0} [COLOR orange]({1} ROM)[/COLOR]'.format(launcher_raw_name, num_roms)
             else:
                 launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
-        elif self.settings['display_launcher_roms'] and launcher_dic['rompath'] and launcher_dic['pclone_launcher']:
+        elif self.settings['display_launcher_roms'] and launcher_dic['rompath'] \
+             and launcher_dic['nointro_xml_file'] and not launcher_dic['pclone_launcher']:
+            num_have    = launcher_dic['num_have']
+            num_miss    = launcher_dic['num_miss']
+            num_unknown = launcher_dic['num_unknown']
+            launcher_name = '{0} [COLOR orange]({1} Have / {2} Miss / {3} Unk)[/COLOR]'.format(
+                launcher_raw_name, num_have, num_miss, num_unknown)
+        elif self.settings['display_launcher_roms'] and launcher_dic['rompath'] \
+             and launcher_dic['nointro_xml_file'] and launcher_dic['pclone_launcher']:
             num_parents = launcher_dic['num_parents']
             num_clones  = launcher_dic['num_clones']
             launcher_name = '{0} [COLOR orange]({1} Par / {2} Clo)[/COLOR]'.format(launcher_raw_name, num_parents, num_clones)
@@ -5928,12 +5938,16 @@ class Main:
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
         info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
-        info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])        
-        info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher['nointro_display_mode'])        
+
+        info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
+        info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher['nointro_display_mode'])
         info_text += "[COLOR skyblue]pclone_launcher[/COLOR]: {0}\n".format(launcher['pclone_launcher'])
         info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher['num_roms'])
         info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher['num_parents'])
         info_text += "[COLOR skyblue]num_clones[/COLOR]: {0}\n".format(launcher['num_clones'])
+        info_text += "[COLOR skyblue]num_have[/COLOR]: {0}\n".format(launcher['num_have'])
+        info_text += "[COLOR skyblue]num_miss[/COLOR]: {0}\n".format(launcher['num_miss'])
+        info_text += "[COLOR skyblue]num_unknown[/COLOR]: {0}\n".format(launcher['num_unknown'])
         info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
         info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
 
@@ -7246,7 +7260,7 @@ class Main:
             log_warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_FileName.getPath()))
             return False
         pDialog.update(0, 'Loading No-Intro/Redump XML DAT file ...')
-        roms_nointro = fs_load_NoIntro_XML_file(nointro_xml_file_FileName)
+        roms_nointro = audit_load_NoIntro_XML_file(nointro_xml_file_FileName)
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
         if not roms_nointro:
@@ -7377,6 +7391,9 @@ class Main:
         launcher['num_roms']    = len(roms)
         launcher['num_parents'] = audit_parents
         launcher['num_clones']  = audit_clones
+        launcher['num_have']    = audit_have
+        launcher['num_miss']    = audit_miss
+        launcher['num_unknown'] = audit_unknown
 
         # --- Make a Parent only ROM list and save JSON ---
         pDialog.update(0, 'Building Parent/Clone index and Parent dictionary ...')
