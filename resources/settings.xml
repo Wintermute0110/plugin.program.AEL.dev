@@ -42,18 +42,9 @@
     <setting label="Hide <Favourites>" type="bool" default="false" id="display_hide_favs" />
     <setting label="Hide {ROM Collections}" type="bool" default="false" id="display_hide_collections" />
     <setting label="Hide [Browse by ...]" type="bool" default="false" id="display_hide_vlaunchers" />
+    <setting label="Hide [Browse Offline Scraper]" type="bool" default="false" id="display_hide_off_scraper" />
     <setting label="Hide [Recently played ROMs]" type="bool" default="false" id="display_hide_recent" />
     <setting label="Hide [Most played ROMs]" type="bool" default="false" id="display_hide_mostplayed" />
-    
-    <setting id="separator" type="lsep" label="Virtual Launchers"/>
-    <setting label="Hide [Browse by Title]" type="bool" default="false" id="display_hide_title" />
-    <setting label="Hide [Browse by Year]" type="bool" default="false" id="display_hide_year" />
-    <setting label="Hide [Browse by Genre]" type="bool" default="false" id="display_hide_genre" />
-    <setting label="Hide [Browse by Studio]" type="bool" default="false" id="display_hide_studio" />
-    <setting label="Hide [Browse by Number of players]" type="bool" default="false" id="display_hide_nplayers" />
-    <setting label="Hide [Browse by ESRB Rating]" type="bool" default="false" id="display_hide_esrb" />
-    <setting label="Hide [Browse by User Rating]" type="bool" default="false" id="display_hide_rating" />
-    <setting label="Hide [Browse by Category]" type="bool" default="false" id="display_hide_category" />
 </category>
 <category label="Paths">
     <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />

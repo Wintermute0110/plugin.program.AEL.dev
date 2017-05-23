@@ -441,17 +441,9 @@ class Main:
         self.settings['display_hide_favs']        = True if __addon_obj__.getSetting('display_hide_favs') == 'true' else False
         self.settings['display_hide_collections'] = True if __addon_obj__.getSetting('display_hide_collections') == 'true' else False
         self.settings['display_hide_vlaunchers']  = True if __addon_obj__.getSetting('display_hide_vlaunchers') == 'true' else False
+        self.settings['display_hide_off_scraper'] = True if __addon_obj__.getSetting('display_hide_off_scraper') == 'true' else False
         self.settings['display_hide_recent']      = True if __addon_obj__.getSetting('display_hide_recent') == 'true' else False
         self.settings['display_hide_mostplayed']  = True if __addon_obj__.getSetting('display_hide_mostplayed') == 'true' else False
-
-        self.settings['display_hide_title']       = True if __addon_obj__.getSetting('display_hide_title') == 'true' else False
-        self.settings['display_hide_year']        = True if __addon_obj__.getSetting('display_hide_year') == 'true' else False
-        self.settings['display_hide_genre']       = True if __addon_obj__.getSetting('display_hide_genre') == 'true' else False
-        self.settings['display_hide_studio']      = True if __addon_obj__.getSetting('display_hide_studio') == 'true' else False
-        self.settings['display_hide_nplayers']    = True if __addon_obj__.getSetting('display_hide_nplayers') == 'true' else False
-        self.settings['display_hide_esrb']        = True if __addon_obj__.getSetting('display_hide_esrb') == 'true' else False
-        self.settings['display_hide_rating']      = True if __addon_obj__.getSetting('display_hide_rating') == 'true' else False
-        self.settings['display_hide_category']    = True if __addon_obj__.getSetting('display_hide_category') == 'true' else False
 
         # --- Paths ---
         self.settings['categories_asset_dir']     = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
@@ -2835,7 +2827,7 @@ class Main:
         if not self.settings['display_hide_vlaunchers']: self._gui_render_virtual_category_root_row()
 
         # --- Browse Offline Scraper database ---
-        self._gui_render_category_offline_scraper_row()
+        if not self.settings['display_hide_off_scraper']: self._gui_render_category_offline_scraper_row()
 
         # --- Recently played and most played ROMs ---
         if not self.settings['display_hide_recent']:     self._gui_render_category_recently_played_row()
@@ -3041,14 +3033,14 @@ class Main:
     def _gui_render_vcategories_root(self):
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-        if not self.settings['display_hide_title']:    self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
-        if not self.settings['display_hide_year']:     self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
-        if not self.settings['display_hide_genre']:    self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
-        if not self.settings['display_hide_studio']:   self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
-        if not self.settings['display_hide_nplayers']: self._gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
-        if not self.settings['display_hide_esrb']:     self._gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
-        if not self.settings['display_hide_rating']:   self._gui_render_virtual_category_row(VCATEGORY_RATING_ID)
-        if not self.settings['display_hide_category']: self._gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_RATING_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_virtual_category_row(self, virtual_category_kind):

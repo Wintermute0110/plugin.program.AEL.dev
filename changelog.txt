@@ -36,6 +36,8 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions.
          Get rid of the ImgSelectDialog() class. This need Krypton Beta 4 to run!
 
+FEATURE  Addon option to hide [Browse Offline Scraper].
+
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]
 
