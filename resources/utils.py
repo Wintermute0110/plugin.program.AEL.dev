@@ -41,6 +41,34 @@ def text_limit_string(string, max_length):
 
   return string
 
+#
+# Writes a XML text tag line, indented 2 spaces by default.
+# Both tag_name and tag_text must be Unicode strings.
+# Returns an Unicode string.
+#
+def XML_text(tag_name, tag_text, num_spaces = 2):
+    if tag_text:
+        tag_text = text_escape_XML(tag_text)
+        line = '{0}<{1}>{2}</{3}>\n'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
+    else:
+        # >> Empty tag    
+        line = '{0}<{1} />\n'.format(' ' * num_spaces, tag_name)
+
+    return line
+
+def text_str_2_Uni(string):
+    # print(type(string))
+    if type(string).__name__ == 'unicode':
+        unicode_str = string
+    elif type(string).__name__ == 'str':
+        unicode_str = string.decode('ascii', errors = 'replace')
+    else:
+        print('TypeError: ' + type(string).__name__)
+        raise TypeError
+    # print(type(unicode_str))
+
+    return unicode_str
+
 # Some XML encoding of special characters:
 #   {'\n': '&#10;', '\r': '&#13;', '\t':'&#9;'}
 #

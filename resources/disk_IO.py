@@ -398,19 +398,9 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # Filesystem very low-level utilities
 # -------------------------------------------------------------------------------------------------
 #
-# Writes a XML text tag line, indented 2 spaces (root sub-child)
-# Both tag_name and tag_text must be Unicode strings.
-# Returns an Unicode string.
-#
-def XML_text(tag_name, tag_text):
-    tag_text = text_escape_XML(tag_text)
-    line     = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text, tag_name)
-
-    return line
-
-#
 # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
 # This function is not needed. It is deprecated and will be removed soon.
+#
 def get_fs_encoding():
     return sys.getfilesystemencoding()
 
