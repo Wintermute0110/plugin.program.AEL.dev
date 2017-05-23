@@ -3999,7 +3999,7 @@ class Main:
         xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
         log_debug('Loading XML {0}'.format(xml_path))
-        games = fs_load_GameInfo_XML(xml_path)
+        games = audit_load_OfflineScraper_XML(xml_path)
 
         # --- Display offline scraper ROMs ---
         loading_ticks_end = time.time()
@@ -6039,7 +6039,7 @@ class Main:
         xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
         log_debug('Loading XML {0}'.format(xml_path))
-        games = fs_load_GameInfo_XML(xml_path)
+        games = audit_load_OfflineScraper_XML(xml_path)
         game = games[game_name]
 
         info_text  = '[COLOR orange]ROM information[/COLOR]\n'
