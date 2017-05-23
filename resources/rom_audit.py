@@ -25,7 +25,64 @@ from utils_kodi import *
 # -------------------------------------------------------------------------------------------------
 # Data structures
 # -------------------------------------------------------------------------------------------------
+# DTD "http://www.logiqx.com/Dats/datafile.dtd"
+def audit_new_rom_logiqx(): 
+    rom = {
+        'name'         : '',
+        'cloneof'      : '',
+        'year'         : '',
+        'manufacturer' : ''
+    }
 
+    return rom
+
+# HyperList doesn't include Plot
+def audit_new_rom_HyperList(): 
+    rom = {
+        'name'         : '',
+        'description'  : '',
+        'cloneof'      : '',
+        'crc'          : '',
+        'manufacturer' : '',
+        'year'         : '',
+        'genre'        : '',
+        'rating'       : '',
+        'enabled'      : ''
+    }
+
+    return rom
+
+def audit_new_rom_GameDB():
+    rom = {
+        'name'         : '',
+        'description'  : '',
+        'year'         : '',
+        'rating'       : '',
+        'manufacturer' : '',
+        'genre'        : '',
+        'player'       : '',
+        'story'        : ''
+    }
+
+    return rom
+
+# Manufacturer is Publisher
+def audit_new_rom_AEL_Offline(): 
+    rom = {
+        'name'         : '',
+        'description'  : '',
+        'cloneof'      : '',
+        'source'       : '',
+        'status'       : '',
+        'year'         : '',
+        'genre'        : '',
+        'manufacturer' : '',
+        'nplayers'     : '',
+        'rating'       : '',
+        'plot'         : ''
+    }
+
+    return rom
 
 # -------------------------------------------------------------------------------------------------
 # Functions
@@ -57,11 +114,7 @@ def audit_load_OfflineScraper_XML(xml_file):
 
         if game_element.tag == 'game':
             # Default values
-            game = {'name'    : '', 'description'  : '', 'year'   : '',
-                    'rating'  : '', 'manufacturer' : '', 'dev'    : '',
-                    'genre'   : '', 'score'        : '', 'player' : '',
-                    'story'   : '', 'enabled'      : '', 'crc'    : '',
-                    'cloneof' : '' }
+            game = audit_new_rom_logiqx()
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
@@ -87,23 +140,29 @@ def audit_load_OfflineScraper_XML(xml_file):
 #   'rom_name_B' : { 'name' : 'rom_name_B', 'cloneof' : '' | 'rom_name_parent},
 # }
 #
-def audit_load_NoIntro_XML_file(roms_xml_file):
+def audit_load_NoIntro_XML_file(xml_FN):
+    nointro_roms = {}
+
     # --- If file does not exist return empty dictionary ---
-    if not roms_xml_file.exists(): return {}
+    if not xml_FN.exists():
+        log_error('Does not exists "{0}"'.format(xml_FN.getPath()))
+        return nointro_roms
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_NoIntro_XML_file() Loading XML file {0}'.format(roms_xml_file.getOriginalPath()))
-    nointro_roms = {}
+    log_verb('Loading XML "{0}"'.format(xml_FN.getOriginalPath()))
     try:
-        xml_tree = ET.parse(roms_xml_file.getPath())
-    except ET.ParseError, e:
+        xml_tree = ET.parse(xml_FN.getPath())
+    except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
-        return roms
+        return nointro_roms
+    except IOError as e:
+        log_error('(IOError) {0}'.format(str(e)))
+        return nointro_roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if root_element.tag == 'game':
-            nointro_rom = {'name' : '', 'cloneof' : ''}
+            nointro_rom = audit_new_rom_logiqx()
             rom_name = root_element.attrib['name']
             nointro_rom['name'] = rom_name
             if 'cloneof' in root_element.attrib:
@@ -111,3 +170,180 @@ def audit_load_NoIntro_XML_file(roms_xml_file):
             nointro_roms[rom_name] = nointro_rom
 
     return nointro_roms
+
+def audit_load_GameDB_XML(xml_FN):
+    __debug_xml_parser = 0
+    games = {}
+
+    # --- Check that file exists and load ---
+    if not xml_FN.exists():
+        log_error('Does not exists "{0}"'.format(xml_FN.getPath()))
+        return games
+    log_verb('Loading XML "{0}"'.format(xml_FN.getPath()))
+    try:
+        xml_tree = ET.parse(xml_FN.getPath())
+    except ET.ParseError as e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return games
+    xml_root = xml_tree.getroot()
+    for game_element in xml_root:
+        if __debug_xml_parser:
+            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
+
+        if game_element.tag == 'game':
+            # Default values
+            game = audit_new_rom_GameDB()
+
+            # ROM name is an attribute of <game>
+            game['name'] = game_element.attrib['name']
+            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+
+            # Parse child tags of category
+            for game_child in game_element:
+                # By default read strings
+                xml_text = game_child.text if game_child.text is not None else ''
+                xml_text = text_unescape_XML(xml_text)
+                xml_tag  = game_child.tag
+                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                game[xml_tag] = xml_text
+            key = game['name']
+            games[key] = game
+
+    return games
+
+def audit_load_Tempest_INI(file_FN):
+    games = {}
+    # Read_status FSM values
+    #   0 -> Looking for '[game_name]' tag
+    #   1 -> Reading fields fiel_name=field_value
+    read_status = 0
+    __debug_INI_parser = False
+
+    # --- Check that file exists ---
+    if not file_FN.exists():
+        log_error('Does not exists "{0}"'.format(file_FN.getPath()))
+        return games
+    log_verb('Loading XML "{0}"'.format(file_FN.getPath()))
+    try:
+        f = open(file_FN.getPath(), 'rt')
+    except IOError:
+        log_info('audit_load_Tempest_INI() IOError opening "{0}"'.format(filename))
+        return {}
+    for file_line in f:
+        stripped_line = file_line.strip().decode(errors = 'replace')
+        if __debug_INI_parser: print('Line "' + stripped_line + '"')
+        if read_status == 0:
+            m = re.search(r'\[([^\]]+)\]', stripped_line)
+            if m:
+                game = audit_new_rom_GameDB()
+                game_key     = m.group(1)
+                game['name'] = m.group(1)
+                if __debug_INI_parser: print('Found game [{0}]'.format(game['name']))
+                read_status = 1
+        elif read_status == 1:
+            line_list = stripped_line.split("=")
+            if len(line_list) == 1:
+                read_status = 0
+                games[game_key] = game
+                if __debug_INI_parser: print('Added game key "{0}"'.format(game_key))
+            else:
+                if __debug_INI_parser: print('Line list -> ' + str(line_list))
+                field_name = line_list[0]
+                field_value = line_list[1]
+                if   field_name == 'Publisher':   game['manufacturer'] = field_value
+                elif field_name == 'Developer':   game['dev'] = field_value
+                elif field_name == 'Released':    game['year'] = field_value
+                elif field_name == 'Systems':     pass
+                elif field_name == 'Genre':       game['genre'] = field_value
+                elif field_name == 'Perspective': pass
+                elif field_name == 'Score':       game['score'] = field_value
+                elif field_name == 'Controls':    pass
+                elif field_name == 'Players':     game['player'] = field_value
+                elif field_name == 'Esrb':        game['rating'] = field_value
+                elif field_name == 'Url':         pass
+                elif field_name == 'Description': game['story'] = field_value
+                elif field_name == 'Goodname':    pass
+                elif field_name == 'NoIntro':     pass
+                elif field_name == 'Tosec':       pass
+                else:
+                    raise NameError
+        else:
+            raise CriticalError('Unknown read_status FSM value')
+    f.close()
+    log_info('audit_load_Tempest_INI() Number of games {0}'.format(len(games)))
+
+    return games
+
+def audit_load_HyperList_XML(xml_FN):
+    __debug_xml_parser = 0
+    games = {}
+
+    # --- Check that file exists and load ---
+    if not xml_FN.exists():
+        log_error('Does not exists "{0}"'.format(xml_FN.getPath()))
+        return games
+    log_verb('Loading XML "{0}"'.format(xml_FN.getPath()))
+    try:
+        xml_tree = ET.parse(xml_FN.getPath())
+    except ET.ParseError as e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return games
+    except IOError as e:
+        log_error('(IOError) {0}'.format(str(e)))
+        return games
+    xml_root = xml_tree.getroot()
+    for game_element in xml_root:
+        if __debug_xml_parser:
+            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
+
+        if game_element.tag == 'game':
+            # Default values
+            game = audit_new_rom_HyperList()
+
+            # ROM name is an attribute of <game>
+            game['name'] = game_element.attrib['name']
+            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+
+            # Parse child tags of category
+            for game_child in game_element:
+                # By default read strings
+                xml_text = game_child.text if game_child.text is not None else ''
+                xml_text = text_unescape_XML(xml_text)
+                xml_tag  = game_child.tag
+                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                game[xml_tag] = xml_text
+            key = game['name']
+            games[key] = game
+
+    return games
+
+def audit_make_NoIntro_PClone_dic(nointro_dic):
+    log_info('Making PClone dictionary ...')
+    main_pclone_dic = {}
+    for machine_name in nointro_dic:
+        machine = nointro_dic[machine_name]
+        if machine['cloneof']:
+            parent_name = machine['cloneof']
+            # >> If parent already in main_pclone_dic then add clone to parent list.
+            # >> If parent not there, then add parent first and then add clone.
+            if parent_name not in main_pclone_dic: main_pclone_dic[parent_name] = []
+            main_pclone_dic[parent_name].append(machine_name)
+        else:
+            # >> Machine is a parent. Add to main_pclone_dic if not already there.
+            if machine_name not in main_pclone_dic: main_pclone_dic[machine_name] = []
+
+    return main_pclone_dic
+
+def audit_make_NoIntro_Parents_dic(nointro_dic):
+    log_info('Making Parents dictionary ...')
+    main_pclone_dic = {}
+    main_clone_to_parent_dic = {}
+    for machine_name in nointro_dic:
+        machine = nointro_dic[machine_name]
+        if machine['cloneof']:
+            parent_name = machine['cloneof']
+            main_clone_to_parent_dic[machine_name] = parent_name            
+
+    return main_clone_to_parent_dic
