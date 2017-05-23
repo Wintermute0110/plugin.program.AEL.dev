@@ -2905,7 +2905,7 @@ class Main:
         fav_flyer = ''
         listitem = xbmcgui.ListItem(fav_name)
         listitem.setInfo('video', {'title': fav_name, 'overlay' : 4,
-                                   'plot' : 'Shows AEL Favourite ROMs.' })
+                                   'plot' : 'Shows AEL Favourite ROMs' })
         listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
 
         # --- Create context menu ---
@@ -2928,7 +2928,7 @@ class Main:
         collections_flyer  = ''
         listitem = xbmcgui.ListItem(collections_name)
         listitem.setInfo('video', {'title': collections_name, 'overlay': 4,
-                                   'plot' : 'Shows user defined ROM collections.'})
+                                   'plot' : 'Shows user defined ROM collections'})
         listitem.setArt({'thumb'  : collections_thumb,  'fanart' : collections_fanart, 
                          'banner' : collections_banner, 'poster' : collections_flyer})
 
@@ -2953,7 +2953,7 @@ class Main:
         vcategory_label  = 'Browse by ...'
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4,
-                                   'plot' : 'Shows AEL virtual launchers.'})
+                                   'plot' : 'Shows AEL virtual launchers'})
         listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart, 
                          'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
@@ -3001,7 +3001,7 @@ class Main:
         fav_flyer = ''
         listitem = xbmcgui.ListItem(laun_name)
         listitem.setInfo('video', {'title': laun_name, 'overlay': 4,
-                                   'plot' : 'Shows the ROMs you have recently played.'})
+                                   'plot' : 'Shows the ROMs you have recently played'})
         listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
 
         commands = []
@@ -3022,7 +3022,7 @@ class Main:
         fav_flyer = ''
         listitem = xbmcgui.ListItem(laun_name)
         listitem.setInfo('video', {'title': laun_name, 'overlay' : 4,
-                                   'plot' : 'Displays the ROMs you play most.'})
+                                   'plot' : 'Displays the ROMs you play most'})
         listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
 
         commands = []
@@ -3060,49 +3060,49 @@ class Main:
             vcategory_flyer  = ''
             vcategory_label  = 'Title'
         elif virtual_category_kind == VCATEGORY_YEARS_ID:
-            vcategory_name   = '[Browse by Year]'
+            vcategory_name   = 'Browse by Year'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'Year'
         elif virtual_category_kind == VCATEGORY_GENRE_ID:
-            vcategory_name   = '[Browse by Genre]'
+            vcategory_name   = 'Browse by Genre'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'Genre'
         elif virtual_category_kind == VCATEGORY_STUDIO_ID:
-            vcategory_name   = '[Browse by Studio]'
+            vcategory_name   = 'Browse by Studio'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'Studio'
         elif virtual_category_kind == VCATEGORY_NPLAYERS_ID:
-            vcategory_name   = '[Browse by Number of Players]'
+            vcategory_name   = 'Browse by Number of Players'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'NPlayers'
         elif virtual_category_kind == VCATEGORY_ESRB_ID:
-            vcategory_name   = '[Browse by ESRB Rating]'
+            vcategory_name   = 'Browse by ESRB Rating'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'ESRB'
         elif virtual_category_kind == VCATEGORY_RATING_ID:
-            vcategory_name   = '[Browse by User Rating]'
+            vcategory_name   = 'Browse by User Rating'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'Rating'
         elif virtual_category_kind == VCATEGORY_CATEGORY_ID:
-            vcategory_name   = '[Browse by Category]'
+            vcategory_name   = 'Browse by Category'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
@@ -3114,7 +3114,7 @@ class Main:
             return
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4,
-                                   'plot' : 'Shows virtual launchers in {0} virtual category.'.format(vcategory_label)})
+                                   'plot' : 'Shows virtual launchers in {0} virtual category'.format(vcategory_label)})
         listitem.setArt({'thumb'  : vcategory_thumb,  'fanart' : vcategory_fanart, 
                          'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
@@ -3644,12 +3644,12 @@ class Main:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
             kodi_def_thumb = launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultProgram.png'
-            platform = launcher['platform']
             icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
             clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
+            platform = launcher['platform']
 
             # --- parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode ---
             nstat = rom['nointro_status']
