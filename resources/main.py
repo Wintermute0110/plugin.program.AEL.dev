@@ -7588,8 +7588,7 @@ class Main:
         if num_roms > 0:
             log_debug('Starting dead items scan')
             i = 0
-            self.pDialog.create('Advanced Emulator Launcher',
-                                'Checking for dead entries ...', "Path '{0}'".format(launcher_path))
+            self.pDialog.create('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
             for key in sorted(roms.iterkeys()):
                 log_debug('Searching {0}'.format(roms[key]['filename']))
                 self.pDialog.update(i * 100 / num_roms)
