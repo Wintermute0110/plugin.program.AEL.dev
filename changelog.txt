@@ -16,9 +16,16 @@ WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
 WIP      Edit multidisc ROMs.
 
 WIP      Changes and suggestions propoed by Atsumori.
+
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2586596#pid2586596
 
+WIP      LaunchBox Games Database scraper.
+         Apparently LaunchBox GamesDB started as a copy of TheGamesDB. Currently there is no
+         API to access LaunchBox GamesDB but an XML with all the database info can be downloaded.
+
+         See http://gamesdb.launchbox-app.com/
+         See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Jun 2017[/B]
 
