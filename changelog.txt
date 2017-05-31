@@ -45,6 +45,13 @@ WIP      Update code to use xbmcgui.Dialog().select() - additions.
 
 FEATURE  Addon option to hide [Browse Offline Scraper].
 
+WIP     Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
+        conveninent that the Unknown ROMs are clones in the Parent/Clone view.
+
+WIP     1 Game 1 ROM launcher display mode. Copy it from AML.
+
+WIP     Options to generate the 1G1R list, like prefer ROMs from Europe, Japan or USA.
+
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]
 
