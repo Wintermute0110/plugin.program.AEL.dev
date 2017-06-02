@@ -84,6 +84,125 @@ def audit_new_rom_AEL_Offline():
 
     return rom
 
+def audit_new_LB_game():
+    g = {
+        'Name'              : '',
+        'ReleaseYear'       : '',
+        'Overview'          : '',
+        'MaxPlayers'        : '',
+        'Cooperative'       : '',
+        'VideoURL'          : '',
+        'DatabaseID'        : '',
+        'CommunityRating'   : '',
+        'Platform'          : '',
+        'Genres'            : '',
+        'Publisher'         : '',
+        'Developer'         : '',
+        'ReleaseDate'       : '',
+        'ESRB'              : '',
+        'WikipediaURL'      : '',
+        'DOS'               : '',
+        'StartupFile'       : '',
+        'StartupMD5'        : '',
+        'SetupFile'         : '',
+        'SetupMD5'          : '',
+        'StartupParameters' : '',
+    }
+
+    return g
+
+def audit_new_LB_platform():
+    g = {
+        'Name'           : '',
+        'Emulated'       : '',
+        'ReleaseDate'    : '',
+        'Developer'      : '',
+        'Manufacturer'   : '',
+        'Cpu'            : '',
+        'Memory'         : '',
+        'Graphics'       : '',
+        'Sound'          : '',
+        'Display'        : '',
+        'Media'          : '',
+        'MaxControllers' : '',
+        'Notes'          : '',
+        'Category'       : '',
+        'UseMameFiles'   : '',
+    }
+
+    return g
+
+def audit_new_LB_gameImage():
+    g = {
+        'DatabaseID' : '',
+        'FileName'   : '',
+        'Type'       : '',
+        'CRC32'      : '',
+        'Region'     : '',
+    }
+
+    return g
+
+def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
+    if not filename_FN.exists():
+        log_error("Cannot load file '{0}'".format(xml_file))
+        return
+
+    # --- Parse using cElementTree ---
+    log_verb('audit_load_LB_metadata_XML() Loading "{0}"'.format(filename_FN.getPath()))
+    try:
+        xml_tree = ET.parse(filename_FN.getPath())
+    except ET.ParseError, e:
+        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) {0}'.format(str(e)))
+        return
+    xml_root = xml_tree.getroot()
+    for xml_element in xml_root:
+        if xml_element.tag == 'Game':
+            game = audit_new_LB_game()
+            for xml_child in xml_element:
+                xml_tag  = xml_child.tag
+                xml_text = xml_child.text if xml_child.text is not None else ''
+                if xml_tag not in game:
+                    log_info('Unknown <Game> child tag <{0}>'.format(xml_tag))
+                    return
+                game[xml_tag] = text_unescape_XML(xml_text)
+            games_dic[game['Name']] = game
+        elif xml_element.tag == 'Platform':
+            platform = audit_new_LB_platform()
+            for xml_child in xml_element:
+                xml_tag  = xml_child.tag
+                xml_text = xml_child.text if xml_child.text is not None else ''
+                if xml_tag not in platform:
+                    log_info('Unknown <Platform> child tag <{0}>'.format(xml_tag))
+                    return
+                platform[xml_tag] = text_unescape_XML(xml_text)
+            platforms_dic[platform['Name']] = platform
+        elif xml_element.tag == 'PlatformAlternateName':
+            pass
+        elif xml_element.tag == 'Emulator':
+            pass
+        elif xml_element.tag == 'EmulatorPlatform':
+            pass
+        elif xml_element.tag == 'GameAlternateName':
+            pass
+        elif xml_element.tag == 'GameImage':
+            game_image = audit_new_LB_gameImage()
+            for xml_child in xml_element:
+                xml_tag  = xml_child.tag
+                xml_text = xml_child.text if xml_child.text is not None else ''
+                if xml_tag not in game_image:
+                    log_info('Unknown <GameImage> child tag <{0}>'.format(xml_tag))
+                    return
+                game_image[xml_tag] = text_unescape_XML(xml_text)
+            gameimages_dic[game_image['FileName']] = game_image
+        else:
+            log_info('Unknwon main tag <{0}>'.format(xml_element.tag))
+            return
+    log_verb('audit_load_LB_metadata_XML() Loaded {0} games ({1} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
+    log_verb('audit_load_LB_metadata_XML() Loaded {0} platforms'.format(len(platforms_dic)))
+    log_verb('audit_load_LB_metadata_XML() Loaded {0} game images'.format(len(gameimages_dic)))
+
 # -------------------------------------------------------------------------------------------------
 # Functions
 # -------------------------------------------------------------------------------------------------
