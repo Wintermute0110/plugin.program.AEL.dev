@@ -6809,33 +6809,32 @@ class Main:
             # >> CMD/BAT files in Windows
             elif app_ext == 'bat' or app_ext == 'BAT':
                 log_debug('_run_process() (Windows) Launching BAT application')
-
-                retcode = subprocess.call('{0} {1}'.format(application, arguments).encode('utf-8'),
-                                          cwd = apppath.encode('utf-8'), startupinfo = info, close_fds = True)
+                log_debug('_run_process() (Windows) Ignoring setting windows_cd_apppath')
+                log_debug('_run_process() (Windows) Ignoring setting windows_close_fds')
+                log_debug('_run_process() (Windows) show_batch_window = {0}'.format(self.settings['show_batch_window']))
+                info = subprocess.STARTUPINFO()
+                info.dwFlags = 1
+                info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
+                retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
                 log_info('_run_process() (Windows) Process BAR retcode = {0}'.format(retcode))
 
             else:
                 # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
-                # >> Workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
+                # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
                 # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
-                if app_ext == 'bat' or app_ext == 'BAT':
-                    log_debug('_run_process() (Windows) Launching BAT application')
-                    info = subprocess.STARTUPINFO()
-                    info.dwFlags = 1
-                    info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
-                else:
-                    log_debug('_run_process() (Windows) Launching regular application')
-                    info = None
-                log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(self.settings['windows_close_fds']))
-                log_debug('_run_process() (Windows) windows_cd_apppath = {0}'.format(self.settings['windows_cd_apppath']))
-                if self.settings['windows_cd_apppath'] and self.settings['windows_close_fds']:
-                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
-                elif self.settings['windows_cd_apppath'] and not self.settings['windows_close_fds']:
-                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False, startupinfo = info)
-                elif not self.settings['windows_cd_apppath'] and self.settings['windows_close_fds']:
-                    retcode = subprocess.call(exec_list, close_fds = True, startupinfo = info)
-                elif not self.settings['windows_cd_apppath'] and not self.settings['windows_close_fds']:
-                    retcode = subprocess.call(exec_list, close_fds = False, startupinfo = info)
+                windows_cd_apppath = self.settings['windows_cd_apppath']
+                windows_close_fds  = self.settings['windows_close_fds']
+                log_debug('_run_process() (Windows) Launching regular application')
+                log_debug('_run_process() (Windows) windows_cd_apppath = {0}'.format(windows_cd_apppath))
+                log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
+                if windows_cd_apppath and windows_close_fds:
+                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
+                elif windows_cd_apppath and not windows_close_fds:
+                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False)
+                elif not windows_cd_apppath and windows_close_fds:
+                    retcode = subprocess.call(exec_list, close_fds = True)
+                elif not windows_cd_apppath and not windows_close_fds:
+                    retcode = subprocess.call(exec_list, close_fds = False)
                 else:
                     raise Exception('Logical error')
                 log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))
