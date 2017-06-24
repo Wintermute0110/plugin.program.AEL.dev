@@ -67,6 +67,8 @@ VCAT_CATEGORY_FILE_PATH = PLUGIN_DATA_DIR.join('vcat_category.xml')
 LAUNCH_LOG_FILE_PATH    = PLUGIN_DATA_DIR.join('launcher.log')
 RECENT_PLAYED_FILE_PATH = PLUGIN_DATA_DIR.join('history.json')
 MOST_PLAYED_FILE_PATH   = PLUGIN_DATA_DIR.join('most_played.json')
+GAMEDB_INFO_DIR         = CURRENT_ADDON_DIR.pjoin('GameDBInfo')
+GAMEDB_JSON_BASE_NOEXT  = 'GameDB_info'
 
 # --- Artwork and NFO for Categories and Launchers ---
 DEFAULT_CAT_ASSET_DIR    = PLUGIN_DATA_DIR.join('asset-categories')
@@ -3129,20 +3131,25 @@ class Main:
         self._misc_set_default_sorting_method()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
+        # >> Open info dictionary
+        gamedb_info_dic = fs_load_JSON_file(GAMEDB_INFO_DIR, GAMEDB_JSON_BASE_NOEXT)
+
         # >> Loop the list of platforms and render a virtual launcher for each platform that
         # >> has a valid XML database.
         for platform in AEL_platform_list:
             # >> Do not show Unknown platform
             if platform == 'Unknown': continue
             db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            self._gui_render_offline_scraper_launchers_row(platform, db_suffix)
+            self._gui_render_offline_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    def _gui_render_offline_scraper_launchers_row(self, platform, db_suffix):
+    def _gui_render_offline_scraper_launchers_row(self, platform, platform_info, db_suffix):
         # >> Mark platform whose XML DB is not available
         title_str = platform
-        if not db_suffix: title_str += ' [COLOR red][Not available][/COLOR]'
-
+        if not db_suffix:
+            title_str += ' [COLOR red][Not available][/COLOR]'
+        else:
+            title_str += ' [COLOR orange]({0} ROMs)[/COLOR]'.format(platform_info['numROMs'])
         plot_text = 'Offline Scraper {0} database ROMs.'.format(platform)
         listitem = xbmcgui.ListItem(title_str)
         listitem.setInfo('video', {'title' : title_str,
