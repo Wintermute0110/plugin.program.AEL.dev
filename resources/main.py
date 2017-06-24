@@ -6702,6 +6702,8 @@ class Main:
         # --- Compute ROM recently played list ---
         MAX_RECENT_PLAYED_ROMS = 100
         recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+        recent_roms_list = [rom for rom in recent_roms_list
+                            if rom['id'] != recent_rom['id']]                                         
         recent_roms_list.insert(0, recent_rom)
         if len(recent_roms_list) > MAX_RECENT_PLAYED_ROMS:
             log_debug('_command_run_rom() len(recent_roms_list) = {0}'.format(len(recent_roms_list)))
