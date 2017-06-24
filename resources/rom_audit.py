@@ -219,7 +219,7 @@ def audit_load_OfflineScraper_XML(xml_file):
         return games
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_GameInfo_XML() Loading "{0}"'.format(xml_file))
+    log_verb('audit_load_OfflineScraper_XML() Loading "{0}"'.format(xml_file))
     try:
         xml_tree = ET.parse(xml_file)
     except ET.ParseError, e:

@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from scrap import *
 from scrap_common import *
 from disk_IO import *
+import rom_audit
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing
@@ -56,8 +57,7 @@ class metadata_Offline(Scraper_Metadata):
         self.addon_dir = plugin_dir
         log_debug('metadata_Offline::set_addon_dir() self.addon_dir = {0}'.format(self.addon_dir))
         
-    # Load XML information for this scraper and keep it cached in memory.
-    # For offline scrapers.
+    # >> Load XML information for this scraper and keep it cached in memory.
     def initialise_scraper(self, platform):
         # Check if we have data already cached in object memory for this platform
         if self.cached_platform == platform:
@@ -79,7 +79,7 @@ class metadata_Offline(Scraper_Metadata):
         # Load XML database and keep it in memory for subsequent calls
         xml_path = os.path.join(self.addon_dir, xml_file)
         log_debug('metadata_Offline::initialise_scraper Loading XML {0}'.format(xml_path))
-        self.games = fs_load_GameInfo_XML(xml_path)
+        self.games = rom_audit.audit_load_OfflineScraper_XML(xml_path)
         if not self.games:
             self.games = {}
             self.cached_xml_path = ''
