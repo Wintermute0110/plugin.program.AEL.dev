@@ -79,6 +79,16 @@ def fs_new_category():
 
     return c
 
+NOINTRO_DMODE_ALL       = 'All ROMs'
+NOINTRO_DMODE_HAVE      = 'Have ROMs'
+NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
+NOINTRO_DMODE_HAVE_MISS = 'Have or Missing ROMs'
+NOINTRO_DMODE_MISS      = 'Missing ROMs'
+NOINTRO_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
+NOINTRO_DMODE_UNK       = 'Unknown ROMs'
+NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
+                           NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
+                           NOINTRO_DMODE_UNK]
 def fs_new_launcher():
     l = {'id' : '',
          'm_name' : '',
@@ -98,10 +108,14 @@ def fs_new_launcher():
          'minimize' : False,
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
+         'nointro_display_mode' : NOINTRO_DMODE_ALL,
          'pclone_launcher' : False,
          'num_roms' : 0,
          'num_parents' : 0,
          'num_clones' : 0,
+         'num_have' : 0,
+         'num_miss' : 0,
+         'num_unknown' : 0,
          'timestamp_launcher' : 0.0,
          'timestamp_report' : 0.0,
          'default_thumb' : 's_thumb',
@@ -147,6 +161,12 @@ NOINTRO_STATUS_UNKNOWN = 'Unknown'
 NOINTRO_STATUS_NONE    = 'None'
 NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE, NOINTRO_STATUS_MISS, NOINTRO_STATUS_UNKNOWN, 
                           NOINTRO_STATUS_NONE]
+
+PCLONE_STATUS_PARENT = 'Parent'
+PCLONE_STATUS_CLONE  = 'Clone'
+PCLONE_STATUS_NONE   = 'None'
+PCLONE_STATUS_LIST   = [PCLONE_STATUS_PARENT, PCLONE_STATUS_CLONE, PCLONE_STATUS_NONE]
+
 # m_esrb string ESRB_LIST default ESRB_PENDING
 ESRB_PENDING     = 'RP (Rating Pending)'
 ESRB_EARLY       = 'EC (Early Childhood)'
@@ -157,6 +177,7 @@ ESRB_MATURE      = 'M (Mature)'
 ESRB_ADULTS_ONLY = 'AO (Adults Only)'
 ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
                     ESRB_MATURE, ESRB_ADULTS_ONLY]
+
 # m_nplayers default values
 NP_1P     = '1P'
 NP_2P_SIM = '2P sim'
@@ -187,6 +208,7 @@ def fs_new_rom():
          'altarg' : '',
          'finished' : False,
          'nointro_status' : NOINTRO_STATUS_NONE,
+         'pclone_status' : PCLONE_STATUS_NONE,
          's_title' : '',
          's_snap' : '',
          's_fanart' : '',
@@ -379,19 +401,9 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # Filesystem very low-level utilities
 # -------------------------------------------------------------------------------------------------
 #
-# Writes a XML text tag line, indented 2 spaces (root sub-child)
-# Both tag_name and tag_text must be Unicode strings.
-# Returns an Unicode string.
-#
-def XML_text(tag_name, tag_text):
-    tag_text = text_escape_XML(tag_text)
-    line     = '  <{0}>{1}</{2}>\n'.format(tag_name, tag_text, tag_name)
-
-    return line
-
-#
 # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
 # This function is not needed. It is deprecated and will be removed soon.
+#
 def get_fs_encoding():
     return sys.getfilesystemencoding()
 
@@ -477,10 +489,14 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
+            str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
             str_list.append(XML_text('pclone_launcher', unicode(launcher['pclone_launcher'])))
             str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
             str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
-            str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))            
+            str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))
+            str_list.append(XML_text('num_have', unicode(launcher['num_have'])))
+            str_list.append(XML_text('num_miss', unicode(launcher['num_miss'])))
+            str_list.append(XML_text('num_unknown', unicode(launcher['num_unknown'])))
             str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
             str_list.append(XML_text('default_thumb', launcher['default_thumb']))
@@ -528,11 +544,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
 #
 # Loads categories.xml from disk and fills dictionary self.categories
 #
-def fs_load_catfile(categories_file):
+def fs_load_catfile(categories_file, categories, launchers):
     __debug_xml_parser = 0
     update_timestamp = 0.0
-    categories = {}
-    launchers = {}
 
     # --- Parse using cElementTree ---
     # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
@@ -544,8 +558,7 @@ def fs_load_catfile(categories_file):
         log_error('(ParseError) {0}'.format(str(e)))
         kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                        'Maybe XML file is corrupt or contains invalid characters.')
-        return (update_timestamp, categories, launchers)
-
+        return update_timestamp
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))
 
@@ -595,7 +608,8 @@ def fs_load_catfile(categories_file):
                 elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
-                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones':
+                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
+                     xml_tag == 'num_have' or xml_tag == 'num_miss'    or xml_tag == 'num_unknown':
                     launcher[xml_tag] = int(xml_text)
                 # >> Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
@@ -604,8 +618,10 @@ def fs_load_catfile(categories_file):
                     launcher[xml_tag] = xml_text
             # --- Add launcher to categories dictionary ---
             launchers[launcher['id']] = launcher
+    # log_verb('fs_load_catfile() Loaded {0} categories'.format(len(categories)))
+    # log_verb('fs_load_catfile() Loaded {0} launchers'.format(len(launchers)))
 
-    return (update_timestamp, categories, launchers)
+    return update_timestamp
 
 # -------------------------------------------------------------------------------------------------
 # Generic JSON loader/writer
@@ -613,7 +629,7 @@ def fs_load_catfile(categories_file):
 # Look at the ROMs JSON code for reference/comments to these functions.
 def fs_write_JSON_file(file_dir, file_base_noext, data):
     # >> Get file names
-    json_file = file_dir.join(file_base_noext + '.json')
+    json_file = file_dir.pjoin(file_base_noext + '.json')
     log_verb('fs_write_JSON_file() Dir  {0}'.format(file_dir.getOriginalPath()))
     log_verb('fs_write_JSON_file() JSON {0}'.format(file_base_noext + '.json'))
 
@@ -630,7 +646,7 @@ def fs_load_JSON_file(file_dir, file_base_noext):
     data = {}
 
     # --- If file does not exist return empty dictionary ---
-    json_file = file_dir.join(file_base_noext + '.json')
+    json_file = file_dir.pjoin(file_base_noext + '.json')
     if not json_file.exists(): return data
 
     # --- Parse using json module ---
@@ -1246,40 +1262,12 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 # -------------------------------------------------------------------------------------------------
 # No-Intro and Offline scrapers
 # -------------------------------------------------------------------------------------------------
-#
-# Loads a No-Intro Parent-Clone XML DAT file. Creates a data structure like
-# roms_nointro = {
-#   'rom_name_A' : { 'name' : 'rom_name_A', 'cloneof' : '' | 'rom_name_parent},
-#   'rom_name_B' : { 'name' : 'rom_name_B', 'cloneof' : '' | 'rom_name_parent},
-# }
-#
-def fs_load_NoIntro_XML_file(roms_xml_file):
-    # --- If file does not exist return empty dictionary ---
-    if not roms_xml_file.exists(): return {}
-
-    # --- Parse using cElementTree ---
-    log_verb('fs_load_NoIntro_XML_file() Loading XML file {0}'.format(roms_xml_file.getOriginalPath()))
-    nointro_roms = {}
-    try:
-        xml_root = roms_xml_file.readXml()
-    except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
-        return roms
-
-    for root_element in xml_root:
-        if root_element.tag == 'game':
-            nointro_rom = {'name' : '', 'cloneof' : ''}
-            rom_name = root_element.attrib['name']
-            nointro_rom['name'] = rom_name
-            if 'cloneof' in root_element.attrib:
-                nointro_rom['cloneof'] = root_element.attrib['cloneof']
-            nointro_roms[rom_name] = nointro_rom
-
-    return nointro_roms
+# -- id of the fake ROM parent of all Unknown ROMs ---
+UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 
 #
-# Creates a Parent/Clone dictionary.
+# Creates and returns Parent/Clone MD5 index dictionary.
+# This dictionary will be save in database roms_base_noext_PClone_index.json.
 #
 # roms_pclone_index = {
 #   'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
@@ -1288,9 +1276,7 @@ def fs_load_NoIntro_XML_file(roms_xml_file):
 #   UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
 # }
 #
-UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 def fs_generate_PClone_index(roms, roms_nointro):
-    # roms_pclone_index_by_name = {}
     roms_pclone_index_by_id = {}
 
     # --- Create a dictionary to convert ROMbase_noext names into IDs ---
@@ -1305,7 +1291,6 @@ def fs_generate_PClone_index(roms, roms_nointro):
 
     # --- Build PClone dictionary using ROM base_noext names ---
     # >> Create fake ROM later because dictionaries cannot be modified when being iterated
-    Found_Unknown_ROMs = False
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
@@ -1318,7 +1303,6 @@ def fs_generate_PClone_index(roms, roms_nointro):
 
         #  Add Unknown ROMs to their own set.
         if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
-            Found_Unknown_ROMs = True
             clone_id = rom['id']
             if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
                 roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
@@ -1344,83 +1328,32 @@ def fs_generate_PClone_index(roms, roms_nointro):
                     roms_pclone_index_by_id[parent_id] = []
                     roms_pclone_index_by_id[parent_id].append(clone_id)
 
-    # >> If Unknown ROMs also creates a fake parent ROM for all Unknown ROMs
-    if Found_Unknown_ROMs:
-        # >> Special Parent ROM for Unknown ROMs
-        u_rom = fs_new_rom()
-        u_rom['id']             = UNKNOWN_ROMS_PARENT_ID
-        u_rom['m_name']         = '[Unknown ROMs]'
-        u_rom['nointro_status'] = NOINTRO_STATUS_HAVE
-        u_rom['m_genre']        = 'Special genre' 
-        u_rom['m_studio']       = 'Special studio'
-        u_rom['m_plot']         = 'Special plot'
-        roms[u_rom['id']] = u_rom
-
     return roms_pclone_index_by_id
 
 #
-# parent_roms = { AEL ROM dictionary having parents only }
+# Returns a dictionary with parent ROMs to be stored in database roms_base_noext_parents.json
+# If Unkown ROMs detected, the fake ROM [Unknown ROMs] is added.
 #
-def fs_generate_parent_ROMs_index(roms, roms_pclone_index):
+def fs_generate_parent_ROMs_dic(roms, roms_pclone_index):
     p_roms = {}
 
+    # --- Build parent ROM dictionary ---
     for rom_id in roms_pclone_index:
-        # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
-        # >> Clean parent ROM name tags from ROM Name
-        p_roms[rom_id] = dict(roms[rom_id])
-        # p_roms[rom_id]['m_name'] = text_format_ROM_title(p_roms[rom_id]['m_name'], True)
+        # >> roms_pclone_index make contain the fake ROM id. Skip it if so because the fake
+        # >> ROM is not in roms dictionary (KeyError exception)
+        if rom_id == UNKNOWN_ROMS_PARENT_ID:
+            rom = fs_new_rom()
+            rom['id']                      = UNKNOWN_ROMS_PARENT_ID
+            rom['m_name']                  = '[Unknown ROMs]'
+            rom['m_plot']                  = 'Special virtual ROM parent of all Unknown ROMs'
+            rom['nointro_status']          = NOINTRO_STATUS_NONE
+            p_roms[UNKNOWN_ROMS_PARENT_ID] = rom
+        else:
+            # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
+            # >> Clean parent ROM name tags from ROM Name
+            p_roms[rom_id] = dict(roms[rom_id])
 
     return p_roms
-
-#
-# Loads offline scraper information XML file.
-#
-def fs_load_GameInfo_XML(xml_file):
-    __debug_xml_parser = 0
-    games = {}
-
-    # --- Check that file exists ---
-    if not os.path.isfile(xml_file):
-        log_error("Cannot load file '{0}'".format(xml_file))
-        return games
-
-    # --- Parse using cElementTree ---
-    log_verb('fs_load_GameInfo_XML() Loading "{0}"'.format(xml_file))
-    try:
-        xml_tree = ET.parse(xml_file)
-    except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
-        return roms
-    xml_root = xml_tree.getroot()
-    for game_element in xml_root:
-        if __debug_xml_parser:
-            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
-
-        if game_element.tag == 'game':
-            # Default values
-            game = {'name'    : '', 'description'  : '', 'year'   : '',
-                    'rating'  : '', 'manufacturer' : '', 'dev'    : '',
-                    'genre'   : '', 'score'        : '', 'player' : '',
-                    'story'   : '', 'enabled'      : '', 'crc'    : '',
-                    'cloneof' : '' }
-
-            # ROM name is an attribute of <game>
-            game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
-
-            # Parse child tags of category
-            for game_child in game_element:
-                # By default read strings
-                xml_text = game_child.text if game_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
-                xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
-                game[xml_tag] = xml_text
-            key = game['name']
-            games[key] = game
-
-    return games
 
 # -------------------------------------------------------------------------------------------------
 # Fixes launchers.xml invalid XML characters, if present.
@@ -1677,7 +1610,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 # This file is called by the ROM scanner to read a ROM info file automatically.
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 #
-def fs_load_NFO_file_scanner(nfo_file_path):
+def fs_import_NFO_file_scanner(nfo_file_path):
     nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'publisher' : '', 'rating' : '', 'plot' : '' }
 
     # >> Read file, put in a string and remove line endings

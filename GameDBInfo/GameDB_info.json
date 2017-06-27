@@ -1,0 +1,200 @@
+{
+ "Atari 2600":{
+  "numROMs":471
+ },
+ "Atari 5200":{
+  "numROMs":72
+ },
+ "Atari 7800":{
+  "numROMs":59
+ },
+ "Atari Jaguar":{
+  "numROMs":54
+ },
+ "Atari Jaguar CD":{
+  "numROMs":13
+ },
+ "Atari Lynx":{
+  "numROMs":75
+ },
+ "Atari ST":{
+  "numROMs":2904
+ },
+ "Colecovision":{
+  "numROMs":140
+ },
+ "Commodore 64":{
+  "numROMs":8338
+ },
+ "Commodore Amiga":{
+  "numROMs":2083
+ },
+ "Commodore Plus-4":{
+  "numROMs":661
+ },
+ "Commodore VIC-20":{
+  "numROMs":1356
+ },
+ "MAME":{
+  "numROMs":37317
+ },
+ "Magnavox Odyssey2":{
+  "numROMs":99
+ },
+ "Microsoft MS-DOS":{
+  "numROMs":5194
+ },
+ "Microsoft MSX":{
+  "numROMs":0
+ },
+ "Microsoft MSX 2":{
+  "numROMs":165
+ },
+ "Microsoft Windows":{
+  "numROMs":0
+ },
+ "Microsoft Xbox":{
+  "numROMs":0
+ },
+ "Microsoft Xbox 360":{
+  "numROMs":0
+ },
+ "Microsoft Xbox One":{
+  "numROMs":0
+ },
+ "NEC PC Engine":{
+  "numROMs":294
+ },
+ "NEC PC Engine CDROM2":{
+  "numROMs":118
+ },
+ "NEC PC-FX":{
+  "numROMs":62
+ },
+ "NEC SuperGrafx":{
+  "numROMs":5
+ },
+ "NEC TurboGrafx 16":{
+  "numROMs":94
+ },
+ "NEC TurboGrafx CD":{
+  "numROMs":46
+ },
+ "Nintendo 3DS":{
+  "numROMs":0
+ },
+ "Nintendo 64":{
+  "numROMs":303
+ },
+ "Nintendo DS":{
+  "numROMs":2222
+ },
+ "Nintendo DSi":{
+  "numROMs":0
+ },
+ "Nintendo Famicom":{
+  "numROMs":893
+ },
+ "Nintendo Famicom Disk System":{
+  "numROMs":209
+ },
+ "Nintendo GameBoy":{
+  "numROMs":0
+ },
+ "Nintendo GameBoy Advance":{
+  "numROMs":0
+ },
+ "Nintendo GameBoy Color":{
+  "numROMs":0
+ },
+ "Nintendo GameCube":{
+  "numROMs":638
+ },
+ "Nintendo NES":{
+  "numROMs":893
+ },
+ "Nintendo SNES":{
+  "numROMs":807
+ },
+ "Nintendo Switch":{
+  "numROMs":0
+ },
+ "Nintendo Virtual Boy":{
+  "numROMs":20
+ },
+ "Nintendo Wii":{
+  "numROMs":1512
+ },
+ "Nintendo Wii U":{
+  "numROMs":0
+ },
+ "Panasonic 3DO":{
+  "numROMs":216
+ },
+ "Philips Videopac G7000":{
+  "numROMs":99
+ },
+ "SNK Neo-Geo CD":{
+  "numROMs":90
+ },
+ "SNK Neo-Geo Pocket":{
+  "numROMs":10
+ },
+ "SNK Neo-Geo Pocket Color":{
+  "numROMs":40
+ },
+ "Sega 32X":{
+  "numROMs":33
+ },
+ "Sega Dreamcast":{
+  "numROMs":347
+ },
+ "Sega Game Gear":{
+  "numROMs":335
+ },
+ "Sega Genesis":{
+  "numROMs":942
+ },
+ "Sega Master System":{
+  "numROMs":333
+ },
+ "Sega MegaCD":{
+  "numROMs":0
+ },
+ "Sega MegaDrive":{
+  "numROMs":942
+ },
+ "Sega PICO":{
+  "numROMs":0
+ },
+ "Sega SG-1000":{
+  "numROMs":75
+ },
+ "Sega Saturn":{
+  "numROMs":303
+ },
+ "Sega SegaCD":{
+  "numROMs":0
+ },
+ "Sinclair ZX Spectrum":{
+  "numROMs":4828
+ },
+ "Sony PlayStation":{
+  "numROMs":1793
+ },
+ "Sony PlayStation 2":{
+  "numROMs":2583
+ },
+ "Sony PlayStation 3":{
+  "numROMs":0
+ },
+ "Sony PlayStation 4":{
+  "numROMs":0
+ },
+ "Sony PlayStation Portable":{
+  "numROMs":1008
+ },
+ "Unknown":{
+  "numROMs":0
+ }
+}

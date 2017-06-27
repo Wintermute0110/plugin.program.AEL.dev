@@ -1,0 +1,1269 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>SNK Neo-Geo CD</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>test</listversion>
+  <exporterversion></exporterversion>
+</header>
+<game name="2020 Super Baseball (World)">
+  <description>2020 Super Baseball (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Baseball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="3 Count Bout (World)">
+  <description>3 Count Bout (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Wrestling</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="ADK World (Japan)">
+  <description>ADK World (Japan)</description>
+  <year>1995</year>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Aero Fighters 2 (World)">
+  <description>Aero Fighters 2 (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+  <manufacturer>Video Systems</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Aero Fighters 3 (World)">
+  <description>Aero Fighters 3 (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+  <manufacturer>Video Systems</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Aggressors of Dark Kombat (World)">
+  <description>Aggressors of Dark Kombat (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Alpha Mission II (World)">
+  <description>Alpha Mission II (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Art of Fighting (World)">
+  <description>Art of Fighting (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Art of Fighting 2 (World)">
+  <description>Art of Fighting 2 (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Art of Fighting 3 - The Path of the Warrior (World)">
+  <description>Art of Fighting 3 - The Path of the Warrior (World)</description>
+  <year>1996</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Baseball Stars 2 (World)">
+  <description>Baseball Stars 2 (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Baseball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Baseball Stars Professional (World)">
+  <description>Baseball Stars Professional (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Baseball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Blue&apos;s Journey (World)">
+  <description>Blue&apos;s Journey (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Breakers (World)">
+  <description>Breakers (World)</description>
+  <year>1997</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Visco</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Burning Fight (World)">
+  <description>Burning Fight (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Crossed Swords (World)">
+  <description>Crossed Swords (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Crossed Swords II (World)">
+  <description>Crossed Swords II (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Cyber-Lip (World)">
+  <description>Cyber-Lip (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Double Dragon (World)">
+  <description>Double Dragon (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Technos</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fatal Fury - The Battle of Fury (World)">
+  <description>Fatal Fury - The Battle of Fury (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fatal Fury 2 (World)">
+  <description>Fatal Fury 2 (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fatal Fury 3 - Road to the Final Victory (World)">
+  <description>Fatal Fury 3 - Road to the Final Victory (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fatal Fury Special (World)">
+  <description>Fatal Fury Special (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Football Frenzy (World)">
+  <description>Football Frenzy (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Football</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Galaxy Fight - Universal Warriors (World)">
+  <description>Galaxy Fight - Universal Warriors (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Sunsoft</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ghost Pilots (World)">
+  <description>Ghost Pilots (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ironclad (World)">
+  <description>Ironclad (World)</description>
+  <year>1996</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Saurus</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kabuki Klash (World)">
+  <description>Kabuki Klash (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Hudson</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Karnov&apos;s Revenge (World)">
+  <description>Karnov&apos;s Revenge (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Data East</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="King of Fighters &apos;94, The (World)">
+  <description>King of Fighters &apos;94, The (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="King of Fighters &apos;95, The (World)">
+  <description>King of Fighters &apos;95, The (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="King of Fighters &apos;96, The (World)">
+  <description>King of Fighters &apos;96, The (World)</description>
+  <year>1996</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="King of Fighters &apos;97, The (World)">
+  <description>King of Fighters &apos;97, The (World)</description>
+  <year>1997</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="King of Fighters &apos;98, The - The Slugfest (World)">
+  <description>King of Fighters &apos;98, The - The Slugfest (World)</description>
+  <year>1998</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="King of Fighters &apos;99, The - Millennium Battle (World)">
+  <description>King of Fighters &apos;99, The - Millennium Battle (World)</description>
+  <year>1999</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="King of the Monsters 2 - The Next Thing (World)">
+  <description>King of the Monsters 2 - The Next Thing (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Last Blade 2, The (World)">
+  <description>Last Blade 2, The (World)</description>
+  <year>1999</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Last Blade, The (World)">
+  <description>Last Blade, The (World)</description>
+  <year>1998</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Last Hope (World)">
+  <description>Last Hope (World)</description>
+  <year>2006</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>NG:DEV.TEAM</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Last Resort (World)">
+  <description>Last Resort (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="League Bowling (World)">
+  <description>League Bowling (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Bowling</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Magical Drop 2 (World)">
+  <description>Magical Drop 2 (World)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Data East</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Magician Lord (World)">
+  <description>Magician Lord (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Metal Slug (World)">
+  <description>Metal Slug (World)</description>
+  <year>1996</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Nazca</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Metal Slug 2 (World)">
+  <description>Metal Slug 2 (World)</description>
+  <year>1998</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Mutation Nation (World)">
+  <description>Mutation Nation (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="NAM-1975 (World)">
+  <description>NAM-1975 (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Neo DriftOut (World)">
+  <description>Neo DriftOut (World)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Visco</manufacturer>
+  <dev></dev>
+  <genre>Driving</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Neo Turf Masters (World)">
+  <description>Neo Turf Masters (World)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ninja Combat (World)">
+  <description>Ninja Combat (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Beat-&apos;Em-Up</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ninja Commando (World)">
+  <description>Ninja Commando (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ninja Master&apos;s - Haou Ninpou-Chou (World)">
+  <description>Ninja Master&apos;s - Haou Ninpou-Chou (World)</description>
+  <year>1996</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="OverTop (World)">
+  <description>OverTop (World)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Driving</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pleasuregoal - 5 on 5 Mini Soccer (World)">
+  <description>Pleasuregoal - 5 on 5 Mini Soccer (World)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Saurus</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Power Spikes II (World)">
+  <description>Power Spikes II (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Video System</manufacturer>
+  <dev></dev>
+  <genre>Sports/Volleyball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pulstar (World)">
+  <description>Pulstar (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Aicom</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Puzzle Bobble (World)">
+  <description>Puzzle Bobble (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Taito</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Puzzled (World)">
+  <description>Puzzled (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ragnagard (World)">
+  <description>Ragnagard (World)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Saurus</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Rally Chase (World)">
+  <description>Rally Chase (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Alpha Denshi</manufacturer>
+  <dev></dev>
+  <genre>Driving</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Real Bout Fatal Fury (World)">
+  <description>Real Bout Fatal Fury (World)</description>
+  <year>1996</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Real Bout Fatal Fury 2 - The Newcomers (World)">
+  <description>Real Bout Fatal Fury 2 - The Newcomers (World)</description>
+  <year>1998</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Real Bout Fatal Fury Special (World)">
+  <description>Real Bout Fatal Fury Special (World)</description>
+  <year>1997</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Riding Hero (World)">
+  <description>Riding Hero (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Driving</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Robo Army (World)">
+  <description>Robo Army (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Samurai Shodown (World)">
+  <description>Samurai Shodown (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Samurai Shodown II (World)">
+  <description>Samurai Shodown II (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Samurai Shodown III (World)">
+  <description>Samurai Shodown III (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Samurai Shodown IV - Amakusa&apos;s Revenge (World)">
+  <description>Samurai Shodown IV - Amakusa&apos;s Revenge (World)</description>
+  <year>1996</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Savage Reign (World)">
+  <description>Savage Reign (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sengoku (World)">
+  <description>Sengoku (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Beat-&apos;Em-Up</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sengoku 2 (World)">
+  <description>Sengoku 2 (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Beat-&apos;Em-Up</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Soccer Brawl (World)">
+  <description>Soccer Brawl (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Stakes Winner - GI Kanzen Seiha Heno Machi (Japan)">
+  <description>Stakes Winner - GI Kanzen Seiha Heno Machi (Japan)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Saurus</manufacturer>
+  <dev></dev>
+  <genre>Sports/Horse Racing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Street Hoop (World)">
+  <description>Street Hoop (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Data East</manufacturer>
+  <dev></dev>
+  <genre>Sports/Basketball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Sidekicks (World)">
+  <description>Super Sidekicks (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Sidekicks 2 (World)">
+  <description>Super Sidekicks 2 (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Sidekicks 3 - The Next Glory (World)">
+  <description>Super Sidekicks 3 - The Next Glory (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Spy, The (World)">
+  <description>Super Spy, The (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Top Hunter - Roddy &amp; Cathy (World)">
+  <description>Top Hunter - Roddy &amp; Cathy (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Top Player&apos;s Golf (World)">
+  <description>Top Player&apos;s Golf (World)</description>
+  <year>1994</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>SNK</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Twinkle Star Sprites (World)">
+  <description>Twinkle Star Sprites (World)</description>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Viewpoint (World)">
+  <description>Viewpoint (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Sammy</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Voltage Fighter Gowcaizer (World)">
+  <description>Voltage Fighter Gowcaizer (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>Technos</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Windjammers (World)">
+  <description>Windjammers (World)</description>
+  <year>1995</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>Data East</manufacturer>
+  <dev></dev>
+  <genre>Sports</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="World Heroes (World)">
+  <description>World Heroes (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="World Heroes 2 (World)">
+  <description>World Heroes 2 (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="World Heroes 2 Jet (World)">
+  <description>World Heroes 2 Jet (World)</description>
+  <year>1994</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="World Heroes Perfect (World)">
+  <description>World Heroes Perfect (World)</description>
+  <year>1995</year>
+  <rating>ESRB - T (Teen)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Zintrick (World)">
+  <description>Zintrick (World)</description>
+  <year>1996</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <manufacturer>ADK</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+</menu>

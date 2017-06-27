@@ -1,0 +1,2935 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Nintendo Famicom Disk System</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>test</listversion>
+  <exporterversion></exporterversion>
+</header>
+<game name="19 - Neunzehn (Japan) (Translated En)">
+  <description>19 - Neunzehn (Japan) (Translated En)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Soft Pro</manufacturer>
+  <dev></dev>
+  <genre>Strategy</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Adian no Tsue (Japan)">
+  <description>Adian no Tsue (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sunsoft</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ai Senshi Nicol (Japan)">
+  <description>Ai Senshi Nicol (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Akara Senki Raijin (Japan)">
+  <description>Akara Senki Raijin (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Microcabin Square</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Aki to Tsukasa no Fushigi no Kabe (Japan) (Unl)">
+  <description>Aki to Tsukasa no Fushigi no Kabe (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Akumajou Dracula (Japan)">
+  <description>Akumajou Dracula (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Akumajou Dracula II - Noroi no Fuuin (Japan)">
+  <description>Akumajou Dracula II - Noroi no Fuuin (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Aliens (Japan) (Proto)">
+  <description>Aliens (Japan) (Proto)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Square-Activision</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="All Night Nippon Super Mario Bros. (Japan)">
+  <description>All Night Nippon Super Mario Bros. (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Apple Town Monogatari - Little Computer People (Japan)">
+  <description>Apple Town Monogatari - Little Computer People (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Square</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Armana no Kiseki (Japan) (Translated En)">
+  <description>Armana no Kiseki (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Aspic - Mahebiou no Noroi (Japan)">
+  <description>Aspic - Mahebiou no Noroi (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bothtec</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Backgammon (Japan)">
+  <description>Backgammon (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bakutoushi Patton-kun (Japan)">
+  <description>Bakutoushi Patton-kun (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Soft Pro</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Baseball (Japan)">
+  <description>Baseball (Japan)</description>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Baseball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Big Challenge! Dogfight Spirit (Japan)">
+  <description>Big Challenge! Dogfight Spirit (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Big Challenge! Go! Go! Bowling (Japan)">
+  <description>Big Challenge! Go! Go! Bowling (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Sports/Bowling</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Big Challenge! Gun Fighter (Japan)">
+  <description>Big Challenge! Gun Fighter (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Big Challenge! Judou Senshuken (Japan)">
+  <description>Big Challenge! Judou Senshuken (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Sports</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bio Miracle Bokutte Upa (Japan)">
+  <description>Bio Miracle Bokutte Upa (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Control (Japan) (Unl)">
+  <description>Bishoujo Control (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Wild</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Hanafuda Club Vol.1 - Oityokabu Hen (Japan) (Unl)">
+  <description>Bishoujo Hanafuda Club Vol.1 - Oityokabu Hen (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Card Battle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Hanafuda Club Vol.2 - Koikoi Bakappana Hen (Japan) (Unl)">
+  <description>Bishoujo Hanafuda Club Vol.2 - Koikoi Bakappana Hen (Japan) (Unl)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Card Battle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Kachinuki Renju - Gomokunarabe (Japan) (Unl)">
+  <description>Bishoujo Kachinuki Renju - Gomokunarabe (Japan) (Unl)</description>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super Pig</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Mahjong Club (Japan) (Unl)">
+  <description>Bishoujo Mahjong Club (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hacker International</manufacturer>
+  <dev></dev>
+  <genre>Mahjong</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Sexy Derby (Japan) (Unl) (Translated En)">
+  <description>Bishoujo Sexy Derby (Japan) (Unl) (Translated En)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Sports/Horse Racing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Sexy Puzzle (Japan) (Unl)">
+  <description>Bishoujo Sexy Puzzle (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo Sexy Slot (Japan) (Unl)">
+  <description>Bishoujo Sexy Slot (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Casino</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bishoujo SF Alien Battle (Japan) (Unl)">
+  <description>Bishoujo SF Alien Battle (Japan) (Unl)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hacker International</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="BodyConQuest I - Abakareshi Musume Tachi (Japan) (Unl) (Translated En)">
+  <description>BodyConQuest I - Abakareshi Musume Tachi (Japan) (Unl) (Translated En)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hacker International</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bomberman (Japan)">
+  <description>Bomberman (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hudson Soft</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Breeder (Japan)">
+  <description>Breeder (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Soft Pro</manufacturer>
+  <dev></dev>
+  <genre>Strategy</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Bubble Bobble (Japan)">
+  <description>Bubble Bobble (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Taito Corp.</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Burger Time (Japan)">
+  <description>Burger Time (Japan)</description>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Data East Corp.</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Casino de Pink (Japan) (Unl)">
+  <description>Casino de Pink (Japan) (Unl)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Wild Turtle</manufacturer>
+  <dev></dev>
+  <genre>Casino</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Chiteitairiku Orudola (Japan)">
+  <description>Chiteitairiku Orudola (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sunsoft</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="City Connection (Japan) (Unl)">
+  <description>City Connection (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hangsing</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Clox (Japan)">
+  <description>Clox (Japan)</description>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tokuma Shoten Intermedia</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Clu Clu Land - Welcome to New Clu Clu Land (Japan)">
+  <description>Clu Clu Land - Welcome to New Clu Clu Land (Japan)</description>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Cocona World (Japan)">
+  <description>Cocona World (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sofel</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Comic Sakka Series Touma Senki #1 - Mashoujo Gakuen Evil (Japan) (Unl)">
+  <description>Comic Sakka Series Touma Senki #1 - Mashoujo Gakuen Evil (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Indies Soft</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Comic Sakka Series Touma Senki #2 - Mermaid no Gyakushuu (Japan) (Unl)">
+  <description>Comic Sakka Series Touma Senki #2 - Mermaid no Gyakushuu (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Indies Soft</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Comic Sakka Series Touma Senki #3 - Ryuujin Sensei Kikiippatsu (Japan) (Unl)">
+  <description>Comic Sakka Series Touma Senki #3 - Ryuujin Sensei Kikiippatsu (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Indies Soft</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Comic Sakka Series Touma Senki #4 - Tenkuu Ryuumaou Fukkatsu (Japan) (Unl)">
+  <description>Comic Sakka Series Touma Senki #4 - Tenkuu Ryuumaou Fukkatsu (Japan) (Unl)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Indies Soft</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Comic Sakka Series Touma Senki #5 - Youjuu Rudo no Chousen (Japan) (Unl)">
+  <description>Comic Sakka Series Touma Senki #5 - Youjuu Rudo no Chousen (Japan) (Unl)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Indies Soft</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Dandy - Zeuon No Fukkatsu (Japan)">
+  <description>Dandy - Zeuon No Fukkatsu (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pony Canyon</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Date de Blackjack (Japan) (Unl)">
+  <description>Date de Blackjack (Japan) (Unl)</description>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hacker International</manufacturer>
+  <dev></dev>
+  <genre>Casino</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Deep Dungeon - Madou Senki (Japan) (Translated En)">
+  <description>Deep Dungeon - Madou Senki (Japan) (Translated En)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>HummingBirdSoft</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Deep Dungeon II - Yushi no Monshou (Japan) (Translated En)">
+  <description>Deep Dungeon II - Yushi no Monshou (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>HummingBirdSoft</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Dig Dug (Japan)">
+  <description>Dig Dug (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Namco Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Dig Dug II (Japan)">
+  <description>Dig Dug II (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Namco Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Dirty Pair - Project Eden (Japan) (Translated En)">
+  <description>Dirty Pair - Project Eden (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Donkey Kong (Japan)">
+  <description>Donkey Kong (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Donkey Kong Jr. (Japan)">
+  <description>Donkey Kong Jr. (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Doremikko (Japan)">
+  <description>Doremikko (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Rhythm</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Dr. Chaos - Jigoku no Tobira (Japan)">
+  <description>Dr. Chaos - Jigoku no Tobira (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pony Canyon</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Druid - Kyoufu no Tobira (Japan)">
+  <description>Druid - Kyoufu no Tobira (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Eggerland (Japan) (Translated En)">
+  <description>Eggerland (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>HAL Laboratory</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Eggerland - Souzou heno Tabidachi (Japan)">
+  <description>Eggerland - Souzou heno Tabidachi (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>HAL Laboratory</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Electrician (Japan) (Translated En)">
+  <description>Electrician (Japan) (Translated En)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Kemco</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Emi-chan no Moero Yakyuuken! (Japan) (Unl) (Translated En)">
+  <description>Emi-chan no Moero Yakyuuken! (Japan) (Unl) (Translated En)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Esper Dream (Japan) (Translated En)">
+  <description>Esper Dream (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Exciting Baseball (Japan)">
+  <description>Exciting Baseball (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Sports/Baseball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Exciting Basket (Japan)">
+  <description>Exciting Basket (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Sports/Basketball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Exciting Billiard (Japan)">
+  <description>Exciting Billiard (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Sports/Pool and Dart</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Exciting Soccer - Konami Cup (Japan)">
+  <description>Exciting Soccer - Konami Cup (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fairy Pinball - Yousei Tachi no Pinball (Japan) (Unl)">
+  <description>Fairy Pinball - Yousei Tachi no Pinball (Japan) (Unl)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hacker International</manufacturer>
+  <dev></dev>
+  <genre>Pinball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fairytale (Japan)">
+  <description>Fairytale (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Soft Pro</manufacturer>
+  <dev></dev>
+  <genre>Strategy</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Falsion (Japan)">
+  <description>Falsion (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Famicom Grand Prix - F1 Race (Japan)">
+  <description>Famicom Grand Prix - F1 Race (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Driving</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Famicom Grand Prix II - 3D Hot Rally (Japan)">
+  <description>Famicom Grand Prix II - 3D Hot Rally (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Driving</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Family Composer (Japan)">
+  <description>Family Composer (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tokyo Shoseki</manufacturer>
+  <dev></dev>
+  <genre>Rhythm</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Family Computer Golf - Japan Course (Japan)">
+  <description>Family Computer Golf - Japan Course (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Family Computer Golf - Special Course (Japan)">
+  <description>Family Computer Golf - Special Course (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Family Computer Golf - U.S. Course (Japan)">
+  <description>Family Computer Golf - U.S. Course (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Family Computer Golf Tournament - Japan Course (Japan)">
+  <description>Family Computer Golf Tournament - Japan Course (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Family Computer Othello (Japan)">
+  <description>Family Computer Othello (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Kawada</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Final Commando - Akai Yousai (Japan)">
+  <description>Final Commando - Akai Yousai (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fire Bam (Japan)">
+  <description>Fire Bam (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hal Laboratory</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fire Rock (Japan)">
+  <description>Fire Rock (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>System Saco</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fuun Shorinji (Japan)">
+  <description>Fuun Shorinji (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Fuun Shorinji - Ankoku no Maou (Japan)">
+  <description>Fuun Shorinji - Ankoku no Maou (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Galaga (Japan)">
+  <description>Galaga (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Namco Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Galaxian (Japan)">
+  <description>Galaxian (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Namco Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Gall Force - Eternal Story (Japan) (Translated En)">
+  <description>Gall Force - Eternal Story (Japan) (Translated En)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>HAL Laboratory</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Game Tengoku (Japan)">
+  <description>Game Tengoku (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sofel</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ginga Denshou - Galaxy Odyssey (Japan)">
+  <description>Ginga Denshou - Galaxy Odyssey (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Imagineer</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Golf (Japan)">
+  <description>Golf (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Golf, The - Bishoujo Classic (Japan) (Unl)">
+  <description>Golf, The - Bishoujo Classic (Japan) (Unl)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hacker International</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Goonies, The (Japan)">
+  <description>Goonies, The (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Green Beret (Japan)">
+  <description>Green Beret (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Gun.Smoke (Japan)">
+  <description>Gun.Smoke (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Capcom</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Gyruss (Japan)">
+  <description>Gyruss (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Halley Wars (Japan)">
+  <description>Halley Wars (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Taito Corp.</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Hao-kun no Fushigina Tabi (Japan)">
+  <description>Hao-kun no Fushigina Tabi (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>DOG</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Hikari Shinwa - Palthena no Kagami (Japan)">
+  <description>Hikari Shinwa - Palthena no Kagami (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Hong Kong (Japan)">
+  <description>Hong Kong (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tokuma Shoten Intermedia</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ice Climber (Japan)">
+  <description>Ice Climber (Japan)</description>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ice Hockey (Japan)">
+  <description>Ice Hockey (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Hockey</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Igo - Kyuroban Taikyoku (Japan)">
+  <description>Igo - Kyuroban Taikyoku (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bps</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ishido (Japan) (Translated En)">
+  <description>Ishido (Japan) (Translated En)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hiro Co. Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Janken Disk Shiro (Japan)">
+  <description>Janken Disk Shiro (Japan)</description>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tokuma Shoten</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Jikai Shounen Met Mag (Japan)">
+  <description>Jikai Shounen Met Mag (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Thinking Rabbit Co.</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kaettekita Mario Bros. (Japan)">
+  <description>Kaettekita Mario Bros. (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kalin no Tsurugi (Japan) (Translated En)">
+  <description>Kalin no Tsurugi (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>SquareSoft</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kamen Rider Black - Taiketsu Shadow Moon (Japan)">
+  <description>Kamen Rider Black - Taiketsu Shadow Moon (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Karate Champ (Japan)">
+  <description>Karate Champ (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Data East</manufacturer>
+  <dev></dev>
+  <genre>Fighter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kick and Run (Japan)">
+  <description>Kick and Run (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Taito Corp.</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kick Challenger Air Foot - Yasai no Kuni no Ashi Senshi (Japan)">
+  <description>Kick Challenger Air Foot - Yasai no Kuni no Ashi Senshi (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Vap</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kidou Keisatsu Patlabor - Dai 2 Shoutai Shutsudou Seyo! (Japan) (Translated En)">
+  <description>Kidou Keisatsu Patlabor - Dai 2 Shoutai Shutsudou Seyo! (Japan) (Translated En)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kieta Princess (Japan)">
+  <description>Kieta Princess (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Imagineer</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kiki Kaikai - Dotou Hen (Japan)">
+  <description>Kiki Kaikai - Dotou Hen (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Taito Corp.</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kineko - Kinetic Connection - The Monitor Puzzle (Japan)">
+  <description>Kineko - Kinetic Connection - The Monitor Puzzle (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Irem</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kineko Vol. II - Kinetic Connection - The Monitor Puzzle (Japan)">
+  <description>Kineko Vol. II - Kinetic Connection - The Monitor Puzzle (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Irem Corp.</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kinnikuman - Kinniku Ookurai Soudatsusen (Japan)">
+  <description>Kinnikuman - Kinniku Ookurai Soudatsusen (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Knight Lore (Japan)">
+  <description>Knight Lore (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Knight Move (Japan) (Translated En)">
+  <description>Knight Move (Japan) (Translated En)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Kobayashi Hitomi Shocking Tennis (Japan) (Unl)">
+  <description>Kobayashi Hitomi Shocking Tennis (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Hacker International</manufacturer>
+  <dev></dev>
+  <genre>Sports/Tennis</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Konamic Ice Hockey (Japan)">
+  <description>Konamic Ice Hockey (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Sports/Hockey</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Konamic Tennis (Japan)">
+  <description>Konamic Tennis (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Sports/Tennis</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Koneko Monogatari - The Adventures of Chatran (Japan)">
+  <description>Koneko Monogatari - The Adventures of Chatran (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pony Inc.</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Legend of Zelda 2, The - Link no Bouken (Japan)">
+  <description>Legend of Zelda 2, The - Link no Bouken (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Lipstick #.1 - Lolita Hen (Japan) (Unl)">
+  <description>Lipstick #.1 - Lolita Hen (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Lipstick #.2 - Joshi Gakusei Hen (Japan) (Unl)">
+  <description>Lipstick #.2 - Joshi Gakusei Hen (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Lipstick #.3 - OL Hen (Japan) (Unl)">
+  <description>Lipstick #.3 - OL Hen (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Lipstick #.4 - Hakui no Tenshi Hen (Japan) (Unl)">
+  <description>Lipstick #.4 - Hakui no Tenshi Hen (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Lipstick #.5 - Stewardess Hen (Japan) (Unl)">
+  <description>Lipstick #.5 - Stewardess Hen (Japan) (Unl)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Lutter (Japan) (Translated En)">
+  <description>Lutter (Japan) (Translated En)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Athena</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Mahjong (Japan)">
+  <description>Mahjong (Japan)</description>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Mahjong</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Mahjong Goraku - Bishoujo Meijinsen (Japan) (Unl)">
+  <description>Mahjong Goraku - Bishoujo Meijinsen (Japan) (Unl)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Indies Soft</manufacturer>
+  <dev></dev>
+  <genre>Mahjong</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Mahjong Kazoku (Japan)">
+  <description>Mahjong Kazoku (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Irem Corp.</manufacturer>
+  <dev></dev>
+  <genre>Mahjong</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Marchen Veil (Japan)">
+  <description>Marchen Veil (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sunsoft</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Matou no Houkai (Japan)">
+  <description>Matou no Houkai (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pony Canyon</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Meikyujin Dababa (Japan)">
+  <description>Meikyujin Dababa (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Metroid (Japan) (Translated En)">
+  <description>Metroid (Japan) (Translated En)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Michael English Daibouken (Japan)">
+  <description>Michael English Daibouken (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Scorpion Soft</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Moero TwinBee - Cinnamon Hakase wo Sukue! (Japan)">
+  <description>Moero TwinBee - Cinnamon Hakase wo Sukue! (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Monty on the Run - Monty no Doki Doki Dai Dassou (Japan) (Translated En)">
+  <description>Monty on the Run - Monty no Doki Doki Dai Dassou (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Moonball Magic (Japan)">
+  <description>Moonball Magic (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>SquareSoft</manufacturer>
+  <dev></dev>
+  <genre>Pinball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Namida no Soukoban Special (Japan) (Translated En)">
+  <description>Namida no Soukoban Special (Japan) (Translated En)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>ASCII</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Nazo no Kabe - Block Kuzushi (Japan)">
+  <description>Nazo no Kabe - Block Kuzushi (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Nazo no Murasame Jou (Japan) (Translated En)">
+  <description>Nazo no Murasame Jou (Japan) (Translated En)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Nazoler Land Dai 2 Gou (Japan)">
+  <description>Nazoler Land Dai 2 Gou (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sunsoft</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Nazoler Land Dai 3 Gou (Japan)">
+  <description>Nazoler Land Dai 3 Gou (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>SunSoft</manufacturer>
+  <dev></dev>
+  <genre>Mini-Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Nazoler Land Soukan Gou (Japan)">
+  <description>Nazoler Land Soukan Gou (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sunsoft</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Omoikkiri Tanteidan Haado Gumi - Matenrou no Chousenjou (Japan)">
+  <description>Omoikkiri Tanteidan Haado Gumi - Matenrou no Chousenjou (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Oru 1 (Japan)">
+  <description>Oru 1 (Japan)</description>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tokuma Shoten Intermedia</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Otocky (Japan)">
+  <description>Otocky (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>SEDIC</manufacturer>
+  <dev></dev>
+  <genre>Rhythm</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pac-Man (Japan)">
+  <description>Pac-Man (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Namco Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pachi Com (Japan)">
+  <description>Pachi Com (Japan)</description>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Toshiba Emi-Jpm</manufacturer>
+  <dev></dev>
+  <genre>Casino</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pachinko Grand Prix (Japan)">
+  <description>Pachinko Grand Prix (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Data East Corp.</manufacturer>
+  <dev></dev>
+  <genre>Casino</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Panic Space (Japan)">
+  <description>Panic Space (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tokuma Shoten Intermedia</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pinball (Japan)">
+  <description>Pinball (Japan)</description>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Pinball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pro Golfer Saru - Kage no Tournament (Japan)">
+  <description>Pro Golfer Saru - Kage no Tournament (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Pro Wrestling - Famicom Wrestling Association (Japan)">
+  <description>Pro Wrestling - Famicom Wrestling Association (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Wrestling</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Professional Mahjong Goku (Japan)">
+  <description>Professional Mahjong Goku (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Chatnoir</manufacturer>
+  <dev></dev>
+  <genre>Mahjong</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Putt Putt Golf (Japan)">
+  <description>Putt Putt Golf (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pack-in-Video</manufacturer>
+  <dev></dev>
+  <genre>Sports/Golf</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Puyo Puyo (Japan)">
+  <description>Puyo Puyo (Japan)</description>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tokuma Shoten Intermedia</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Puzzle Boys (Japan) (Translated En)">
+  <description>Puzzle Boys (Japan) (Translated En)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Atlus Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Radical Bomber!! Jirai-kun (Japan)">
+  <description>Radical Bomber!! Jirai-kun (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Jaleco</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Reflect World (Japan)">
+  <description>Reflect World (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>East Cube</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Relics - Ankoku Yousai (Japan)">
+  <description>Relics - Ankoku Yousai (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bothtec</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Replicart (Japan)">
+  <description>Replicart (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Taito Corp.</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Roger Rabbit (Japan)">
+  <description>Roger Rabbit (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Kemco</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sailor Fuku Bishoujo Zukan Vol. 1 (Japan) (Unl)">
+  <description>Sailor Fuku Bishoujo Zukan Vol. 1 (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Mature</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sailor Fuku Bishoujo Zukan Vol. 2 (Japan) (Unl)">
+  <description>Sailor Fuku Bishoujo Zukan Vol. 2 (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Mature</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sailor Fuku Bishoujo Zukan Vol. 3 (Japan) (Unl)">
+  <description>Sailor Fuku Bishoujo Zukan Vol. 3 (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Mature</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sailor Fuku Bishoujo Zukan Vol. 4 (Japan) (Unl)">
+  <description>Sailor Fuku Bishoujo Zukan Vol. 4 (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Mature</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sailor Fuku Bishoujo Zukan Vol. 5 (Japan) (Unl)">
+  <description>Sailor Fuku Bishoujo Zukan Vol. 5 (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Mature</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sailor Fuku Bishoujo Zukan Vol. 6 (Japan) (Unl)">
+  <description>Sailor Fuku Bishoujo Zukan Vol. 6 (Japan) (Unl)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Mimi Pro</manufacturer>
+  <dev></dev>
+  <genre>Mature</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Samurai Sword (Japan) (Translated En)">
+  <description>Samurai Sword (Japan) (Translated En)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Capcom</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Santa Claus no Takarabako (Japan) (Translated En)">
+  <description>Santa Claus no Takarabako (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Data East</manufacturer>
+  <dev></dev>
+  <genre>Party</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="SD Gundam World - Gachapon Senshi - Scramble Wars (Japan)">
+  <description>SD Gundam World - Gachapon Senshi - Scramble Wars (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Strategy</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="SD Gundam World - Gachapon Senshi - Scramble Wars Map Collection (Japan)">
+  <description>SD Gundam World - Gachapon Senshi - Scramble Wars Map Collection (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Strategy</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Section-Z (Japan)">
+  <description>Section-Z (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Capcom</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Seiken Psycho Calibur - Maju no Mori Densetsu (Japan) (Translated En)">
+  <description>Seiken Psycho Calibur - Maju no Mori Densetsu (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Wave Jack / Imagineer</manufacturer>
+  <dev></dev>
+  <genre>Role-Playing</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Sexy Invaders (Japan) (Unl)">
+  <description>Sexy Invaders (Japan) (Unl)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super Pig</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Silvania - Ai Ippai no Boukensha (Japan) (Translated En)">
+  <description>Silvania - Ai Ippai no Boukensha (Japan) (Translated En)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pack-In-Video</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Smash Ping Pong (Japan)">
+  <description>Smash Ping Pong (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Soccer (Japan)">
+  <description>Soccer (Japan)</description>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Soccer</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Solomon no Kagi (Japan)">
+  <description>Solomon no Kagi (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Tecmo Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Suishou no Ryuu (Japan) (Translated En)">
+  <description>Suishou no Ryuu (Japan) (Translated En)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Square</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Boy Allan (Japan)">
+  <description>Super Boy Allan (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Sunsoft</manufacturer>
+  <dev></dev>
+  <genre>Miscellaneous</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Lode Runner (Japan)">
+  <description>Super Lode Runner (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Irem</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Lode Runner II (Japan)">
+  <description>Super Lode Runner II (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Irem</manufacturer>
+  <dev></dev>
+  <genre>Puzzle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Mario Bros. (Japan)">
+  <description>Super Mario Bros. (Japan)</description>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Super Mario Bros. 2 (Japan)">
+  <description>Super Mario Bros. 2 (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Tama &amp; Friends - 3 Choume Dai Bouken (Japan)">
+  <description>Tama &amp; Friends - 3 Choume Dai Bouken (Japan)</description>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Tanigawa Kouji no Shougi Shinan II - Meijin heno Michi (Japan)">
+  <description>Tanigawa Kouji no Shougi Shinan II - Meijin heno Michi (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pony</manufacturer>
+  <dev></dev>
+  <genre>Board Games</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Tennis (Japan)">
+  <description>Tennis (Japan)</description>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Tennis</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Tobidase Daisakusen (Japan)">
+  <description>Tobidase Daisakusen (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Square</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Topple Zip (Japan)">
+  <description>Topple Zip (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bothtec</manufacturer>
+  <dev></dev>
+  <genre>Driving</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Transformers - The Headmasters (Japan)">
+  <description>Transformers - The Headmasters (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Takara Co. Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="TwinBee (Japan)">
+  <description>TwinBee (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Konami</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ultraman - Kaijuteikoku no Gyakusyu (Japan)">
+  <description>Ultraman - Kaijuteikoku no Gyakusyu (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Ultraman 2 - Shutsugeki Katokutai!! (Japan)">
+  <description>Ultraman 2 - Shutsugeki Katokutai!! (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Bandai</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Volleyball (Japan)">
+  <description>Volleyball (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Sports/Volleyball</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Vs. Excitebike (Japan)">
+  <description>Vs. Excitebike (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Motorcycle</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Wakusei Aton Gaiden (Japan)">
+  <description>Wakusei Aton Gaiden (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Kokuzeichou</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Wardner no Mori (Japan)">
+  <description>Wardner no Mori (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Taito Corp.</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Winter Games (Japan)">
+  <description>Winter Games (Japan)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Epyx - Pony Canyon</manufacturer>
+  <dev></dev>
+  <genre>Sports/Olympic</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Wrecking Crew (Japan)">
+  <description>Wrecking Crew (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Xevious (Japan)">
+  <description>Xevious (Japan)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Namco Ltd.</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Yakyuuken Part II - Gal&apos;s Dungeon (Japan) (Unl) (Translated En)">
+  <description>Yakyuuken Part II - Gal&apos;s Dungeon (Japan) (Unl) (Translated En)</description>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Super PIG</manufacturer>
+  <dev></dev>
+  <genre>Maze</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Youkai Yashiki (Japan) (Translated En)">
+  <description>Youkai Yashiki (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Irem</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Yu Maze (Japan)">
+  <description>Yu Maze (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Taito</manufacturer>
+  <dev></dev>
+  <genre>Action</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Yumekoujou - Doki Doki Panic (Japan) (Translated En)">
+  <description>Yumekoujou - Doki Doki Panic (Japan) (Translated En)</description>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Platform</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Zanac (Japan)">
+  <description>Zanac (Japan)</description>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Pony Canyon</manufacturer>
+  <dev></dev>
+  <genre>Shooter</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+<game name="Zelda no Densetsu - The Hyrule Fantasy (Japan)">
+  <description>Zelda no Densetsu - The Hyrule Fantasy (Japan)</description>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <manufacturer>Nintendo</manufacturer>
+  <dev></dev>
+  <genre>Adventure</genre>
+  <score></score>
+  <player></player>
+  <story></story>
+  <enabled>Yes</enabled>
+  <crc></crc>
+  <cloneof></cloneof>
+</game>
+</menu>

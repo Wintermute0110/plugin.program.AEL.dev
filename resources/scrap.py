@@ -53,6 +53,19 @@ class Scraper:
 # Metadata scrapers base class
 # All scrapers (offline or online) must implement the abstract methods.
 # -------------------------------------------------------------------------------------------------
+def new_gamedata_dic():
+    gamedata = {
+        'title'    : '',
+        'year'     : '',
+        'genre'    : '',
+        'studio'   : '',
+        'nplayers' : '',
+        'esrb'     : '',
+        'plot'     : ''
+    }
+
+    return gamedata
+
 class Scraper_Metadata(Scraper):
     # Offline scrapers need to know plugin installation directory.
     # For offline scrapers just pass.
@@ -64,7 +77,7 @@ class Scraper_Metadata(Scraper):
     # get_game_search() is usually common code for the online scrapers.
     #
     # Mandatory fields returned:
-    #   gamedata = {'title' : '', 'year' : '', 'genre' : '', 'studio' : '', 'plot' : ''}
+    #   gamedata dictionary created by new_gamedata_dic()
     def get_metadata(self, game):
         raise NotImplementedError('Subclass must implement get_metadata() abstract method')
 
@@ -109,5 +122,17 @@ from scrap_asset import *
 
 # This is the official list of supported scrapers. This list MUST match the settings configuration 
 # in settings.xml or bad things will happen.
-scrapers_metadata = [ metadata_Offline(), metadata_TheGamesDB(), metadata_GameFAQs(), metadata_MobyGames(), metadata_ArcadeDB() ]
-scrapers_asset    = [ asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_metadata = [
+    metadata_Offline(),
+    metadata_TheGamesDB(),
+    metadata_GameFAQs(),
+    metadata_MobyGames(),
+    metadata_ArcadeDB()
+]
+
+scrapers_asset = [
+    asset_TheGamesDB(),
+    asset_GameFAQs(),
+    asset_MobyGames(),
+    asset_ArcadeDB()
+]

@@ -27,7 +27,7 @@ def emudata_get_program_arguments( app ):
     applications = {
         'mame'        : '"$rom$"',
         'mednafen'    : '-fs 1 "$rom$"',
-        'mupen64plus' : '--nogui --noask --noosd --fullscreen "%rom%"',
+        'mupen64plus' : '--nogui --noask --noosd --fullscreen "$rom$"',
         'nestopia'    : '"$rom$"',
         'xbmc'        : 'PlayMedia($rom$)',
         'kodi'        : 'PlayMedia($rom$)',
@@ -66,6 +66,8 @@ def emudata_get_program_extensions( app ):
 AEL_platform_list = [
     # --- MAME/Arcade ---
     'MAME',
+    # --- Amstrad ---
+    # 'Amstrad CPC',
     # --- Atari ---
     'Atari 2600',
     'Atari 5200',
@@ -83,7 +85,7 @@ AEL_platform_list = [
     'Commodore VIC-20',
     # --- Magnavox ---
     'Magnavox Odyssey2',
-    'Philips Videopac+ G7000',
+    'Philips Videopac G7000',
     # --- Microsoft ---
     'Microsoft MSX',
     'Microsoft MSX 2',
@@ -116,6 +118,8 @@ AEL_platform_list = [
     'Nintendo Wii',
     'Nintendo Wii U',
     'Nintendo Switch',
+    # --- 3DO ---
+    'Panasonic 3DO',
     # --- Sega ---
     'Sega SG-1000',
     'Sega Master System',
@@ -158,39 +162,43 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Atari Jaguar'                : 'GameDBInfo/Atari Jaguar.xml',
     'Atari Jaguar CD'             : 'GameDBInfo/Atari Jaguar CD.xml',
     'Atari Lynx'                  : 'GameDBInfo/Atari Lynx.xml',
-    'Atari ST'                    : '',
+    'Atari ST'                    : 'GameDBInfo/Atari ST.xml',
+    
     'Colecovision'                : 'GameDBInfo/Colecovision.xml',
-    'Commodore 64'                : '',
-    'Commodore Amiga'             : '',
-    'Commodore Plus-4'            : '',
-    'Commodore VIC-20'            : '',
-    'Magnavox Odyssey2'           : '',
-    'Philips Videopac+ G7000'     : '',
+
+    'Commodore 64'                : 'GameDBInfo/Commodore 64.xml',
+    'Commodore Amiga'             : 'GameDBInfo/Commodore Amiga.xml',
+    'Commodore Plus-4'            : 'GameDBInfo/Commodore Plus-4.xml',
+    'Commodore VIC-20'            : 'GameDBInfo/Commodore VIC-20.xml',
+
+    'Magnavox Odyssey2'           : 'GameDBInfo/Magnavox Odyssey2.xml',
+    'Philips Videopac G7000'      : 'GameDBInfo/Magnavox Odyssey2.xml',
+
     'Microsoft MSX'               : '',
-    'Microsoft MSX 2'             : '',
-    'Microsoft MS-DOS'            : '',
+    'Microsoft MSX 2'             : 'GameDBInfo/Microsoft MSX 2.xml',
+    'Microsoft MS-DOS'            : 'GameDBInfo/Microsoft MS-DOS.xml',
     'Microsoft Windows'           : '',
     'Microsoft Xbox'              : '',
     'Microsoft Xbox 360'          : '',
     'Microsoft Xbox One'          : '',
 
     'NEC PC Engine'               : 'GameDBInfo/NEC PC Engine.xml',
-    'NEC PC Engine CDROM2'        : 'GameDBInfo/NEC PC Engine-CD.xml',
-    'NEC TurboGrafx 16'           : 'GameDBInfo/NEC Turbo Graphx 16.xml',
-    'NEC TurboGrafx CD'           : 'GameDBInfo/NEC TurboGrafx-CD.xml',
+    'NEC PC Engine CDROM2'        : 'GameDBInfo/NEC PC Engine CDROM2.xml',
+    'NEC TurboGrafx 16'           : 'GameDBInfo/NEC TurboGrafx 16.xml',
+    'NEC TurboGrafx CD'           : 'GameDBInfo/NEC TurboGrafx CD.xml',
     'NEC SuperGrafx'              : 'GameDBInfo/NEC SuperGrafx.xml',
     'NEC PC-FX'                   : 'GameDBInfo/NEC PC-FX.xml',
 
     'Nintendo GameBoy'            : 'GameDBInfo/Nintendo Game Boy.xml',
     'Nintendo GameBoy Color'      : 'GameDBInfo/Nintendo Game Boy Color.xml',
     'Nintendo GameBoy Advance'    : 'GameDBInfo/Nintendo Game Boy Advance.xml',
-    'Nintendo DS'                 : '',
+    'Nintendo DS'                 : 'GameDBInfo/Nintendo DS.xml',
     'Nintendo DSi'                : '',
     'Nintendo 3DS'                : '',
-    'Nintendo Famicom Disk System': '',
-    'Nintendo NES'                : 'GameDBInfo/Nintendo Entertainment System.xml',
-    'Nintendo Famicom'            : 'GameDBInfo/Nintendo Entertainment System.xml',
-    'Nintendo SNES'               : 'GameDBInfo/Super Nintendo Entertainment System.xml',
+    'Nintendo Famicom Disk System': 'GameDBInfo/Nintendo Famicom Disk System.xml',
+    'Nintendo NES'                : 'GameDBInfo/Nintendo NES.xml',
+    'Nintendo Famicom'            : 'GameDBInfo/Nintendo NES.xml',
+    'Nintendo SNES'               : 'GameDBInfo/Nintendo SNES.xml',
     'Nintendo Virtual Boy'        : 'GameDBInfo/Nintendo Virtual Boy.xml',
     'Nintendo 64'                 : 'GameDBInfo/Nintendo 64.xml',    
     'Nintendo GameCube'           : 'GameDBInfo/Nintendo GameCube.xml',
@@ -198,11 +206,13 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Nintendo Wii U'              : '',
     'Nintendo Switch'             : '',
 
+    'Panasonic 3DO'               : 'GameDBInfo/Panasonic 3DO.xml',
+
     'Sega SG-1000'                : 'GameDBInfo/Sega SG-1000.xml',
     'Sega Master System'          : 'GameDBInfo/Sega Master System.xml',
     'Sega Game Gear'              : 'GameDBInfo/Sega Game Gear.xml',
-    'Sega MegaDrive'              : '',
-    'Sega Genesis'                : '',
+    'Sega MegaDrive'              : 'GameDBInfo/Sega MegaDrive.xml',
+    'Sega Genesis'                : 'GameDBInfo/Sega MegaDrive.xml',
     'Sega MegaCD'                 : 'GameDBInfo/Sega CD.xml',
     'Sega SegaCD'                 : 'GameDBInfo/Sega CD.xml',
     'Sega 32X'                    : 'GameDBInfo/Sega 32x.xml',
@@ -210,21 +220,24 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Sega Saturn'                 : 'GameDBInfo/Sega Saturn.xml',
     'Sega Dreamcast'              : 'GameDBInfo/Sega Dreamcast.xml',
 
-    'Sinclair ZX Spectrum'        : '',
-    'SNK Neo-Geo CD'              : '',
-    'SNK Neo-Geo Pocket'          : '',
-    'SNK Neo-Geo Pocket Color'    : '',
+    'Sinclair ZX Spectrum'        : 'GameDBInfo/Sinclair ZX Spectrum.xml',
+
+    'SNK Neo-Geo CD'              : 'GameDBInfo/SNK Neo-Geo CD.xml',
+    'SNK Neo-Geo Pocket'          : 'GameDBInfo/SNK Neo-Geo Pocket.xml',
+    'SNK Neo-Geo Pocket Color'    : 'GameDBInfo/SNK Neo-Geo Pocket Color.xml',
+
     'Sony PlayStation'            : 'GameDBInfo/Sony PlayStation.xml',
     'Sony PlayStation 2'          : 'GameDBInfo/Sony Playstation 2.xml',
     'Sony PlayStation 3'          : '',
     'Sony PlayStation 4'          : '',
-    'Sony PlayStation Portable'   : 'GameDBInfo/Sony PSP.xml',
+    'Sony PlayStation Portable'   : 'GameDBInfo/Sony PlayStation Portable.xml',
+
     'Unknown'                     : ''
 }
 
 #
 # Get platform list from http://thegamesdb.net/api/GetPlatformsList.php
-# Platform name is inside <name> tag. Spaces must be converted into '+'.
+# Platform name is inside <name> tag.
 #
 platform_AEL_to_TheGamesDB_dic = {
     'MAME'                        : 'Arcade',
@@ -241,7 +254,7 @@ platform_AEL_to_TheGamesDB_dic = {
     'Commodore Plus-4'            : '', #  Not found in TheGamesDB
     'Commodore VIC-20'            : 'Commodore VIC-20',
     'Magnavox Odyssey2'           : 'Magnavox Odyssey 2',
-    'Philips Videopac+ G7000'     : 'Magnavox Odyssey 2',    
+    'Philips Videopac G7000'      : 'Magnavox Odyssey 2',    
     'Microsoft MSX'               : 'MSX',
     'Microsoft MSX 2'             : 'MSX',
     'Microsoft MS-DOS'            : 'PC',
@@ -274,6 +287,8 @@ platform_AEL_to_TheGamesDB_dic = {
     'Nintendo Wii U'              : 'Nintendo Wii U',
     'Nintendo Switch'             : 'Nintendo Switch',
 
+    'Panasonic 3DO'               : '3DO',
+    
     'Sega SG-1000'                : 'SEGA SG-1000',
     'Sega Master System'          : 'Sega Master System',
     'Sega Game Gear'              : 'Sega Game Gear',
@@ -316,7 +331,7 @@ platform_AEL_to_GameFAQs_dic = {
     'Commodore Plus-4'            : '0',   # Not found in GameFAQs
     'Commodore VIC-20'            : '11',  # <option label="VIC-20" value="11">VIC-20</option>
     'Magnavox Odyssey2'           : '9',   # <option label="Odyssey^2" value="9">Odyssey^2</option>
-    'Philips Videopac+ G7000'     : '9',   # Not found in GameFAQs
+    'Philips Videopac G7000'      : '9',   # Not found in GameFAQs
 
     'Microsoft MSX'               : '40',  # <option label="MSX" value="40">MSX</option>
     'Microsoft MSX 2'             : '40',
@@ -349,6 +364,8 @@ platform_AEL_to_GameFAQs_dic = {
     'Nintendo Wii'                : '114', # <option label="Wii" value="114">Wii</option>
     'Nintendo Wii U'              : '118', # <option label="Wii U" value="118">Wii U</option>
     'Nintendo Switch'             : '124', # <option label="Nintendo Switch" value="124">Nintendo Switch</option>
+
+    'Panasonic 3DO'               : '61',  # <option label="3DO" value="61">3DO</option>
 
     'Sega SG-1000'                : '43',  # <option label="SG-1000" value="43">SG-1000</option>
     'Sega Master System/Mark III' : '49',  # <option label="Sega Master System" value="49">Sega Master System</option>
@@ -391,7 +408,7 @@ platform_AEL_to_MobyGames_dic = {
     'Commodore Plus-4'            : '115', # <option value="115">Commodore 16, Plus/4</option>
     'Commodore VIC-20'            : '43',  # <option value="43">VIC-20</option>
     'Magnavox Odyssey2'           : '78',  # <option value="78">Odyssey 2</option>
-    'Philips Videopac+ G7000'     : '78',  # Not found on MobyGames
+    'Philips Videopac G7000'      : '78',  # Not found on MobyGames
 
     'Microsoft MSX'               : '57',  # <option value="57">MSX</option>
     'Microsoft MSX 2'             : '57',
@@ -426,6 +443,8 @@ platform_AEL_to_MobyGames_dic = {
     'Nintendo Wii'                : '82',  # <option value="82">Wii</option>
     'Nintendo Wii U'              : '132', # <option value="132">Wii U</option>
     'Nintendo Switch'             : '203', # <option value="203">Nintendo Switch</option>
+
+    'Panasonic 3DO'               : '35',  # <option value="35">3DO</option>
 
     'Sega SG-1000'                : '114', # <option value="114">SG-1000</option>
     'Sega Master System'          : '26',  # <option value="26">SEGA Master System</option>

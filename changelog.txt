@@ -1,22 +1,35 @@
-[B]Advanced Emulator Launcher | version 0.9.8 | XX April 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.8 | XX July 2017[/B]
 
-WIP      Full Extranafart support for Categories/Launchers.
+WIP      Complete Extranafart support for Categories/Launchers.
 
-WIP      Full Extranafart for ROMs.
+WIP      Complete Extranafart support for ROMs.
 
 WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
          online and offline scrapers. There is a Python implementation of the algorithm here,
          https://github.com/seatgeek/fuzzywuzzy
 
-WIP      Massive upgrade of the AEL Offline scraper database.
-
-WIP      Have a setting to restrict ROMs displayed based on rating.
+WIP      Massive upgrade of AEL Offline scraper database.
 
 WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          Copy remote ROMs for external launchers?
 
+WIP      Edit multidisc ROMs.
 
-[B]Advanced Emulator Launcher | version 0.9.7 | XX March 2017[/B]
+WIP      Options to generate the 1G1R list, like prefer ROMs from Europe, Japan or USA.
+
+WIP      Changes and suggestions propoed by Atsumori.
+
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2586596#pid2586596
+
+WIP      LaunchBox Games Database scraper.
+         Apparently LaunchBox GamesDB started as a copy of TheGamesDB. Currently there is no
+         API to access LaunchBox GamesDB but an XML with all the database info can be downloaded.
+
+         See http://gamesdb.launchbox-app.com/
+         See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
+
+[B]Advanced Emulator Launcher | version 0.9.7 | XX Jun 2017[/B]
 
 WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
 
@@ -29,21 +42,62 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
          New param: "preselect" for Dialog().multiselect() and Dialog().select(). 
          See http://forum.kodi.tv/showthread.php?tid=250936
 
-WIP      Update code to use xbmcgui.Dialog().select() - additions. Get rid of the ImgSelectDialog()
-         class. This need Krypton Beta 4 to run!
+WIP      Update code to use xbmcgui.Dialog().select() - additions.
+         Get rid of the ImgSelectDialog() class. This need Krypton Beta 4 to run!
 
-WIP      Edit multidisc ROMs.
+WIP      Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
+         conveninent that the Unknown ROMs are clones in the Parent/Clone view.
 
-WIP      Support ERSB and NPlayers in offline scraper.
+WIP      1 Game 1 ROM launcher display mode. Copy it from AML.
 
-WIP      Support ERSB and NPlayers in online scraper.
+FEATURE  Addon option to hide [Browse Offline Scraper].
 
-WIP      ROM scanner report.
+FEATURE  Remove duplicates from recent ROMs list. Contributed by bonzini.
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/pull/41
+
+FIX      Fixed launching of BAT files in Windows.
 
 
-[B]Advanced Emulator Launcher | version 0.9.6 | xx March 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]
 
-FIX      Fix crash when displaying a Launcher in Parent/Clone view with Unknown ROMs.
+FEATURE  Set Parent/Clone property so skins can display flag.
+
+FEATURE  Support ERSB and NPlayers in offline scraper.
+
+FEATURE  Support ERSB and NPlayers in online scrapers.
+
+FEATURE  Virtual category to browse the Offline Scraper database.
+
+FEATURE  Updated the number of databases in the Offline Scraper.
+
+FEATURE  ROM scanner reports.
+
+FEATURE  Refurbish ROM auditing and Parent/Clone view display mode.
+
+FEATURE  Added a "Display ROMs" setting valid only in Parent/Clone display mode.
+
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2581878#pid2581878
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2582004#pid2582004
+
+FEATURE  Support Redump DAT files. Note that Redump does not include Parent/Clone data so all
+         ROMs are Parent ROMs.
+
+FEATURE  New platform Panasonic 3DO.
+
+FEATURE  Update NFO files after scraping. This is useful to interrupt the scanner when scanning
+         large collections and resume scanning later.
+         See http://forum.kodi.tv/showthread.php?tid=287826&pid=2548998#pid2548998
+
+FEATURE  Allow only one instance of AEL running at a time.
+         This prevents multiple launcher execution and also get rids forever of any database
+         corruption issues due to concurrency! Thanks Roman_V_M for ideas about the fix.
+         See http://forum.kodi.tv/showthread.php?tid=310697
+
+FIX      Fixed crash when displaying a Launcher in Parent/Clone view with Unknown ROMs.
+
+FIX      Fixed the number of ROMs counter when importing AL launchers.xml
+
+FIX      ROM scanner ignores NFO files if option "NFO Files + Scrapers" is set.
 
 
 [B]Advanced Emulator Launcher | version 0.9.6-beta1 | 5 March 2017[/B]
