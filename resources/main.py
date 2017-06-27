@@ -4005,7 +4005,7 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+        xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
         log_debug('Loading XML {0}'.format(xml_path))
         games = audit_load_OfflineScraper_XML(xml_path)
@@ -6037,7 +6037,7 @@ class Main:
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
         xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+        xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
         log_debug('Loading XML {0}'.format(xml_path))
         games = audit_load_OfflineScraper_XML(xml_path)
@@ -6727,7 +6727,7 @@ class Main:
         # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
         if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
             log_info('_command_run_rom() Executing Kodi Retroplayer ...')
-            bc_romfile = os.path.basename(ROMFileName.getPath())
+            bc_romfile = ROMFileName.getBase()
             bc_listitem = xbmcgui.ListItem(bc_romfile, "0", "", "")
             bc_parameters = {'Platform': 'Test Platform', 'Title': 'Test Game', 'URL': 'testurl'}
             bc_listitem.setInfo(type = 'game', infoLabels = bc_parameters)
