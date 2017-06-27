@@ -1830,12 +1830,19 @@ def fs_export_category_NFO(nfo_FileName, category):
 
     return True
 
+from stat import *
 def fs_import_category_NFO(nfo_FileName, categories, categoryID):
     # --- Get NFO file name ---
     log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
+    
+    log_debug('fs_import_category_NFO() is file "{0}"'.format(nfo_FileName.isfile()))
+    log_debug('fs_import_category_NFO() exists "{0}"'.format(nfo_FileName.exists()))
+    mode = nfo_FileName.stat().st_mode()
+    isadir = not ISDIR(mode)
+    log_debug('fs_import_category_NFO() is file stat "{0}"'.format(isadir))
 
     # --- Import data ---
-    if nfo_FileName.exists():
+    if nfo_FileName.isfile():
         try:
             item_nfo = nfo_FileName.readAllUnicode()
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
