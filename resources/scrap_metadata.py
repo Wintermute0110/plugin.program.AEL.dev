@@ -363,7 +363,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         return Scraper_ArcadeDB.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
-        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
+        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '', 'nplayers' : '', 'esrb' : '', 'plot': ''}
 
         # --- Get game page ---
         game_id_url = game['id'] 
@@ -387,7 +387,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         # --- Year ---
         # <div class="table_caption">Year: </div> <div class="table_value"> <span class="dettaglio">1990</span> <div id="inputid89"
         fa_year = re.findall('<div class="table_caption">Year: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
-        if fa_year: gamedata['year'] = fa_year[1]
+        if fa_year: gamedata['year'] = fa_year[0]
 
         # --- Studio ---
         # <div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">Konami</span> </div>

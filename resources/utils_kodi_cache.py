@@ -58,7 +58,7 @@ def kodi_update_image_cache(img_path):
     if cached_thumb_ext == '.tbn':
         img_path_ext = img_path.getExt()
         cached_thumb = FileName(cached_thumb.getOriginalPath().replace('.tbn', img_path_ext))
-        log_debug('kodi_update_image_cache() New cached_thumb {0}'.format(cached_thumb))
+        log_debug('kodi_update_image_cache() New cached_thumb {0}'.format(cached_thumb.getOriginalPath()))
 
     # Check if file exists in the cache
     # xbmc.getCacheThumbName() seems to return a cache filename even if the local file does not exist!

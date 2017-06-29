@@ -1534,8 +1534,8 @@ def fs_export_ROM_NFO(rom, verbose = True):
     # >> Skip No-Intro Added ROMs. rom['filename'] will be empty.
     if not rom['filename']: return
     ROMFileName = FileName(rom['filename'])
-    nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
-    log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path))
+    nfo_file_path = ROMFileName.switchExtension('.nfo')
+    log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path.getPath()))
 
     # Always overwrite NFO files.
     nfo_content = []

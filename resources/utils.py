@@ -501,8 +501,12 @@ class FileName:
 
     def getExt(self):
         root, ext = os.path.splitext(self.path)
-        
         return ext
+
+    def switchExtension(self, targetExt):
+        
+        new_path = FileName(self.getBase_noext() + targetExt)
+        return new_path
 
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
