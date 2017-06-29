@@ -1026,7 +1026,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
         with open(asset_FN.getPath(), mode = 'rb') as file: # b is important -> binary
             fileData = file.read()
             fileData_base64 = base64.b64encode(fileData)
-            statinfo = os.stat(asset_FN.getPath())
+            statinfo = asset_FN.stat()
             file_size = statinfo.st_size
             a_dic = {'basename' : asset_FN.getBase(), 'filesize' : file_size, 'data' : fileData_base64}
             assets_dic[asset_FN.getBase_noext()] = a_dic
@@ -1054,7 +1054,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
             with open(asset_FN.getPath(), mode = 'rb') as file: # b is important -> binary
                 fileData = file.read()
             fileData_base64 = base64.b64encode(fileData)
-            statinfo = os.stat(asset_FN.getPath())
+            statinfo = asset_FN.stat()
             file_size = statinfo.st_size
             a_dic = {'basename' : asset_FN.getBase(), 'filesize' : file_size, 'data' : fileData_base64}
             assets_dic[asset_FN.getBase_noext()] = a_dic
@@ -1086,7 +1086,7 @@ def fs_import_ROM_collection(input_FileName):
     try:
         raw_data = input_FileName.readJson()
     except ValueError:
-        statinfo = os.stat(input_FileName.getOriginalPath())
+        statinfo = input_FileName.stat()
         log_error('fs_import_ROM_collection() ValueError exception in json.load() function')
         log_error('fs_import_ROM_collection() File {0}'.format(input_FileName.getOriginalPath()))
         log_error('fs_import_ROM_collection() Size {0}'.format(statinfo.st_size))
@@ -1573,7 +1573,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
     log_debug('fs_export_ROM_NFO() Loading "{0}"'.format(nfo_file_path))
 
     # --- Import data ---
-    if os.path.isfile(nfo_file_path):
+    if ROMFileName.exists():
         # >> Read file, put in a string and remove line endings.
         # >> We assume NFO files are UTF-8. Decode data to Unicode.
         # file = open(nfo_file_path, 'rt')
@@ -1660,7 +1660,7 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     try:
         nfo_FileName.writeAll(full_string)
     except:
-        kodi_notify_warn('Exception writing NFO file {0}'.format(os.path.basename(nfo_FileName.getOriginalPath())))
+        kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_FileName.getPath()))
         log_error("fs_export_launcher_NFO() Exception writing'{0}'".format(nfo_FileName.getOriginalPath()))
         return False
     log_debug("fs_export_launcher_NFO() Created '{0}'".format(nfo_FileName.getOriginalPath()))
@@ -1725,8 +1725,8 @@ def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
 #
 def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
-    nfo_dir = settings['launchers_asset_dir']
-    nfo_file_path = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
+    nfo_dir = FileName(settings['launchers_asset_dir'])
+    nfo_file_path = nfo_dir.pjoin(launcher_name + '.nfo')
     log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
@@ -1800,8 +1800,8 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
 #
 def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
-    nfo_dir = settings['categories_asset_dir']
-    nfo_file_path = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
+    nfo_dir = FileName(settings['categories_asset_dir'])
+    nfo_file_path = nfo_dir.pjoin(category_name + '.nfo')
     log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
@@ -1864,8 +1864,8 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
 
 def fs_get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
-    nfo_dir = settings['collections_asset_dir']
-    nfo_file_path = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
+    nfo_dir = FileName(settings['collections_asset_dir'])
+    nfo_file_path = nfo_dir.pjoin(collection_name + '.nfo')
     log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path

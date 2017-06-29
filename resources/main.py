@@ -159,6 +159,7 @@ AEL_LOCK_VALUE    = 'True'
 
 class SingleInstance:
     def __enter__(self):
+        return True
         # --- If property is True then another instance of AEL is running ---
         if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
             log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
@@ -8090,7 +8091,8 @@ class Main:
             self.pDialog.close()
 
             # If there is a local image add it to the list and show it to the user
-            if os.path.isfile(local_asset_path):
+            local_asset_obj = FileName(local_asset_path)
+            if local_asset_obj.exists():
                 image_list.insert(0, {'name' : 'Current local image', 
                                       'id'   : local_asset_path,
                                       'URL'  : local_asset_path})
