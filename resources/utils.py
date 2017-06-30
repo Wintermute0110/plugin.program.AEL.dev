@@ -20,6 +20,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from stat import *
 import xml.etree.ElementTree as ET
 import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch, json
 import xbmcvfs
@@ -551,11 +552,27 @@ class FileName:
 
     # Warning: not suitable for xbmcvfs paths yet
     def isdir(self):
-        return os.path.isdir(self.path)
+        
+        if not self.exists():
+            return False
+
+        try:
+            self.open()
+            self.close()
+        except:
+            return True
+
+        return False
+        #return os.path.isdir(self.path)
         
     # Warning: not suitable for xbmcvfs paths yet
     def isfile(self):
-        return os.path.isfile(self.path)
+
+        if not self.exists():
+            return False
+
+        return not self.isdir()
+        #return os.path.isfile(self.path)
 
     def makedirs(self):
         
