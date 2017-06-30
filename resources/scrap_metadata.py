@@ -376,7 +376,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         #
         # --- Title ---
         # <div class="table_caption">Name: </div> <div class="table_value"> <span class="dettaglio">Aliens (World set 1)</span>
-        fa_title = re.findall('<div class="table_caption">Name: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
+        fa_title = re.findall('<div id="game_description" class="invisibile">(.*?)</div>', page_data)
         if fa_title: gamedata['title'] = fa_title[0]
 
         # --- Genre/Category ---
@@ -391,7 +391,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
 
         # --- Studio ---
         # <div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">Konami</span> </div>
-        fa_studio = re.findall('<div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span> </div>', page_data)
+        fa_studio = re.findall('<div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
         if fa_studio: gamedata['studio'] = fa_studio[0]
         
         # --- Plot ---
