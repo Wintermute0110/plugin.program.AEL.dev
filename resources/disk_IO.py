@@ -1553,11 +1553,11 @@ def fs_export_ROM_NFO(rom, verbose = True):
         nfo_file_path.writeAll(full_string)
     except:
         if verbose:
-            kodi_notify_warn('Error writing {0}'.format(nfo_file_path))
-        log_error("fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path))
+            kodi_notify_warn('Error writing {0}'.format(nfo_file_path.getPath()))
+        log_error("fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path.getOriginalPath()))
         return
     if verbose:
-        kodi_notify('Created NFO file {0}'.format(nfo_file_path))
+        kodi_notify('Created NFO file {0}'.format(nfo_file_path.getPath()))
 
     return
 
@@ -1569,16 +1569,16 @@ def fs_export_ROM_NFO(rom, verbose = True):
 #
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     ROMFileName = FileName(roms[romID]['filename'])
-    nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
-    log_debug('fs_export_ROM_NFO() Loading "{0}"'.format(nfo_file_path))
+    nfo_file_path = ROMFileName.switchExtension('.nfo')
+    log_debug('fs_import_ROM_NFO() Loading "{0}"'.format(nfo_file_path.getPath()))
 
     # --- Import data ---
     if ROMFileName.exists():
         # >> Read file, put in a string and remove line endings.
         # >> We assume NFO files are UTF-8. Decode data to Unicode.
         # file = open(nfo_file_path, 'rt')
-        file = codecs.open(nfo_file_path, 'r', 'utf-8')
-        nfo_str = file.read().replace('\r', '').replace('\n', '')
+        nfo_str = nfo_file_path.readAllUnicode()
+        nfo_str = nfo_str.replace('\r', '').replace('\n', '')
         file.close()
 
         # Search for items
@@ -1597,11 +1597,11 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         if len(item_plot) > 0:      roms[romID]['m_plot']   = text_unescape_XML(item_plot[0])
 
         if verbose:
-            kodi_notify('Imported {0}'.format(nfo_file_path))
+            kodi_notify('Imported {0}'.format(nfo_file_path.getPath()))
     else:
         if verbose:
-            kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path))
-        log_debug("fs_import_ROM_NFO() NFO file not found '{0}'".format(nfo_file_path))
+            kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path.getPath()))
+        log_debug("fs_import_ROM_NFO() NFO file not found '{0}'".format(nfo_file_path.getOriginalPath()))
         return False
 
     return True

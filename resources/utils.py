@@ -505,7 +505,7 @@ class FileName:
 
     def switchExtension(self, targetExt):
         
-        new_path = FileName(self.getBase_noext() + targetExt)
+        new_path = FileName(self.getPath_noext() + targetExt)
         return new_path
 
     # ---------------------------------------------------------------------------------------------
