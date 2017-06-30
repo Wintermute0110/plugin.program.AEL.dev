@@ -505,7 +505,10 @@ class FileName:
 
     def switchExtension(self, targetExt):
         
-        new_path = FileName(self.getPath_noext() + targetExt)
+        ext = self.getExt()
+        copiedPath = self.originalPath
+        
+        new_path = FileName(copiedPath.replace(ext, targetExt))
         return new_path
 
     # ---------------------------------------------------------------------------------------------

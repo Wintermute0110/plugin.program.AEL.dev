@@ -1535,7 +1535,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
     if not rom['filename']: return
     ROMFileName = FileName(rom['filename'])
     nfo_file_path = ROMFileName.switchExtension('.nfo')
-    log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path.getPath()))
+    log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path.getOriginalPath()))
 
     # Always overwrite NFO files.
     nfo_content = []
@@ -1553,11 +1553,11 @@ def fs_export_ROM_NFO(rom, verbose = True):
         nfo_file_path.writeAll(full_string)
     except:
         if verbose:
-            kodi_notify_warn('Error writing {0}'.format(nfo_file_path.getPath()))
-        log_error("fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path.getOriginalPath()))
+            kodi_notify_warn('Error writing {0}'.format(nfo_file_path.getOriginalPath()))
+        log_error("fs_export_ROM_NFO() Exception writing '{0}'".format(nfo_file_path.getPath()))
         return
     if verbose:
-        kodi_notify('Created NFO file {0}'.format(nfo_file_path.getPath()))
+        kodi_notify('Created NFO file {0}'.format(nfo_file_path.getOriginalPath()))
 
     return
 
