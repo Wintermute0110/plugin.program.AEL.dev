@@ -1579,7 +1579,6 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         # file = open(nfo_file_path, 'rt')
         nfo_str = nfo_file_path.readAllUnicode()
         nfo_str = nfo_str.replace('\r', '').replace('\n', '')
-        file.close()
 
         # Search for items
         item_title     = re.findall('<title>(.*?)</title>', nfo_str)
