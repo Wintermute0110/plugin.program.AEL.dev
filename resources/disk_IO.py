@@ -1763,7 +1763,7 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
     log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
 
     # --- Import data ---
-    if nfo_FileName.isfile():
+    if nfo_FileName.exists():
         try:
             item_nfo = nfo_FileName.readAllUnicode()
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
@@ -1830,7 +1830,7 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
     log_debug('fs_import_collection_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
 
     # --- Import data ---
-    if nfo_FileName.isfile():
+    if nfo_FileName.exists():
         try:
             item_nfo = nfo_FileName.readAllUnicode()
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
