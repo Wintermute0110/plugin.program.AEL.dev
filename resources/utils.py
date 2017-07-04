@@ -583,6 +583,10 @@ class FileName:
 
         if self.isfile():
             xbmcvfs.delete(self.originalPath)
+
+            # hard delete if it doesnt succeed
+            if self.exists():
+                os.remove(self.path)
         else:
             xbmcvfs.rmdir(self.originalPath)
 
