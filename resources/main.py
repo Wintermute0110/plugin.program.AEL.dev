@@ -8144,7 +8144,7 @@ class Main:
             # --- Return value is downloaded image ---
             ret_asset_path = image_path.getOriginalPath()
         else:
-            log_debug('{0} scraper: user chose local image "{1}"'.format(image_name, image_url))
+            log_debug('{0} scraper: user chose local image "{1}"'.format(A.name, image_url))
             ret_asset_path = image_url
 
         # --- Returned value ---
