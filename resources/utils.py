@@ -535,12 +535,18 @@ class FileName:
 
     def recursiveScanFilesInPath(self, mask):
         files = []
-        for root, dirs, foundfiles in os.walk(self.path):
-            for filename in fnmatch.filter(foundfiles, mask):
-                files.append(os.path.join(root, filename))
+        
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(FileName(os.path.join(self.originalPath, filename)))
+
+        for subdir in subdirectories:
+            subPath = FileName(os.path.join(self.originalPath, subdir))
+            subPathFiles = subPath.recursiveScanFilesInPath(mask)
+            files.extend(subPathFiles)
 
         return files
-
+    
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
     # ---------------------------------------------------------------------------------------------
