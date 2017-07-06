@@ -520,7 +520,7 @@ class FileName:
 
         subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(os.path.join(self.originalPath, filename))
+            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
 
         return files
 
@@ -529,23 +529,32 @@ class FileName:
         
         subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(FileName(os.path.join(self.originalPath, filename)))
+            files.append(FileName(os.path.join(self.originalPath, self._decodeName(filename))))
 
         return files
 
     def recursiveScanFilesInPath(self, mask):
         files = []
         
-        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
         for filename in fnmatch.filter(filenames, mask):
-            files.append(FileName(os.path.join(self.originalPath, filename)))
+            files.append(FileName(os.path.join(self.originalPath, self._decodeName(filename))))
 
         for subdir in subdirectories:
-            subPath = FileName(os.path.join(self.originalPath, subdir))
+            subPath = FileName(os.path.join(self.originalPath, self._decodeName(subdir)))
             subPathFiles = subPath.recursiveScanFilesInPath(mask)
             files.extend(subPathFiles)
 
         return files
+
+    def _decodeName(self, name):
+        if type(name) == str:
+            try:
+                name = name.decode('utf8')
+            except:
+                name = name.decode('windows-1252')
+        
+        return name
     
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
