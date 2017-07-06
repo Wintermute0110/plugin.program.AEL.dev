@@ -529,7 +529,8 @@ class FileName:
         
         subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(FileName(os.path.join(self.originalPath, self._decodeName(filename))))
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(filePath.getOriginalPath())
 
         return files
 
@@ -538,10 +539,11 @@ class FileName:
         
         subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
         for filename in fnmatch.filter(filenames, mask):
-            files.append(FileName(os.path.join(self.originalPath, self._decodeName(filename))))
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(filePath.getOriginalPath())
 
         for subdir in subdirectories:
-            subPath = FileName(os.path.join(self.originalPath, self._decodeName(subdir)))
+            subPath = self.pjoin(self._decodeName(subdir))
             subPathFiles = subPath.recursiveScanFilesInPath(mask)
             files.extend(subPathFiles)
 
