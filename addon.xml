@@ -13,6 +13,6 @@
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <summary lang="en">Start any emulators/apps from Kodi.</summary>
-    <description lang="en">Multi-emulator front-end for Kodi scalable to collections of thousands of ROMs. Includes offline scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. ROM auditing for No-Intro ROMs using No-Intro XML DATs. Launching of games and standalone applications is also available.</description>
+    <description lang="en">Multi-emulator front-end and general application launcher for Kodi. Includes offline scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files. Launching of games and standalone applications is also available.</description>
   </extension>
 </addon>
