@@ -57,6 +57,9 @@ FEATURE  Remove duplicates from recent ROMs list. Contributed by bonzini.
 
 FIX      Fixed launching of BAT files in Windows.
 
+WIP      In order for skin shortcuts and widgets to work OK, addon concurrency must be enabled
+         by database read-only commands.
+
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]
 
