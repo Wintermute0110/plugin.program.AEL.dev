@@ -115,7 +115,7 @@ VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
 VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
-# --- Content type to be used by skins ---
+# --- Content type property to be used by skins ---
 AEL_CONTENT_WINDOW_ID       = 10000
 AEL_CONTENT_LABEL           = 'AEL_Content'
 AEL_CONTENT_VALUE_LAUNCHERS = 'launchers'
@@ -123,28 +123,27 @@ AEL_CONTENT_VALUE_ROMS      = 'roms'
 AEL_CONTENT_VALUE_NONE      = ''
 
 # --- ROM flags used by skins to display status icons ---
-AEL_INFAV_BOOL_LABEL     = 'AEL_InFav'
-AEL_MULTIDISC_BOOL_LABEL = 'AEL_MultiDisc'
-AEL_FAV_STAT_LABEL       = 'AEL_Fav_stat'
-AEL_NOINTRO_STAT_LABEL   = 'AEL_NoIntro_stat'
-AEL_PCLONE_STAT_LABEL    = 'AEL_PClone_stat'
-
-AEL_INFAV_BOOL_VALUE_TRUE            = 'InFav_True'
-AEL_INFAV_BOOL_VALUE_FALSE           = 'InFav_False'
-AEL_MULTIDISC_BOOL_VALUE_TRUE        = 'MultiDisc_True'
-AEL_MULTIDISC_BOOL_VALUE_FALSE       = 'MultiDisc_False'
+AEL_INFAV_BOOL_LABEL       = 'AEL_InFav'
+AEL_INFAV_BOOL_VALUE_TRUE  = 'InFav_True'
+AEL_INFAV_BOOL_VALUE_FALSE = 'InFav_False'
+AEL_MULTIDISC_BOOL_LABEL       = 'AEL_MultiDisc'
+AEL_MULTIDISC_BOOL_VALUE_TRUE  = 'MultiDisc_True'
+AEL_MULTIDISC_BOOL_VALUE_FALSE = 'MultiDisc_False'
+AEL_FAV_STAT_LABEL                   = 'AEL_Fav_stat'
 AEL_FAV_STAT_VALUE_OK                = 'Fav_OK'
 AEL_FAV_STAT_VALUE_UNLINKED_ROM      = 'Fav_UnlinkedROM'
 AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER = 'Fav_UnlinkedLauncher'
 AEL_FAV_STAT_VALUE_BROKEN            = 'Fav_Broken'
 AEL_FAV_STAT_VALUE_NONE              = 'Fav_None'
-AEL_NOINTRO_STAT_VALUE_HAVE          = 'NoIntro_Have'
-AEL_NOINTRO_STAT_VALUE_MISS          = 'NoIntro_Miss'
-AEL_NOINTRO_STAT_VALUE_UNKNOWN       = 'NoIntro_Unknown'
-AEL_NOINTRO_STAT_VALUE_NONE          = 'NoIntro_None'
-AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
-AEL_PCLONE_STAT_VALUE_CLONE          = 'PClone_Clone'
-AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
+AEL_NOINTRO_STAT_LABEL         = 'AEL_NoIntro_stat'
+AEL_NOINTRO_STAT_VALUE_HAVE    = 'NoIntro_Have'
+AEL_NOINTRO_STAT_VALUE_MISS    = 'NoIntro_Miss'
+AEL_NOINTRO_STAT_VALUE_UNKNOWN = 'NoIntro_Unknown'
+AEL_NOINTRO_STAT_VALUE_NONE    = 'NoIntro_None'
+AEL_PCLONE_STAT_LABEL        = 'AEL_PClone_stat'
+AEL_PCLONE_STAT_VALUE_PARENT = 'PClone_Parent'
+AEL_PCLONE_STAT_VALUE_CLONE  = 'PClone_Clone'
+AEL_PCLONE_STAT_VALUE_NONE   = 'PClone_None'
 
 #
 # Make AEL to run only 1 single instance
@@ -1768,57 +1767,71 @@ class Main:
                     add_delete_NoIntro_str = 'Delete No-Intro/Redump DAT: {0}'.format(nointro_xml_file)
                 else:
                     add_delete_NoIntro_str = 'Add No-Intro/Redump XML DAT ...'
-                launcher_mode_str = 'Parent/Clone mode' if launcher['pclone_launcher'] else 'Normal mode'
+                display_mode_str = launcher['launcher_display_mode']
                 type2 = dialog.select('Audit ROMs / Launcher view mode',
-                                      ['Change launcher display mode (now {0}) ...'.format(launcher_mode_str),
+                                      ['Change launcher display mode (now {0}) ...'.format(display_mode_str),
                                        add_delete_NoIntro_str,
                                        'Display ROMs (now {0}) ...'.format(launcher['nointro_display_mode']),
                                        'Update ROM audit'])
-                if type2 < 0: return # User canceled select dialog
+                if type2 < 0: return # >> User canceled select dialog
 
                 # --- Change launcher view mode (Normal or PClone) ---
                 if type2 == 0:
                     launcher = self.launchers[launcherID]
-                    pclone_launcher = launcher['pclone_launcher']
-                    if pclone_launcher: item_list = ['Normal mode', 'Parent/Clone mode [Current]']
-                    else:               item_list = ['Normal mode [Current]', 'Parent/Clone mode']
-                    type_temp = dialog.select('Launcher display mode', item_list)
+                    # >> Krypton feature: preselect the current item.
+                    # >> NOTE Preselect must be called with named parameter, otherwise it does not work well.
+                    display_mode = launcher['launcher_display_mode']
+                    if   display_mode == LAUNCHER_DMODE_FLAT:   p_idx = 0
+                    elif display_mode == LAUNCHER_DMODE_PCLONE: p_idx = 1
+                    elif display_mode == LAUNCHER_DMODE_1G1R:   p_idx = 2
+                    else:                                       p_idx = 0
+                    log_debug('p_idx = "{0}"'.format(p_idx))
+                    type_temp = dialog.select('Launcher display mode', LAUNCHER_DMODE_LIST, preselect = p_idx)
                     if type_temp < 0: return
 
+                    # >> LAUNCHER_DMODE_FLAT
                     if type_temp == 0:
                         # --- Delete PClone index and Parent ROMs DB to save disk space ---
 
                         # --- Mark status ---
-                        self.launchers[launcherID]['pclone_launcher'] = False
-                        log_debug('_command_edit_launcher() pclone_launcher = False')
-                        kodi_notify('Launcher view mode set Normal')
+                        launcher['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
+                        log_debug('launcher_display_mode = {0}'.format(launcher['launcher_display_mode']))
+                        kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_FLAT))
 
-                    elif type_temp == 1:
+                    # >> LAUNCHER_DMODE_PCLONE = 1
+                    # >> LAUNCHER_DMODE_1G1R = 2
+                    elif type_temp == 1 or type_temp == 2:
                         # >> Check if user configured a No-Intro DAT. If not configured  or file does
                         # >> not exists refuse to switch to PClone view and force normal mode.
                         nointro_xml_file = launcher['nointro_xml_file']
                         nointro_xml_file_FName = FileName(nointro_xml_file)
                         if not nointro_xml_file:
-                            log_info('_command_edit_launcher() No-Intro DAT not configured. PClone view mode cannot be set.')
-                            log_info('_command_edit_launcher() Forcing normal view mode.')
-                            kodi_dialog_OK('No-Intro DAT not configured. PClone view mode cannot be set.')
-                            self.launchers[launcherID]['pclone_launcher'] = False
-                            kodi_notify('Launcher view mode set to Normal')
+                            log_info('_command_edit_launcher() No-Intro DAT not configured.')
+                            log_info('_command_edit_launcher() Forcing Flat view mode.')
+                            kodi_dialog_OK('No-Intro DAT not configured. PClone or 1G1R view mode cannot be set.')
+                            launcher['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
+                            kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_FLAT))
 
                         elif not nointro_xml_file_FName.exists():
-                            log_info('_command_edit_launcher() No-Intro DAT not found. PClone view mode cannot be set.')
-                            log_info('_command_edit_launcher() Forcing normal view mode.')
-                            kodi_dialog_OK('No-Intro DAT cannot be found. PClone view mode cannot be set.')
-                            self.launchers[launcherID]['pclone_launcher'] = False
-                            kodi_notify('Launcher view mode set to Normal')
+                            log_info('_command_edit_launcher() No-Intro DAT not found.')
+                            log_info('_command_edit_launcher() Forcing Flat view mode.')
+                            kodi_dialog_OK('No-Intro DAT cannot be found. PClone or 1G1R view mode cannot be set.')
+                            launcher['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
+                            kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_FLAT))
 
                         else:
-                            # --- Re/Generate PClone index and Parent ROMs DB ---
+                            # --- Re/Generate PClone index and Parent ROMs databases ---
 
-                            # --- Mark status ---
-                            self.launchers[launcherID]['pclone_launcher'] = True
-                            log_debug('_command_edit_launcher() pclone_launcher = True')
-                            kodi_notify('Launcher view mode set to Parent/Clone')
+                            # >> LAUNCHER_DMODE_PCLONE = 1
+                            if type_temp == 1:
+                                launcher['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
+                                log_debug('launcher_display_mode = {0}'.format(launcher['launcher_display_mode']))
+                                kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_PCLONE))
+                            # >> LAUNCHER_DMODE_1G1R = 2
+                            elif type_temp == 2:
+                                launcher['launcher_display_mode'] = LAUNCHER_DMODE_1G1R
+                                log_debug('launcher_display_mode = {0}'.format(launcher['launcher_display_mode']))
+                                kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_1G1R))
 
                 # --- Add/Delete No-Intro XML parent-clone DAT ---
                 elif type2 == 1:
@@ -2063,7 +2076,7 @@ class Main:
             else:
                 roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
                 num_roms = len(roms)
-                ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs '.format(launcher_name, num_roms) +
+                ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs. '.format(launcher_name, num_roms) +
                                         'Are you sure you want to delete it?')
             if not ret: return
 
@@ -3274,27 +3287,37 @@ class Main:
         # --- Launcher tags ---
         # >> Do not plot ROM count on standalone launchers! Launcher is standalone if rompath = ''
         launcher_name = launcher_raw_name = launcher_dic['m_name']
-        if self.settings['display_launcher_roms'] and launcher_dic['rompath'] \
-           and not launcher_dic['nointro_xml_file'] and not launcher_dic['pclone_launcher']:
-            num_roms = launcher_dic['num_roms']
-            if num_roms == 0:
-                launcher_name = '{0} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
-            elif num_roms == 1:
-                launcher_name = '{0} [COLOR orange]({1} ROM)[/COLOR]'.format(launcher_raw_name, num_roms)
+        if self.settings['display_launcher_roms']:
+            if launcher_dic['rompath']:
+                # >> ROM launcher with DAT file and ROM audit information.
+                if launcher_dic['nointro_xml_file']:
+                    if launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
+                        num_have    = launcher_dic['num_have']
+                        num_miss    = launcher_dic['num_miss']
+                        num_unknown = launcher_dic['num_unknown']
+                        launcher_name = '{0} [COLOR orange]({1} Have / {2} Miss / {3} Unk)[/COLOR]'.format(
+                            launcher_raw_name, num_have, num_miss, num_unknown)
+                    elif launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_PCLONE:
+                        num_parents = launcher_dic['num_parents']
+                        num_clones  = launcher_dic['num_clones']
+                        launcher_name = '{0} [COLOR orange]({1} Par / {2} Clo)[/COLOR]'.format(
+                            launcher_raw_name, num_parents, num_clones)
+                    elif launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_1G1R:
+                        num_parents = launcher_dic['num_parents']
+                        launcher_name = '{0} [COLOR orange]({1} Games)[/COLOR]'.format(launcher_raw_name, num_parents)
+                    else:
+                        launcher_name = '{0} [COLOR red](ERROR)[/COLOR]'.format(launcher_raw_name)
+                # >> ROM launcher with no DAT file.
+                else:
+                    num_roms = launcher_dic['num_roms']
+                    if num_roms == 0:
+                        launcher_name = '{0} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
+                    elif num_roms == 1:
+                        launcher_name = '{0} [COLOR orange]({1} ROM)[/COLOR]'.format(launcher_raw_name, num_roms)
+                    else:
+                        launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
             else:
-                launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
-        elif self.settings['display_launcher_roms'] and launcher_dic['rompath'] \
-             and launcher_dic['nointro_xml_file'] and not launcher_dic['pclone_launcher']:
-            num_have    = launcher_dic['num_have']
-            num_miss    = launcher_dic['num_miss']
-            num_unknown = launcher_dic['num_unknown']
-            launcher_name = '{0} [COLOR orange]({1} Have / {2} Miss / {3} Unk)[/COLOR]'.format(
-                launcher_raw_name, num_have, num_miss, num_unknown)
-        elif self.settings['display_launcher_roms'] and launcher_dic['rompath'] \
-             and launcher_dic['nointro_xml_file'] and launcher_dic['pclone_launcher']:
-            num_parents = launcher_dic['num_parents']
-            num_clones  = launcher_dic['num_clones']
-            launcher_name = '{0} [COLOR orange]({1} Par / {2} Clo)[/COLOR]'.format(launcher_raw_name, num_parents, num_clones)
+                launcher_name = '{0} [COLOR chocolate](Std)[/COLOR]'.format(launcher_raw_name)
 
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
@@ -3465,9 +3488,10 @@ class Main:
             return
         selectedLauncher = self.launchers[launcherID]
 
-        # --- Render in normal mode (all ROMs) or Parent/Clone mode---
+        # --- Render in Flat mode (all ROMs) or Parent/Clone mode---
         loading_ticks_start = time.time()
-        if selectedLauncher['pclone_launcher']:
+        # if selectedLauncher['pclone_launcher']:
+        if False:
             # --- Load parent ROMs ---
             parents_roms_base_noext = selectedLauncher['roms_base_noext'] + '_parents'
             parents_file_path = ROMS_DIR.join(parents_roms_base_noext + '.json')
@@ -5987,7 +6011,7 @@ class Main:
 
         info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
         info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher['nointro_display_mode'])
-        info_text += "[COLOR skyblue]pclone_launcher[/COLOR]: {0}\n".format(launcher['pclone_launcher'])
+        info_text += "[COLOR violet]launcher_display_mode[/COLOR]: '{0}'\n".format(launcher['launcher_display_mode'])
         info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher['num_roms'])
         info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher['num_parents'])
         info_text += "[COLOR skyblue]num_clones[/COLOR]: {0}\n".format(launcher['num_clones'])

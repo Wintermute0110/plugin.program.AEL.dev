@@ -81,6 +81,7 @@ def fs_new_category():
 
     return c
 
+# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
 NOINTRO_DMODE_ALL       = 'All ROMs'
 NOINTRO_DMODE_HAVE      = 'Have ROMs'
 NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
@@ -91,6 +92,13 @@ NOINTRO_DMODE_UNK       = 'Unknown ROMs'
 NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
                            NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
                            NOINTRO_DMODE_UNK]
+
+# launcher['launcher_display_mode'] values default LAUNCHER_DMODE_FLAT
+LAUNCHER_DMODE_FLAT   = 'Flat mode'
+LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
+LAUNCHER_DMODE_1G1R   = '1G1R mode'
+LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
+
 def fs_new_launcher():
     l = {'id' : '',
          'm_name' : '',
@@ -111,7 +119,7 @@ def fs_new_launcher():
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
          'nointro_display_mode' : NOINTRO_DMODE_ALL,
-         'pclone_launcher' : False,
+         'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
          'num_roms' : 0,
          'num_parents' : 0,
          'num_clones' : 0,
@@ -180,7 +188,7 @@ ESRB_ADULTS_ONLY = 'AO (Adults Only)'
 ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
                     ESRB_MATURE, ESRB_ADULTS_ONLY]
 
-# m_nplayers default values
+# m_nplayers values default ''
 NP_1P     = '1P'
 NP_2P_SIM = '2P sim'
 NP_2P_ALT = '2P alt'
@@ -492,7 +500,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
-            str_list.append(XML_text('pclone_launcher', unicode(launcher['pclone_launcher'])))
+            str_list.append(XML_text('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
             str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
             str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
             str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))
@@ -622,7 +630,7 @@ def fs_load_catfile(categories_file, categories, launchers):
                 if xml_tag == 'args_extra':
                     launcher[xml_tag].append(xml_text)
                 # >> Transform Bool datatype
-                elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
+                elif xml_tag == 'finished' or xml_tag == 'minimize':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
                 elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
