@@ -3488,10 +3488,22 @@ class Main:
             return
         selectedLauncher = self.launchers[launcherID]
 
-        # --- Render in Flat mode (all ROMs) or Parent/Clone mode---
+        # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
+        # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
         loading_ticks_start = time.time()
-        # if selectedLauncher['pclone_launcher']:
-        if False:
+        if selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
+            # --- Load ROMs for this launcher ---
+            roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
+            if not roms_file_path.exists():
+                kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher['roms_base_noext'])
+            if not roms:
+                kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+        else:
             # --- Load parent ROMs ---
             parents_roms_base_noext = selectedLauncher['roms_base_noext'] + '_parents'
             parents_file_path = ROMS_DIR.join(parents_roms_base_noext + '.json')
@@ -3517,23 +3529,6 @@ class Main:
                 kodi_notify('PClone index dict is empty.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
-        else:
-            # --- Load ROMs for this launcher ---
-            roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
-            if not roms_file_path.exists():
-                kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
-            roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher['roms_base_noext'])
-            if not roms:
-                kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
-        # log_debug('type(roms) = {0}'.format(type(roms)))
-        # log_debug('roms = {0}'.format(roms))
-        # for key in roms:
-            # log_debug('key   = {0}'.format(key))
-            # log_debug('value = {0}'.format(roms[key]))
 
         # --- ROM display filter ---
         dp_mode = selectedLauncher['nointro_display_mode']
@@ -3579,13 +3574,14 @@ class Main:
         # --- Display ROMs ---
         loading_ticks_end = time.time()
         rendering_ticks_start = time.time()
-        if selectedLauncher['pclone_launcher']:
+        if selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
+            for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
+        else:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
                 num_clones = len(pclone_index[key])
                 self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, True, num_clones)
-        else:
-            for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
+
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
         rendering_ticks_end = time.time()
 

@@ -37,17 +37,17 @@ FEATURE  Removed ElementTree dependency in addon.xml. It's not longer needed.
 FEATURE  Use the <news> tag in addon.xml. In general, have a look at http://kodi.wiki/view/addon.xml
          and modernise addon.xml.
 
-WIP      Make use of Krypton feature in the several dialogs of the addon.
+WORKING  Make use of Krypton feature in the several dialogs of the addon.
          New param: "preselect" for Dialog().multiselect() and Dialog().select(). 
          See http://forum.kodi.tv/showthread.php?tid=250936
 
 WIP      Update code to use xbmcgui.Dialog().select() - additions.
          Get rid of the ImgSelectDialog() class. This need Krypton Beta 4 to run!
 
-FEATURE  Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
+WORKING  Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
          conveninent that the Unknown ROMs are clones in the Parent/Clone view.
 
-WIP      1 Game 1 ROM launcher display mode. Copy it from AML.
+WORKING  1 Game 1 ROM launcher display mode. Copy it from AML.
          Changed launcher['pclone_launcher'] to launcher['launcher_display_mode'] to store the
          display mode in categories.xml database.
 
