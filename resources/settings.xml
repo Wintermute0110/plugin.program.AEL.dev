@@ -4,7 +4,7 @@
     <!-- <setting id="separator" type="lsep" label="Scan settings"/> -->
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
     <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
-    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy"  default="3" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
+    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
     <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
 
     <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
@@ -23,6 +23,7 @@
 </category>
 <category label="ROM audit">
     <setting label="Group Unkown ROMs as clone ROMs" type="bool" default="false" id="audit_unknown_clones" />
+    <setting label="1G1R preferred region" type="enum" id="audit_1G1R_region" default="0" values="Europe|USA|Japan" />
 </category>
 <!--
 <category label="Scrapers">
