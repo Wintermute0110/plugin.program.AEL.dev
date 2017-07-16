@@ -31,11 +31,10 @@ WIP      LaunchBox Games Database scraper.
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Jun 2017[/B]
 
-WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
+FEATURE  Removed ElementTree dependency in addon.xml. It's not longer needed.
+         AEL ONLY WORKS ON KRYPTON NOW!!!
 
-WIP      Removed ElementTree dependency in addon.xml. It's not longer needed.
-
-WIP      Use the <news> tag in addon.xml. In general, have a look at http://kodi.wiki/view/addon.xml
+FEATURE  Use the <news> tag in addon.xml. In general, have a look at http://kodi.wiki/view/addon.xml
          and modernise addon.xml.
 
 WIP      Make use of Krypton feature in the several dialogs of the addon.
