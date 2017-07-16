@@ -56,7 +56,7 @@ FEATURE  Remove duplicates from recent ROMs list. Contributed by bonzini.
 
 FIX      Fixed launching of BAT files in Windows.
 
-WIP      In order for skin shortcuts and widgets to work OK, addon concurrency must be enabled
+FIX      In order for skin shortcuts and widgets to work OK, addon concurrency must be enabled
          by database read-only commands.
 
 

@@ -247,40 +247,55 @@ class Main:
         self.content_type = args['content_type'] if 'content_type' in args else None
         # log_debug('content_type = {0}'.format(self.content_type))
 
-        # --- Ensure AEL only runs one instance at a time ---
-        with SingleInstance(): self.run_protected(args)
-        log_debug('Advanced Emulator Launcher run_plugin() exit')
-
-    #
-    # This function is guaranteed to run with no concurrency.
-    #
-    def run_protected(self, args):
         # --- Addon first-time initialisation ---
-        # When the addon is installed and the file categories.xml does not exist, just
-        # create an empty one with a default launcher.
-        if not CATEGORIES_FILE_PATH.exists():
-            kodi_dialog_OK('It looks it is the first time you run Advanced Emulator Launcher! ' +
-                           'A default categories.xml has been created. You can now customise it to your needs.')
-            self._cat_create_default()
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        # >> When the addon is installed and the file categories.xml does not exist, just
+        #    create an empty one with a default launcher.
+        # >> NOTE Not needed anymore. Skins using shortcuts and/or widgets will call AEL concurrently
+        #         and AEL should return an empty list with no GUI warnings or dialogs.
+        # if not CATEGORIES_FILE_PATH.exists():
+        #     kodi_dialog_OK('It looks it is the first time you run Advanced Emulator Launcher! ' +
+        #                    'A default categories.xml has been created. You can now customise it to your needs.')
+        #     self._cat_create_default()
+        #     fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # --- Load categories.xml and fill categories and launchers dictionaries ---
         self.categories = {}
         self.launchers = {}
         self.update_timestamp = fs_load_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
-        # --- If no com parameter display addon root directory ---
-        if 'com' not in args:
-            self._command_render_categories()
-            log_debug('Advanced Emulator Launcher run_protected() exit (addon root)')
-            return
-        command = args['com'][0]
+        # --- Get addon command ---
+        command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
+        log_debug('command = "{0}"'.format(command))
 
-        # --- Category management ---
-        if command == 'ADD_CATEGORY':
-            self._command_add_new_category()
-        elif command == 'EDIT_CATEGORY':
-            self._command_edit_category(args['catID'][0])
+        # --- Commands that do not modify the databases are allowed to run concurrently ---
+        if command == 'SHOW_ADDON_ROOT' or \
+           command == 'SHOW_VCATEGORIES_ROOT' or command == 'SHOW_OFFLINE_LAUNCHERS_ROOT' or \
+           command == 'SHOW_FAVOURITES'       or command == 'SHOW_VIRTUAL_CATEGORY' or \
+           command == 'SHOW_RECENTLY_PLAYED'  or command == 'SHOW_MOST_PLAYED' or \
+           command == 'SHOW_COLLECTIONS'      or command == 'SHOW_COLLECTION_ROMS' or \
+           command == 'SHOW_LAUNCHERS' or command == 'SHOW_ROMS' or \
+           command == 'SHOW_VLAUNCHER_ROMS' or command == 'SHOW_OFFLINE_SCRAPER_ROMS' or \
+           command == 'SHOW_CLONE_ROMS' or \
+           command == 'SHOW_ALL_CATEGORIES' or \
+           command == 'SHOW_ALL_LAUNCHERS' or \
+           command == 'SHOW_ALL_ROMS' or \
+           command == 'BUILD_GAMES_MENU':
+            self.run_concurrent(command, args)
+        else:
+            # >> Ensure AEL only runs one instance at a time
+            with SingleInstance():
+                self.run_protected(command, args)
+        log_debug('Advanced Emulator Launcher run_plugin() exit')
+
+    #
+    # This function may run concurrently
+    #
+    def run_concurrent(self, command, args):
+        log_debug('Advanced Emulator Launcher run_concurrent() BEGIN')
+        
+        # --- Name says it all ---
+        if command == 'SHOW_ADDON_ROOT':
+            self._command_render_categories()
 
         # --- Render launchers stuff ---
         elif command == 'SHOW_VCATEGORIES_ROOT':
@@ -302,14 +317,6 @@ class Main:
         elif command == 'SHOW_LAUNCHERS':
             self._command_render_launchers(args['catID'][0])
 
-        # --- Launcher management ---
-        elif command == 'ADD_LAUNCHER':
-            self._command_add_new_launcher(args['catID'][0])
-        elif command == 'ADD_LAUNCHER_ROOT':
-            self._command_add_new_launcher(VCATEGORY_ADDONROOT_ID)
-        elif command == 'EDIT_LAUNCHER':
-            self._command_edit_launcher(args['catID'][0], args['launID'][0])
-
         # --- Show ROMs in launcher/virtual launcher ---
         elif command == 'SHOW_ROMS':
             self._command_render_roms(args['catID'][0], args['launID'][0])
@@ -329,6 +336,35 @@ class Main:
             self._command_render_all_launchers()
         elif command == 'SHOW_ALL_ROMS':
             self._command_render_all_ROMs()
+
+        # >> Command to build/fill the menu with categories or launcher using skinshortcuts
+        elif command == 'BUILD_GAMES_MENU':
+            self._command_buildMenu()
+
+        # >> Unknown command
+        else:
+            kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
+        log_debug('Advanced Emulator Launcher run_concurrent() END')
+
+    #
+    # This function is guaranteed to run with no concurrency.
+    #
+    def run_protected(self, command, args):
+        log_debug('Advanced Emulator Launcher run_protected() BEGIN')
+
+        # --- Category management ---
+        if command == 'ADD_CATEGORY':
+            self._command_add_new_category()
+        elif command == 'EDIT_CATEGORY':
+            self._command_edit_category(args['catID'][0])
+
+        # --- Launcher management ---
+        elif command == 'ADD_LAUNCHER':
+            self._command_add_new_launcher(args['catID'][0])
+        elif command == 'ADD_LAUNCHER_ROOT':
+            self._command_add_new_launcher(VCATEGORY_ADDONROOT_ID)
+        elif command == 'EDIT_LAUNCHER':
+            self._command_edit_launcher(args['catID'][0], args['launID'][0])
 
         # --- ROM management ---
         # >> Add/Edit/Delete ROMs in launcher, Favourites or ROM Collections <<
@@ -395,12 +431,10 @@ class Main:
         elif command == 'CHECK_DATABASE':      self._command_check_database()
         elif command == 'IMPORT_AL_LAUNCHERS': self._command_import_legacy_AL()
 
-        # >> Command to build/fill the menu with categories or launcher using skinshortcuts
-        elif command == 'BUILD_GAMES_MENU':
-            self._command_buildMenu()
+        # >> Unknown command
         else:
             kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
-        log_debug('Advanced Emulator Launcher run_protected() exit')
+        log_debug('Advanced Emulator Launcher run_protected() END')
 
     #
     # Get Addon Settings
