@@ -44,7 +44,7 @@ WIP      Make use of Krypton feature in the several dialogs of the addon.
 WIP      Update code to use xbmcgui.Dialog().select() - additions.
          Get rid of the ImgSelectDialog() class. This need Krypton Beta 4 to run!
 
-WIP      Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
+FEATURE  Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
          conveninent that the Unknown ROMs are clones in the Parent/Clone view.
 
 WIP      1 Game 1 ROM launcher display mode. Copy it from AML.

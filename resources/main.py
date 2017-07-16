@@ -461,12 +461,15 @@ class Main:
         self.settings['metadata_scraper_mode']    = int(__addon_obj__.getSetting('metadata_scraper_mode'))
         self.settings['asset_scraper_mode']       = int(__addon_obj__.getSetting('asset_scraper_mode'))
 
+        # --- ROM audit ---
+        self.settings['audit_unknown_clones']  = True if __addon_obj__.getSetting('audit_unknown_clones') == 'true' else False
+
         # --- Scrapers ---
-        self.settings['scraper_region']           = int(__addon_obj__.getSetting('scraper_region'))
-        self.settings['scraper_thumb_size']       = int(__addon_obj__.getSetting('scraper_thumb_size'))
-        self.settings['scraper_fanart_size']      = int(__addon_obj__.getSetting('scraper_fanart_size'))
-        self.settings['scraper_image_type']       = int(__addon_obj__.getSetting('scraper_image_type'))
-        self.settings['scraper_fanart_order']     = int(__addon_obj__.getSetting('scraper_fanart_order'))
+        # self.settings['scraper_region']           = int(__addon_obj__.getSetting('scraper_region'))
+        # self.settings['scraper_thumb_size']       = int(__addon_obj__.getSetting('scraper_thumb_size'))
+        # self.settings['scraper_fanart_size']      = int(__addon_obj__.getSetting('scraper_fanart_size'))
+        # self.settings['scraper_image_type']       = int(__addon_obj__.getSetting('scraper_image_type'))
+        # self.settings['scraper_fanart_order']     = int(__addon_obj__.getSetting('scraper_fanart_order'))
 
         # --- Display ---
         self.settings['display_launcher_notify']  = True if __addon_obj__.getSetting('display_launcher_notify') == 'true' else False
