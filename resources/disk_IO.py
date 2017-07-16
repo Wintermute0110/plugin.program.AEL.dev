@@ -24,6 +24,8 @@ import os
 import sys
 import string
 import base64
+import pprint
+import errno
 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
@@ -551,16 +553,28 @@ def fs_load_catfile(categories_file, categories, launchers):
     update_timestamp = 0.0
 
     # --- Parse using cElementTree ---
-    # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
+    # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
     log_verb('fs_load_catfile() Loading {0}'.format(categories_file.getOriginalPath()))
     try:
         xml_tree = ET.parse(categories_file.getPath())
-    except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+    except IOError as e:
+        log_debug('fs_load_catfile() (IOError) errno = {0}'.format(e.errno))
+        # log_debug(unicode(errno.errorcode))
+        # >> No such file or directory
+        if e.errno == errno.ENOENT:
+            log_error('fs_load_catfile() (IOError) No such file or directory.')
+        else:
+            log_error('fs_load_catfile() (IOError) Unhandled errno value.')
+        log_error('fs_load_catfile() (IOError) Return empty categories and launchers dictionaries.')
+        return update_timestamp
+    except ET.ParseError as e:
+        log_error('fs_load_catfile() (ParseError) Exception parsing XML categories.xml')
+        log_error('fs_load_catfile() (ParseError) {0}'.format(str(e)))
         kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                        'Maybe XML file is corrupt or contains invalid characters.')
         return update_timestamp
+
+    # --- Parse XML file ---
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))

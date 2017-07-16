@@ -204,19 +204,21 @@ class Main:
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL Main::run_plugin() constructor ----------')
-        log_debug('sys.platform   {0}'.format(sys.platform))
-        # log_debug('WindowId       {0}'.format(xbmcgui.getCurrentWindowId()))
-        # log_debug('WindowName     {0}'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
-        log_debug('Python version ' + sys.version.replace('\n', ''))
-        # log_debug('__addon_name__    {0}'.format(__addon_name__))
-        # log_debug('__addon_id__      {0}'.format(__addon_id__))
-        log_debug('__addon_version__ {0}'.format(__addon_version__))
-        # log_debug('__addon_author__  {0}'.format(__addon_author__))
-        # log_debug('__addon_profile__ {0}'.format(__addon_profile__))
-        # log_debug('__addon_type__    {0}'.format(__addon_type__))
-        for i in range(len(sys.argv)): log_debug('sys.argv[{0}] = "{1}"'.format(i, sys.argv[i]))
-        # log_debug('PLUGIN_DATA_DIR   "{0}"'.format(PLUGIN_DATA_DIR))
-        # log_debug('CURRENT_ADDON_DIR "{0}"'.format(CURRENT_ADDON_DIR))
+        log_debug('sys.platform   "{0}"'.format(sys.platform))
+        # log_debug('WindowId       "{0}"'.format(xbmcgui.getCurrentWindowId()))
+        # log_debug('WindowName     "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
+        log_debug('Python version "' + sys.version.replace('\n', '') + '"')
+        # log_debug('__a_name__     "{0}"'.format(__addon_name__))
+        # log_debug('__a_id__       "{0}"'.format(__addon_id__))
+        log_debug('__a_version__  "{0}"'.format(__addon_version__))
+        # log_debug('__a_author__   "{0}"'.format(__addon_author__))
+        # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
+        # log_debug('__a_type__     "{0}"'.format(__addon_type__))
+        for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
+        # log_debug('PLUGIN_DATA_DIR OP "{0}"'.format(PLUGIN_DATA_DIR.getOriginalPath()))
+        # log_debug('PLUGIN_DATA_DIR  P "{0}"'.format(PLUGIN_DATA_DIR.getPath()))
+        # log_debug('CURRENT_ADDON_DIR OP "{0}"'.format(CURRENT_ADDON_DIR.getOriginalPath()))
+        # log_debug('CURRENT_ADDON_DIR  P "{0}"'.format(CURRENT_ADDON_DIR.getPath()))
 
         # --- Addon data paths creation ---
         if not PLUGIN_DATA_DIR.exists():          PLUGIN_DATA_DIR.makedirs()
@@ -563,15 +565,15 @@ class Main:
     def _misc_set_AEL_Content(self, AEL_Content_Value):
         if AEL_Content_Value == AEL_CONTENT_VALUE_LAUNCHERS:
             log_debug('_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
-                      'Property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS))
+                      'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS))
             xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS)
         elif AEL_Content_Value == AEL_CONTENT_VALUE_ROMS:
             log_debug('_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
-                      'Property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS))
+                      'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS))
             xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS)
         elif AEL_Content_Value == AEL_CONTENT_VALUE_NONE:
             log_debug('_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
-                      'Property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE))
+                      'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE))
             xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE)
         else:
             log_error('_misc_set_AEL_Content() Invalid AEL_Content_Value "{0}"'.format(AEL_Content_Value))
