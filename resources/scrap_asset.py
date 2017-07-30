@@ -21,8 +21,8 @@ import sys, urllib, urllib2, re, os
 import pprint
 
 # --- AEL modules ---
+from platforms import *
 from scrap import *
-from scrap_info import *
 from assets import *
 
 # -------------------------------------------------------------------------------------------------
