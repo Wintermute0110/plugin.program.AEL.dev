@@ -7370,7 +7370,7 @@ class Main:
                 if not BIOS_str_list:
                     filtered_roms_nointro[rom_id] = rom
                 else:
-                    log_debug('_roms_update_NoIntro_status() Removing BIOS {0}'.format(rom['name']))
+                    log_debug('_roms_update_NoIntro_status() Removed BIOS "{0}"'.format(rom['name']))
                 item_counter += 1
                 pDialog.update((item_counter*100)/num_items)
                 if __debug_progress_dialogs: time.sleep(__debug_time_step)
@@ -7455,7 +7455,11 @@ class Main:
 
         # --- Make a Parent/Clone index and save JSON file ---
         pDialog.update(0, 'Building Parent/Clone index ...')
-        roms_pclone_index     = fs_generate_PClone_index(roms, roms_nointro)
+        # >> audit_unknown_roms is an int of list = ['Parents', 'Clones']
+        unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
+        # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
+        log_debug('unknown_ROMs_are_parents = {0}'.format(unknown_ROMs_are_parents))
+        roms_pclone_index     = fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
         index_roms_base_noext = launcher['roms_base_noext'] + '_PClone_index'
         fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
         pDialog.update(100)

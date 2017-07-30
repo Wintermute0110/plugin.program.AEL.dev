@@ -1331,14 +1331,25 @@ UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 # Creates and returns Parent/Clone MD5 index dictionary.
 # This dictionary will be save in database roms_base_noext_PClone_index.json.
 #
-# roms_pclone_index = {
-#   'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#   'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#    ... ,
-#   UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
-# }
+# unknown_ROMs_are_parents = True
+#   roms_pclone_index_by_id = {
+#       'parent_id_1'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#       'parent_id_2'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#        ... ,
+#       'unknown_rom_id_1' : [], # Unknown ROMs never have clones
+#       'unknown_rom_id_2' : [],
+#       ...
+#   }
 #
-def fs_generate_PClone_index(roms, roms_nointro):
+# unknown_ROMs_are_parents = False
+#   roms_pclone_index_by_id = {
+#       'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#       'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#        ... ,
+#       UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
+#   }
+#
+def fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
     roms_pclone_index_by_id = {}
 
     # --- Create a dictionary to convert ROMbase_noext names into IDs ---
@@ -1352,7 +1363,6 @@ def fs_generate_PClone_index(roms, roms_nointro):
         names_to_ids_dic[rom_name] = rom_id
 
     # --- Build PClone dictionary using ROM base_noext names ---
-    # >> Create fake ROM later because dictionaries cannot be modified when being iterated
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
@@ -1363,22 +1373,26 @@ def fs_generate_PClone_index(roms, roms_nointro):
         # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
         # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
 
-        #  Add Unknown ROMs to their own set.
         if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
-            clone_id = rom['id']
-            if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
-                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
-                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(clone_id)
+            if unknown_ROMs_are_parents:
+                # >> Unknown ROMs are parents
+                if rom_id not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[rom_id] = []
             else:
-                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(clone_id)
+                # >> Unknown ROMs are clones
+                #    Also, if the parent ROMs of all clones does not exist yet then create it
+                if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
+                else:
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
         else:
             nointro_rom = roms_nointro[rom_nointro_name]
 
             # >> ROM is a parent
             if nointro_rom['cloneof'] == '':
-                parent_id = rom['id']
-                if parent_id not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[parent_id] = []
+                if rom_id not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[rom_id] = []
             # >> ROM is a clone
             else:
                 parent_name = nointro_rom['cloneof']
@@ -1394,7 +1408,8 @@ def fs_generate_PClone_index(roms, roms_nointro):
 
 #
 # Returns a dictionary with parent ROMs to be stored in database roms_base_noext_parents.json
-# If Unkown ROMs detected, the fake ROM [Unknown ROMs] is added.
+# If the parent of the Unknown ROMs is detected in the Parent dictionary then create fake
+# metadata for it.
 #
 def fs_generate_parent_ROMs_dic(roms, roms_pclone_index):
     p_roms = {}
