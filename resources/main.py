@@ -690,9 +690,12 @@ class Main:
                 return
 
         # --- Edit Category Assets/Artwork ---
+        # >> New in Kodi Krypton: use new xbmcgui.Dialog().select() and get rid of ImgSelectDialog()
+        #    class. Get rid of al calls to gui_show_image_select().
         elif type == 1:
             category = self.categories[categoryID]
 
+            # >> Create label2 and image ListItem fields
             label2_thumb     = category['s_thumb']     if category['s_thumb']     else 'Not set'
             label2_fanart    = category['s_fanart']    if category['s_fanart']    else 'Not set'
             label2_banner    = category['s_banner']    if category['s_banner']    else 'Not set'
@@ -702,107 +705,111 @@ class Main:
             img_thumb        = category['s_thumb']     if category['s_thumb']     else 'DefaultAddonNone.png'
             img_fanart       = category['s_fanart']    if category['s_fanart']    else 'DefaultAddonNone.png'
             img_banner       = category['s_banner']    if category['s_banner']    else 'DefaultAddonNone.png'
-            img_flyer        = category['s_flyer']     if category['s_flyer']     else 'DefaultAddonNone.png'
+            img_poster       = category['s_flyer']     if category['s_flyer']     else 'DefaultAddonNone.png'
             img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
-            img_list = [
-                {'name' : 'Edit Thumbnail ...',    'label2' : label2_thumb,     'icon' : img_thumb},
-                {'name' : 'Edit Fanart ...',       'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner ...',       'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Flyer / Poster ...', 'label2' : label2_poster,    'icon' : img_flyer},
-                {'name' : 'Edit Clearlogo ...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Trailer ...',      'label2' : label2_trailer,   'icon' : img_trailer}
-            ]
-            type2 = gui_show_image_select('Edit Category Assets/Artwork', img_list)
+
+            # >> Create ListItem objects for select dialog
+            thumb_listitem     = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_thumb)
+            fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
+            banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
+            poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
+            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
+            trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
+            thumb_listitem.setArt({'icon' : img_thumb})
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            poster_listitem.setArt({'icon' : img_poster})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            trailer_listitem.setArt({'icon' : img_trailer})
+
+            # >> Execute select dialog
+            listitems = [thumb_listitem, fanart_listitem, banner_listitem,
+                         poster_listitem, clearlogo_listitem, trailer_listitem]
+            type2 = dialog.select('Edit Category Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
             # --- Edit Assets ---
-            # >> Category is changed using Python passign by assigment
-            # >> If this function returns False no changes were made. No need to save categories XML and 
-            # >> update container.
-            if type2 == 0:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_THUMB, category): return
-            elif type2 == 1:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_FANART, category): return
-            elif type2 == 2:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_BANNER, category): return
-            elif type2 == 3:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_FLYER, category): return
-            elif type2 == 4:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_CLEARLOGO, category): return
-            elif type2 == 5:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_TRAILER, category): return
+            # >> If this function returns False no changes were made. No need to save categories XML
+            # >> and update container.
+            asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_kind = asset_list[type2]
+            if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, launcher): return
 
         # --- Choose default thumb/fanart ---
         elif type == 2:
             category = self.categories[categoryID]
-
-            asset_thumb_srt     = assets_get_asset_name_str(category['default_thumb'])
-            asset_fanart_srt    = assets_get_asset_name_str(category['default_fanart'])
-            asset_banner_srt    = assets_get_asset_name_str(category['default_banner'])
-            asset_poster_srt    = assets_get_asset_name_str(category['default_poster'])
-            asset_clearlogo_srt = assets_get_asset_name_str(category['default_clearlogo'])
-            label2_thumb        = category[category['default_thumb']]     if category[category['default_thumb']]     else 'Not set'
+            # >> Label1 an label2
+            asset_icon_str      = assets_get_asset_name_str(category['default_thumb'])
+            asset_fanart_str    = assets_get_asset_name_str(category['default_fanart'])
+            asset_banner_str    = assets_get_asset_name_str(category['default_banner'])
+            asset_poster_str    = assets_get_asset_name_str(category['default_poster'])
+            asset_clearlogo_str = assets_get_asset_name_str(category['default_clearlogo'])
+            label2_icon         = category[category['default_thumb']]     if category[category['default_thumb']]     else 'Not set'
             label2_fanart       = category[category['default_fanart']]    if category[category['default_fanart']]    else 'Not set'
             label2_banner       = category[category['default_banner']]    if category[category['default_banner']]    else 'Not set'
             label2_poster       = category[category['default_poster']]    if category[category['default_poster']]    else 'Not set'
             label2_clearlogo    = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'Not set'
-            img_thumb           = category[category['default_thumb']]     if category[category['default_thumb']]     else 'DefaultAddonNone.png'
+            icon_listitem       = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str),
+                                                   label2 = label2_icon)
+            fanart_listitem     = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
+                                                   label2 = label2_fanart)
+            banner_listitem     = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str),
+                                                   label2 = label2_banner)
+            poster_listitem     = xbmcgui.ListItem(label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str),
+                                                   label2 = label2_poster)
+            clearlogo_listitem  = xbmcgui.ListItem(label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str),
+                                                   label2 = label2_clearlogo)
+
+            # >> Asset image
+            img_icon            = category[category['default_thumb']]     if category[category['default_thumb']]     else 'DefaultAddonNone.png'
             img_fanart          = category[category['default_fanart']]    if category[category['default_fanart']]    else 'DefaultAddonNone.png'
             img_banner          = category[category['default_banner']]    if category[category['default_banner']]    else 'DefaultAddonNone.png'
             img_poster          = category[category['default_poster']]    if category[category['default_poster']]    else 'DefaultAddonNone.png'
             img_clearlogo       = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'DefaultAddonNone.png'
-            img_list = [
-                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   
-                 'label2' : label2_thumb,  'icon' : img_thumb},
-                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt), 
-                 'label2' : label2_fanart, 'icon' : img_fanart},
-                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt), 
-                 'label2' : label2_banner, 'icon' : img_banner},
-                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt), 
-                 'label2' : label2_poster, 'icon' : img_poster},
-                {'name' : 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_srt), 
-                 'label2' : label2_clearlogo, 'icon' : img_clearlogo}
-            ]
-            type2 = gui_show_image_select('Edit Category default Assets/Artwork', img_list)
+            icon_listitem.setArt({'icon' : img_icon})
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            poster_listitem.setArt({'icon' : img_poster})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+
+            # >> Execute select dialog
+            listitems = [icon_listitem, fanart_listitem, banner_listitem,
+                         poster_listitem, clearlogo_listitem]
+            type2 = dialog.select('Edit Category default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
-            Category_asset_img_list = [
-                {'name'   : 'Thumb',
-                 'label2' : category['s_thumb'] if category['s_thumb'] else 'Not set',
-                 'icon'   : category['s_thumb'] if category['s_thumb'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Fanart',
-                 'label2' : category['s_fanart'] if category['s_fanart'] else 'Not set',
-                 'icon'   : category['s_fanart'] if category['s_fanart'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Banner',
-                 'label2' : category['s_banner'] if category['s_banner'] else 'Not set',
-                 'icon'   : category['s_banner'] if category['s_banner'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Poster',
-                 'label2' : category['s_flyer'] if category['s_flyer'] else 'Not set',
-                 'icon'   : category['s_flyer'] if category['s_flyer'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Clearlogo',
-                 'label2' : category['s_clearlogo'] if category['s_clearlogo'] else 'Not set',
-                 'icon'   : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'}
+            Category_asset_ListItem_list = [
+                xbmcgui.ListItem(label = 'Icon',      label2 = category['s_thumb'] if category['s_thumb'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Fanart',    label2 = category['s_fanart'] if category['s_fanart'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Banner',    label2 = category['s_banner'] if category['s_banner'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Poster',    label2 = category['s_flyer'] if category['s_flyer'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Clearlogo', label2 = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'),
             ]
+            Category_asset_ListItem_list[0].setArt({'icon' : category['s_thumb'] if category['s_thumb'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[1].setArt({'icon' : category['s_fanart'] if category['s_fanart'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[2].setArt({'icon' : category['s_banner'] if category['s_banner'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[3].setArt({'icon' : category['s_flyer'] if category['s_flyer'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[4].setArt({'icon' : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'})
 
             if type2 == 0:
-                type_s = gui_show_image_select('Choose default Asset for Thumb', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Icon', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_thumb', type_s)
             elif type2 == 1:
-                type_s = gui_show_image_select('Choose default Asset for Fanart', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Fanart', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_fanart', type_s)
             elif type2 == 2:
-                type_s = gui_show_image_select('Choose default Asset for Banner', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Banner', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_banner', type_s)
             elif type2 == 3:
-                type_s = gui_show_image_select('Choose default Asset for Poster', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Poster', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_poster', type_s)
             elif type2 == 4:
-                type_s = gui_show_image_select('Choose default Asset for Clearlogo', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Clearlogo', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(category, 'default_clearlogo', type_s)
 
@@ -1255,6 +1262,7 @@ class Main:
         if type == type_nb:
             launcher = self.launchers[launcherID]
 
+            # >> Create label2 and image ListItem fields
             label2_thumb     = launcher['s_thumb']     if launcher['s_thumb']     else 'Not set'
             label2_fanart    = launcher['s_fanart']    if launcher['s_fanart']    else 'Not set'
             label2_banner    = launcher['s_banner']    if launcher['s_banner']    else 'Not set'
@@ -1264,107 +1272,112 @@ class Main:
             img_thumb        = launcher['s_thumb']     if launcher['s_thumb']     else 'DefaultAddonNone.png'
             img_fanart       = launcher['s_fanart']    if launcher['s_fanart']    else 'DefaultAddonNone.png'
             img_banner       = launcher['s_banner']    if launcher['s_banner']    else 'DefaultAddonNone.png'
-            img_flyer        = launcher['s_flyer']     if launcher['s_flyer']     else 'DefaultAddonNone.png'
+            img_poster       = launcher['s_flyer']     if launcher['s_flyer']     else 'DefaultAddonNone.png'
             img_clearlogo    = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png' if launcher['s_trailer']   else 'DefaultAddonNone.png'
-            img_list = [
-                {'name' : 'Edit Thumbnail ...',    'label2' : label2_thumb,     'icon' : img_thumb},
-                {'name' : 'Edit Fanart ...',       'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner ...',       'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Flyer / Poster ...', 'label2' : label2_poster,    'icon' : img_flyer},
-                {'name' : 'Edit Clearlogo ...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Trailer ...',      'label2' : label2_trailer,   'icon' : img_trailer}
-            ]
-            type2 = gui_show_image_select('Edit Launcher Assets/Artwork', img_list)
+
+            # >> Create ListItem objects for select dialog
+            thumb_listitem = xbmcgui.ListItem(label = 'Edit Icon ...', label2 = label2_thumb)
+            fanart_listitem = xbmcgui.ListItem(label = 'Edit Fanart ...', label2 = label2_fanart)
+            banner_listitem = xbmcgui.ListItem(label = 'Edit Banner ...', label2 = label2_banner)
+            poster_listitem = xbmcgui.ListItem(label = 'Edit Poster ...', label2 = label2_poster)
+            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
+            trailer_listitem = xbmcgui.ListItem(label = 'Edit Trailer ...', label2 = label2_trailer)
+            thumb_listitem.setArt({'icon' : img_thumb})
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            poster_listitem.setArt({'icon' : img_poster})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            trailer_listitem.setArt({'icon' : img_trailer})
+
+            # >> Execute select dialog
+            listitems = [thumb_listitem, fanart_listitem, banner_listitem,
+                         poster_listitem, clearlogo_listitem, trailer_listitem]
+            type2 = dialog.select('Edit Launcher Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
             # --- Edit Assets ---
-            # >> _gui_edit_asset() returns True if image was changed
-            # >> Launcher is changed using Python passign by assigment
-            if type2 == 0:
-                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_THUMB, launcher): return
-            elif type2 == 1:
-                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_FANART, launcher): return
-            elif type2 == 2:
-                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_BANNER, launcher): return
-            elif type2 == 3:
-                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_FLYER, launcher): return
-            elif type2 == 4:
-                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_CLEARLOGO, launcher): return
-            elif type2 == 5:
-                if not self._gui_edit_asset(KIND_LAUNCHER, ASSET_TRAILER, launcher): return
+            # >> If this function returns False no changes were made. No need to save categories XML
+            # >> and update container.
+            asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_kind = asset_list[type2]
+            if not self._gui_edit_asset(KIND_LAUNCHER, asset_kind, launcher): return
 
-        # --- Choose default thumb/fanart/banner/poster ---
+        # --- Choose Launcher default thumb/fanart/banner/poster/clearlogo ---
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
-
-            asset_thumb_srt     = assets_get_asset_name_str(launcher['default_thumb'])
-            asset_fanart_srt    = assets_get_asset_name_str(launcher['default_fanart'])
-            asset_banner_srt    = assets_get_asset_name_str(launcher['default_banner'])
-            asset_poster_srt    = assets_get_asset_name_str(launcher['default_poster'])
-            asset_clearlogo_srt = assets_get_asset_name_str(launcher['default_clearlogo'])
-            label2_thumb        = launcher[launcher['default_thumb']]     if launcher[launcher['default_thumb']]     else 'Not set'
+            # >> Label1 an label2
+            asset_icon_str      = assets_get_asset_name_str(launcher['default_thumb'])
+            asset_fanart_str    = assets_get_asset_name_str(launcher['default_fanart'])
+            asset_banner_str    = assets_get_asset_name_str(launcher['default_banner'])
+            asset_poster_str    = assets_get_asset_name_str(launcher['default_poster'])
+            asset_clearlogo_str = assets_get_asset_name_str(launcher['default_clearlogo'])
+            label2_icon         = launcher[launcher['default_thumb']]     if launcher[launcher['default_thumb']]     else 'Not set'
             label2_fanart       = launcher[launcher['default_fanart']]    if launcher[launcher['default_fanart']]    else 'Not set'
             label2_banner       = launcher[launcher['default_banner']]    if launcher[launcher['default_banner']]    else 'Not set'
             label2_poster       = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'Not set'
             label2_clearlogo    = launcher[launcher['default_clearlogo']] if launcher[launcher['default_clearlogo']] else 'Not set'
-            img_thumb           = launcher[launcher['default_thumb']]     if launcher[launcher['default_thumb']]     else 'DefaultAddonNone.png'
+            icon_listitem       = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str),
+                                                   label2 = label2_icon)
+            fanart_listitem     = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
+                                                   label2 = label2_fanart)
+            banner_listitem     = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str),
+                                                   label2 = label2_banner)
+            poster_listitem     = xbmcgui.ListItem(label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str),
+                                                   label2 = label2_poster)
+            clearlogo_listitem  = xbmcgui.ListItem(label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str),
+                                                   label2 = label2_clearlogo)
+
+            # >> Asset image
+            img_icon            = launcher[launcher['default_thumb']]     if launcher[launcher['default_thumb']]     else 'DefaultAddonNone.png'
             img_fanart          = launcher[launcher['default_fanart']]    if launcher[launcher['default_fanart']]    else 'DefaultAddonNone.png'
             img_banner          = launcher[launcher['default_banner']]    if launcher[launcher['default_banner']]    else 'DefaultAddonNone.png'
             img_poster          = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'DefaultAddonNone.png'
             img_clearlogo       = launcher[launcher['default_clearlogo']] if launcher[launcher['default_clearlogo']] else 'DefaultAddonNone.png'
-            img_list = [
-                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),   
-                 'label2' : label2_thumb,  'icon' : img_thumb},
-                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt),
-                 'label2' : label2_fanart, 'icon' : img_fanart},
-                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt),
-                 'label2' : label2_banner, 'icon' : img_banner},
-                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt),
-                 'label2' : label2_poster, 'icon' : img_poster},
-                {'name' : 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_srt), 
-                 'label2' : label2_clearlogo, 'icon' : img_clearlogo}
-            ]
-            type2 = gui_show_image_select('Edit Launcher default Assets/Artwork', img_list)
+            icon_listitem.setArt({'icon' : img_icon})
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            poster_listitem.setArt({'icon' : img_poster})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+
+            # >> Execute select dialog
+            listitems = [icon_listitem, fanart_listitem, banner_listitem,
+                         poster_listitem, clearlogo_listitem]
+            type2 = dialog.select('Edit Launcher default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
-            Launcher_asset_img_list = [
-                {'name'   : 'Thumb',
-                 'label2' : launcher['s_thumb'] if launcher['s_thumb'] else 'Not set',
-                 'icon'   : launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Fanart',
-                 'label2' : launcher['s_fanart'] if launcher['s_fanart'] else 'Not set',
-                 'icon'   : launcher['s_fanart'] if launcher['s_fanart'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Banner',
-                 'label2' : launcher['s_banner'] if launcher['s_banner'] else 'Not set',
-                 'icon'   : launcher['s_banner'] if launcher['s_banner'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Poster',
-                 'label2' : launcher['s_flyer'] if launcher['s_flyer'] else 'Not set',
-                 'icon'   : launcher['s_flyer'] if launcher['s_flyer'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Clearlogo',
-                 'label2' : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'Not set',
-                 'icon'   : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'}
+            Launcher_asset_ListItem_list = [
+                xbmcgui.ListItem(label = 'Icon',      label2 = launcher['s_thumb'] if launcher['s_thumb'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Fanart',    label2 = launcher['s_fanart'] if launcher['s_fanart'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Banner',    label2 = launcher['s_banner'] if launcher['s_banner'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Poster',    label2 = launcher['s_flyer'] if launcher['s_flyer'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Clearlogo', label2 = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'Not set'),
             ]
+            Launcher_asset_ListItem_list[0].setArt({'icon' : launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultAddonNone.png'})
+            Launcher_asset_ListItem_list[1].setArt({'icon' : launcher['s_fanart'] if launcher['s_fanart'] else 'DefaultAddonNone.png'})
+            Launcher_asset_ListItem_list[2].setArt({'icon' : launcher['s_banner'] if launcher['s_banner'] else 'DefaultAddonNone.png'})
+            Launcher_asset_ListItem_list[3].setArt({'icon' : launcher['s_flyer'] if launcher['s_flyer'] else 'DefaultAddonNone.png'})
+            Launcher_asset_ListItem_list[4].setArt({'icon' : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'})
 
             if type2 == 0:
-                type_s = gui_show_image_select('Choose default Asset for Thumb', Launcher_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Icon', list = Launcher_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_thumb', type_s)
             elif type2 == 1:
-                type_s = gui_show_image_select('Choose default Asset for Fanart', Launcher_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Fanart', list = Launcher_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_fanart', type_s)
             elif type2 == 2:
-                type_s = gui_show_image_select('Choose default Asset for Banner', Launcher_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Banner', list = Launcher_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_banner', type_s)
             elif type2 == 3:
-                type_s = gui_show_image_select('Choose default Asset for Poster', Launcher_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Poster', list = Launcher_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_poster', type_s)
             elif type2 == 4:
-                type_s = gui_show_image_select('Choose default Asset for Clearlogo', Launcher_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Clearlogo', list = Launcher_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(launcher, 'default_clearlogo', type_s)
 
@@ -2333,6 +2346,7 @@ class Main:
         # --- Edit Launcher Assets/Artwork ---
         elif type == 1:
             rom = roms[romID]
+
             # >> Build asset image list for dialog
             label2_title     = rom['s_title']     if rom['s_title']     else 'Not set'
             label2_snap      = rom['s_snap']      if rom['s_snap']      else 'Not set'
@@ -2359,50 +2373,47 @@ class Main:
             img_manual       = 'DefaultAddonImages.png' if rom['s_manual']    else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'
 
-            img_list = [
-                {'name' : 'Edit Title ...',            'label2' : label2_title,     'icon' : img_title},
-                {'name' : 'Edit Snap ...',             'label2' : label2_snap,      'icon' : img_snap},
-                {'name' : 'Edit Fanart ...',           'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner / Marquee ...',   'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Clearlogo ...',        'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Boxfront / Cabinet ...', 'label2' : label2_boxfront,  'icon' : img_boxfront},
-                {'name' : 'Edit Boxback / CPanel ...',   'label2' : label2_boxback,   'icon' : img_boxback},
-                {'name' : 'Edit Cartridge / PCB ...',    'label2' : label2_cartridge, 'icon' : img_cartridge},
-                {'name' : 'Edit Flyer ...',            'label2' : label2_flyer,     'icon' : img_flyer},
-                {'name' : 'Edit Map ...',              'label2' : label2_map,       'icon' : img_map},
-                {'name' : 'Edit Manual ...',           'label2' : label2_manual,    'icon' : img_manual},
-                {'name' : 'Edit Trailer ...',          'label2' : label2_trailer,   'icon' : img_trailer}
-            ]
-            type2 = gui_show_image_select('Edit ROM Assets/Artwork', img_list)
+            # >> Create ListItem objects for select dialog
+            title_listitem     = xbmcgui.ListItem(label = 'Edit Title ...',              label2 = label2_title)
+            snap_listitem      = xbmcgui.ListItem(label = 'Edit Snap ...',               label2 = label2_snap)
+            fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',             label2 = label2_fanart)
+            banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner / Marquee ...',   label2 = label2_banner)
+            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...',          label2 = label2_clearlogo)
+            boxfront_listitem  = xbmcgui.ListItem(label = 'Edit Boxfront / Cabinet ...', label2 = label2_boxfront)
+            boxback_listitem   = xbmcgui.ListItem(label = 'Edit Boxback / CPanel ...',   label2 = label2_boxback)
+            cartridge_listitem = xbmcgui.ListItem(label = 'Edit Cartridge / PCB ...',    label2 = label2_cartridge)
+            flyer_listitem     = xbmcgui.ListItem(label = 'Edit Flyer ...',              label2 = label2_flyer)
+            map_listitem       = xbmcgui.ListItem(label = 'Edit Map ...',                label2 = label2_map)
+            manual_listitem    = xbmcgui.ListItem(label = 'Edit Manual ...',             label2 = label2_manual)
+            trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',            label2 = label2_trailer)
+            title_listitem.setArt({'icon' : img_title})
+            snap_listitem.setArt({'icon' : img_snap})
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            boxfront_listitem.setArt({'icon' : img_boxfront})
+            boxback_listitem.setArt({'icon' : img_boxback})
+            cartridge_listitem.setArt({'icon' : img_cartridge})
+            flyer_listitem.setArt({'icon' : img_flyer})
+            map_listitem.setArt({'icon' : img_map})
+            manual_listitem.setArt({'icon' : img_manual})
+            trailer_listitem.setArt({'icon' : img_trailer})
+
+            # >> Execute select dialog
+            listitems = [title_listitem, snap_listitem, fanart_listitem, banner_listitem,
+                         clearlogo_listitem, boxfront_listitem, boxback_listitem, cartridge_listitem,
+                         flyer_listitem, map_listitem, manual_listitem, trailer_listitem]
+            type2 = dialog.select('Edit ROM Assets/Artwork', list = listitems, useDetails = True)
+            if type2 < 0: return
 
             # --- Edit Assets ---
-            # >> _gui_edit_asset() returns True if image was changed
-            # >> ROM is changed using Python passign by assigment
-            if type2 == 0:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_TITLE, rom, categoryID, launcherID): return
-            elif type2 == 1:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_SNAP, rom, categoryID, launcherID): return
-            elif type2 == 2:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_FANART, rom, categoryID, launcherID): return
-            elif type2 == 3:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_BANNER, rom, categoryID, launcherID): return
-            elif type2 == 4:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_CLEARLOGO, rom, categoryID, launcherID): return
-            elif type2 == 5:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXFRONT, rom, categoryID, launcherID): return
-            elif type2 == 6:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_BOXBACK, rom, categoryID, launcherID): return
-            elif type2 == 7:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_CARTRIDGE, rom, categoryID, launcherID): return
-            elif type2 == 8:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_FLYER, rom, categoryID, launcherID): return
-            elif type2 == 9:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_MAP, rom, categoryID, launcherID): return
-            elif type2 == 10:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_MANUAL, rom, categoryID, launcherID): return
-            elif type2 == 11:
-                if not self._gui_edit_asset(KIND_ROM, ASSET_TRAILER, rom, categoryID, launcherID): return
-            elif type2 < 0: return
+            # >> If this function returns False no changes were made. No need to save categories XML
+            # >> and update container.
+            asset_list = [ASSET_TITLE, ASSET_SNAP, ASSET_FANART, ASSET_BANNER, 
+                          ASSET_CLEARLOGO, ASSET_BOXFRONT, ASSET_BOXBACK, ASSET_CARTRIDGE,
+                          ASSET_FLYER, ASSET_MAP, ASSET_MANUAL, ASSET_TRAILER]
+            asset_kind = asset_list[type2]
+            if not self._gui_edit_asset(KIND_ROM, asset_kind, rom, categoryID, launcherID): return
 
         # --- Edit status ---
         elif type == 2:
@@ -2627,90 +2638,96 @@ class Main:
             # --- Choose default Favourite/Collection assets/artwork ---
             elif type2 == 6:
                 rom = roms[romID]
-                asset_thumb_srt     = assets_get_asset_name_str(rom['roms_default_thumb'])
-                asset_fanart_srt    = assets_get_asset_name_str(rom['roms_default_fanart'])
-                asset_banner_srt    = assets_get_asset_name_str(rom['roms_default_banner'])
-                asset_poster_srt    = assets_get_asset_name_str(rom['roms_default_poster'])
-                asset_clearlogo_srt = assets_get_asset_name_str(rom['roms_default_clearlogo'])
+
+                # >> Label1 an label2
+                asset_icon_str     = assets_get_asset_name_str(rom['roms_default_thumb'])
+                asset_fanart_str    = assets_get_asset_name_str(rom['roms_default_fanart'])
+                asset_banner_str    = assets_get_asset_name_str(rom['roms_default_banner'])
+                asset_poster_str    = assets_get_asset_name_str(rom['roms_default_poster'])
+                asset_clearlogo_str = assets_get_asset_name_str(rom['roms_default_clearlogo'])
                 label2_thumb        = rom[rom['roms_default_thumb']]     if rom[rom['roms_default_thumb']]     else 'Not set'
                 label2_fanart       = rom[rom['roms_default_fanart']]    if rom[rom['roms_default_fanart']]    else 'Not set'
                 label2_banner       = rom[rom['roms_default_banner']]    if rom[rom['roms_default_banner']]    else 'Not set'
                 label2_poster       = rom[rom['roms_default_poster']]    if rom[rom['roms_default_poster']]    else 'Not set'
                 label2_clearlogo    = rom[rom['roms_default_clearlogo']] if rom[rom['roms_default_clearlogo']] else 'Not set'
-                img_thumb           = rom[rom['roms_default_thumb']]     if rom[rom['roms_default_thumb']]     else 'DefaultAddonNone.png'
+                icon_listitem       = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str),
+                                                       label2 = label2_thumb)
+                fanart_listitem     = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
+                                                       label2 = label2_fanart)
+                banner_listitem     = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str),
+                                                       label2 = label2_banner)
+                poster_listitem     = xbmcgui.ListItem(label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str),
+                                                       label2 = label2_poster)
+                clearlogo_listitem  = xbmcgui.ListItem(label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str),
+                                                       label2 = label2_clearlogo)
+
+                # >> Asset image
+                img_icon            = rom[rom['roms_default_thumb']]     if rom[rom['roms_default_thumb']]     else 'DefaultAddonNone.png'
                 img_fanart          = rom[rom['roms_default_fanart']]    if rom[rom['roms_default_fanart']]    else 'DefaultAddonNone.png'
                 img_banner          = rom[rom['roms_default_banner']]    if rom[rom['roms_default_banner']]    else 'DefaultAddonNone.png'
                 img_poster          = rom[rom['roms_default_poster']]    if rom[rom['roms_default_poster']]    else 'DefaultAddonNone.png'
                 img_clearlogo       = rom[rom['roms_default_clearlogo']] if rom[rom['roms_default_clearlogo']] else 'DefaultAddonNone.png'
-                img_list = [
-                    {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),         'label2' : label2_thumb,     'icon' : img_thumb},
-                    {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt),       'label2' : label2_fanart,    'icon' : img_fanart},
-                    {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt),       'label2' : label2_banner,    'icon' : img_banner},
-                    {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt),       'label2' : label2_poster,    'icon' : img_poster},
-                    {'name' : 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_srt), 'label2' : label2_clearlogo, 'icon' : img_clearlogo}
-                ]
-                type3 = gui_show_image_select('Edit ROMs default Assets/Artwork', img_list)
+                icon_listitem.setArt({'icon' : img_icon})
+                fanart_listitem.setArt({'icon' : img_fanart})
+                banner_listitem.setArt({'icon' : img_banner})
+                poster_listitem.setArt({'icon' : img_poster})
+                clearlogo_listitem.setArt({'icon' : img_clearlogo})
 
-                ROM_asset_img_list = [
-                    {'name'   : 'Title',
-                     'label2' : rom['s_title'] if rom['s_title'] else 'Not set',
-                     'icon'   : rom['s_title'] if rom['s_title'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Snap',
-                     'label2' : rom['s_snap'] if rom['s_snap'] else 'Not set',
-                     'icon'   : rom['s_snap'] if rom['s_snap'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Fanart',
-                     'label2' : rom['s_fanart'] if rom['s_fanart'] else 'Not set',
-                     'icon'   : rom['s_fanart'] if rom['s_fanart'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Banner',
-                     'label2' : rom['s_banner'] if rom['s_banner'] else 'Not set',
-                     'icon'   : rom['s_banner'] if rom['s_banner'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Clearlogo',
-                     'label2' : rom['s_clearlogo'] if rom['s_clearlogo'] else 'Not set',
-                     'icon'   : rom['s_clearlogo'] if rom['s_clearlogo'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Boxfront',
-                     'label2' : rom['s_boxfront'] if rom['s_boxfront'] else 'Not set',
-                     'icon'   : rom['s_boxfront'] if rom['s_boxfront'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Boxback',
-                     'label2' : rom['s_boxback'] if rom['s_boxback'] else 'Not set',
-                     'icon'   : rom['s_boxback'] if rom['s_boxback'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Cartridge',
-                     'label2' : rom['s_cartridge'] if rom['s_cartridge'] else 'Not set',
-                     'icon'   : rom['s_cartridge'] if rom['s_cartridge'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Flyer',
-                     'label2' : rom['s_flyer'] if rom['s_flyer'] else 'Not set',
-                     'icon'   : rom['s_flyer'] if rom['s_flyer'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Map',
-                     'label2' : rom['s_map'] if rom['s_map'] else 'Not set',
-                     'icon'   : rom['s_map'] if rom['s_map'] else 'DefaultAddonNone.png'},
-                    {'name'   : 'Manual',
-                     'label2' : rom['s_manual']          if rom['s_manual']    else 'Not set',
-                     'icon'   : 'DefaultAddonImages.png' if rom['s_manual']    else 'DefaultAddonNone.png'},
-                    {'name'   : 'Trailer',
-                     'label2' : rom['s_trailer']         if rom['s_trailer']   else 'Not set',
-                     'icon'   : 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'}
+                # >> Execute select dialog
+                listitems = [icon_listitem, fanart_listitem, banner_listitem,
+                             poster_listitem, clearlogo_listitem]
+                type3 = dialog.select('Edit ROMs default Assets/Artwork', list = listitems, useDetails = True)
+                if type3 < 0: return
+
+                ROMs_asset_ListItem_list = [
+                    xbmcgui.ListItem(label = 'Title',     label2 = rom['s_title'] if rom['s_title'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Snap',      label2 = rom['s_snap'] if rom['s_snap'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Fanart',    label2 = rom['s_fanart'] if rom['s_fanart'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Banner',    label2 = rom['s_banner'] if rom['s_banner'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Clearlogo', label2 = rom['s_clearlogo'] if rom['s_clearlogo'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Boxfront',  label2 = rom['s_boxfront'] if rom['s_boxfront'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Boxback',   label2 = rom['s_boxback'] if rom['s_boxback'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Cartridge', label2 = rom['s_cartridge'] if rom['s_cartridge'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Flyer',     label2 = rom['s_flyer'] if rom['s_flyer'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Map',       label2 = rom['s_map'] if rom['s_map'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Manual',    label2 = rom['s_manual'] if rom['s_manual'] else 'Not set'),
+                    xbmcgui.ListItem(label = 'Trailer',   label2 = rom['s_trailer'] if rom['s_trailer'] else 'Not set'),
                 ]
+                ROMs_asset_ListItem_list[0].setArt({'icon' : rom['s_title'] if rom['s_title'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[1].setArt({'icon' : rom['s_snap'] if rom['s_snap'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[2].setArt({'icon' : rom['s_fanart'] if rom['s_fanart'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[3].setArt({'icon' : rom['s_banner'] if rom['s_banner'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[4].setArt({'icon' : rom['s_clearlogo'] if rom['s_clearlogo'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[5].setArt({'icon' : rom['s_boxfront'] if rom['s_boxfront'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[6].setArt({'icon' : rom['s_boxback'] if rom['s_boxback'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[7].setArt({'icon' : rom['s_cartridge'] if rom['s_cartridge'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[8].setArt({'icon' : rom['s_flyer'] if rom['s_flyer'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[9].setArt({'icon' : rom['s_map'] if rom['s_map'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[10].setArt({'icon' : rom['s_manual'] if rom['s_manual'] else 'DefaultAddonNone.png'})
+                ROMs_asset_ListItem_list[11].setArt({'icon' : rom['s_trailer'] if rom['s_trailer'] else 'DefaultAddonNone.png'})
 
                 if type3 == 0:
-                    type_s = gui_show_image_select('Choose default Asset for Thumb', ROM_asset_img_list)
+                    type_s = dialog.select('Choose default Asset for Icon', list = ROMs_asset_ListItem_list, useDetails = True)
                     if type_s < 0: return
                     assets_choose_category_ROM(rom, 'roms_default_thumb', type_s)
                 elif type3 == 1:
-                    type_s = gui_show_image_select('Choose default Asset for Fanart', ROM_asset_img_list)
+                    type_s = dialog.select('Choose default Asset for Fanart', list = ROMs_asset_ListItem_list, useDetails = True)
                     if type_s < 0: return
                     assets_choose_category_ROM(rom, 'roms_default_fanart', type_s)
                 elif type3 == 2:
-                    type_s = gui_show_image_select('Choose default Asset for Banner', ROM_asset_img_list)
+                    type_s = dialog.select('Choose default Asset for Banner', list = ROMs_asset_ListItem_list, useDetails = True)
                     if type_s < 0: return
                     assets_choose_category_ROM(rom, 'roms_default_banner', type_s)
                 elif type3 == 3:
-                    type_s = gui_show_image_select('Choose default Asset for Poster', ROM_asset_img_list)
+                    type_s = dialog.select('Choose default Asset for Poster', list = ROMs_asset_ListItem_list, useDetails = True)
                     if type_s < 0: return
                     assets_choose_category_ROM(rom, 'roms_default_poster', type_s)
                 elif type3 == 4:
-                    type_s = gui_show_image_select('Choose default Asset for Clearlogo', ROM_asset_img_list)
+                    type_s = dialog.select('Choose default Asset for Clearlogo', list = ROMs_asset_ListItem_list, useDetails = True)
                     if type_s < 0: return
                     assets_choose_category_ROM(rom, 'roms_default_clearlogo', type_s)
-                elif type3 < 0: return # User canceled select dialog
+                # User canceled select dialog
+                elif type3 < 0: return
 
         # --- Manage Collection ROM position (ONLY for Favourite/Collection ROMs) ---
         elif type == 6:
@@ -4826,6 +4843,7 @@ class Main:
 
         # --- Edit artwork ---
         elif type == 1:
+            # >> Create label2 and image ListItem fields
             label2_thumb     = collection['s_thumb']     if collection['s_thumb']     else 'Not set'
             label2_fanart    = collection['s_fanart']    if collection['s_fanart']    else 'Not set'
             label2_banner    = collection['s_banner']    if collection['s_banner']    else 'Not set'
@@ -4835,100 +4853,106 @@ class Main:
             img_thumb        = collection['s_thumb']     if collection['s_thumb']     else 'DefaultAddonNone.png'
             img_fanart       = collection['s_fanart']    if collection['s_fanart']    else 'DefaultAddonNone.png'
             img_banner       = collection['s_banner']    if collection['s_banner']    else 'DefaultAddonNone.png'
-            img_flyer        = collection['s_flyer']     if collection['s_flyer']     else 'DefaultAddonNone.png'
+            img_poster       = collection['s_flyer']     if collection['s_flyer']     else 'DefaultAddonNone.png'
             img_clearlogo    = collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png'   if collection['s_trailer']   else 'DefaultAddonNone.png'
-            img_list = [
-                {'name' : 'Edit Thumbnail ...',    'label2' : label2_thumb,     'icon' : img_thumb},
-                {'name' : 'Edit Fanart ...',       'label2' : label2_fanart,    'icon' : img_fanart},
-                {'name' : 'Edit Banner ...',       'label2' : label2_banner,    'icon' : img_banner},
-                {'name' : 'Edit Flyer / Poster ...', 'label2' : label2_poster,    'icon' : img_flyer},
-                {'name' : 'Edit Clearlogo ...',    'label2' : label2_clearlogo, 'icon' : img_clearlogo},
-                {'name' : 'Edit Trailer ...',      'label2' : label2_trailer,   'icon' : img_trailer}
-            ]
-            type2 = gui_show_image_select('Edit Collection Assets/Artwork', img_list)
+            
+            # >> Create ListItem objects for select dialog
+            thumb_listitem     = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_thumb)
+            fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
+            banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
+            poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
+            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
+            trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
+            thumb_listitem.setArt({'icon' : img_thumb})
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            poster_listitem.setArt({'icon' : img_poster})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            trailer_listitem.setArt({'icon' : img_trailer})
+
+            # >> Execute select dialog
+            listitems = [thumb_listitem, fanart_listitem, banner_listitem,
+                         poster_listitem, clearlogo_listitem, trailer_listitem]
+            type2 = dialog.select('Edit Collection Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
-            if type2 == 0:
-                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_THUMB, collection): return
-            elif type2 == 1:
-                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_FANART, collection): return
-            elif type2 == 2:
-                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_BANNER, collection): return
-            elif type2 == 3:
-                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_FLYER, collection): return
-            elif type2 == 4:
-                if not self._gui_edit_asset(KIND_CATEGORY, ASSET_CLEARLOGO, category): return
-            elif type2 == 5:
-                if not self._gui_edit_asset(KIND_COLLECTION, ASSET_TRAILER, collection): return
+            asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_kind = asset_list[type2]
+            if not self._gui_edit_asset(KIND_COLLECTION, asset_kind, collection): return
 
         # --- Change default artwork ---
         elif type == 2:
-            asset_thumb_srt     = assets_get_asset_name_str(collection['default_thumb'])
-            asset_fanart_srt    = assets_get_asset_name_str(collection['default_fanart'])
-            asset_banner_srt    = assets_get_asset_name_str(collection['default_banner'])
-            asset_poster_srt    = assets_get_asset_name_str(collection['default_poster'])
-            asset_clearlogo_srt = assets_get_asset_name_str(collection['default_clearlogo'])
+            # >> Label1 an label2
+            asset_icon_str      = assets_get_asset_name_str(collection['default_thumb'])
+            asset_fanart_str    = assets_get_asset_name_str(collection['default_fanart'])
+            asset_banner_str    = assets_get_asset_name_str(collection['default_banner'])
+            asset_poster_str    = assets_get_asset_name_str(collection['default_poster'])
+            asset_clearlogo_str = assets_get_asset_name_str(collection['default_clearlogo'])
             label2_thumb        = collection[collection['default_thumb']]     if collection[collection['default_thumb']]     else 'Not set'
             label2_fanart       = collection[collection['default_fanart']]    if collection[collection['default_fanart']]    else 'Not set'
             label2_banner       = collection[collection['default_banner']]    if collection[collection['default_banner']]    else 'Not set'
             label2_poster       = collection[collection['default_poster']]    if collection[collection['default_poster']]    else 'Not set'
             label2_clearlogo    = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'Not set'
-            img_thumb           = collection[collection['default_thumb']]     if collection[collection['default_thumb']]     else 'DefaultAddonNone.png'
+            icon_listitem       = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str),
+                                                   label2 = label2_thumb)
+            fanart_listitem     = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
+                                                   label2 = label2_fanart)
+            banner_listitem     = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str),
+                                                   label2 = label2_banner)
+            poster_listitem     = xbmcgui.ListItem(label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str),
+                                                   label2 = label2_poster)
+            clearlogo_listitem  = xbmcgui.ListItem(label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str),
+                                                   label2 = label2_clearlogo)
+
+            # >> Asset image
+            img_icon            = collection[collection['default_thumb']]     if collection[collection['default_thumb']]     else 'DefaultAddonNone.png'
             img_fanart          = collection[collection['default_fanart']]    if collection[collection['default_fanart']]    else 'DefaultAddonNone.png'
             img_banner          = collection[collection['default_banner']]    if collection[collection['default_banner']]    else 'DefaultAddonNone.png'
             img_poster          = collection[collection['default_poster']]    if collection[collection['default_poster']]    else 'DefaultAddonNone.png'
             img_clearlogo       = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'DefaultAddonNone.png'
-            img_list = [
-                {'name' : 'Choose asset for Thumb (currently {0})'.format(asset_thumb_srt),
-                 'label2' : label2_thumb,  'icon' : img_thumb},
-                {'name' : 'Choose asset for Fanart (currently {0})'.format(asset_fanart_srt),
-                 'label2' : label2_fanart, 'icon' : img_fanart},
-                {'name' : 'Choose asset for Banner (currently {0})'.format(asset_banner_srt),
-                 'label2' : label2_banner, 'icon' : img_banner},
-                {'name' : 'Choose asset for Poster (currently {0})'.format(asset_poster_srt),
-                 'label2' : label2_poster, 'icon' : img_poster},
-                {'name' : 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_srt), 
-                 'label2' : label2_clearlogo, 'icon' : img_clearlogo}
-            ]
-            type2 = gui_show_image_select('Edit Collection default Assets/Artwork', img_list)
+            icon_listitem.setArt({'icon' : img_icon})
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            poster_listitem.setArt({'icon' : img_poster})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+
+            # >> Execute select dialog
+            listitems = [icon_listitem, fanart_listitem, banner_listitem,
+                         poster_listitem, clearlogo_listitem]
+            type2 = dialog.select('Edit Collection default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
-            Category_asset_img_list = [
-                {'name'   : 'Thumb',
-                 'label2' : collection['s_thumb'] if collection['s_thumb'] else 'Not set',
-                 'icon'   : collection['s_thumb'] if collection['s_thumb'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Fanart',
-                 'label2' : collection['s_fanart'] if collection['s_fanart'] else 'Not set',
-                 'icon'   : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Banner',
-                 'label2' : collection['s_banner'] if collection['s_banner'] else 'Not set',
-                 'icon'   : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Poster',
-                 'label2' : collection['s_flyer'] if collection['s_flyer'] else 'Not set',
-                 'icon'   : collection['s_flyer'] if collection['s_flyer'] else 'DefaultAddonNone.png'},
-                {'name'   : 'Clearlogo',
-                 'label2' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set',
-                 'icon'   : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'}
+            Category_asset_ListItem_list = [
+                xbmcgui.ListItem(label = 'Icon',      label2 = collection['s_thumb'] if collection['s_thumb'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Fanart',    label2 = collection['s_fanart'] if collection['s_fanart'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Banner',    label2 = collection['s_banner'] if collection['s_banner'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Poster',    label2 = collection['s_flyer'] if collection['s_flyer'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Clearlogo', label2 = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'),
             ]
+            Category_asset_ListItem_list[0].setArt({'icon' : collection['s_thumb'] if collection['s_thumb'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[1].setArt({'icon' : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[2].setArt({'icon' : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[3].setArt({'icon' : collection['s_flyer'] if collection['s_flyer'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[4].setArt({'icon' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'})
 
             if type2 == 0:
-                type_s = gui_show_image_select('Choose default Asset for Thumb', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Icon', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(collection, 'default_thumb', type_s)
             elif type2 == 1:
-                type_s = gui_show_image_select('Choose default Asset for Fanart', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Fanart', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(collection, 'default_fanart', type_s)
             elif type2 == 2:
-                type_s = gui_show_image_select('Choose default Asset for Banner', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Banner', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(collection, 'default_banner', type_s)
             elif type2 == 3:
-                type_s = gui_show_image_select('Choose default Asset for Poster', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Poster', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(collection, 'default_poster', type_s)
             elif type2 == 4:
-                type_s = gui_show_image_select('Choose default Asset for Clearlogo', Category_asset_img_list)
+                type_s = dialog.select('Choose default Asset for Clearlogo', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
                 assets_choose_category_artwork(collection, 'default_clearlogo', type_s)
 
@@ -8161,11 +8185,12 @@ class Main:
                                       'URL'  : local_asset_path})
 
             # Convert list returned by scraper into a list the select window uses
-            img_dialog_list = []
+            ListItem_list = []
             for item in image_list:
-                item_dic = {'name' : item['name'], 'label2' : item['URL'], 'icon' : item['URL']}
-                img_dialog_list.append(item_dic)
-            image_selected_index = gui_show_image_select('Select image', img_dialog_list)
+                listitem_obj = xbmcgui.ListItem(label = item['name'], label2 = item['URL'])
+                listitem_obj.setArt({'icon' : item['URL']})
+                ListItem_list.append(listitem_obj)
+            image_selected_index = xbmcgui.Dialog().select('Select image', list = ListItem_list, useDetails = True)
             log_debug('{0} dialog returned index {1}'.format(A.name, image_selected_index))
             if image_selected_index < 0: image_selected_index = 0
 
@@ -8624,11 +8649,12 @@ class Main:
                                       'URL' : current_asset_path.getPath()})
 
             # >> Convert list returned by scraper into a list the select window uses
-            img_dialog_list = []
+            ListItem_list = []
             for item in image_list:
-                item_dic = {'name' : item['name'], 'label2' : item['URL'], 'icon' : item['URL']}
-                img_dialog_list.append(item_dic)
-            image_selected_index = gui_show_image_select('Select image', img_dialog_list)
+                listitem_obj = xbmcgui.ListItem(label = item['name'], label2 = item['URL'])
+                listitem_obj.setArt({'icon' : item['URL']})
+                ListItem_list.append(listitem_obj)
+            image_selected_index = xbmcgui.Dialog().select('Select image', list = ListItem_list, useDetails = True)
             log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
             if image_selected_index < 0: image_selected_index = 0
             # >> Resolve asset URL
@@ -9404,137 +9430,3 @@ class Main:
         ui._add_additionalproperty( listitem, "backgroundName", fanart )
 
         return listitem
-
-# -------------------------------------------------------------------------------------------------
-# Custom class dialog for an image selection window
-# -------------------------------------------------------------------------------------------------
-# Release - Image Resource selection script (NOTE is a script, not an addon!)
-# See http://forum.kodi.tv/showthread.php?tid=239558
-# See https://github.com/ronie/script.image.resource.select/blob/master/default.py
-#
-# From DialogSelect.xml in Confluence (Kodi Krypton taken from Github master)
-# https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
-# Controls 5 and 7 are grouped
-#
-# <control type="label"  id="1"> | <description>header label</description>      | Window title on top
-# control 2 does not exist
-# <control type="list"   id="3"> |                                              | Listbox for TEXT
-# <control type="label"  id="4"> | <description>No Settings Label</description>
-# <control type="list"   id="6"> |                                              | Listbox for IMAGES
-# <control type="button" id="5"> | <description>Manual button</description>     | OK button
-# <control type="button" id="7"> | <description>Cancel button</description>     | New Krypton cancel button
-#
-class ImgSelectDialog(xbmcgui.WindowXMLDialog):
-    def __init__(self, *args, **kwargs):
-        xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
-
-        # >> Custom stuff
-        self.listing       = kwargs.get('listing')
-        self.window_title  = kwargs.get('title')
-        self.selected_item = -1
-
-    def onInit(self):
-        # --- This control is a listitem that only displays text and label_1 ---
-        # >> It is not used, make it invisible
-        self.getControl(3).setVisible(False)
-
-        # --- Container that displays icon, label_1 and label_2 for each listview item ---
-        self.container = self.getControl(6)
-
-        # --- Scrollbar ---
-        # >> In Krypton produces and exception RuntimeError: Unknown control type for python
-        # self.scrollbar = self.getControl(61)
-
-        # --- OK button ---
-        self.button_OK = self.getControl(5)
-        self.button_OK.setVisible(False)
-        # self.button_OK.setLabel('OK')
-        # >> Set navigation rules
-        # self.button_OK.controlLeft(self.scrollbar)
-        # self.button_OK.controlRight(self.container)
-        # >> Disables movement left-right in image listbox
-        # self.container.controlLeft(self.container)
-        # self.container.controlRight(self.container)
-
-        # >> The mysterious control 7 is new in Kodi Krypton!
-        # >> See http://forum.kodi.tv/showthread.php?tid=250936&pid=2246458#pid2246458
-        try:
-            # Produces an error "RuntimeError: Non-Existent Control 7" in Jarvis
-            self.button_cancel = self.getControl(7)
-            self.button_cancel.setVisible(False)
-            # self.button_cancel.setLabel('Cancel')
-            # self.button_cancel.controlLeft(self.scrollbar)
-            # self.button_cancel.controlRight(self.container)
-        except:
-            pass
-
-        # >> Window title on top
-        self.getControl(1).setLabel(self.window_title)
-
-        # >> Add items to list
-        listitems = []
-        for index, item in enumerate(self.listing):
-            listitem = xbmcgui.ListItem(label = item['name'], label2 = item['label2'])
-            listitem.setArt({'icon' : 'DefaultAddonImages.png', 'thumb' : item['icon']})
-            listitems.append(listitem)
-        self.container.addItems(listitems)
-
-        # >> Set the focus on the ListItem
-        self.setFocus(self.container)
-
-    #
-    # Action object docs: http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmcgui.html#Action
-    #
-    def onAction(self, action):
-        # focused_control = self.getFocus()
-        # log_debug('ImgSelectDialog::onAction() action.getId()     = {0}'.format(action.getId()))
-        # log_debug('ImgSelectDialog::onAction() Focused control Id = {0}'.format(focused_control.getId()))
-
-        # >> Close dialog
-        if action.getId() in (9, 10, 92, 216, 247, 257, 275, 61467, 61448):
-            self.close()
-
-    def onClick(self, controlID):
-        # log_debug('ImgSelectDialog::onAction() controlID = {0}'.format(controlID))
-
-        # >> User clicked on a ListItem item
-        if controlID == 6:
-            # xbmc.sleep(100)
-            self.selected_item = self.container.getSelectedPosition()
-            self.close()
-
-        # >> User clicked on OK button
-        elif controlID == 5:
-            # xbmc.sleep(25)
-            self.close()
-
-        # >> User clicked on Cancel button
-        elif controlID == 7:
-            self.selected_item = -1
-            self.close()
-
-    def onFocus(self, controlID):
-        # log_debug('ImgSelectDialog::onFocus() controlID = {0}'.format(controlID))
-        pass
-
-#
-# NOTE: not all skins display label2. Confluence does
-#
-# item_list = [ {name : '', label2 : '', icon : '', }, {}, ...]
-#
-# Returns:
-# -1         Dialog was cancelled or closed without selecting
-# 0, 1, ...  Index of the item selected
-#
-def gui_show_image_select(window_title, item_list):
-    # The xml file needs to be part of your addon, or included in the skin you use.
-    # DialogSelect.xml is defined in Confluence here
-    # https://github.com/xbmc/skin.confluence/blob/master/720p/DialogSelect.xml
-    w = ImgSelectDialog('DialogSelect.xml', BASE_DIR.getOriginalPath(), title = window_title, listing = item_list)
-
-    # --- Execute dialog ---
-    w.doModal()
-    selected_item = w.selected_item
-    del w
-
-    return selected_item
