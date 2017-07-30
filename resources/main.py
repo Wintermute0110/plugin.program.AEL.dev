@@ -271,12 +271,12 @@ class Main:
         # --- Commands that do not modify the databases are allowed to run concurrently ---
         if command == 'SHOW_ADDON_ROOT' or \
            command == 'SHOW_VCATEGORIES_ROOT' or command == 'SHOW_OFFLINE_LAUNCHERS_ROOT' or \
-           command == 'SHOW_FAVOURITES'       or command == 'SHOW_VIRTUAL_CATEGORY' or \
-           command == 'SHOW_RECENTLY_PLAYED'  or command == 'SHOW_MOST_PLAYED' or \
-           command == 'SHOW_COLLECTIONS'      or command == 'SHOW_COLLECTION_ROMS' or \
+           command == 'SHOW_FAVOURITES' or command == 'SHOW_VIRTUAL_CATEGORY' or \
+           command == 'SHOW_RECENTLY_PLAYED' or command == 'SHOW_MOST_PLAYED' or \
+           command == 'SHOW_COLLECTIONS' or command == 'SHOW_COLLECTION_ROMS' or \
            command == 'SHOW_LAUNCHERS' or command == 'SHOW_ROMS' or \
            command == 'SHOW_VLAUNCHER_ROMS' or command == 'SHOW_OFFLINE_SCRAPER_ROMS' or \
-           command == 'SHOW_CLONE_ROMS' or \
+           command == 'EXEC_SHOW_CLONE_ROMS' or command == 'SHOW_CLONE_ROMS' or \
            command == 'SHOW_ALL_CATEGORIES' or \
            command == 'SHOW_ALL_LAUNCHERS' or \
            command == 'SHOW_ALL_ROMS' or \
@@ -325,6 +325,10 @@ class Main:
             self._command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
         elif command == 'SHOW_OFFLINE_SCRAPER_ROMS':
             self._command_render_offline_scraper_roms(args['catID'][0])
+        # >> Auxiliar command to render clone ROM list from context menu in 1G1R mode
+        elif command == 'EXEC_SHOW_CLONE_ROMS':
+            url = self._misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
+            xbmc.executebuiltin('Container.Update({0})'.format(url))
         elif command == 'SHOW_CLONE_ROMS':
             self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
 
@@ -3401,7 +3405,7 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     #
     # Render clone ROMs. romID is the parent ROM.
-    # This is only called in Parent/Clone display mode.
+    # This is only called in Parent/Clone and 1G1R display modes.
     #
     def _command_render_clone_roms(self, categoryID, launcherID, romID):
         # --- Set content type and sorting methods ---
@@ -3414,6 +3418,7 @@ class Main:
             kodi_dialog_OK('_command_render_clone_roms(): Launcher ID not found in self.launchers. Report this bug.')
             return
         selectedLauncher = self.launchers[launcherID]
+        view_mode = selectedLauncher['launcher_display_mode']
 
         # --- Load ROMs for this launcher ---
         roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
@@ -3487,7 +3492,7 @@ class Main:
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-            self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
+            self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -3504,11 +3509,12 @@ class Main:
             kodi_dialog_OK('_command_render_roms(): Launcher ID not found in self.launchers. Report this bug.')
             return
         selectedLauncher = self.launchers[launcherID]
+        view_mode = selectedLauncher['launcher_display_mode']
 
         # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
         # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
         loading_ticks_start = time.time()
-        if selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
+        if view_mode == LAUNCHER_DMODE_FLAT:
             # --- Load ROMs for this launcher ---
             roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
             if not roms_file_path.exists():
@@ -3591,14 +3597,13 @@ class Main:
         # --- Display ROMs ---
         loading_ticks_end = time.time()
         rendering_ticks_start = time.time()
-        if selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
+        if view_mode == LAUNCHER_DMODE_FLAT:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, False)
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
         else:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
                 num_clones = len(pclone_index[key])
-                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, True, num_clones)
-
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, True, num_clones)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
         rendering_ticks_end = time.time()
 
@@ -3607,11 +3612,13 @@ class Main:
         log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
 
     #
-    # Former  _add_rom()
+    # Former _add_rom()
     # Note that if we are rendering favourites, categoryID = VCATEGORY_FAVOURITES_ID
     # Note that if we are rendering virtual launchers, categoryID = VCATEGORY_*_ID
     #
-    def _gui_render_rom_row(self, categoryID, launcherID, rom, rom_in_fav, parent_launcher = False, num_clones = 0):
+    def _gui_render_rom_row(self, categoryID, launcherID, rom,
+                            rom_in_fav = False, view_mode = LAUNCHER_DMODE_FLAT,
+                            is_parent_launcher = False, num_clones = 0):
         # --- Do not render row if ROM is finished ---
         if rom['finished'] and self.settings['display_hide_finished']: return
 
@@ -3738,18 +3745,16 @@ class Main:
 
             # --- parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode ---
             nstat = rom['nointro_status']
-            if parent_launcher and num_clones > 0:
-                rom_name = rom_raw_name + ' [COLOR orange][{0} clones][/COLOR]'.format(num_clones)
+            if self.settings['display_nointro_stat']:
+                if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
+                elif nstat == NOINTRO_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                elif nstat == NOINTRO_STATUS_NONE:    rom_name = rom_raw_name
+                else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
             else:
-                # --- Do not render No-Intro flag for parents when showing Parent ROMs ---
-                if self.settings['display_nointro_stat']:
-                    if   nstat == NOINTRO_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                    elif nstat == NOINTRO_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-                    elif nstat == NOINTRO_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-                    elif nstat == NOINTRO_STATUS_NONE:    rom_name = rom_raw_name
-                    else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
-                else:
-                    rom_name = rom_raw_name
+                rom_name = rom_raw_name
+            if is_parent_launcher and num_clones > 0:
+                rom_name += ' [COLOR orange][{0} clones][/COLOR]'.format(num_clones)
             if   nstat == NOINTRO_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
             elif nstat == NOINTRO_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
             elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
@@ -3764,7 +3769,6 @@ class Main:
             if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
 
         # --- Set common flags to all launchers---
-        # >> Multidisc ROM flag
         if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
         # --- Add ROM to lisitem ---
@@ -3853,6 +3857,8 @@ class Main:
             commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
         else:
+            if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_1G1R:
+                commands.append(('Show clones', self._misc_url_RunPlugin('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID)))
             commands.append(('View ROM/Launcher',         self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
             commands.append(('Edit ROM',                  self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
             commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
@@ -3865,7 +3871,7 @@ class Main:
         # --- Add row ---
         # URLs must be different depending on the content type. If not Kodi log will be filled with:
         # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
-        if parent_launcher and num_clones > 0:
+        if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_PCLONE:
             url_str = self._misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
         else:
@@ -3930,7 +3936,7 @@ class Main:
 
         # --- Display Favourites ---
         for key in sorted(roms, key= lambda x : roms[x]['m_name']):
-            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, roms[key], False)
+            self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, roms[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     # ---------------------------------------------------------------------------------------------
@@ -4113,7 +4119,7 @@ class Main:
 
         # --- Display recently player ROM list ---
         for rom in rom_list:
-            self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom, False)
+            self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _command_render_most_played(self):
@@ -4130,7 +4136,7 @@ class Main:
 
         # --- Display most played ROMs, order by number of launchs ---
         for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
-            self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key], False)
+            self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -4164,7 +4170,7 @@ class Main:
         # --- Render ROMs ---
         for rom_id in sorted(all_roms, key = lambda x : all_roms[x]['m_name']):
             self._gui_render_rom_row(all_roms[rom_id]['category_id'], all_roms[rom_id]['launcher_id'],
-                                     all_roms[rom_id], rom_id in roms_fav_set, False)
+                                     all_roms[rom_id], rom_id in roms_fav_set)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -4706,7 +4712,7 @@ class Main:
 
         # --- Display Collection ---
         for rom in collection_rom_list:
-            self._gui_render_rom_row(categoryID, launcherID, rom, False)
+            self._gui_render_rom_row(categoryID, launcherID, rom)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -5553,7 +5559,7 @@ class Main:
         if not rl:
             kodi_dialog_OK('Search returned no results')
         for key in sorted(rl.iterkeys()):
-            self._gui_render_rom_row(categoryID, launcherID, rl[key], False, False)
+            self._gui_render_rom_row(categoryID, launcherID, rl[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #

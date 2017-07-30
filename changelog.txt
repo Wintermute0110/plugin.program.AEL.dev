@@ -45,10 +45,10 @@ WORKING  Make use of Krypton features in the several dialogs of the addon: new p
          for Dialog().multiselect() and Dialog().select(). 
          See https://forum.kodi.tv/showthread.php?tid=250936&pid=2327011#pid2327011
 
-WORKING  Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
+FEATURE  Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
          conveninent that the Unknown ROMs are clones in the Parent/Clone view.
 
-WORKING  1 Game 1 ROM launcher display mode. Copy it from AML.
+FEATURE  1 Game 1 ROM launcher display mode. Copy it from AML.
          Changed launcher['pclone_launcher'] to launcher['launcher_display_mode'] to store the
          display mode in categories.xml database.
 
