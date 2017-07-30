@@ -11,11 +11,13 @@ WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorith
 WIP      Massive upgrade of AEL Offline scraper database.
 
 WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
+         See Chrisism patch in Github.
          Copy remote ROMs for external launchers?
 
 WIP      Edit multidisc ROMs.
 
-WIP      Options to generate the 1G1R list, like prefer ROMs from Europe, Japan or USA.
+WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
+         This resembles what NARS No-Intro filtering does.
 
 WIP      Changes and suggestions propoed by Atsumori.
 
@@ -41,7 +43,7 @@ FEATURE  Update code to use new xbmcgui.Dialog().select() useDetails parameter. 
          ImgSelectDialog() class. This need Krypton Beta 4 to run!
          See https://forum.kodi.tv/showthread.php?tid=250936&pid=2438074#pid2438074
 
-WORKING  Make use of Krypton features in the several dialogs of the addon: new param: "preselect" 
+FEATURE  Make use of Krypton features in the several dialogs of the addon: new param: "preselect" 
          for Dialog().multiselect() and Dialog().select(). 
          See https://forum.kodi.tv/showthread.php?tid=250936&pid=2327011#pid2327011
 

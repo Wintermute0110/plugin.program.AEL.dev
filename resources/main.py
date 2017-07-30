@@ -1164,8 +1164,8 @@ class Main:
 
             # --- Selection of the launcher platform from AEL "official" list ---
             elif type2 == 1:
-                dialog = xbmcgui.Dialog()
-                sel_platform = dialog.select('Select the platform', AEL_platform_list)
+                p_idx = get_AEL_platform_index(self.launchers[launcherID]['platform'])
+                sel_platform = xbmcgui.Dialog().select('Select the platform', AEL_platform_list, preselect = p_idx)
                 if sel_platform < 0: return
                 self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
                 kodi_notify('Launcher Platform is now {0}'.format(AEL_platform_list[sel_platform]))
