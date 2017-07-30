@@ -267,7 +267,7 @@ platform_AEL_to_LB_XML = {
     'Sega SG-1000'                : '',
     'Sega Master System'          : '',
     'Sega Game Gear'              : '',
-    'Sega MegaDrive'              : 'LaunchBox/Sega MegaDrive.xml',
+    'Sega MegaDrive'              : 'LaunchBox/Sega Genesis.xml',
     'Sega Genesis'                : '',
     'Sega MegaCD'                 : '',
     'Sega SegaCD'                 : '',
