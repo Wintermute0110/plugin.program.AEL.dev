@@ -67,8 +67,10 @@ VCAT_CATEGORY_FILE_PATH = PLUGIN_DATA_DIR.join('vcat_category.xml')
 LAUNCH_LOG_FILE_PATH    = PLUGIN_DATA_DIR.join('launcher.log')
 RECENT_PLAYED_FILE_PATH = PLUGIN_DATA_DIR.join('history.json')
 MOST_PLAYED_FILE_PATH   = PLUGIN_DATA_DIR.join('most_played.json')
-GAMEDB_INFO_DIR         = CURRENT_ADDON_DIR.pjoin('GameDBInfo')
-GAMEDB_JSON_BASE_NOEXT  = 'GameDB_info'
+GAMEDB_INFO_DIR           = CURRENT_ADDON_DIR.pjoin('GameDBInfo')
+GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
+LAUNCHBOX_INFO_DIR        = CURRENT_ADDON_DIR.pjoin('LaunchBox')
+LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
 
 # --- Artwork and NFO for Categories and Launchers ---
 DEFAULT_CAT_ASSET_DIR    = PLUGIN_DATA_DIR.join('asset-categories')
@@ -270,12 +272,14 @@ class Main:
 
         # --- Commands that do not modify the databases are allowed to run concurrently ---
         if command == 'SHOW_ADDON_ROOT' or \
-           command == 'SHOW_VCATEGORIES_ROOT' or command == 'SHOW_OFFLINE_LAUNCHERS_ROOT' or \
+           command == 'SHOW_VCATEGORIES_ROOT' or \
+           command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT' or command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT' or \
            command == 'SHOW_FAVOURITES' or command == 'SHOW_VIRTUAL_CATEGORY' or \
            command == 'SHOW_RECENTLY_PLAYED' or command == 'SHOW_MOST_PLAYED' or \
            command == 'SHOW_COLLECTIONS' or command == 'SHOW_COLLECTION_ROMS' or \
            command == 'SHOW_LAUNCHERS' or command == 'SHOW_ROMS' or \
-           command == 'SHOW_VLAUNCHER_ROMS' or command == 'SHOW_OFFLINE_SCRAPER_ROMS' or \
+           command == 'SHOW_VLAUNCHER_ROMS' or \
+           command == 'SHOW_AEL_SCRAPER_ROMS' or command == 'SHOW_LB_SCRAPER_ROMS' or \
            command == 'EXEC_SHOW_CLONE_ROMS' or command == 'SHOW_CLONE_ROMS' or \
            command == 'SHOW_ALL_CATEGORIES' or \
            command == 'SHOW_ALL_LAUNCHERS' or \
@@ -301,8 +305,10 @@ class Main:
         # --- Render launchers stuff ---
         elif command == 'SHOW_VCATEGORIES_ROOT':
             self._gui_render_vcategories_root()
-        elif command == 'SHOW_OFFLINE_LAUNCHERS_ROOT':
-            self._gui_render_offline_scraper_launchers()
+        elif command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT':
+            self._gui_render_AEL_scraper_launchers()
+        elif command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT':
+            self._gui_render_LB_scraper_launchers()
         elif command == 'SHOW_FAVOURITES':
             self._command_render_favourites()
         elif command == 'SHOW_VIRTUAL_CATEGORY':
@@ -323,8 +329,10 @@ class Main:
             self._command_render_roms(args['catID'][0], args['launID'][0])
         elif command == 'SHOW_VLAUNCHER_ROMS':
             self._command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
-        elif command == 'SHOW_OFFLINE_SCRAPER_ROMS':
-            self._command_render_offline_scraper_roms(args['catID'][0])
+        elif command == 'SHOW_AEL_SCRAPER_ROMS':
+            self._command_render_AEL_scraper_roms(args['catID'][0])
+        elif command == 'SHOW_LB_SCRAPER_ROMS':
+            self._command_render_LB_scraper_roms(args['catID'][0])
         # >> Auxiliar command to render clone ROM list from context menu in 1G1R mode
         elif command == 'EXEC_SHOW_CLONE_ROMS':
             url = self._misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
@@ -486,7 +494,8 @@ class Main:
         self.settings['display_hide_favs']        = True if __addon_obj__.getSetting('display_hide_favs') == 'true' else False
         self.settings['display_hide_collections'] = True if __addon_obj__.getSetting('display_hide_collections') == 'true' else False
         self.settings['display_hide_vlaunchers']  = True if __addon_obj__.getSetting('display_hide_vlaunchers') == 'true' else False
-        self.settings['display_hide_off_scraper'] = True if __addon_obj__.getSetting('display_hide_off_scraper') == 'true' else False
+        self.settings['display_hide_AEL_scraper'] = True if __addon_obj__.getSetting('display_hide_AEL_scraper') == 'true' else False
+        self.settings['display_hide_LB_scraper']  = True if __addon_obj__.getSetting('display_hide_LB_scraper') == 'true' else False
         self.settings['display_hide_recent']      = True if __addon_obj__.getSetting('display_hide_recent') == 'true' else False
         self.settings['display_hide_mostplayed']  = True if __addon_obj__.getSetting('display_hide_mostplayed') == 'true' else False
 
@@ -2903,7 +2912,8 @@ class Main:
         if not self.settings['display_hide_vlaunchers']: self._gui_render_virtual_category_root_row()
 
         # --- Browse Offline Scraper database ---
-        if not self.settings['display_hide_off_scraper']: self._gui_render_category_offline_scraper_row()
+        if not self.settings['display_hide_AEL_scraper']: self._gui_render_category_AEL_offline_scraper_row()
+        if not self.settings['display_hide_LB_scraper']: self._gui_render_category_LB_offline_scraper_row()
 
         # --- Recently played and most played ROMs ---
         if not self.settings['display_hide_recent']:     self._gui_render_category_recently_played_row()
@@ -3037,17 +3047,16 @@ class Main:
         url_str = self._misc_url('SHOW_VCATEGORIES_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-    def _gui_render_category_offline_scraper_row(self):
-        vcategory_name   = '[Browse Offline Scraper]'
+    def _gui_render_category_AEL_offline_scraper_row(self):
+        vcategory_name   = '[Browse AEL Offline Scraper]'
         vcategory_thumb  = 'DefaultFolder.png'
         vcategory_fanart = ''
         vcategory_banner = ''
         vcategory_flyer  = ''
         vcategory_label  = 'Browse Offline Scraper'
+        vcategory_plot   = 'Allows you to browse the ROMs in the AEL offline scraper database'
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4,
-                                   'plot' : 'Allows you to browse the ROMs in the Offline '
-                                            'scraper database'})
+        listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4, 'plot' : vcategory_plot})
         listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart,
                          'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
@@ -3058,7 +3067,30 @@ class Main:
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_OFFLINE_LAUNCHERS_ROOT')
+        url_str = self._misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_category_LB_offline_scraper_row(self):
+        vcategory_name   = '[Browse LaunchBox Offline Scraper]'
+        vcategory_thumb  = 'DefaultFolder.png'
+        vcategory_fanart = ''
+        vcategory_banner = ''
+        vcategory_flyer  = ''
+        vcategory_label  = 'Browse Offline Scraper'
+        vcategory_plot   = 'Allows you to browse the ROMs in the LaunchBox offline scraper database'
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4, 'plot' : vcategory_plot})
+        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart,
+                         'banner' : vcategory_banner, 'poster' : vcategory_flyer})
+
+        commands = []
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        url_str = self._misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_category_recently_played_row(self):
@@ -3200,7 +3232,7 @@ class Main:
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-    def _gui_render_offline_scraper_launchers(self):
+    def _gui_render_AEL_scraper_launchers(self):
         self._misc_set_default_sorting_method()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
@@ -3213,10 +3245,10 @@ class Main:
             # >> Do not show Unknown platform
             if platform == 'Unknown': continue
             db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            self._gui_render_offline_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
+            self._gui_render_AEL_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    def _gui_render_offline_scraper_launchers_row(self, platform, platform_info, db_suffix):
+    def _gui_render_AEL_scraper_launchers_row(self, platform, platform_info, db_suffix):
         # >> Mark platform whose XML DB is not available
         title_str = platform
         if not db_suffix:
@@ -3236,7 +3268,46 @@ class Main:
         commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_OFFLINE_SCRAPER_ROMS', platform)
+        url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', platform)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_LB_scraper_launchers(self):
+        self._misc_set_default_sorting_method()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+
+        # >> Open info dictionary
+        gamedb_info_dic = fs_load_JSON_file(LAUNCHBOX_INFO_DIR, LAUNCHBOX_JSON_BASE_NOEXT)
+
+        # >> Loop the list of platforms and render a virtual launcher for each platform that
+        # >> has a valid XML database.
+        for platform in AEL_platform_list:
+            # >> Do not show Unknown platform
+            if platform == 'Unknown': continue
+            db_suffix = platform_AEL_to_LB_XML[platform]
+            self._gui_render_LB_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    def _gui_render_LB_scraper_launchers_row(self, platform, platform_info, db_suffix):
+        # >> Mark platform whose XML DB is not available
+        title_str = platform
+        if not db_suffix:
+            title_str += ' [COLOR red][Not available][/COLOR]'
+        else:
+            title_str += ' [COLOR orange]({0} ROMs)[/COLOR]'.format(platform_info['numROMs'])
+        plot_text = 'Offline Scraper {0} database ROMs.'.format(platform)
+        listitem = xbmcgui.ListItem(title_str)
+        listitem.setInfo('video', {'title' : title_str,
+                                   'genre' : 'Offline Scraper database',
+                                   'plot'  : plot_text, 'overlay': 4 } )
+        # >> Set platform property to render platform icon on skins.
+        listitem.setProperty('platform', platform)
+
+        commands = []
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('Add-on Settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        url_str = self._misc_url('SHOW_LB_SCRAPER_ROMS', platform)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     # ---------------------------------------------------------------------------------------------
@@ -4068,10 +4139,10 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
-    # Renders ROMs in a Offline Scraper virtual launcher
+    # Renders ROMs in a AEL offline Scraper virtual launcher
     #
-    def _command_render_offline_scraper_roms(self, platform):
-        log_debug('_command_render_offline_scraper_roms() platform = "{0}"'.format(platform))
+    def _command_render_AEL_scraper_roms(self, platform):
+        log_debug('_command_render_AEL_scraper_roms() platform = "{0}"'.format(platform))
         # >> Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)

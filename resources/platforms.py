@@ -124,7 +124,7 @@ def get_AEL_platform_index(platform_name):
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -------------------------------------------------------------------------------------------------
 #
-# GameDBInfo XML are compatible with HyperSpin Hyperlist XML files.
+# GameDBInfo XML database files.
 #
 platform_AEL_to_Offline_GameDBInfo_XML = {
     'MAME'                        : 'GameDBInfo/MAME.xml',
@@ -203,6 +203,90 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Sony PlayStation 3'          : '',
     'Sony PlayStation 4'          : '',
     'Sony PlayStation Portable'   : 'GameDBInfo/Sony PlayStation Portable.xml',
+
+    'Unknown'                     : ''
+}
+
+#
+# LaunchBox XML database files.
+#
+platform_AEL_to_LB_XML = {
+    'MAME'                        : '',
+    'Atari 2600'                  : '',
+    'Atari 5200'                  : '',
+    'Atari 7800'                  : '',
+    'Atari Jaguar'                : '',
+    'Atari Jaguar CD'             : '',
+    'Atari Lynx'                  : '',
+    'Atari ST'                    : '',
+    
+    'Colecovision'                : '',
+
+    'Commodore 64'                : '',
+    'Commodore Amiga'             : '',
+    'Commodore Plus-4'            : '',
+    'Commodore VIC-20'            : '',
+
+    'Magnavox Odyssey2'           : '',
+    'Philips Videopac G7000'      : '',
+
+    'Microsoft MSX'               : '',
+    'Microsoft MSX 2'             : '',
+    'Microsoft MS-DOS'            : '',
+    'Microsoft Windows'           : '',
+    'Microsoft Xbox'              : '',
+    'Microsoft Xbox 360'          : '',
+    'Microsoft Xbox One'          : '',
+
+    'NEC PC Engine'               : '',
+    'NEC PC Engine CDROM2'        : '',
+    'NEC TurboGrafx 16'           : '',
+    'NEC TurboGrafx CD'           : '',
+    'NEC SuperGrafx'              : '',
+    'NEC PC-FX'                   : '',
+
+    'Nintendo GameBoy'            : '',
+    'Nintendo GameBoy Color'      : '',
+    'Nintendo GameBoy Advance'    : '',
+    'Nintendo DS'                 : '',
+    'Nintendo DSi'                : '',
+    'Nintendo 3DS'                : '',
+    'Nintendo Famicom Disk System': '',
+    'Nintendo NES'                : '',
+    'Nintendo Famicom'            : '',
+    'Nintendo SNES'               : '',
+    'Nintendo Virtual Boy'        : '',
+    'Nintendo 64'                 : '',
+    'Nintendo GameCube'           : '',
+    'Nintendo Wii'                : '',
+    'Nintendo Wii U'              : '',
+    'Nintendo Switch'             : '',
+
+    'Panasonic 3DO'               : '',
+
+    'Sega SG-1000'                : '',
+    'Sega Master System'          : '',
+    'Sega Game Gear'              : '',
+    'Sega MegaDrive'              : 'LaunchBox/Sega MegaDrive.xml',
+    'Sega Genesis'                : '',
+    'Sega MegaCD'                 : '',
+    'Sega SegaCD'                 : '',
+    'Sega 32X'                    : '',
+    'Sega PICO'                   : '',
+    'Sega Saturn'                 : '',
+    'Sega Dreamcast'              : '',
+
+    'Sinclair ZX Spectrum'        : '',
+
+    'SNK Neo-Geo CD'              : '',
+    'SNK Neo-Geo Pocket'          : '',
+    'SNK Neo-Geo Pocket Color'    : '',
+
+    'Sony PlayStation'            : '',
+    'Sony PlayStation 2'          : '',
+    'Sony PlayStation 3'          : '',
+    'Sony PlayStation 4'          : '',
+    'Sony PlayStation Portable'   : '',
 
     'Unknown'                     : ''
 }

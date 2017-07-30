@@ -49,7 +49,8 @@
     <setting label="Hide <Favourites>" type="bool" default="false" id="display_hide_favs" />
     <setting label="Hide {ROM Collections}" type="bool" default="false" id="display_hide_collections" />
     <setting label="Hide [Browse by ...]" type="bool" default="false" id="display_hide_vlaunchers" />
-    <setting label="Hide [Browse Offline Scraper]" type="bool" default="false" id="display_hide_off_scraper" />
+    <setting label="Hide [Browse AEL Offline Scraper]" type="bool" default="false" id="display_hide_AEL_scraper" />
+    <setting label="Hide [Browse LaunchBox Offline Scraper]" type="bool" default="false" id="display_hide_LB_scraper" />
     <setting label="Hide [Recently played ROMs]" type="bool" default="false" id="display_hide_recent" />
     <setting label="Hide [Most played ROMs]" type="bool" default="false" id="display_hide_mostplayed" />
 </category>

@@ -25,8 +25,8 @@ from resources.platforms import *
 
 # --- Constants -----------------------------------------------------------------------------------
 CURRENT_DIR = FileName('./')
-GAMEDB_DIR = FileName('./GameDBInfo/')
-GAMEDB_JSON_BASE_NOEXT = 'GameDB_info'
+GAMEDB_DIR = FileName('./LaunchBox/')
+GAMEDB_JSON_BASE_NOEXT = 'LaunchBox_info'
 
 # --- main() --------------------------------------------------------------------------------------
 set_log_level(LOG_DEBUG)
@@ -35,7 +35,7 @@ for platform in AEL_platform_list:
     # print('Processing platform "{0}"'.format(platform))
 
     # >> Open XML file and count ROMs
-    xml_file = CURRENT_DIR.pjoin(platform_AEL_to_Offline_GameDBInfo_XML[platform]).getPath()
+    xml_file = CURRENT_DIR.pjoin(platform_AEL_to_LB_XML[platform]).getPath()
     games = audit_load_OfflineScraper_XML(xml_file)
 
     # >> Count ROMs and add to dictionary
