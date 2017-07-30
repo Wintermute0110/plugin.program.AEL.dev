@@ -461,7 +461,7 @@ class Main:
         self.settings['asset_scraper_mode']       = int(__addon_obj__.getSetting('asset_scraper_mode'))
 
         # --- ROM audit ---
-        self.settings['audit_unknown_clones']  = True if __addon_obj__.getSetting('audit_unknown_clones') == 'true' else False
+        self.settings['audit_unknown_roms']       = int(__addon_obj__.getSetting('audit_unknown_roms'))
 
         # --- Scrapers ---
         # self.settings['scraper_region']           = int(__addon_obj__.getSetting('scraper_region'))
@@ -538,10 +538,10 @@ class Main:
         self.scraper_asset = scrapers_asset[self.settings['asset_scraper']]
         log_verb('_load_asset_scraper() Loaded asset scraper {0}'.format(self.scraper_asset.name))
 
-        # Initialise options of the thumb scraper
-        region = self.settings['scraper_region']
-        thumb_imgsize = self.settings['scraper_thumb_size']
-        self.scraper_asset.set_options(region, thumb_imgsize)
+        # --- Initialise options of the thumb scraper ---
+        # region = self.settings['scraper_region']
+        # thumb_imgsize = self.settings['scraper_thumb_size']
+        # self.scraper_asset.set_options(region, thumb_imgsize)
 
     #
     # Set Sorting methods
@@ -7392,7 +7392,7 @@ class Main:
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 
-        # --- Traverse Launcher ROMs and check if they are No-Intro ROMs ---
+        # --- Traverse Launcher ROMs and check if they are in the No-Intro ROMs list ---
         pDialog.update(0, 'Audit Step 1/4: Checking Have and Unknown ROMs ...')
         num_items = len(roms)
         item_counter = 0
