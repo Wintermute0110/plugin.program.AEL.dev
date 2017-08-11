@@ -14,7 +14,7 @@ WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          See Chrisism patch in Github.
          Copy remote ROMs for external launchers?
 
-WIP      Edit multidisc ROMs.
+WIP      Edit multi-disc ROMs.
 
 WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
          This resembles what NARS No-Intro filtering does.
@@ -31,8 +31,37 @@ WIP      LaunchBox Games Database scraper.
          See http://gamesdb.launchbox-app.com/
          See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
 
+WIP      Have a look at https://www.screenscraper.fr/ and consider it for an online scraper.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
+
+WIP      Ability to import launcher and cateogires assets in the XML configuration files.
+         Create a working example for Gamestarter addon. Also, refactor the AEL asset library.
+
+WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
+         selected scraper. This will require a redesign of the current scraping engine.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628383#pid2628383 and next post.
+
+WIP      Add support for ScummVM platform in the Offline Scraper.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
+
+WIP      Add an option to suspend/resume joystick support at launch. This is to prevent Kodi
+         and the launched app to grab joystick events.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
+
+WIP      Update MAME Offline Scraper database to version 0.188 or 0.189
+
+WIP      Improve Retroplayer support.
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
+
+WIP      Rename "Studio" database field to "Developer".
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
+
+WIP      Think about exporting the AEL platform database using JSON-LD in accordance to
+         Garbear's idea.
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
 
 FEATURE  Removed ElementTree dependency in addon.xml. It's not longer needed.
          AEL ONLY WORKS ON KRYPTON NOW!!!
@@ -66,6 +95,12 @@ FIX      Fixed launching of BAT files in Windows.
 
 FIX      In order for skin shortcuts and widgets to work OK, addon concurrency must be enabled
          by database read-only commands.
+
+WIP      Fix scraper-related crash in the ROM scanner.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628382#pid2628382
+
+WIP      Fix artwork support for mult-disc ROMs.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628912#pid2628912
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]
