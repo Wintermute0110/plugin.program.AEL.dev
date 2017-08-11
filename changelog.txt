@@ -37,7 +37,7 @@ WIP      Have a look at https://www.screenscraper.fr/ and consider it for an onl
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
 
-WIP      Ability to import launcher and cateogires assets in the XML configuration files.
+WIP      Ability to import launcher and categories assets in the XML configuration files.
          Create a working example for Gamestarter addon. Also, refactor the AEL asset library.
 
 WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
