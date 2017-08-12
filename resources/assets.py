@@ -63,6 +63,7 @@ TRAILER_EXTENSIONS = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4',
 # Get extensions to search for files
 # Input : ['png', 'jpg']
 # Output: ['png', 'jpg', 'PNG', 'JPG']
+#
 def asset_get_filesearch_extension_list(exts):
     ext_list = list(exts)
     for ext in exts:
@@ -74,6 +75,7 @@ def asset_get_filesearch_extension_list(exts):
 # Gets extensions to be used in Kodi file dialog.
 # Input : ['png', 'jpg']
 # Output: '.png|.jpg'
+#
 def asset_get_dialog_extension_list(exts):
     ext_string = ''
     for ext in exts:
@@ -82,6 +84,20 @@ def asset_get_dialog_extension_list(exts):
     ext_string = ext_string[:-1]
 
     return ext_string
+
+#
+# Gets extensions to be used in Kodi file dialog.
+# Input : ['png', 'jpg']
+# Output: '(png|jpg)'
+#
+def asset_get_regexp_extension_list(exts):
+    ext_string = ''
+    for ext in exts:
+        ext_string += ext + '|'
+    # >> Remove trailing '|' character
+    ext_string = ext_string[:-1]
+
+    return '(' + ext_string + ')'
 
 # -------------------------------------------------------------------------------------------------
 # Asset functions
@@ -185,6 +201,7 @@ class AssetInfo:
     key         = ''
     name        = ''
     kind_str    = ''
+    fname_infix = ''
     exts        = []
     exts_dialog = []
     path_key    = ''
@@ -213,6 +230,7 @@ def assets_get_info_scheme(asset_kind):
         A.key         = 's_fanart'
         A.name        = 'Fanart'
         A.kind_str    = 'image'
+        A.fname_infix = 'fanart'
         A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_fanart'
@@ -221,6 +239,7 @@ def assets_get_info_scheme(asset_kind):
         A.key         = 's_banner'
         A.name        = 'Banner'
         A.kind_str    = 'image'
+        A.fname_infix = 'banner'
         A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_banner'
@@ -229,6 +248,7 @@ def assets_get_info_scheme(asset_kind):
         A.key         = 's_clearlogo'
         A.name        = 'Clearlogo'
         A.kind_str    = 'image'
+        A.fname_infix = 'clearlogo'
         A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_clearlogo'
@@ -277,6 +297,7 @@ def assets_get_info_scheme(asset_kind):
         A.key         = 's_thumb'
         A.name        = 'Thumb'
         A.kind_str    = 'image'
+        A.fname_infix = 'icon'
         A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_thumb'

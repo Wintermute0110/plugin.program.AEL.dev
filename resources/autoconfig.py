@@ -24,11 +24,15 @@ import os
 # ~~~ Using ElementTree seems to solve the problem
 import xml.etree.ElementTree as ET
 
+# --- Kodi stuff ---
+import xbmc, xbmcgui, xbmcplugin, xbmcaddon
+
 # --- AEL packages ---
 from constants import *
 from utils import *
 from utils_kodi import *
 from disk_IO import *
+from assets import *
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.
@@ -267,17 +271,15 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, categories, launchers, imp
             log_debug('New Category "{0}" (ID {1})'.format(i_category['name'], categoryID))
 
             # >> Import launcher. Only import fields that are not empty strings.
-            autoconfig_import_category(categories, categoryID, i_category)
+            autoconfig_import_category(categories, categoryID, i_category, import_FN)
         else:
             # >> Category exists (by name). Overwrite?
             log_debug('Case B) Category found. Edit existing category.')
-            cat_name = i_launcher['category'] if i_launcher['category'] != VCATEGORY_ADDONROOT_ID else 'Root Category'
-            ret = kodi_dialog_yesno('Category {0} '.format(i_launcher['name'], cat_name) +
-                                    'found in AEL database. Overwrite?')
+            ret = kodi_dialog_yesno('Category "{0}" found in AEL database. Overwrite?'.format(i_category['name']))
             if ret < 1: continue
 
             # >> Import launcher. Only import fields that are not empty strings.
-            autoconfig_import_category(categories, s_categoryID, i_category)
+            autoconfig_import_category(categories, s_categoryID, i_category, import_FN)
 
     # >> DEBUG
     fs_write_catfile(CATEGORIES_FILE_PATH, categories, launchers)
@@ -362,7 +364,7 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, categories, launchers, imp
 #
 # Imports/edits a category.
 #
-def autoconfig_import_category(categories, categoryID, i_category):
+def autoconfig_import_category(categories, categoryID, i_category, import_FN):
     log_debug('autoconfig_import_category() categoryID = {0}'.format(categoryID))
 
     # --- Category metadata ---
@@ -384,8 +386,97 @@ def autoconfig_import_category(categories, categoryID, i_category):
 
     # --- Category assets ---
     if i_category['asset_prefix']:
-        log_debug('Imported category assets with prefix "{0}"'.format(i_category['asset_prefix']))
-        
+        asset_prefix = i_category['asset_prefix']
+        log_debug('Importing category assets with prefix "{0}"'.format(asset_prefix))
+        log_debug('import_FN "{0}"'.format(import_FN.getPath()))
+
+        # >> Get a list of all files in the XML config file directory.
+        # >> This list has filenames withouth path.
+        file_list = sorted(os.listdir(import_FN.getDir()))
+        # log_debug('--- File list ---')
+        # for file in file_list: log_debug('--- "{0}"'.format(file))
+
+        # >> Traverse list of category assets and search for image files for each asset
+        # custom_CATEGORY_ASSET_LIST = CATEGORY_ASSET_LIST[0:2]
+        for cat_asset in CATEGORY_ASSET_LIST:
+            AInfo = assets_get_info_scheme(cat_asset)
+            log_debug('>> Asset "{0}"'.format(AInfo.name))
+            asset_file_list = autoconfig_search_asset_file_list(asset_prefix, AInfo, import_FN, file_list)
+
+            # >> Assets found
+            if not asset_file_list: continue
+            listitems_list = []
+            listitems_asset_paths = []
+
+            # >> Current image if found
+            current_FN = FileName(categories[categoryID][AInfo.key])
+            if current_FN.exists():
+                asset_listitem = xbmcgui.ListItem(label = current_FN.getBase(), label2 = current_FN.getPath())
+                asset_listitem.setArt({'icon' : current_FN.getPath()})
+                listitems_list.append(asset_listitem)
+                listitems_asset_paths.append(current_FN.getPath())
+            # >> Images found in XML configuration
+            for asset_file_name in asset_file_list:
+                log_debug('asset_file_name "{0}"'.format(asset_file_name))
+                asset_FN = FileName(asset_file_name)
+                asset_listitem = xbmcgui.ListItem(label = asset_FN.getBase(), label2 = asset_file_name)
+                asset_listitem.setArt({'icon' : asset_file_name})
+                listitems_list.append(asset_listitem)
+                listitems_asset_paths.append(asset_FN.getPath())
+            # >> No image
+            asset_listitem = xbmcgui.ListItem(label = 'No image')
+            asset_listitem.setArt({'icon' : 'DefaultAddonNone.png'})
+            listitems_list.append(asset_listitem)
+            listitems_asset_paths.append('')
+
+            title_str = 'Choose {0} file'.format(AInfo.name)
+            ret_idx = xbmcgui.Dialog().select(title_str, list = listitems_list, useDetails = True)
+            if ret_idx < 0: return
+
+            # >> Set asset field
+            categories[categoryID][AInfo.key] = listitems_asset_paths[ret_idx]
+            log_verb('Set category image "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
+
+#
+# Search for asset files and return a list of found asset files.
+# Get a non-recursive list of all files on the directory the XML configuration file is. Then,
+# scan this list for asset matching.
+#
+# Search patterns (<> is mandatory, [] is optional):
+#
+#   A) <asset_path_prefix>_<icon|fanart|banner|poster|clearlogo>[_Comment].<asset_extensions>
+#   B) <asset_path_prefix>_<icon|fanart|banner|poster|clearlogo>_N[_Comment].<asset_extensions>
+#   C) <asset_path_prefix>_<icon|fanart|banner|poster|clearlogo>_NN[_Comment].<asset_extensions>
+#
+# N is a number [0-9]
+#
+def autoconfig_search_asset_file_list(asset_prefix, AInfo, import_FN, file_list):
+    log_debug('autoconfig_search_asset_file_list() BEGIN asset infix "{0}"'.format(AInfo.fname_infix))
+
+    asset_dir_FN = FileName(import_FN.getDir())
+    log_debug('asset_dir_FN "{0}"'.format(asset_dir_FN.getPath()))
+
+    # >> Traverse list of filenames (no paths)
+    filename_noext = asset_prefix + '_' + AInfo.fname_infix
+    log_debug('filename_noext "{0}"'.format(filename_noext))
+    img_ext_regexp = asset_get_regexp_extension_list(IMAGE_EXTENSIONS)
+    log_debug('img_ext_regexp "{0}"'.format(img_ext_regexp))
+    pattern = '({0})([\w]*?)\.{1}'.format(filename_noext, img_ext_regexp)
+    log_debug('Pattern "{0}"'.format(pattern))
+    
+    # --- Search for files in case A, B and C ---
+    asset_file_list = []
+    for file in file_list:
+        # log_debug('Testing "{0}"'.format(file))
+        m = re.match(pattern, file)
+        if m:
+            log_debug('MATCH   "{0}"'.format(m.group(0)))
+            asset_full_path = asset_dir_FN.pjoin(file)
+            log_debug('Adding  "{0}"'.format(asset_full_path.getPath()))
+            asset_file_list.append(asset_full_path.getPath())
+    log_debug('autoconfig_search_asset_file_list() END')
+
+    return asset_file_list
 
 #
 # Never change i_launcher['id'] or i_launcher['categoryID'] in this function.
