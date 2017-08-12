@@ -35,11 +35,16 @@ ASSET_MAP       = 1000
 ASSET_MANUAL    = 1100
 ASSET_TRAILER   = 1200
 ASSET_THUMB     = 1300 # Only used in Categories/Launchers
+ASSET_ICON      = 1300 # For compatibility. ASSET_THUMB is deprecated.
 
 #
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
 #
 CATEGORY_ASSET_LIST = [
+    ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER
+]
+
+LAUNCHER_ASSET_LIST = [
     ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER
 ]
 
@@ -201,7 +206,7 @@ class AssetInfo:
     key         = ''
     name        = ''
     kind_str    = ''
-    fname_infix = ''
+    fname_infix = '' # Used only when searching assets when importing XML
     exts        = []
     exts_dialog = []
     path_key    = ''
@@ -209,7 +214,25 @@ class AssetInfo:
 def assets_get_info_scheme(asset_kind):
     A = AssetInfo()
 
-    if asset_kind == ASSET_TITLE:
+    if asset_kind == ASSET_THUMB:
+        A.kind        = ASSET_THUMB
+        A.key         = 's_thumb'
+        A.name        = 'Thumb'
+        A.kind_str    = 'image'
+        A.fname_infix = 'icon'
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
+        A.path_key    = 'path_thumb'
+    elif asset_kind == ASSET_ICON:
+        A.kind        = ASSET_ICON
+        A.key         = 's_icon'
+        A.name        = 'Icon'
+        A.kind_str    = 'image'
+        A.fname_infix = 'icon'
+        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
+        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
+        A.path_key    = 'path_icon'
+    elif asset_kind == ASSET_TITLE:
         A.kind        = ASSET_TITLE
         A.key         = 's_title'
         A.name        = 'Title'
@@ -281,6 +304,7 @@ def assets_get_info_scheme(asset_kind):
         A.key         = 's_flyer'
         A.name        = 'Flyer'
         A.kind_str    = 'image'
+        A.fname_infix = 'poster'
         A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_flyer'
@@ -292,15 +316,6 @@ def assets_get_info_scheme(asset_kind):
         A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
         A.path_key    = 'path_map'
-    elif asset_kind == ASSET_THUMB:
-        A.kind        = ASSET_THUMB
-        A.key         = 's_thumb'
-        A.name        = 'Thumb'
-        A.kind_str    = 'image'
-        A.fname_infix = 'icon'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_thumb'
     elif asset_kind == ASSET_MANUAL:
         A.kind        = ASSET_MANUAL
         A.key         = 's_manual'
