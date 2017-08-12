@@ -34,6 +34,10 @@ WIP      LaunchBox Games Database scraper.
 WIP      Have a look at https://www.screenscraper.fr/ and consider it for an online scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
 
+WIP      Think about exporting the AEL platform database using JSON-LD in accordance to
+         Garbear's idea.
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
 
@@ -57,10 +61,6 @@ WIP      Improve Retroplayer support.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
 
 WIP      Rename "Studio" database field to "Developer".
-         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
-
-WIP      Think about exporting the AEL platform database using JSON-LD in accordance to
-         Garbear's idea.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
 
 FEATURE  Removed ElementTree dependency in addon.xml. It's not longer needed.
