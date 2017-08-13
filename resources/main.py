@@ -3752,7 +3752,7 @@ class Main:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
             kodi_def_icon = launcher['s_icon'] if launcher['s_icon'] else 'DefaultProgram.png'
-            icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_icon)
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_icon', kodi_def_icon)
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
@@ -6057,12 +6057,12 @@ class Main:
         # >> Assets/artwork
         info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
         info_text += "[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(rom['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(rom['s_banner'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(rom['s_clearlogo'])
         info_text += "[COLOR violet]s_boxfront[/COLOR]: '{0}'\n".format(rom['s_boxfront'])
         info_text += "[COLOR violet]s_boxback[/COLOR]: '{0}'\n".format(rom['s_boxback'])
         info_text += "[COLOR violet]s_cartridge[/COLOR]: '{0}'\n".format(rom['s_cartridge'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(rom['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(rom['s_banner'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(rom['s_clearlogo'])
         info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(rom['s_flyer'])
         info_text += "[COLOR violet]s_map[/COLOR]: '{0}'\n".format(rom['s_map'])
         info_text += "[COLOR violet]s_manual[/COLOR]: '{0}'\n".format(rom['s_manual'])
@@ -6148,12 +6148,12 @@ class Main:
         info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(launcher['roms_default_clearlogo'])
         info_text += "[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher['path_title'])
         info_text += "[COLOR violet]path_snap[/COLOR]: '{0}'\n".format(launcher['path_snap'])
-        info_text += "[COLOR violet]path_fanart[/COLOR]: '{0}'\n".format(launcher['path_fanart'])
-        info_text += "[COLOR violet]path_banner[/COLOR]: '{0}'\n".format(launcher['path_banner'])
-        info_text += "[COLOR violet]path_clearlogo[/COLOR]: '{0}'\n".format(launcher['path_clearlogo'])
         info_text += "[COLOR violet]path_boxfront[/COLOR]: '{0}'\n".format(launcher['path_boxfront'])
         info_text += "[COLOR violet]path_boxback[/COLOR]: '{0}'\n".format(launcher['path_boxback'])
         info_text += "[COLOR violet]path_cartridge[/COLOR]: '{0}'\n".format(launcher['path_cartridge'])
+        info_text += "[COLOR violet]path_fanart[/COLOR]: '{0}'\n".format(launcher['path_fanart'])
+        info_text += "[COLOR violet]path_banner[/COLOR]: '{0}'\n".format(launcher['path_banner'])
+        info_text += "[COLOR violet]path_clearlogo[/COLOR]: '{0}'\n".format(launcher['path_clearlogo'])
         info_text += "[COLOR violet]path_flyer[/COLOR]: '{0}'\n".format(launcher['path_flyer'])
         info_text += "[COLOR violet]path_map[/COLOR]: '{0}'\n".format(launcher['path_map'])
         info_text += "[COLOR violet]path_manual[/COLOR]: '{0}'\n".format(launcher['path_manual'])
@@ -7774,6 +7774,7 @@ class Main:
         self._load_asset_scraper()
 
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
+        log_info('Checking for unset artwork directories ...')
         (self.enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
         if unconfigured_name_list:
             unconfigure_asset_srt = ', '.join(unconfigured_name_list)
@@ -7781,7 +7782,8 @@ class Main:
                            'Asset scanner will be disabled for this/those.')
 
         # ~~~ Ensure there is no duplicate asset dirs ~~~
-        # >> Cancel scanning if duplicates found
+        # >> Cancel scanning of assets if duplicates found
+        log_info('Checking for duplicate artwork directories ...')
         duplicated_name_list = asset_get_duplicated_dir_list(launcher)
         if duplicated_name_list:
             duplicated_asset_srt = ', '.join(duplicated_name_list)
@@ -8097,11 +8099,14 @@ class Main:
                 log_debug('NFO file found. Loading it.')
                 nfo_dic = fs_import_NFO_file_scanner(nfo_file_path)
                 # NOTE <platform> is chosen by AEL, never read from NFO files
-                romdata['m_name']   = nfo_dic['title']     # <title>
-                romdata['m_year']   = nfo_dic['year']      # <year>
-                romdata['m_genre']  = nfo_dic['genre']     # <genre>
-                romdata['m_studio'] = nfo_dic['publisher'] # <publisher>
-                romdata['m_plot']   = nfo_dic['plot']      # <plot>
+                romdata['m_name']      = nfo_dic['title']     # <title>
+                romdata['m_year']      = nfo_dic['year']      # <year>
+                romdata['m_genre']     = nfo_dic['genre']     # <genre>
+                romdata['m_developer'] = nfo_dic['publisher'] # <publisher> rename to <developer>
+                # romdata['m_nplayers']  = nfo_dic['nplayers']  # <nplayers>
+                # romdata['m_esrb']      = nfo_dic['esrb']      # <esrb>
+                # romdata['m_rating']    = nfo_dic['rating']    # <rating>
+                romdata['m_plot']      = nfo_dic['plot']      # <plot>
             else:
                 log_debug('NFO file not found. Only cleaning ROM name.')
                 romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
@@ -8152,12 +8157,12 @@ class Main:
                 else:
                     romdata['m_name'] = gamedata['title']
                     log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
-                romdata['m_year']     = gamedata['year']
-                romdata['m_genre']    = gamedata['genre']
-                romdata['m_studio']   = gamedata['studio']
-                romdata['m_nplayers'] = gamedata['nplayers']
-                romdata['m_esrb']     = gamedata['esrb']
-                romdata['m_plot']     = gamedata['plot']
+                romdata['m_year']      = gamedata['year']
+                romdata['m_genre']     = gamedata['genre']
+                romdata['m_developer'] = gamedata['studio']
+                romdata['m_nplayers']  = gamedata['nplayers']
+                romdata['m_esrb']      = gamedata['esrb']
+                romdata['m_plot']      = gamedata['plot']
 
                 # --- Update ROM NFO file after scraping ---
                 if self.settings['scan_update_NFO_files']:
@@ -8211,12 +8216,12 @@ class Main:
 
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-        log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-        log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-        log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
         log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
         log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
         log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+        log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+        log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+        log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
         log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
         log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
         log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))

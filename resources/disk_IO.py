@@ -147,12 +147,12 @@ def fs_new_launcher():
          'roms_default_clearlogo' : 's_clearlogo',
          'path_title' : '',
          'path_snap' : '',
-         'path_fanart' : '',
-         'path_banner' : '',
-         'path_clearlogo' : '',
          'path_boxfront' : '',
          'path_boxback' : '',
          'path_cartridge' : '',
+         'path_fanart' : '',
+         'path_banner' : '',
+         'path_clearlogo' : '',
          'path_flyer' : '',
          'path_map' : '',
          'path_manual' : '',
@@ -222,12 +222,12 @@ def fs_new_rom():
          'pclone_status' : PCLONE_STATUS_NONE,
          's_title' : '',
          's_snap' : '',
-         's_fanart' : '',
-         's_banner' : '',
-         's_clearlogo' : '',
          's_boxfront' : '',
          's_boxback' : '',
          's_cartridge' : '',
+         's_fanart' : '',
+         's_banner' : '',
+         's_clearlogo' : '',
          's_flyer' : '',
          's_map' : '',
          's_manual' : '',
@@ -534,12 +534,12 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('roms_default_clearlogo', launcher['roms_default_clearlogo']))
             str_list.append(XML_text('path_title', launcher['path_title']))
             str_list.append(XML_text('path_snap', launcher['path_snap']))
-            str_list.append(XML_text('path_fanart', launcher['path_fanart']))
-            str_list.append(XML_text('path_banner', launcher['path_banner']))
-            str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
             str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
             str_list.append(XML_text('path_boxback', launcher['path_boxback']))
             str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
+            str_list.append(XML_text('path_fanart', launcher['path_fanart']))
+            str_list.append(XML_text('path_banner', launcher['path_banner']))
+            str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
             str_list.append(XML_text('path_flyer', launcher['path_flyer']))
             str_list.append(XML_text('path_map', launcher['path_map']))
             str_list.append(XML_text('path_manual', launcher['path_manual']))

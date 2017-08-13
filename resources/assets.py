@@ -50,9 +50,9 @@ LAUNCHER_ASSET_LIST = [
 ]
 
 ROM_ASSET_LIST = [
-    ASSET_TITLE,     ASSET_SNAP,      ASSET_BOXFRONT, ASSET_BOXBACK,
-    ASSET_CARTRIDGE, ASSET_CARTRIDGE, ASSET_FANART,   ASSET_CLEARLOGO,  
-    ASSET_FLYER,     ASSET_MAP,       ASSET_MANUAL,   ASSET_TRAILER
+    ASSET_TITLE,     ASSET_SNAP,   ASSET_BOXFRONT, ASSET_BOXBACK,
+    ASSET_CARTRIDGE, ASSET_FANART, ASSET_BANNER,   ASSET_CLEARLOGO,  
+    ASSET_FLYER,     ASSET_MAP,    ASSET_MANUAL,   ASSET_TRAILER
 ]
 
 # --- Plugin will search these file extensions for assets ---
@@ -114,12 +114,12 @@ def assets_init_asset_dir(assets_path_FName, launcher):
     if launcher['platform'] == 'MAME':
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'cabinets')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'cpanels')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'PCBs')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
@@ -127,12 +127,12 @@ def assets_init_asset_dir(assets_path_FName, launcher):
     else:
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'boxfronts')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'boxbacks')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'cartridges')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
