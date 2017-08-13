@@ -38,6 +38,8 @@ WIP      Think about exporting the AEL platform database using JSON-LD in accord
          Garbear's idea.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
 
+WIP      Update MAME Offline Scraper database to version 0.188 or 0.189
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
 
@@ -55,10 +57,12 @@ FEATURE  Renamed 's_flyer' -> 's_poster' in Categories/Launchers/Collections.
 
 FEATURE  Renamed 'roms_default_thumb' -> 'roms_default_icon' in Launchers.
 
+WIP      Improve Retroplayer support.
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
+         and https://alwinesch.github.io/group__python__xbmcgui__listitem.html#ga0f1e91e1d5aa61d8dd0eac90e8edbf18
+
 WIP      Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
-
-WIP      Update MAME Offline Scraper database to version 0.188 or 0.189
 
 WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
          selected scraper. This will require a redesign of the current scraping engine.
@@ -67,9 +71,6 @@ WIP      ROM scanner should be able to scrap all assets, not just the ones suppo
 WIP      Add an option to suspend/resume joystick support at launch. This is to prevent Kodi
          and the launched app to grab joystick events.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
-
-WIP      Improve Retroplayer support.
-         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
 
 FEATURE  Removed ElementTree dependency in addon.xml. It's not longer needed.
          AEL ONLY WORKS ON KRYPTON NOW!!!

@@ -2893,7 +2893,7 @@ class Main:
 
         # --- Set Category artwork ---
         # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
-        icon_path      = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
+        icon_path      = asset_get_default_asset_Category(category_dic, 'default_icon', 'DefaultFolder.png')
         fanart_path    = asset_get_default_asset_Category(category_dic, 'default_fanart')
         banner_path    = asset_get_default_asset_Category(category_dic, 'default_banner')
         poster_path    = asset_get_default_asset_Category(category_dic, 'default_poster')
@@ -3362,25 +3362,26 @@ class Main:
         # >>     skin. If year is not set then the correct icon is shown.
         if launcher_dic['m_year']:
             listitem.setInfo('video', {'title'   : launcher_name,             'year'    : launcher_dic['m_year'],
-                                       'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
-                                       'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
+                                       'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
+                                       'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
                                        'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         else:
             listitem.setInfo('video', {'title'   : launcher_name,
-                                       'genre'   : launcher_dic['m_genre'],   'plot'    : launcher_dic['m_plot'],
-                                       'studio'  : launcher_dic['m_studio'],  'rating'  : launcher_dic['m_rating'],
+                                       'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
+                                       'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
                                        'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty('platform', launcher_dic['platform'])
 
         # --- Set ListItem artwork ---
         kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-        icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_thumb', kodi_thumb)
+        icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_icon', kodi_thumb)
         fanart_path    = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
         banner_path    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
         poster_path    = asset_get_default_asset_Category(launcher_dic, 'default_poster')
         clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
-        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path,
-                         'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
+        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 'banner' : banner_path,
+                         'poster' : poster_path, 'clearlogo' : clearlogo_path,
+                         'controller' : launcher_dic['s_controller']})
 
         # --- Create context menu ---
         # Categories/Launchers/ROMs context menu order
@@ -3649,8 +3650,7 @@ class Main:
         #      function. A lot of ifs will be avoided here and that will increase speed.
         rom_raw_name = rom['m_name']
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            kodi_def_thumb  = 'DefaultProgram.png'
-            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
@@ -3672,8 +3672,7 @@ class Main:
             elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            kodi_def_thumb  = 'DefaultProgram.png'
-            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
@@ -3695,8 +3694,7 @@ class Main:
             elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
         elif categoryID == VCATEGORY_RECENT_ID:
-            kodi_def_thumb  = 'DefaultProgram.png'
-            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
@@ -3704,8 +3702,7 @@ class Main:
             platform       = rom['platform']
             rom_name = rom_raw_name
         elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-            kodi_def_thumb  = 'DefaultProgram.png'
-            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
@@ -3720,8 +3717,7 @@ class Main:
              categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
              categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
-            kodi_def_thumb  = 'DefaultProgram.png'
-            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_thumb', kodi_def_thumb)
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
@@ -3750,8 +3746,8 @@ class Main:
         else:
             # >> If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
-            kodi_def_thumb = launcher['s_thumb'] if launcher['s_thumb'] else 'DefaultProgram.png'
-            icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_thumb)
+            kodi_def_icon = launcher['s_icon'] if launcher['s_icon'] else 'DefaultProgram.png'
+            icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_thumb', kodi_def_icon)
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
@@ -3798,13 +3794,13 @@ class Main:
         # >>     skin. If year is not set then the correct icon is shown.
         if rom['m_year']:
             listitem.setInfo('video', {'title'   : rom_name,         'year'    : rom['m_year'],
-                                       'genre'   : rom['m_genre'],   'plot'    : rom['m_plot'],
-                                       'studio'  : rom['m_studio'],  'rating'  : rom['m_rating'],
+                                       'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
+                                       'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
                                        'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
         else:
             listitem.setInfo('video', {'title'   : rom_name,
-                                       'genre'   : rom['m_genre'],   'plot'    : rom['m_plot'],
-                                       'studio'  : rom['m_studio'],  'rating'  : rom['m_rating'],
+                                       'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
+                                       'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
                                        'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty('nplayers', rom['m_nplayers'])
         listitem.setProperty('esrb', rom['m_esrb'])
@@ -8907,6 +8903,28 @@ class Main:
         self.categories = {}
         self.launchers = {}
         self.update_timestamp = fs_load_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+        # >> Traverse and fix Categories.
+        for category_id in self.categories:
+            category = self.categories[category_id]
+            if category['default_icon'] == 's_flyer':      category['default_icon'] = 's_poster'
+            if category['default_fanart'] == 's_flyer':    category['default_fanart'] = 's_poster'
+            if category['default_banner'] == 's_flyer':    category['default_banner'] = 's_poster'
+            if category['default_poster'] == 's_flyer':    category['default_poster'] = 's_poster'
+            if category['default_clearlogo'] == 's_flyer': category['default_clearlogo'] = 's_poster'
+
+        # >> Traverse and fix Launchers.
+        for launcher_id in self.launchers:
+            launcher = self.launchers[launcher_id]
+            if launcher['default_icon'] == 's_flyer':       launcher['default_icon'] = 's_poster'
+            if launcher['default_fanart'] == 's_flyer':     launcher['default_fanart'] = 's_poster'
+            if launcher['default_banner'] == 's_flyer':     launcher['default_banner'] = 's_poster'
+            if launcher['default_poster'] == 's_flyer':     launcher['default_poster'] = 's_poster'
+            if launcher['default_clearlogo'] == 's_flyer':  launcher['default_clearlogo'] = 's_poster'
+            if launcher['default_controller'] == 's_flyer': launcher['default_controller'] = 's_poster'
+
+        # >> Save categories.xml
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         pDialog.update(100)
         pDialog.close()
 
@@ -8930,15 +8948,15 @@ class Main:
                 for rom_id in roms: self._misc_fix_rom_object(roms[rom_id])
                 fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, roms)
 
-            # >> Also Save Categories/Launchers XML.
             # >> This updates timestamps and forces regeneration of Virtual Launchers.
             self.launchers[launcher_id]['timestamp_launcher'] = time.time()            
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # >> Update dialog
             processed_launchers += 1
             update_number = (float(processed_launchers) / float(num_launchers)) * 100 
             pDialog.update(int(update_number))
+        # >> Save categories.xml because launcher timestamps changed
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         pDialog.update(100)
         pDialog.close()
 
@@ -9016,20 +9034,14 @@ class Main:
             rom.pop('m_studio')
 
     def _misc_fix_Favourite_rom_object(self, rom):
-        # --- Add new fields if not present ---
-        if not 'm_nplayers'    in rom: rom['m_nplayers']    = ''
-        if not 'm_esrb'        in rom: rom['m_esrb']        = ESRB_PENDING
-        if not 'disks'         in rom: rom['disks']         = []
-        if not 'pclone_status' in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
-        # --- Delete unwanted/obsolete stuff ---
-        if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
-        # --- DB field renamings ---
-        if 'm_studio' in rom:
-            rom['m_developer'] = rom['m_studio']
-            rom.pop('m_studio')
+        # --- Fix standard ROM fields ---
+        self._misc_fix_rom_object(rom)
 
         # --- Favourite ROMs additional stuff ---
         if not 'args_extra' in rom: rom['args_extra'] = []
+        if 'roms_default_thumb' in rom:
+            rom['roms_default_icon'] = rom['roms_default_thumb']
+            rom.pop('roms_default_thumb')
 
     #
     # A set of functions to help making plugin URLs
