@@ -652,28 +652,28 @@ class Main:
         elif type == 1:
             category = self.categories[categoryID]
 
-            # >> Create label2 and image ListItem fields
-            label2_thumb     = category['s_thumb']     if category['s_thumb']     else 'Not set'
+            # >> Lisitem elements and label2
+            label2_icon      = category['s_icon']      if category['s_icon']      else 'Not set'
             label2_fanart    = category['s_fanart']    if category['s_fanart']    else 'Not set'
             label2_banner    = category['s_banner']    if category['s_banner']    else 'Not set'
-            label2_poster    = category['s_flyer']     if category['s_flyer']     else 'Not set'
+            label2_poster    = category['s_poster']    if category['s_poster']    else 'Not set'
             label2_clearlogo = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'
             label2_trailer   = category['s_trailer']   if category['s_trailer']   else 'Not set'
-            img_thumb        = category['s_thumb']     if category['s_thumb']     else 'DefaultAddonNone.png'
-            img_fanart       = category['s_fanart']    if category['s_fanart']    else 'DefaultAddonNone.png'
-            img_banner       = category['s_banner']    if category['s_banner']    else 'DefaultAddonNone.png'
-            img_poster       = category['s_flyer']     if category['s_flyer']     else 'DefaultAddonNone.png'
-            img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
-            img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
-
-            # >> Create ListItem objects for select dialog
-            thumb_listitem     = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_thumb)
+            icon_listitem      = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_icon)
             fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
             banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
             poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
             clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
             trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
-            thumb_listitem.setArt({'icon' : img_thumb})
+
+            # >> Set lisitem artwork with setArt
+            img_icon         = category['s_icon']      if category['s_icon']      else 'DefaultAddonNone.png'
+            img_fanart       = category['s_fanart']    if category['s_fanart']    else 'DefaultAddonNone.png'
+            img_banner       = category['s_banner']    if category['s_banner']    else 'DefaultAddonNone.png'
+            img_poster       = category['s_poster']    if category['s_poster']    else 'DefaultAddonNone.png'
+            img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
+            img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
+            icon_listitem.setArt({'icon' : img_icon})
             fanart_listitem.setArt({'icon' : img_fanart})
             banner_listitem.setArt({'icon' : img_banner})
             poster_listitem.setArt({'icon' : img_poster})
@@ -681,7 +681,7 @@ class Main:
             trailer_listitem.setArt({'icon' : img_trailer})
 
             # >> Execute select dialog
-            listitems = [thumb_listitem, fanart_listitem, banner_listitem,
+            listitems = [icon_listitem, fanart_listitem, banner_listitem,
                          poster_listitem, clearlogo_listitem, trailer_listitem]
             type2 = dialog.select('Edit Category Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
@@ -689,9 +689,9 @@ class Main:
             # --- Edit Assets ---
             # >> If this function returns False no changes were made. No need to save categories XML
             # >> and update container.
-            asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER]
             asset_kind = asset_list[type2]
-            if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, launcher): return
+            if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, category): return
 
         # --- Choose default thumb/fanart ---
         elif type == 2:
@@ -1219,44 +1219,49 @@ class Main:
         if type == type_nb:
             launcher = self.launchers[launcherID]
 
-            # >> Create label2 and image ListItem fields
-            label2_thumb     = launcher['s_thumb']     if launcher['s_thumb']     else 'Not set'
-            label2_fanart    = launcher['s_fanart']    if launcher['s_fanart']    else 'Not set'
-            label2_banner    = launcher['s_banner']    if launcher['s_banner']    else 'Not set'
-            label2_poster    = launcher['s_flyer']     if launcher['s_flyer']     else 'Not set'
-            label2_clearlogo = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'Not set'
-            label2_trailer   = launcher['s_trailer']   if launcher['s_trailer']   else 'Not set'
-            img_thumb        = launcher['s_thumb']     if launcher['s_thumb']     else 'DefaultAddonNone.png'
-            img_fanart       = launcher['s_fanart']    if launcher['s_fanart']    else 'DefaultAddonNone.png'
-            img_banner       = launcher['s_banner']    if launcher['s_banner']    else 'DefaultAddonNone.png'
-            img_poster       = launcher['s_flyer']     if launcher['s_flyer']     else 'DefaultAddonNone.png'
-            img_clearlogo    = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'
-            img_trailer      = 'DefaultAddonVideo.png' if launcher['s_trailer']   else 'DefaultAddonNone.png'
+            # >> Create ListItems and label2
+            label2_icon       = launcher['s_icon']       if launcher['s_icon']      else 'Not set'
+            label2_fanart     = launcher['s_fanart']     if launcher['s_fanart']    else 'Not set'
+            label2_banner     = launcher['s_banner']     if launcher['s_banner']    else 'Not set'
+            label2_poster     = launcher['s_poster']     if launcher['s_poster']     else 'Not set'
+            label2_clearlogo  = launcher['s_clearlogo']  if launcher['s_clearlogo'] else 'Not set'
+            label2_controller = launcher['s_controller'] if launcher['s_controller'] else 'Not set'
+            label2_trailer    = launcher['s_trailer']    if launcher['s_trailer']   else 'Not set'
+            icon_listitem       = xbmcgui.ListItem(label = 'Edit Icon ...', label2 = label2_icon)
+            fanart_listitem     = xbmcgui.ListItem(label = 'Edit Fanart ...', label2 = label2_fanart)
+            banner_listitem     = xbmcgui.ListItem(label = 'Edit Banner ...', label2 = label2_banner)
+            poster_listitem     = xbmcgui.ListItem(label = 'Edit Poster ...', label2 = label2_poster)
+            clearlogo_listitem  = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
+            controller_listitem = xbmcgui.ListItem(label = 'Edit Controller ...', label2 = label2_controller)
+            trailer_listitem    = xbmcgui.ListItem(label = 'Edit Trailer ...', label2 = label2_trailer)
 
-            # >> Create ListItem objects for select dialog
-            thumb_listitem = xbmcgui.ListItem(label = 'Edit Icon ...', label2 = label2_thumb)
-            fanart_listitem = xbmcgui.ListItem(label = 'Edit Fanart ...', label2 = label2_fanart)
-            banner_listitem = xbmcgui.ListItem(label = 'Edit Banner ...', label2 = label2_banner)
-            poster_listitem = xbmcgui.ListItem(label = 'Edit Poster ...', label2 = label2_poster)
-            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
-            trailer_listitem = xbmcgui.ListItem(label = 'Edit Trailer ...', label2 = label2_trailer)
-            thumb_listitem.setArt({'icon' : img_thumb})
+            # >> Set artwork with setArt()
+            img_icon       = launcher['s_icon']       if launcher['s_icon']     else 'DefaultAddonNone.png'
+            img_fanart     = launcher['s_fanart']     if launcher['s_fanart']    else 'DefaultAddonNone.png'
+            img_banner     = launcher['s_banner']     if launcher['s_banner']    else 'DefaultAddonNone.png'
+            img_poster     = launcher['s_poster']     if launcher['s_poster']     else 'DefaultAddonNone.png'
+            img_clearlogo  = launcher['s_clearlogo']  if launcher['s_clearlogo'] else 'DefaultAddonNone.png'
+            img_controller = launcher['s_controller'] if launcher['s_controller'] else 'DefaultAddonNone.png'
+            img_trailer    = 'DefaultAddonVideo.png'  if launcher['s_trailer']   else 'DefaultAddonNone.png'
+            icon_listitem.setArt({'icon' : img_icon})
             fanart_listitem.setArt({'icon' : img_fanart})
             banner_listitem.setArt({'icon' : img_banner})
             poster_listitem.setArt({'icon' : img_poster})
             clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            controller_listitem.setArt({'icon' : img_controller})
             trailer_listitem.setArt({'icon' : img_trailer})
 
             # >> Execute select dialog
-            listitems = [thumb_listitem, fanart_listitem, banner_listitem,
-                         poster_listitem, clearlogo_listitem, trailer_listitem]
+            listitems = [icon_listitem, fanart_listitem, banner_listitem, poster_listitem,
+                         clearlogo_listitem, controller_listitem, trailer_listitem]
             type2 = dialog.select('Edit Launcher Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
             # --- Edit Assets ---
             # >> If this function returns False no changes were made. No need to save categories XML
             # >> and update container.
-            asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER,
+                          ASSET_CLEARLOGO, ASSET_CONTROLLER, ASSET_TRAILER]
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_LAUNCHER, asset_kind, launcher): return
 
