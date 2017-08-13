@@ -8871,8 +8871,8 @@ class Main:
         if not import_FN.exists(): return
 
         # --- Import stuff ---
-        # >> This function notifies the user if importing is succesful or not.
-        autoconfig_import_launchers(CATEGORIES_FILE_PATH, self.categories, self.launchers, import_FN)
+        # >> This function notifies the user if importing is succesful or not. It also saves categories.xml
+        autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, self.categories, self.launchers, import_FN)
 
     #
     # Export AEL launcher configuration
