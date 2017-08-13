@@ -545,7 +545,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         # for file in file_list: log_debug('--- "{0}"'.format(file))
 
         # >> Traverse list of category assets and search for image files for each asset
-        for laun_asset in CATEGORY_ASSET_LIST:
+        for laun_asset in LAUNCHER_ASSET_LIST:
             # >> Bypass trailers now
             if laun_asset == ASSET_TRAILER: continue
 
