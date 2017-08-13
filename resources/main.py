@@ -8891,7 +8891,7 @@ class Main:
 
         # --- Export stuff ---        
         # >> This function notifies the user if exporting is succesful.
-        autoconfig_export_launchers(export_FN)
+        autoconfig_export_all(self.categories, self.launchers, export_FN)
 
     #
     # Checks all databases and tries to update to newer version if possible

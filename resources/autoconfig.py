@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Advanced Emulator Launcher XML autoconfiguration stuff
+# Advanced Emulator Launcher XML autoconfiguration stuff.
 #
 
 # Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
@@ -39,31 +39,48 @@ from platforms import *
 # Exports launchers to an XML file.
 # Currently categories are not supported.
 # -------------------------------------------------------------------------------------------------
-def autoconfig_export_launchers(export_FN):
+def autoconfig_export_all(categories, launchers, export_FN):
     # >> Traverse all launchers and add to the XML file.
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     str_list.append('<advanced_emulator_launcher_configuration>\n')
-    for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
-        # >> Data which is not string must be converted to string
-        launcher = self.launchers[launcherID]
-        if launcher['categoryID'] in self.categories:
-            category_name = self.categories[launcher['categoryID']]['m_name']
+
+    # --- Export Categories ---
+    # >> Data which is not string must be converted to string
+    for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
+        category = categories[categoryID]
+        log_verb('autoconfig_export_all() Category "{0}" (ID "{1}")'.format(category['m_name'], categoryID))
+        # >> Export Category
+        str_list.append('<category>\n')
+        str_list.append(XML_text('name', category['m_name']))
+        str_list.append(XML_text('genre', category['m_genre']))
+        str_list.append(XML_text('rating', category['m_rating']))
+        str_list.append(XML_text('plot', category['m_plot']))
+        # >> asset_prefix not implemented yet.
+        str_list.append(XML_text('asset_prefix', ''))
+        str_list.append('</category>\n')
+
+    # --- Export Launchers ---
+    # >> Data which is not string must be converted to string
+    for launcherID in sorted(launchers, key = lambda x : launchers[x]['m_name']):
+        launcher = launchers[launcherID]
+        if launcher['categoryID'] in categories:
+            category_name = categories[launcher['categoryID']]['m_name']
         elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
             category_name = VCATEGORY_ADDONROOT_ID
         else:
             kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
             return
-        log_verb('_command_export_launchers() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
+        log_verb('autoconfig_export_all() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
 
         # >> WORKAROUND Take titles path and remove trailing subdirectory.
         path_titles = launcher['path_title']
-        log_verb('_command_export_launchers() path_titles "{0}"'.format(path_titles))
+        log_verb('autoconfig_export_all() path_titles "{0}"'.format(path_titles))
         (head, tail) = os.path.split(path_titles)
-        log_verb('_command_export_launchers() head        "{0}"'.format(head))
-        log_verb('_command_export_launchers() tail        "{0}"'.format(tail))
+        log_verb('autoconfig_export_all() head        "{0}"'.format(head))
+        log_verb('autoconfig_export_all() tail        "{0}"'.format(tail))
         path_assets = head
-        log_verb('_command_export_launchers() path_assets "{0}"'.format(path_assets))
+        log_verb('autoconfig_export_all() path_assets "{0}"'.format(path_assets))
 
         # >> Export Launcher
         str_list.append('<launcher>\n')
@@ -71,7 +88,7 @@ def autoconfig_export_launchers(export_FN):
         str_list.append(XML_text('category', category_name))
         str_list.append(XML_text('year', launcher['m_year']))
         str_list.append(XML_text('genre', launcher['m_genre']))
-        str_list.append(XML_text('studio', launcher['m_studio']))
+        str_list.append(XML_text('developer', launcher['m_developer']))
         str_list.append(XML_text('rating', launcher['m_rating']))
         str_list.append(XML_text('plot', launcher['m_plot']))
         str_list.append(XML_text('platform', launcher['platform']))
@@ -81,17 +98,10 @@ def autoconfig_export_launchers(export_FN):
             for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
         else:
             str_list.append(XML_text('args_extra', ''))
-        str_list.append(XML_text('rompath', launcher['rompath']))
-        str_list.append(XML_text('romext', launcher['romext']))
-        # >> Assets not supported yet. Can be changed with the graphical interface.
-        # str_list.append(XML_text('thumb', launcher['s_thumb']))
-        # str_list.append(XML_text('fanart', launcher['s_fanart']))
-        # str_list.append(XML_text('banner', launcher['s_banner']))
-        # str_list.append(XML_text('flyer', launcher['s_flyer']))
-        # str_list.append(XML_text('clearlogo', launcher['s_clearlogo']))
-        # str_list.append(XML_text('trailer', launcher['s_trailer']))
-        # >> path_assets supported
-        str_list.append(XML_text('path_assets', path_assets))
+        str_list.append(XML_text('asset_prefix', ''))
+        str_list.append(XML_text('ROM_path', launcher['rompath']))
+        str_list.append(XML_text('ROM_ext', launcher['romext']))
+        str_list.append(XML_text('ROM_asset_path', path_assets))
         str_list.append('</launcher>\n')
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
@@ -103,16 +113,16 @@ def autoconfig_export_launchers(export_FN):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        log_error('(OSError) Cannot write categories.xml file')
-        kodi_notify_warn('(OSError) Cannot write categories.xml file')
+        log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
         return
     except IOError:
-        log_error('(IOError) Cannot write categories.xml file')
-        kodi_notify_warn('(IOError) Cannot write categories.xml file')
+        log_error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
         return
-    log_verb('_command_export_launchers() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
-    log_verb('_command_export_launchers() Exported  P "{0}"'.format(export_FN.getPath()))
-    kodi_notify('Exported AEL Launchers configuration')
+    log_verb('autoconfig_export_all() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
+    log_verb('autoconfig_export_all() Exported  P "{0}"'.format(export_FN.getPath()))
+    kodi_notify('Exported AEL Categories and Launchers XML configuration')
 
 # -------------------------------------------------------------------------------------------------
 # Import AEL launcher configuration
