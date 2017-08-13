@@ -6931,13 +6931,13 @@ class Main:
             log_info('_command_run_rom() Executing ROM with Kodi Retroplayer ...')
             # >> Create listitem object
             label_str = ROMFileName.getBase()
-            retro_listitem = xbmcgui.ListItem(label = label_str, label2 = label_str)
+            listitem = xbmcgui.ListItem(label = label_str, label2 = label_str)
             # >> Listitem metadata
             # >> How to fill gameclient = string (game.libretro.fceumm) ???
-            retro_listitem.setInfo(type = 'game', 
-                                   {'title'    : label_str,            'platform': 'Test platform',
-                                    'genres'   : list(rom['m_genre']), 'developer': rom['m_developer'],
-                                    'overview' : rom['m_plot'],        'year': rom['m_year']})
+            genre_list = list(rom['m_genre'])
+            listitem.setInfo('game', {'title'    : label_str,     'platform'  : 'Test platform',
+                                      'genres'   : genre_list,    'developer' : rom['m_developer'],
+                                      'overview' : rom['m_plot'], 'year'      : rom['m_year'] })
             log_info('_command_run_rom() application.getOriginalPath() "{0}"'.format(application.getOriginalPath()))
             log_info('_command_run_rom() ROMFileName.getPath()         "{0}"'.format(ROMFileName.getPath()))
             log_info('_command_run_rom() label_str                     "{0}"'.format(label_str))
@@ -6947,7 +6947,7 @@ class Main:
                 kodi_notify('Launching "{0}" with Retroplayer'.format(romtitle))
 
             log_verb('_command_run_rom() Calling xbmc.Player().play() ...')
-            xbmc.Player().play(ROMFileName.getPath(), retro_listitem)
+            xbmc.Player().play(ROMFileName.getPath(), listitem)
             log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
             return
         else:
