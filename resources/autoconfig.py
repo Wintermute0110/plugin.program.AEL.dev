@@ -281,11 +281,6 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, categories, launchers, imp
             # >> Import launcher. Only import fields that are not empty strings.
             autoconfig_import_category(categories, s_categoryID, i_category, import_FN)
 
-    # >> DEBUG
-    fs_write_catfile(CATEGORIES_FILE_PATH, categories, launchers)
-    kodi_refresh_container()
-    return
-
     # >> Traverse launcher import list and import all launchers found in XML file.
     # A) Match categories by name. If multiple categories with same name pick the first one.
     # B) If category does not exist create a new one.
@@ -298,7 +293,7 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, categories, launchers, imp
         (s_categoryID, s_launcherID) = autoconfig_search_all_by_name(i_launcher, categories, launchers)
         log_debug('s_launcher = "{0}"'.format(s_launcherID))
         log_debug('s_category = "{0}"'.format(s_categoryID))
-        
+
         # --- Options ---
         # NOTE If category not found then create a new one for this imported launcher
         # A) Category not found. This implies launcher not found.
@@ -321,12 +316,12 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, categories, launchers, imp
             launcherdata['id'] = launcherID
             launcherdata['categoryID'] = categoryID
             launcherdata['timestamp_launcher'] = time.time()
-            self.launchers[launcherID] = launcherdata
+            launchers[launcherID] = launcherdata
             log_debug('New Launcher "{0}" (ID {1})'.format(i_launcher['name'], launcherID))
 
             # >> Import launcher. Only import fields that are not empty strings.
             # >> Function edits self.launchers dictionary using first argument key
-            autoconfig_import_launcher(launcherID, i_launcher, i_launcher['category'])
+            autoconfig_import_launcher(launchers, launcherID, i_launcher, import_FN)
 
         elif s_categoryID and not s_launcherID:
             # >> Create new launcher inside existing category and import launcher.
@@ -336,11 +331,11 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, categories, launchers, imp
             launcherdata['id'] = launcherID
             launcherdata['categoryID'] = s_categoryID
             launcherdata['timestamp_launcher'] = time.time()
-            self.launchers[launcherID] = launcherdata
+            launchers[launcherID] = launcherdata
             log_debug('New Launcher "{0}" (ID {1})'.format(i_launcher['name'], launcherID))
 
             # >> Import launcher. Only import fields that are not empty strings.
-            autoconfig_import_launcher(launcherID, i_launcher, i_launcher['category'])
+            autoconfig_import_launcher(launchers, launcherID, i_launcher, import_FN)
 
         else:
             # >> Both category and launcher exists (by name). Overwrite?
@@ -351,15 +346,12 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, categories, launchers, imp
             if ret < 1: continue
 
             # >> Import launcher. Only import fields that are not empty strings.
-            autoconfig_import_launcher(s_launcherID, i_launcher, i_launcher['category'])
+            autoconfig_import_launcher(launchers, s_launcherID, i_launcher, import_FN)
 
     # --- Save Categories/Launchers, update timestamp and notify user ---
     fs_write_catfile(CATEGORIES_FILE_PATH, categories, launchers)
     kodi_refresh_container()
-    if len(imported_launchers_list) == 1:
-        kodi_notify('Imported Launcher "{0}" configuration'.format(imported_launchers_list[0]['name']))
-    else:
-        kodi_notify('Imported {0} Launcher configurations'.format(len(imported_launchers_list)))
+    kodi_notify('Finished importing Categories/Launchers')
 
 #
 # Imports/edits a category.
@@ -384,7 +376,7 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         categories[categoryID]['m_plot'] = i_category['plot']
         log_debug('Imported m_plot   = "{0}"'.format(i_category['plot']))
 
-    # --- Category assets ---
+    # --- Category assets/artwork ---
     if i_category['asset_prefix']:
         asset_prefix = i_category['asset_prefix']
         log_debug('Importing category assets with prefix "{0}"'.format(asset_prefix))
@@ -441,7 +433,7 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
 #
 # Never change i_launcher['id'] or i_launcher['categoryID'] in this function.
 #
-def autoconfig_import_launcher(self, s_launcherID, i_launcher, category_name):
+def autoconfig_import_launcher(launchers, s_launcherID, i_launcher, import_FN):
     log_debug('autoconfig_import_category() s_launcherID = {0}'.format(s_launcherID))
 
     # --- Launcher metadata ---
@@ -452,18 +444,23 @@ def autoconfig_import_launcher(self, s_launcherID, i_launcher, category_name):
         log_debug('new_launcher_name "{0}"'.format(new_launcher_name))
         self.launchers[s_launcherID]['m_name'] = i_launcher['name']
         log_debug('Imported m_name      = "{0}"'.format(i_launcher['name']))
+
     if i_launcher['year']:
         self.launchers[s_launcherID]['m_year'] = i_launcher['year']
         log_debug('Imported m_year      = "{0}"'.format(i_launcher['year']))
+
     if i_launcher['genre']:
         self.launchers[s_launcherID]['m_genre'] = i_launcher['genre']
         log_debug('Imported m_genre     = "{0}"'.format(i_launcher['genre']))
+
     if i_launcher['studio']:
         self.launchers[s_launcherID]['m_studio'] = i_launcher['studio']
         log_debug('Imported m_studio    = "{0}"'.format(i_launcher['studio']))
+
     if i_launcher['rating']:
         self.launchers[s_launcherID]['m_rating'] = i_launcher['rating']
         log_debug('Imported m_rating    = "{0}"'.format(i_launcher['rating']))
+
     if i_launcher['plot']:
         self.launchers[s_launcherID]['m_plot'] = i_launcher['plot']
         log_debug('Imported m_plot      = "{0}"'.format(i_launcher['plot']))
@@ -510,7 +507,8 @@ def autoconfig_import_launcher(self, s_launcherID, i_launcher, category_name):
         self.launchers[s_launcherID]['romext'] = i_launcher['romext']
         log_debug('Imported romext      = "{0}"'.format(i_launcher['romext']))
 
-    # --- Assets (not supported at the moment) ---
+    # --- Launcher assets/artwork ---
+    # >> Have a look at autoconfig_import_category() for a reference implementation.
     if i_launcher['path_assets']:
         Path_assets_FN = FileName(i_launcher['path_assets'])
         log_debug('Path_assets_FN OP "{0}"'.format(Path_assets_FN.getOriginalPath()))
