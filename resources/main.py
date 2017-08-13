@@ -6040,7 +6040,7 @@ class Main:
         info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(rom['m_name'])
         info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(rom['m_year'])
         info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(rom['m_genre'])
-        info_text += "[COLOR violet]m_studio[/COLOR]: '{0}'\n".format(rom['m_studio'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(rom['m_developer'])
         info_text += "[COLOR violet]m_nplayers[/COLOR]: '{0}'\n".format(rom['m_nplayers'])
         info_text += "[COLOR violet]m_esrb[/COLOR]: '{0}'\n".format(rom['m_esrb'])
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(rom['m_rating'])
@@ -6052,6 +6052,7 @@ class Main:
         info_text += "[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
         info_text += "[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
+        info_text += "[COLOR violet]pclone_status[/COLOR]: '{0}'\n".format(rom['pclone_status'])
         # >> Assets/artwork
         info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
         info_text += "[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
@@ -6078,15 +6079,17 @@ class Main:
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(rom['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(rom['minimize'])
-        # >> launch_count only in Favourite ROMs in "Most played ROms"
-        if 'launch_count' in rom:
-            info_text += "[COLOR skyblue]launch_count[/COLOR]: {0}\n".format(rom['launch_count'])
-        info_text += "[COLOR violet]fav_status[/COLOR]: '{0}'\n".format(rom['fav_status'])
-        info_text += "[COLOR violet]roms_default_thumb[/COLOR]: '{0}'\n".format(rom['roms_default_thumb'])
+        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(rom['roms_default_icon'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(rom['roms_default_fanart'])
         info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
         info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(rom['roms_default_poster'])
         info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(rom['roms_default_clearlogo'])
+
+        # >> Favourite ROMs unique fields.
+        info_text += "[COLOR violet]fav_status[/COLOR]: '{0}'\n".format(rom['fav_status'])
+        # >> 'launch_count' only in Favourite ROMs in "Most played ROMs"
+        if 'launch_count' in rom:
+            info_text += "[COLOR skyblue]launch_count[/COLOR]: {0}\n".format(rom['launch_count'])
 
         return info_text
 
@@ -6096,7 +6099,7 @@ class Main:
         info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(launcher['m_name'])
         info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(launcher['m_year'])
         info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(launcher['m_genre'])
-        info_text += "[COLOR violet]m_studio[/COLOR]: '{0}'\n".format(launcher['m_studio'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(launcher['m_developer'])
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(launcher['m_rating'])
         info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(launcher['m_plot'])
 
@@ -6123,24 +6126,25 @@ class Main:
         info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
         info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
 
-        info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(launcher['default_thumb'])
+        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(launcher['default_icon'])
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher['default_fanart'])
         info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(launcher['default_banner'])
         info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(launcher['default_poster'])
         info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(launcher['default_clearlogo'])
-        info_text += "[COLOR violet]roms_default_thumb[/COLOR]: '{0}'\n".format(launcher['roms_default_thumb'])
+        info_text += "[COLOR violet]default_controller[/COLOR]: '{0}'\n".format(launcher['default_controller'])
+        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(launcher['s_icon'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(launcher['s_banner'])
+        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(launcher['s_poster'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(launcher['s_clearlogo'])
+        info_text += "[COLOR violet]s_controller[/COLOR]: '{0}'\n".format(launcher['s_controller'])
+        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(launcher['s_trailer'])
+
+        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(launcher['roms_default_icon'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(launcher['roms_default_fanart'])
         info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(launcher['roms_default_banner'])
         info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(launcher['roms_default_poster'])
         info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(launcher['roms_default_clearlogo'])
-
-        info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(launcher['s_thumb'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(launcher['s_banner'])
-        info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(launcher['s_flyer'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(launcher['s_clearlogo'])
-        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(launcher['s_trailer'])
-
         info_text += "[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher['path_title'])
         info_text += "[COLOR violet]path_snap[/COLOR]: '{0}'\n".format(launcher['path_snap'])
         info_text += "[COLOR violet]path_fanart[/COLOR]: '{0}'\n".format(launcher['path_fanart'])
@@ -6161,18 +6165,18 @@ class Main:
         info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
         info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(category['m_name'])
         info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(category['m_genre'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(category['m_plot'])
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(category['m_rating'])
-        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])        
-        info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(category['default_thumb'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(category['m_plot'])
+        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])
+        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(category['default_icon'])
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(category['default_fanart'])
         info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(category['default_banner'])
         info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(category['default_poster'])
         info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(category['default_clearlogo'])
-        info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(category['s_thumb'])
+        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(category['s_icon'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(category['s_fanart'])
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(category['s_banner'])
-        info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(category['s_flyer'])
+        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(category['s_poster'])
         info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(category['s_clearlogo'])
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(category['s_trailer'])
 
@@ -6186,15 +6190,15 @@ class Main:
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(collection['m_rating'])
         info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(collection['m_plot'])
         info_text += "[COLOR violet]roms_base_noext[/COLOR]: {0}\n".format(collection['roms_base_noext'])
-        info_text += "[COLOR violet]default_thumb[/COLOR]: '{0}'\n".format(collection['default_thumb'])
+        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(collection['default_icon'])
         info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(collection['default_fanart'])
         info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(collection['default_banner'])
         info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(collection['default_poster'])
         info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(collection['default_clearlogo'])
-        info_text += "[COLOR violet]s_thumb[/COLOR]: '{0}'\n".format(collection['s_thumb'])
+        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(collection['s_icon'])
         info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(collection['s_fanart'])
         info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(collection['s_banner'])
-        info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(collection['s_flyer'])
+        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(collection['s_poster'])
         info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(collection['s_clearlogo'])
         info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(collection['s_trailer'])
 
@@ -8955,7 +8959,7 @@ class Main:
         pDialog.update(100)
         pDialog.close()
 
-        # >> Traverse every ROM Collection and check/update.
+        # >> Traverse every ROM Collection database and check/update Favourite ROMs.
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         pDialog.create('Advanced Emulator Launcher', 'Checking Collection ROMs ...')
         num_collections = len(collections)
@@ -8977,7 +8981,6 @@ class Main:
         pDialog.create('Advanced Emulator Launcher', 'Checking Most Played ROMs ...')
         most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
         for rom_id in most_played_roms:
-            # >> Get ROM object
             rom = most_played_roms[rom_id]
             self._misc_fix_Favourite_rom_object(rom)
         fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
@@ -9000,24 +9003,33 @@ class Main:
     # ROM dictionary is edited by Python passing by assigment
     #
     def _misc_fix_rom_object(self, rom):
-        # >> Add empty string fields m_nplayers, m_esrb if not present.
+        # --- Add new fields if not present ---
         if not 'm_nplayers'    in rom: rom['m_nplayers']    = ''
         if not 'm_esrb'        in rom: rom['m_esrb']        = ESRB_PENDING
         if not 'disks'         in rom: rom['disks']         = []
         if not 'pclone_status' in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
-        # >> Delete unwanted stuff
+        # --- Delete unwanted/obsolete stuff ---
         if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
+        # --- DB field renamings ---
+        if 'm_studio' in rom:
+            rom['m_developer'] = rom['m_studio']
+            rom.pop('m_studio')
 
     def _misc_fix_Favourite_rom_object(self, rom):
-        # >> Add empty string fields m_nplayers, m_esrb, disks if not present.
+        # --- Add new fields if not present ---
         if not 'm_nplayers'    in rom: rom['m_nplayers']    = ''
         if not 'm_esrb'        in rom: rom['m_esrb']        = ESRB_PENDING
         if not 'disks'         in rom: rom['disks']         = []
         if not 'pclone_status' in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
-        # >> Delete unwanted stuff
+        # --- Delete unwanted/obsolete stuff ---
         if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
-        # >> args_extra empty list
-        if not 'args_extra'    in rom: rom['args_extra']    = []
+        # --- DB field renamings ---
+        if 'm_studio' in rom:
+            rom['m_developer'] = rom['m_studio']
+            rom.pop('m_studio')
+
+        # --- Favourite ROMs additional stuff ---
+        if not 'args_extra' in rom: rom['args_extra'] = []
 
     #
     # A set of functions to help making plugin URLs

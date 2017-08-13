@@ -54,11 +54,10 @@ JSON_separators = (',', ':')
 # Internally all string in the data model are Unicode. They will be encoded to
 # UTF-8 when writing files.
 # -------------------------------------------------------------------------------------------------
-# These three functions create a new data structure for the given object
-# and (very importantly) fill the correct default values). These must match
-# what is written/read from/to the XML files.
-#
+# These three functions create a new data structure for the given object and (very importantly) 
+# fill the correct default values). These must match what is written/read from/to the XML files.
 # Tag name in the XML is the same as in the data dictionary.
+#
 def fs_new_category():
     c = {'id' : '',
          'm_name' : '',
@@ -66,15 +65,15 @@ def fs_new_category():
          'm_rating' : '',
          'm_plot' : '',
          'finished' : False,
-         'default_thumb' : 's_thumb',
+         'default_icon' : 's_icon',
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
-         'default_poster' : 's_flyer',
+         'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
-         's_thumb' : '',
+         's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
-         's_flyer' : '',
+         's_poster' : '',
          's_clearlogo' : '',
          's_trailer' : ''
          }
@@ -104,7 +103,7 @@ def fs_new_launcher():
          'm_name' : '',
          'm_year' : '',
          'm_genre' : '',
-         'm_studio' : '',
+         'm_developer' : '',
          'm_rating' : '',
          'm_plot' : '',
          'platform' : '',
@@ -128,22 +127,24 @@ def fs_new_launcher():
          'num_unknown' : 0,
          'timestamp_launcher' : 0.0,
          'timestamp_report' : 0.0,
-         'default_thumb' : 's_thumb',
+         'default_icon' : 's_icon',
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
-         'default_poster' : 's_flyer',
+         'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
-         'roms_default_thumb' : 's_boxfront',
+         'default_controller' : 's_controller',
+         's_icon' : '',
+         's_fanart' : '',
+         's_banner' : '',
+         's_poster' : '',
+         's_clearlogo' : '',
+         's_controller' : '',
+         's_trailer' : '',
+         'roms_default_icon' : 's_boxfront',
          'roms_default_fanart' : 's_fanart',
          'roms_default_banner' : 's_banner',
          'roms_default_poster' : 's_flyer',
          'roms_default_clearlogo' : 's_clearlogo',
-         's_thumb' : '',
-         's_fanart' : '',
-         's_banner' : '',
-         's_flyer' : '',
-         's_clearlogo' : '',
-         's_trailer' : '',
          'path_title' : '',
          'path_snap' : '',
          'path_fanart' : '',
@@ -207,7 +208,7 @@ def fs_new_rom():
          'm_name' : '',
          'm_year' : '',
          'm_genre' : '',
-         'm_studio' : '',
+         'm_developer' : '',
          'm_nplayers' : '',
          'm_esrb' : ESRB_PENDING,
          'm_rating' : '',
@@ -242,15 +243,15 @@ def fs_new_collection():
          'm_rating' : '',
          'm_plot' : '',
          'roms_base_noext' : '',
-         'default_thumb' : 's_thumb',
+         'default_icon' : 's_icon',
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
-         'default_poster' : 's_flyer',
+         'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
-         's_thumb' : '',
+         's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
-         's_flyer' : '',
+         's_poster' : '',
          's_clearlogo' : '',
          's_trailer' : ''
     }
@@ -291,13 +292,14 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['rompath']                = launcher['rompath']
     favourite['romext']                 = launcher['romext']
     favourite['minimize']               = launcher['minimize']
-    favourite['roms_default_thumb']     = launcher['roms_default_thumb']
+    favourite['roms_default_icon']      = launcher['roms_default_icon']
     favourite['roms_default_fanart']    = launcher['roms_default_fanart']
     favourite['roms_default_banner']    = launcher['roms_default_banner']
     favourite['roms_default_poster']    = launcher['roms_default_poster']
     favourite['roms_default_clearlogo'] = launcher['roms_default_clearlogo']
 
     # >> Favourite ROM unique fields
+    # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
     favourite['fav_status'] = 'OK'
 
     return favourite
@@ -362,7 +364,7 @@ def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['m_name']         = source_rom['m_name']
     dest_rom['m_year']         = source_rom['m_year']
     dest_rom['m_genre']        = source_rom['m_genre']
-    dest_rom['m_studio']       = source_rom['m_studio']
+    dest_rom['m_developer']    = source_rom['m_developer']
     dest_rom['m_rating']       = source_rom['m_rating']
     dest_rom['m_plot']         = source_rom['m_plot']
     dest_rom['altapp']         = source_rom['altapp']
@@ -383,7 +385,7 @@ def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
     dest_rom['s_map']       = source_rom['s_map']
     dest_rom['s_manual']    = source_rom['s_manual']
     dest_rom['s_trailer']   = source_rom['s_trailer']
-    dest_rom['roms_default_thumb']     = source_launcher['roms_default_thumb']
+    dest_rom['roms_default_icon']      = source_launcher['roms_default_icon']
     dest_rom['roms_default_fanart']    = source_launcher['roms_default_fanart']
     dest_rom['roms_default_banner']    = source_launcher['roms_default_banner']
     dest_rom['roms_default_poster']    = source_launcher['roms_default_poster']
@@ -459,17 +461,18 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('id', categoryID))
             str_list.append(XML_text('m_name', category['m_name']))
             str_list.append(XML_text('m_genre', category['m_genre']))
-            str_list.append(XML_text('m_plot', category['m_plot']))
             str_list.append(XML_text('m_rating', category['m_rating']))
+            str_list.append(XML_text('m_plot', category['m_plot']))
             str_list.append(XML_text('finished', unicode(category['finished'])))
-            str_list.append(XML_text('default_thumb', category['default_thumb']))
+            str_list.append(XML_text('default_icon', category['default_icon']))
             str_list.append(XML_text('default_fanart', category['default_fanart']))
             str_list.append(XML_text('default_banner', category['default_banner']))
             str_list.append(XML_text('default_poster', category['default_poster']))
-            str_list.append(XML_text('s_thumb', category['s_thumb']))
+            str_list.append(XML_text('default_clearlogo', category['default_clearlogo']))
+            str_list.append(XML_text('s_icon', category['s_icon']))
             str_list.append(XML_text('s_fanart', category['s_fanart']))
             str_list.append(XML_text('s_banner', category['s_banner']))
-            str_list.append(XML_text('s_flyer', category['s_flyer']))
+            str_list.append(XML_text('s_poster', category['s_poster']))
             str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
             str_list.append(XML_text('s_trailer', category['s_trailer']))
             str_list.append('</category>\n')
@@ -483,9 +486,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('m_name', launcher['m_name']))
             str_list.append(XML_text('m_year', launcher['m_year']))
             str_list.append(XML_text('m_genre', launcher['m_genre']))
-            str_list.append(XML_text('m_studio', launcher['m_studio']))
-            str_list.append(XML_text('m_plot', launcher['m_plot']))
+            str_list.append(XML_text('m_developer', launcher['m_developer']))
             str_list.append(XML_text('m_rating', launcher['m_rating']))
+            str_list.append(XML_text('m_plot', launcher['m_plot']))
             str_list.append(XML_text('platform', launcher['platform']))
             str_list.append(XML_text('categoryID', launcher['categoryID']))
             str_list.append(XML_text('application', launcher['application']))
@@ -509,21 +512,26 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('num_unknown', unicode(launcher['num_unknown'])))
             str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
-            str_list.append(XML_text('default_thumb', launcher['default_thumb']))
+            # >> Launcher artwork
+            str_list.append(XML_text('default_icon', launcher['default_icon']))
             str_list.append(XML_text('default_fanart', launcher['default_fanart']))
             str_list.append(XML_text('default_banner', launcher['default_banner']))
             str_list.append(XML_text('default_poster', launcher['default_poster']))
-            str_list.append(XML_text('roms_default_thumb', launcher['roms_default_thumb']))
+            str_list.append(XML_text('default_clearlogo', launcher['default_clearlogo']))
+            str_list.append(XML_text('default_controller', launcher['default_controller']))
+            str_list.append(XML_text('s_icon', launcher['s_icon']))
+            str_list.append(XML_text('s_fanart', launcher['s_fanart']))
+            str_list.append(XML_text('s_banner', launcher['s_banner']))
+            str_list.append(XML_text('s_poster', launcher['s_poster']))
+            str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
+            str_list.append(XML_text('s_controller', launcher['s_controller']))
+            str_list.append(XML_text('s_trailer', launcher['s_trailer']))
+            # >> ROMs artwork
+            str_list.append(XML_text('roms_default_icon', launcher['roms_default_icon']))
             str_list.append(XML_text('roms_default_fanart', launcher['roms_default_fanart']))
             str_list.append(XML_text('roms_default_banner', launcher['roms_default_banner']))
             str_list.append(XML_text('roms_default_poster', launcher['roms_default_poster']))
             str_list.append(XML_text('roms_default_clearlogo', launcher['roms_default_clearlogo']))
-            str_list.append(XML_text('s_thumb', launcher['s_thumb']))
-            str_list.append(XML_text('s_fanart', launcher['s_fanart']))
-            str_list.append(XML_text('s_banner', launcher['s_banner']))
-            str_list.append(XML_text('s_flyer', launcher['s_flyer']))
-            str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
-            str_list.append(XML_text('s_trailer', launcher['s_trailer']))
             str_list.append(XML_text('path_title', launcher['path_title']))
             str_list.append(XML_text('path_snap', launcher['path_snap']))
             str_list.append(XML_text('path_fanart', launcher['path_fanart']))
@@ -890,14 +898,16 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append(XML_text('m_rating', collection['m_rating']))
             str_list.append(XML_text('m_plot', collection['m_plot']))
             str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
-            str_list.append(XML_text('default_thumb', collection['default_thumb']))
+            str_list.append(XML_text('default_icon', collection['default_icon']))
             str_list.append(XML_text('default_fanart', collection['default_fanart']))
             str_list.append(XML_text('default_banner', collection['default_banner']))
             str_list.append(XML_text('default_poster', collection['default_poster']))
-            str_list.append(XML_text('s_thumb', collection['s_thumb']))
+            str_list.append(XML_text('default_clearlogo', collection['default_clearlogo']))
+            str_list.append(XML_text('s_icon', collection['s_icon']))
             str_list.append(XML_text('s_fanart', collection['s_fanart']))
             str_list.append(XML_text('s_banner', collection['s_banner']))
-            str_list.append(XML_text('s_flyer', collection['s_flyer']))
+            str_list.append(XML_text('s_poster', collection['s_poster']))
+            str_list.append(XML_text('s_clearlogo', collection['s_clearlogo']))
             str_list.append(XML_text('s_trailer', collection['s_trailer']))
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
