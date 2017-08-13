@@ -601,11 +601,11 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         # >> Create asset directories if ROM path exists
         else:
             log_debug('ROM_asset_path path found. Creating assets subdirectories.')
-            assets_init_asset_dir(Path_assets_FN, self.launchers[s_launcherID])
+            assets_init_asset_dir(Path_assets_FN, launchers[launcherID])
 
     # >> Name of launcher has changed.
     #    Regenerate roms_base_noext and rename old one if necessary.
-    category_name = categories[categoryID]['m_name']
+    category_name = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
     old_roms_base_noext          = launchers[launcherID]['roms_base_noext']
     old_roms_file_json           = ROMS_DIR.join(old_roms_base_noext + '.json')
     old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
