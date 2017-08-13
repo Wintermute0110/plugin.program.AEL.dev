@@ -57,7 +57,7 @@ FEATURE  Renamed 's_flyer' -> 's_poster' in Categories/Launchers/Collections.
 
 FEATURE  Renamed 'roms_default_thumb' -> 'roms_default_icon' in Launchers.
 
-WIP      Improve Retroplayer support.
+FEATURE  Improve Retroplayer support.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
          and https://alwinesch.github.io/group__python__xbmcgui__listitem.html#ga0f1e91e1d5aa61d8dd0eac90e8edbf18
 

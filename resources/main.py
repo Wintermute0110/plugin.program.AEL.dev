@@ -6926,22 +6926,28 @@ class Main:
 
         # --- Execute Kodi Retroplayer if launcher configured to do so ---
         # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
+        # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
         if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
-            log_info('_command_run_rom() Executing Kodi Retroplayer ...')
-            bc_romfile = os.path.basename(ROMFileName.getPath())
-            bc_listitem = xbmcgui.ListItem(bc_romfile, "0", "", "")
-            bc_parameters = {'Platform': 'Test Platform', 'Title': 'Test Game', 'URL': 'testurl'}
-            bc_listitem.setInfo(type = 'game', infoLabels = bc_parameters)
+            log_info('_command_run_rom() Executing ROM with Kodi Retroplayer ...')
+            # >> Create listitem object
+            label_str = ROMFileName.getBase()
+            retro_listitem = xbmcgui.ListItem(label = label_str, label2 = label_str)
+            # >> Listitem metadata
+            # >> How to fill gameclient = string (game.libretro.fceumm) ???
+            retro_listitem.setInfo(type = 'game', 
+                                   {'title'    : label_str,            'platform': 'Test platform',
+                                    'genres'   : list(rom['m_genre']), 'developer': rom['m_developer'],
+                                    'overview' : rom['m_plot'],        'year': rom['m_year']})
             log_info('_command_run_rom() application.getOriginalPath() "{0}"'.format(application.getOriginalPath()))
             log_info('_command_run_rom() ROMFileName.getPath()         "{0}"'.format(ROMFileName.getPath()))
-            log_info('_command_run_rom() bc_romfile                    "{0}"'.format(bc_romfile))
+            log_info('_command_run_rom() label_str                     "{0}"'.format(label_str))
 
             # --- User notification ---
             if self.settings['display_launcher_notify']:
-                kodi_notify('Launching {0} with Retroplayer'.format(romtitle))
+                kodi_notify('Launching "{0}" with Retroplayer'.format(romtitle))
 
             log_verb('_command_run_rom() Calling xbmc.Player().play() ...')
-            xbmc.Player().play(ROMFileName.getPath(), bc_listitem)
+            xbmc.Player().play(ROMFileName.getPath(), retro_listitem)
             log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
             return
         else:
