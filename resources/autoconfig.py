@@ -355,7 +355,7 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
     kodi_notify('Finished importing Categories/Launchers')
 
 #
-# Imports/edits a category.
+# Imports/edits a category with an extenal XML config file.
 #
 def autoconfig_import_category(categories, categoryID, i_category, import_FN):
     log_debug('autoconfig_import_category() categoryID = {0}'.format(categoryID))
@@ -378,7 +378,11 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         log_debug('Imported m_plot   = "{0}"'.format(i_category['plot']))
 
     # --- Category assets/artwork ---
+    # >> Ask user if the wants to import Category assets
+    process_assets = False
     if i_category['asset_prefix']:
+        process_assets = kodi_dialog_yesno('Import artwork for category "{0}"?'.format(i_category['name']))
+    if process_assets:
         asset_prefix = i_category['asset_prefix']
         log_debug('Importing category assets with prefix "{0}"'.format(asset_prefix))
         # log_debug('import_FN "{0}"'.format(import_FN.getPath()))
@@ -515,9 +519,9 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
 
     # --- Launcher assets/artwork ---
     # >> Have a look at autoconfig_import_category() for a reference implementation.
+    # >> Ask user if the wants to import Launcher assets
     process_assets = False
     if i_launcher['asset_prefix']:
-        # >> Ask user if the wants to import Launcher assets
         process_assets = kodi_dialog_yesno('Import artwork for launcher "{0}"?'.format(i_launcher['name']))
     if process_assets:
         asset_prefix = i_launcher['asset_prefix']
