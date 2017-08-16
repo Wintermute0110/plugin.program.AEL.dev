@@ -20,6 +20,22 @@
     <setting id="separator" type="lsep" label="Scraping mode"/>
     <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
     <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
+
+    <setting id="separator" type="lsep" label="Artwork scrapers"/>
+    <setting label="Titles scraper" type="enum" id="scraper_title" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Snaps scraper" type="enum" id="scraper_snap" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Boxfront scraper" type="enum" id="scraper_bfront" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Boxback scraper" type="enum" id="scraper_bback" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Cartridge scraper" type="enum" id="scraper_cart" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Fanart scraper" type="enum" id="scraper_fanart" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Banner scraper" type="enum" id="scraper_banner" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Clearlogo scraper" type="enum" id="scraper_clearlogo" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Flyer scraper" type="enum" id="scraper_flyer" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+
+    <setting label="Cabinet scraper (MAME only)" type="enum" id="scraper_cabinet" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="CPanel scraper (MAME only)" type="enum" id="scraper_cpanel" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="PCB scraper (MAME only)" type="enum" id="scraper_pcb" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Flyer scraper (MAME only)" type="enum" id="scraper_flyer_mame" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
 </category>
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
@@ -36,14 +52,14 @@
 -->
 <category label="Display">
     <setting id="separator" type="lsep" label="General"/>
-    <setting label="Launching Application notification" type="bool" default="true" id="display_launcher_notify" />
+    <setting label="Launching application notification" type="bool" default="true" id="display_launcher_notify" />
     <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" default="false" id="display_hide_finished" />
-    <setting label="Display number of ROMs in Luancher" type="bool" default="true" id="display_launcher_roms" />
+    <setting label="Display number of ROMs in launchers" type="bool" default="true" id="display_launcher_roms" />
 
     <setting id="separator" type="lsep" label="ROM tags"/>
-    <setting label="Display ROM in Favourites label" type="bool" default="true" id="display_rom_in_fav" />
-    <setting label="Display No-Intro status label" type="bool" default="true" id="display_nointro_stat" />
-    <setting label="Display Favourite ROM status label" type="bool" default="true" id="display_fav_status" />
+    <setting label="Display ROM in Favourites tag" type="bool" default="true" id="display_rom_in_fav" />
+    <setting label="Display ROM audit tag" type="bool" default="true" id="display_nointro_stat" />
+    <setting label="Display ROM in Favourites tag" type="bool" default="true" id="display_fav_status" />
 
     <setting id="separator" type="lsep" label="Special Categories/Launchers"/>
     <setting label="Hide <Favourites>" type="bool" default="false" id="display_hide_favs" />
@@ -61,20 +77,27 @@
     <setting label="Collections Asset directory" type="folder" id="collections_asset_dir" default="" source="" />
 </category>
 <category label="I/O">
-    <setting label="Import launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
+    <setting id="separator" type="lsep" label="Import/export configuration"/>
     <setting label="Export launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
+    <setting label="Import launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
+    <setting label="Create ROM asset path if missing" type="bool" id="io_create_ROM_path" default="false"/>
+
+    <setting id="separator" type="lsep" label="Utilities"/>
     <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
+    <setting label="Check Launchers ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
+    <setting label="Check Retroarch BIOSes ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
+    <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
     <setting label="Import AL launchers.xml ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
-    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
 </category>
 <category label="Advanced">
     <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />
-    <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
     <setting label="After/before launch delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int"/>
     <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false"/>
-    <setting label="Escape ROMfile quotes" type="bool" id="escape_romfile" default="false" />
+    <setting label="Escape $rom$ quotes" type="bool" id="escape_romfile" default="false" />
+    <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
     <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
     <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true"/>
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
+    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
 </category>
 </settings>
