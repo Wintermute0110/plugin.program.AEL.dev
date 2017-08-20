@@ -61,6 +61,12 @@ FEATURE  Improve Retroplayer support.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
          and https://alwinesch.github.io/group__python__xbmcgui__listitem.html#ga0f1e91e1d5aa61d8dd0eac90e8edbf18
 
+WIP      Audit Retroarch BIOSes in System directory.
+
+WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
+         etc. When a user uses XML to import configurations it is easy to make a typo when
+         writing directory names, etc. This command will report if AEL configuration is OK.
+
 WIP      Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
