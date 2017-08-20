@@ -386,6 +386,8 @@ class Main:
         elif command == 'IMPORT_LAUNCHERS':    self._command_import_launchers()
         elif command == 'EXPORT_LAUNCHERS':    self._command_export_launchers()
         elif command == 'CHECK_DATABASE':      self._command_check_database()
+        elif command == 'CHECK_LAUNCHERS':     self._command_check_launchers()
+        elif command == 'CHECK_RETRO_BIOS':    self._command_check_retro_BIOS()
         elif command == 'IMPORT_AL_LAUNCHERS': self._command_import_legacy_AL()
 
         # >> Unknown command
@@ -6552,128 +6554,6 @@ class Main:
         fs_write_VCategory_XML(vcategory_db_filename, vcategory_launchers)
 
     #
-    # Import legacy Advanced Launcher launchers.xml
-    #
-    def _command_import_legacy_AL(self):
-        # >> Confirm action with user
-        ret = kodi_dialog_yesno('Are you sure you want to import Advanced Launcher launchers.xml?')
-        if not ret: return
-
-        kodi_notify('Importing AL launchers.xml ...')
-        AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
-        LAUNCHERS_FILE_PATH = AL_DATA_DIR.join('launchers.xml')
-        FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.join('fixed_launchers.xml')
-
-        # >> Check that launchers.xml exist
-        if not LAUNCHERS_FILE_PATH.exists():
-            log_error("_command_import_legacy_AL() Cannot find '{0}'".format(LAUNCHERS_FILE_PATH.getPath()))
-            kodi_dialog_OK('launchers.xml not found! Nothing imported.')
-            return
-
-        # >> Try to correct ilegal XML characters in launchers.xml
-        # >> Also copies fixed launchers.xml into AEL data directory.
-        fs_fix_launchers_xml(LAUNCHERS_FILE_PATH, FIXED_LAUNCHERS_FILE_PATH)
-
-        # >> Read launchers.xml
-        AL_categories = {}
-        AL_launchers = {}
-        kodi_busydialog_ON()
-        fs_load_legacy_AL_launchers(FIXED_LAUNCHERS_FILE_PATH, AL_categories, AL_launchers)
-        kodi_busydialog_OFF()
-
-        # >> Traverse AL data and create categories/launchers/ROMs
-        num_categories = 0
-        num_launchers = 0
-        num_ROMs = 0
-        default_SID = misc_generate_random_SID()
-        for AL_category_key in AL_categories:
-            num_categories += 1
-            AL_category = AL_categories[AL_category_key]
-            category = fs_new_category()
-            # >> Do translation
-            category['id']       = default_SID if AL_category['id'] == 'default' else AL_category['id']
-            category['m_name']   = AL_category['name']
-            category['m_genre']  = AL_category['genre']
-            category['m_plot']   = AL_category['plot']
-            category['s_thumb']  = AL_category['thumb']
-            category['s_fanart'] = AL_category['fanart']
-            category['finished'] = False if AL_category['finished'] == 'false' else True
-            self.categories[category['id']] = category
-
-        for AL_launcher_key in AL_launchers:
-            num_launchers += 1
-            AL_launcher = AL_launchers[AL_launcher_key]
-            launcher = fs_new_launcher()
-            # >> Do translation
-            launcher['id']           = AL_launcher['id']
-            launcher['m_name']       = AL_launcher['name']
-            launcher['m_year']       = AL_launcher['release']
-            launcher['m_genre']      = AL_launcher['genre']
-            launcher['m_studio']     = AL_launcher['studio']
-            launcher['m_plot']       = AL_launcher['plot']
-            # >> 'gamesys' ignored, set to unknown to avoid trouble with scrapers
-            # launcher['platform']    = AL_launcher['gamesys']
-            launcher['platform']     = 'Unknown'
-            launcher['categoryID']   = default_SID if AL_launcher['category'] == 'default' else AL_launcher['category']
-            launcher['application']  = AL_launcher['application']
-            launcher['args']         = AL_launcher['args']
-            launcher['rompath']      = AL_launcher['rompath']
-            launcher['romext']       = AL_launcher['romext']
-            launcher['finished']     = False if AL_launcher['finished'] == 'false' else True
-            launcher['minimize']     = False if AL_launcher['minimize'] == 'false' else True
-            # >> 'lnk' ignored, always active in AEL
-            launcher['s_thumb']      = AL_launcher['thumb']
-            launcher['s_fanart']     = AL_launcher['fanart']
-            launcher['path_title']   = AL_launcher['thumbpath']
-            launcher['path_fanart']  = AL_launcher['fanartpath']
-            launcher['path_trailer'] = AL_launcher['trailerpath']
-            # --- Import ROMs if ROMs launcher ---
-            AL_roms = AL_launcher['roms']
-            if AL_roms:
-                roms = {}
-                category_name = self.categories[launcher['categoryID']]['m_name']
-                roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcher['id'])
-                launcher['roms_base_noext'] = roms_base_noext
-                launcher['num_roms'] = len(AL_roms)
-                for AL_rom_ID in AL_roms:
-                    num_ROMs += 1
-                    AL_rom = AL_roms[AL_rom_ID]
-                    rom = fs_new_rom()
-                    # >> Do translation
-                    rom['id']        = AL_rom['id']
-                    rom['m_name']    = AL_rom['name']
-                    rom['m_year']    = AL_rom['release']
-                    rom['m_genre']   = AL_rom['genre']
-                    rom['m_studio']  = AL_rom['studio']
-                    rom['m_plot']    = AL_rom['plot']
-                    rom['filename']  = AL_rom['filename']
-                    rom['altapp']    = AL_rom['altapp']
-                    rom['altarg']    = AL_rom['altarg']
-                    rom['finished']  = False if AL_rom['finished'] == 'false' else True
-                    rom['s_title']   = AL_rom['thumb']
-                    rom['s_fanart']  = AL_rom['fanart']
-                    rom['s_trailer'] = AL_rom['trailer']
-
-                    # >> Add to ROM dictionary
-                    roms[rom['id']] = rom
-
-                # >> Save ROMs XML
-                fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, launcher)
-            else:
-                launcher['roms_xml_file'] = ''
-            # --- Add launcher to AEL launchers ---
-            launcher['timestamp_launcher'] = time.time()
-            self.launchers[launcher['id']] = launcher
-
-        # >> Save AEL categories.xml
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-
-        # --- Show some information to user ---
-        kodi_dialog_OK('Imported {0} Category/s, {1} Launcher/s '.format(num_categories, num_launchers) +
-                       'and {0} ROM/s.'.format(num_ROMs))
-        kodi_refresh_container()
-
-    #
     # Launchs a standalone application.
     #
     def _command_run_standalone_launcher(self, categoryID, launcherID):
@@ -9075,6 +8955,134 @@ class Main:
         if 'roms_default_thumb' in rom:
             rom['roms_default_icon'] = rom['roms_default_thumb']
             rom.pop('roms_default_thumb')
+
+    def _command_check_launchers(self):
+        kodi_dialog_OK('_command_check_launchers() Not implemented yet')
+
+    def _command_check_retro_BIOS(self):
+        kodi_dialog_OK('_command_check_retro_BIOS() Not implemented yet')
+
+    #
+    # Import legacy Advanced Launcher launchers.xml
+    #
+    def _command_import_legacy_AL(self):
+        # >> Confirm action with user
+        ret = kodi_dialog_yesno('Are you sure you want to import Advanced Launcher launchers.xml?')
+        if not ret: return
+
+        kodi_notify('Importing AL launchers.xml ...')
+        AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
+        LAUNCHERS_FILE_PATH = AL_DATA_DIR.join('launchers.xml')
+        FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.join('fixed_launchers.xml')
+
+        # >> Check that launchers.xml exist
+        if not LAUNCHERS_FILE_PATH.exists():
+            log_error("_command_import_legacy_AL() Cannot find '{0}'".format(LAUNCHERS_FILE_PATH.getPath()))
+            kodi_dialog_OK('launchers.xml not found! Nothing imported.')
+            return
+
+        # >> Try to correct ilegal XML characters in launchers.xml
+        # >> Also copies fixed launchers.xml into AEL data directory.
+        fs_fix_launchers_xml(LAUNCHERS_FILE_PATH, FIXED_LAUNCHERS_FILE_PATH)
+
+        # >> Read launchers.xml
+        AL_categories = {}
+        AL_launchers = {}
+        kodi_busydialog_ON()
+        fs_load_legacy_AL_launchers(FIXED_LAUNCHERS_FILE_PATH, AL_categories, AL_launchers)
+        kodi_busydialog_OFF()
+
+        # >> Traverse AL data and create categories/launchers/ROMs
+        num_categories = 0
+        num_launchers = 0
+        num_ROMs = 0
+        default_SID = misc_generate_random_SID()
+        for AL_category_key in AL_categories:
+            num_categories += 1
+            AL_category = AL_categories[AL_category_key]
+            category = fs_new_category()
+            # >> Do translation
+            category['id']       = default_SID if AL_category['id'] == 'default' else AL_category['id']
+            category['m_name']   = AL_category['name']
+            category['m_genre']  = AL_category['genre']
+            category['m_plot']   = AL_category['plot']
+            category['s_thumb']  = AL_category['thumb']
+            category['s_fanart'] = AL_category['fanart']
+            category['finished'] = False if AL_category['finished'] == 'false' else True
+            self.categories[category['id']] = category
+
+        for AL_launcher_key in AL_launchers:
+            num_launchers += 1
+            AL_launcher = AL_launchers[AL_launcher_key]
+            launcher = fs_new_launcher()
+            # >> Do translation
+            launcher['id']           = AL_launcher['id']
+            launcher['m_name']       = AL_launcher['name']
+            launcher['m_year']       = AL_launcher['release']
+            launcher['m_genre']      = AL_launcher['genre']
+            launcher['m_studio']     = AL_launcher['studio']
+            launcher['m_plot']       = AL_launcher['plot']
+            # >> 'gamesys' ignored, set to unknown to avoid trouble with scrapers
+            # launcher['platform']    = AL_launcher['gamesys']
+            launcher['platform']     = 'Unknown'
+            launcher['categoryID']   = default_SID if AL_launcher['category'] == 'default' else AL_launcher['category']
+            launcher['application']  = AL_launcher['application']
+            launcher['args']         = AL_launcher['args']
+            launcher['rompath']      = AL_launcher['rompath']
+            launcher['romext']       = AL_launcher['romext']
+            launcher['finished']     = False if AL_launcher['finished'] == 'false' else True
+            launcher['minimize']     = False if AL_launcher['minimize'] == 'false' else True
+            # >> 'lnk' ignored, always active in AEL
+            launcher['s_thumb']      = AL_launcher['thumb']
+            launcher['s_fanart']     = AL_launcher['fanart']
+            launcher['path_title']   = AL_launcher['thumbpath']
+            launcher['path_fanart']  = AL_launcher['fanartpath']
+            launcher['path_trailer'] = AL_launcher['trailerpath']
+            # --- Import ROMs if ROMs launcher ---
+            AL_roms = AL_launcher['roms']
+            if AL_roms:
+                roms = {}
+                category_name = self.categories[launcher['categoryID']]['m_name']
+                roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcher['id'])
+                launcher['roms_base_noext'] = roms_base_noext
+                launcher['num_roms'] = len(AL_roms)
+                for AL_rom_ID in AL_roms:
+                    num_ROMs += 1
+                    AL_rom = AL_roms[AL_rom_ID]
+                    rom = fs_new_rom()
+                    # >> Do translation
+                    rom['id']        = AL_rom['id']
+                    rom['m_name']    = AL_rom['name']
+                    rom['m_year']    = AL_rom['release']
+                    rom['m_genre']   = AL_rom['genre']
+                    rom['m_studio']  = AL_rom['studio']
+                    rom['m_plot']    = AL_rom['plot']
+                    rom['filename']  = AL_rom['filename']
+                    rom['altapp']    = AL_rom['altapp']
+                    rom['altarg']    = AL_rom['altarg']
+                    rom['finished']  = False if AL_rom['finished'] == 'false' else True
+                    rom['s_title']   = AL_rom['thumb']
+                    rom['s_fanart']  = AL_rom['fanart']
+                    rom['s_trailer'] = AL_rom['trailer']
+
+                    # >> Add to ROM dictionary
+                    roms[rom['id']] = rom
+
+                # >> Save ROMs XML
+                fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, launcher)
+            else:
+                launcher['roms_xml_file'] = ''
+            # --- Add launcher to AEL launchers ---
+            launcher['timestamp_launcher'] = time.time()
+            self.launchers[launcher['id']] = launcher
+
+        # >> Save AEL categories.xml
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+        # --- Show some information to user ---
+        kodi_dialog_OK('Imported {0} Category/s, {1} Launcher/s '.format(num_categories, num_launchers) +
+                       'and {0} ROM/s.'.format(num_ROMs))
+        kodi_refresh_container()
 
     #
     # A set of functions to help making plugin URLs
