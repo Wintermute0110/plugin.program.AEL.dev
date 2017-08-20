@@ -166,45 +166,60 @@ def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asse
     return thumb_path
 
 #
-# Gets a human readable name string for the default fallback thumb
+# Gets a human readable name string for the asset field name.
 #
 def assets_get_asset_name_str(default_asset):
     asset_name_str = ''
 
+    # >> ROMs
     if   default_asset == 's_title':     asset_name_str = 'Title'
     elif default_asset == 's_snap':      asset_name_str = 'Snap'
-    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
-    elif default_asset == 's_banner':    asset_name_str = 'Banner'
-    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
     elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
     elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
     elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
+    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
+    elif default_asset == 's_banner':    asset_name_str = 'Banner'
+    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
     elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
     elif default_asset == 's_map':       asset_name_str = 'Map'
     elif default_asset == 's_manual':    asset_name_str = 'Manual'
     elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
-    elif default_asset == 's_thumb':     asset_name_str = 'Thumb'
+    # >> Categories/Launchers
+    elif default_asset == 's_icon':       asset_name_str = 'Icon'
+    elif default_asset == 's_poster':     asset_name_str = 'Poster'
+    elif default_asset == 's_controller': asset_name_str = 'Controller'
     else:
         kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
         log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
     
     return asset_name_str
 
+#
+# Used in Category context menu, "Choose defaul Assets/Artwork ..."
+# Order here must match order in list Category_asset_ListItem_list
+#
 def assets_choose_category_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_thumb'
+    if   index == 0: dict_object[key] = 's_icon'
     elif index == 1: dict_object[key] = 's_fanart'
     elif index == 2: dict_object[key] = 's_banner'
-    elif index == 3: dict_object[key] = 's_flyer'
+    elif index == 3: dict_object[key] = 's_poster'
+    elif index == 4: dict_object[key] = 's_clearlogo'
+
+def assets_choose_launcher_artwork(dict_object, key, index):
+    if   index == 0: dict_object[key] = 's_icon'
+    elif index == 1: dict_object[key] = 's_fanart'
+    elif index == 2: dict_object[key] = 's_banner'
+    elif index == 3: dict_object[key] = 's_poster'
 
 def assets_choose_category_ROM(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_title'
     elif index == 1: dict_object[key] = 's_snap'
-    elif index == 2: dict_object[key] = 's_fanart'
-    elif index == 3: dict_object[key] = 's_banner'
-    elif index == 4: dict_object[key] = 's_clearlogo'
     elif index == 5: dict_object[key] = 's_boxfront'
     elif index == 6: dict_object[key] = 's_boxback'
     elif index == 7: dict_object[key] = 's_cartridge'
+    elif index == 2: dict_object[key] = 's_fanart'
+    elif index == 3: dict_object[key] = 's_banner'
+    elif index == 4: dict_object[key] = 's_clearlogo'
     elif index == 8: dict_object[key] = 's_flyer'
     elif index == 9: dict_object[key] = 's_map'
 

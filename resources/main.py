@@ -716,12 +716,12 @@ class Main:
         elif type == 2:
             category = self.categories[categoryID]
             # >> Label1 an label2
-            asset_icon_str      = assets_get_asset_name_str(category['default_thumb'])
+            asset_icon_str      = assets_get_asset_name_str(category['default_icon'])
             asset_fanart_str    = assets_get_asset_name_str(category['default_fanart'])
             asset_banner_str    = assets_get_asset_name_str(category['default_banner'])
             asset_poster_str    = assets_get_asset_name_str(category['default_poster'])
             asset_clearlogo_str = assets_get_asset_name_str(category['default_clearlogo'])
-            label2_icon         = category[category['default_thumb']]     if category[category['default_thumb']]     else 'Not set'
+            label2_icon         = category[category['default_icon']]      if category[category['default_icon']]      else 'Not set'
             label2_fanart       = category[category['default_fanart']]    if category[category['default_fanart']]    else 'Not set'
             label2_banner       = category[category['default_banner']]    if category[category['default_banner']]    else 'Not set'
             label2_poster       = category[category['default_poster']]    if category[category['default_poster']]    else 'Not set'
@@ -738,7 +738,7 @@ class Main:
                                                    label2 = label2_clearlogo)
 
             # >> Asset image
-            img_icon            = category[category['default_thumb']]     if category[category['default_thumb']]     else 'DefaultAddonNone.png'
+            img_icon            = category[category['default_icon']]      if category[category['default_icon']]      else 'DefaultAddonNone.png'
             img_fanart          = category[category['default_fanart']]    if category[category['default_fanart']]    else 'DefaultAddonNone.png'
             img_banner          = category[category['default_banner']]    if category[category['default_banner']]    else 'DefaultAddonNone.png'
             img_poster          = category[category['default_poster']]    if category[category['default_poster']]    else 'DefaultAddonNone.png'
@@ -750,28 +750,28 @@ class Main:
             clearlogo_listitem.setArt({'icon' : img_clearlogo})
 
             # >> Execute select dialog
-            listitems = [icon_listitem, fanart_listitem, banner_listitem,
-                         poster_listitem, clearlogo_listitem]
+            listitems = [icon_listitem, fanart_listitem, banner_listitem, poster_listitem,
+                         clearlogo_listitem]
             type2 = dialog.select('Edit Category default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
             Category_asset_ListItem_list = [
-                xbmcgui.ListItem(label = 'Icon',      label2 = category['s_thumb'] if category['s_thumb'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Icon',      label2 = category['s_icon'] if category['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',    label2 = category['s_fanart'] if category['s_fanart'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Banner',    label2 = category['s_banner'] if category['s_banner'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Poster',    label2 = category['s_flyer'] if category['s_flyer'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Poster',    label2 = category['s_poster'] if category['s_poster'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Clearlogo', label2 = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'),
             ]
-            Category_asset_ListItem_list[0].setArt({'icon' : category['s_thumb'] if category['s_thumb'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[0].setArt({'icon' : category['s_icon'] if category['s_icon'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[1].setArt({'icon' : category['s_fanart'] if category['s_fanart'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[2].setArt({'icon' : category['s_banner'] if category['s_banner'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[3].setArt({'icon' : category['s_flyer'] if category['s_flyer'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[3].setArt({'icon' : category['s_poster'] if category['s_poster'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[4].setArt({'icon' : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'})
 
             if type2 == 0:
                 type_s = dialog.select('Choose default Asset for Icon', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_thumb', type_s)
+                assets_choose_category_artwork(category, 'default_icon', type_s)
             elif type2 == 1:
                 type_s = dialog.select('Choose default Asset for Fanart', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
