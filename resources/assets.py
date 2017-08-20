@@ -205,11 +205,17 @@ def assets_choose_category_artwork(dict_object, key, index):
     elif index == 3: dict_object[key] = 's_poster'
     elif index == 4: dict_object[key] = 's_clearlogo'
 
+#
+# Used in Launcher context menu, "Choose defaul Assets/Artwork ..."
+# Order here must match order in list Launcher_asset_ListItem_list
+#
 def assets_choose_launcher_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_icon'
     elif index == 1: dict_object[key] = 's_fanart'
     elif index == 2: dict_object[key] = 's_banner'
     elif index == 3: dict_object[key] = 's_poster'
+    elif index == 4: dict_object[key] = 's_clearlogo'
+    elif index == 5: dict_object[key] = 's_controller'
 
 def assets_choose_category_ROM(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_title'
