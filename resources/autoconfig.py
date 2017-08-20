@@ -56,8 +56,13 @@ def autoconfig_export_all(categories, launchers, export_FN):
         str_list.append(XML_text('genre', category['m_genre']))
         str_list.append(XML_text('rating', category['m_rating']))
         str_list.append(XML_text('plot', category['m_plot']))
-        # >> asset_prefix not implemented yet.
-        str_list.append(XML_text('asset_prefix', ''))
+        str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
+        str_list.append(XML_text('s_icon', category['s_icon']))
+        str_list.append(XML_text('s_fanart', category['s_fanart']))
+        str_list.append(XML_text('s_banner', category['s_banner']))
+        str_list.append(XML_text('s_poster', category['s_poster']))
+        str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
+        str_list.append(XML_text('s_trailer', category['s_trailer']))
         str_list.append('</category>\n')
 
     # --- Export Launchers ---
@@ -75,11 +80,11 @@ def autoconfig_export_all(categories, launchers, export_FN):
 
         # >> WORKAROUND Take titles path and remove trailing subdirectory.
         path_titles = launcher['path_title']
-        log_verb('autoconfig_export_all() path_titles "{0}"'.format(path_titles))
         (head, tail) = os.path.split(path_titles)
+        path_assets = head
+        log_verb('autoconfig_export_all() path_titles "{0}"'.format(path_titles))
         log_verb('autoconfig_export_all() head        "{0}"'.format(head))
         log_verb('autoconfig_export_all() tail        "{0}"'.format(tail))
-        path_assets = head
         log_verb('autoconfig_export_all() path_assets "{0}"'.format(path_assets))
 
         # >> Export Launcher
@@ -98,10 +103,17 @@ def autoconfig_export_all(categories, launchers, export_FN):
             for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
         else:
             str_list.append(XML_text('args_extra', ''))
-        str_list.append(XML_text('asset_prefix', ''))
         str_list.append(XML_text('ROM_path', launcher['rompath']))
         str_list.append(XML_text('ROM_ext', launcher['romext']))
-        str_list.append(XML_text('ROM_asset_path', path_assets))
+        str_list.append(XML_text('ROM_asset_path', launcher['ROM_asset_path']))
+        str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
+        str_list.append(XML_text('s_icon', launcher['s_icon']))
+        str_list.append(XML_text('s_fanart', launcher['s_fanart']))
+        str_list.append(XML_text('s_banner', launcher['s_banner']))
+        str_list.append(XML_text('s_poster', launcher['s_poster']))
+        str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
+        str_list.append(XML_text('s_controller', launcher['s_controller']))
+        str_list.append(XML_text('s_trailer', launcher['s_trailer']))
         str_list.append('</launcher>\n')
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
@@ -133,7 +145,13 @@ def autoconfig_get_default_import_category():
         'genre' : '',
         'rating' : '',
         'plot' : '',
-        'asset_prefix' : ''
+        'Asset_Prefix' : '',
+        's_icon' : '',
+        's_fanart' : '',
+        's_banner' : '',
+        's_poster' : '',
+        's_clearlogo' : '',
+        's_trailer' : '',
     }
 
     return l
@@ -151,10 +169,17 @@ def autoconfig_get_default_import_launcher():
         'application' : '',
         'args' : '',
         'args_extra' : [],
-        'asset_prefix' : '',
         'ROM_path' : '',
         'ROM_ext' : '',
-        'ROM_asset_path' : ''
+        'ROM_asset_path' : '',
+        'Asset_Prefix' : '',
+        's_icon' : '',
+        's_fanart' : '',
+        's_banner' : '',
+        's_poster' : '',
+        's_clearlogo' : '',
+        's_controller' : '',
+        's_trailer' : '',
     }
 
     return l
@@ -373,77 +398,91 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
     # --- Category metadata ---
     if i_category['name']:
         categories[categoryID]['m_name'] = i_category['name']
-        log_debug('Imported m_name   = "{0}"'.format(i_category['name']))
-        
+        log_debug('Imported m_name       "{0}"'.format(i_category['name']))
+
     if i_category['genre']:
         categories[categoryID]['m_genre'] = i_category['genre']
-        log_debug('Imported m_genre  = "{0}"'.format(i_category['genre']))
-        
+        log_debug('Imported m_genre      "{0}"'.format(i_category['genre']))
+
     if i_category['rating']:
         categories[categoryID]['m_rating'] = i_category['rating']
-        log_debug('Imported m_rating = "{0}"'.format(i_category['rating']))
-        
+        log_debug('Imported m_rating =   "{0}"'.format(i_category['rating']))
+
     if i_category['plot']:
         categories[categoryID]['m_plot'] = i_category['plot']
-        log_debug('Imported m_plot   = "{0}"'.format(i_category['plot']))
+        log_debug('Imported m_plot       "{0}"'.format(i_category['plot']))
 
     # --- Category assets/artwork ---
-    # >> Ask user if the wants to import Category assets
-    process_assets = False
-    if i_category['asset_prefix']:
-        process_assets = kodi_dialog_yesno('Import artwork for category "{0}"?'.format(i_category['name']))
-    if process_assets:
-        asset_prefix = i_category['asset_prefix']
-        log_debug('Importing category assets with prefix "{0}"'.format(asset_prefix))
-        # log_debug('import_FN "{0}"'.format(import_FN.getPath()))
+    if i_category['Asset_Prefix']:
+        categories[categoryID]['Asset_Prefix'] = i_category['Asset_Prefix']
+        log_debug('Imported Asset_Prefix "{0}"'.format(i_category['Asset_Prefix']))
+    Asset_Prefix = i_category['Asset_Prefix']
+    log_debug('Importing category assets with prefix "{0}"'.format(Asset_Prefix))
+    # log_debug('import_FN "{0}"'.format(import_FN.getPath()))
 
-        # >> Get a list of all files in the XML config file directory.
-        # >> This list has filenames withouth path.
-        file_list = sorted(os.listdir(import_FN.getDir()))
-        # log_debug('--- File list ---')
-        # for file in file_list: log_debug('--- "{0}"'.format(file))
+    # >> Get a list of all files in the XML config file directory.
+    # >> This list has filenames withouth path.
+    file_list = sorted(os.listdir(import_FN.getDir()))
+    # log_debug('--- File list ---')
+    # for file in file_list: log_debug('--- "{0}"'.format(file))
 
-        # >> Traverse list of category assets and search for image files for each asset
-        for cat_asset in CATEGORY_ASSET_LIST:
-            # >> Bypass trailers now
-            if cat_asset == ASSET_TRAILER: continue
+    # >> Traverse list of category assets and search for image files for each asset
+    for cat_asset in CATEGORY_ASSET_LIST:
+        # >> Bypass trailers now
+        if cat_asset == ASSET_TRAILER: continue
 
-            # >> Look for assets
-            AInfo = assets_get_info_scheme(cat_asset)
-            log_debug('>> Asset "{0}"'.format(AInfo.name))
-            asset_file_list = autoconfig_search_asset_file_list(asset_prefix, AInfo, import_FN, file_list)
-            if not asset_file_list: continue
-            listitems_list = []
-            listitems_asset_paths = []
+        # >> Look for assets using the <Asset_Prefix> tag
+        AInfo = assets_get_info_scheme(cat_asset)
+        log_debug('>> Asset "{0}"'.format(AInfo.name))
+        asset_file_list = autoconfig_search_asset_file_list(Asset_Prefix, AInfo, import_FN, file_list)
 
-            # >> Current image if found
-            current_FN = FileName(categories[categoryID][AInfo.key])
-            if current_FN.exists():
-                asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
-                asset_listitem.setArt({'icon' : current_FN.getPath()})
-                listitems_list.append(asset_listitem)
-                listitems_asset_paths.append(current_FN.getPath())
-            # >> Images found in XML configuration
-            for asset_file_name in asset_file_list:
-                log_debug('asset_file_name "{0}"'.format(asset_file_name))
-                asset_FN = FileName(asset_file_name)
-                asset_listitem = xbmcgui.ListItem(label = asset_FN.getBase(), label2 = asset_file_name)
-                asset_listitem.setArt({'icon' : asset_file_name})
-                listitems_list.append(asset_listitem)
-                listitems_asset_paths.append(asset_FN.getPath())
-            # >> No image
-            asset_listitem = xbmcgui.ListItem(label = 'No image')
-            asset_listitem.setArt({'icon' : 'DefaultAddonNone.png'})
+        # --- Create image list for selection dialog ---
+        listitems_list = []
+        listitems_asset_paths = []
+        # >> Current image if found
+        current_FN = FileName(categories[categoryID][AInfo.key])
+        if current_FN.exists():
+            asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
+            asset_listitem.setArt({'icon' : current_FN.getPath()})
             listitems_list.append(asset_listitem)
-            listitems_asset_paths.append('')
+            listitems_asset_paths.append(current_FN.getPath())
+        # >> Image in <s_icon>, <s_fanart>, ... tags if found
+        tag_asset_FN = FileName(i_category[AInfo.key])
+        if tag_asset_FN.exists():
+            asset_listitem = xbmcgui.ListItem(label = 'XML <{0}> image'.format(AInfo.key),
+                                              label2 = tag_asset_FN.getPath())
+            asset_listitem.setArt({'icon' : tag_asset_FN.getPath()})
+            listitems_list.append(asset_listitem)
+            listitems_asset_paths.append(tag_asset_FN.getPath())
+        # >> Images found in XML configuration via <Asset_Prefix> tag if found
+        image_count = 1
+        for asset_file_name in asset_file_list:
+            log_debug('asset_file_name "{0}"'.format(asset_file_name))
+            asset_FN = FileName(asset_file_name)
+            asset_listitem = xbmcgui.ListItem(label = '<Asset_Prefix> #{0} "{1}"'.format(image_count, asset_FN.getBase()),
+                                              label2 = asset_file_name)
+            asset_listitem.setArt({'icon' : asset_file_name})
+            listitems_list.append(asset_listitem)
+            listitems_asset_paths.append(asset_FN.getPath())
+            image_count += 1
+        # >> If list is empty at this point no images were found at all.
+        if not listitems_list:
+            log_debug('listitems_list is empty. Keeping {0} as it was.'.format(AInfo.name))
+            continue
+        # >> No image
+        asset_listitem = xbmcgui.ListItem(label = 'No image')
+        asset_listitem.setArt({'icon' : 'DefaultAddonNone.png'})
+        listitems_list.append(asset_listitem)
+        listitems_asset_paths.append('')
 
-            title_str = 'Category "{0}". Choose {1} file'.format(i_category['name'], AInfo.name)
-            ret_idx = xbmcgui.Dialog().select(title_str, list = listitems_list, useDetails = True)
-            if ret_idx < 0: return
+        # >> Show image selection select() dialog
+        title_str = 'Category "{0}". Choose {1} ...'.format(i_category['name'], AInfo.name)
+        ret_idx = xbmcgui.Dialog().select(title_str, list = listitems_list, useDetails = True)
+        if ret_idx < 0: return
 
-            # >> Set asset field
-            categories[categoryID][AInfo.key] = listitems_asset_paths[ret_idx]
-            log_verb('Set category artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
+        # >> Set asset field
+        categories[categoryID][AInfo.key] = listitems_asset_paths[ret_idx]
+        log_verb('Set category artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
 #
 # Imports/Edits a launcher with an extenal XML config file.
@@ -459,47 +498,57 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         log_debug('old_launcher_name "{0}"'.format(old_launcher_name))
         log_debug('new_launcher_name "{0}"'.format(new_launcher_name))
         launchers[launcherID]['m_name'] = i_launcher['name']
-        log_debug('Imported m_name      = "{0}"'.format(i_launcher['name']))
+        log_debug('Imported m_name      "{0}"'.format(i_launcher['name']))
 
     if i_launcher['year']:
         launchers[launcherID]['m_year'] = i_launcher['year']
-        log_debug('Imported m_year      = "{0}"'.format(i_launcher['year']))
+        log_debug('Imported m_year      "{0}"'.format(i_launcher['year']))
 
     if i_launcher['genre']:
         launchers[launcherID]['m_genre'] = i_launcher['genre']
-        log_debug('Imported m_genre     = "{0}"'.format(i_launcher['genre']))
+        log_debug('Imported m_genre     "{0}"'.format(i_launcher['genre']))
 
     if i_launcher['developer']:
         launchers[launcherID]['m_studio'] = i_launcher['developer']
-        log_debug('Imported m_studio    = "{0}"'.format(i_launcher['developer']))
+        log_debug('Imported m_studio    "{0}"'.format(i_launcher['developer']))
 
     if i_launcher['rating']:
         launchers[launcherID]['m_rating'] = i_launcher['rating']
-        log_debug('Imported m_rating    = "{0}"'.format(i_launcher['rating']))
+        log_debug('Imported m_rating    "{0}"'.format(i_launcher['rating']))
 
     if i_launcher['plot']:
         launchers[launcherID]['m_plot'] = i_launcher['plot']
-        log_debug('Imported m_plot      = "{0}"'.format(i_launcher['plot']))
+        log_debug('Imported m_plot      "{0}"'.format(i_launcher['plot']))
 
     # --- Launcher stuff ---
+    # >> If platform cannot be found in the official list then warn user and set it to 'Unknown'
     if i_launcher['platform']:
-        # >> If platform cannot be found in the official list then set it to Unknown
         if i_launcher['platform'] in AEL_platform_list:
             log_debug('Platform name recognised')
             platform = i_launcher['platform']
         else:
+            kodi_dialog_OK('Unrecognised platform name "{0}". Setting platform to "Unknown"'.format(i_launcher['platform']),
+                           title = 'Launcher "{0}"'.format(i_launcher['name']))
             log_debug('Unrecognised platform name "{0}". Setting to Unknown'.format(i_launcher['platform']))
             platform = 'Unknown'
         launchers[launcherID]['platform'] = platform
-        log_debug('Imported platform    = "{0}"'.format(platform))
+        log_debug('Imported platform    "{0}"'.format(platform))
 
+    # >> If application not found warn user.
     if i_launcher['application']:
+        app_FN = FileName(i_launcher['application'])
+        if not app_FN.exists():
+            log_debug('Application NOT found.')
+            kodi_dialog_OK('Application "{0}" not found'.format(app_FN.getPath()),
+                           title = 'Launcher "{0}"'.format(i_launcher['name']))
+        else:
+            log_debug('Application found.')
         launchers[launcherID]['application'] = i_launcher['application']
-        log_debug('Imported application = "{0}"'.format(i_launcher['application']))
+        log_debug('Imported application "{0}"'.format(i_launcher['application']))
 
     if i_launcher['args']:
         launchers[launcherID]['args']        = i_launcher['args']
-        log_debug('Imported args        = "{0}"'.format(i_launcher['args']))
+        log_debug('Imported args        "{0}"'.format(i_launcher['args']))
 
     # >> For every args_extra item add one entry to the list
     if i_launcher['args_extra']:
@@ -507,101 +556,124 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID]['args_extra'] = []
         for args in i_launcher['args_extra']:
             launchers[launcherID]['args_extra'].append(args)
-            log_debug('Imported args_extra  = "{0}"'.format(args))
+            log_debug('Imported args_extra  "{0}"'.format(args))
 
+    # >> Warn user if rompath directory does not exist
     if i_launcher['ROM_path']:
         rompath = FileName(i_launcher['ROM_path'])
         log_debug('ROMpath OP "{0}"'.format(rompath.getOriginalPath()))
         log_debug('ROMpath  P "{0}"'.format(rompath.getPath()))
-        # Warn user if rompath directory does not exist
         if not rompath.exists():
-            log_debug('ROMpath not found.')
-            kodi_dialog_OK('Launcher "{0}". '.format(i_launcher['name']) +
-                           'ROM path "{0}" not found'.format(rompath.getPath()))
+            log_debug('ROMpath NOT found.')
+            kodi_dialog_OK('ROM path "{0}" not found'.format(rompath.getPath()),
+                           title = 'Launcher "{0}"'.format(i_launcher['name']))
         else:
             log_debug('ROM_path found.')
         launchers[launcherID]['rompath'] = i_launcher['ROM_path']
-        log_debug('Imported rompath     = "{0}"'.format(i_launcher['ROM_path']))
+        log_debug('Imported rompath     "{0}"'.format(i_launcher['ROM_path']))
 
     if i_launcher['ROM_ext']:
         launchers[launcherID]['romext'] = i_launcher['ROM_ext']
-        log_debug('Imported romext      = "{0}"'.format(i_launcher['ROM_ext']))
-
-    # --- Launcher assets/artwork ---
-    # >> Have a look at autoconfig_import_category() for a reference implementation.
-    # >> Ask user if the wants to import Launcher assets
-    process_assets = False
-    if i_launcher['asset_prefix']:
-        process_assets = kodi_dialog_yesno('Import artwork for launcher "{0}"?'.format(i_launcher['name']))
-    if process_assets:
-        asset_prefix = i_launcher['asset_prefix']
-        log_debug('Importing launcher assets with prefix "{0}"'.format(asset_prefix))
-        # log_debug('import_FN "{0}"'.format(import_FN.getPath()))
-
-        # >> Get a list of all files in the XML config file directory.
-        # >> This list has filenames withouth path.
-        file_list = sorted(os.listdir(import_FN.getDir()))
-        # log_debug('--- File list ---')
-        # for file in file_list: log_debug('--- "{0}"'.format(file))
-
-        # >> Traverse list of category assets and search for image files for each asset
-        for laun_asset in LAUNCHER_ASSET_LIST:
-            # >> Bypass trailers now
-            if laun_asset == ASSET_TRAILER: continue
-
-            # >> Look for assets
-            AInfo = assets_get_info_scheme(laun_asset)
-            log_debug('>> Asset "{0}"'.format(AInfo.name))
-            asset_file_list = autoconfig_search_asset_file_list(asset_prefix, AInfo, import_FN, file_list)
-            if not asset_file_list: continue
-            listitems_list = []
-            listitems_asset_paths = []
-
-            # >> Current image if found
-            current_FN = FileName(launchers[launcherID][AInfo.key])
-            if current_FN.exists():
-                asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
-                asset_listitem.setArt({'icon' : current_FN.getPath()})
-                listitems_list.append(asset_listitem)
-                listitems_asset_paths.append(current_FN.getPath())
-            # >> Images found in XML configuration
-            for asset_file_name in asset_file_list:
-                log_debug('asset_file_name "{0}"'.format(asset_file_name))
-                asset_FN = FileName(asset_file_name)
-                asset_listitem = xbmcgui.ListItem(label = asset_FN.getBase(), label2 = asset_file_name)
-                asset_listitem.setArt({'icon' : asset_file_name})
-                listitems_list.append(asset_listitem)
-                listitems_asset_paths.append(asset_FN.getPath())
-            # >> No image
-            asset_listitem = xbmcgui.ListItem(label = 'No image')
-            asset_listitem.setArt({'icon' : 'DefaultAddonNone.png'})
-            listitems_list.append(asset_listitem)
-            listitems_asset_paths.append('')
-
-            title_str = 'Launcher "{0}". Choose {1} file'.format(i_launcher['name'], AInfo.name)
-            ret_idx = xbmcgui.Dialog().select(title_str, list = listitems_list, useDetails = True)
-            if ret_idx < 0: return
-
-            # >> Set asset field
-            launchers[launcherID][AInfo.key] = listitems_asset_paths[ret_idx]
-            log_verb('Set launcher artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
+        log_debug('Imported romext      "{0}"'.format(i_launcher['ROM_ext']))
 
     # --- ROM assets path ---
+    # >> If ROM_asset_path not found warn the user and tell him if should be created or not.
     if i_launcher['ROM_asset_path']:
-        Path_assets_FN = FileName(i_launcher['ROM_asset_path'])
-        log_debug('Path_assets_FN OP "{0}"'.format(Path_assets_FN.getOriginalPath()))
-        log_debug('Path_assets_FN  P "{0}"'.format(Path_assets_FN.getPath()))
+        launchers[launcherID]['ROM_asset_path'] = i_launcher['ROM_asset_path']
+        log_debug('Imported ROM_asset_path "{0}"'.format(i_launcher['ROM_asset_path']))
+        ROM_asset_path_FN = FileName(i_launcher['ROM_asset_path'])
+        log_debug('ROM_asset_path_FN OP "{0}"'.format(ROM_asset_path_FN.getOriginalPath()))
+        log_debug('ROM_asset_path_FN  P "{0}"'.format(ROM_asset_path_FN.getPath()))
 
-        # >> Warn user if Path_assets_FN directory does not exist
-        if not Path_assets_FN.exists():
-            log_debug('ROM_asset_path path not found!')
-            kodi_dialog_OK('Launcher "{0}". '.format(i_launcher['name']) +
-                           'ROM asset path "{0}" not found. '.format(Path_assets_FN.getPath()) +
-                           'Asset subdirectories will not be created.')
+        # >> Warn user if ROM_asset_path_FN directory does not exist
+        if not ROM_asset_path_FN.exists():
+            log_debug('Not found ROM_asset_path "{0}"'.format(ROM_asset_path_FN.getPath()))
+            ret = kodi_dialog_yesno('ROM asset path "{0}" not found. '.format(ROM_asset_path_FN.getPath()) +
+                                    'Create it?', title = 'Launcher "{0}"'.format(i_launcher['name']))
+            if ret:
+                log_debug('Creating dir "{0}"'.format(ROM_asset_path_FN.getPath()))
+                ROM_asset_path_FN.makedirs()
+            else:
+                log_debug('Do not create "{0}"'.format(ROM_asset_path_FN.getPath()))
+
         # >> Create asset directories if ROM path exists
-        else:
+        if ROM_asset_path_FN.exists():
             log_debug('ROM_asset_path path found. Creating assets subdirectories.')
-            assets_init_asset_dir(Path_assets_FN, launchers[launcherID])
+            assets_init_asset_dir(ROM_asset_path_FN, launchers[launcherID])
+        else:
+            log_debug('ROM_asset_path path found after asking user to create it.')
+            log_debug('ROM asset directories left blank or as there were.')
+
+    # --- Launcher assets/artwork ---
+    if i_launcher['Asset_Prefix']:
+        launchers[launcherID]['Asset_Prefix'] = i_launcher['Asset_Prefix']
+        log_debug('Imported Asset_Prefix "{0}"'.format(i_launcher['Asset_Prefix']))
+    Asset_Prefix = i_launcher['Asset_Prefix']
+    log_debug('Importing launcher assets with prefix "{0}"'.format(Asset_Prefix))
+    # log_debug('import_FN "{0}"'.format(import_FN.getPath()))
+
+    # >> Have a look at autoconfig_import_category() for a reference implementation.
+    # >> Get a list of all files in the XML config file directory.
+    # >> This list has filenames withouth path.
+    file_list = sorted(os.listdir(import_FN.getDir()))
+    # log_debug('--- File list ---')
+    # for file in file_list: log_debug('--- "{0}"'.format(file))
+
+    # >> Traverse list of category assets and search for image files for each asset
+    for laun_asset in LAUNCHER_ASSET_LIST:
+        # >> Bypass trailers now
+        if laun_asset == ASSET_TRAILER: continue
+
+        # >> Look for assets
+        AInfo = assets_get_info_scheme(laun_asset)
+        log_debug('>> Asset "{0}"'.format(AInfo.name))
+        asset_file_list = autoconfig_search_asset_file_list(Asset_Prefix, AInfo, import_FN, file_list)
+        # --- Create image list for selection dialog ---
+        listitems_list = []
+        listitems_asset_paths = []
+        # >> Current image if found
+        current_FN = FileName(launchers[launcherID][AInfo.key])
+        if current_FN.exists():
+            asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
+            asset_listitem.setArt({'icon' : current_FN.getPath()})
+            listitems_list.append(asset_listitem)
+            listitems_asset_paths.append(current_FN.getPath())
+        # >> Image in <s_icon>, <s_fanart>, ... tags if found
+        tag_asset_FN = FileName(i_launcher[AInfo.key])
+        if tag_asset_FN.exists():
+            asset_listitem = xbmcgui.ListItem(label = 'XML <{0}> image'.format(AInfo.key),
+                                              label2 = tag_asset_FN.getPath())
+            asset_listitem.setArt({'icon' : tag_asset_FN.getPath()})
+            listitems_list.append(asset_listitem)
+            listitems_asset_paths.append(tag_asset_FN.getPath())
+        # >> Images found in XML configuration via <Asset_Prefix> tag
+        image_count = 1
+        for asset_file_name in asset_file_list:
+            log_debug('asset_file_name "{0}"'.format(asset_file_name))
+            asset_FN = FileName(asset_file_name)
+            asset_listitem = xbmcgui.ListItem(label = '<Asset_Prefix> #{0} "{1}"'.format(image_count, asset_FN.getBase()),
+                                              label2 = asset_file_name)
+            asset_listitem.setArt({'icon' : asset_file_name})
+            listitems_list.append(asset_listitem)
+            listitems_asset_paths.append(asset_FN.getPath())
+            image_count += 1
+        # >> If list is empty at this point no images were found at all.
+        if not listitems_list:
+            log_debug('listitems_list is empty. Keeping {0} as it was.'.format(AInfo.name))
+            continue
+        # >> No image
+        asset_listitem = xbmcgui.ListItem(label = 'No image')
+        asset_listitem.setArt({'icon' : 'DefaultAddonNone.png'})
+        listitems_list.append(asset_listitem)
+        listitems_asset_paths.append('')
+
+        title_str = 'Launcher "{0}". Choose {1} file'.format(i_launcher['name'], AInfo.name)
+        ret_idx = xbmcgui.Dialog().select(title_str, list = listitems_list, useDetails = True)
+        if ret_idx < 0: return
+
+        # >> Set asset field
+        launchers[launcherID][AInfo.key] = listitems_asset_paths[ret_idx]
+        log_verb('Set launcher artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
     # >> Name of launcher has changed.
     #    Regenerate roms_base_noext and rename old one if necessary.

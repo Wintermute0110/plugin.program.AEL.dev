@@ -70,7 +70,7 @@ def fs_new_category():
          'default_banner' : 's_banner',
          'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
-         'asset_prefix' : '',
+         'Asset_Prefix' : '',
          's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -134,7 +134,7 @@ def fs_new_launcher():
          'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
          'default_controller' : 's_controller',
-         'asset_prefix' : '',
+         'Asset_Prefix' : '',
          's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -472,7 +472,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('default_banner', category['default_banner']))
             str_list.append(XML_text('default_poster', category['default_poster']))
             str_list.append(XML_text('default_clearlogo', category['default_clearlogo']))
-            str_list.append(XML_text('asset_prefix', category['asset_prefix']))
+            str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
             str_list.append(XML_text('s_icon', category['s_icon']))
             str_list.append(XML_text('s_fanart', category['s_fanart']))
             str_list.append(XML_text('s_banner', category['s_banner']))
@@ -523,7 +523,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('default_poster', launcher['default_poster']))
             str_list.append(XML_text('default_clearlogo', launcher['default_clearlogo']))
             str_list.append(XML_text('default_controller', launcher['default_controller']))
-            str_list.append(XML_text('asset_prefix', launcher['asset_prefix']))
+            str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
             str_list.append(XML_text('s_icon', launcher['s_icon']))
             str_list.append(XML_text('s_fanart', launcher['s_fanart']))
             str_list.append(XML_text('s_banner', launcher['s_banner']))
