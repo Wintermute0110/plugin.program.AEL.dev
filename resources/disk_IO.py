@@ -70,6 +70,7 @@ def fs_new_category():
          'default_banner' : 's_banner',
          'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
+         'asset_prefix' : '',
          's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -133,6 +134,7 @@ def fs_new_launcher():
          'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
          'default_controller' : 's_controller',
+         'asset_prefix' : '',
          's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
@@ -145,6 +147,7 @@ def fs_new_launcher():
          'roms_default_banner' : 's_banner',
          'roms_default_poster' : 's_flyer',
          'roms_default_clearlogo' : 's_clearlogo',
+         'ROM_asset_path' : '',
          'path_title' : '',
          'path_snap' : '',
          'path_boxfront' : '',
@@ -469,6 +472,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('default_banner', category['default_banner']))
             str_list.append(XML_text('default_poster', category['default_poster']))
             str_list.append(XML_text('default_clearlogo', category['default_clearlogo']))
+            str_list.append(XML_text('asset_prefix', category['asset_prefix']))
             str_list.append(XML_text('s_icon', category['s_icon']))
             str_list.append(XML_text('s_fanart', category['s_fanart']))
             str_list.append(XML_text('s_banner', category['s_banner']))
@@ -519,6 +523,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('default_poster', launcher['default_poster']))
             str_list.append(XML_text('default_clearlogo', launcher['default_clearlogo']))
             str_list.append(XML_text('default_controller', launcher['default_controller']))
+            str_list.append(XML_text('asset_prefix', launcher['asset_prefix']))
             str_list.append(XML_text('s_icon', launcher['s_icon']))
             str_list.append(XML_text('s_fanart', launcher['s_fanart']))
             str_list.append(XML_text('s_banner', launcher['s_banner']))
@@ -532,6 +537,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('roms_default_banner', launcher['roms_default_banner']))
             str_list.append(XML_text('roms_default_poster', launcher['roms_default_poster']))
             str_list.append(XML_text('roms_default_clearlogo', launcher['roms_default_clearlogo']))
+            str_list.append(XML_text('ROM_asset_path', launcher['ROM_asset_path']))
             str_list.append(XML_text('path_title', launcher['path_title']))
             str_list.append(XML_text('path_snap', launcher['path_snap']))
             str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
