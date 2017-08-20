@@ -8961,7 +8961,7 @@ class Main:
 
     def _command_check_retro_BIOS(self):
         # >> If Retroarch System dir not configured or found abort.
-        
+        pass
 
         # >> Get a list of files in Retroarch system dir
         
