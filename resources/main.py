@@ -410,14 +410,30 @@ class Main:
         self.settings['scan_clean_tags']          = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
 
         # --- ROM scraping ---
-        self.settings['metadata_scraper']         = int(__addon_obj__.getSetting('metadata_scraper'))
-        self.settings['asset_scraper']            = int(__addon_obj__.getSetting('asset_scraper'))
-
         self.settings['metadata_scraper_mode']    = int(__addon_obj__.getSetting('metadata_scraper_mode'))
         self.settings['asset_scraper_mode']       = int(__addon_obj__.getSetting('asset_scraper_mode'))
 
+        self.settings['metadata_scraper']         = int(__addon_obj__.getSetting('metadata_scraper'))
+        self.settings['asset_scraper']            = int(__addon_obj__.getSetting('asset_scraper'))
+
+        self.settings['scraper_metadata']         = int(__addon_obj__.getSetting('scraper_metadata'))
+        self.settings['scraper_title']            = int(__addon_obj__.getSetting('scraper_title'))
+        self.settings['scraper_snap']             = int(__addon_obj__.getSetting('scraper_snap'))
+        self.settings['scraper_bfront']           = int(__addon_obj__.getSetting('scraper_bfront'))
+        self.settings['scraper_bback']            = int(__addon_obj__.getSetting('scraper_bback'))
+        self.settings['scraper_cart']             = int(__addon_obj__.getSetting('scraper_cart'))
+        self.settings['scraper_fanart']           = int(__addon_obj__.getSetting('scraper_fanart'))
+        self.settings['scraper_banner']           = int(__addon_obj__.getSetting('scraper_banner'))
+        self.settings['scraper_clearlogo']        = int(__addon_obj__.getSetting('scraper_clearlogo'))
+        self.settings['scraper_flyer']            = int(__addon_obj__.getSetting('scraper_flyer'))
+        self.settings['scraper_cabinet']          = int(__addon_obj__.getSetting('scraper_cabinet'))
+        self.settings['scraper_cpanel']           = int(__addon_obj__.getSetting('scraper_cpanel'))
+        self.settings['scraper_pcb']              = int(__addon_obj__.getSetting('scraper_pcb'))
+        self.settings['scraper_flyer_mame']       = int(__addon_obj__.getSetting('scraper_flyer_mame'))
+
         # --- ROM audit ---
         self.settings['audit_unknown_roms']       = int(__addon_obj__.getSetting('audit_unknown_roms'))
+        self.settings['audit_1G1R_region']        = int(__addon_obj__.getSetting('audit_1G1R_region'))
 
         # --- Scrapers ---
         # self.settings['scraper_region']           = int(__addon_obj__.getSetting('scraper_region'))
@@ -450,17 +466,18 @@ class Main:
         self.settings['collections_asset_dir']    = __addon_obj__.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- I/O ---
-        self.settings['log_level']                = int(__addon_obj__.getSetting('log_level'))
-        
+        self.settings['io_retroarch_sys_dir']     = __addon_obj__.getSetting('io_retroarch_sys_dir').decode('utf-8')
+
         # --- Advanced ---
         self.settings['media_state_action']       = int(__addon_obj__.getSetting('media_state_action'))
-        self.settings['lirc_state']               = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
         self.settings['delay_tempo']              = int(round(float(__addon_obj__.getSetting('delay_tempo'))))
         self.settings['suspend_audio_engine']     = True if __addon_obj__.getSetting('suspend_audio_engine') == 'true' else False
         self.settings['escape_romfile']           = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
+        self.settings['lirc_state']               = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
         self.settings['show_batch_window']        = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
         self.settings['windows_close_fds']        = True if __addon_obj__.getSetting('windows_close_fds') == 'true' else False
         self.settings['windows_cd_apppath']       = True if __addon_obj__.getSetting('windows_cd_apppath') == 'true' else False
+        self.settings['log_level']                = int(__addon_obj__.getSetting('log_level'))
 
         # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR.getOriginalPath()

@@ -1,27 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 <category label="ROM scanner">
-    <!-- <setting id="separator" type="lsep" label="Scan settings"/> -->
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
     <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
     <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
     <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
-
-    <!-- <setting id="separator" type="lsep" label="Title Formatting"/> -->
-    <setting label="Update NFO files after ROM scraping" type="bool" default="false" id="scan_update_NFO_files" />
-    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" default="true" id="scan_ignore_scrap_title" />
-    <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" default="false" id="scan_clean_tags" />
+    <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
+    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" id="scan_ignore_scrap_title" default="true" />
+    <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
 </category>
 <category label="ROM scraping">
-    <setting id="separator" type="lsep" label="Scrapers"/>
-    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Asset scraper" type="enum" id="asset_scraper" default="0" values="TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-
     <setting id="separator" type="lsep" label="Scraping mode"/>
     <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
     <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
 
-    <setting id="separator" type="lsep" label="Artwork scrapers"/>
+    <setting id="separator" type="lsep" label="Scrapers (OLD)"/>
+    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Asset scraper" type="enum" id="asset_scraper" default="0" values="TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+
+    <setting id="separator" type="lsep" label="Scrapers (NEW)"/>
+    <setting label="Metadata scraper" type="enum" id="scraper_metadata" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="Titles scraper" type="enum" id="scraper_title" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="Snaps scraper" type="enum" id="scraper_snap" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="Boxfront scraper" type="enum" id="scraper_bfront" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
@@ -31,7 +29,6 @@
     <setting label="Banner scraper" type="enum" id="scraper_banner" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="Clearlogo scraper" type="enum" id="scraper_clearlogo" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="Flyer scraper" type="enum" id="scraper_flyer" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-
     <setting label="Cabinet scraper (MAME only)" type="enum" id="scraper_cabinet" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="CPanel scraper (MAME only)" type="enum" id="scraper_cpanel" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="PCB scraper (MAME only)" type="enum" id="scraper_pcb" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
@@ -52,23 +49,23 @@
 -->
 <category label="Display">
     <setting id="separator" type="lsep" label="General"/>
-    <setting label="Launching application notification" type="bool" default="true" id="display_launcher_notify" />
-    <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" default="false" id="display_hide_finished" />
-    <setting label="Display number of ROMs in launchers" type="bool" default="true" id="display_launcher_roms" />
+    <setting label="Launching application notification" type="bool" id="display_launcher_notify" default="true" />
+    <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="display_hide_finished" default="false" />
+    <setting label="Display number of ROMs in launchers" type="bool" id="display_launcher_roms" default="true" />
 
     <setting id="separator" type="lsep" label="ROM tags"/>
-    <setting label="Display ROM in Favourites tag" type="bool" default="true" id="display_rom_in_fav" />
-    <setting label="Display ROM audit tag" type="bool" default="true" id="display_nointro_stat" />
-    <setting label="Display ROM in Favourites tag" type="bool" default="true" id="display_fav_status" />
+    <setting label="Display ROM in Favourites tag" type="bool" id="display_rom_in_fav" default="true" />
+    <setting label="Display ROM audit tag" type="bool" id="display_nointro_stat" default="true" />
+    <setting label="Display ROM in Favourites tag" type="bool" id="display_fav_status" default="true" />
 
     <setting id="separator" type="lsep" label="Special Categories/Launchers"/>
-    <setting label="Hide <Favourites>" type="bool" default="false" id="display_hide_favs" />
-    <setting label="Hide {ROM Collections}" type="bool" default="false" id="display_hide_collections" />
-    <setting label="Hide [Browse by ...]" type="bool" default="false" id="display_hide_vlaunchers" />
-    <setting label="Hide [Browse AEL Offline Scraper]" type="bool" default="false" id="display_hide_AEL_scraper" />
-    <setting label="Hide [Browse LaunchBox Offline Scraper]" type="bool" default="false" id="display_hide_LB_scraper" />
-    <setting label="Hide [Recently played ROMs]" type="bool" default="false" id="display_hide_recent" />
-    <setting label="Hide [Most played ROMs]" type="bool" default="false" id="display_hide_mostplayed" />
+    <setting label="Hide <Favourites>" type="bool" id="display_hide_favs" default="false" />
+    <setting label="Hide {ROM Collections}" type="bool" id="display_hide_collections" default="false" />
+    <setting label="Hide [Browse by ...]" type="bool" id="display_hide_vlaunchers" default="false" />
+    <setting label="Hide [Browse AEL Offline Scraper]" type="bool" id="display_hide_AEL_scraper" default="false" />
+    <setting label="Hide [Browse LaunchBox Offline Scraper]" type="bool" id="display_hide_LB_scraper" default="false" />
+    <setting label="Hide [Recently played ROMs]" type="bool" id="display_hide_recent" default="false" />
+    <setting label="Hide [Most played ROMs]" type="bool" id="display_hide_mostplayed" default="false" />
 </category>
 <category label="Paths">
     <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />
@@ -78,9 +75,8 @@
 </category>
 <category label="I/O">
     <setting id="separator" type="lsep" label="Import/export configuration"/>
-    <setting label="Export launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
     <setting label="Import launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
-    <setting label="Create ROM asset path if missing" type="bool" id="io_create_ROM_path" default="false"/>
+    <setting label="Export launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
 
     <setting id="separator" type="lsep" label="Utilities"/>
     <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
