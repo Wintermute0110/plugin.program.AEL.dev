@@ -4157,7 +4157,7 @@ class Main:
         loading_ticks_start = time.time()
         xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path))
+        log_debug('Loading XML {0}'.format(xml_path.getOriginalPath()))
         games = audit_load_OfflineScraper_XML(xml_path)
 
         # --- Display offline scraper ROMs ---
@@ -4190,9 +4190,9 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+        xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path))
+        log_debug('Loading XML {0}'.format(xml_path.getOriginalPath()))
         games = audit_load_OfflineScraper_XML(xml_path)
 
         # --- Display offline scraper ROMs ---
@@ -6237,10 +6237,9 @@ class Main:
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
         if scraper == 'AEL':
-            xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+            xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
             # log_debug('xml_file = {0}'.format(xml_file))
-            log_debug('Loading AEL XML {0}'.format(xml_path))
+            log_debug('Loading AEL XML {0}'.format(xml_path.getOriginalPath()))
             games = audit_load_OfflineScraper_XML(xml_path)
             game = games[game_name]
 
@@ -6262,9 +6261,9 @@ class Main:
             info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(game['cloneof'])
         elif scraper == 'LaunchBox':
             xml_file = platform_AEL_to_LB_XML[platform]
-            xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+            xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
             # log_debug('xml_file = {0}'.format(xml_file))
-            log_debug('Loading LaunchBox XML {0}'.format(xml_path))
+            log_debug('Loading LaunchBox XML {0}'.format(xml_path.getOriginalPath()))
             games = audit_load_OfflineScraper_XML(xml_path)
             game = games[game_name]
             # log_debug(unicode(game))
