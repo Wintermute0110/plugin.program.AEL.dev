@@ -8964,7 +8964,7 @@ class Main:
 
     def _command_check_retro_BIOS(self):
         # >> If Retroarch System dir not configured or found abort.
-        pass
+        kodi_dialog_OK('_command_check_retro_BIOS() not implemented yet. Sorry.')
 
         # >> Get a list of files in Retroarch system dir
         
@@ -8977,7 +8977,7 @@ class Main:
         #    5) Write results into a report TXT file.
         
 
-        # >> Display results
+        # >> Display report TXT file.
         
 
     #
