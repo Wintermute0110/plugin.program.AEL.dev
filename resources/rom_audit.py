@@ -466,3 +466,25 @@ def audit_make_NoIntro_Parents_dic(nointro_dic):
             main_clone_to_parent_dic[machine_name] = parent_name            
 
     return main_clone_to_parent_dic
+
+# -------------------------------------------------------------------------------------------------
+# Retroarch System directory BIOS audit
+# -------------------------------------------------------------------------------------------------
+# See https://github.com/libretro/libretro-database/blob/master/dat/BIOS.dat
+# See https://github.com/libretro/libretro-database/blob/master/dat/BIOS%20-%20Non-Merged.dat
+Libretro_BIOS_list = [
+    # --- Atari 5200 ---
+    {'filename' : '5200.rom', size : 2048, 'md5': '281f20ea4320404ec820fb7ec0693b38', 'mandatory' : True },
+
+    # --- Atari 7800 ---
+    {'filename' : '7800 BIOS (E).rom', size : 16384, 'md5': '397bb566584be7b9764e7a68974c4263', 'mandatory' : True },
+    {'filename' : '7800 BIOS (U).rom', size : 4096, 'md5': '0763f1ffb006ddbe32e52d497ee848ae', 'mandatory' : True },
+
+    # --- Sony PlayStation ---
+    {'filename' : 'scph5500.bin', size : 524288, 'md5': '8dd7d5296a650fac7319bce665a6a53c', 'mandatory' : True },
+    {'filename' : 'scph5501.bin', size : 524288, 'md5': '490f666e1afb15b7362b406ed1cea246', 'mandatory' : True },
+    {'filename' : 'scph5502.bin', size : 524288, 'md5': '32736f17079d0b2b7024407c39bd3050', 'mandatory' : True },
+
+    # --- Sony PlayStation Portable ---
+    {'filename' : 'ppge_atlas.zim', size : 784968, 'md5': 'a93fc411c1ce7d001a2a812643c70085', 'mandatory' : True },
+]

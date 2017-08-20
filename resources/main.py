@@ -8957,10 +8957,25 @@ class Main:
             rom.pop('roms_default_thumb')
 
     def _command_check_launchers(self):
-        kodi_dialog_OK('_command_check_launchers() Not implemented yet')
+        kodi_dialog_OK('_command_check_launchers() not implemented yet. Sorry.')
 
     def _command_check_retro_BIOS(self):
-        kodi_dialog_OK('_command_check_retro_BIOS() Not implemented yet')
+        # >> If Retroarch System dir not configured or found abort.
+        
+
+        # >> Get a list of files in Retroarch system dir
+        
+
+        # >> Algortihm:
+        #    1) Traverse list of BIOS. For every BIOS:
+        #    2) Check if file exists. If not exists -> missing BIOS.
+        #    3) If BIOS file exists check MD5
+        #    4) Unknwon files in Retroarch System dir are ignored and non-reported.
+        #    5) Write results into a report TXT file.
+        
+
+        # >> Display results
+        
 
     #
     # Import legacy Advanced Launcher launchers.xml
