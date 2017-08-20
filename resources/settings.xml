@@ -75,8 +75,8 @@
 </category>
 <category label="I/O">
     <setting id="separator" type="lsep" label="Import/export configuration"/>
-    <setting label="Import launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
-    <setting label="Export launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
+    <setting label="Import category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
+    <setting label="Export category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
 
     <setting id="separator" type="lsep" label="Utilities"/>
     <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
