@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 import sys, urllib, urllib2, re
 
 # --- AEL modules ---
+from platforms import *
 from scrap import *
-from scrap_info import *
 from net_IO import *
 from utils import *
 

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher scraping engine
+# Advanced Emulator Launcher platform and emulator information
 #
 
 # Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
-# Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,50 +17,11 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 
-# -----------------------------------------------------------------------------
-# Miscellaneous emulator and gamesys (platforms) supported.
-# -----------------------------------------------------------------------------
-def emudata_get_program_arguments( app ):
-    # Based on the app. name, retrieve the default arguments for the app.
-    app = app.lower()
-    applications = {
-        'mame'        : '"$rom$"',
-        'mednafen'    : '-fs 1 "$rom$"',
-        'mupen64plus' : '--nogui --noask --noosd --fullscreen "$rom$"',
-        'nestopia'    : '"$rom$"',
-        'xbmc'        : 'PlayMedia($rom$)',
-        'kodi'        : 'PlayMedia($rom$)',
-        'retroarch'   : '-L /path/to/core -f "$rom$"',
-        'yabause'     : '-a -f -i "$rom$"',
-    }
-    for application, arguments in applications.iteritems():
-        if app.find(application) >= 0:
-            return arguments
-
-    return '"$rom$"'
-
-def emudata_get_program_extensions( app ):
-    # Based on the app. name, retrieve the recognized extension of the app.
-    app = app.lower()
-    applications = {
-        'mame'       : 'zip|7z',
-        'mednafen'   : 'zip|cue',
-        'mupen64plus': 'z64|zip|n64',
-        'nestopia'   : 'nes|zip',
-        'retroarch'  : 'zip|cue',
-        'yabause'    : 'cue',
-    }
-    for application, extensions in applications.iteritems():
-        if app.find(application) >= 0:
-            return extensions
-
-    return ""
-
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # This dictionary has the AEL "official" game system list.
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # >> When possible user No-Intro DAT-o-MATIC names
-# >> Fallback to Wikipedia
+# >> Fallback to Wikipedia names
 #
 AEL_platform_list = [
     # --- MAME/Arcade ---
@@ -148,11 +108,23 @@ AEL_platform_list = [
     'Unknown'
 ]
 
-# -----------------------------------------------------------------------------
-# Translation of AEL oficial gamesys (platform) name to scraper particular name
-# -----------------------------------------------------------------------------
 #
-# GameDBInfo XML are compatible with HyperSpin Hyperlist XML files.
+# Returns the platform numerical index from the platform name. If the platform name is not
+# found then returns the index of the 'Unknown' platform
+#
+def get_AEL_platform_index(platform_name):
+    try:
+        platform_index = AEL_platform_list.index(platform_name)
+    except:
+        platform_index = AEL_platform_list.index('Unknown')
+
+    return platform_index
+
+# -------------------------------------------------------------------------------------------------
+# Translation of AEL oficial gamesys (platform) name to scraper particular name
+# -------------------------------------------------------------------------------------------------
+#
+# GameDBInfo XML database files.
 #
 platform_AEL_to_Offline_GameDBInfo_XML = {
     'MAME'                        : 'GameDBInfo/MAME.xml',
@@ -231,6 +203,90 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Sony PlayStation 3'          : '',
     'Sony PlayStation 4'          : '',
     'Sony PlayStation Portable'   : 'GameDBInfo/Sony PlayStation Portable.xml',
+
+    'Unknown'                     : ''
+}
+
+#
+# LaunchBox XML database files.
+#
+platform_AEL_to_LB_XML = {
+    'MAME'                        : '',
+    'Atari 2600'                  : '',
+    'Atari 5200'                  : '',
+    'Atari 7800'                  : '',
+    'Atari Jaguar'                : '',
+    'Atari Jaguar CD'             : '',
+    'Atari Lynx'                  : '',
+    'Atari ST'                    : '',
+    
+    'Colecovision'                : '',
+
+    'Commodore 64'                : '',
+    'Commodore Amiga'             : '',
+    'Commodore Plus-4'            : '',
+    'Commodore VIC-20'            : '',
+
+    'Magnavox Odyssey2'           : '',
+    'Philips Videopac G7000'      : '',
+
+    'Microsoft MSX'               : '',
+    'Microsoft MSX 2'             : '',
+    'Microsoft MS-DOS'            : '',
+    'Microsoft Windows'           : '',
+    'Microsoft Xbox'              : '',
+    'Microsoft Xbox 360'          : '',
+    'Microsoft Xbox One'          : '',
+
+    'NEC PC Engine'               : '',
+    'NEC PC Engine CDROM2'        : '',
+    'NEC TurboGrafx 16'           : '',
+    'NEC TurboGrafx CD'           : '',
+    'NEC SuperGrafx'              : '',
+    'NEC PC-FX'                   : '',
+
+    'Nintendo GameBoy'            : '',
+    'Nintendo GameBoy Color'      : '',
+    'Nintendo GameBoy Advance'    : '',
+    'Nintendo DS'                 : '',
+    'Nintendo DSi'                : '',
+    'Nintendo 3DS'                : '',
+    'Nintendo Famicom Disk System': '',
+    'Nintendo NES'                : '',
+    'Nintendo Famicom'            : '',
+    'Nintendo SNES'               : '',
+    'Nintendo Virtual Boy'        : '',
+    'Nintendo 64'                 : '',
+    'Nintendo GameCube'           : '',
+    'Nintendo Wii'                : '',
+    'Nintendo Wii U'              : '',
+    'Nintendo Switch'             : '',
+
+    'Panasonic 3DO'               : '',
+
+    'Sega SG-1000'                : '',
+    'Sega Master System'          : '',
+    'Sega Game Gear'              : '',
+    'Sega MegaDrive'              : 'LaunchBox/Sega Genesis.xml',
+    'Sega Genesis'                : '',
+    'Sega MegaCD'                 : '',
+    'Sega SegaCD'                 : '',
+    'Sega 32X'                    : '',
+    'Sega PICO'                   : '',
+    'Sega Saturn'                 : '',
+    'Sega Dreamcast'              : '',
+
+    'Sinclair ZX Spectrum'        : '',
+
+    'SNK Neo-Geo CD'              : '',
+    'SNK Neo-Geo Pocket'          : '',
+    'SNK Neo-Geo Pocket Color'    : '',
+
+    'Sony PlayStation'            : '',
+    'Sony PlayStation 2'          : '',
+    'Sony PlayStation 3'          : '',
+    'Sony PlayStation 4'          : '',
+    'Sony PlayStation Portable'   : '',
 
     'Unknown'                     : ''
 }
@@ -486,3 +542,42 @@ def AEL_platform_to_MobyGames(platform_AEL):
     except: platform_MobyGames = ''
         
     return platform_MobyGames
+
+# -------------------------------------------------------------------------------------------------
+# Miscellaneous emulator and gamesys (platforms) supported.
+# -------------------------------------------------------------------------------------------------
+def emudata_get_program_arguments(app):
+    # Based on the app. name, retrieve the default arguments for the app.
+    app = app.lower()
+    applications = {
+        'mame'        : '"$rom$"',
+        'mednafen'    : '-fs 1 "$rom$"',
+        'mupen64plus' : '--nogui --noask --noosd --fullscreen "$rom$"',
+        'nestopia'    : '"$rom$"',
+        'xbmc'        : 'PlayMedia($rom$)',
+        'kodi'        : 'PlayMedia($rom$)',
+        'retroarch'   : '-L /path/to/core -f "$rom$"',
+        'yabause'     : '-a -f -i "$rom$"',
+    }
+    for application, arguments in applications.iteritems():
+        if app.find(application) >= 0:
+            return arguments
+
+    return '"$rom$"'
+
+def emudata_get_program_extensions(app):
+    # Based on the app. name, retrieve the recognized extension of the app.
+    app = app.lower()
+    applications = {
+        'mame'       : 'zip|7z',
+        'mednafen'   : 'zip|cue',
+        'mupen64plus': 'z64|zip|n64',
+        'nestopia'   : 'nes|zip',
+        'retroarch'  : 'zip|cue',
+        'yabause'    : 'cue',
+    }
+    for application, extensions in applications.iteritems():
+        if app.find(application) >= 0:
+            return extensions
+
+    return ''

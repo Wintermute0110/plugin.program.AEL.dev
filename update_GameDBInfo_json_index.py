@@ -21,7 +21,7 @@ import sys
 from resources.utils import *
 from resources.disk_IO import *
 from resources.rom_audit import *
-from resources.scrap_info import *
+from resources.platforms import *
 
 # --- Constants -----------------------------------------------------------------------------------
 CURRENT_DIR = FileName('./')

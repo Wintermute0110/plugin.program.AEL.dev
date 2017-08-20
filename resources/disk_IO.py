@@ -24,6 +24,8 @@ import os
 import sys
 import string
 import base64
+import pprint
+import errno
 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
@@ -52,11 +54,10 @@ JSON_separators = (',', ':')
 # Internally all string in the data model are Unicode. They will be encoded to
 # UTF-8 when writing files.
 # -------------------------------------------------------------------------------------------------
-# These three functions create a new data structure for the given object
-# and (very importantly) fill the correct default values). These must match
-# what is written/read from/to the XML files.
-#
+# These three functions create a new data structure for the given object and (very importantly) 
+# fill the correct default values). These must match what is written/read from/to the XML files.
 # Tag name in the XML is the same as in the data dictionary.
+#
 def fs_new_category():
     c = {'id' : '',
          'm_name' : '',
@@ -64,21 +65,23 @@ def fs_new_category():
          'm_rating' : '',
          'm_plot' : '',
          'finished' : False,
-         'default_thumb' : 's_thumb',
+         'default_icon' : 's_icon',
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
-         'default_poster' : 's_flyer',
+         'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
-         's_thumb' : '',
+         'Asset_Prefix' : '',
+         's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
-         's_flyer' : '',
+         's_poster' : '',
          's_clearlogo' : '',
          's_trailer' : ''
          }
 
     return c
 
+# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
 NOINTRO_DMODE_ALL       = 'All ROMs'
 NOINTRO_DMODE_HAVE      = 'Have ROMs'
 NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
@@ -89,12 +92,19 @@ NOINTRO_DMODE_UNK       = 'Unknown ROMs'
 NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
                            NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
                            NOINTRO_DMODE_UNK]
+
+# launcher['launcher_display_mode'] values default LAUNCHER_DMODE_FLAT
+LAUNCHER_DMODE_FLAT   = 'Flat mode'
+LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
+LAUNCHER_DMODE_1G1R   = '1G1R mode'
+LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
+
 def fs_new_launcher():
     l = {'id' : '',
          'm_name' : '',
          'm_year' : '',
          'm_genre' : '',
-         'm_studio' : '',
+         'm_developer' : '',
          'm_rating' : '',
          'm_plot' : '',
          'platform' : '',
@@ -109,7 +119,7 @@ def fs_new_launcher():
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
          'nointro_display_mode' : NOINTRO_DMODE_ALL,
-         'pclone_launcher' : False,
+         'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
          'num_roms' : 0,
          'num_parents' : 0,
          'num_clones' : 0,
@@ -118,30 +128,34 @@ def fs_new_launcher():
          'num_unknown' : 0,
          'timestamp_launcher' : 0.0,
          'timestamp_report' : 0.0,
-         'default_thumb' : 's_thumb',
+         'default_icon' : 's_icon',
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
-         'default_poster' : 's_flyer',
+         'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
-         'roms_default_thumb' : 's_boxfront',
+         'default_controller' : 's_controller',
+         'Asset_Prefix' : '',
+         's_icon' : '',
+         's_fanart' : '',
+         's_banner' : '',
+         's_poster' : '',
+         's_clearlogo' : '',
+         's_controller' : '',
+         's_trailer' : '',
+         'roms_default_icon' : 's_boxfront',
          'roms_default_fanart' : 's_fanart',
          'roms_default_banner' : 's_banner',
          'roms_default_poster' : 's_flyer',
          'roms_default_clearlogo' : 's_clearlogo',
-         's_thumb' : '',
-         's_fanart' : '',
-         's_banner' : '',
-         's_flyer' : '',
-         's_clearlogo' : '',
-         's_trailer' : '',
+         'ROM_asset_path' : '',
          'path_title' : '',
          'path_snap' : '',
-         'path_fanart' : '',
-         'path_banner' : '',
-         'path_clearlogo' : '',
          'path_boxfront' : '',
          'path_boxback' : '',
          'path_cartridge' : '',
+         'path_fanart' : '',
+         'path_banner' : '',
+         'path_clearlogo' : '',
          'path_flyer' : '',
          'path_map' : '',
          'path_manual' : '',
@@ -178,7 +192,7 @@ ESRB_ADULTS_ONLY = 'AO (Adults Only)'
 ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
                     ESRB_MATURE, ESRB_ADULTS_ONLY]
 
-# m_nplayers default values
+# m_nplayers values default ''
 NP_1P     = '1P'
 NP_2P_SIM = '2P sim'
 NP_2P_ALT = '2P alt'
@@ -197,7 +211,7 @@ def fs_new_rom():
          'm_name' : '',
          'm_year' : '',
          'm_genre' : '',
-         'm_studio' : '',
+         'm_developer' : '',
          'm_nplayers' : '',
          'm_esrb' : ESRB_PENDING,
          'm_rating' : '',
@@ -211,12 +225,12 @@ def fs_new_rom():
          'pclone_status' : PCLONE_STATUS_NONE,
          's_title' : '',
          's_snap' : '',
-         's_fanart' : '',
-         's_banner' : '',
-         's_clearlogo' : '',
          's_boxfront' : '',
          's_boxback' : '',
          's_cartridge' : '',
+         's_fanart' : '',
+         's_banner' : '',
+         's_clearlogo' : '',
          's_flyer' : '',
          's_map' : '',
          's_manual' : '',
@@ -232,15 +246,15 @@ def fs_new_collection():
          'm_rating' : '',
          'm_plot' : '',
          'roms_base_noext' : '',
-         'default_thumb' : 's_thumb',
+         'default_icon' : 's_icon',
          'default_fanart' : 's_fanart',
          'default_banner' : 's_banner',
-         'default_poster' : 's_flyer',
+         'default_poster' : 's_poster',
          'default_clearlogo' : 's_clearlogo',
-         's_thumb' : '',
+         's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
-         's_flyer' : '',
+         's_poster' : '',
          's_clearlogo' : '',
          's_trailer' : ''
     }
@@ -281,13 +295,14 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['rompath']                = launcher['rompath']
     favourite['romext']                 = launcher['romext']
     favourite['minimize']               = launcher['minimize']
-    favourite['roms_default_thumb']     = launcher['roms_default_thumb']
+    favourite['roms_default_icon']      = launcher['roms_default_icon']
     favourite['roms_default_fanart']    = launcher['roms_default_fanart']
     favourite['roms_default_banner']    = launcher['roms_default_banner']
     favourite['roms_default_poster']    = launcher['roms_default_poster']
     favourite['roms_default_clearlogo'] = launcher['roms_default_clearlogo']
 
     # >> Favourite ROM unique fields
+    # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
     favourite['fav_status'] = 'OK'
 
     return favourite
@@ -352,7 +367,7 @@ def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['m_name']         = source_rom['m_name']
     dest_rom['m_year']         = source_rom['m_year']
     dest_rom['m_genre']        = source_rom['m_genre']
-    dest_rom['m_studio']       = source_rom['m_studio']
+    dest_rom['m_developer']    = source_rom['m_developer']
     dest_rom['m_rating']       = source_rom['m_rating']
     dest_rom['m_plot']         = source_rom['m_plot']
     dest_rom['altapp']         = source_rom['altapp']
@@ -373,7 +388,7 @@ def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
     dest_rom['s_map']       = source_rom['s_map']
     dest_rom['s_manual']    = source_rom['s_manual']
     dest_rom['s_trailer']   = source_rom['s_trailer']
-    dest_rom['roms_default_thumb']     = source_launcher['roms_default_thumb']
+    dest_rom['roms_default_icon']      = source_launcher['roms_default_icon']
     dest_rom['roms_default_fanart']    = source_launcher['roms_default_fanart']
     dest_rom['roms_default_banner']    = source_launcher['roms_default_banner']
     dest_rom['roms_default_poster']    = source_launcher['roms_default_poster']
@@ -449,17 +464,19 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('id', categoryID))
             str_list.append(XML_text('m_name', category['m_name']))
             str_list.append(XML_text('m_genre', category['m_genre']))
-            str_list.append(XML_text('m_plot', category['m_plot']))
             str_list.append(XML_text('m_rating', category['m_rating']))
+            str_list.append(XML_text('m_plot', category['m_plot']))
             str_list.append(XML_text('finished', unicode(category['finished'])))
-            str_list.append(XML_text('default_thumb', category['default_thumb']))
+            str_list.append(XML_text('default_icon', category['default_icon']))
             str_list.append(XML_text('default_fanart', category['default_fanart']))
             str_list.append(XML_text('default_banner', category['default_banner']))
             str_list.append(XML_text('default_poster', category['default_poster']))
-            str_list.append(XML_text('s_thumb', category['s_thumb']))
+            str_list.append(XML_text('default_clearlogo', category['default_clearlogo']))
+            str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
+            str_list.append(XML_text('s_icon', category['s_icon']))
             str_list.append(XML_text('s_fanart', category['s_fanart']))
             str_list.append(XML_text('s_banner', category['s_banner']))
-            str_list.append(XML_text('s_flyer', category['s_flyer']))
+            str_list.append(XML_text('s_poster', category['s_poster']))
             str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
             str_list.append(XML_text('s_trailer', category['s_trailer']))
             str_list.append('</category>\n')
@@ -473,9 +490,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('m_name', launcher['m_name']))
             str_list.append(XML_text('m_year', launcher['m_year']))
             str_list.append(XML_text('m_genre', launcher['m_genre']))
-            str_list.append(XML_text('m_studio', launcher['m_studio']))
-            str_list.append(XML_text('m_plot', launcher['m_plot']))
+            str_list.append(XML_text('m_developer', launcher['m_developer']))
             str_list.append(XML_text('m_rating', launcher['m_rating']))
+            str_list.append(XML_text('m_plot', launcher['m_plot']))
             str_list.append(XML_text('platform', launcher['platform']))
             str_list.append(XML_text('categoryID', launcher['categoryID']))
             str_list.append(XML_text('application', launcher['application']))
@@ -490,7 +507,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
-            str_list.append(XML_text('pclone_launcher', unicode(launcher['pclone_launcher'])))
+            str_list.append(XML_text('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
             str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
             str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
             str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))
@@ -499,29 +516,36 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('num_unknown', unicode(launcher['num_unknown'])))
             str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
-            str_list.append(XML_text('default_thumb', launcher['default_thumb']))
+            # >> Launcher artwork
+            str_list.append(XML_text('default_icon', launcher['default_icon']))
             str_list.append(XML_text('default_fanart', launcher['default_fanart']))
             str_list.append(XML_text('default_banner', launcher['default_banner']))
             str_list.append(XML_text('default_poster', launcher['default_poster']))
-            str_list.append(XML_text('roms_default_thumb', launcher['roms_default_thumb']))
+            str_list.append(XML_text('default_clearlogo', launcher['default_clearlogo']))
+            str_list.append(XML_text('default_controller', launcher['default_controller']))
+            str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
+            str_list.append(XML_text('s_icon', launcher['s_icon']))
+            str_list.append(XML_text('s_fanart', launcher['s_fanart']))
+            str_list.append(XML_text('s_banner', launcher['s_banner']))
+            str_list.append(XML_text('s_poster', launcher['s_poster']))
+            str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
+            str_list.append(XML_text('s_controller', launcher['s_controller']))
+            str_list.append(XML_text('s_trailer', launcher['s_trailer']))
+            # >> ROMs artwork
+            str_list.append(XML_text('roms_default_icon', launcher['roms_default_icon']))
             str_list.append(XML_text('roms_default_fanart', launcher['roms_default_fanart']))
             str_list.append(XML_text('roms_default_banner', launcher['roms_default_banner']))
             str_list.append(XML_text('roms_default_poster', launcher['roms_default_poster']))
             str_list.append(XML_text('roms_default_clearlogo', launcher['roms_default_clearlogo']))
-            str_list.append(XML_text('s_thumb', launcher['s_thumb']))
-            str_list.append(XML_text('s_fanart', launcher['s_fanart']))
-            str_list.append(XML_text('s_banner', launcher['s_banner']))
-            str_list.append(XML_text('s_flyer', launcher['s_flyer']))
-            str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
-            str_list.append(XML_text('s_trailer', launcher['s_trailer']))
+            str_list.append(XML_text('ROM_asset_path', launcher['ROM_asset_path']))
             str_list.append(XML_text('path_title', launcher['path_title']))
             str_list.append(XML_text('path_snap', launcher['path_snap']))
-            str_list.append(XML_text('path_fanart', launcher['path_fanart']))
-            str_list.append(XML_text('path_banner', launcher['path_banner']))
-            str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
             str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
             str_list.append(XML_text('path_boxback', launcher['path_boxback']))
             str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
+            str_list.append(XML_text('path_fanart', launcher['path_fanart']))
+            str_list.append(XML_text('path_banner', launcher['path_banner']))
+            str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
             str_list.append(XML_text('path_flyer', launcher['path_flyer']))
             str_list.append(XML_text('path_map', launcher['path_map']))
             str_list.append(XML_text('path_manual', launcher['path_manual']))
@@ -549,13 +573,23 @@ def fs_load_catfile(categories_file, categories, launchers):
     update_timestamp = 0.0
 
     # --- Parse using cElementTree ---
-    # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
+    # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
     log_verb('fs_load_catfile() Loading {0}'.format(categories_file.getOriginalPath()))
     try:
         xml_root = categories_file.readXml()
-    except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+    except IOError as e:
+        log_debug('fs_load_catfile() (IOError) errno = {0}'.format(e.errno))
+        # log_debug(unicode(errno.errorcode))
+        # >> No such file or directory
+        if e.errno == errno.ENOENT:
+            log_error('fs_load_catfile() (IOError) No such file or directory.')
+        else:
+            log_error('fs_load_catfile() (IOError) Unhandled errno value.')
+        log_error('fs_load_catfile() (IOError) Return empty categories and launchers dictionaries.')
+        return update_timestamp
+    except ET.ParseError as e:
+        log_error('fs_load_catfile() (ParseError) Exception parsing XML categories.xml')
+        log_error('fs_load_catfile() (ParseError) {0}'.format(str(e)))
         kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                        'Maybe XML file is corrupt or contains invalid characters.')
         return update_timestamp
@@ -605,7 +639,7 @@ def fs_load_catfile(categories_file, categories, launchers):
                 if xml_tag == 'args_extra':
                     launcher[xml_tag].append(xml_text)
                 # >> Transform Bool datatype
-                elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'pclone_launcher':
+                elif xml_tag == 'finished' or xml_tag == 'minimize':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
                 elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
@@ -852,14 +886,16 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append(XML_text('m_rating', collection['m_rating']))
             str_list.append(XML_text('m_plot', collection['m_plot']))
             str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
-            str_list.append(XML_text('default_thumb', collection['default_thumb']))
+            str_list.append(XML_text('default_icon', collection['default_icon']))
             str_list.append(XML_text('default_fanart', collection['default_fanart']))
             str_list.append(XML_text('default_banner', collection['default_banner']))
             str_list.append(XML_text('default_poster', collection['default_poster']))
-            str_list.append(XML_text('s_thumb', collection['s_thumb']))
+            str_list.append(XML_text('default_clearlogo', collection['default_clearlogo']))
+            str_list.append(XML_text('s_icon', collection['s_icon']))
             str_list.append(XML_text('s_fanart', collection['s_fanart']))
             str_list.append(XML_text('s_banner', collection['s_banner']))
-            str_list.append(XML_text('s_flyer', collection['s_flyer']))
+            str_list.append(XML_text('s_poster', collection['s_poster']))
+            str_list.append(XML_text('s_clearlogo', collection['s_clearlogo']))
             str_list.append(XML_text('s_trailer', collection['s_trailer']))
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
@@ -1269,14 +1305,25 @@ UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 # Creates and returns Parent/Clone MD5 index dictionary.
 # This dictionary will be save in database roms_base_noext_PClone_index.json.
 #
-# roms_pclone_index = {
-#   'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#   'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#    ... ,
-#   UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
-# }
+# unknown_ROMs_are_parents = True
+#   roms_pclone_index_by_id = {
+#       'parent_id_1'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#       'parent_id_2'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#        ... ,
+#       'unknown_rom_id_1' : [], # Unknown ROMs never have clones
+#       'unknown_rom_id_2' : [],
+#       ...
+#   }
 #
-def fs_generate_PClone_index(roms, roms_nointro):
+# unknown_ROMs_are_parents = False
+#   roms_pclone_index_by_id = {
+#       'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#       'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#        ... ,
+#       UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
+#   }
+#
+def fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
     roms_pclone_index_by_id = {}
 
     # --- Create a dictionary to convert ROMbase_noext names into IDs ---
@@ -1290,7 +1337,6 @@ def fs_generate_PClone_index(roms, roms_nointro):
         names_to_ids_dic[rom_name] = rom_id
 
     # --- Build PClone dictionary using ROM base_noext names ---
-    # >> Create fake ROM later because dictionaries cannot be modified when being iterated
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
@@ -1301,22 +1347,26 @@ def fs_generate_PClone_index(roms, roms_nointro):
         # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
         # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
 
-        #  Add Unknown ROMs to their own set.
         if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
-            clone_id = rom['id']
-            if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
-                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
-                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(clone_id)
+            if unknown_ROMs_are_parents:
+                # >> Unknown ROMs are parents
+                if rom_id not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[rom_id] = []
             else:
-                roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(clone_id)
+                # >> Unknown ROMs are clones
+                #    Also, if the parent ROMs of all clones does not exist yet then create it
+                if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
+                else:
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
         else:
             nointro_rom = roms_nointro[rom_nointro_name]
 
             # >> ROM is a parent
             if nointro_rom['cloneof'] == '':
-                parent_id = rom['id']
-                if parent_id not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[parent_id] = []
+                if rom_id not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[rom_id] = []
             # >> ROM is a clone
             else:
                 parent_name = nointro_rom['cloneof']
@@ -1332,7 +1382,8 @@ def fs_generate_PClone_index(roms, roms_nointro):
 
 #
 # Returns a dictionary with parent ROMs to be stored in database roms_base_noext_parents.json
-# If Unkown ROMs detected, the fake ROM [Unknown ROMs] is added.
+# If the parent of the Unknown ROMs is detected in the Parent dictionary then create fake
+# metadata for it.
 #
 def fs_generate_parent_ROMs_dic(roms, roms_pclone_index):
     p_roms = {}

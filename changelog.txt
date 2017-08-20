@@ -11,11 +11,13 @@ WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorith
 WIP      Massive upgrade of AEL Offline scraper database.
 
 WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
+         See Chrisism patch in Github.
          Copy remote ROMs for external launchers?
 
-WIP      Edit multidisc ROMs.
+WIP      Edit multi-disc ROMs.
 
-WIP      Options to generate the 1G1R list, like prefer ROMs from Europe, Japan or USA.
+WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
+         This resembles what NARS No-Intro filtering does.
 
 WIP      Changes and suggestions propoed by Atsumori.
 
@@ -29,33 +31,91 @@ WIP      LaunchBox Games Database scraper.
          See http://gamesdb.launchbox-app.com/
          See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
 
-[B]Advanced Emulator Launcher | version 0.9.7 | XX Jun 2017[/B]
+WIP      Have a look at https://www.screenscraper.fr/ and consider it for an online scraper.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
 
-WIP      AEL ONLY WORKS ON KRYPTON NOW!!!
+WIP      Think about exporting the AEL platform database using JSON-LD in accordance to
+         Garbear's idea.
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
 
-WIP      Removed ElementTree dependency in addon.xml. It's not longer needed.
+WIP      Update MAME Offline Scraper database to version 0.188 or 0.189
 
-WIP      Use the <news> tag in addon.xml. In general, have a look at http://kodi.wiki/view/addon.xml
+
+[B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
+
+FEATURE  Ability to import launcher and categories assets in the XML configuration files.
+         Create a working example for Gamestarter addon. Also, refactor the AEL asset library.
+
+FEATURE  Rename "Studio" database field to "Developer" in Launchers/ROMs.
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
+
+FEATURE  New Launcher asset 's_controller' for Console/Computer controller picture.
+
+FEATURE  Renamed 's_thumb' -> 's_icon' in Categories/Launchers/Collections.
+
+FEATURE  Renamed 's_flyer' -> 's_poster' in Categories/Launchers/Collections.
+
+FEATURE  Renamed 'roms_default_thumb' -> 'roms_default_icon' in Launchers.
+
+FEATURE  Improve Retroplayer support.
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
+         and https://alwinesch.github.io/group__python__xbmcgui__listitem.html#ga0f1e91e1d5aa61d8dd0eac90e8edbf18
+
+WIP      Audit Retroarch BIOSes in System directory.
+
+WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
+         etc. When a user uses XML to import configurations it is easy to make a typo when
+         writing directory names, etc. This command will report if AEL configuration is OK.
+
+WIP      Add support for ScummVM platform in the Offline Scraper.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
+
+WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
+         selected scraper. This will require a redesign of the current scraping engine.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628383#pid2628383 and next post.
+
+WIP      Add an option to suspend/resume joystick support at launch. This is to prevent Kodi
+         and the launched app to grab joystick events.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
+
+FEATURE  Removed ElementTree dependency in addon.xml. It's not longer needed.
+         AEL ONLY WORKS ON KRYPTON NOW!!!
+
+FEATURE  Use the <news> tag in addon.xml. In general, have a look at http://kodi.wiki/view/addon.xml
          and modernise addon.xml.
 
-WIP      Make use of Krypton feature in the several dialogs of the addon.
-         New param: "preselect" for Dialog().multiselect() and Dialog().select(). 
-         See http://forum.kodi.tv/showthread.php?tid=250936
+FEATURE  Update code to use new xbmcgui.Dialog().select() useDetails parameter. Get rid of the 
+         ImgSelectDialog() class. This need Krypton Beta 4 to run!
+         See https://forum.kodi.tv/showthread.php?tid=250936&pid=2438074#pid2438074
 
-WIP      Update code to use xbmcgui.Dialog().select() - additions.
-         Get rid of the ImgSelectDialog() class. This need Krypton Beta 4 to run!
+FEATURE  Make use of Krypton features in the several dialogs of the addon: new param: "preselect" 
+         for Dialog().multiselect() and Dialog().select(). 
+         See https://forum.kodi.tv/showthread.php?tid=250936&pid=2327011#pid2327011
 
-WIP      Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
+FEATURE  Option to group Unknown ROMs as clones or keep them as parents. I realised it is not
          conveninent that the Unknown ROMs are clones in the Parent/Clone view.
 
-WIP      1 Game 1 ROM launcher display mode. Copy it from AML.
+FEATURE  1 Game 1 ROM launcher display mode. Copy it from AML.
+         Changed launcher['pclone_launcher'] to launcher['launcher_display_mode'] to store the
+         display mode in categories.xml database.
 
 FEATURE  Addon option to hide [Browse Offline Scraper].
 
 FEATURE  Remove duplicates from recent ROMs list. Contributed by bonzini.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/pull/41
 
+FEATURE  Preliminary render support for LaunchBox scraper.
+
 FIX      Fixed launching of BAT files in Windows.
+
+FIX      In order for skin shortcuts and widgets to work OK, addon concurrency must be enabled
+         by database read-only commands.
+
+WIP      Fix scraper-related crash in the ROM scanner.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628382#pid2628382
+
+WIP      Fix artwork support for mult-disc ROMs.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628912#pid2628912
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]
