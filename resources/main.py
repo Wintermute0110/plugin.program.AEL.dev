@@ -73,6 +73,7 @@ GAMEDB_INFO_DIR           = CURRENT_ADDON_DIR.pjoin('GameDBInfo')
 GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
 LAUNCHBOX_INFO_DIR        = CURRENT_ADDON_DIR.pjoin('LaunchBox')
 LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
+BIOS_REPORT_FILE_PATH     = PLUGIN_DATA_DIR.join('report_BIOS.txt')
 
 # --- Artwork and NFO for Categories and Launchers ---
 DEFAULT_CAT_ASSET_DIR    = PLUGIN_DATA_DIR.join('asset-categories')
@@ -8962,23 +8963,93 @@ class Main:
     def _command_check_launchers(self):
         kodi_dialog_OK('_command_check_launchers() not implemented yet. Sorry.')
 
+    # 
     def _command_check_retro_BIOS(self):
+        log_info('_command_check_retro_BIOS() Checking Retroarch BIOSes ...')
+
         # >> If Retroarch System dir not configured or found abort.
-        kodi_dialog_OK('_command_check_retro_BIOS() not implemented yet. Sorry.')
+        sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
+        if not sys_dir_FN.exists():
+            kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
+            return
 
         # >> Get a list of files in Retroarch system dir
-        
+        # file_list = sorted(os.listdir(sys_dir_FN.getDir()))
+        # log_debug('--- File list ---')
+        # for file in file_list: log_debug('--- "{0}"'.format(file))
+        # file_set = set(file_list)
 
-        # >> Algortihm:
+        # >> Progress dialog
+        pDialog = xbmcgui.DialogProgress()
+        pDialog_canceled = False
+        pDialog.create('Advanced Emulator Launcher', 'Checking Retroarch BIOSes ...')
+        num_BIOS = len(Libretro_BIOS_list)
+        file_count = 0
+
+        # >> Algorithm:
         #    1) Traverse list of BIOS. For every BIOS:
         #    2) Check if file exists. If not exists -> missing BIOS.
-        #    3) If BIOS file exists check MD5
+        #    3) If BIOS exists check file size.
+        #    3) If BIOS exists check MD5
         #    4) Unknwon files in Retroarch System dir are ignored and non-reported.
         #    5) Write results into a report TXT file.
-        
+        str_list = []
+        str_list.append('=========================\n')
+        str_list.append('= Retroarch BIOS report =\n')
+        str_list.append('=========================\n')
+        for BIOS_dic in Libretro_BIOS_list:
+            BIOS_file_FN = sys_dir_FN.pjoin(BIOS_dic['filename'])
+            log_debug('Testing BIOS "{0}"'.format(BIOS_file_FN.getPath()))
+
+            if not BIOS_file_FN.exists():
+                log_info('Not found "{0}"'.format(BIOS_file_FN.getPath()))
+                str_list.append('Not found "{0}"\n'.format(BIOS_file_FN.getPath()))
+                continue
+
+            BIOS_stat = BIOS_file_FN.stat()
+            file_size = BIOS_stat.st_size
+            if file_size != BIOS_dic['size']:
+                log_info('Wrong size "{0}"'.format(BIOS_file_FN.getPath()))
+                log_info('It is {0} and must be {1}'.format(file_size, BIOS_dic['size']))
+                str_list.append('Wrong size "{0}"\n'.format(BIOS_file_FN.getPath()))
+                continue
+
+            hash_md5 = hashlib.md5()
+            with open(BIOS_file_FN.getPath(), "rb") as f:
+                for chunk in iter(lambda: f.read(4096), b""):
+                    hash_md5.update(chunk)
+            file_MD5 = hash_md5.hexdigest()
+            log_debug('MD5 is "{0}"'.format(file_MD5))
+            if file_MD5 != BIOS_dic['md5']:
+                log_info('Wrong MD5 "{0}"'.format(BIOS_file_FN.getPath()))
+                log_info('It is       "{0}"'.format(file_MD5))
+                log_info('and must be "{0}"'.format(BIOS_dic['md5']))
+                str_list.append('Wrong MD5 "{0}"\n'.format(BIOS_file_FN.getPath()))
+                continue
+            log_info('BIOS OK "{0}"'.format(BIOS_file_FN.getPath()))
+            str_list.append('BIOS OK "{0}"\n'.format(BIOS_file_FN.getPath()))
+
+            # >> Update progress
+            file_count += 1
+            update_number = (float(file_count) / float(num_BIOS)) * 100
+            pDialog.update(update_number)
+        pDialog.update(100)
+        pDialog.close()
+
+        # >> Stats report
+        log_info('Writing report file "{0}"'.format(BIOS_REPORT_FILE_PATH.getPath()))
+        full_string = ''.join(str_list).encode('utf-8')
+        file = open(BIOS_REPORT_FILE_PATH.getPath(), 'w')
+        file.write(full_string)
+        file.close()
 
         # >> Display report TXT file.
-        
+        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+        dialog = xbmcgui.Dialog()
+        dialog.textviewer('Retroarch BIOS report', full_string)
+        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
     #
     # Import legacy Advanced Launcher launchers.xml

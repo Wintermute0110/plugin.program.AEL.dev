@@ -480,6 +480,64 @@ Libretro_BIOS_list = [
     {'filename' : '7800 BIOS (E).rom', 'size' : 16384, 'md5': '397bb566584be7b9764e7a68974c4263', 'mandatory' : True },
     {'filename' : '7800 BIOS (U).rom', 'size' : 4096, 'md5': '0763f1ffb006ddbe32e52d497ee848ae', 'mandatory' : True },
 
+    # --- Atari Lynx ---
+    {'filename' : 'lynxboot.img', 'size' : 512, 'md5': 'fcd403db69f54290b51035d82f835e7b', 'mandatory' : True },
+    
+    # --- Magnavox - Odyssey2 ---
+    {'filename' : 'o2rom.bin', 'size' : 1024, 'md5': '562d5ebf9e030a40d6fabfc2f33139fd', 'mandatory' : True },
+
+    # --- Microsoft - MSX ---
+    {'filename' : 'MSX.ROM', 'size' : 32768, 'md5': 'aa95aea2563cd5ec0a0919b44cc17d47', 'mandatory' : True },
+
+    # --- NEC - PC Engine ---
+    
+    # --- NEC - PC Engine SuperGrafx ---
+    
+    # --- NEC - PC-FX ---
+    
+    # --- Nintendo - Famicom Disk System ---
+    {'filename' : 'disksys.rom', 'size' : 8192, 'md5': 'ca30b50f880eb660a320674ed365ef7a', 'mandatory' : True },
+
+    # --- Nintendo - Gameboy ---
+    
+    # --- Nintendo - Game Boy Advance ---
+    
+    # --- Nintendo - Gameboy Color ---
+    
+    # --- Nintendo - GameCube ---
+    
+    # --- Nintendo - Nintendo 64DD ---
+    
+    # --- Nintendo - Nintendo DS ---
+    
+    # --- Nintendo - Nintendo Entertainment System ---
+    
+    # --- Nintendo - Pokemon Mini ---
+    
+    # --- Nintendo - Super Nintendo Entertainment System ---
+    
+    # --- Phillips - Videopac+ ---
+    {'filename' : 'c52.bin', 'size' : 1024, 'md5': 'f1071cdb0b6b10dde94d3bc8a6146387', 'mandatory' : True },
+    {'filename' : 'g7400.bin', 'size' : 1024, 'md5': 'c500ff71236068e0dc0d0603d265ae76', 'mandatory' : True },
+    {'filename' : 'jopac.bin', 'size' : 1024, 'md5': '279008e4a0db2dc5f1c048853b033828', 'mandatory' : True },
+
+    # --- Sega - Dreamcast ---
+    {'filename' : 'dc_boot.bin', 'size' : 2097152, 'md5': 'e10c53c2f8b90bab96ead2d368858623', 'mandatory' : True },
+    {'filename' : 'dc_flash.bin', 'size' : 131072, 'md5': '0a93f7940c455905bea6e392dfde92a4', 'mandatory' : True },
+
+    # --- Sega - Mega Drive - Genesis ---
+    
+    # --- Sega Saturn ---
+    {'filename' : 'mpr-17933.bin', 'size' : 524288, 'md5': '3240872c70984b6cbfda1586cab68dbe', 'mandatory' : True },
+    {'filename' : 'mpr-18811-mx.ic1', 'size' : 2097152, 'md5': '255113ba943c92a54facd25a10fd780c', 'mandatory' : True },
+    {'filename' : 'mpr-19367-mx.ic1', 'size' : 2097152, 'md5': '1cd19988d1d72a3e7caa0b73234c96b4', 'mandatory' : True },
+    {'filename' : 'saturn_bios.bin', 'size' : 524288, 'md5': 'af5828fdff51384f99b3c4926be27762', 'mandatory' : True },
+    {'filename' : 'sega_101.bin', 'size' : 524288, 'md5': '85ec9ca47d8f6807718151cbcca8b964', 'mandatory' : True },
+
+    # --- Sharp - X68000 ---
+    {'filename' : 'cgrom.dat', 'size' : 786432, 'md5': 'cb0a5cfcf7247a7eab74bb2716260269', 'mandatory' : True },
+    {'filename' : 'iplrom.dat', 'size' : 131072, 'md5': '7fd4caabac1d9169e289f0f7bbf71d8e', 'mandatory' : True },
+
     # --- Sony PlayStation ---
     {'filename' : 'scph5500.bin', 'size' : 524288, 'md5': '8dd7d5296a650fac7319bce665a6a53c', 'mandatory' : True },
     {'filename' : 'scph5501.bin', 'size' : 524288, 'md5': '490f666e1afb15b7362b406ed1cea246', 'mandatory' : True },
@@ -487,4 +545,10 @@ Libretro_BIOS_list = [
 
     # --- Sony PlayStation Portable ---
     {'filename' : 'ppge_atlas.zim', 'size' : 784968, 'md5': 'a93fc411c1ce7d001a2a812643c70085', 'mandatory' : True },
+    
+    # --- The 3DO Company - 3DO ---
+    {'filename' : 'goldstar.bin', 'size' : 1048576, 'md5': '8639fd5e549bd6238cfee79e3e749114', 'mandatory' : True },
+    {'filename' : 'panafz1.bin', 'size' : 1048576, 'md5': 'f47264dd47fe30f73ab3c010015c155b', 'mandatory' : True },
+    {'filename' : 'panafz10.bin', 'size' : 1048576, 'md5': '51f2f43ae2f3508a14d9f56597e2d3ce', 'mandatory' : True },
+    {'filename' : 'sanyotry.bin', 'size' : 1048576, 'md5': '35fa1a1ebaaeea286dc5cd15487c13ea', 'mandatory' : True },
 ]
