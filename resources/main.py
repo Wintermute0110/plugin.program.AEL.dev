@@ -9032,7 +9032,7 @@ class Main:
             # >> Update progress
             file_count += 1
             update_number = (float(file_count) / float(num_BIOS)) * 100
-            pDialog.update(update_number)
+            pDialog.update(int(update_number))
         pDialog.update(100)
         pDialog.close()
 
