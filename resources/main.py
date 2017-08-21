@@ -2178,7 +2178,7 @@ class Main:
             menu_list = ["Edit Title: '{0}'".format(roms[romID]['m_name']),
                          "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
                          "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
-                         "Edit Studio: '{0}'".format(roms[romID]['m_studio']),
+                         "Edit Developer: '{0}'".format(roms[romID]['m_developer']),
                          "Edit NPlayers: '{0}'".format(roms[romID]['m_nplayers']),
                          "Edit ESRB rating: '{0}'".format(roms[romID]['m_esrb']),
                          "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
@@ -2215,13 +2215,13 @@ class Main:
                 roms[romID]['m_genre'] = keyboard.getText().decode('utf-8')
                 kodi_notify('Changed ROM Genre')
 
-            # --- Edition of the rom studio ---
+            # --- Edition of the rom developer ---
             elif type2 == 3:
-                keyboard = xbmc.Keyboard(roms[romID]['m_studio'], 'Edit studio')
+                keyboard = xbmc.Keyboard(roms[romID]['m_developer'], 'Edit developer')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                roms[romID]['m_studio'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed ROM Studio')
+                roms[romID]['m_developer'] = keyboard.getText().decode('utf-8')
+                kodi_notify('Changed ROM Developer')
 
             # --- Edition of launcher NPlayers ---
             elif type2 == 4:
