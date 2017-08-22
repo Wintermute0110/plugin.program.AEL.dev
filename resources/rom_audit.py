@@ -482,19 +482,34 @@ Libretro_BIOS_list = [
 
     # --- Atari Lynx ---
     {'filename' : 'lynxboot.img', 'size' : 512, 'md5': 'fcd403db69f54290b51035d82f835e7b', 'mandatory' : True },
+
+    # --- Atari ST ---
     
+
+    # --- Id Software - Doom ---
+    
+
     # --- Magnavox - Odyssey2 ---
     {'filename' : 'o2rom.bin', 'size' : 1024, 'md5': '562d5ebf9e030a40d6fabfc2f33139fd', 'mandatory' : True },
 
     # --- Microsoft - MSX ---
     {'filename' : 'MSX.ROM', 'size' : 32768, 'md5': 'aa95aea2563cd5ec0a0919b44cc17d47', 'mandatory' : True },
+    {'filename' : 'MSX2.ROM', 'size' : 32768, 'md5': 'ec3a01c91f24fbddcbcab0ad301bc9ef', 'mandatory' : True },
+    {'filename' : 'MSX2EXT.ROM', 'size' : 16384, 'md5': '2183c2aff17cf4297bdb496de78c2e8a', 'mandatory' : True },
+    {'filename' : 'MSX2P.ROM', 'size' : 32768, 'md5': '6d8c0ca64e726c82a4b726e9b01cdf1e', 'mandatory' : True },
+    {'filename' : 'MSX2PEXT.ROM', 'size' : 16384, 'md5': '7c8243c71d8f143b2531f01afa6a05dc', 'mandatory' : True },
 
-    # --- NEC - PC Engine ---
-    
-    # --- NEC - PC Engine SuperGrafx ---
-    
+    # --- NEC - PC Engine and Supergrafx ---
+    {'filename' : 'syscard3.pce', 'size' : 262144, 'md5': '38179df8f4ac870017db21ebcbf53114', 'mandatory' : True },
+    {'filename' : 'gecard.pce', 'size' : 32768, 'md5': '6d2cb14fc3e1f65ceb135633d1694122', 'mandatory' : True },
+
     # --- NEC - PC-FX ---
-    
+    {'filename' : 'pcfx.rom', 'size' : 1048576, 'md5': '08e36edbea28a017f79f8d4f7ff9b6d7', 'mandatory' : True },
+    {'filename' : 'fx-scsi.rom', 'size' : 524288, 'md5': '430e9745f9235c515bc8e652d6ca3004', 'mandatory' : True },
+    {'filename' : 'pcfxbios.bin', 'size' : 1048576, 'md5': '08e36edbea28a017f79f8d4f7ff9b6d7', 'mandatory' : True },
+    {'filename' : 'pcfxv101.bin', 'size' : 1048576, 'md5': 'e2fb7c7220e3a7838c2dd7e401a7f3d8', 'mandatory' : True },
+    {'filename' : 'pcfxga.rom', 'size' : 1048576, 'md5': '5885bc9a64bf80d4530b9b9b978ff587', 'mandatory' : True },
+
     # --- Nintendo - Famicom Disk System ---
     {'filename' : 'disksys.rom', 'size' : 8192, 'md5': 'ca30b50f880eb660a320674ed365ef7a', 'mandatory' : True },
 
@@ -505,17 +520,31 @@ Libretro_BIOS_list = [
     # --- Nintendo - Gameboy Color ---
     
     # --- Nintendo - GameCube ---
-    
+    {'filename' : 'gc-ntsc-10.bin', 'size' : 2097152 , 'md5': 'fc924a7c879b661abc37cec4f018fdf3', 'mandatory' : True },
+    {'filename' : 'gc-pal-10.bin', 'size' : 2097152 , 'md5': '0cdda509e2da83c85bfe423dd87346cc', 'mandatory' : True },
+    {'filename' : 'gc-pal-12.bin', 'size' : 2097152 , 'md5': 'db92574caab77a7ec99d4605fd6f2450', 'mandatory' : True },
+    {'filename' : 'gc-dvd-20010608.bin', 'size' : 131072 , 'md5': '561532ad496f644897952d2cef5bb431', 'mandatory' : True },
+    {'filename' : 'gc-dvd-20010831.bin', 'size' : 131072 , 'md5': 'b953eb1a8fc9922b3f7051c1cdc451f1', 'mandatory' : True },
+    {'filename' : 'gc-dvd-20020402.bin', 'size' : 131072 , 'md5': '413154dd0e2c824c9b18b807fd03ec4e', 'mandatory' : True },
+    {'filename' : 'gc-dvd-20020823.bin', 'size' : 131072 , 'md5': 'c03f6bbaf644eb9b3ee261dbe199eb42', 'mandatory' : True },
+
     # --- Nintendo - Nintendo 64DD ---
-    
+    {'filename' : '64DD_IPL.bin', 'size' : 4194304, 'md5': '8d3d9f294b6e174bc7b1d2fd1c727530', 'mandatory' : True },
+
     # --- Nintendo - Nintendo DS ---
-    
+    {'filename' : 'bios7.bin', 'size' : 16384, 'md5': 'df692a80a5b1bc90728bc3dfc76cd948', 'mandatory' : True },
+    {'filename' : 'bios9.bin', 'size' : 4096, 'md5': 'a392174eb3e572fed6447e956bde4b25', 'mandatory' : True },
+    {'filename' : 'firmware.bin', 'size' : 262144, 'md5': 'e45033d9b0fa6b0de071292bba7c9d13', 'mandatory' : True },
+
     # --- Nintendo - Nintendo Entertainment System ---
     
+
     # --- Nintendo - Pokemon Mini ---
-    
+    {'filename' : 'bios.min', 'size' : 4096, 'md5': '1e4fb124a3a886865acb574f388c803d', 'mandatory' : True },
+
     # --- Nintendo - Super Nintendo Entertainment System ---
     
+
     # --- Phillips - Videopac+ ---
     {'filename' : 'c52.bin', 'size' : 1024, 'md5': 'f1071cdb0b6b10dde94d3bc8a6146387', 'mandatory' : True },
     {'filename' : 'g7400.bin', 'size' : 1024, 'md5': 'c500ff71236068e0dc0d0603d265ae76', 'mandatory' : True },
@@ -526,7 +555,18 @@ Libretro_BIOS_list = [
     {'filename' : 'dc_flash.bin', 'size' : 131072, 'md5': '0a93f7940c455905bea6e392dfde92a4', 'mandatory' : True },
 
     # --- Sega - Mega Drive - Genesis ---
-    
+    {'filename' : 'areplay.bin', 'size' : 32768, 'md5': 'a0028b3043f9d59ceeb03da5b073b30d', 'mandatory' : True },
+    {'filename' : 'bios.gg', 'size' : 1024, 'md5': '672e104c3be3a238301aceffc3b23fd6', 'mandatory' : True },
+    {'filename' : 'bios_CD_E.bin', 'size' : 131072, 'md5': 'e66fa1dc5820d254611fdcdba0662372', 'mandatory' : True },
+    {'filename' : 'bios_CD_J.bin', 'size' : 131072, 'md5': '278a9397d192149e84e820ac621a8edd', 'mandatory' : True },
+    {'filename' : 'bios_CD_U.bin', 'size' : 131072, 'md5': '2efd74e3232ff260e371b99f84024f7f', 'mandatory' : True },
+    {'filename' : 'bios_E.sms', 'size' : 8192, 'md5': '840481177270d5642a14ca71ee72844c', 'mandatory' : True },
+    {'filename' : 'bios_J.sms', 'size' : 8192, 'md5': '24a519c53f67b00640d0048ef7089105', 'mandatory' : True },
+    {'filename' : 'bios_U.sms', 'size' : 8192, 'md5': '840481177270d5642a14ca71ee72844c', 'mandatory' : True },
+    {'filename' : 'ggenie.bin', 'size' : 32768, 'md5': 'b5d5ff1147036b06944b4d2cac2dd1e1', 'mandatory' : True },
+    {'filename' : 'sk.bin', 'size' : 2097152, 'md5': '4ea493ea4e9f6c9ebfccbdb15110367e', 'mandatory' : True },
+    {'filename' : 'sk2chip.bin', 'size' : 262144, 'md5': 'b4e76e416b887f4e7413ba76fa735f16', 'mandatory' : True },
+
     # --- Sega Saturn ---
     {'filename' : 'mpr-17933.bin', 'size' : 524288, 'md5': '3240872c70984b6cbfda1586cab68dbe', 'mandatory' : True },
     {'filename' : 'mpr-18811-mx.ic1', 'size' : 2097152, 'md5': '255113ba943c92a54facd25a10fd780c', 'mandatory' : True },
