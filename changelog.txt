@@ -10,6 +10,8 @@ WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorith
 
 WIP      Massive upgrade of AEL Offline scraper database.
 
+WIP      Update MAME Offline Scraper database to version 0.188 or 0.189
+
 WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          See Chrisism patch in Github.
          Copy remote ROMs for external launchers?
@@ -37,8 +39,6 @@ WIP      Have a look at https://www.screenscraper.fr/ and consider it for an onl
 WIP      Think about exporting the AEL platform database using JSON-LD in accordance to
          Garbear's idea.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
-
-WIP      Update MAME Offline Scraper database to version 0.188 or 0.189
 
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
