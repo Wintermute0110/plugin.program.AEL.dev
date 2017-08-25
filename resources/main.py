@@ -4947,27 +4947,27 @@ class Main:
         # --- Edit artwork ---
         elif type == 1:
             # >> Create label2 and image ListItem fields
-            label2_thumb     = collection['s_thumb']     if collection['s_thumb']     else 'Not set'
+            label2_icon      = collection['s_icon']      if collection['s_icon']      else 'Not set'
             label2_fanart    = collection['s_fanart']    if collection['s_fanart']    else 'Not set'
             label2_banner    = collection['s_banner']    if collection['s_banner']    else 'Not set'
-            label2_poster    = collection['s_flyer']     if collection['s_flyer']     else 'Not set'
+            label2_poster    = collection['s_poster']    if collection['s_poster']    else 'Not set'
             label2_clearlogo = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'
             label2_trailer   = collection['s_trailer']   if collection['s_trailer']   else 'Not set'
-            img_thumb        = collection['s_thumb']     if collection['s_thumb']     else 'DefaultAddonNone.png'
+            img_icon         = collection['s_icon']      if collection['s_icon']      else 'DefaultAddonNone.png'
             img_fanart       = collection['s_fanart']    if collection['s_fanart']    else 'DefaultAddonNone.png'
             img_banner       = collection['s_banner']    if collection['s_banner']    else 'DefaultAddonNone.png'
-            img_poster       = collection['s_flyer']     if collection['s_flyer']     else 'DefaultAddonNone.png'
+            img_poster       = collection['s_poster']    if collection['s_poster']    else 'DefaultAddonNone.png'
             img_clearlogo    = collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png'   if collection['s_trailer']   else 'DefaultAddonNone.png'
-            
+
             # >> Create ListItem objects for select dialog
-            thumb_listitem     = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_thumb)
+            icon_listitem      = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_icon)
             fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
             banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
             poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
             clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
             trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
-            thumb_listitem.setArt({'icon' : img_thumb})
+            icon_listitem.setArt({'icon' : img_icon})
             fanart_listitem.setArt({'icon' : img_fanart})
             banner_listitem.setArt({'icon' : img_banner})
             poster_listitem.setArt({'icon' : img_poster})
@@ -4975,29 +4975,29 @@ class Main:
             trailer_listitem.setArt({'icon' : img_trailer})
 
             # >> Execute select dialog
-            listitems = [thumb_listitem, fanart_listitem, banner_listitem,
-                         poster_listitem, clearlogo_listitem, trailer_listitem]
+            listitems = [icon_listitem, fanart_listitem, banner_listitem, poster_listitem,
+                         clearlogo_listitem, trailer_listitem]
             type2 = dialog.select('Edit Collection Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
-            asset_list = [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER]
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_COLLECTION, asset_kind, collection): return
 
         # --- Change default artwork ---
         elif type == 2:
             # >> Label1 an label2
-            asset_icon_str      = assets_get_asset_name_str(collection['default_thumb'])
+            asset_icon_str      = assets_get_asset_name_str(collection['default_icon'])
             asset_fanart_str    = assets_get_asset_name_str(collection['default_fanart'])
             asset_banner_str    = assets_get_asset_name_str(collection['default_banner'])
             asset_poster_str    = assets_get_asset_name_str(collection['default_poster'])
             asset_clearlogo_str = assets_get_asset_name_str(collection['default_clearlogo'])
-            label2_thumb        = collection[collection['default_thumb']]     if collection[collection['default_thumb']]     else 'Not set'
+            label2_icon         = collection[collection['default_icon']]      if collection[collection['default_icon']]      else 'Not set'
             label2_fanart       = collection[collection['default_fanart']]    if collection[collection['default_fanart']]    else 'Not set'
             label2_banner       = collection[collection['default_banner']]    if collection[collection['default_banner']]    else 'Not set'
             label2_poster       = collection[collection['default_poster']]    if collection[collection['default_poster']]    else 'Not set'
             label2_clearlogo    = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'Not set'
             icon_listitem       = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str),
-                                                   label2 = label2_thumb)
+                                                   label2 = label2_icon)
             fanart_listitem     = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
                                                    label2 = label2_fanart)
             banner_listitem     = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str),
@@ -5008,7 +5008,7 @@ class Main:
                                                    label2 = label2_clearlogo)
 
             # >> Asset image
-            img_icon            = collection[collection['default_thumb']]     if collection[collection['default_thumb']]     else 'DefaultAddonNone.png'
+            img_icon            = collection[collection['default_icon']]      if collection[collection['default_icon']]      else 'DefaultAddonNone.png'
             img_fanart          = collection[collection['default_fanart']]    if collection[collection['default_fanart']]    else 'DefaultAddonNone.png'
             img_banner          = collection[collection['default_banner']]    if collection[collection['default_banner']]    else 'DefaultAddonNone.png'
             img_poster          = collection[collection['default_poster']]    if collection[collection['default_poster']]    else 'DefaultAddonNone.png'
@@ -5020,28 +5020,27 @@ class Main:
             clearlogo_listitem.setArt({'icon' : img_clearlogo})
 
             # >> Execute select dialog
-            listitems = [icon_listitem, fanart_listitem, banner_listitem,
-                         poster_listitem, clearlogo_listitem]
+            listitems = [icon_listitem, fanart_listitem, banner_listitem, poster_listitem, clearlogo_listitem]
             type2 = dialog.select('Edit Collection default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
             Category_asset_ListItem_list = [
-                xbmcgui.ListItem(label = 'Icon',      label2 = collection['s_thumb'] if collection['s_thumb'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Icon',      label2 = collection['s_icon'] if collection['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',    label2 = collection['s_fanart'] if collection['s_fanart'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Banner',    label2 = collection['s_banner'] if collection['s_banner'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Poster',    label2 = collection['s_flyer'] if collection['s_flyer'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Poster',    label2 = collection['s_poster'] if collection['s_poster'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Clearlogo', label2 = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'),
             ]
-            Category_asset_ListItem_list[0].setArt({'icon' : collection['s_thumb'] if collection['s_thumb'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[0].setArt({'icon' : collection['s_icon'] if collection['s_icon'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[1].setArt({'icon' : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[2].setArt({'icon' : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[3].setArt({'icon' : collection['s_flyer'] if collection['s_flyer'] else 'DefaultAddonNone.png'})
+            Category_asset_ListItem_list[3].setArt({'icon' : collection['s_poster'] if collection['s_poster'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[4].setArt({'icon' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'})
 
             if type2 == 0:
                 type_s = dialog.select('Choose default Asset for Icon', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
-                assets_choose_category_artwork(collection, 'default_thumb', type_s)
+                assets_choose_category_artwork(collection, 'default_icon', type_s)
             elif type2 == 1:
                 type_s = dialog.select('Choose default Asset for Fanart', list = Category_asset_ListItem_list, useDetails = True)
                 if type_s < 0: return
@@ -8824,6 +8823,14 @@ class Main:
         # >> Traverse and fix Categories.
         for category_id in self.categories:
             category = self.categories[category_id]
+            # >> Fix s_thumb -> s_icon renaming
+            if category['default_icon'] == 's_thumb':      category['default_icon'] = 's_icon'
+            if category['default_fanart'] == 's_thumb':    category['default_fanart'] = 's_icon'
+            if category['default_banner'] == 's_thumb':    category['default_banner'] = 's_icon'
+            if category['default_poster'] == 's_thumb':    category['default_poster'] = 's_icon'
+            if category['default_clearlogo'] == 's_thumb': category['default_clearlogo'] = 's_icon'
+
+            # >> Fix s_flyer -> s_poster renaming
             if category['default_icon'] == 's_flyer':      category['default_icon'] = 's_poster'
             if category['default_fanart'] == 's_flyer':    category['default_fanart'] = 's_poster'
             if category['default_banner'] == 's_flyer':    category['default_banner'] = 's_poster'
@@ -8833,6 +8840,15 @@ class Main:
         # >> Traverse and fix Launchers.
         for launcher_id in self.launchers:
             launcher = self.launchers[launcher_id]
+            # >> Fix s_thumb -> s_icon renaming
+            if launcher['default_icon'] == 's_thumb':       launcher['default_icon'] = 's_icon'
+            if launcher['default_fanart'] == 's_thumb':     launcher['default_fanart'] = 's_icon'
+            if launcher['default_banner'] == 's_thumb':     launcher['default_banner'] = 's_icon'
+            if launcher['default_poster'] == 's_thumb':     launcher['default_poster'] = 's_icon'
+            if launcher['default_clearlogo'] == 's_thumb':  launcher['default_clearlogo'] = 's_icon'
+            if launcher['default_controller'] == 's_thumb': launcher['default_controller'] = 's_icon'
+
+            # >> Fix s_flyer -> s_poster renaming
             if launcher['default_icon'] == 's_flyer':       launcher['default_icon'] = 's_poster'
             if launcher['default_fanart'] == 's_flyer':     launcher['default_fanart'] = 's_poster'
             if launcher['default_banner'] == 's_flyer':     launcher['default_banner'] = 's_poster'
@@ -8901,6 +8917,30 @@ class Main:
         processed_collections = 0
         for collection_id in collections:
             collection = collections[collection_id]
+            # >> Fix collection
+            if 'default_thumb' in collection:
+                collection['default_icon'] = collection['default_thumb']
+                collection.pop('default_thumb')
+            if 's_thumb' in collection:
+                collection['s_icon'] = collection['s_thumb']
+                collection.pop('s_thumb')
+            if 's_flyer' in collection:
+                collection['s_poster'] = collection['s_flyer']
+                collection.pop('s_flyer')
+            # >> Fix s_thumb -> s_icon renaming
+            if collection['default_icon'] == 's_thumb':      collection['default_icon'] = 's_icon'
+            if collection['default_fanart'] == 's_thumb':    collection['default_fanart'] = 's_icon'
+            if collection['default_banner'] == 's_thumb':    collection['default_banner'] = 's_icon'
+            if collection['default_poster'] == 's_thumb':    collection['default_poster'] = 's_icon'
+            if collection['default_clearlogo'] == 's_thumb': collection['default_clearlogo'] = 's_icon'
+            # >> Fix s_flyer -> s_poster renaming
+            if collection['default_icon'] == 's_flyer':      collection['default_icon'] = 's_poster'
+            if collection['default_fanart'] == 's_flyer':    collection['default_fanart'] = 's_poster'
+            if collection['default_banner'] == 's_flyer':    collection['default_banner'] = 's_poster'
+            if collection['default_poster'] == 's_flyer':    collection['default_poster'] = 's_poster'
+            if collection['default_clearlogo'] == 's_flyer': collection['default_clearlogo'] = 's_poster'
+
+            # >> Fix collection ROMs
             roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             for rom in collection_rom_list: self._misc_fix_Favourite_rom_object(rom)
@@ -8909,6 +8949,8 @@ class Main:
             processed_collections += 1
             update_number = (float(processed_collections) / float(num_collections)) * 100 
             pDialog.update(int(update_number))
+        # >> Save ROM Collection index
+        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
         pDialog.update(100)
         pDialog.close()
 
