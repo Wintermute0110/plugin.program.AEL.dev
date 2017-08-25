@@ -377,17 +377,12 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
             # >> Both category and launcher exists (by name). Overwrite?
             log_debug('Case C) Category and Launcher found.')
             cat_name = i_launcher['category'] if i_launcher['category'] != VCATEGORY_ADDONROOT_ID else 'Root Category'
-            ret = kodi_dialog_yesno('Launcher {0} in Category {1} '.format(i_launcher['name'], cat_name) +
+            ret = kodi_dialog_yesno('Launcher "{0}" in Category "{1}" '.format(i_launcher['name'], cat_name) +
                                     'found in AEL database. Overwrite?')
             if ret < 1: continue
 
             # >> Import launcher. Only import fields that are not empty strings.
             autoconfig_import_launcher(ROMS_DIR, categories, launchers, s_categoryID, s_launcherID, i_launcher, import_FN)
-
-    # --- Save Categories/Launchers, update timestamp and notify user ---
-    fs_write_catfile(CATEGORIES_FILE_PATH, categories, launchers)
-    kodi_refresh_container()
-    kodi_notify('Finished importing Categories/Launchers')
 
 #
 # Imports/edits a category with an extenal XML config file.
@@ -634,22 +629,28 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         # >> Current image if found
         current_FN = FileName(launchers[launcherID][AInfo.key])
         if current_FN.exists():
+            log_debug('Current asset found "{0}"'.format(current_FN.getPath()))
             asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
             asset_listitem.setArt({'icon' : current_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(current_FN.getPath())
+        else:
+            log_debug('Current asset NOT found "{0}"'.format(current_FN.getPath()))
         # >> Image in <s_icon>, <s_fanart>, ... tags if found
         tag_asset_FN = FileName(i_launcher[AInfo.key])
         if tag_asset_FN.exists():
+            log_debug('<{0}> tag found "{1}"'.format(AInfo.key, tag_asset_FN.getPath()))
             asset_listitem = xbmcgui.ListItem(label = 'XML <{0}> image'.format(AInfo.key),
                                               label2 = tag_asset_FN.getPath())
             asset_listitem.setArt({'icon' : tag_asset_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(tag_asset_FN.getPath())
+        else:
+            log_debug('<{0}> tag NOT found "{1}"'.format(AInfo.key, tag_asset_FN.getPath()))
         # >> Images found in XML configuration via <Asset_Prefix> tag
         image_count = 1
         for asset_file_name in asset_file_list:
-            log_debug('asset_file_name "{0}"'.format(asset_file_name))
+            log_debug('Asset_Prefix found "{0}"'.format(asset_file_name))
             asset_FN = FileName(asset_file_name)
             asset_listitem = xbmcgui.ListItem(label = '<Asset_Prefix> #{0} "{1}"'.format(image_count, asset_FN.getBase()),
                                               label2 = asset_file_name)

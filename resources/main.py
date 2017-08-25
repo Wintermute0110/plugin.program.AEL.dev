@@ -8780,15 +8780,23 @@ class Main:
         return file_data
 
     def _command_import_launchers(self):
-        # >> Ask user for configuration XML file.
-        dialog = xbmcgui.Dialog()
-        xml_file = dialog.browse(1, 'Select XML category/launcher configuration file', 'files', '.xml').decode('utf-8')
-        import_FN = FileName(xml_file)
-        if not import_FN.exists(): return
+        # >> If enableMultiple = True this function always returns a list of strings in UTF-8
+        file_list = xbmcgui.Dialog().browse(1, 'Select XML category/launcher configuration file',
+                                            'files', '.xml', enableMultiple = True)
 
-        # --- Import stuff ---
-        # >> This function notifies the user if importing is succesful or not. It also saves categories.xml
-        autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, self.categories, self.launchers, import_FN)
+        # >> Process file by file
+        for xml_file in file_list:
+            xml_file_unicode = xml_file.decode('utf-8')
+            log_debug('_command_import_launchers() Importing "{0}"'.format(xml_file_unicode))
+            import_FN = FileName(xml_file_unicode)
+            if not import_FN.exists(): continue
+            # >> This function edits self.categories, self.launchers dictionaries
+            autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, self.categories, self.launchers, import_FN)
+
+        # --- Save Categories/Launchers, update timestamp and notify user ---
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        kodi_refresh_container()
+        kodi_notify('Finished importing Categories/Launchers')
 
     #
     # Export AEL launcher configuration
