@@ -61,9 +61,9 @@ FEATURE  Improve Retroplayer support.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
          and https://alwinesch.github.io/group__python__xbmcgui__listitem.html#ga0f1e91e1d5aa61d8dd0eac90e8edbf18
 
-WIP      Support for <Launcher_NFO> tag in XML configuration files.
+FEATURE  Audit Retroarch BIOSes in System directory.
 
-WIP      Audit Retroarch BIOSes in System directory.
+WIP      Support for <Launcher_NFO> tag in XML configuration files.
 
 WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
          etc. When a user uses XML to import configurations it is easy to make a typo when

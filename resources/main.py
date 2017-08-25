@@ -7129,7 +7129,7 @@ class Main:
         
         # >> Step 1: Build report data
         num_roms = len(roms)
-        missing_m_year = missing_m_genre  = missing_m_studio = missing_m_nplayers = 0
+        missing_m_year = missing_m_genre  = missing_m_developer = missing_m_nplayers = 0
         missing_m_esrb = missing_m_rating = missing_m_plot   = 0
         missing_s_title     = missing_s_snap     = missing_s_fanart  = missing_s_banner    = 0
         missing_s_clearlogo = missing_s_boxfront = missing_s_boxback = missing_s_cartridge = 0
@@ -7142,20 +7142,20 @@ class Main:
             rom_info['m_name'] = rom['m_name']
             rom_info['m_nointro_status'] = rom['nointro_status']
             # >> Metadata
-            if rom['m_year']:                 rom_info['m_year']     = 'YES'
-            else:                             rom_info['m_year']     = '---'; missing_m_year += 1
-            if rom['m_genre']:                rom_info['m_genre']    = 'YES'
-            else:                             rom_info['m_genre']    = '---'; missing_m_genre += 1
-            if rom['m_studio']:               rom_info['m_studio']   = 'YES'
-            else:                             rom_info['m_studio']   = '---'; missing_m_studio += 1
-            if rom['m_nplayers']:             rom_info['m_nplayers'] = 'YES'
-            else:                             rom_info['m_nplayers'] = '---'; missing_m_nplayers += 1
-            if rom['m_esrb'] == ESRB_PENDING: rom_info['m_esrb']     = '---'; missing_m_esrb += 1
-            else:                             rom_info['m_studio']   = 'YES'
-            if rom['m_rating']:               rom_info['m_rating']   = 'YES'
-            else:                             rom_info['m_rating']   = '---'; missing_m_rating += 1
-            if rom['m_plot']:                 rom_info['m_plot']     = 'YES'
-            else:                             rom_info['m_plot']     = '---'; missing_m_plot += 1
+            if rom['m_year']:                 rom_info['m_year']      = 'YES'
+            else:                             rom_info['m_year']      = '---'; missing_m_year += 1
+            if rom['m_genre']:                rom_info['m_genre']     = 'YES'
+            else:                             rom_info['m_genre']     = '---'; missing_m_genre += 1
+            if rom['m_developer']:            rom_info['m_developer'] = 'YES'
+            else:                             rom_info['m_developer'] = '---'; missing_m_developer += 1
+            if rom['m_nplayers']:             rom_info['m_nplayers']  = 'YES'
+            else:                             rom_info['m_nplayers']  = '---'; missing_m_nplayers += 1
+            if rom['m_esrb'] == ESRB_PENDING: rom_info['m_esrb']      = '---'; missing_m_esrb += 1
+            else:                             rom_info['m_studio']    = 'YES'
+            if rom['m_rating']:               rom_info['m_rating']    = 'YES'
+            else:                             rom_info['m_rating']    = '---'; missing_m_rating += 1
+            if rom['m_plot']:                 rom_info['m_plot']      = 'YES'
+            else:                             rom_info['m_plot']      = '---'; missing_m_plot += 1
             # >> Assets
             if rom['s_title']:     rom_info['s_title']     = 'Y'
             else:                  rom_info['s_title']     = '-'; missing_s_title += 1
@@ -7207,7 +7207,7 @@ class Main:
         str_list.append('\n<Metadata statistics>\n')
         str_list.append('ROMs with Year      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_year, missing_m_year))
         str_list.append('ROMs with Genre     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_genre, missing_m_genre))
-        str_list.append('ROMs with Studio    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_studio, missing_m_studio))
+        str_list.append('ROMs with Developer {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_developer, missing_m_developer))
         str_list.append('ROMs with NPlayers  {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_nplayers, missing_m_nplayers))
         str_list.append('ROMs with ESRB      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_esrb, missing_m_esrb))
         str_list.append('ROMs with Rating    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_rating, missing_m_rating))
@@ -7229,14 +7229,14 @@ class Main:
 
         # >> Step 3: Metadata report
         str_meta_list = []
-        str_meta_list.append('{0} Year Genre Studio Rating Plot Audit\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_meta_list.append('{0}\n'.format('-' * 86))
+        str_meta_list.append('{0} Year Genre Developer Rating Plot Audit\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
+        str_meta_list.append('{0}\n'.format('-' * 89))
         for m in check_list:
             # >> Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_meta_list.append('{0} {1}  {2}   {3}    {4}    {5}  {6}\n'.format(
+            str_meta_list.append('{0} {1}  {2}   {3}       {4}    {5}  {6}\n'.format(
                             name_str.ljust(ROM_NAME_LENGHT),
-                            m['m_year'], m['m_genre'], m['m_studio'],
+                            m['m_year'], m['m_genre'], m['m_developer'],
                             m['m_rating'], m['m_plot'], m['m_nointro_status']))
 
         # >> Step 4: Asset report
