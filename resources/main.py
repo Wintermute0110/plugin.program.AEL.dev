@@ -4742,7 +4742,7 @@ class Main:
             listitem.setInfo('video', {'title'   : collection['m_name'],    'genre'   : collection['m_genre'],
                                        'plot'    : collection['m_plot'],    'rating'  : collection['m_rating'],
                                        'trailer' : collection['s_trailer'], 'overlay' : 4 })
-            icon_path      = asset_get_default_asset_Category(collection, 'default_thumb', 'DefaultFolder.png')
+            icon_path      = asset_get_default_asset_Category(collection, 'default_icon', 'DefaultFolder.png')
             fanart_path    = asset_get_default_asset_Category(collection, 'default_fanart')
             banner_path    = asset_get_default_asset_Category(collection, 'default_banner')
             poster_path    = asset_get_default_asset_Category(collection, 'default_poster')
