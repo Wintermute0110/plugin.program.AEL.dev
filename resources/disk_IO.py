@@ -1023,20 +1023,22 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
         'version' : AEL_STORAGE_FORMAT
     }
     collection_dic = {
-        'id'             : collection['id'],
-        'm_name'         : collection['m_name'],
-        'm_genre'        : collection['m_genre'],
-        'm_rating'       : collection['m_rating'],
-        'm_plot'         : collection['m_plot'],
-        'default_thumb'  : collection['default_thumb'],
-        'default_fanart' : collection['default_fanart'],
-        'default_banner' : collection['default_banner'],
-        'default_poster' : collection['default_poster'],
-        's_thumb'        : collection['s_thumb'],
-        's_fanart'       : collection['s_fanart'],
-        's_banner'       : collection['s_banner'],
-        's_flyer'        : collection['s_flyer'],
-        's_trailer'      : collection['s_trailer']
+        'id'                : collection['id'],
+        'm_name'            : collection['m_name'],
+        'm_genre'           : collection['m_genre'],
+        'm_rating'          : collection['m_rating'],
+        'm_plot'            : collection['m_plot'],
+        'default_icon'      : collection['default_icon'],
+        'default_fanart'    : collection['default_fanart'],
+        'default_banner'    : collection['default_banner'],
+        'default_poster'    : collection['default_poster'],
+        'default_clearlogo' : collection['default_clearlogo'],
+        's_icon'            : collection['s_icon'],
+        's_fanart'          : collection['s_fanart'],
+        's_banner'          : collection['s_banner'],
+        's_poster'          : collection['s_poster'],
+        's_clearlogo'       : collection['s_clearlogo'],
+        's_trailer'         : collection['s_trailer']
     }
     raw_data = []
     raw_data.append(control_dic)
@@ -1073,7 +1075,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
     # --- Export Collection assets ---
     assets_dic = {}
     log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
-    for asset_kind in [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER]:
+    for asset_kind in CATEGORY_ASSET_LIST:
         AInfo    = assets_get_info_scheme(asset_kind)
         asset_FN = FileName(collection[AInfo.key])
         if not collection[AInfo.key]:
