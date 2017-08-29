@@ -65,6 +65,8 @@ FEATURE  Audit Retroarch BIOSes in System directory.
 
 WIP      Support for <Launcher_NFO> tag in XML configuration files.
 
+WIP      Preserve path_title, path_snap, etc. when exporting a Launcher into an XML file.
+
 WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
          etc. When a user uses XML to import configurations it is easy to make a typo when
          writing directory names, etc. This command will report if AEL configuration is OK.
