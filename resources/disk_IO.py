@@ -223,6 +223,7 @@ def fs_new_rom():
          'finished' : False,
          'nointro_status' : NOINTRO_STATUS_NONE,
          'pclone_status' : PCLONE_STATUS_NONE,
+         'cloneof' : '',
          's_title' : '',
          's_snap' : '',
          's_boxfront' : '',

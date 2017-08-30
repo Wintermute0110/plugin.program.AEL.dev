@@ -63,6 +63,9 @@ FEATURE  Improve Retroplayer support.
 
 FEATURE  Audit Retroarch BIOSes in System directory.
 
+FEATURE  Scan for artwork in the Parent/Clone group of a ROM. Implemented only in the context
+         menu "Edit Launcher", "Manage ROM List", "Rescan ROMs local assets/artwork".
+
 WIP      Support for <Launcher_NFO> tag in XML configuration files.
 
 WIP      Preserve path_title, path_snap, etc. when exporting a Launcher into an XML file.

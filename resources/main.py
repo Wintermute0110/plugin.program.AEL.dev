@@ -436,7 +436,9 @@ class Main:
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']       = int(__addon_obj__.getSetting('audit_unknown_roms'))
-        self.settings['audit_1G1R_region']        = int(__addon_obj__.getSetting('audit_1G1R_region'))
+        self.settings['audit_pclone_assets']      = True if __addon_obj__.getSetting('audit_pclone_assets') == 'true' else False
+        self.settings['audit_1G1R_main_region']   = int(__addon_obj__.getSetting('audit_1G1R_main_region'))
+        self.settings['audit_1G1R_second_region'] = int(__addon_obj__.getSetting('audit_1G1R_second_region'))
 
         # --- Scrapers ---
         # self.settings['scraper_region']           = int(__addon_obj__.getSetting('scraper_region'))
@@ -1563,6 +1565,18 @@ class Main:
                     log_info('_command_edit_launcher() Rescanning local assets ...')
                     launcher = self.launchers[launcherID]
 
+                    # --- Crete Parent/Clone dictionaries ---
+                    # >> This is only available if a No-Intro/Redump DAT is configured. If not, warn the user.
+                    if self.settings['audit_pclone_assets'] and not launcher['nointro_xml_file']:
+                        log_info('Use assets in the Parent/Clone group is ON. No-Intro/Redump DAT not configured.')
+                        kodi_dialog_OK('No-Intro/Redump DAT not configured and audit_pclone_assets is True. Aborting.')
+                        roms_pclone_index = {}
+                        clone_parent_dic  = {}
+                    elif self.settings['audit_pclone_assets'] and launcher['nointro_xml_file']:
+                        log_info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
+                        roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone')
+                        clone_parent_dic  = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent')
+
                     # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
                     (enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
                     if unconfigured_name_list:
@@ -1590,10 +1604,30 @@ class Main:
                     num_items = len(roms)
                     item_counter = 0
                     for rom_id in roms:
+                        # --- Search assets for current ROM ---
                         rom = roms[rom_id]
                         ROMFile = FileName(rom['filename'])
                         rom_basename_noext = ROMFile.getBase_noext()
-                        log_verb('Checking ROM "{0}"'.format(ROMFile.getBase()))
+                        log_verb('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
+                        
+                        # --- Make PClone group list in case we need it later ---
+                        if self.settings['audit_pclone_assets']:
+                            if rom_id in roms_pclone_index:
+                                parent_id = rom_id
+                                num_clones = len(roms_pclone_index[rom_id])
+                                log_debug('ROM is a parent (parent ID {0} / {1} clones)'.format(parent_id, num_clones))
+                            else:
+                                parent_id = clone_parent_dic[rom_id]
+                                log_debug('ROM is a clone (parent ID {0})'.format(parent_id))
+                            pclone_set_id_list = []
+                            pclone_set_id_list.append(parent_id)
+                            pclone_set_id_list += roms_pclone_index[parent_id]
+                            # >> Remove current ROM from PClone group
+                            pclone_set_id_list.remove(rom_id)
+                            # log_debug(unicode(pclone_set_id_list))
+                            log_debug('PClone group list has {0} ROMs (after stripping current ROM)'.format(len(pclone_set_id_list)))
+
+                        # --- Search assets ---
                         for i, asset in enumerate(ROM_ASSET_LIST):
                             AInfo = assets_get_info_scheme(asset)
                             if not enabled_asset_list[i]: continue
@@ -1601,27 +1635,44 @@ class Main:
                             local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
                             if local_asset:
                                 rom[AInfo.key] = local_asset.getOriginalPath()
-                                log_debug('Found   {0:<10} "{1}"'.format(AInfo.name, local_asset.getPath()))
+                                log_debug('Found   {0} "{1}"'.format(AInfo.name, local_asset.getPath()))
                             else:
                                 rom[AInfo.key] = ''
-                                log_debug('Missing {0:<10}'.format(AInfo.name))
+                                log_debug('Missing {0}'.format(AInfo.name))
+                            # --- Also search assets in the Parent/Clone group ---
+                            if self.settings['audit_pclone_assets'] and not rom[AInfo.key]:
+                                if len(pclone_set_id_list) == 0: continue
+                                log_debug('Searching {0} in PClone set'.format(AInfo.name))
+                                for set_rom_id in pclone_set_id_list:
+                                    ROMFile = FileName(roms[set_rom_id]['filename'])
+                                    rom_basename_noext = ROMFile.getBase_noext()
+                                    log_verb('Checking PClone set ROM "{0}" (ID) {1})'.format(ROMFile.getBase(), set_rom_id))
+                                    local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
+                                    if local_asset:
+                                        rom[AInfo.key] = local_asset.getOriginalPath()
+                                        log_debug('Found   {0} "{1}" in PClone ROM'.format(AInfo.name, local_asset.getPath()))
+                                    else:
+                                        rom[AInfo.key] = ''
+                                        log_debug('Missing {0} in PClone ROM'.format(AInfo.name))
+                        # >> Update progress dialog
                         item_counter += 1
                         pDialog.update((item_counter*100)/num_items)
                     pDialog.update(100)
                     pDialog.close()
 
                     # --- If there is a No-Intro XML configured audit ROMs ---
-                    if launcher['nointro_xml_file']:
-                        log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
-                        nointro_xml_FN = FileName(launcher['nointro_xml_file'])
-                        if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
-                            self.launchers[launcherID]['nointro_xml_file'] = ''
-                            self.launchers[launcherID]['pclone_launcher'] = False
-                            kodi_dialog_OK('Error auditing ROMs. XML DAT file unset.')
+                    # >> Here only assets s_* are changed. I think it is not necessary to audit ROMs again.
+                    # if launcher['nointro_xml_file']:
+                    #     log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
+                    #     nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+                    #     if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
+                    #         self.launchers[launcherID]['nointro_xml_file'] = ''
+                    #         self.launchers[launcherID]['pclone_launcher'] = False
+                    #         kodi_dialog_OK('Error auditing ROMs. XML DAT file unset.')
 
                     # ~~~ Save ROMs XML file ~~~
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
-                    kodi_notify('Rescaning of local artwork finished')
+                    kodi_notify('Rescaning of ROMs local artwork finished')
 
                 # --- Remove Remove dead/missing ROMs ROMs ---
                 elif type2 == 3:
@@ -3893,9 +3944,9 @@ class Main:
             commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
         else:
+            commands.append(('View ROM/Launcher',         self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
             if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_1G1R:
                 commands.append(('Show clones', self._misc_url_RunPlugin('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID)))
-            commands.append(('View ROM/Launcher',         self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
             commands.append(('Edit ROM',                  self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
             commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
             commands.append(('Add ROM to Collection',     self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
@@ -6073,6 +6124,7 @@ class Main:
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
         info_text += "[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
         info_text += "[COLOR violet]pclone_status[/COLOR]: '{0}'\n".format(rom['pclone_status'])
+        info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(rom['cloneof'])
         # >> Assets/artwork
         info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
         info_text += "[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
@@ -7483,13 +7535,24 @@ class Main:
         # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
         log_debug('unknown_ROMs_are_parents = {0}'.format(unknown_ROMs_are_parents))
         roms_pclone_index     = fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
-        index_roms_base_noext = launcher['roms_base_noext'] + '_PClone_index'
+        index_roms_base_noext = launcher['roms_base_noext'] + '_index_PClone'
         fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 
+        # --- Make a Clone/Parent index ---
+        pDialog.update(0, 'Building Clone/Parent index ...')
+        clone_parent_dic = {}
+        for parent_id in roms_pclone_index:
+            for clone_id in roms_pclone_index[parent_id]:
+                clone_parent_dic[clone_id] = parent_id
+        index_roms_base_noext = launcher['roms_base_noext'] + '_index_CParent'
+        fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, clone_parent_dic)
+        pDialog.update(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
+
         # --- Set pclone_status flag ---
-        pDialog.update(0, 'Audit Step 4/4: Setting Parent/Clone status ...')
+        pDialog.update(0, 'Audit Step 4/4: Setting Parent/Clone status and cloneof fields...')
         num_items = len(roms)
         item_counter = 0
         audit_parents = audit_clones = 0
@@ -7498,6 +7561,7 @@ class Main:
                 roms[rom_id]['pclone_status'] = PCLONE_STATUS_PARENT
                 audit_parents += 1
             else:
+                roms[rom_id]['cloneof'] = clone_parent_dic[rom_id]
                 roms[rom_id]['pclone_status'] = PCLONE_STATUS_CLONE
                 audit_clones += 1
             item_counter += 1
@@ -8993,6 +9057,7 @@ class Main:
         if not 'm_esrb'        in rom: rom['m_esrb']        = ESRB_PENDING
         if not 'disks'         in rom: rom['disks']         = []
         if not 'pclone_status' in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
+        if not 'cloneof'       in rom: rom['cloneof']    = ''
         # --- Delete unwanted/obsolete stuff ---
         if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
         # --- DB field renamings ---
