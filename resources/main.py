@@ -8316,7 +8316,7 @@ class Main:
             try:
                 net_download_img(image_url, image_path)
             except socket.timeout:
-                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
+                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(A.name))
 
             # ~~~ Update Kodi cache with downloaded image ~~~
             # Recache only if local image is in the Kodi cache, this function takes care of that.
@@ -8325,7 +8325,7 @@ class Main:
             # --- Return value is downloaded image ---
             ret_asset_path = image_path
         else:
-            log_debug('{0} scraper: user chose local image "{1}"'.format(image_name, image_url))
+            log_debug('{0} scraper: user chose local image "{1}"'.format(A.name, image_url))
             ret_asset_path = image_url
 
         # --- Returned value ---
@@ -8587,7 +8587,7 @@ class Main:
                 if scrap_obj.supports_asset(asset_kind):
                     scraper_obj_list.append(scrap_obj)
                     scraper_menu_list.append('Scrape {0} from {1}'.format(AInfo.name, scrap_obj.name))
-                    log_verb('Scraper {0} support scraping {1}'.format(scrap_obj.name, AInfo.name))
+                    log_verb('Scraper {0} supports scraping {1}'.format(scrap_obj.name, AInfo.name))
                 else:
                     log_verb('Scraper {0} does not support scraping {1}'.format(scrap_obj.name, AInfo.name))
                     log_verb('Scraper DISABLED')
@@ -8695,10 +8695,11 @@ class Main:
             log_debug('_gui_edit_asset() User chose scraper "{0}"'.format(scraper_obj.name))
 
             # --- Initialise asset scraper ---
-            region        = self.settings['scraper_region']
-            thumb_imgsize = self.settings['scraper_thumb_size']
-            scraper_obj.set_options(region, thumb_imgsize)
-            log_debug('_gui_edit_asset() Initialised scraper "{0}"'.format(scraper_obj.name))
+            # region        = self.settings['scraper_region']
+            # thumb_imgsize = self.settings['scraper_thumb_size']
+            # scraper_obj.set_options(region, thumb_imgsize)
+            # >> Must be like this: scraper_obj.set_options(self.settings)
+            # log_debug('_gui_edit_asset() Initialised scraper "{0}"'.format(scraper_obj.name))
 
             # --- Ask user to edit the image search string ---
             keyboard = xbmc.Keyboard(object_dic['m_name'], 'Enter the string to search for ...')

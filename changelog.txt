@@ -118,7 +118,7 @@ FIX      Fixed launching of BAT files in Windows.
 FIX      In order for skin shortcuts and widgets to work OK, addon concurrency must be enabled
          by database read-only commands.
 
-WIP      Fix scraper-related crash in the ROM scanner.
+FIX      Fix scraper-related crash in the ROM scanner.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628382#pid2628382
 
 WIP      Fix artwork support for mult-disc ROMs.
