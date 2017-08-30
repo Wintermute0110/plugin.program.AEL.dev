@@ -8716,18 +8716,20 @@ class Main:
             kodi_busydialog_OFF()
             log_debug('{0} scraper found {1} result/s'.format(AInfo.name, len(results)))
             if not results:
-                kodi_dialog_OK('Scraper found no matches.')
+                kodi_dialog_OK('Scraper found no matching games.')
                 log_debug('{0} scraper did not found any game'.format(AInfo.name))
                 return False
 
             # --- Choose game to download image ---
-            # Display corresponding game list found so user choses
-            dialog = xbmcgui.Dialog()
-            rom_name_list = []
-            for game in results:
-                rom_name_list.append(game['display_name'])
-            selectgame = dialog.select('Select game for {0}'.format(search_string), rom_name_list)
-            if selectgame < 0: return False
+            if len(results) == 1:
+                selectgame = 0
+            else:
+                # >> Display corresponding game list found so user choses
+                rom_name_list = []
+                for game in results:
+                    rom_name_list.append(game['display_name'])
+                selectgame = xbmcgui.Dialog().select('Select game for {0}'.format(search_string), rom_name_list)
+                if selectgame < 0: return False
 
             # --- Grab list of images for the selected game ---
             # >> Prevent race conditions
@@ -8736,7 +8738,7 @@ class Main:
             kodi_busydialog_OFF()
             log_verb('{0} scraper returned {1} images'.format(AInfo.name, len(image_list)))
             if not image_list:
-                kodi_dialog_OK('Scraper found no images.')
+                kodi_dialog_OK('Scraper found no images for game "{0}".'.format(game['display_name']))
                 return False
 
             # --- Always do semi-automatic scraping when editing images ---
@@ -8752,19 +8754,37 @@ class Main:
                 listitem_obj = xbmcgui.ListItem(label = item['name'], label2 = item['URL'])
                 listitem_obj.setArt({'icon' : item['URL']})
                 ListItem_list.append(listitem_obj)
-            image_selected_index = xbmcgui.Dialog().select('Select image', list = ListItem_list, useDetails = True)
-            log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
-            if image_selected_index < 0: image_selected_index = 0
-            # >> Resolve asset URL
-            image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
-            log_debug('Resolved {0} URL "{1}"'.format(AInfo.name, image_url))
-            log_debug('URL extension "{0}"'.format(image_ext))
-            if not image_url or not image_ext:
-                log_error('_gui_edit_asset() image_url or image_ext empty/not set')
+            # >> If there are no items in the list is because there is no current asst and scraper
+            # >> found nothing. Return.
+            if len(ListItem_list) == 0:
+                log_debug('_gui_edit_asset() ListItem_list is empty. Returning.')
+                return False
+            # >> If there is only one item in the list do not show select dialog
+            elif len(ListItem_list) == 1:
+                log_debug('_gui_edit_asset() ListItem_list has one element. Do not show select dialog.')
+                image_selected_index = 0
+            else:
+                image_selected_index = xbmcgui.Dialog().select('Select image', list = ListItem_list, useDetails = True)
+                log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
+            # >> User cancelled dialog
+            if image_selected_index < 0:
+                log_debug('_gui_edit_asset() User cancelled image select dialog. Returning.')
                 return False
 
-            # --- If user chose the local image don't download anything ---
-            if image_url != current_asset_path:
+            # >> User choose local image
+            if image_list[image_selected_index]['URL'] == current_asset_path.getPath():
+               log_debug('_gui_edit_asset() Selected current image "{0}"'.format(current_asset_path.getPath()))
+               return False
+            else:
+                log_debug('_gui_edit_asset() Downloading selected image')
+                # >> Resolve asset URL
+                image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
+                log_debug('Resolved {0} URL "{1}"'.format(AInfo.name, image_url))
+                log_debug('URL extension "{0}"'.format(image_ext))
+                if not image_url or not image_ext:
+                    log_error('_gui_edit_asset() image_url or image_ext empty/not set')
+                    return False
+
                 # ~~~ Download image ~~~
                 image_local_path = asset_path_noext.append(image_ext).getPath()
                 log_verb('Downloading URL "{0}"'.format(image_url))
@@ -8784,11 +8804,9 @@ class Main:
 
                 # --- Notify user ---
                 kodi_notify('Downloaded {0} with {1} scraper'.format(AInfo.name, scraper_obj.name))
-            else:
-                log_debug('Scraper: user chose local image "{1}"'.format(current_asset_path))
-                return False
 
             # --- Edit using Python pass by assigment ---
+            # >> If we reach this point is because an image was downloaded
             # >> Caller is responsible to save Categories/Launchers/ROMs
             object_dic[AInfo.key] = image_local_path
 
