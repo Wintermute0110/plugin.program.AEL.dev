@@ -1630,6 +1630,7 @@ class Main:
                         # --- Search assets ---
                         for i, asset in enumerate(ROM_ASSET_LIST):
                             AInfo = assets_get_info_scheme(asset)
+                            log_debug('Search  {0}'.format(AInfo.name))
                             if not enabled_asset_list[i]: continue
                             asset_path = FileName(launcher[AInfo.path_key])
                             local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
@@ -1642,18 +1643,18 @@ class Main:
                             # --- Also search assets in the Parent/Clone group ---
                             if self.settings['audit_pclone_assets'] and not rom[AInfo.key]:
                                 if len(pclone_set_id_list) == 0: continue
-                                log_debug('Searching {0} in PClone set'.format(AInfo.name))
+                                # log_debug('Search  {0} in PClone set'.format(AInfo.name))
                                 for set_rom_id in pclone_set_id_list:
-                                    ROMFile = FileName(roms[set_rom_id]['filename'])
-                                    rom_basename_noext = ROMFile.getBase_noext()
-                                    log_verb('Checking PClone set ROM "{0}" (ID) {1})'.format(ROMFile.getBase(), set_rom_id))
-                                    local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
-                                    if local_asset:
-                                        rom[AInfo.key] = local_asset.getOriginalPath()
-                                        log_debug('Found   {0} "{1}" in PClone ROM'.format(AInfo.name, local_asset.getPath()))
+                                    ROMFile_t = FileName(roms[set_rom_id]['filename'])
+                                    rom_basename_noext_t = ROMFile_t.getBase_noext()
+                                    log_debug('Checking PClone set ROM "{0}" (ID) {1})'.format(ROMFile_t.getBase(), set_rom_id))
+                                    local_asset_t = misc_look_for_file(asset_path, rom_basename_noext_t, AInfo.exts)
+                                    if local_asset_t:
+                                        rom[AInfo.key] = local_asset_t.getOriginalPath()
+                                        log_debug('Found   {0} "{1}"'.format(AInfo.name, local_asset_t.getPath()))
                                     else:
                                         rom[AInfo.key] = ''
-                                        log_debug('Missing {0} in PClone ROM'.format(AInfo.name))
+                                        log_debug('Missing {0}'.format(AInfo.name))
                         # >> Update progress dialog
                         item_counter += 1
                         pDialog.update((item_counter*100)/num_items)
