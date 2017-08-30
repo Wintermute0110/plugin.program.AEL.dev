@@ -471,24 +471,57 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
     # Get screenshot image URL.
     #
     def get_shot_image_URL(self, art_page_URL):
-        log_debug('asset_MobyGames::get_shot_image_URL() art_page_URL = {0}'.format(art_page_URL))
+        log_debug('asset_MobyGames::get_shot_image_URL() art_page_URL "{0}"'.format(art_page_URL))
         page_data = net_get_URL_oneline(art_page_URL)
         # text_dump_str_to_file(os.path.join('E:/', 'MobyGames-get_shot_image_URL.txt'), page_data)
-        
+
+        # --- OLD Mobygames screenshot webpage ---
         # <div class="screenshot">
         # <img 
         #  title="" 
         #  alt="Super Mario World SNES Title screen" 
         #  border="0" 
         #  src="/images/shots/l/218703-super-mario-world-snes-screenshot-title-screen.png" 
-        #  height="448" width="512" ><h3>
+        #  height="448" width="512" >
+        # <h3>
+        #
+        # --- New (Aug 2017) Mobygames screenshot webpage ---
+        # <div class="screenshot doubled">
+        # <img
+        #  title=""
+        #  alt="Knuckles&amp;#x27; Chaotix SEGA 32X Title Screen"
+        #  src="/images/shots/l/32523-knuckles-chaotix-sega-32x-screenshot-title-screen.gif"
+        #  width="640"
+        #  border="0"
+        #  height="448" >
+        #  <h3>Title Screen</h3></div>
+        #
+        # >> findall() returns a list of strings. If pattern has groups then returns a list of groups.
+        sub_URL = ''
+        # >> Approach A
         rlist = re.findall('<div class="screenshot">'
                            '<img title="(.*?)" alt="(.*?)" border="(.*?)" src="(.*?)" height="(.*?)" width="(.*?)" >'
                            '<h3>', page_data)
+        if rlist: sub_URL = rlist[0][3]
+        else: log_debug('asset_MobyGames::get_shot_image_URL() Approach A failed')
+        # >> Approach B
+        if not sub_URL:
+            rlist = re.findall('<div class="screenshot doubled">'
+                               '<img title="(.*?)" alt="(.*?)" src="(.*?)" width="(.*?)" border="(.*?)" height="(.*?)" >' 
+                               '<h3>(.*?)</h3></div>', page_data)
+            if rlist: sub_URL = rlist[0][2]
+            else: log_debug('asset_MobyGames::get_shot_image_URL() Approach B failed')
+        # >> Approach C
+        if not sub_URL:
+            rlist = re.findall('<div class="screenshot doubled">'
+                               '<img title="(.*?)" alt="(.*?)" border="(.*?)" src="(.*?)" height="(.*?)" width="(.*?)" >'
+                               '<h3>(.*?)</h3></div>', page_data)
+            if rlist: sub_URL = rlist[0][3]
+            else: log_debug('asset_MobyGames::get_shot_image_URL() Approach C failed')
+
         # log_debug('Screenshots rlist = ' + unicode(rlist))
-        art_URL = ''
-        if len(rlist) > 0: art_URL = 'http://www.mobygames.com' + rlist[0][3]
-        log_debug('asset_MobyGames::get_shot_image_URL() art_URL = {0}'.format(art_URL))
+        art_URL = 'http://www.mobygames.com' + sub_URL if sub_URL else ''
+        log_debug('asset_MobyGames::get_shot_image_URL() art_URL "{0}"'.format(art_URL))
 
         return art_URL
 
@@ -518,7 +551,9 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
         return art_URL
 
     def resolve_image_URL(self, image_dic):
-        log_debug('asset_MobyGames::resolve_image_URL() Resolving {0}'.format(image_dic['name']))
+        log_debug('asset_MobyGames::resolve_image_URL() Resolving "{0}"'.format(image_dic['name']))
+        image_url = ''
+        image_ext = ''
         asset_kind = image_dic['asset_kind']
 
         # >> Go to artwork page and get actual filename. Skip if empty string returned.
@@ -528,12 +563,14 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             image_url = self.get_cover_image_URL(image_dic['id'])
         else:
             log_error('asset_MobyGames::resolve_image_URL() Wrong asset_kind =  {0}'.format(asset_kind))
-            return ('', '')
+            return (image_url, image_ext)
+        log_debug('asset_MobyGames::resolve_image_URL() Resolved "{0}"'.format(image_url))
 
         # >> Get image extension from URL
-        if not image_url: return ('', '')
+        if not image_url: return (image_url, image_ext)
         image_ext = text_get_image_URL_extension(image_url)
-        
+        log_debug('asset_MobyGames::resolve_image_URL() Img extension "{0}"'.format(image_ext))
+
         return (image_url, image_ext)
 
 # -------------------------------------------------------------------------------------------------
