@@ -18,6 +18,9 @@ WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
 
 WIP      Edit multi-disc ROMs.
 
+WIP      Fix artwork support for mult-disc ROMs.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628912#pid2628912
+
 WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
          This resembles what NARS No-Intro filtering does.
 
@@ -39,6 +42,10 @@ WIP      Have a look at https://www.screenscraper.fr/ and consider it for an onl
 WIP      Think about exporting the AEL platform database using JSON-LD in accordance to
          Garbear's idea.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
+
+WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
+         etc. When a user uses XML to import configurations it is easy to make a typo when
+         writing directory names, etc. This command will report if AEL configuration is OK.
 
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
@@ -66,13 +73,9 @@ FEATURE  Audit Retroarch BIOSes in System directory.
 FEATURE  Scan for artwork in the Parent/Clone group of a ROM. Implemented only in the context
          menu "Edit Launcher", "Manage ROM List", "Rescan ROMs local assets/artwork".
 
-WIP      Support for <Launcher_NFO> tag in XML configuration files.
+FEATURE  Support for <Launcher_NFO> tag in XML configuration files.
 
 WIP      Preserve path_title, path_snap, etc. when exporting a Launcher into an XML file.
-
-WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
-         etc. When a user uses XML to import configurations it is easy to make a typo when
-         writing directory names, etc. This command will report if AEL configuration is OK.
 
 WIP      Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
@@ -120,9 +123,6 @@ FIX      In order for skin shortcuts and widgets to work OK, addon concurrency m
 
 FIX      Fix scraper-related crash in the ROM scanner.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628382#pid2628382
-
-WIP      Fix artwork support for mult-disc ROMs.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628912#pid2628912
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]

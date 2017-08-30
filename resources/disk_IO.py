@@ -1683,16 +1683,16 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         item_title     = re.findall('<title>(.*?)</title>', nfo_str)
         item_year      = re.findall('<year>(.*?)</year>', nfo_str)
         item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
-        item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
+        item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
         item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
         item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
-        if len(item_title) > 0:     roms[romID]['m_name']   = text_unescape_XML(item_title[0])
-        if len(item_year) > 0:      roms[romID]['m_year']   = text_unescape_XML(item_year[0])
-        if len(item_genre) > 0:     roms[romID]['m_genre']  = text_unescape_XML(item_genre[0])
-        if len(item_publisher) > 0: roms[romID]['m_studio'] = text_unescape_XML(item_publisher[0])
-        if len(item_rating) > 0:    roms[romID]['m_rating'] = text_unescape_XML(item_rating[0])
-        if len(item_plot) > 0:      roms[romID]['m_plot']   = text_unescape_XML(item_plot[0])
+        if len(item_title) > 0:     roms[romID]['m_name']      = text_unescape_XML(item_title[0])
+        if len(item_year) > 0:      roms[romID]['m_year']      = text_unescape_XML(item_year[0])
+        if len(item_genre) > 0:     roms[romID]['m_genre']     = text_unescape_XML(item_genre[0])
+        if len(item_developer) > 0: roms[romID]['m_developer'] = text_unescape_XML(item_developer[0])
+        if len(item_rating) > 0:    roms[romID]['m_rating']    = text_unescape_XML(item_rating[0])
+        if len(item_plot) > 0:      roms[romID]['m_plot']      = text_unescape_XML(item_plot[0])
 
         if verbose:
             kodi_notify('Imported {0}'.format(nfo_file_path))
@@ -1709,7 +1709,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 #
 def fs_import_NFO_file_scanner(nfo_file_path):
-    nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'publisher' : '', 'rating' : '', 'plot' : '' }
+    nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : '' }
 
     # >> Read file, put in a string and remove line endings
     file = codecs.open(nfo_file_path.getPath(), 'r', 'utf-8')
@@ -1720,14 +1720,14 @@ def fs_import_NFO_file_scanner(nfo_file_path):
     item_title     = re.findall('<title>(.*?)</title>', nfo_str)
     item_year      = re.findall('<year>(.*?)</year>', nfo_str)
     item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
-    item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
+    item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
     item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
     item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
     if len(item_title) > 0:     nfo_dic['title']     = text_unescape_XML(item_title[0])
     if len(item_year) > 0:      nfo_dic['year']      = text_unescape_XML(item_year[0])
     if len(item_genre) > 0:     nfo_dic['genre']     = text_unescape_XML(item_genre[0])
-    if len(item_publisher) > 0: nfo_dic['publisher'] = text_unescape_XML(item_publisher[0])
+    if len(item_developer) > 0: nfo_dic['developer'] = text_unescape_XML(item_developer[0])
     if len(item_rating) > 0:    nfo_dic['rating']    = text_unescape_XML(item_rating[0])
     if len(item_plot) > 0:      nfo_dic['plot']      = text_unescape_XML(item_plot[0])
 
@@ -1751,7 +1751,7 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     nfo_content.append('<launcher>\n')
     nfo_content.append(XML_text('year',      launcher['m_year']))
     nfo_content.append(XML_text('genre',     launcher['m_genre']))
-    nfo_content.append(XML_text('publisher', launcher['m_studio']))
+    nfo_content.append(XML_text('developer', launcher['m_developer']))
     nfo_content.append(XML_text('rating',    launcher['m_rating']))
     nfo_content.append(XML_text('plot',      launcher['m_plot']))
     nfo_content.append('</launcher>\n')
@@ -1802,25 +1802,64 @@ def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
     # Find data
     item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
     item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
-    item_publisher = re.findall('<publisher>(.*?)</publisher>', item_nfo)
+    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
     item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
     item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
-    # log_debug("fs_import_launcher_NFO() item_year      '{0}'".format(item_year[0]))
-    # log_debug("fs_import_launcher_NFO() item_publisher '{0}'".format(item_publisher[0]))
-    # log_debug("fs_import_launcher_NFO() item_genre     '{0}'".format(item_genre[0]))
-    # log_debug("fs_import_launcher_NFO() item_plot      '{0}'".format(item_plot[0]))
 
     # >> Careful about object mutability! This should modify the dictionary
     # >> passed as argument outside this function.
-    if item_year:      launchers[launcherID]['m_year']   = text_unescape_XML(item_year[0])
-    if item_genre:     launchers[launcherID]['m_genre']  = text_unescape_XML(item_genre[0])
-    if item_publisher: launchers[launcherID]['m_studio'] = text_unescape_XML(item_publisher[0])
-    if item_rating:    launchers[launcherID]['m_rating'] = text_unescape_XML(item_rating[0])
-    if item_plot:      launchers[launcherID]['m_plot']   = text_unescape_XML(item_plot[0])
+    if item_year:      launchers[launcherID]['m_year']      = text_unescape_XML(item_year[0])
+    if item_genre:     launchers[launcherID]['m_genre']     = text_unescape_XML(item_genre[0])
+    if item_developer: launchers[launcherID]['m_developer'] = text_unescape_XML(item_developer[0])
+    if item_rating:    launchers[launcherID]['m_rating']    = text_unescape_XML(item_rating[0])
+    if item_plot:      launchers[launcherID]['m_plot']      = text_unescape_XML(item_plot[0])
 
     log_verb("fs_import_launcher_NFO() Imported '{0}'".format(nfo_FileName.getPath()))
 
     return True
+
+#
+# Used by autoconfig_import_launcher(). Returns a dictionary with the Launcher NFO file information.
+# If there is any error return a dictionary with empty information.
+#
+def fs_read_launcher_NFO(nfo_FileName):
+    launcher_dic = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
+
+    # --- Get NFO file name ---
+    log_debug('fs_read_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+
+    # --- Import data ---
+    if os.path.isfile(nfo_FileName.getPath()):
+        # >> Read NFO file data
+        try:
+            file = codecs.open(nfo_FileName.getPath(), 'r', 'utf-8')
+            item_nfo = file.read().replace('\r', '').replace('\n', '')
+            file.close()
+        except:
+            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
+            log_error("fs_read_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+            return launcher_dic
+    else:
+        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getPath())))
+        log_info("fs_read_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+        return launcher_dic
+
+    # Find data
+    item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+    item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
+    item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
+    item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
+
+    if item_year:      launcher_dic['year']      = text_unescape_XML(item_year[0])
+    if item_genre:     launcher_dic['genre']     = text_unescape_XML(item_genre[0])
+    if item_developer: launcher_dic['developer'] = text_unescape_XML(item_developer[0])
+    if item_rating:    launcher_dic['rating']    = text_unescape_XML(item_rating[0])
+    if item_plot:      launcher_dic['plot']      = text_unescape_XML(item_plot[0])
+
+    log_verb("fs_read_launcher_NFO() Read '{0}'".format(nfo_FileName.getPath()))
+
+    return launcher_dic
 
 #
 # Returns a FileName object

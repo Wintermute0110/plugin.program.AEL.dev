@@ -160,6 +160,7 @@ def autoconfig_get_default_import_launcher():
     l = {
         'name' : '',
         'category' : 'root_category',
+        'Launcher_NFO' : '',
         'year' : '',
         'genre' : '',
         'developer' : '',
@@ -485,6 +486,8 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
 def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, launcherID, i_launcher, import_FN):
     log_debug('autoconfig_import_launcher() categoryID = {0}'.format(categoryID))
     log_debug('autoconfig_import_launcher() launcherID = {0}'.format(launcherID))
+    Launcher_NFO_meta = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
+    XML_meta          = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
 
     # --- Launcher metadata ---
     if i_launcher['name']:
@@ -495,25 +498,72 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID]['m_name'] = i_launcher['name']
         log_debug('Imported m_name      "{0}"'.format(i_launcher['name']))
 
+    # >> Process <Launcher_NFO> before any metadata tag
+    if i_launcher['Launcher_NFO']:
+        Launcher_NFO_FN = FileName(import_FN.getDir()).pjoin(i_launcher['Launcher_NFO'])
+        Launcher_NFO_meta = fs_read_launcher_NFO(Launcher_NFO_FN)
+        log_debug('NFO year             "{0}"'.format(Launcher_NFO_meta['year']))
+        log_debug('NFO genre            "{0}"'.format(Launcher_NFO_meta['genre']))
+        log_debug('NFO developer        "{0}"'.format(Launcher_NFO_meta['developer']))
+        log_debug('NFO rating           "{0}"'.format(Launcher_NFO_meta['rating']))
+        log_debug('NFO plot             "{0}"'.format(Launcher_NFO_meta['plot']))
+
+    # >> Process XML metadata and put in temporal dictionary
     if i_launcher['year']:
-        launchers[launcherID]['m_year'] = i_launcher['year']
-        log_debug('Imported m_year      "{0}"'.format(i_launcher['year']))
+        XML_meta['year'] = i_launcher['year']
+        log_debug('XML year             "{0}"'.format(i_launcher['year']))
 
     if i_launcher['genre']:
-        launchers[launcherID]['m_genre'] = i_launcher['genre']
-        log_debug('Imported m_genre     "{0}"'.format(i_launcher['genre']))
+        XML_meta['genre'] = i_launcher['genre']
+        log_debug('XML genre            "{0}"'.format(i_launcher['genre']))
 
     if i_launcher['developer']:
-        launchers[launcherID]['m_studio'] = i_launcher['developer']
-        log_debug('Imported m_studio    "{0}"'.format(i_launcher['developer']))
+        XML_meta['developer'] = i_launcher['developer']
+        log_debug('XML developer        "{0}"'.format(i_launcher['developer']))
 
     if i_launcher['rating']:
-        launchers[launcherID]['m_rating'] = i_launcher['rating']
-        log_debug('Imported m_rating    "{0}"'.format(i_launcher['rating']))
+        XML_meta['rating'] = i_launcher['rating']
+        log_debug('XML rating           "{0}"'.format(i_launcher['rating']))
 
     if i_launcher['plot']:
-        launchers[launcherID]['m_plot'] = i_launcher['plot']
-        log_debug('Imported m_plot      "{0}"'.format(i_launcher['plot']))
+        XML_meta['plot'] = i_launcher['plot']
+        log_debug('XML plot             "{0}"'.format(i_launcher['plot']))
+
+    # >> Process metadata. XML metadata overrides Launcher_NFO metadata, if exists.
+    if XML_meta['year']:
+        launchers[launcherID]['m_year'] = XML_meta['year']
+        log_debug('Imported m_year      "{0}"'.format(XML_meta['year']))
+    elif Launcher_NFO_meta['year']:
+        launchers[launcherID]['m_year'] = Launcher_NFO_meta['year']
+        log_debug('Imported m_year      "{0}"'.format(Launcher_NFO_meta['year']))
+
+    if XML_meta['genre']:
+        launchers[launcherID]['m_genre'] = XML_meta['genre']
+        log_debug('Imported m_genre     "{0}"'.format(XML_meta['genre']))
+    elif Launcher_NFO_meta['genre']:
+        launchers[launcherID]['m_genre'] = Launcher_NFO_meta['genre']
+        log_debug('Imported m_genre     "{0}"'.format(Launcher_NFO_meta['genre']))
+
+    if XML_meta['developer']:
+        launchers[launcherID]['m_developer'] = XML_meta['developer']
+        log_debug('Imported m_developer "{0}"'.format(XML_meta['developer']))
+    elif Launcher_NFO_meta['developer']:
+        launchers[launcherID]['m_developer'] = Launcher_NFO_meta['developer']
+        log_debug('Imported m_developer "{0}"'.format(Launcher_NFO_meta['developer']))
+
+    if XML_meta['rating']:
+        launchers[launcherID]['m_rating'] = XML_meta['rating']
+        log_debug('Imported m_rating    "{0}"'.format(XML_meta['rating']))
+    elif Launcher_NFO_meta['rating']:
+        launchers[launcherID]['m_rating'] = Launcher_NFO_meta['rating']
+        log_debug('Imported m_rating    "{0}"'.format(Launcher_NFO_meta['rating']))
+
+    if XML_meta['plot']:
+        launchers[launcherID]['m_plot'] = XML_meta['plot']
+        log_debug('Imported m_plot      "{0}"'.format(XML_meta['plot']))
+    elif Launcher_NFO_meta['plot']:
+        launchers[launcherID]['m_plot'] = Launcher_NFO_meta['plot']
+        log_debug('Imported m_plot      "{0}"'.format(Launcher_NFO_meta['plot']))
 
     # --- Launcher stuff ---
     # >> If platform cannot be found in the official list then warn user and set it to 'Unknown'
