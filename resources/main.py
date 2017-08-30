@@ -8738,7 +8738,7 @@ class Main:
             kodi_busydialog_OFF()
             log_verb('{0} scraper returned {1} images'.format(AInfo.name, len(image_list)))
             if not image_list:
-                kodi_dialog_OK('Scraper found no images for game "{0}".'.format(game['display_name']))
+                kodi_dialog_OK('Scraper found no images for game "{0}".'.format(results[selectgame]['display_name']))
                 return False
 
             # --- Always do semi-automatic scraping when editing images ---
