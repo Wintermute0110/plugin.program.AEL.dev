@@ -188,6 +188,18 @@ def autoconfig_get_default_import_launcher():
         'ROM_path' : '',
         'ROM_ext' : '',
         'ROM_asset_path' : '',
+        'path_title' : '',
+        'path_snap' : '',
+        'path_boxfront' : '',
+        'path_boxback' : '',
+        'path_cartridge' : '',
+        'path_fanart' : '',
+        'path_banner' : '',
+        'path_clearlogo' : '',
+        'path_flyer' : '',
+        'path_map' : '',
+        'path_manual' : '',
+        'path_trailer' : '',
         'Asset_Prefix' : '',
         's_icon' : '',
         's_fanart' : '',
@@ -663,6 +675,57 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         else:
             log_debug('ROM_asset_path path found after asking user to create it.')
             log_debug('ROM asset directories left blank or as there were.')
+
+    # --- <path_*> tags override <ROM_asset_path> ---
+    # >> This paths will be imported in a raw way, no existance checkings will be done.
+    # >> Note that path_* tags will be imported only if they are non-empty.
+    if i_launcher['path_title']:
+        launchers[launcherID]['path_title'] = i_launcher['path_title']
+        log_debug('Imported path_title "{0}"'.format(i_launcher['path_title']))
+
+    if i_launcher['path_snap']:
+        launchers[launcherID]['path_snap'] = i_launcher['path_snap']
+        log_debug('Imported path_snap "{0}"'.format(i_launcher['path_snap']))
+
+    if i_launcher['path_boxfront']:
+        launchers[launcherID]['path_boxfront'] = i_launcher['path_boxfront']
+        log_debug('Imported path_boxfront "{0}"'.format(i_launcher['path_boxfront']))
+
+    if i_launcher['path_boxback']:
+        launchers[launcherID]['path_boxback'] = i_launcher['path_boxback']
+        log_debug('Imported path_boxback "{0}"'.format(i_launcher['path_boxback']))
+
+    if i_launcher['path_cartridge']:
+        launchers[launcherID]['path_cartridge'] = i_launcher['path_cartridge']
+        log_debug('Imported path_cartridge "{0}"'.format(i_launcher['path_cartridge']))
+
+    if i_launcher['path_fanart']:
+        launchers[launcherID]['path_fanart'] = i_launcher['path_fanart']
+        log_debug('Imported path_fanart "{0}"'.format(i_launcher['path_fanart']))
+
+    if i_launcher['path_banner']:
+        launchers[launcherID]['path_banner'] = i_launcher['path_banner']
+        log_debug('Imported path_banner "{0}"'.format(i_launcher['path_banner']))
+
+    if i_launcher['path_clearlogo']:
+        launchers[launcherID]['path_clearlogo'] = i_launcher['path_clearlogo']
+        log_debug('Imported path_clearlogo "{0}"'.format(i_launcher['path_clearlogo']))
+
+    if i_launcher['path_flyer']:
+        launchers[launcherID]['path_flyer'] = i_launcher['path_flyer']
+        log_debug('Imported path_flyer "{0}"'.format(i_launcher['path_flyer']))
+
+    if i_launcher['path_map']:
+        launchers[launcherID]['path_map'] = i_launcher['path_map']
+        log_debug('Imported path_map "{0}"'.format(i_launcher['path_map']))
+
+    if i_launcher['path_manual']:
+        launchers[launcherID]['path_manual'] = i_launcher['path_manual']
+        log_debug('Imported path_manual "{0}"'.format(i_launcher['path_manual']))
+
+    if i_launcher['path_trailer']:
+        launchers[launcherID]['path_trailer'] = i_launcher['path_trailer']
+        log_debug('Imported path_trailer "{0}"'.format(i_launcher['path_trailer']))
 
     # --- Launcher assets/artwork ---
     if i_launcher['Asset_Prefix']:
