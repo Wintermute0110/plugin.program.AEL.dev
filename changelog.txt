@@ -47,6 +47,9 @@ WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths
          etc. When a user uses XML to import configurations it is easy to make a typo when
          writing directory names, etc. This command will report if AEL configuration is OK.
 
+WIP      Add support for ScummVM platform in the Offline Scraper.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
 
@@ -76,9 +79,6 @@ FEATURE  Scan for artwork in the Parent/Clone group of a ROM. Implemented only i
 FEATURE  Support for <Launcher_NFO> tag in XML configuration files.
 
 WIP      Preserve path_title, path_snap, etc. when exporting a Launcher into an XML file.
-
-WIP      Add support for ScummVM platform in the Offline Scraper.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
 WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
          selected scraper. This will require a redesign of the current scraping engine.

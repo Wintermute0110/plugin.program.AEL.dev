@@ -1047,7 +1047,7 @@ class Main:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                                   'Change Category: {0}'.format(category_name), finished_display,
-                                  'Manage ROM List ...', 'Audit ROMs / Launcher view mode ...',
+                                  'Manage ROMs ...', 'Audit ROMs / Launcher view mode ...',
                                   'Advanced Modifications ...', 'Delete Launcher'])
         if type < 0: return
 
@@ -1561,21 +1561,13 @@ class Main:
                                        'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
                 # --- Rescan local assets/artwork ---
+                # >> A) First, local assets are searched for every ROM based on the filename.
+                # >> B) Next, missing assets are searched in the Parent/Clone group using the files
+                #       found in the previous step. This is much faster than searching for files again.
+                #
                 elif type2 == 2:
                     log_info('_command_edit_launcher() Rescanning local assets ...')
                     launcher = self.launchers[launcherID]
-
-                    # --- Crete Parent/Clone dictionaries ---
-                    # >> This is only available if a No-Intro/Redump DAT is configured. If not, warn the user.
-                    if self.settings['audit_pclone_assets'] and not launcher['nointro_xml_file']:
-                        log_info('Use assets in the Parent/Clone group is ON. No-Intro/Redump DAT not configured.')
-                        kodi_dialog_OK('No-Intro/Redump DAT not configured and audit_pclone_assets is True. Aborting.')
-                        roms_pclone_index = {}
-                        clone_parent_dic  = {}
-                    elif self.settings['audit_pclone_assets'] and launcher['nointro_xml_file']:
-                        log_info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
-                        roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone')
-                        clone_parent_dic  = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent')
 
                     # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
                     (enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
@@ -1596,7 +1588,7 @@ class Main:
                     else:
                         log_info('No duplicated asset dirs found')
 
-                    # >> Traverse ROM list and check local asset/artwork
+                    # --- Traverse ROM list and check local asset/artwork ---
                     pDialog = xbmcgui.DialogProgress()
                     pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
@@ -1609,9 +1601,49 @@ class Main:
                         ROMFile = FileName(rom['filename'])
                         rom_basename_noext = ROMFile.getBase_noext()
                         log_verb('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
-                        
-                        # --- Make PClone group list in case we need it later ---
-                        if self.settings['audit_pclone_assets']:
+
+                        # --- Search assets ---
+                        for i, asset in enumerate(ROM_ASSET_LIST):
+                            AInfo = assets_get_info_scheme(asset)
+                            # log_debug('Search  {0}'.format(AInfo.name))
+                            if not enabled_asset_list[i]: continue
+                            asset_path = FileName(launcher[AInfo.path_key])
+                            local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
+                            if local_asset:
+                                rom[AInfo.key] = local_asset.getOriginalPath()
+                                log_debug('Found {0:<9} "{1}"'.format(AInfo.name, local_asset.getPath()))
+                            else:
+                                rom[AInfo.key] = ''
+                                log_debug('Miss  {0:<9}'.format(AInfo.name))
+                        # --- Update progress dialog ---
+                        item_counter += 1
+                        pDialog.update((item_counter*100)/num_items)
+                    pDialog.update(100)
+                    pDialog.close()
+
+                    # --- Crete Parent/Clone dictionaries ---
+                    # --- Traverse ROM list and check assets in the PClone group ---
+                    # >> This is only available if a No-Intro/Redump DAT is configured. If not, warn the user.
+                    if self.settings['audit_pclone_assets'] and not launcher['nointro_xml_file']:
+                        log_info('Use assets in the Parent/Clone group is ON. No-Intro/Redump DAT not configured.')
+                        kodi_dialog_OK('No-Intro/Redump DAT not configured and audit_pclone_assets is True. ' +
+                                       'Cancelling looking for assets in the Parent/Clone group.')
+                    elif self.settings['audit_pclone_assets'] and launcher['nointro_xml_file']:
+                        log_info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
+                        roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone')
+                        clone_parent_dic  = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent')
+                        pDialog = xbmcgui.DialogProgress()
+                        pDialog.create('Advanced Emulator Launcher', 'Searching for assets/artwork in the Parent/Clone group ...')
+                        num_items = len(roms)
+                        item_counter = 0
+                        for rom_id in roms:
+                            # --- Search assets for current ROM ---
+                            rom = roms[rom_id]
+                            ROMFile = FileName(rom['filename'])
+                            rom_basename_noext = ROMFile.getBase_noext()
+                            log_verb('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
+
+                            # --- Make PClone group list in case we need it later ---
                             if rom_id in roms_pclone_index:
                                 parent_id = rom_id
                                 num_clones = len(roms_pclone_index[rom_id])
@@ -1626,40 +1658,37 @@ class Main:
                             pclone_set_id_list.remove(rom_id)
                             # log_debug(unicode(pclone_set_id_list))
                             log_debug('PClone group list has {0} ROMs (after stripping current ROM)'.format(len(pclone_set_id_list)))
+                            if len(pclone_set_id_list) == 0: continue
 
-                        # --- Search assets ---
-                        for i, asset in enumerate(ROM_ASSET_LIST):
-                            AInfo = assets_get_info_scheme(asset)
-                            log_debug('Search  {0}'.format(AInfo.name))
-                            if not enabled_asset_list[i]: continue
-                            asset_path = FileName(launcher[AInfo.path_key])
-                            local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
-                            if local_asset:
-                                rom[AInfo.key] = local_asset.getOriginalPath()
-                                log_debug('Found   {0} "{1}"'.format(AInfo.name, local_asset.getPath()))
-                            else:
-                                rom[AInfo.key] = ''
-                                log_debug('Missing {0}'.format(AInfo.name))
-                            # --- Also search assets in the Parent/Clone group ---
-                            if self.settings['audit_pclone_assets'] and not rom[AInfo.key]:
-                                if len(pclone_set_id_list) == 0: continue
-                                # log_debug('Search  {0} in PClone set'.format(AInfo.name))
-                                for set_rom_id in pclone_set_id_list:
-                                    ROMFile_t = FileName(roms[set_rom_id]['filename'])
-                                    rom_basename_noext_t = ROMFile_t.getBase_noext()
-                                    log_debug('Checking PClone set ROM "{0}" (ID) {1})'.format(ROMFile_t.getBase(), set_rom_id))
-                                    local_asset_t = misc_look_for_file(asset_path, rom_basename_noext_t, AInfo.exts)
-                                    if local_asset_t:
-                                        rom[AInfo.key] = local_asset_t.getOriginalPath()
-                                        log_debug('Found   {0} "{1}"'.format(AInfo.name, local_asset_t.getPath()))
+                            # --- Search assets ---
+                            for i, asset in enumerate(ROM_ASSET_LIST):
+                                AInfo = assets_get_info_scheme(asset)
+                                # log_debug('Search  {0}'.format(AInfo.name))
+                                if not enabled_asset_list[i]: continue
+                                asset_DB_file = rom[AInfo.key]
+                                # >> Only search for asset in the PClone group if asset is missing from
+                                # >> current ROM.
+                                if not asset_DB_file:
+                                    # log_debug('Search  {0} in PClone set'.format(AInfo.name))
+                                    for set_rom_id in pclone_set_id_list:
+                                        # ROMFile_t = FileName(roms[set_rom_id]['filename'])
+                                        # log_debug('PClone group ROM "{0}" (ID) {1})'.format(ROMFile_t.getBase(), set_rom_id))
+                                        asset_DB_file_t = roms[set_rom_id][AInfo.key]
+                                        if asset_DB_file_t:
+                                            rom[AInfo.key] = asset_DB_file_t
+                                            log_debug('Found {0:<9} "{1}"'.format(AInfo.name, asset_DB_file_t))
+                                            # >> Stop as soon as one asset is found in the group.
+                                            break
+                                    # >> The else statement is executed when the loop has exhausted iterating the list.
                                     else:
-                                        rom[AInfo.key] = ''
-                                        log_debug('Missing {0}'.format(AInfo.name))
-                        # >> Update progress dialog
-                        item_counter += 1
-                        pDialog.update((item_counter*100)/num_items)
-                    pDialog.update(100)
-                    pDialog.close()
+                                        log_debug('Miss  {0:<9}'.format(AInfo.name))
+                                else:
+                                    log_debug('Has   {0:<9}'.format(AInfo.name))
+                            # >> Update progress dialog
+                            item_counter += 1
+                            pDialog.update((item_counter*100)/num_items)
+                        pDialog.update(100)
+                        pDialog.close()
 
                     # --- If there is a No-Intro XML configured audit ROMs ---
                     # >> Here only assets s_* are changed. I think it is not necessary to audit ROMs again.
