@@ -3555,7 +3555,7 @@ class Main:
             return
 
         # --- Load parent/clone index ---
-        index_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_index'
+        index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
         index_file_path = ROMS_DIR.join(index_base_noext + '.json')
         if not index_file_path.exists():
             kodi_notify('Parent list JSON not found.')
@@ -3663,7 +3663,7 @@ class Main:
                 return
 
             # --- Load parent/clone index ---
-            index_base_noext = selectedLauncher['roms_base_noext'] + '_PClone_index'
+            index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
             index_file_path = ROMS_DIR.join(index_base_noext + '.json')
             if not index_file_path.exists():
                 kodi_notify('PClone index JSON not found.')
