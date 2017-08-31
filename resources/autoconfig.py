@@ -78,14 +78,15 @@ def autoconfig_export_all(categories, launchers, export_FN):
             return
         log_verb('autoconfig_export_all() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
 
-        # >> WORKAROUND Take titles path and remove trailing subdirectory.
-        path_titles = launcher['path_title']
-        (head, tail) = os.path.split(path_titles)
-        path_assets = head
-        log_verb('autoconfig_export_all() path_titles "{0}"'.format(path_titles))
-        log_verb('autoconfig_export_all() head        "{0}"'.format(head))
-        log_verb('autoconfig_export_all() tail        "{0}"'.format(tail))
-        log_verb('autoconfig_export_all() path_assets "{0}"'.format(path_assets))
+        # >> Check if all artwork paths share the same ROM_asset_path. Unless the user has
+        # >> customised the ROM artwork paths this should be the case.
+        # >> A) This function checks if all path_* share a common root directory. If so
+        # >>    this function returns that common directory as an Unicode string. In this
+        # >>    case AEL will write the tag <ROM_asset_path> only.
+        # >> B) If path_* do not share a common root directory this function returns '' and then
+        # >>    AEL writes all <path_*> tags in the XML file.
+        ROM_asset_path = assets_get_ROM_asset_path(launcher)
+        log_verb('autoconfig_export_all() ROM_asset_path "{0}"'.format(ROM_asset_path))
 
         # >> Export Launcher
         str_list.append('<launcher>\n')
@@ -105,7 +106,21 @@ def autoconfig_export_all(categories, launchers, export_FN):
             str_list.append(XML_text('args_extra', ''))
         str_list.append(XML_text('ROM_path', launcher['rompath']))
         str_list.append(XML_text('ROM_ext', launcher['romext']))
-        str_list.append(XML_text('ROM_asset_path', launcher['ROM_asset_path']))
+        if ROM_asset_path:
+            str_list.append(XML_text('ROM_asset_path', ROM_asset_path))
+        else:
+            str_list.append(XML_text('path_title', launcher['path_title']))
+            str_list.append(XML_text('path_snap', launcher['path_snap']))
+            str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
+            str_list.append(XML_text('path_boxback', launcher['path_boxback']))
+            str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
+            str_list.append(XML_text('path_fanart', launcher['path_fanart']))
+            str_list.append(XML_text('path_banner', launcher['path_banner']))
+            str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
+            str_list.append(XML_text('path_flyer', launcher['path_flyer']))
+            str_list.append(XML_text('path_map', launcher['path_map']))
+            str_list.append(XML_text('path_manual', launcher['path_manual']))
+            str_list.append(XML_text('path_trailer', launcher['path_trailer']))
         str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
         str_list.append(XML_text('s_icon', launcher['s_icon']))
         str_list.append(XML_text('s_fanart', launcher['s_fanart']))

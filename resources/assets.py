@@ -520,3 +520,23 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
             log_verb('assets_search_local_assets() Missing  {0:<9}'.format(AInfo.name))
 
     return local_asset_list
+
+#
+# A) This function checks if all path_* share a common root directory. If so
+#    this function returns that common directory as an Unicode string.
+# B) If path_* do not share a common root directory this function returns ''.
+#
+def assets_get_ROM_asset_path(launcher):
+    ROM_asset_path = ''
+    duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
+    AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
+    path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
+    log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
+    log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
+    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+        AInfo = assets_get_info_scheme(asset_kind)
+        current_path_FN = FileName(launcher[AInfo.path_key])
+        if current_path_FN.getDir() == path_first_asset_FN.getDir():
+            duplicated_bool_list[i] = True
+
+    return path_first_asset_FN.getDir() if all(duplicated_bool_list) else ''

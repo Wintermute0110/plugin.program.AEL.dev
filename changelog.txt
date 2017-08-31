@@ -124,6 +124,10 @@ FIX      In order for skin shortcuts and widgets to work OK, addon concurrency m
 FIX      Fix scraper-related crash in the ROM scanner.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628382#pid2628382
 
+WIP      When scraper downloads an image the parents JSON must be also updated. In general, every
+         time a ROM is modified in the main database the Parents JSON must be updated to keep
+         both DBs synchronised!
+
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]
 
