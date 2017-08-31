@@ -1690,15 +1690,26 @@ class Main:
                         pDialog.update(100)
                         pDialog.close()
 
-                    # --- If there is a No-Intro XML configured audit ROMs ---
+                    # --- Update assets on _parents.json ---
                     # >> Here only assets s_* are changed. I think it is not necessary to audit ROMs again.
-                    # if launcher['nointro_xml_file']:
-                    #     log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
-                    #     nointro_xml_FN = FileName(launcher['nointro_xml_file'])
-                    #     if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
-                    #         self.launchers[launcherID]['nointro_xml_file'] = ''
-                    #         self.launchers[launcherID]['pclone_launcher'] = False
-                    #         kodi_dialog_OK('Error auditing ROMs. XML DAT file unset.')
+                    if launcher['nointro_xml_file']:
+                        log_verb('Updating artwork on parent JSON database.')
+                        parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
+                        parent_roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
+                        for parent_rom_id in parent_roms:
+                            parent_roms[parent_rom_id]['s_banner']    = roms[parent_rom_id]['s_banner']
+                            parent_roms[parent_rom_id]['s_boxback']   = roms[parent_rom_id]['s_boxback']
+                            parent_roms[parent_rom_id]['s_boxfront']  = roms[parent_rom_id]['s_boxfront']
+                            parent_roms[parent_rom_id]['s_cartridge'] = roms[parent_rom_id]['s_cartridge']
+                            parent_roms[parent_rom_id]['s_clearlogo'] = roms[parent_rom_id]['s_clearlogo']
+                            parent_roms[parent_rom_id]['s_fanart']    = roms[parent_rom_id]['s_fanart']
+                            parent_roms[parent_rom_id]['s_flyer']     = roms[parent_rom_id]['s_flyer']
+                            parent_roms[parent_rom_id]['s_manual']    = roms[parent_rom_id]['s_manual']
+                            parent_roms[parent_rom_id]['s_map']       = roms[parent_rom_id]['s_map']
+                            parent_roms[parent_rom_id]['s_snap']      = roms[parent_rom_id]['s_snap']
+                            parent_roms[parent_rom_id]['s_title']     = roms[parent_rom_id]['s_title']
+                            parent_roms[parent_rom_id]['s_trailer']   = roms[parent_rom_id]['s_trailer']
+                        fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
 
                     # ~~~ Save ROMs XML file ~~~
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
