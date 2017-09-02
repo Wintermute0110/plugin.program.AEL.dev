@@ -57,7 +57,7 @@ ROM_ASSET_LIST = [
 
 # --- Plugin will search these file extensions for assets ---
 # >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
-IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'jpeg', 'bmp']
+IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'bmp']
 MANUAL_EXTENSIONS  = ['pdf']
 TRAILER_EXTENSIONS = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
 

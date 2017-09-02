@@ -1607,6 +1607,20 @@ class Main:
                             AInfo = assets_get_info_scheme(asset)
                             # log_debug('Search  {0}'.format(AInfo.name))
                             if not enabled_asset_list[i]: continue
+                            # >> Only look for local asset if current file do not exists. This avoid
+                            # >> clearing user-customised assets. Also, first check if the field
+                            # >> is defined (which is very quick) to avoid an extra filesystem 
+                            # >> exist check() for missing images.
+                            if rom[AInfo.key]:
+                                # >> However, if the artwork is a substitution from the PClone group
+                                # >> and the user updated the artwork collection for this ROM the 
+                                # >> new image will not be picked with the current implementation ...
+                                # >> How to differentiate substituted PClone artwork from user
+                                # >> manually customised artwork???
+                                current_asset_FN = FileName(rom[AInfo.key])
+                                if current_asset_FN.exists():
+                                    log_debug('Local {0:<9} "{1}"'.format(AInfo.name, current_asset_FN.getPath()))
+                                    continue
                             asset_path = FileName(launcher[AInfo.path_key])
                             local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
                             if local_asset:
@@ -1643,7 +1657,7 @@ class Main:
                             rom_basename_noext = ROMFile.getBase_noext()
                             log_verb('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
 
-                            # --- Make PClone group list in case we need it later ---
+                            # --- Make a PClone group list for this ROM ---
                             if rom_id in roms_pclone_index:
                                 parent_id = rom_id
                                 num_clones = len(roms_pclone_index[rom_id])
@@ -1666,8 +1680,8 @@ class Main:
                                 # log_debug('Search  {0}'.format(AInfo.name))
                                 if not enabled_asset_list[i]: continue
                                 asset_DB_file = rom[AInfo.key]
-                                # >> Only search for asset in the PClone group if asset is missing from
-                                # >> current ROM.
+                                # >> Only search for asset in the PClone group if asset is missing
+                                # >> from current ROM.
                                 if not asset_DB_file:
                                     # log_debug('Search  {0} in PClone set'.format(AInfo.name))
                                     for set_rom_id in pclone_set_id_list:
@@ -8832,7 +8846,7 @@ class Main:
                log_debug('_gui_edit_asset() Selected current image "{0}"'.format(current_asset_path.getPath()))
                return False
             else:
-                log_debug('_gui_edit_asset() Downloading selected image')
+                log_debug('_gui_edit_asset() Downloading selected image ...')
                 # >> Resolve asset URL
                 kodi_busydialog_ON()
                 image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
