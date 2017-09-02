@@ -1615,8 +1615,12 @@ class Main:
                                 # >> However, if the artwork is a substitution from the PClone group
                                 # >> and the user updated the artwork collection for this ROM the 
                                 # >> new image will not be picked with the current implementation ...
+                                #
                                 # >> How to differentiate substituted PClone artwork from user
                                 # >> manually customised artwork???
+                                # >> If directory is different it is definitely customised.
+                                # >> If directory is the same and the basename is from a ROM in the
+                                # >> PClone group it is very likely it is substituted.
                                 current_asset_FN = FileName(rom[AInfo.key])
                                 if current_asset_FN.exists():
                                     log_debug('Local {0:<9} "{1}"'.format(AInfo.name, current_asset_FN.getPath()))
@@ -6121,17 +6125,17 @@ class Main:
             # --- Read report file ---
             try:
                 if selected_value == 2:
-                    window_title = 'Launcher {0} Statistics Report'.format(launcher['m_name'])
+                    window_title = 'Launcher "{0}" Statistics Report'.format(launcher['m_name'])
                     file = open(report_stats_FN.getPath(), 'r')
                     info_text = file.read()
                     file.close()
                 elif selected_value == 3:
-                    window_title = 'Launcher {0} Metadata Report'.format(launcher['m_name'])
+                    window_title = 'Launcher "{0}" Metadata Report'.format(launcher['m_name'])
                     file = open(report_meta_FN.getPath(), 'r')
                     info_text = file.read()
                     file.close()
                 elif selected_value == 4:
-                    window_title = 'Launcher {0} Asset Report'.format(launcher['m_name'])
+                    window_title = 'Launcher "{0}" Asset Report'.format(launcher['m_name'])
                     file = open(report_assets_FN.getPath(), 'r')
                     info_text = file.read()
                     file.close()
@@ -7242,8 +7246,6 @@ class Main:
         report_file_name = REPORTS_DIR.join(roms_base_noext + '.txt')
         log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
 
-        # >> Progress dialog
-        
         # >> Step 1: Build report data
         num_roms = len(roms)
         missing_m_year = missing_m_genre  = missing_m_developer = missing_m_nplayers = 0
@@ -7252,13 +7254,20 @@ class Main:
         missing_s_clearlogo = missing_s_boxfront = missing_s_boxback = missing_s_cartridge = 0
         missing_s_flyer     = missing_s_map      = missing_s_manual  = missing_s_trailer   = 0
         audit_none = audit_have = audit_miss = audit_unknown = 0
+        audit_num_parents = audit_num_clones = 0
         check_list = []
+        path_title_P = FileName(launcher['path_title']).getPath()
+        path_snap_P = FileName(launcher['path_snap']).getPath()
+        path_boxfront_P = FileName(launcher['path_boxfront']).getPath()
+        path_boxback_P = FileName(launcher['path_boxback']).getPath()
+        path_cartridge_P = FileName(launcher['path_cartridge']).getPath()
         for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             rom = roms[rom_id]
             rom_info = {}
             rom_info['m_name'] = rom['m_name']
             rom_info['m_nointro_status'] = rom['nointro_status']
-            # >> Metadata
+            rom_info['m_pclone_status'] = rom['pclone_status']
+            # --- Metadata ---
             if rom['m_year']:                 rom_info['m_year']      = 'YES'
             else:                             rom_info['m_year']      = '---'; missing_m_year += 1
             if rom['m_genre']:                rom_info['m_genre']     = 'YES'
@@ -7273,23 +7282,49 @@ class Main:
             else:                             rom_info['m_rating']    = '---'; missing_m_rating += 1
             if rom['m_plot']:                 rom_info['m_plot']      = 'YES'
             else:                             rom_info['m_plot']      = '---'; missing_m_plot += 1
-            # >> Assets
-            if rom['s_title']:     rom_info['s_title']     = 'Y'
-            else:                  rom_info['s_title']     = '-'; missing_s_title += 1
-            if rom['s_snap']:      rom_info['s_snap']      = 'Y'
-            else:                  rom_info['s_snap']      = '-'; missing_s_snap += 1
+            # --- Assets ---
+            # >> Y means the asset exists and has the Base_noext of the ROM.
+            # >> S means the asset exists and is a PClone group substitution.
+            # >> C means the asset exists and is a user customised asset.
+            # >> X means the asset exists, getDir() is same but Base_noext() is different
+            # path_* and art getDir() different ==> Custom asset (user customised it) C
+            # path_* and art getDir() equal and Base_noext() equal ==> Own artwork Y
+            # path_* and art getDir() equal and Base_noext() different ==> Maybe S or maybe C => O
+            # To differentiate between S and C a test in the PClone group must be done.
+            #
+            romfile_FN = FileName(rom['filename'])
+            romfile_getBase_noext = romfile_FN.getBase_noext()
+            if rom['s_title']:
+                rom_info['s_title'] = self._aux_get_info(FileName(rom['s_title']), path_title_P, romfile_getBase_noext)
+            else:
+                rom_info['s_title'] = '-'
+                missing_s_title += 1
+            if rom['s_snap']:
+                rom_info['s_snap'] = self._aux_get_info(FileName(rom['s_snap']), path_snap_P, romfile_getBase_noext)
+            else:
+                rom_info['s_snap'] = '-'
+                missing_s_snap += 1
+            if rom['s_boxfront']:
+                rom_info['s_boxfront'] = self._aux_get_info(FileName(rom['s_boxfront']), path_boxfront_P, romfile_getBase_noext)
+            else:
+                rom_info['s_boxfront'] = '-'
+                missing_s_boxfront += 1
+            if rom['s_boxback']:
+                rom_info['s_boxback'] = self._aux_get_info(FileName(rom['s_boxback']), path_boxback_P, romfile_getBase_noext)
+            else:
+                rom_info['s_boxback'] = '-'
+                missing_s_boxback += 1
+            if rom['s_cartridge']:
+                rom_info['s_cartridge'] = self._aux_get_info(FileName(rom['s_cartridge']), path_cartridge_P, romfile_getBase_noext)
+            else:                  
+                rom_info['s_cartridge'] = '-'
+                missing_s_cartridge += 1
             if rom['s_fanart']:    rom_info['s_fanart']    = 'Y'
             else:                  rom_info['s_fanart']    = '-'; missing_s_fanart += 1
             if rom['s_banner']:    rom_info['s_banner']    = 'Y'
             else:                  rom_info['s_banner']    = '-'; missing_s_banner += 1
             if rom['s_clearlogo']: rom_info['s_clearlogo'] = 'Y'
             else:                  rom_info['s_clearlogo'] = '-'; missing_s_clearlogo += 1
-            if rom['s_boxfront']:  rom_info['s_boxfront']  = 'Y'
-            else:                  rom_info['s_boxfront']  = '-'; missing_s_boxfront += 1
-            if rom['s_boxback']:   rom_info['s_boxback']   = 'Y'
-            else:                  rom_info['s_boxback']   = '-'; missing_s_boxback += 1
-            if rom['s_cartridge']: rom_info['s_cartridge'] = 'Y'
-            else:                  rom_info['s_cartridge'] = '-'; missing_s_cartridge += 1
             if rom['s_flyer']:     rom_info['s_flyer']     = 'Y'
             else:                  rom_info['s_flyer']     = '-'; missing_s_flyer += 1
             if rom['s_map']:       rom_info['s_map']       = 'Y'
@@ -7298,7 +7333,7 @@ class Main:
             else:                  rom_info['s_manual']    = '-'; missing_s_manual += 1
             if rom['s_trailer']:   rom_info['s_trailer']   = 'Y'
             else:                  rom_info['s_trailer']   = '-'; missing_s_trailer += 1
-            # >> ROM audit
+            # --- ROM audit ---
             if   rom['nointro_status'] == NOINTRO_STATUS_NONE:    audit_none += 1
             elif rom['nointro_status'] == NOINTRO_STATUS_HAVE:    audit_have += 1
             elif rom['nointro_status'] == NOINTRO_STATUS_MISS:    audit_miss += 1
@@ -7307,54 +7342,107 @@ class Main:
                 log_error('Unknown audit status {0}.'.format(rom['nointro_status']))
                 kodi_dialog_OK('Unknown audit status {0}. This is a bug, please report it.'.format(rom['nointro_status']))
                 return
+            if   rom['pclone_status'] == PCLONE_STATUS_PARENT: audit_num_parents += 1
+            elif rom['pclone_status'] == PCLONE_STATUS_CLONE:  audit_num_clones += 1
+            elif rom['pclone_status'] == PCLONE_STATUS_NONE:   pass
+            else:
+                log_error('Unknown pclone status {0}.'.format(rom['pclone_status']))
+                kodi_dialog_OK('Unknown pclone status {0}. This is a bug, please report it.'.format(rom['pclone_status']))
+                return
+
             # >> Add to list
             check_list.append(rom_info)
 
-        # >> Step 2: Statistics report
-        str_list = []
-        str_list.append('Launcher name  {0}\n'.format(launcher['m_name']))
-        str_list.append('Number of ROMs {0}\n'.format(num_roms))
+        # >> Math
+        have_m_year = num_roms - missing_m_year
+        have_m_genre = num_roms - missing_m_genre
+        have_m_developer = num_roms - missing_m_developer
+        have_m_nplayers = num_roms - missing_m_nplayers
+        have_m_esrb = num_roms - missing_m_esrb
+        have_m_rating = num_roms - missing_m_rating
+        have_m_plot = num_roms - missing_m_plot
+
+        miss_s_year_pcent = float(missing_m_year*100) / num_roms
+        miss_s_genre_pcent = float(missing_m_genre*100) / num_roms
+        miss_s_developer_pcent = float(missing_m_developer*100) / num_roms
+        miss_s_nplayers_pcent = float(missing_m_nplayers*100) / num_roms
+        miss_s_esrb_pcent = float(missing_m_esrb*100) / num_roms
+        miss_s_rating_pcent = float(missing_m_rating*100) / num_roms
+        miss_s_plot_pcent = float(missing_m_plot*100) / num_roms
+
+        have_s_title = num_roms - missing_s_title
+        have_s_snap = num_roms - missing_s_snap
+        have_s_boxfront = num_roms - missing_s_boxfront
+        have_s_boxback = num_roms - missing_s_boxback
+        have_s_cartridge = num_roms - missing_s_cartridge
+        have_s_fanart = num_roms - missing_s_fanart
+        have_s_banner = num_roms - missing_s_banner
+        have_s_clearlogo = num_roms - missing_s_clearlogo
+        have_s_flyer = num_roms - missing_s_flyer
+        have_s_map = num_roms - missing_s_map
+        have_s_manual = num_roms - missing_s_manual
+        have_s_trailer = num_roms - missing_s_trailer
+
+        miss_s_title_pcent = float(missing_s_title*100) / num_roms
+        miss_s_snap_pcent = float(missing_s_snap*100) / num_roms
+        miss_s_boxfront_pcent = float(missing_s_boxfront*100) / num_roms
+        miss_s_boxback_pcent = float(missing_s_boxback*100) / num_roms
+        miss_s_cartridge_pcent = float(missing_s_cartridge*100) / num_roms
+        miss_s_fanart_pcent = float(missing_s_fanart*100) / num_roms
+        miss_s_banner_pcent = float(missing_s_banner*100) / num_roms
+        miss_s_clearlogo_pcent = float(missing_s_clearlogo*100) / num_roms
+        miss_s_flyer_pcent = float(missing_s_flyer*100) / num_roms
+        miss_s_map_pcent = float(missing_s_map*100) / num_roms
+        miss_s_manual_pcent = float(missing_s_manual*100) / num_roms
+        miss_s_trailer_pcent = float(missing_s_trailer*100) / num_roms
+
+        # --- Step 2: Statistics report ---
+        # >> Launcher name printed on window title
         # >> Audit statistics
-        str_list.append('\n<No-Intro Audit Statistics>\n')
-        str_list.append('Have ROMs           {0:5d}\n'.format(audit_have))
-        str_list.append('Missing ROMs        {0:5d}\n'.format(audit_miss))
-        str_list.append('Unknown ROMs        {0:5d}\n'.format(audit_unknown))
-        str_list.append('Not checked ROMs    {0:5d}\n'.format(audit_none))
+        str_list = []
+        str_list.append('<No-Intro Audit Statistics>\n')
+        str_list.append('Number of ROMs   {0:5d}\n'.format(num_roms))
+        str_list.append('Not checked ROMs {0:5d}\n'.format(audit_none))
+        str_list.append('Have ROMs        {0:5d}\n'.format(audit_have))
+        str_list.append('Missing ROMs     {0:5d}\n'.format(audit_miss))
+        str_list.append('Unknown ROMs     {0:5d}\n'.format(audit_unknown))
+        str_list.append('Parent           {0:5d}\n'.format(audit_num_parents))
+        str_list.append('Clones           {0:5d}\n'.format(audit_num_clones))
         # >> Metadata
         str_list.append('\n<Metadata statistics>\n')
-        str_list.append('ROMs with Year      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_year, missing_m_year))
-        str_list.append('ROMs with Genre     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_genre, missing_m_genre))
-        str_list.append('ROMs with Developer {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_developer, missing_m_developer))
-        str_list.append('ROMs with NPlayers  {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_nplayers, missing_m_nplayers))
-        str_list.append('ROMs with ESRB      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_esrb, missing_m_esrb))
-        str_list.append('ROMs with Rating    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_rating, missing_m_rating))
-        str_list.append('ROMs with Plot      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_m_plot, missing_m_plot))
+        str_list.append('Year      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_year, missing_m_year, miss_s_year_pcent))
+        str_list.append('Genre     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_genre, missing_m_genre, miss_s_genre_pcent))
+        str_list.append('Developer {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_developer, missing_m_developer, miss_s_developer_pcent))
+        str_list.append('NPlayers  {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_nplayers, missing_m_nplayers, miss_s_nplayers_pcent))
+        str_list.append('ESRB      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_esrb, missing_m_esrb, miss_s_esrb_pcent))
+        str_list.append('Rating    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_rating, missing_m_rating, miss_s_rating_pcent))
+        str_list.append('Plot      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_plot, missing_m_plot, miss_s_plot_pcent))
         # >> Assets statistics
         str_list.append('\n<Asset statistics>\n')
-        str_list.append('ROMs with Title     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_title, missing_s_title))
-        str_list.append('ROMS with Snap      {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_snap, missing_s_snap))        
-        str_list.append('ROMs with Fanart    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_fanart, missing_s_fanart))        
-        str_list.append('ROMS with Banner    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_banner, missing_s_banner))        
-        str_list.append('ROMs with Clearlogo {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_clearlogo, missing_s_clearlogo))
-        str_list.append('ROMS with Boxfront  {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxfront, missing_s_boxfront))
-        str_list.append('ROMs with Boxback   {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_boxback, missing_s_boxback))
-        str_list.append('ROMS with Cartridge {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_cartridge, missing_s_cartridge))
-        str_list.append('ROMs with Flyer     {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_flyer, missing_s_flyer))
-        str_list.append('ROMS with Map       {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_map, missing_s_map))
-        str_list.append('ROMs with Manual    {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_manual, missing_s_manual))
-        str_list.append('ROMS with Trailer   {0:5d} ({1:5d} missing)\n'.format(num_roms - missing_s_trailer, missing_s_trailer))
+        str_list.append('Title     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_title, missing_s_title, miss_s_title_pcent))
+        str_list.append('Snap      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_snap, missing_s_snap, miss_s_snap_pcent))
+        str_list.append('Boxfront  {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_boxfront, missing_s_boxfront, miss_s_boxfront_pcent))
+        str_list.append('Boxback   {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_boxback, missing_s_boxback, miss_s_boxback_pcent))
+        str_list.append('Cartridge {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_cartridge, missing_s_cartridge, miss_s_cartridge_pcent))
+        str_list.append('Fanart    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_fanart, missing_s_fanart, miss_s_fanart_pcent))
+        str_list.append('Banner    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_banner, missing_s_banner, miss_s_banner_pcent))
+        str_list.append('Clearlogo {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_clearlogo, missing_s_clearlogo, miss_s_clearlogo_pcent))
+        str_list.append('Flyer     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_flyer, missing_s_flyer, miss_s_flyer_pcent))
+        str_list.append('Map       {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_map, missing_s_map, miss_s_map_pcent))
+        str_list.append('Manual    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_manual, missing_s_manual, miss_s_manual_pcent))
+        str_list.append('Trailer   {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_trailer, missing_s_trailer, miss_s_trailer_pcent))
 
         # >> Step 3: Metadata report
         str_meta_list = []
-        str_meta_list.append('{0} Year Genre Developer Rating Plot Audit\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_meta_list.append('{0}\n'.format('-' * 89))
+        str_meta_list.append('{0} Year Genre Developer Rating Plot Audit    PClone\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
+        str_meta_list.append('{0}\n'.format('-' * 99))
         for m in check_list:
             # >> Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_meta_list.append('{0} {1}  {2}   {3}       {4}    {5}  {6}\n'.format(
+            str_meta_list.append('{0} {1}  {2}   {3}       {4}    {5}  {6:<7}  {7}\n'.format(
                             name_str.ljust(ROM_NAME_LENGHT),
                             m['m_year'], m['m_genre'], m['m_developer'],
-                            m['m_rating'], m['m_plot'], m['m_nointro_status']))
+                            m['m_rating'], m['m_plot'], m['m_nointro_status'], m['m_pclone_status']))
 
         # >> Step 4: Asset report
         str_asset_list = []
@@ -7394,6 +7482,20 @@ class Main:
         except IOError:
             log_error('Cannot write categories.xml file (IOError)')
             kodi_notify_warn('Cannot write Launcher Report (IOError)')
+
+        
+    def _aux_get_info(self, asset_FN, path_asset_P, romfile_getBase_noext):
+        # log_debug('title_FN.getDir() "{0}"'.format(title_FN.getDir()))
+        # log_debug('path_title_P      "{0}"'.format(path_title_P))
+        if path_asset_P != asset_FN.getDir():
+            ret_str = 'C'
+        else:
+            if romfile_getBase_noext == asset_FN.getBase_noext():
+                ret_str = 'Y'
+            else:
+                ret_str = 'O'
+
+        return ret_str
 
     #
     # Deletes missing ROMs
