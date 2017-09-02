@@ -50,6 +50,9 @@ WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths
 WIP      Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
+WIP      Disable LNK $rom$ launcher with global setting.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2640857#pid2640857
+
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
 
