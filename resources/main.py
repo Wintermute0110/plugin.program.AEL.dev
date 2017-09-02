@@ -28,6 +28,10 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 from constants import *
 from utils import *
 from utils_kodi import *
+from utils_kodi_cache import *
+from scrap import *
+from assets import *
+from rom_audit import *
 from disk_IO import *
 from net_IO import *
 from assets import *
@@ -103,6 +107,7 @@ AEL_LOCK_VALUE    = 'True'
 
 class SingleInstance:
     def __enter__(self):
+        return True
         # --- If property is True then another instance of AEL is running ---
         if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
             log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
@@ -3888,7 +3893,11 @@ class Main:
             elif nstat == NOINTRO_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
             elif nstat == NOINTRO_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
             # --- Mark clone ROMs ---
-            pclone_status = rom['pclone_status']
+            if 'pclone_status' in rom:
+                pclone_status = rom['pclone_status']
+            else:
+                pclone_status = ''
+
             if pclone_status == PCLONE_STATUS_CLONE: rom_name += ' [COLOR orange][Clo][/COLOR]'
             if   pclone_status == PCLONE_STATUS_PARENT: AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
             elif pclone_status == PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
@@ -4239,9 +4248,9 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+        xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path))
+        log_debug('Loading XML {0}'.format(xml_path.getOriginalPath()))
         games = audit_load_OfflineScraper_XML(xml_path)
 
         # --- Display offline scraper ROMs ---
@@ -4274,9 +4283,9 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+        xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path))
+        log_debug('Loading XML {0}'.format(xml_path.getOriginalPath()))
         games = audit_load_OfflineScraper_XML(xml_path)
 
         # --- Display offline scraper ROMs ---
@@ -5260,8 +5269,8 @@ class Main:
                 fileData = base64.b64decode(asset_base64_data)
                 log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
                 log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
-                with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
-                    file.write(fileData)
+
+                new_asset_FN.writeAll(fileData, 'wb') # b is important -> binary
                 statinfo = new_asset_FN.stat()
                 file_size = statinfo.st_size
                 if asset_filesize != file_size:
@@ -5301,8 +5310,7 @@ class Main:
                     fileData = base64.b64decode(asset_base64_data)
                     log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
                     log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
-                    with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
-                        file.write(fileData)
+                    new_asset_FN.writeAll(fileData, 'wb')
                     statinfo = new_asset_FN.stat()
                     file_size = statinfo.st_size
                     if asset_filesize != file_size:
@@ -6054,8 +6062,7 @@ class Main:
                 kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
                 return
             info_text = ''
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
-                info_text = myfile.read()
+            info_text = LAUNCH_LOG_FILE_PATH.readAll()
 
             # --- Show information window ---
             window_title = 'Launcher last execution stdout'
@@ -6097,19 +6104,13 @@ class Main:
             try:
                 if selected_value == 2:
                     window_title = 'Launcher {0} Statistics Report'.format(launcher['m_name'])
-                    file = open(report_stats_FN.getPath(), 'r')
-                    info_text = file.read()
-                    file.close()
+                    info_text = report_stats_FN.readAll()
                 elif selected_value == 3:
                     window_title = 'Launcher {0} Metadata Report'.format(launcher['m_name'])
-                    file = open(report_meta_FN.getPath(), 'r')
-                    info_text = file.read()
-                    file.close()
+                    info_text = report_meta_FN.readAll()
                 elif selected_value == 4:
                     window_title = 'Launcher {0} Asset Report'.format(launcher['m_name'])
-                    file = open(report_assets_FN.getPath(), 'r')
-                    info_text = file.read()
-                    file.close()
+                    info_text = report_assets_FN.readAll()
             except IOError:
                 log_error('_command_view_menu() (IOError) Exception reading report TXT file')
                 window_title = 'Error'
@@ -6329,10 +6330,9 @@ class Main:
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
         if scraper == 'AEL':
-            xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+            xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
             # log_debug('xml_file = {0}'.format(xml_file))
-            log_debug('Loading AEL XML {0}'.format(xml_path))
+            log_debug('Loading AEL XML {0}'.format(xml_path.getOriginalPath()))
             games = audit_load_OfflineScraper_XML(xml_path)
             game = games[game_name]
 
@@ -6354,9 +6354,9 @@ class Main:
             info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(game['cloneof'])
         elif scraper == 'LaunchBox':
             xml_file = platform_AEL_to_LB_XML[platform]
-            xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+            xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
             # log_debug('xml_file = {0}'.format(xml_file))
-            log_debug('Loading LaunchBox XML {0}'.format(xml_path))
+            log_debug('Loading LaunchBox XML {0}'.format(xml_path.getOriginalPath()))
             games = audit_load_OfflineScraper_XML(xml_path)
             game = games[game_name]
             # log_debug(unicode(game))
@@ -8255,7 +8255,7 @@ class Main:
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
         log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
-        log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext))
+        log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext.getPath()))
 
         # --- If scraper does not support particular asset return inmediately ---
         if not scraper_obj.supports_asset(asset_kind):
@@ -8316,7 +8316,8 @@ class Main:
             self.pDialog.close()
 
             # If there is a local image add it to the list and show it to the user
-            if os.path.isfile(local_asset_path):
+            local_asset_obj = FileName(local_asset_path)
+            if local_asset_obj.exists():
                 image_list.insert(0, {'name' : 'Current local image', 
                                       'id'   : local_asset_path,
                                       'URL'  : local_asset_path})
@@ -8350,9 +8351,9 @@ class Main:
         # If user chose the local image don't download anything
         if image_url != local_asset_path:
             # ~~~ Download image ~~~
-            image_path = asset_path_noext.append(image_ext).getPath()
+            image_path = asset_path_noext.append(image_ext)
             log_verb('Downloading URL  "{0}"'.format(image_url))
-            log_verb('Into local file  "{0}"'.format(image_path))
+            log_verb('Into local file  "{0}"'.format(image_path.getPath()))
             try:
                 net_download_img(image_url, image_path)
             except socket.timeout:
@@ -8363,7 +8364,7 @@ class Main:
             kodi_update_image_cache(image_path)
 
             # --- Return value is downloaded image ---
-            ret_asset_path = image_path
+            ret_asset_path = image_path.getOriginalPath()
         else:
             log_debug('{0} scraper: user chose local image "{1}"'.format(A.name, image_url))
             ret_asset_path = image_url
@@ -8543,6 +8544,7 @@ class Main:
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
             log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
+           
             if not asset_directory.isdir():
                 kodi_dialog_OK('Directory to store Category artwork not configured or not found. '
                                'Configure it before you can edit artwork.')
@@ -8671,7 +8673,7 @@ class Main:
             log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, AInfo.name, image_file_path.getOriginalPath()))
 
             # --- Update Kodi image cache ---
-            kodi_update_image_cache(image_file_path.getOriginalPath())
+            kodi_update_image_cache(image_file_path)
 
         # --- Import an image ---
         # >> Copy and rename a local image into asset directory
@@ -8717,7 +8719,7 @@ class Main:
             log_info('_gui_edit_asset() Selected {0} {1} "{2}"'.format(object_name, AInfo.name, dest_path_FileName.getOriginalPath()))
 
             # --- Update Kodi image cache ---
-            kodi_update_image_cache(dest_path_FileName.getOriginalPath())
+            kodi_update_image_cache(dest_path_FileName)
 
         # --- Unset asset ---
         elif type2 == 2:
@@ -8826,9 +8828,9 @@ class Main:
                     return False
 
                 # ~~~ Download image ~~~
-                image_local_path = asset_path_noext.append(image_ext).getPath()
+                image_local_path = asset_path_noext.append(image_ext)
                 log_verb('Downloading URL "{0}"'.format(image_url))
-                log_verb('Into local file "{0}"'.format(image_local_path))
+                log_verb('Into local file "{0}"'.format(image_local_path.getPath()))
 
                 # >> Prevent race conditions
                 kodi_busydialog_ON()
@@ -8848,7 +8850,7 @@ class Main:
             # --- Edit using Python pass by assigment ---
             # >> If we reach this point is because an image was downloaded
             # >> Caller is responsible to save Categories/Launchers/ROMs
-            object_dic[AInfo.key] = image_local_path
+            object_dic[AInfo.key] = image_local_path.getOriginalPath()
 
         # >> If we reach this point, changes were made.
         # >> Categories/Launchers/ROMs must be saved, container must be refreshed.
@@ -8897,9 +8899,7 @@ class Main:
 
         # Import file
         log_debug('_gui_import_TXT_file() Importing description from "{0}"'.format(text_file.getOriginalPath()))
-        text_plot = open(text_file.getPath(), 'rt')
-        file_data = text_plot.read()
-        text_plot.close()
+        file_data = text_file.readAll()
 
         return file_data
 

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 # --- AEL modules ---
 from scrap import *
 from scrap_common import *
+from utils import *
 from disk_IO import *
 import rom_audit
 
@@ -77,7 +78,9 @@ class metadata_Offline(Scraper_Metadata):
             return
 
         # Load XML database and keep it in memory for subsequent calls
-        xml_path = os.path.join(self.addon_dir, xml_file)
+        #xml_path = os.path.join(self.addon_dir, xml_file)
+        xml_path = Path(self.addon_dir)
+        xml_path = xml_path.join(xml_file)
         log_debug('metadata_Offline::initialise_scraper Loading XML {0}'.format(xml_path))
         self.games = rom_audit.audit_load_OfflineScraper_XML(xml_path)
         if not self.games:
@@ -363,7 +366,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         return Scraper_ArcadeDB.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
-        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : ''}
+        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '', 'nplayers' : '', 'esrb' : '', 'plot': ''}
 
         # --- Get game page ---
         game_id_url = game['id'] 
@@ -376,7 +379,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         #
         # --- Title ---
         # <div class="table_caption">Name: </div> <div class="table_value"> <span class="dettaglio">Aliens (World set 1)</span>
-        fa_title = re.findall('<div class="table_caption">Name: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
+        fa_title = re.findall('<div id="game_description" class="invisibile">(.*?)</div>', page_data)
         if fa_title: gamedata['title'] = fa_title[0]
 
         # --- Genre/Category ---
@@ -387,11 +390,11 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         # --- Year ---
         # <div class="table_caption">Year: </div> <div class="table_value"> <span class="dettaglio">1990</span> <div id="inputid89"
         fa_year = re.findall('<div class="table_caption">Year: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
-        if fa_year: gamedata['year'] = fa_year[1]
+        if fa_year: gamedata['year'] = fa_year[0]
 
         # --- Studio ---
         # <div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">Konami</span> </div>
-        fa_studio = re.findall('<div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span> </div>', page_data)
+        fa_studio = re.findall('<div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
         if fa_studio: gamedata['studio'] = fa_studio[0]
         
         # --- Plot ---
