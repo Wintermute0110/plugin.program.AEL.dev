@@ -2937,8 +2937,16 @@ class Main:
             fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
-            # >> If launcher has a DAT then synchronise the list of parents
-            
+            # >> If launcher has a DAT then synchronise the edit ROM in the list of parents
+            if launcher['nointro_xml_file']:
+                log_verb('Updating ROM in Parents JSON')
+                parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
+                parent_roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
+                # >> Only edit if ROM is in parent list
+                if romID in parent_roms:
+                    log_verb('romID in Parent JSON. Updating ...')
+                    parent_roms[romID] = roms[romID]
+                fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
 
         # It seems that updating the container does more harm than good... specially when having many ROMs
         # By the way, what is the difference between Container.Refresh() and Container.Update()?
