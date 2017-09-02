@@ -8425,15 +8425,18 @@ class Main:
         kodi_busydialog_OFF()
         log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
-            kodi_notify_warn('Scraper found no matches')
+            kodi_notify_warn('Scraper found no game matches')
             return False
 
         # --- Display corresponding game list found so user choses ---
-        dialog = xbmcgui.Dialog()
         rom_name_list = []
         for game in results: rom_name_list.append(game['display_name'])
-        selectgame = dialog.select('Select game for ROM {0}'.format(rom_name), rom_name_list)
-        if selectgame < 0: return False
+        # >> If there is only one item in the list then don't show select dialog
+        if len(rom_name_list) == 1:
+            selectgame = 0
+        else:
+            selectgame = xbmcgui.Dialog().select('Select game for ROM {0}'.format(rom_name), rom_name_list)
+            if selectgame < 0: return False
         log_verb('_gui_scrap_rom_metadata() User chose game "{0}"'.format(rom_name_list[selectgame]))
 
         # --- Grab metadata for selected game ---
@@ -8497,12 +8500,13 @@ class Main:
             return False
 
         # Display corresponding game list found so user choses
-        dialog = xbmcgui.Dialog()
         rom_name_list = []
-        for game in results:
-            rom_name_list.append(game['display_name'])
-        selectgame = dialog.select('Select item for Launcher {0}'.format(launcher_name), rom_name_list)
-        if selectgame < 0: return False
+        for game in results: rom_name_list.append(game['display_name'])
+        if len(rom_name_list) == 1:
+            selectgame = 0
+        else:
+            selectgame = xbmcgui.Dialog().select('Select item for Launcher {0}'.format(launcher_name), rom_name_list)
+            if selectgame < 0: return False
 
         # --- Grab metadata for selected game ---
         # >> Prevent race conditions
@@ -8646,7 +8650,7 @@ class Main:
         # --- Show image editing options ---
         # >> Scrape only supported for ROMs (for the moment)
         dialog = xbmcgui.Dialog()
-        common_menu_list = ['Select local {0}'.format(AInfo.kind_str, AInfo.kind_str),
+        common_menu_list = ['Select local {0}'.format(AInfo.kind_str),
                             'Import local {0} (copy and rename)'.format(AInfo.kind_str),
                             'Unset artwork/asset',]
         if object_kind == KIND_ROM:
@@ -8789,7 +8793,8 @@ class Main:
             kodi_busydialog_OFF()
             log_verb('{0} scraper returned {1} images'.format(AInfo.name, len(image_list)))
             if not image_list:
-                kodi_dialog_OK('Scraper found no images for game "{0}".'.format(results[selectgame]['display_name']))
+                kodi_dialog_OK('Scraper found no {0} '.format(AInfo.name) + 
+                               'images for game "{0}".'.format(results[selectgame]['display_name']))
                 return False
 
             # --- Always do semi-automatic scraping when editing images ---
@@ -8829,7 +8834,9 @@ class Main:
             else:
                 log_debug('_gui_edit_asset() Downloading selected image')
                 # >> Resolve asset URL
+                kodi_busydialog_ON()
                 image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
+                kodi_busydialog_OFF()
                 log_debug('Resolved {0} URL "{1}"'.format(AInfo.name, image_url))
                 log_debug('URL extension "{0}"'.format(image_ext))
                 if not image_url or not image_ext:
@@ -8840,8 +8847,6 @@ class Main:
                 image_local_path = asset_path_noext.append(image_ext).getPath()
                 log_verb('Downloading URL "{0}"'.format(image_url))
                 log_verb('Into local file "{0}"'.format(image_local_path))
-
-                # >> Prevent race conditions
                 kodi_busydialog_ON()
                 try:
                     net_download_img(image_url, image_local_path)
