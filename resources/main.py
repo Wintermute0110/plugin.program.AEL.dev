@@ -2016,7 +2016,12 @@ class Main:
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
                     nointro_xml_FN = FileName(launcher['nointro_xml_file'])
                     if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
+                        pDialog = xbmcgui.DialogProgress()
+                        pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
+                        pDialog.update(25)
                         fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                        pDialog.update(100)
+                        pDialog.close()
                         kodi_notify('Have {0} / Miss {1} / Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
                     else:
                         # >> ERROR when auditing the ROMs. Unset nointro_xml_file
@@ -2952,19 +2957,28 @@ class Main:
             self.launchers[launcherID]['num_roms'] = len(roms)
             self.launchers[launcherID]['timestamp_launcher'] = _t = time.time()
             roms_base_noext = self.launchers[launcherID]['roms_base_noext']
+            pDialog = xbmcgui.DialogProgress()
+            pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
+            pDialog.update(25)
             fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+            pDialog.update(90)
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            pDialog.update(100)
 
             # >> If launcher has a DAT then synchronise the edit ROM in the list of parents
             if launcher['nointro_xml_file']:
                 log_verb('Updating ROM in Parents JSON')
                 parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
+                pDialog.update(25, 'Loading Parents JSON ...')
                 parent_roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
                 # >> Only edit if ROM is in parent list
                 if romID in parent_roms:
                     log_verb('romID in Parent JSON. Updating ...')
                     parent_roms[romID] = roms[romID]
+                pDialog.update(50, 'Saving Parents JSON ...')
                 fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
+                pDialog.update(100)
+            pDialog.close()
 
         # It seems that updating the container does more harm than good... specially when having many ROMs
         # By the way, what is the difference between Container.Refresh() and Container.Update()?
@@ -7736,7 +7750,6 @@ class Main:
             pDialog.update((item_counter*100)/num_items)
             if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
-        pDialog.close()
         launcher['num_roms']    = len(roms)
         launcher['num_parents'] = audit_parents
         launcher['num_clones']  = audit_clones
@@ -7746,11 +7759,12 @@ class Main:
 
         # --- Make a Parent only ROM list and save JSON ---
         pDialog.update(0, 'Building Parent/Clone index and Parent dictionary ...')
-        parent_roms             = fs_generate_parent_ROMs_dic(roms, roms_pclone_index)
+        parent_roms = fs_generate_parent_ROMs_dic(roms, roms_pclone_index)
         parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
         fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
+        pDialog.close()
 
         # --- Update launcher number of ROMs ---
         self.audit_have    = audit_have
