@@ -7586,7 +7586,7 @@ class Main:
     #    This fake ROM is added to roms_base_noext_parents.json database.
     #    This fake ROM is not present in the main JSON ROM database.
     # 
-    # Returns)
+    # Returns:
     #   True  -> ROM audit was OK
     #   False -> There was a problem with the audit.
     #
@@ -7711,18 +7711,23 @@ class Main:
         pDialog.update(100)
 
         # --- Make a Parent/Clone index and save JSON file ---
+        # >> Here we build a roms_pclone_index with info from the DAT file. 2 issues:
+        # >> A) Redump DATs do not have cloneof information.
+        # >> B) Also, it is at this point where a region custom parent may be chosen instead of
+        # >>    the default one.
         pDialog.update(0, 'Building Parent/Clone index ...')
         # >> audit_unknown_roms is an int of list = ['Parents', 'Clones']
         unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
         # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
         log_debug('unknown_ROMs_are_parents = {0}'.format(unknown_ROMs_are_parents))
-        roms_pclone_index     = fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+        roms_pclone_index = fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
         index_roms_base_noext = launcher['roms_base_noext'] + '_index_PClone'
         fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Make a Clone/Parent index ---
+        # >> This is made exclusively from the Parent/Clone index
         pDialog.update(0, 'Building Clone/Parent index ...')
         clone_parent_dic = {}
         for parent_id in roms_pclone_index:
@@ -7758,6 +7763,7 @@ class Main:
         launcher['num_unknown'] = audit_unknown
 
         # --- Make a Parent only ROM list and save JSON ---
+        # >> This is to speed up rendering of launchers in 1G1R display mode
         pDialog.update(0, 'Building Parent/Clone index and Parent dictionary ...')
         parent_roms = fs_generate_parent_ROMs_dic(roms, roms_pclone_index)
         parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
