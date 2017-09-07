@@ -166,6 +166,24 @@ class Main:
         # log_debug('CURRENT_ADDON_DIR OP "{0}"'.format(CURRENT_ADDON_DIR.getOriginalPath()))
         # log_debug('CURRENT_ADDON_DIR  P "{0}"'.format(CURRENT_ADDON_DIR.getPath()))
 
+        # --- Get DEBUG information for the log --
+        if self.settings['log_level'] == LOG_DEBUG:
+            # >> Skin in use
+            c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
+                     ' "method" : "Settings.GetSettingValue",'
+                     ' "params" : {"setting":"lookandfeel.skin"}}')
+            response = xbmc.executeJSONRPC(c_str)
+            log_debug('JSON      ''{0}'''.format(c_str))
+            log_debug('Response  ''{0}'''.format(response))
+
+            # --- Save all settings into a file dor DEBUG ---
+            # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
+            #          ' "method" : "Settings.GetSettings",'
+            #          ' "params" : {"level":"expert"}}')
+            # response = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response.decode('utf-8')))
+
         # --- Addon data paths creation ---
         if not PLUGIN_DATA_DIR.exists():          PLUGIN_DATA_DIR.makedirs()
         if not DEFAULT_CAT_ASSET_DIR.exists():    DEFAULT_CAT_ASSET_DIR.makedirs()
@@ -477,6 +495,7 @@ class Main:
         self.settings['media_state_action']       = int(__addon_obj__.getSetting('media_state_action'))
         self.settings['delay_tempo']              = int(round(float(__addon_obj__.getSetting('delay_tempo'))))
         self.settings['suspend_audio_engine']     = True if __addon_obj__.getSetting('suspend_audio_engine') == 'true' else False
+        self.settings['suspend_joystick_engine']  = True if __addon_obj__.getSetting('suspend_joystick_engine') == 'true' else False
         self.settings['escape_romfile']           = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
         self.settings['lirc_state']               = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
         self.settings['show_batch_window']        = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
@@ -7155,6 +7174,34 @@ class Main:
         else:
             log_verb('_run_before_execution() DO NOT suspend Kodi audio engine')
 
+        # --- Force joystick suspend if requested in "Settings" --> "Advanced"
+        # >> See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
+        # >> See https://forum.kodi.tv/showthread.php?tid=157499&pid=1722549&highlight=input.enablejoystick#pid1722549
+        # >> See https://forum.kodi.tv/showthread.php?tid=313615
+        self.kodi_joystick_suspended = False
+        if self.settings['suspend_joystick_engine']:
+            log_verb('_run_before_execution() Suspending Kodi joystick engine')
+            # >> Research. Get the value of the setting first
+            # >> Apparently input.enablejoystick is not supported on Kodi Krypton anymore.
+            # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
+            #          ' "method" : "Settings.GetSettingValue",'
+            #          ' "params" : {"setting":"input.enablejoystick"}}')
+            # response = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response))
+
+            # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
+            #          ' "method" : "Settings.SetSettingValue",'
+            #          ' "params" : {"setting" : "input.enablejoystick", "value" : false} }')
+            # response = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response))
+            # self.kodi_joystick_suspended = True
+
+            log_error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
+        else:
+            log_verb('_run_before_execution() DO NOT suspend Kodi joystick engine')
+
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_run_before_execution() Toggling Kodi fullscreen')
@@ -7193,7 +7240,18 @@ class Main:
             xbmc.enableNavSounds(True)
             xbmc.sleep(100)
         else:
-            log_verb('_run_before_execution() DO NOT resume Kodi audio engine')
+            log_verb('_run_after_execution() DO NOT resume Kodi audio engine')
+
+        # --- Resume joystick engine if it was suspended ---
+        if self.kodi_joystick_suspended:
+            log_verb('_run_after_execution() Kodi joystick engine was suspended before launching')
+            log_verb('_run_after_execution() Resuming Kodi joystick engine')
+            # response = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response))
+            log_verb('_run_before_execution() Not supported on Kodi Krypton!')
+        else:
+            log_verb('_run_after_execution() DO NOT resume Kodi joystick engine')
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']
