@@ -56,6 +56,10 @@ WIP      Disable LNK $rom$ launcher with global setting.
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
 
+WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
+         selected scraper. This will require a redesign of the current scraping engine.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628383#pid2628383 and next post.
+
 FEATURE  Ability to import launcher and categories assets in the XML configuration files.
          Create a working example for Gamestarter addon. Also, refactor the AEL asset library.
 
@@ -83,13 +87,12 @@ FEATURE  Support for <Launcher_NFO> tag in XML configuration files.
 
 FEATURE  Preserve path_title, path_snap, etc. when exporting a Launcher into an XML file.
 
-WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
-         selected scraper. This will require a redesign of the current scraping engine.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628383#pid2628383 and next post.
-
-WIP      Add an option to suspend/resume joystick support at launch. This is to prevent Kodi
+FEATURE  Add an option to suspend/resume joystick support at launch. This is to prevent Kodi
          and the launched app to grab joystick events.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
+         
+         Cannot be implemented because setting input.enablejoystick does not exist in Krypton
+         any more.
 
 FEATURE  Removed ElementTree dependency in addon.xml. It's not longer needed.
          AEL ONLY WORKS ON KRYPTON NOW!!!
@@ -130,6 +133,9 @@ FIX      Fix scraper-related crash in the ROM scanner.
 FIX      When scraper downloads an image the parents JSON must be also updated. In general, every
          time a ROM is modified in the main database the Parents JSON must be updated to keep
          both DBs synchronised!
+
+FIX      Fixed Unicode-related crashes introduced in 0.9.6 in the ROM scanner.
+         See https://forum.kodi.tv/showthread.php?tid=276002&pid=2642201#pid2642201
 
 
 [B]Advanced Emulator Launcher | version 0.9.6 | 20 May 2017[/B]

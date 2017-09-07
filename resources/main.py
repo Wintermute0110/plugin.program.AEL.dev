@@ -6160,17 +6160,17 @@ class Main:
                 if selected_value == 2:
                     window_title = 'Launcher "{0}" Statistics Report'.format(launcher['m_name'])
                     file = open(report_stats_FN.getPath(), 'r')
-                    info_text = file.read()
+                    info_text = file.read().decode('utf-8')
                     file.close()
                 elif selected_value == 3:
                     window_title = 'Launcher "{0}" Metadata Report'.format(launcher['m_name'])
                     file = open(report_meta_FN.getPath(), 'r')
-                    info_text = file.read()
+                    info_text = file.read().decode('utf-8')
                     file.close()
                 elif selected_value == 4:
                     window_title = 'Launcher "{0}" Asset Report'.format(launcher['m_name'])
                     file = open(report_assets_FN.getPath(), 'r')
-                    info_text = file.read()
+                    info_text = file.read().decode('utf-8')
                     file.close()
             except IOError:
                 log_error('_command_view_menu() (IOError) Exception reading report TXT file')
@@ -8061,7 +8061,7 @@ class Main:
         report_fobj.write('Processing files ...\n')
         num_new_roms = 0
         num_files_checked = 0
-        for f_path in files:
+        for f_path in sorted(files):
             # --- Get all file name combinations ---
             ROM = FileName(f_path)
             log_debug('========== Processing File ==========')
@@ -8072,7 +8072,7 @@ class Main:
             # log_debug('ROM.getBase()         "{0}"'.format(ROM.getBase()))
             # log_debug('ROM.getBase_noext()   "{0}"'.format(ROM.getBase_noext()))
             # log_debug('ROM.getExt()          "{0}"'.format(ROM.getExt()))
-            report_fobj.write('>>> {0}\n'.format(ROM.getPath()))
+            report_fobj.write('>>> {0}\n'.format(ROM.getPath()).encode('utf-8'))
 
             # ~~~ Update progress dialog ~~~
             self.progress_number = num_files_checked * 100 / num_files
