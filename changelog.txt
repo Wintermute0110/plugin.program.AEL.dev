@@ -65,7 +65,7 @@ WIP      Add an option to see ROM Maps image if it exists.
 
 WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM Sorting).
          In "Edit Launcher", "Audit ROMs / Launcher view mode" include a new option like
-         "Create PClone based on filenames"
+         "Create PClone DAT based on ROM filenames"
 
 WIP      Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
          PClone information. See previous feature.
@@ -73,9 +73,12 @@ WIP      Add an option to create a default Parent ROM for Redump DATs or NoIntro
 WIP      Use substituted artwork from the Parent/Clone group.
          So far implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork"
 
-WIP      I discovered that in the ROM Scanner most of the time is spend looking for artwork. Before
+FEATURE  I discovered that in the ROM Scanner most of the time is spend looking for artwork. Before
          I though it was the Offline scraper the culprit. Instead of using FileName().exists()
          create a set with all files in the directory and use that for the search.
+
+         Implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork",
+         must be ported to the ROM scanner if it works well (faster than the current approach).
 
 WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
          This resembles what NARS No-Intro filtering does.

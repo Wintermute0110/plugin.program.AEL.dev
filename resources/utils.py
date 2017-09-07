@@ -359,6 +359,36 @@ def text_get_image_URL_extension(url):
     return ret
 
 # -------------------------------------------------------------------------------------------------
+# File cache
+# -------------------------------------------------------------------------------------------------
+file_cache = {}
+def misc_add_file_cache(dir_str):
+    global file_cache
+
+    # >> Create a set with all the files in the directory
+    log_debug('misc_add_file_cache() Scanning "{0}"'.format(dir_str))
+    file_list = os.listdir(dir_str)
+    file_set = set(file_list)
+    # for file in file_set: log_debug('File "{0}"'.format(file))
+    log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
+    file_cache[dir_str] = file_set
+
+#
+# See misc_look_for_file() documentation below.
+#
+def misc_search_file_cache(dir_str, filename_noext, file_exts):
+    # log_debug('misc_search_file_cache() Searching in  "{0}"'.format(dir_str))
+    current_cache_set = file_cache[dir_str]
+    for ext in file_exts:
+        file_base = filename_noext + '.' + ext
+        log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
+        if file_base in current_cache_set:
+            # log_debug('misc_search_file_cache() Found in cache')
+            return FileName(dir_str).pjoin(file_base)
+
+    return None
+
+# -------------------------------------------------------------------------------------------------
 # Misc stuff
 # -------------------------------------------------------------------------------------------------
 #
@@ -374,7 +404,7 @@ def text_get_image_URL_extension(url):
 #
 def misc_look_for_file(rootPath, filename_noext, file_exts):
     for ext in file_exts:
-        file_path = rootPath.join(filename_noext + '.' + ext)
+        file_path = rootPath.pjoin(filename_noext + '.' + ext)
         if file_path.exists():
             return file_path
 

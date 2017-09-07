@@ -1607,8 +1607,20 @@ class Main:
                     else:
                         log_info('No duplicated asset dirs found')
 
-                    # --- Traverse ROM list and check local asset/artwork ---
+                    # --- Create cache of assets ---
+                    # >> misc_add_file_cache() creates a set with all files in a given directory.
+                    # >> That set is stored in a function internal cache associated with the path.
+                    # >> Files in the cache can be searched with misc_search_file_cache()
                     pDialog = xbmcgui.DialogProgress()
+                    pDialog.create('Advanced Emulator Launcher', 'Scanning asset directories ...')
+                    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+                        AInfo = assets_get_info_scheme(asset_kind)
+                        misc_add_file_cache(launcher[AInfo.path_key])
+                        pDialog.update((100*i)/len(ROM_ASSET_LIST))
+                    pDialog.update(100)
+                    pDialog.close()
+
+                    # --- Traverse ROM list and check local asset/artwork ---
                     pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
                     roms_base_noext = self.launchers[launcherID]['roms_base_noext']
                     roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
@@ -1644,8 +1656,12 @@ class Main:
                                 if current_asset_FN.exists():
                                     log_debug('Local {0:<9} "{1}"'.format(AInfo.name, current_asset_FN.getPath()))
                                     continue
-                            asset_path = FileName(launcher[AInfo.path_key])
-                            local_asset = misc_look_for_file(asset_path, rom_basename_noext, AInfo.exts)
+                            # >> Old implementation (slow). Using FileName().exists() to check many
+                            # >> files becames really slow.
+                            # asset_dir = FileName(launcher[AInfo.path_key])
+                            # local_asset = misc_look_for_file(asset_dir, rom_basename_noext, AInfo.exts)
+                            # >> New implementation using a cache.
+                            local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
                             if local_asset:
                                 rom[AInfo.key] = local_asset.getOriginalPath()
                                 log_debug('Found {0:<9} "{1}"'.format(AInfo.name, local_asset.getPath()))
@@ -1669,7 +1685,6 @@ class Main:
                         log_info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
                         roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone')
                         clone_parent_dic  = fs_load_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent')
-                        pDialog = xbmcgui.DialogProgress()
                         pDialog.create('Advanced Emulator Launcher', 'Searching for assets/artwork in the Parent/Clone group ...')
                         num_items = len(roms)
                         item_counter = 0
@@ -1729,6 +1744,8 @@ class Main:
 
                     # --- Update assets on _parents.json ---
                     # >> Here only assets s_* are changed. I think it is not necessary to audit ROMs again.
+                    pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
+                    pDialog.update(0)
                     if launcher['nointro_xml_file']:
                         log_verb('Updating artwork on parent JSON database.')
                         parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
@@ -1749,7 +1766,10 @@ class Main:
                         fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
 
                     # ~~~ Save ROMs XML file ~~~
+                    pDialog.update(50)
                     fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    pDialog.update(100)
+                    pDialog.close()
                     kodi_notify('Rescaning of ROMs local artwork finished')
 
                 # --- Remove Remove dead/missing ROMs ROMs ---
@@ -1895,6 +1915,7 @@ class Main:
                 type2 = dialog.select('Audit ROMs / Launcher view mode',
                                       ['Change launcher display mode (now {0}) ...'.format(display_mode_str),
                                        add_delete_NoIntro_str,
+                                       'Create Parent/Clone DAT based on ROM filenames',
                                        'Display ROMs (now {0}) ...'.format(launcher['nointro_display_mode']),
                                        'Update ROM audit'])
                 if type2 < 0: return # >> User canceled select dialog
@@ -2006,8 +2027,15 @@ class Main:
                             kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
                         launcher['num_roms'] = len(roms)
 
-                # --- Display ROMs ---
+                # --- Add/Delete No-Intro XML parent-clone DAT ---
                 elif type2 == 2:
+                    kodi_dialog_OK('Feature not implemented yet.')
+                    return
+
+                # --- Display ROMs ---
+                elif type2 == 3:
+                    kodi_dialog_OK('Implement Krypton dialog preselect!')
+
                     # >> If no DAT configured exit.
                     if not has_NoIntro_DAT:
                         kodi_dialog_OK('No-Intro/Redump XML DAT file not configured.')
@@ -2022,7 +2050,7 @@ class Main:
                     log_info('Launcher display mode changed to "{0}"'.format(launcher['nointro_display_mode']))
 
                 # --- Update ROM audit ---
-                elif type2 == 3:
+                elif type2 == 4:
                     # >> If no DAT configured exit.
                     if not has_NoIntro_DAT:
                         kodi_dialog_OK('No-Intro/Redump XML DAT file not configured.')
