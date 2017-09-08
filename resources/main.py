@@ -168,13 +168,27 @@ class Main:
 
         # --- Get DEBUG information for the log --
         if self.settings['log_level'] == LOG_DEBUG:
-            # >> Skin in use
+            json_rpc_start = time.time()
+
+            # >> Properties: Kodi name and version
             c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
-                     ' "method" : "Settings.GetSettingValue",'
-                     ' "params" : {"setting":"lookandfeel.skin"}}')
+                     ' "method" : "Application.GetProperties",'
+                     ' "params" : {"properties" : ["name", "version"]} }')
             response = xbmc.executeJSONRPC(c_str)
             log_debug('JSON      ''{0}'''.format(c_str))
             log_debug('Response  ''{0}'''.format(response))
+
+            # >> Skin in use
+            c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
+                     ' "method" : "Settings.GetSettingValue",'
+                     ' "params" : {"setting" : "lookandfeel.skin"} }')
+            response = xbmc.executeJSONRPC(c_str)
+            log_debug('JSON      ''{0}'''.format(c_str))
+            log_debug('Response  ''{0}'''.format(response))
+            
+            # >> Print time of JSON RPC
+            json_rpc_end = time.time()
+            log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
 
             # --- Save all settings into a file dor DEBUG ---
             # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
