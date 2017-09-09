@@ -649,47 +649,59 @@ def fs_load_JSON_file(file_dir, file_base_noext):
     return data
 
 # -------------------------------------------------------------------------------------------------
-# Standard ROMs
+# Standard ROM databases
 # -------------------------------------------------------------------------------------------------
 #
-# Return ROMs database file name.
-# NOTE that JSON ROM writer creates 2 files: one JSON with main DB and one small XML with associated
-# launcher info. When removing launchers both the JSON and XML files must be removed.
+# <roms_base_noext>.json
+# <roms_base_noext>.xml
+# <roms_base_noext>_index_CParent.json
+# <roms_base_noext>_index_PClone.json
+# <roms_base_noext>_parents.json
+# <roms_base_noext>_DAT.json
 #
-def fs_get_ROMs_XML_file_path(roms_dir, roms_base_noext):
-    roms_file_path = roms_dir.join(roms_base_noext + '.xml')
-
-    return roms_file_path
-
-def fs_get_ROMs_JSON_file_path(roms_dir, roms_base_noext):
-    roms_file_path = roms_dir.join(roms_base_noext + '.json')
-
-    return roms_file_path
-
-def fs_unlink_ROMs_database(roms_dir, roms_base_noext):
-    # >> Delete ROMs info XML file
-    roms_xml_file = fs_get_ROMs_XML_file_path(roms_dir, roms_base_noext)
-    if roms_xml_file.exists():
-        log_info('Deleting ROMs XML  "{0}"'.format(roms_xml_file.getOriginalPath()))
-        roms_xml_file.unlink()
-
+def fs_unlink_ROMs_database(roms_dir_FN, launcher):
     # >> Delete ROMs JSON file
-    roms_json_file = fs_get_ROMs_JSON_file_path(roms_dir, roms_base_noext)
+    roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
     if roms_json_file.exists():
-        log_info('Deleting ROMs JSON "{0}"'.format(roms_json_file.getOriginalPath()))
+        log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_file.getOriginalPath()))
         roms_json_file.unlink()
 
-    # >> Delete No-Intro/Redump stuff if exist
-    
+    # >> Delete ROMs info XML file
+    roms_xml_file = roms_dir_FN.pjoin(roms_base_noext + '.xml')
+    if roms_xml_file.exists():
+        log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_file.getOriginalPath()))
+        roms_xml_file.unlink()
 
-def fs_rename_ROMs_database(roms_dir, old_roms_base_noext, new_roms_base_noext):
+    # >> Delete No-Intro/Redump stuff if exist
+    roms_index_CParent_file = roms_dir_FN.pjoin(roms_base_noext + '_index_CParent.json')
+    if roms_index_CParent_file.exists():
+        log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_file.getOriginalPath()))
+        roms_index_CParent_file.unlink()
+
+    roms_index_PClone_file = roms_dir_FN.pjoin(roms_base_noext + '_index_PClone.json')
+    if roms_index_PClone_file.exists():
+        log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_file.getOriginalPath()))
+        roms_index_PClone_file.unlink()
+
+    roms_parents_file = roms_dir_FN.pjoin(roms_base_noext + '_parents.json')
+    if roms_parents_file.exists():
+        log_info('Deleting parents JSON "{0}"'.format(roms_parents_file.getOriginalPath()))
+        roms_parents_file.unlink()
+
+    roms_DAT_file = roms_dir_FN.pjoin(roms_base_noext + '_DAT.json')
+    if roms_DAT_file.exists():
+        log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_file.getOriginalPath()))
+        roms_DAT_file.unlink()
+
+def fs_rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
     pass
 
-def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
+def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # >> Get file names
-    roms_json_file = roms_dir.join(roms_base_noext + '.json')
-    roms_xml_file  = roms_dir.join(roms_base_noext + '.xml')
-    log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir.getOriginalPath()))
+    roms_base_noext = launcher['roms_base_noext']
+    roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
+    roms_xml_file  = roms_dir_FN.pjoin(roms_base_noext + '.xml')
+    log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
     log_verb('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     log_verb('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
 
@@ -744,18 +756,19 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
 #
-def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
+def fs_load_ROMs_JSON(roms_dir_FN, launcher):
     roms = {}
 
     # --- If file does not exist return empty dictionary ---
-    roms_json_file = roms_dir.join(roms_base_noext + '.json')
+    roms_base_noext = launcher['roms_base_noext']
+    roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
     if not roms_json_file.exists(): return roms
 
     # --- Parse using json module ---
     # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
     #    exception exceptions.ValueError and launcher cannot be deleted. Deal
     #    with this exception so at least launcher can be rescanned.
-    log_verb('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir.getOriginalPath()))
+    log_verb('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
     log_verb('fs_load_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     with open(roms_json_file.getPath().decode('utf-8')) as file:
         try:
@@ -763,7 +776,7 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('fs_load_ROMs_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir.getPath()))
+            log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getPath()))
             log_error('fs_load_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
             log_error('fs_load_ROMs_JSON() Size {0}'.format(statinfo.st_size))
         file.close()
