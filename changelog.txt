@@ -40,10 +40,6 @@ WIP      Think about exporting the AEL platform database using JSON-LD in accord
          Garbear's idea.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
 
-WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
-         etc. When a user uses XML to import configurations it is easy to make a typo when
-         writing directory names, etc. This command will report if AEL configuration is OK.
-
 WIP      Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
@@ -51,6 +47,9 @@ WIP      Disable LNK $rom$ launcher with global setting.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2640857#pid2640857
 
 WIP      categoryID is redundant in SHOW_ROMS URL! Remove it or make it optional.
+         See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
+
+WIP      Should plugin URL be rationalised and simplified to make skinner's life easier?
          See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
 
 WIP      Add an option to see the ROM Manual in PDF if exists. Maybe use GhostScript to render
@@ -63,20 +62,23 @@ WIP      Add an option to see ROM Maps image if it exists.
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
 
+WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
+         etc. When a user uses XML to import configurations it is easy to make a typo when
+         writing directory names, etc. This command will report if AEL configuration is OK.
+
 WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM Sorting).
          In "Edit Launcher", "Audit ROMs / Launcher view mode" include a new option like
          "Create PClone DAT based on ROM filenames"
 
-WIP      Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
+FEATURE  Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
          PClone information. See previous feature.
 
-WIP      Use substituted artwork from the Parent/Clone group.
+FEATURE  Use substituted artwork from the Parent/Clone group.
          So far implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork"
 
-FEATURE  I discovered that in the ROM Scanner most of the time is spend looking for artwork. Before
+FEATURE  I discovered that in the ROM Scanner most of the time is spend looking for artwork. Before,
          I though it was the Offline scraper the culprit. Instead of using FileName().exists()
          create a set with all files in the directory and use that for the search.
-
          Implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork",
          must be ported to the ROM scanner if it works well (faster than the current approach).
 

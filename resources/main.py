@@ -2043,15 +2043,23 @@ class Main:
                             kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
                         launcher['num_roms'] = len(roms)
 
-                # --- Add/Delete No-Intro XML parent-clone DAT ---
+                # --- Create Parent/Clone DAT based on ROM filenames ---
                 elif type2 == 2:
-                    kodi_dialog_OK('Feature not implemented yet.')
+                    if has_NoIntro_DAT:
+                        d = xbmcgui.Dialog()
+                        ret = d.yesno('Advanced Emulator Launcher',
+                                      'This Launcher has a DAT file attached. Creating a filename '
+                                      'based DAT will remove the No-Intro/Redump DAT. Continue?')
+                        if not ret: return
+                        # >> Delete No-Intro/Redump DAT and reset ROM audit.
+                    
+                    # >> Create an artificial <roms_base_noext>_DAT.json file. Keep launcher
+                    # >> nointro_xml_file = '' because the artificial DAT is not an official DAT.
+                    kodi_dialog_OK('Not implemented yet. Sorry.')
                     return
 
                 # --- Display ROMs ---
                 elif type2 == 3:
-                    kodi_dialog_OK('Implement Krypton dialog preselect!')
-
                     # >> If no DAT configured exit.
                     if not has_NoIntro_DAT:
                         kodi_dialog_OK('No-Intro/Redump XML DAT file not configured.')
@@ -2059,11 +2067,21 @@ class Main:
 
                     # >> In Krypton preselect the current item
                     launcher = self.launchers[launcherID]
-                    type_temp = dialog.select('Launcher display mode', NOINTRO_DMODE_LIST)
+                    nointro_display_mode = launcher['nointro_display_mode']
+                    if   nointro_display_mode == NOINTRO_DMODE_ALL:       p_idx = 0
+                    elif nointro_display_mode == NOINTRO_DMODE_HAVE:      p_idx = 1
+                    elif nointro_display_mode == NOINTRO_DMODE_HAVE_UNK:  p_idx = 2
+                    elif nointro_display_mode == NOINTRO_DMODE_HAVE_MISS: p_idx = 3
+                    elif nointro_display_mode == NOINTRO_DMODE_MISS:      p_idx = 4
+                    elif nointro_display_mode == NOINTRO_DMODE_MISS_UNK:  p_idx = 5
+                    elif nointro_display_mode == NOINTRO_DMODE_UNK:       p_idx = 6
+                    else:                                                 p_idx = 0
+                    log_debug('p_idx = "{0}"'.format(p_idx))
+                    type_temp = dialog.select('Launcher display mode', NOINTRO_DMODE_LIST, preselect = p_idx)
                     if type_temp < 0: return
                     launcher['nointro_display_mode'] = NOINTRO_DMODE_LIST[type_temp]
-                    kodi_notify('Display ROMs changed to "{0}"'.format(launcher['nointro_display_mode']))
                     log_info('Launcher display mode changed to "{0}"'.format(launcher['nointro_display_mode']))
+                    kodi_notify('Display ROMs changed to "{0}"'.format(launcher['nointro_display_mode']))
 
                 # --- Update ROM audit ---
                 elif type2 == 4:
@@ -3755,25 +3773,25 @@ class Main:
         loading_ticks_start = time.time()
         if view_mode == LAUNCHER_DMODE_FLAT:
             # --- Load ROMs for this launcher ---
-            roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
-            if not roms_file_path.exists():
+            roms_json_FN = ROMS_DIR.pjoin(selectedLauncher['roms_base_noext'] + '.json')
+            if not roms_json_FN.exists():
                 kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
-            roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher)
             if not roms:
                 kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
         else:
             # --- Load parent ROMs ---
-            parents_roms_base_noext = selectedLauncher['roms_base_noext'] + '_parents'
-            parents_file_path = ROMS_DIR.join(parents_roms_base_noext + '.json')
-            if not parents_file_path.exists():
+            parent_roms_base_noext = selectedLauncher['roms_base_noext'] + '_parents'
+            parents_FN = ROMS_DIR.pjoin(parent_roms_base_noext + '.json')
+            if not parents_FN.exists():
                 kodi_notify('Parent ROMs JSON not found.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
-            roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
+            roms = fs_load_JSON_file(ROMS_DIR, parent_roms_base_noext)
             if not roms:
                 kodi_notify('Parent ROMs JSON is empty.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -3781,8 +3799,8 @@ class Main:
 
             # --- Load parent/clone index ---
             index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
-            index_file_path = ROMS_DIR.join(index_base_noext + '.json')
-            if not index_file_path.exists():
+            index_FN = ROMS_DIR.pjoin(index_base_noext + '.json')
+            if not index_FN.exists():
                 kodi_notify('PClone index JSON not found.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
@@ -3798,8 +3816,9 @@ class Main:
             filtered_roms = {}
             for rom_id in roms:
                 rom = roms[rom_id]
-                # >> Always include a parent ROM regardless of filters.
-                if selectedLauncher['pclone_launcher'] and len(pclone_index[rom_id]):
+                # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
+                # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
+                if not selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
                     filtered_roms[rom_id] = rom
                     continue
                 # >> Filter ROM
