@@ -457,15 +457,7 @@ class FileName:
 
         return self
 
-    # Behaves like os.path.join(). Returns a FileName object
-    # DEPRECATED
-    def join(self, *args):
-        child = FileName(self.originalPath)
-        for arg in args:
-            child._join_raw(arg)
-
-        return child
-
+    # >> Joins paths. Returns a new FileName object
     def pjoin(self, *args):
         child = FileName(self.originalPath)
         for arg in args:
