@@ -9512,24 +9512,21 @@ class Main:
             mandatory_str = 'YES      ' if BIOS_dic['mandatory'] else 'NO       '
             status_str = '{0}{1}'.format(status, ' ' * (max_size_status - len(status)))
 
-            if BIOS_status_dic[BIOS_filename] == 'OK':
+            # >> Print affected core list
+            core_list = BIOS_dic['cores']
+            if len(core_list) == 0:
                 line_str = '{0}  {1}  {2}\n'.format(filename_str, mandatory_str, status_str)
                 str_list.append(line_str)
             else:
-                # >> Print affected core list
-                core_list = BIOS_dic['cores']
-                if len(core_list) == 0:
-                    line_str = '{0}  {1}  {2}\n'.format(filename_str, mandatory_str, status_str)
-                    str_list.append(line_str)
-                else:
-                    num_spaces = len(filename_str) + 9 + len(status_str) + 4
-                    for i, core_name in enumerate(core_list):
-                        if i == 0:
-                            line_str = '{0}  {1}  {2}  {3}\n'.format(filename_str, mandatory_str, status_str, core_name)
-                            str_list.append(line_str)
-                        else:
-                            line_str = '{0}  {1}\n'.format(' ' * num_spaces, core_name)
-                            str_list.append(line_str)
+                num_spaces = len(filename_str) + 9 + len(status_str) + 4
+                for i, core_name in enumerate(core_list):
+                    beautiful_core_name = Retro_core_dic[core_name] if core_name in Retro_core_dic else core_name
+                    if i == 0:
+                        line_str = '{0}  {1}  {2}  {3}\n'.format(filename_str, mandatory_str, status_str, beautiful_core_name)
+                        str_list.append(line_str)
+                    else:
+                        line_str = '{0}  {1}\n'.format(' ' * num_spaces, beautiful_core_name)
+                        str_list.append(line_str)
 
         # >> Stats report
         log_info('Writing report file "{0}"'.format(BIOS_REPORT_FILE_PATH.getPath()))
