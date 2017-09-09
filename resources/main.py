@@ -6890,7 +6890,7 @@ class Main:
                 kodi_dialog_OK('launcherID not found in self.launchers')
                 return
             launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
             # --- Check ROM is in XML data just read ---
             if romID not in roms:
                 kodi_dialog_OK('romID not in roms dictionary')
@@ -7048,7 +7048,7 @@ class Main:
             log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
         else:
             log_info('_command_run_rom() Launcher is not Kodi Retroplayer.')
-            non_blocking_flag = False
+            non_blocking_flag = True
             self._run_before_execution(romtitle, minimize_flag)
             self._run_process(application.getPath(), arguments, apppath, romext, non_blocking_flag)
             self._run_after_execution(minimize_flag)
@@ -8256,7 +8256,6 @@ class Main:
             kodi_dialog_OK('No ROMs found! Make sure launcher directory and file extensions are correct.')
             return
 
-
         # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
         if launcher['nointro_xml_file']:
             log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
@@ -8297,7 +8296,7 @@ class Main:
         # >> Update launcher timestamp to update VLaunchers and reports.
         self.launchers[launcherID]['num_roms'] = len(roms)
         self.launchers[launcherID]['timestamp_launcher'] = time.time()
-        fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, launcher)
+        fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
