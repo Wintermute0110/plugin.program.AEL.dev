@@ -6817,8 +6817,9 @@ class Main:
             return
 
         # ~~~~~ Execute external application ~~~~~
+        non_blocking_flag = False
         self._run_before_execution(launcher_title, minimize_flag)
-        self._run_process(application.getPath(), arguments, application.getDir(), app_ext)
+        self._run_process(application.getPath(), arguments, application.getDir(), app_ext, non_blocking_flag)
         self._run_after_execution(minimize_flag)
 
     #
@@ -7072,20 +7073,18 @@ class Main:
             log_verb('_command_run_rom() Calling xbmc.Player().play() ...')
             xbmc.Player().play(ROMFileName.getPath(), listitem)
             log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
-            return
         else:
             log_info('_command_run_rom() Launcher is not Kodi Retroplayer.')
-
-        # ~~~~~ Execute external application ~~~~~
-        self._run_before_execution(romtitle, minimize_flag)
-        self._run_process(application.getPath(), arguments, apppath, romext)
-        self._run_after_execution(minimize_flag)
+            non_blocking_flag = False
+            self._run_before_execution(romtitle, minimize_flag)
+            self._run_process(application.getPath(), arguments, apppath, romext, non_blocking_flag)
+            self._run_after_execution(minimize_flag)
 
     #
     # Launchs a ROM launcher or standalone launcher
     # For standalone launchers romext is the extension of the application (only used in Windoze)
     #
-    def _run_process(self, application, arguments, apppath, romext):
+    def _run_process(self, application, arguments, apppath, romext, non_blocking_flag):
         import shlex
         import subprocess
 
@@ -7171,18 +7170,22 @@ class Main:
 
         # >> Linux and Android
         elif sys.platform.startswith('linux'):
-            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
-
             # >> Old way of launching child process. os.system() is deprecated and should not
             # >> be used anymore.
             # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
 
             # >> New way of launching, uses subproces module. Also, save child process stdout.
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
-            log_info('_run_process() Process retcode = {0}'.format(retcode))
-
-            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
+            if non_blocking_flag:
+                # >> In a non-blocking launch stdout/stderr of child process cannot be recorded.
+                log_info('_run_process() (Linux) Launching non-blocking process subprocess.Popen()')
+                p = subprocess.Popen(exec_list)
+            else:
+                if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
+                log_info('_run_process() (Linux) Launching blocking process subprocess.call()')
+                with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
+                    retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
+                log_info('_run_process() Process retcode = {0}'.format(retcode))
+                if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
 
         # >> OS X
         elif sys.platform.startswith('darwin'):
