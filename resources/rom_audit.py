@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 import xml.etree.ElementTree as ET
 
 # --- Modules/packages in this plugin ---
+from constants import *
 from utils import *
 from utils_kodi import *
 
@@ -466,6 +467,168 @@ def audit_make_NoIntro_Parents_dic(nointro_dic):
             main_clone_to_parent_dic[machine_name] = parent_name            
 
     return main_clone_to_parent_dic
+
+# -------------------------------------------------------------------------------------------------
+# No-Intro/Redump audit
+# -------------------------------------------------------------------------------------------------
+#
+# Creates and returns Parent/Clone MD5 index dictionary.
+# This dictionary will be save in database roms_base_noext_PClone_index.json.
+#
+# unknown_ROMs_are_parents = True
+#   roms_pclone_index_by_id = {
+#       'parent_id_1'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#       'parent_id_2'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#        ... ,
+#       'unknown_rom_id_1' : [], # Unknown ROMs never have clones
+#       'unknown_rom_id_2' : [],
+#       ...
+#   }
+#
+# unknown_ROMs_are_parents = False
+#   roms_pclone_index_by_id = {
+#       'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#       'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
+#        ... ,
+#       UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
+#   }
+#
+def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
+    roms_pclone_index_by_id = {}
+
+    # --- Create a dictionary to convert ROMbase_noext names into IDs ---
+    names_to_ids_dic = {}
+    for rom_id in roms:
+        rom = roms[rom_id]
+        ROMFileName = FileName(rom['filename'])
+        rom_name = ROMFileName.getBase_noext()
+        # log_debug('{0} --> {1}'.format(rom_name, rom_id))
+        # log_debug('{0}'.format(rom))
+        names_to_ids_dic[rom_name] = rom_id
+
+    # --- Build PClone dictionary using ROM base_noext names ---
+    for rom_id in roms:
+        rom = roms[rom_id]
+        ROMFileName = FileName(rom['filename'])
+        rom_nointro_name = ROMFileName.getBase_noext()
+        # log_debug('rom_id {0}'.format(rom_id))
+        # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
+        # log_debug('  filename         "{0}"'.format(rom['filename']))
+        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
+        # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
+
+        if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
+            if unknown_ROMs_are_parents:
+                # >> Unknown ROMs are parents
+                if rom_id not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[rom_id] = []
+            else:
+                # >> Unknown ROMs are clones
+                #    Also, if the parent ROMs of all clones does not exist yet then create it
+                if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
+                else:
+                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
+        else:
+            nointro_rom = roms_nointro[rom_nointro_name]
+
+            # >> ROM is a parent
+            if nointro_rom['cloneof'] == '':
+                if rom_id not in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[rom_id] = []
+            # >> ROM is a clone
+            else:
+                parent_name = nointro_rom['cloneof']
+                parent_id   = names_to_ids_dic[parent_name]
+                clone_id    = rom['id']
+                if parent_id in roms_pclone_index_by_id:
+                    roms_pclone_index_by_id[parent_id].append(clone_id)
+                else:
+                    roms_pclone_index_by_id[parent_id] = []
+                    roms_pclone_index_by_id[parent_id].append(clone_id)
+
+    return roms_pclone_index_by_id
+
+#
+# Returns a dictionary with parent ROMs to be stored in database roms_base_noext_parents.json
+# If the parent of the Unknown ROMs is detected in the Parent dictionary then create fake
+# metadata for it.
+#
+def audit_generate_parent_ROMs_dic(roms, roms_pclone_index):
+    p_roms = {}
+
+    # --- Build parent ROM dictionary ---
+    for rom_id in roms_pclone_index:
+        # >> roms_pclone_index make contain the fake ROM id. Skip it if so because the fake
+        # >> ROM is not in roms dictionary (KeyError exception)
+        if rom_id == UNKNOWN_ROMS_PARENT_ID:
+            rom = fs_new_rom()
+            rom['id']                      = UNKNOWN_ROMS_PARENT_ID
+            rom['m_name']                  = '[Unknown ROMs]'
+            rom['m_plot']                  = 'Special virtual ROM parent of all Unknown ROMs'
+            rom['nointro_status']          = NOINTRO_STATUS_NONE
+            p_roms[UNKNOWN_ROMS_PARENT_ID] = rom
+        else:
+            # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
+            # >> Clean parent ROM name tags from ROM Name
+            p_roms[rom_id] = dict(roms[rom_id])
+
+    return p_roms
+
+def audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
+    roms_pclone_index_by_id = {}
+
+    # --- Create a dictionary 'rom_base_name' : 'romID' ---
+    rom_ID_bname_dic = {}
+    for romID in roms:
+        rom = roms[romID]
+        base_name = audit_get_ROM_base_name(rom['filename'])
+        rom_ID_bname_dic[romID] = base_name
+
+    # --- Create a parent/clone list based on the baseName of the ROM ---
+    # parent_bname : [parent_ID, clone_ID_1, clone_ID_2, ...]
+    pclone_bname_dict = {}
+    for id in rom_ID_bname_dic:
+        base_name = rom_ID_bname_dic[id]
+        # >> If base_name exists, add this ROM to that
+        if base_name in pclone_bname_dict:
+            pclone_bname_dict[base_name].append(id)
+        # >> If not, create a new entry
+        else:
+            IDs = []
+            IDs.append(id)
+            pclone_bname_dict[base_name] = IDs
+
+    # --- Build filename-based PClone dictionary ---
+    # NOTE To avoid problems with artwork substitution, make sure the list of
+    #      clones is alphabetically sorted, so the output of the program is
+    #      always the same for the same input. Otherwise, due to dictionary race
+    #      conditions the order of this list may vary from execution to execution, and
+    #      that is bad!
+    #      For now sorted alpahbetically by ID until I code something better.
+    for base_name in pclone_bname_dict:
+        id_group = pclone_bname_dict[base_name]
+        parent_id = id_group[0]
+        clone_list_id = sorted(id_group[1:])
+        roms_pclone_index_by_id[parent_id] = clone_list_id
+
+    return roms_pclone_index_by_id
+
+# -------------------------------------------------------------------------------------------------
+# NARS (NARS Advanced ROM Sorting) stuff
+# -------------------------------------------------------------------------------------------------
+#
+# Get baseName from filename (no extension, no tags).
+#
+def audit_get_ROM_base_name(romFileName):
+    # >> re.search() returns a MatchObject
+    regSearch = re.search("[^\(\)]*", romFileName)
+    if regSearch is None:
+        raise NameError('audit_get_ROM_base_name() regSearch is None')
+    regExp_result = regSearch.group()
+  
+    return regExp_result.strip()
 
 # -------------------------------------------------------------------------------------------------
 # Retroarch System directory BIOS audit

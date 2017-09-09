@@ -35,6 +35,7 @@ import errno
 import xml.etree.ElementTree as ET
 
 # --- AEL packages ---
+from constants import *
 from utils import *
 from utils_kodi import *
 from assets import *
@@ -80,24 +81,6 @@ def fs_new_category():
          }
 
     return c
-
-# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
-NOINTRO_DMODE_ALL       = 'All ROMs'
-NOINTRO_DMODE_HAVE      = 'Have ROMs'
-NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
-NOINTRO_DMODE_HAVE_MISS = 'Have or Missing ROMs'
-NOINTRO_DMODE_MISS      = 'Missing ROMs'
-NOINTRO_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
-NOINTRO_DMODE_UNK       = 'Unknown ROMs'
-NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
-                           NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
-                           NOINTRO_DMODE_UNK]
-
-# launcher['launcher_display_mode'] values default LAUNCHER_DMODE_FLAT
-LAUNCHER_DMODE_FLAT   = 'Flat mode'
-LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
-LAUNCHER_DMODE_1G1R   = '1G1R mode'
-LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
 
 def fs_new_launcher():
     l = {'id' : '',
@@ -164,48 +147,6 @@ def fs_new_launcher():
 
     return l
 
-# Mandatory variables in XML:
-# id              string MD5 hash
-# name            string ROM name
-# finished        bool default False
-# nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
-NOINTRO_STATUS_HAVE    = 'Have'
-NOINTRO_STATUS_MISS    = 'Miss'
-NOINTRO_STATUS_UNKNOWN = 'Unknown'
-NOINTRO_STATUS_NONE    = 'None'
-NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE, NOINTRO_STATUS_MISS, NOINTRO_STATUS_UNKNOWN, 
-                          NOINTRO_STATUS_NONE]
-
-PCLONE_STATUS_PARENT = 'Parent'
-PCLONE_STATUS_CLONE  = 'Clone'
-PCLONE_STATUS_NONE   = 'None'
-PCLONE_STATUS_LIST   = [PCLONE_STATUS_PARENT, PCLONE_STATUS_CLONE, PCLONE_STATUS_NONE]
-
-# m_esrb string ESRB_LIST default ESRB_PENDING
-ESRB_PENDING     = 'RP (Rating Pending)'
-ESRB_EARLY       = 'EC (Early Childhood)'
-ESRB_EVERYONE    = 'E (Everyone)'
-ESRB_EVERYONE_10 = 'E10+ (Everyone 10+)'
-ESRB_TEEN        = 'T (Teen)'
-ESRB_MATURE      = 'M (Mature)'
-ESRB_ADULTS_ONLY = 'AO (Adults Only)'
-ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
-                    ESRB_MATURE, ESRB_ADULTS_ONLY]
-
-# m_nplayers values default ''
-NP_1P     = '1P'
-NP_2P_SIM = '2P sim'
-NP_2P_ALT = '2P alt'
-NP_3P_SIM = '3P sim'
-NP_3P_ALT = '3P alt'
-NP_4P_SIM = '4P sim'
-NP_4P_ALT = '4P alt'
-NP_6P_SIM = '6P sim'
-NP_6P_ALT = '6P alt'
-NP_8P_SIM = '8P sim'
-NP_8P_ALT = '8P alt'
-NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, NP_4P_ALT, 
-                        NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
 def fs_new_rom():
     r = {'id' : '',
          'm_name' : '',
@@ -731,11 +672,18 @@ def fs_unlink_ROMs_database(roms_dir, roms_base_noext):
     if roms_xml_file.exists():
         log_info('Deleting ROMs XML  "{0}"'.format(roms_xml_file.getOriginalPath()))
         roms_xml_file.unlink()
+
     # >> Delete ROMs JSON file
     roms_json_file = fs_get_ROMs_JSON_file_path(roms_dir, roms_base_noext)
     if roms_json_file.exists():
         log_info('Deleting ROMs JSON "{0}"'.format(roms_json_file.getOriginalPath()))
         roms_json_file.unlink()
+
+    # >> Delete No-Intro/Redump stuff if exist
+    
+
+def fs_rename_ROMs_database(roms_dir, old_roms_base_noext, new_roms_base_noext):
+    pass
 
 def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
     # >> Get file names
@@ -1339,117 +1287,6 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
             return {}
 
     return roms
-
-# -------------------------------------------------------------------------------------------------
-# No-Intro and Offline scrapers
-# -------------------------------------------------------------------------------------------------
-# -- id of the fake ROM parent of all Unknown ROMs ---
-UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
-
-#
-# Creates and returns Parent/Clone MD5 index dictionary.
-# This dictionary will be save in database roms_base_noext_PClone_index.json.
-#
-# unknown_ROMs_are_parents = True
-#   roms_pclone_index_by_id = {
-#       'parent_id_1'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#       'parent_id_2'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#        ... ,
-#       'unknown_rom_id_1' : [], # Unknown ROMs never have clones
-#       'unknown_rom_id_2' : [],
-#       ...
-#   }
-#
-# unknown_ROMs_are_parents = False
-#   roms_pclone_index_by_id = {
-#       'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#       'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#        ... ,
-#       UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
-#   }
-#
-def fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
-    roms_pclone_index_by_id = {}
-
-    # --- Create a dictionary to convert ROMbase_noext names into IDs ---
-    names_to_ids_dic = {}
-    for rom_id in roms:
-        rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
-        rom_name = ROMFileName.getBase_noext()
-        # log_debug('{0} --> {1}'.format(rom_name, rom_id))
-        # log_debug('{0}'.format(rom))
-        names_to_ids_dic[rom_name] = rom_id
-
-    # --- Build PClone dictionary using ROM base_noext names ---
-    for rom_id in roms:
-        rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
-        rom_nointro_name = ROMFileName.getBase_noext()
-        # log_debug('rom_id {0}'.format(rom_id))
-        # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
-        # log_debug('  filename         "{0}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
-        # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
-
-        if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
-            if unknown_ROMs_are_parents:
-                # >> Unknown ROMs are parents
-                if rom_id not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[rom_id] = []
-            else:
-                # >> Unknown ROMs are clones
-                #    Also, if the parent ROMs of all clones does not exist yet then create it
-                if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
-                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
-                else:
-                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
-        else:
-            nointro_rom = roms_nointro[rom_nointro_name]
-
-            # >> ROM is a parent
-            if nointro_rom['cloneof'] == '':
-                if rom_id not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[rom_id] = []
-            # >> ROM is a clone
-            else:
-                parent_name = nointro_rom['cloneof']
-                parent_id   = names_to_ids_dic[parent_name]
-                clone_id    = rom['id']
-                if parent_id in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[parent_id].append(clone_id)
-                else:
-                    roms_pclone_index_by_id[parent_id] = []
-                    roms_pclone_index_by_id[parent_id].append(clone_id)
-
-    return roms_pclone_index_by_id
-
-#
-# Returns a dictionary with parent ROMs to be stored in database roms_base_noext_parents.json
-# If the parent of the Unknown ROMs is detected in the Parent dictionary then create fake
-# metadata for it.
-#
-def fs_generate_parent_ROMs_dic(roms, roms_pclone_index):
-    p_roms = {}
-
-    # --- Build parent ROM dictionary ---
-    for rom_id in roms_pclone_index:
-        # >> roms_pclone_index make contain the fake ROM id. Skip it if so because the fake
-        # >> ROM is not in roms dictionary (KeyError exception)
-        if rom_id == UNKNOWN_ROMS_PARENT_ID:
-            rom = fs_new_rom()
-            rom['id']                      = UNKNOWN_ROMS_PARENT_ID
-            rom['m_name']                  = '[Unknown ROMs]'
-            rom['m_plot']                  = 'Special virtual ROM parent of all Unknown ROMs'
-            rom['nointro_status']          = NOINTRO_STATUS_NONE
-            p_roms[UNKNOWN_ROMS_PARENT_ID] = rom
-        else:
-            # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
-            # >> Clean parent ROM name tags from ROM Name
-            p_roms[rom_id] = dict(roms[rom_id])
-
-    return p_roms
 
 # -------------------------------------------------------------------------------------------------
 # Fixes launchers.xml invalid XML characters, if present.

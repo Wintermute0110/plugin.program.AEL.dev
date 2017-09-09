@@ -36,7 +36,8 @@
 </category>
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
-    <setting label="Use assets in the Parent/Clone group" type="bool" id="audit_pclone_assets" default="true" />
+    <setting label="Create filename-based Parent/Clone groups" type="bool" id="audit_create_pclone_groups" default="true" />
+    <setting label="Search assets in the Parent/Clone group" type="bool" id="audit_pclone_assets" default="true" />
     <setting label="1G1R main region (not working yet)" type="enum" id="audit_1G1R_main_region" default="0" values="Europe|USA|Japan" />
     <setting label="1G1R secondary region (not working yet)" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />
 </category>

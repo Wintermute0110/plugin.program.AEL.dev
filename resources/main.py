@@ -433,89 +433,91 @@ class Main:
     #
     def _get_settings(self):
         # Get the users preference settings
+        o = __addon_obj__
         self.settings = {}
 
         # --- ROM Scanner settings ---
-        self.settings['scan_recursive']           = True if __addon_obj__.getSetting('scan_recursive') == 'true' else False
-        self.settings['scan_ignore_bios']         = True if __addon_obj__.getSetting('scan_ignore_bios') == 'true' else False
-        self.settings['scan_metadata_policy']     = int(__addon_obj__.getSetting('scan_metadata_policy'))
-        self.settings['scan_asset_policy']        = int(__addon_obj__.getSetting('scan_asset_policy'))
-        self.settings['scan_update_NFO_files']    = True if __addon_obj__.getSetting('scan_update_NFO_files') == 'true' else False
-        self.settings['scan_ignore_scrap_title']  = True if __addon_obj__.getSetting('scan_ignore_scrap_title') == 'true' else False
-        self.settings['scan_clean_tags']          = True if __addon_obj__.getSetting('scan_clean_tags') == 'true' else False
+        self.settings['scan_recursive']           = True if o.getSetting('scan_recursive') == 'true' else False
+        self.settings['scan_ignore_bios']         = True if o.getSetting('scan_ignore_bios') == 'true' else False
+        self.settings['scan_metadata_policy']     = int(o.getSetting('scan_metadata_policy'))
+        self.settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
+        self.settings['scan_update_NFO_files']    = True if o.getSetting('scan_update_NFO_files') == 'true' else False
+        self.settings['scan_ignore_scrap_title']  = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
+        self.settings['scan_clean_tags']          = True if o.getSetting('scan_clean_tags') == 'true' else False
 
         # --- ROM scraping ---
-        self.settings['metadata_scraper_mode']    = int(__addon_obj__.getSetting('metadata_scraper_mode'))
-        self.settings['asset_scraper_mode']       = int(__addon_obj__.getSetting('asset_scraper_mode'))
+        self.settings['metadata_scraper_mode']    = int(o.getSetting('metadata_scraper_mode'))
+        self.settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
 
-        self.settings['metadata_scraper']         = int(__addon_obj__.getSetting('metadata_scraper'))
-        self.settings['asset_scraper']            = int(__addon_obj__.getSetting('asset_scraper'))
+        self.settings['metadata_scraper']         = int(o.getSetting('metadata_scraper'))
+        self.settings['asset_scraper']            = int(o.getSetting('asset_scraper'))
 
-        self.settings['scraper_metadata']         = int(__addon_obj__.getSetting('scraper_metadata'))
-        self.settings['scraper_title']            = int(__addon_obj__.getSetting('scraper_title'))
-        self.settings['scraper_snap']             = int(__addon_obj__.getSetting('scraper_snap'))
-        self.settings['scraper_bfront']           = int(__addon_obj__.getSetting('scraper_bfront'))
-        self.settings['scraper_bback']            = int(__addon_obj__.getSetting('scraper_bback'))
-        self.settings['scraper_cart']             = int(__addon_obj__.getSetting('scraper_cart'))
-        self.settings['scraper_fanart']           = int(__addon_obj__.getSetting('scraper_fanart'))
-        self.settings['scraper_banner']           = int(__addon_obj__.getSetting('scraper_banner'))
-        self.settings['scraper_clearlogo']        = int(__addon_obj__.getSetting('scraper_clearlogo'))
-        self.settings['scraper_flyer']            = int(__addon_obj__.getSetting('scraper_flyer'))
-        self.settings['scraper_cabinet']          = int(__addon_obj__.getSetting('scraper_cabinet'))
-        self.settings['scraper_cpanel']           = int(__addon_obj__.getSetting('scraper_cpanel'))
-        self.settings['scraper_pcb']              = int(__addon_obj__.getSetting('scraper_pcb'))
-        self.settings['scraper_flyer_mame']       = int(__addon_obj__.getSetting('scraper_flyer_mame'))
+        self.settings['scraper_metadata']         = int(o.getSetting('scraper_metadata'))
+        self.settings['scraper_title']            = int(o.getSetting('scraper_title'))
+        self.settings['scraper_snap']             = int(o.getSetting('scraper_snap'))
+        self.settings['scraper_bfront']           = int(o.getSetting('scraper_bfront'))
+        self.settings['scraper_bback']            = int(o.getSetting('scraper_bback'))
+        self.settings['scraper_cart']             = int(o.getSetting('scraper_cart'))
+        self.settings['scraper_fanart']           = int(o.getSetting('scraper_fanart'))
+        self.settings['scraper_banner']           = int(o.getSetting('scraper_banner'))
+        self.settings['scraper_clearlogo']        = int(o.getSetting('scraper_clearlogo'))
+        self.settings['scraper_flyer']            = int(o.getSetting('scraper_flyer'))
+        self.settings['scraper_cabinet']          = int(o.getSetting('scraper_cabinet'))
+        self.settings['scraper_cpanel']           = int(o.getSetting('scraper_cpanel'))
+        self.settings['scraper_pcb']              = int(o.getSetting('scraper_pcb'))
+        self.settings['scraper_flyer_mame']       = int(o.getSetting('scraper_flyer_mame'))
 
         # --- ROM audit ---
-        self.settings['audit_unknown_roms']       = int(__addon_obj__.getSetting('audit_unknown_roms'))
-        self.settings['audit_pclone_assets']      = True if __addon_obj__.getSetting('audit_pclone_assets') == 'true' else False
-        self.settings['audit_1G1R_main_region']   = int(__addon_obj__.getSetting('audit_1G1R_main_region'))
-        self.settings['audit_1G1R_second_region'] = int(__addon_obj__.getSetting('audit_1G1R_second_region'))
+        self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
+        self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
+        self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
+        self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
+        self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
 
         # --- Scrapers ---
-        # self.settings['scraper_region']           = int(__addon_obj__.getSetting('scraper_region'))
-        # self.settings['scraper_thumb_size']       = int(__addon_obj__.getSetting('scraper_thumb_size'))
-        # self.settings['scraper_fanart_size']      = int(__addon_obj__.getSetting('scraper_fanart_size'))
-        # self.settings['scraper_image_type']       = int(__addon_obj__.getSetting('scraper_image_type'))
-        # self.settings['scraper_fanart_order']     = int(__addon_obj__.getSetting('scraper_fanart_order'))
+        # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
+        # self.settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
+        # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
+        # self.settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
+        # self.settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
 
         # --- Display ---
-        self.settings['display_launcher_notify']  = True if __addon_obj__.getSetting('display_launcher_notify') == 'true' else False
-        self.settings['display_hide_finished']    = True if __addon_obj__.getSetting('display_hide_finished') == 'true' else False
-        self.settings['display_launcher_roms']    = True if __addon_obj__.getSetting('display_launcher_roms') == 'true' else False
+        self.settings['display_launcher_notify']  = True if o.getSetting('display_launcher_notify') == 'true' else False
+        self.settings['display_hide_finished']    = True if o.getSetting('display_hide_finished') == 'true' else False
+        self.settings['display_launcher_roms']    = True if o.getSetting('display_launcher_roms') == 'true' else False
 
-        self.settings['display_rom_in_fav']       = True if __addon_obj__.getSetting('display_rom_in_fav') == 'true' else False
-        self.settings['display_nointro_stat']     = True if __addon_obj__.getSetting('display_nointro_stat') == 'true' else False
-        self.settings['display_fav_status']       = True if __addon_obj__.getSetting('display_fav_status') == 'true' else False
+        self.settings['display_rom_in_fav']       = True if o.getSetting('display_rom_in_fav') == 'true' else False
+        self.settings['display_nointro_stat']     = True if o.getSetting('display_nointro_stat') == 'true' else False
+        self.settings['display_fav_status']       = True if o.getSetting('display_fav_status') == 'true' else False
 
-        self.settings['display_hide_favs']        = True if __addon_obj__.getSetting('display_hide_favs') == 'true' else False
-        self.settings['display_hide_collections'] = True if __addon_obj__.getSetting('display_hide_collections') == 'true' else False
-        self.settings['display_hide_vlaunchers']  = True if __addon_obj__.getSetting('display_hide_vlaunchers') == 'true' else False
-        self.settings['display_hide_AEL_scraper'] = True if __addon_obj__.getSetting('display_hide_AEL_scraper') == 'true' else False
-        self.settings['display_hide_LB_scraper']  = True if __addon_obj__.getSetting('display_hide_LB_scraper') == 'true' else False
-        self.settings['display_hide_recent']      = True if __addon_obj__.getSetting('display_hide_recent') == 'true' else False
-        self.settings['display_hide_mostplayed']  = True if __addon_obj__.getSetting('display_hide_mostplayed') == 'true' else False
+        self.settings['display_hide_favs']        = True if o.getSetting('display_hide_favs') == 'true' else False
+        self.settings['display_hide_collections'] = True if o.getSetting('display_hide_collections') == 'true' else False
+        self.settings['display_hide_vlaunchers']  = True if o.getSetting('display_hide_vlaunchers') == 'true' else False
+        self.settings['display_hide_AEL_scraper'] = True if o.getSetting('display_hide_AEL_scraper') == 'true' else False
+        self.settings['display_hide_LB_scraper']  = True if o.getSetting('display_hide_LB_scraper') == 'true' else False
+        self.settings['display_hide_recent']      = True if o.getSetting('display_hide_recent') == 'true' else False
+        self.settings['display_hide_mostplayed']  = True if o.getSetting('display_hide_mostplayed') == 'true' else False
 
         # --- Paths ---
-        self.settings['categories_asset_dir']     = __addon_obj__.getSetting('categories_asset_dir').decode('utf-8')
-        self.settings['launchers_asset_dir']      = __addon_obj__.getSetting('launchers_asset_dir').decode('utf-8')
-        self.settings['favourites_asset_dir']     = __addon_obj__.getSetting('favourites_asset_dir').decode('utf-8')
-        self.settings['collections_asset_dir']    = __addon_obj__.getSetting('collections_asset_dir').decode('utf-8')
+        self.settings['categories_asset_dir']     = o.getSetting('categories_asset_dir').decode('utf-8')
+        self.settings['launchers_asset_dir']      = o.getSetting('launchers_asset_dir').decode('utf-8')
+        self.settings['favourites_asset_dir']     = o.getSetting('favourites_asset_dir').decode('utf-8')
+        self.settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- I/O ---
-        self.settings['io_retroarch_sys_dir']     = __addon_obj__.getSetting('io_retroarch_sys_dir').decode('utf-8')
+        self.settings['io_retroarch_sys_dir']     = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
         # --- Advanced ---
-        self.settings['media_state_action']       = int(__addon_obj__.getSetting('media_state_action'))
-        self.settings['delay_tempo']              = int(round(float(__addon_obj__.getSetting('delay_tempo'))))
-        self.settings['suspend_audio_engine']     = True if __addon_obj__.getSetting('suspend_audio_engine') == 'true' else False
-        self.settings['suspend_joystick_engine']  = True if __addon_obj__.getSetting('suspend_joystick_engine') == 'true' else False
-        self.settings['escape_romfile']           = True if __addon_obj__.getSetting('escape_romfile') == 'true' else False
-        self.settings['lirc_state']               = True if __addon_obj__.getSetting('lirc_state') == 'true' else False
-        self.settings['show_batch_window']        = True if __addon_obj__.getSetting('show_batch_window') == 'true' else False
-        self.settings['windows_close_fds']        = True if __addon_obj__.getSetting('windows_close_fds') == 'true' else False
-        self.settings['windows_cd_apppath']       = True if __addon_obj__.getSetting('windows_cd_apppath') == 'true' else False
-        self.settings['log_level']                = int(__addon_obj__.getSetting('log_level'))
+        self.settings['media_state_action']       = int(o.getSetting('media_state_action'))
+        self.settings['delay_tempo']              = int(round(float(o.getSetting('delay_tempo'))))
+        self.settings['suspend_audio_engine']     = True if o.getSetting('suspend_audio_engine') == 'true' else False
+        self.settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
+        self.settings['escape_romfile']           = True if o.getSetting('escape_romfile') == 'true' else False
+        self.settings['lirc_state']               = True if o.getSetting('lirc_state') == 'true' else False
+        self.settings['show_batch_window']        = True if o.getSetting('show_batch_window') == 'true' else False
+        self.settings['windows_close_fds']        = True if o.getSetting('windows_close_fds') == 'true' else False
+        self.settings['windows_cd_apppath']       = True if o.getSetting('windows_cd_apppath') == 'true' else False
+        self.settings['log_level']                = int(o.getSetting('log_level'))
 
         # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR.getOriginalPath()
@@ -7810,21 +7812,36 @@ class Main:
             if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
 
-        # --- Make a Parent/Clone index and save JSON file ---
-        # >> Here we build a roms_pclone_index with info from the DAT file. 2 issues:
-        # >> A) Redump DATs do not have cloneof information.
-        # >> B) Also, it is at this point where a region custom parent may be chosen instead of
-        # >>    the default one.
-        pDialog.update(0, 'Building Parent/Clone index ...')
+        # --- Detect if the DAT file has PClone information or not ---
+        dat_pclone_dic = audit_make_NoIntro_PClone_dic(roms_nointro)
+        num_dat_clones = 0
+        for parent_name in dat_pclone_dic: num_dat_clones += len(dat_pclone_dic[parent_name])
+        log_verb('No-Intro/Redump DAT has {0} clone ROMs'.format(num_dat_clones))
+
+        # --- Generate main pclone dictionary ---
         # >> audit_unknown_roms is an int of list = ['Parents', 'Clones']
-        unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
         # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
+        unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
         log_debug('unknown_ROMs_are_parents = {0}'.format(unknown_ROMs_are_parents))
-        roms_pclone_index = fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
-        index_roms_base_noext = launcher['roms_base_noext'] + '_index_PClone'
-        fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, roms_pclone_index)
-        pDialog.update(100)
-        if __debug_progress_dialogs: time.sleep(0.5)
+        if num_dat_clones == 0 and self.settings['audit_create_pclone_groups']:
+            # --- If DAT has no PClone information and user want then generate filename-based PClone groups ---
+            # >> This feature is taken from NARS (NARS Advanced ROM Sorting)
+            log_verb('Generating filename-based Parent/Clone groups')
+            pDialog.update(0, 'Building filename-based Parent/Clone index ...')
+            roms_pclone_index = audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+            pDialog.update(100)
+            if __debug_progress_dialogs: time.sleep(0.5)
+        else:
+            # --- Make a DAT-based Parent/Clone index ---
+            # >> Here we build a roms_pclone_index with info from the DAT file. 2 issues:
+            # >> A) Redump DATs do not have cloneof information.
+            # >> B) Also, it is at this point where a region custom parent may be chosen instead of
+            # >>    the default one.
+            log_verb('Generating DAT-based Parent/Clone groups')
+            pDialog.update(0, 'Building DAT-based Parent/Clone index ...')
+            roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+            pDialog.update(100)
+            if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Make a Clone/Parent index ---
         # >> This is made exclusively from the Parent/Clone index
@@ -7833,12 +7850,10 @@ class Main:
         for parent_id in roms_pclone_index:
             for clone_id in roms_pclone_index[parent_id]:
                 clone_parent_dic[clone_id] = parent_id
-        index_roms_base_noext = launcher['roms_base_noext'] + '_index_CParent'
-        fs_write_JSON_file(ROMS_DIR, index_roms_base_noext, clone_parent_dic)
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 
-        # --- Set pclone_status flag ---
+        # --- Set ROMs pclone_status flag and update launcher statistics ---
         pDialog.update(0, 'Audit Step 4/4: Setting Parent/Clone status and cloneof fields...')
         num_items = len(roms)
         item_counter = 0
@@ -7865,11 +7880,18 @@ class Main:
         # --- Make a Parent only ROM list and save JSON ---
         # >> This is to speed up rendering of launchers in 1G1R display mode
         pDialog.update(0, 'Building Parent/Clone index and Parent dictionary ...')
-        parent_roms = fs_generate_parent_ROMs_dic(roms, roms_pclone_index)
-        parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
-        fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
+        parent_roms = audit_generate_parent_ROMs_dic(roms, roms_pclone_index)
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Save JSON databases ---
+        pDialog.update(0, 'Saving NO-Intro/Redump JSON databases ...')
+        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone', roms_pclone_index)
+        pDialog.update(30)
+        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent', clone_parent_dic)
+        pDialog.update(60)
+        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_parents', parent_roms)
+        pDialog.update(100)
         pDialog.close()
 
         # --- Update launcher number of ROMs ---

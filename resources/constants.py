@@ -74,3 +74,67 @@ AEL_PCLONE_STAT_LABEL                = 'AEL_PClone_stat'
 AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
 AEL_PCLONE_STAT_VALUE_CLONE          = 'PClone_Clone'
 AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
+
+# --- ID of the fake ROM parent of all Unknown ROMs ---
+UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
+
+# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
+NOINTRO_DMODE_ALL       = 'All ROMs'
+NOINTRO_DMODE_HAVE      = 'Have ROMs'
+NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
+NOINTRO_DMODE_HAVE_MISS = 'Have or Missing ROMs'
+NOINTRO_DMODE_MISS      = 'Missing ROMs'
+NOINTRO_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
+NOINTRO_DMODE_UNK       = 'Unknown ROMs'
+NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
+                           NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
+                           NOINTRO_DMODE_UNK]
+
+# launcher['launcher_display_mode'] values default LAUNCHER_DMODE_FLAT
+LAUNCHER_DMODE_FLAT   = 'Flat mode'
+LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
+LAUNCHER_DMODE_1G1R   = '1G1R mode'
+LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
+
+# Mandatory variables in XML:
+# id              string MD5 hash
+# name            string ROM name
+# finished        bool default False
+# nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
+NOINTRO_STATUS_HAVE    = 'Have'
+NOINTRO_STATUS_MISS    = 'Miss'
+NOINTRO_STATUS_UNKNOWN = 'Unknown'
+NOINTRO_STATUS_NONE    = 'None'
+NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE, NOINTRO_STATUS_MISS, NOINTRO_STATUS_UNKNOWN, 
+                          NOINTRO_STATUS_NONE]
+
+PCLONE_STATUS_PARENT = 'Parent'
+PCLONE_STATUS_CLONE  = 'Clone'
+PCLONE_STATUS_NONE   = 'None'
+PCLONE_STATUS_LIST   = [PCLONE_STATUS_PARENT, PCLONE_STATUS_CLONE, PCLONE_STATUS_NONE]
+
+# m_esrb string ESRB_LIST default ESRB_PENDING
+ESRB_PENDING     = 'RP (Rating Pending)'
+ESRB_EARLY       = 'EC (Early Childhood)'
+ESRB_EVERYONE    = 'E (Everyone)'
+ESRB_EVERYONE_10 = 'E10+ (Everyone 10+)'
+ESRB_TEEN        = 'T (Teen)'
+ESRB_MATURE      = 'M (Mature)'
+ESRB_ADULTS_ONLY = 'AO (Adults Only)'
+ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
+                    ESRB_MATURE, ESRB_ADULTS_ONLY]
+
+# m_nplayers values default ''
+NP_1P     = '1P'
+NP_2P_SIM = '2P sim'
+NP_2P_ALT = '2P alt'
+NP_3P_SIM = '3P sim'
+NP_3P_ALT = '3P alt'
+NP_4P_SIM = '4P sim'
+NP_4P_ALT = '4P alt'
+NP_6P_SIM = '6P sim'
+NP_6P_ALT = '6P alt'
+NP_8P_SIM = '8P sim'
+NP_8P_ALT = '8P alt'
+NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, NP_4P_ALT, 
+                        NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
