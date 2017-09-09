@@ -804,45 +804,19 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID][AInfo.key] = listitems_asset_paths[ret_idx]
         log_verb('Set launcher artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
-    # >> Name of launcher has changed.
-    #    Regenerate roms_base_noext and rename old one if necessary.
-    category_name = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
-    old_roms_base_noext          = launchers[launcherID]['roms_base_noext']
-    old_roms_file_json           = ROMS_DIR.join(old_roms_base_noext + '.json')
-    old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
-    old_PClone_index_file_json   = ROMS_DIR.join(old_roms_base_noext + '_PClone_index.json')
-    old_PClone_parents_file_json = ROMS_DIR.join(old_roms_base_noext + '_PClone_parents.json')
-    log_debug('old_roms_base_noext "{0}"'.format(old_roms_base_noext))
-    new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-    new_roms_file_json           = ROMS_DIR.join(new_roms_base_noext + '.json')
-    new_roms_file_xml            = ROMS_DIR.join(new_roms_base_noext + '.xml')
-    new_PClone_index_file_json   = ROMS_DIR.join(new_roms_base_noext + '_PClone_index.json')
-    new_PClone_parents_file_json = ROMS_DIR.join(new_roms_base_noext + '_PClone_parents.json')
-    log_debug('new_roms_base_noext "{0}"'.format(new_roms_base_noext))
-
     # >> Rename ROMS JSON/XML only if there is a change in filenames.
+    #    Regenerate roms_base_noext and rename old one if necessary.
+    old_roms_base_noext = launchers[launcherID]['roms_base_noext']
+    category_name       = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
+    new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
+    log_debug('old_roms_base_noext "{0}"'.format(old_roms_base_noext))
+    log_debug('new_roms_base_noext "{0}"'.format(new_roms_base_noext))
     if old_roms_base_noext != new_roms_base_noext:
         log_debug('Renaming JSON/XML launcher databases')
         launchers[launcherID]['roms_base_noext'] = new_roms_base_noext
-        # >> Only rename files if originals found.
-        if old_roms_file_json.exists():
-            old_roms_file_json.rename(new_roms_file_json)
-            log_debug('RENAMED {0}'.format(old_roms_file_json.getOriginalPath()))
-            log_debug('   into {0}'.format(new_roms_file_json.getOriginalPath()))
-        if old_roms_file_xml.exists():
-            old_roms_file_xml.rename(new_roms_file_xml)
-            log_debug('RENAMED {0}'.format(old_roms_file_xml.getOriginalPath()))
-            log_debug('   into {0}'.format(new_roms_file_xml.getOriginalPath()))
-        if old_PClone_index_file_json.exists():
-            old_PClone_index_file_json.rename(new_PClone_index_file_json)
-            log_debug('RENAMED {0}'.format(old_PClone_index_file_json.getOriginalPath()))
-            log_debug('   into {0}'.format(new_PClone_index_file_json.getOriginalPath()))
-        if old_PClone_parents_file_json.exists():
-            old_PClone_parents_file_json.rename(new_PClone_parents_file_json)
-            log_debug('RENAMED {0}'.format(old_PClone_parents_file_json.getOriginalPath()))
-            log_debug('   into {0}'.format(new_PClone_parents_file_json.getOriginalPath()))
+        fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
     else:
-        log_debug('Not renaming databases (old and new names are equal)')
+        log_debug('Not renaming ROM databases (old and new names are equal)')
 
 #
 # Search for asset files and return a list of found asset files.

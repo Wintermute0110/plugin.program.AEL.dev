@@ -848,10 +848,10 @@ class Main:
                                         'Are you sure you want to delete "{0}"?'.format(category_name))
                 if not ret: return
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
-                # >> Delete launchers and ROM JSON/XML associated with them
+                # >> Delete launchers and ROM JSON/XML files associated with them
                 for launcherID in launcherID_list:
                     log_info('Deleting linked launcher "{0}" id {1}'.format(self.launchers[launcherID]['m_name'], launcherID))
-                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
                     self.launchers.pop(launcherID)
                 # >> Delete category from database.
                 self.categories.pop(categoryID)
@@ -1130,43 +1130,18 @@ class Main:
                 if old_launcher_name == new_launcher_name: return
 
                 # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-                old_roms_base_noext          = launcher['roms_base_noext']
-                old_roms_file_json           = ROMS_DIR.join(old_roms_base_noext + '.json')
-                old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
-                old_PClone_index_file_json   = ROMS_DIR.join(old_roms_base_noext + '_PClone_index.json')
-                old_PClone_parents_file_json = ROMS_DIR.join(old_roms_base_noext + '_PClone_parents.json')
-                if launcher['categoryID'] in self.categories:
-                    category_name = self.categories[launcher['categoryID']]['m_name']
-                elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
-                    category_name = VCATEGORY_ADDONROOT_ID
-                else:
-                    kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
-                    raise Exception('Launcher category not found. This is a bug, please report it.')
-                new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-                new_roms_file_json           = ROMS_DIR.join(new_roms_base_noext + '.json')
-                new_roms_file_xml            = ROMS_DIR.join(new_roms_base_noext + '.xml')
-                new_PClone_index_file_json   = ROMS_DIR.join(new_roms_base_noext + '_PClone_index.json')
-                new_PClone_parents_file_json = ROMS_DIR.join(new_roms_base_noext + '_PClone_parents.json')
+                old_roms_base_noext = self.launchers[launcherID]['roms_base_noext']
+                categoryID          = self.launchers[launcherID]['categoryID']
+                category_name       = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
+                new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
                 log_debug('_command_edit_launcher() old_roms_base_noext "{0}"'.format(old_roms_base_noext))
                 log_debug('_command_edit_launcher() new_roms_base_noext "{0}"'.format(new_roms_base_noext))
-                # >> Rename ROMS JSON/XML
-                if old_roms_file_json.exists():
-                    old_roms_file_json.rename(new_roms_file_json)
-                    log_debug('_command_edit_launcher() RENAMED {0}'.format(old_roms_file_json.getOriginalPath()))
-                    log_debug('_command_edit_launcher()    into {0}'.format(new_roms_file_json.getOriginalPath()))
-                if old_roms_file_xml.exists():
-                    old_roms_file_xml.rename(new_roms_file_xml)
-                    log_debug('_command_edit_launcher() RENAMED {0}'.format(old_roms_file_xml.getOriginalPath()))
-                    log_debug('_command_edit_launcher()    into {0}'.format(new_roms_file_xml.getOriginalPath()))
-                # >> Renamed PClone files if found
-                if old_PClone_index_file_json.exists():
-                    old_PClone_index_file_json.rename(new_PClone_index_file_json)
-                    log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_index_file_json.getOriginalPath()))
-                    log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_index_file_json.getOriginalPath()))
-                if old_PClone_parents_file_json.exists():
-                    old_PClone_parents_file_json.rename(new_PClone_parents_file_json)
-                    log_debug('_command_edit_launcher() RENAMED {0}'.format(old_PClone_parents_file_json.getOriginalPath()))
-                    log_debug('_command_edit_launcher()    into {0}'.format(new_PClone_parents_file_json.getOriginalPath()))
+                if old_roms_base_noext != new_roms_base_noext:
+                    log_debug('Renaming JSON/XML launcher databases')
+                    launchers[launcherID]['roms_base_noext'] = new_roms_base_noext
+                    fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
+                else:
+                    log_debug('Not renaming ROM databases (old and new names are equal)')
                 launcher['m_name'] = new_launcher_name
                 launcher['roms_base_noext'] = new_roms_base_noext
                 kodi_notify('Changed Launcher Title')
@@ -2272,7 +2247,7 @@ class Main:
             if not ret: return
 
             # --- Remove JSON/XML file if exist ---
-            fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+            fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
 
             # --- Remove launcher from database. Categories.xml will be saved at the end of function ---
             self.launchers.pop(launcherID)
@@ -2331,8 +2306,7 @@ class Main:
         else:
             log_debug('_command_edit_rom() Editing ROM in Launcher')
             launcher = self.launchers[launcherID]
-            roms_base_noext = launcher['roms_base_noext']
-            roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
 
         # --- Show a dialog with ROM editing options ---
         rom_name = roms[romID]['m_name']
@@ -3037,11 +3011,10 @@ class Main:
             #    Also update changed launcher timestamp
             self.launchers[launcherID]['num_roms'] = len(roms)
             self.launchers[launcherID]['timestamp_launcher'] = _t = time.time()
-            roms_base_noext = self.launchers[launcherID]['roms_base_noext']
             pDialog = xbmcgui.DialogProgress()
             pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
-            pDialog.update(25)
-            fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+            pDialog.update(10)
+            fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID], roms)
             pDialog.update(90)
             fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             pDialog.update(100)
@@ -3056,7 +3029,7 @@ class Main:
                 if romID in parent_roms:
                     log_verb('romID in Parent JSON. Updating ...')
                     parent_roms[romID] = roms[romID]
-                pDialog.update(50, 'Saving Parents JSON ...')
+                pDialog.update(10, 'Saving Parents JSON ...')
                 fs_write_JSON_file(ROMS_DIR, parents_roms_base_noext, parent_roms)
                 pDialog.update(100)
             pDialog.close()

@@ -660,41 +660,86 @@ def fs_load_JSON_file(file_dir, file_base_noext):
 # <roms_base_noext>_DAT.json
 #
 def fs_unlink_ROMs_database(roms_dir_FN, launcher):
+    roms_base_noext = launcher['roms_base_noext']
+
     # >> Delete ROMs JSON file
-    roms_json_file_FN = roms_dir_FN.pjoin(roms_base_noext + '.json')
-    if roms_json_file_FN.exists():
-        log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_file_FN.getOriginalPath()))
-        roms_json_file_FN.unlink()
+    roms_json_FN = roms_dir_FN.pjoin(roms_base_noext + '.json')
+    if roms_json_FN.exists():
+        log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_FN.getOriginalPath()))
+        roms_json_FN.unlink()
 
     # >> Delete ROMs info XML file
-    roms_xml_file_FN = roms_dir_FN.pjoin(roms_base_noext + '.xml')
-    if roms_xml_file_FN.exists():
-        log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_file_FN.getOriginalPath()))
-        roms_xml_file_FN.unlink()
+    roms_xml_FN = roms_dir_FN.pjoin(roms_base_noext + '.xml')
+    if roms_xml_FN.exists():
+        log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_FN.getOriginalPath()))
+        roms_xml_FN.unlink()
 
     # >> Delete No-Intro/Redump stuff if exist
-    roms_index_CParent_file_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_CParent.json')
-    if roms_index_CParent_file_FN.exists():
-        log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_file_FN.getOriginalPath()))
-        roms_index_CParent_file_FN.unlink()
+    roms_index_CParent_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_CParent.json')
+    if roms_index_CParent_FN.exists():
+        log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_FN.getOriginalPath()))
+        roms_index_CParent_FN.unlink()
 
-    roms_index_PClone_file_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_PClone.json')
-    if roms_index_PClone_file.exists():
-        log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_file_FN.getOriginalPath()))
-        roms_index_PClone_file_FN.unlink()
+    roms_index_PClone_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_PClone.json')
+    if roms_index_PClone_FN.exists():
+        log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_FN.getOriginalPath()))
+        roms_index_PClone_FN.unlink()
 
-    roms_parents_file_FN = roms_dir_FN.pjoin(roms_base_noext + '_parents.json')
-    if roms_parents_file_FN.exists():
-        log_info('Deleting parents JSON "{0}"'.format(roms_parents_file_FN.getOriginalPath()))
-        roms_parents_file_FN.unlink()
+    roms_parents_FN = roms_dir_FN.pjoin(roms_base_noext + '_parents.json')
+    if roms_parents_FN.exists():
+        log_info('Deleting parents JSON "{0}"'.format(roms_parents_FN.getOriginalPath()))
+        roms_parents_FN.unlink()
 
-    roms_DAT_file_FN = roms_dir_FN.pjoin(roms_base_noext + '_DAT.json')
-    if roms_DAT_file_FN.exists():
-        log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_file_FN.getOriginalPath()))
-        roms_DAT_file_FN.unlink()
+    roms_DAT_FN = roms_dir_FN.pjoin(roms_base_noext + '_DAT.json')
+    if roms_DAT_FN.exists():
+        log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getOriginalPath()))
+        roms_DAT_FN.unlink()
 
 def fs_rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
-    pass
+    old_roms_json_FN          = roms_dir_FN.pjoin(old_roms_base_noext + '.json')
+    old_roms_xml_FN           = roms_dir_FN.pjoin(old_roms_base_noext + '.xml')
+    old_roms_index_CParent_FN = roms_dir_FN.pjoin(old_roms_base_noext + '_index_CParent.json')
+    old_roms_index_PClone_FN  = roms_dir_FN.pjoin(old_roms_base_noext + '_index_PClone.json')
+    old_roms_parents_FN       = roms_dir_FN.pjoin(old_roms_base_noext + '_parents.json')
+    old_roms_DAT_FN           = roms_dir_FN.pjoin(old_roms_base_noext + '_DAT.json')
+
+    new_roms_json_FN          = roms_dir_FN.pjoin(new_roms_base_noext + '.json')
+    new_roms_xml_FN           = roms_dir_FN.pjoin(new_roms_base_noext + '.xml')
+    new_roms_index_CParent_FN = roms_dir_FN.pjoin(new_roms_base_noext + '_index_CParent.json')
+    new_roms_index_PClone_FN  = roms_dir_FN.pjoin(new_roms_base_noext + '_index_PClone.json')
+    new_roms_parents_FN       = roms_dir_FN.pjoin(new_roms_base_noext + '_parents.json')
+    new_roms_DAT_FN           = roms_dir_FN.pjoin(new_roms_base_noext + '_DAT.json')
+
+    # >> Only rename files if originals found.
+    if old_roms_json_FN.exists():
+        old_roms_json_FN.rename(new_roms_json_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_json_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_json_FN.getOriginalPath()))
+
+    if old_roms_xml_FN.exists():
+        old_roms_xml_FN.rename(new_roms_xml_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_xml_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_xml_FN.getOriginalPath()))
+
+    if old_roms_index_CParent_FN.exists():
+        old_roms_index_CParent_FN.rename(new_roms_index_CParent_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_index_CParent_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_index_CParent_FN.getOriginalPath()))
+
+    if old_roms_index_PClone_FN.exists():
+        old_roms_index_PClone_FN.rename(new_roms_index_PClone_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_index_PClone_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_index_PClone_FN.getOriginalPath()))
+
+    if old_roms_parents_FN.exists():
+        old_roms_parents_FN.rename(new_roms_parents_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_parents_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_parents_FN.getOriginalPath()))
+
+    if old_roms_DAT_FN.exists():
+        old_roms_DAT_FN.rename(new_roms_DAT_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_DAT_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_DAT_FN.getOriginalPath()))
 
 def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # >> Get file names

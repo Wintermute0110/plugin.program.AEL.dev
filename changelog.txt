@@ -73,6 +73,9 @@ WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advance
 FEATURE  Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
          PClone information. See previous feature.
 
+WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
+         This resembles what NARS No-Intro filtering does.
+
 FEATURE  Use substituted artwork from the Parent/Clone group.
          So far implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork"
 
@@ -82,16 +85,13 @@ FEATURE  I discovered that in the ROM Scanner most of the time is spend looking 
          Implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork",
          must be ported to the ROM scanner if it works well (faster than the current approach).
 
-WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
-         This resembles what NARS No-Intro filtering does.
-
 WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
          selected scraper. This will require a redesign of the current scraping engine.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628383#pid2628383 and next post.
 
 WIP      Port to the ROM scanner the asset file cache.
 
-WIP      Launcher flag to enable non-blocking launchers. This is required for wrapper scripts
+HALF     Launcher flag to enable non-blocking launchers. This is required for wrapper scripts
          that close Kodi to avoid problems (such as Kodi getting gamepad commands instead of the
          launcher app or Kodi running in standalone mode withouth a Window manager).
 
