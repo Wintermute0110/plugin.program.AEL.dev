@@ -532,32 +532,6 @@ class Main:
         # log_debug('Settings dump END')
 
     #
-    # Load scrapers based on the user settings. This couple of functions are only used in the ROM
-    # scanner. Edit Categories/Launchers/ROMs initialise scrapers on demand.
-    # Pass settings to the scraper objects based on user preferences.
-    # Scrapers are loaded when needed, no always at main() as before. This will make the plugin
-    # a little bit faster.
-    #
-    def _load_metadata_scraper(self):
-        # Scraper objects are created and inserted into a list. This list order matches
-        # exactly the number returned by the settings. If scrapers are changed make sure the
-        # list in scrapers.py and in settings.xml have same values!
-        self.scraper_metadata = scrapers_metadata[self.settings['metadata_scraper']]
-        log_verb('_load_metadata_scraper() Loaded metadata scraper {0}'.format(self.scraper_metadata.name))
-
-        # Initialise metadata scraper plugin installation dir, for offline scrapers
-        self.scraper_metadata.set_addon_dir(CURRENT_ADDON_DIR.getPath())
-
-    def _load_asset_scraper(self):
-        self.scraper_asset = scrapers_asset[self.settings['asset_scraper']]
-        log_verb('_load_asset_scraper() Loaded asset scraper {0}'.format(self.scraper_asset.name))
-
-        # --- Initialise options of the thumb scraper ---
-        # region = self.settings['scraper_region']
-        # thumb_imgsize = self.settings['scraper_thumb_size']
-        # self.scraper_asset.set_options(region, thumb_imgsize)
-
-    #
     # Set Sorting methods
     #
     def _misc_set_default_sorting_method(self):
@@ -8050,18 +8024,35 @@ class Main:
         report_fobj.write('  ROM ext       "{0}"\n'.format(launcher_exts))
         report_fobj.write('  Platform      "{0}"\n'.format(launcher['platform']))
 
-        # Check if there is an XML for this launcher. If so, load it.
-        # If file does not exist or is empty then return an empty dictionary.
+        # >> Check if there is an XML for this launcher. If so, load it.
+        # >> If file does not exist or is empty then return an empty dictionary.
         report_fobj.write('Loading launcher ROMs ...\n')
         roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
         num_roms = len(roms)
         report_fobj.write('  {0} ROMs currently in database\n'.format(num_roms))
         log_info('Launcher ROM database contain {0} items'.format(num_roms))
 
-        # --- Load metadata/asset scrapers ---
-        self._load_metadata_scraper()
-        self._load_asset_scraper()
+        # --- Load metadata/asset scrapers --------------------------------------------------------
+        # --- Metadata scraper ---
+        # Scraper objects are created and inserted into a list. This list order matches
+        # exactly the number returned by the settings. If scrapers are changed make sure the
+        # list in scrapers.py and in settings.xml have same values!
+        self.scraper_metadata = scrapers_metadata[self.settings['metadata_scraper']]
+        log_verb('Loaded metadata scraper {0}'.format(self.scraper_metadata.name))
 
+        # >> Initialise metadata scraper plugin installation dir, for offline scrapers
+        self.scraper_metadata.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+
+        # --- Asset scrapers ---
+        self.scraper_asset = scrapers_asset[self.settings['asset_scraper']]
+        log_verb('Loaded asset scraper {0}'.format(self.scraper_asset.name))
+
+        # >> Initialise options of the thumb scraper
+        # region = self.settings['scraper_region']
+        # thumb_imgsize = self.settings['scraper_thumb_size']
+        # self.scraper_asset.set_options(region, thumb_imgsize)
+
+        # --- Assets/artwork stuff ----------------------------------------------------------------
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         log_info('Checking for unset artwork directories ...')
         (self.enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
@@ -8089,7 +8080,7 @@ class Main:
         self.pDialog_canceled = False
         self.pDialog_verbose = False
 
-        # ~~~~~ Remove dead entries ~~~~~
+        # --- Remove dead entries -----------------------------------------------------------------
         log_info('Removing dead ROMs ...'.format())
         report_fobj.write('Removing dead ROMs ...\n')
         num_removed_roms = 0
