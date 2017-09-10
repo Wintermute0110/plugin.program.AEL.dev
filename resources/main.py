@@ -6820,14 +6820,15 @@ class Main:
         # --- ROM in Favourites ---
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
             log_info('_command_run_rom() Launching ROM in Favourites ...')
-            roms          = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            rom           = roms[romID]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
+            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            rom = roms[romID]
+            recent_rom = rom
+            minimize_flag     = rom['minimize']
+            non_blocking_flag = rom['non_blocking']
+            romext            = rom['romext']
+            standard_app      = rom['application']
+            standard_args     = rom['args']
+            args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Recently played ROMs list ---
         elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
             log_info('_command_run_rom() Launching ROM in Recently Played ROMs ...')
@@ -6836,24 +6837,26 @@ class Main:
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
                 return
-            rom           = recent_roms_list[current_ROM_position]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
+            rom = recent_roms_list[current_ROM_position]
+            recent_rom = rom
+            minimize_flag     = rom['minimize']
+            non_blocking_flag = rom['non_blocking']
+            romext            = rom['romext']
+            standard_app      = rom['application']
+            standard_args     = rom['args']
+            args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Most played ROMs ---
         elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
             log_info('_command_run_rom() Launching ROM in Most played ROMs ...')
             most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-            rom           = most_played_roms[romID]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
+            rom = most_played_roms[romID]
+            recent_rom = rom
+            minimize_flag     = rom['minimize']
+            non_blocking_flag = rom['non_blocking']
+            romext            = rom['romext']
+            standard_app      = rom['application']
+            standard_args     = rom['args']
+            args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_info('_command_run_rom() Launching ROM in Collection ...')
@@ -6865,13 +6868,14 @@ class Main:
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
                 return
-            rom           = collection_rom_list[current_ROM_position]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
+            rom = collection_rom_list[current_ROM_position]
+            recent_rom = rom
+            minimize_flag     = rom['minimize']
+            non_blocking_flag = rom['non_blocking']
+            romext            = rom['romext']
+            standard_app      = rom['application']
+            standard_args     = rom['args']
+            args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID or \
@@ -6892,13 +6896,14 @@ class Main:
                 log_info('_command_run_rom() Launching ROM in Category Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
 
-            rom           = roms[romID]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
+            rom = roms[romID]
+            recent_rom = rom
+            minimize_flag     = rom['minimize']
+            non_blocking_flag = rom['non_blocking']
+            romext            = rom['romext']
+            standard_app      = rom['application']
+            standard_args     = rom['args']
+            args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in standard ROM launcher ---
         else:
             log_info('_command_run_rom() Launching ROM in Launcher ...')
@@ -6912,13 +6917,14 @@ class Main:
             if romID not in roms:
                 kodi_dialog_OK('romID not in roms dictionary')
                 return
-            rom           = roms[romID]
-            recent_rom    = fs_get_Favourite_from_ROM(rom, launcher)
-            minimize_flag = launcher['minimize']
-            romext        = launcher['romext']
-            standard_app  = launcher['application']
-            standard_args = launcher['args']
-            args_extra    = launcher['args_extra']
+            rom = roms[romID]
+            recent_rom = fs_get_Favourite_from_ROM(rom, launcher)
+            minimize_flag     = launcher['minimize']
+            non_blocking_flag = launcher['non_blocking']
+            romext            = launcher['romext']
+            standard_app      = launcher['application']
+            standard_args     = launcher['args']
+            args_extra        = launcher['args_extra']
 
         # ~~~~~ Substitue altapp/altarg or additional arguments ~~~~~
         # >> If ROM has altapp configured, then use altapp/altarg
@@ -7065,7 +7071,6 @@ class Main:
             log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
         else:
             log_info('_command_run_rom() Launcher is not Kodi Retroplayer.')
-            non_blocking_flag = True
             self._run_before_execution(romtitle, minimize_flag)
             self._run_process(application.getPath(), arguments, apppath, romext, non_blocking_flag)
             self._run_after_execution(minimize_flag)
@@ -7159,6 +7164,11 @@ class Main:
                 log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))
 
         # >> Linux and Android
+        # >> New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
+        # >> process. This is to avoid Kodi opens sockets be inherited by the child process. A
+        # >> wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
+        # >> closed Kodi will complain that the remote interfacte cannot be initialised. I believe
+        # >> the cause is that the socket is kept open by the wrapper script.
         elif sys.platform.startswith('linux'):
             # >> Old way of launching child process. os.system() is deprecated and should not
             # >> be used anymore.
@@ -7168,12 +7178,12 @@ class Main:
             if non_blocking_flag:
                 # >> In a non-blocking launch stdout/stderr of child process cannot be recorded.
                 log_info('_run_process() (Linux) Launching non-blocking process subprocess.Popen()')
-                p = subprocess.Popen(exec_list)
+                p = subprocess.Popen(exec_list, close_fds = True)
             else:
                 if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
                 log_info('_run_process() (Linux) Launching blocking process subprocess.call()')
                 with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                    retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
+                    retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
                 log_info('_run_process() Process retcode = {0}'.format(retcode))
                 if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
 
