@@ -6305,6 +6305,7 @@ class Main:
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(rom['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(rom['minimize'])
+        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(rom['non_blocking'])
         info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(rom['roms_default_icon'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(rom['roms_default_fanart'])
         info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
@@ -9275,10 +9276,9 @@ class Main:
         # >> Save categories.xml
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         pDialog.update(100)
-        pDialog.close()
 
         # >> Traverse all launchers. Load ROMs and check every ROMs.
-        pDialog.create('Advanced Emulator Launcher', 'Checking Launcher ROMs ...')
+        pDialog.update(0, 'Checking Launcher ROMs ...')
         num_launchers = len(self.launchers)
         processed_launchers = 0
         for launcher_id in self.launchers:
@@ -9290,7 +9290,7 @@ class Main:
 
             # --- If exists, load Parent ROM database ---
             parents_roms_base_noext = self.launchers[launcher_id]['roms_base_noext'] + '_parents'
-            parents_FN = ROMS_DIR.join(parents_roms_base_noext + '.json')
+            parents_FN = ROMS_DIR.pjoin(parents_roms_base_noext + '.json')
             if parents_FN.exists():
                 roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
                 for rom_id in roms: self._misc_fix_rom_object(roms[rom_id])
@@ -9301,15 +9301,14 @@ class Main:
 
             # >> Update dialog
             processed_launchers += 1
-            update_number = (float(processed_launchers) / float(num_launchers)) * 100 
-            pDialog.update(int(update_number))
+            update_number = (processed_launchers * 100) / num_launchers
+            pDialog.update(update_number)
         # >> Save categories.xml because launcher timestamps changed
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         pDialog.update(100)
-        pDialog.close()
 
         # >> Load Favourite ROMs and update JSON
-        pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs ...')
+        pDialog.update(0, 'Checking Favourite ROMs ...')
         roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
         num_fav_roms = len(roms_fav)
         processed_fav_roms = 0
@@ -9323,11 +9322,10 @@ class Main:
             pDialog.update(int(update_number))
         fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
         pDialog.update(100)
-        pDialog.close()
 
         # >> Traverse every ROM Collection database and check/update Favourite ROMs.
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-        pDialog.create('Advanced Emulator Launcher', 'Checking Collection ROMs ...')
+        pDialog.update(0, 'Checking Collection ROMs ...')
         num_collections = len(collections)
         processed_collections = 0
         for collection_id in collections:
@@ -9367,20 +9365,18 @@ class Main:
         # >> Save ROM Collection index
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
         pDialog.update(100)
-        pDialog.close()
 
         # >> Load Most Played ROMs and check/update.
-        pDialog.create('Advanced Emulator Launcher', 'Checking Most Played ROMs ...')
+        pDialog.update(0, 'Checking Most Played ROMs ...')
         most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
         for rom_id in most_played_roms:
             rom = most_played_roms[rom_id]
             self._misc_fix_Favourite_rom_object(rom)
         fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
         pDialog.update(100)
-        pDialog.close()
 
         # >> Load Recently Played ROMs and check/update.
-        pDialog.create('Advanced Emulator Launcher', 'Checking Recently Played ROMs ...')
+        pDialog.update(0, 'Checking Recently Played ROMs ...')
         recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
         for rom in recent_roms_list: self._misc_fix_Favourite_rom_object(rom)
         fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
@@ -9396,11 +9392,11 @@ class Main:
     #
     def _misc_fix_rom_object(self, rom):
         # --- Add new fields if not present ---
-        if not 'm_nplayers'    in rom: rom['m_nplayers']    = ''
-        if not 'm_esrb'        in rom: rom['m_esrb']        = ESRB_PENDING
-        if not 'disks'         in rom: rom['disks']         = []
-        if not 'pclone_status' in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
-        if not 'cloneof'       in rom: rom['cloneof']    = ''
+        if 'm_nplayers'    not in rom: rom['m_nplayers']    = ''
+        if 'm_esrb'        not in rom: rom['m_esrb']        = ESRB_PENDING
+        if 'disks'         not in rom: rom['disks']         = []
+        if 'pclone_status' not in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
+        if 'cloneof'       not in rom: rom['cloneof']       = ''
         # --- Delete unwanted/obsolete stuff ---
         if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
         # --- DB field renamings ---
@@ -9413,7 +9409,8 @@ class Main:
         self._misc_fix_rom_object(rom)
 
         # --- Favourite ROMs additional stuff ---
-        if not 'args_extra' in rom: rom['args_extra'] = []
+        if 'args_extra' not in rom: rom['args_extra'] = []
+        if 'non_blocking' not in rom: rom['non_blocking'] = False
         if 'roms_default_thumb' in rom:
             rom['roms_default_icon'] = rom['roms_default_thumb']
             rom.pop('roms_default_thumb')

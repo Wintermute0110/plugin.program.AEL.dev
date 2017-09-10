@@ -238,6 +238,7 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['rompath']                = launcher['rompath']
     favourite['romext']                 = launcher['romext']
     favourite['minimize']               = launcher['minimize']
+    favourite['non_blocking']           = launcher['non_blocking']
     favourite['roms_default_icon']      = launcher['roms_default_icon']
     favourite['roms_default_fanart']    = launcher['roms_default_fanart']
     favourite['roms_default_banner']    = launcher['roms_default_banner']
@@ -298,25 +299,30 @@ def fs_aux_copy_ROM_main_stuff(source_launcher, source_rom, dest_rom):
     dest_rom['fav_status']  = 'OK'
 
 def fs_aux_copy_ROM_launcher_info(source_launcher, dest_rom):
-    dest_rom['platform']    = source_launcher['platform']
-    dest_rom['application'] = source_launcher['application']
-    dest_rom['args']        = source_launcher['args']
-    dest_rom['args_extra']  = source_launcher['args_extra']
-    dest_rom['rompath']     = source_launcher['rompath']
-    dest_rom['romext']      = source_launcher['romext']
-    dest_rom['minimize']    = source_launcher['minimize']
+    dest_rom['platform']     = source_launcher['platform']
+    dest_rom['application']  = source_launcher['application']
+    dest_rom['args']         = source_launcher['args']
+    dest_rom['args_extra']   = source_launcher['args_extra']
+    dest_rom['rompath']      = source_launcher['rompath']
+    dest_rom['romext']       = source_launcher['romext']
+    dest_rom['minimize']     = source_launcher['minimize']
+    dest_rom['non_blocking'] = source_launcher['non_blocking']
 
 def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['m_name']         = source_rom['m_name']
     dest_rom['m_year']         = source_rom['m_year']
     dest_rom['m_genre']        = source_rom['m_genre']
     dest_rom['m_developer']    = source_rom['m_developer']
+    dest_rom['m_nplayers']     = source_rom['m_nplayers']
+    dest_rom['m_esrb']         = source_rom['m_esrb']
     dest_rom['m_rating']       = source_rom['m_rating']
     dest_rom['m_plot']         = source_rom['m_plot']
     dest_rom['altapp']         = source_rom['altapp']
     dest_rom['altarg']         = source_rom['altarg']
     dest_rom['finished']       = source_rom['finished']
     dest_rom['nointro_status'] = source_rom['nointro_status']
+    dest_rom['pclone_status']  = source_rom['pclone_status']
+    dest_rom['cloneof']        = source_rom['cloneof']
 
 def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
     dest_rom['s_title']     = source_rom['s_title']
