@@ -85,9 +85,13 @@ FEATURE  I discovered that in the ROM Scanner most of the time is spend looking 
          Implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork",
          must be ported to the ROM scanner if it works well (faster than the current approach).
 
-WIP      ROM scanner should be able to scrap all assets, not just the ones supported by the
+FEATURE  ROM scanner should be able to scrap all assets, not just the ones supported by the
          selected scraper. This will require a redesign of the current scraping engine.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628383#pid2628383 and next post.
+
+WIP      Make sure all asset scraper requests are cached in the ROM scanner. For example, Title
+         scraper choose a game in the list, then Snap scraper for the same ROM must use the
+         cached selected game.
 
 WIP      Port to the ROM scanner the asset file cache. This will increase the scanning speed a lot.
 

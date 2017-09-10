@@ -55,13 +55,13 @@ class Scraper:
 # -------------------------------------------------------------------------------------------------
 def new_gamedata_dic():
     gamedata = {
-        'title'    : '',
-        'year'     : '',
-        'genre'    : '',
-        'studio'   : '',
-        'nplayers' : '',
-        'esrb'     : '',
-        'plot'     : ''
+        'title'     : '',
+        'year'      : '',
+        'genre'     : '',
+        'developer' : '',
+        'nplayers'  : '',
+        'esrb'      : '',
+        'plot'      : ''
     }
 
     return gamedata
@@ -120,8 +120,8 @@ class Scraper_Asset(Scraper):
 from scrap_metadata import *
 from scrap_asset import *
 
-# This is the official list of supported scrapers. This list MUST match the settings configuration 
-# in settings.xml or bad things will happen.
+# This is the official list of supported scrapers.
+# This list MUST match the settings configuration in settings.xml or bad things will happen.
 scrapers_metadata = [
     metadata_Offline(),
     metadata_TheGamesDB(),
@@ -130,9 +130,19 @@ scrapers_metadata = [
     metadata_ArcadeDB()
 ]
 
-scrapers_asset = [
-    asset_TheGamesDB(),
-    asset_GameFAQs(),
-    asset_MobyGames(),
-    asset_ArcadeDB()
-]
+# This lists MUST match the settings configuration in settings.xml or bad things will happen.
+# NOTE Should every list contain different instances or references to common instances of the same object?
+#      This will have implications on cache data in the objects!
+scrapers_title      = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_snap       = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_boxfront   = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_cabinet    = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_boxback    = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_cpanel     = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_cartridge  = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_pcb        = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_fanart     = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_banner     = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_marquee    = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_clearlogo  = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_flyer      = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]

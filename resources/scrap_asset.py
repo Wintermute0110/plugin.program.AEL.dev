@@ -39,7 +39,7 @@ class asset_NULL(Scraper_Asset):
     def set_options(self, region, imgsize):
         pass
 
-    def supports_asset(asset_kind):
+    def supports_asset(self, asset_kind):
         return False
 
     def get_images(self, game, asset_kind):

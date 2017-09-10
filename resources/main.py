@@ -449,23 +449,20 @@ class Main:
         self.settings['metadata_scraper_mode']    = int(o.getSetting('metadata_scraper_mode'))
         self.settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
 
-        self.settings['metadata_scraper']         = int(o.getSetting('metadata_scraper'))
-        self.settings['asset_scraper']            = int(o.getSetting('asset_scraper'))
-
         self.settings['scraper_metadata']         = int(o.getSetting('scraper_metadata'))
         self.settings['scraper_title']            = int(o.getSetting('scraper_title'))
         self.settings['scraper_snap']             = int(o.getSetting('scraper_snap'))
         self.settings['scraper_bfront']           = int(o.getSetting('scraper_bfront'))
+        self.settings['scraper_cabinet']          = int(o.getSetting('scraper_cabinet'))
         self.settings['scraper_bback']            = int(o.getSetting('scraper_bback'))
+        self.settings['scraper_cpanel']           = int(o.getSetting('scraper_cpanel'))
         self.settings['scraper_cart']             = int(o.getSetting('scraper_cart'))
+        self.settings['scraper_pcb']              = int(o.getSetting('scraper_pcb'))
         self.settings['scraper_fanart']           = int(o.getSetting('scraper_fanart'))
         self.settings['scraper_banner']           = int(o.getSetting('scraper_banner'))
+        self.settings['scraper_marquee']          = int(o.getSetting('scraper_marquee'))
         self.settings['scraper_clearlogo']        = int(o.getSetting('scraper_clearlogo'))
         self.settings['scraper_flyer']            = int(o.getSetting('scraper_flyer'))
-        self.settings['scraper_cabinet']          = int(o.getSetting('scraper_cabinet'))
-        self.settings['scraper_cpanel']           = int(o.getSetting('scraper_cpanel'))
-        self.settings['scraper_pcb']              = int(o.getSetting('scraper_pcb'))
-        self.settings['scraper_flyer_mame']       = int(o.getSetting('scraper_flyer_mame'))
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
@@ -7654,17 +7651,22 @@ class Main:
         log_info('_roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
 
         # >> Step 3) Delete PClone index and Parent ROM list.
-        roms_base_noext        = launcher['roms_base_noext']
-        index_roms_base_noext  = roms_base_noext + '_PClone_index'
-        parent_roms_base_noext = roms_base_noext + '_parents'
-        index_roms_file        = ROMS_DIR.join(index_roms_base_noext + '.json')
-        parent_roms_file       = ROMS_DIR.join(parent_roms_base_noext + '.json')
-        if index_roms_file.exists():
-            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(index_roms_file.getPath()))
-            index_roms_file.unlink()
-        if parent_roms_file.exists():
-            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(parent_roms_file.getPath()))
-            parent_roms_file.unlink()
+        roms_base_noext         = launcher['roms_base_noext']
+        CParent_roms_base_noext = roms_base_noext + '_index_CParent'
+        PClone_roms_base_noext  = roms_base_noext + '_index_PClone'
+        parents_roms_base_noext = roms_base_noext + '_parents'
+        CParent_FN = ROMS_DIR.pjoin(CParent_roms_base_noext + '.json')
+        PClone_FN  = ROMS_DIR.pjoin(PClone_roms_base_noext + '.json')
+        parents_FN = ROMS_DIR.pjoin(parents_roms_base_noext + '.json')
+        if CParent_FN.exists():
+            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(CParent_FN.getPath()))
+            CParent_FN.unlink()
+        if PClone_FN.exists():
+            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(PClone_FN.getPath()))
+            PClone_FN.unlink()
+        if parents_FN.exists():
+            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(parents_FN.getPath()))
+            parents_FN.unlink()
 
     #
     # Helper function to update ROMs No-Intro status if user configured a No-Intro DAT file.
@@ -8037,17 +8039,91 @@ class Main:
         # Scraper objects are created and inserted into a list. This list order matches
         # exactly the number returned by the settings. If scrapers are changed make sure the
         # list in scrapers.py and in settings.xml have same values!
-        self.scraper_metadata = scrapers_metadata[self.settings['metadata_scraper']]
-        log_verb('Loaded metadata scraper {0}'.format(self.scraper_metadata.name))
-
-        # >> Initialise metadata scraper plugin installation dir, for offline scrapers
-        self.scraper_metadata.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+        self.scraper_data = scrapers_metadata[self.settings['scraper_metadata']]
+        self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+        log_verb('Loaded Metadata scraper "{0}"'.format(self.scraper_data.name))
 
         # --- Asset scrapers ---
-        self.scraper_asset = scrapers_asset[self.settings['asset_scraper']]
-        log_verb('Loaded asset scraper {0}'.format(self.scraper_asset.name))
+        # >> Create a dictionary with references to the asset srapers
+        self.scraper_dic = {}
 
-        # >> Initialise options of the thumb scraper
+        # >> Titles
+        A = assets_get_info_scheme(ASSET_TITLE)
+        self.scraper_dic[A.key] = scrapers_title[self.settings['scraper_title']]
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Snaps
+        A = assets_get_info_scheme(ASSET_SNAP)
+        self.scraper_dic[A.key] = scrapers_snap[self.settings['scraper_snap']]
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Boxfronts or MAME Cabinet
+        A = assets_get_info_scheme(ASSET_BOXFRONT)
+        if launcher['platform'] != 'MAME':
+            self.scraper_dic[A.key] = scrapers_boxfront[self.settings['scraper_bfront']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        else:
+            self.scraper_dic[A.key] = scrapers_cabinet[self.settings['scraper_cabinet']]
+            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME Cabinets)'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Boxback or MAME CPanel
+        A = assets_get_info_scheme(ASSET_BOXBACK)
+        if launcher['platform'] != 'MAME':
+            self.scraper_dic[A.key] = scrapers_boxback[self.settings['scraper_bback']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        else:
+            self.scraper_dic[A.key] = scrapers_cpanel[self.settings['scraper_cpanel']]
+            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME CPanels)'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Cartridge or MAME PCB
+        A = assets_get_info_scheme(ASSET_CARTRIDGE)
+        if launcher['platform'] != 'MAME':
+            self.scraper_dic[A.key] = scrapers_cartridge[self.settings['scraper_cart']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        else:
+            self.scraper_dic[A.key] = scrapers_pcb[self.settings['scraper_pcb']]
+            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME PCBs)'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Fanart
+        A = assets_get_info_scheme(ASSET_FANART)
+        self.scraper_dic[A.key] = scrapers_fanart[self.settings['scraper_fanart']]
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Banner or MAME Marquee
+        A = assets_get_info_scheme(ASSET_BANNER)
+        if launcher['platform'] != 'MAME':
+            self.scraper_dic[A.key] = scrapers_banner[self.settings['scraper_banner']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        else:
+            self.scraper_dic[A.key] = scrapers_marquee[self.settings['scraper_marquee']]
+            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME Marquees)'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Clearlogo
+        A = assets_get_info_scheme(ASSET_CLEARLOGO)
+        self.scraper_dic[A.key] = scrapers_clearlogo[self.settings['scraper_clearlogo']]
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Flyer
+        A = assets_get_info_scheme(ASSET_FLYER)
+        self.scraper_dic[A.key] = scrapers_flyer[self.settings['scraper_flyer']]
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+        # >> Map (not supported yet, use a null scraper)
+        A = assets_get_info_scheme(ASSET_MAP)
+        self.scraper_dic[A.key] = asset_NULL()
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+
+        # >> Manual (not supported yet, use a null scraper)
+        A = assets_get_info_scheme(ASSET_MANUAL)
+        self.scraper_dic[A.key] = asset_NULL()
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+
+        # >> Trailer (not supported yet, use a null scraper)
+        A = assets_get_info_scheme(ASSET_TRAILER)
+        self.scraper_dic[A.key] = asset_NULL()
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+
+        # >> Initialise options of the thumb scraper (NOT SUPPORTED YET)
         # region = self.settings['scraper_region']
         # thumb_imgsize = self.settings['scraper_thumb_size']
         # self.scraper_asset.set_options(region, thumb_imgsize)
@@ -8075,10 +8151,10 @@ class Main:
             log_info('No duplicated asset dirs found')
 
         # --- Progress dialog ---
-        # Put in in object variables so it can be access in helper functions.
+        # >> Put in in object variables so it can be access in helper functions.
+        self.pDialog_verbose = True
         self.pDialog = xbmcgui.DialogProgress()
         self.pDialog_canceled = False
-        self.pDialog_verbose = False
 
         # --- Remove dead entries -----------------------------------------------------------------
         log_info('Removing dead ROMs ...'.format())
@@ -8396,12 +8472,12 @@ class Main:
                 romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         elif metadata_action == META_SCRAPER:
             if self.pDialog_verbose:
-                scraper_text = 'Scraping metadata with {0}. Searching for matching games ...'.format(self.scraper_metadata.name)
+                scraper_text = 'Scraping metadata with {0}. Searching for matching games ...'.format(self.scraper_data.name)
                 self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
             # --- Do a search and get a list of games ---
             rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-            results = self.scraper_metadata.get_search(rom_name_scraping, ROM.getBase_noext(), platform)
+            results = self.scraper_data.get_search(rom_name_scraping, ROM.getBase_noext(), platform)
             log_debug('Metadata scraper found {0} result/s'.format(len(results)))
             if results:
                 # id="metadata_scraper_mode" values="Semi-automatic|Automatic"
@@ -8428,11 +8504,11 @@ class Main:
                     log_error('Invalid metadata_scraper_mode {0}'.format(self.settings['metadata_scraper_mode']))
                     selectgame = 0
                 if self.pDialog_verbose:
-                    scraper_text = 'Scraping metadata with {0}. Getting metadata ...'.format(self.scraper_metadata.name)
+                    scraper_text = 'Scraping metadata with {0}. Getting metadata ...'.format(self.scraper_data.name)
                     self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
                 # --- Grab metadata for selected game ---
-                gamedata = self.scraper_metadata.get_metadata(results[selectgame])
+                gamedata = self.scraper_data.get_metadata(results[selectgame])
 
                 # --- Put metadata into ROM dictionary ---
                 if scan_ignore_scrapped_title:
@@ -8443,7 +8519,7 @@ class Main:
                     log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
                 romdata['m_year']      = gamedata['year']
                 romdata['m_genre']     = gamedata['genre']
-                romdata['m_developer'] = gamedata['studio']
+                romdata['m_developer'] = gamedata['developer']
                 romdata['m_nplayers']  = gamedata['nplayers']
                 romdata['m_esrb']      = gamedata['esrb']
                 romdata['m_plot']      = gamedata['plot']
@@ -8459,6 +8535,8 @@ class Main:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
         # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # NOTE This must use a cache to speed up the ROM scanner! Currenly most time is spent
+        #      searching for local artwork when using the offline scraper.
         local_asset_list = assets_search_local_assets(launcher, ROM, self.enabled_asset_list)
 
         # ~~~ Asset scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8484,6 +8562,8 @@ class Main:
                     romdata[A.key] = local_asset_list[i]
                 else:
                     log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
+                    # >> Set the asset-specific scraper before calling _roms_scrap_asset()
+                    self.scraper_asset = self.scraper_dic[A.key]
                     romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM, launcher)
 
         elif scan_asset_policy == 2:
@@ -8496,6 +8576,8 @@ class Main:
                     log_verb('Skipped {0} (dir not configured)'.format(A.name))
                     continue
                 log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
+                # >> Set the asset-specific scraper before calling _roms_scrap_asset()
+                self.scraper_asset = self.scraper_dic[A.key]
                 romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM, launcher)
 
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
@@ -8534,7 +8616,7 @@ class Main:
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
         log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
         log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
-        log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext))
+        log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext.getPath()))
 
         # --- If scraper does not support particular asset return inmediately ---
         if not scraper_obj.supports_asset(asset_kind):

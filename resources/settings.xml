@@ -14,25 +14,21 @@
     <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
     <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
 
-    <setting id="separator" type="lsep" label="Scrapers (OLD)"/>
-    <setting label="Metadata scraper" type="enum" id="metadata_scraper" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Asset scraper" type="enum" id="asset_scraper" default="0" values="TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-
-    <setting id="separator" type="lsep" label="Scrapers (NEW)"/>
+    <setting id="separator" type="lsep" label="Scrapers"/>
     <setting label="Metadata scraper" type="enum" id="scraper_metadata" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Titles scraper" type="enum" id="scraper_title" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Snaps scraper" type="enum" id="scraper_snap" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Boxfront scraper" type="enum" id="scraper_bfront" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Boxback scraper" type="enum" id="scraper_bback" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Cartridge scraper" type="enum" id="scraper_cart" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Fanart scraper" type="enum" id="scraper_fanart" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Banner scraper" type="enum" id="scraper_banner" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Clearlogo scraper" type="enum" id="scraper_clearlogo" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Flyer scraper" type="enum" id="scraper_flyer" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Titles scraper" type="enum" id="scraper_title" default="0"                values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Snaps scraper" type="enum" id="scraper_snap" default="0"                  values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Boxfront scraper" type="enum" id="scraper_bfront" default="0"             values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
     <setting label="Cabinet scraper (MAME only)" type="enum" id="scraper_cabinet" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="CPanel scraper (MAME only)" type="enum" id="scraper_cpanel" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="PCB scraper (MAME only)" type="enum" id="scraper_pcb" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Flyer scraper (MAME only)" type="enum" id="scraper_flyer_mame" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Boxback scraper" type="enum" id="scraper_bback" default="0"               values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="CPanel scraper (MAME only)" type="enum" id="scraper_cpanel" default="0"   values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Cartridge scraper" type="enum" id="scraper_cart" default="0"              values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="PCB scraper (MAME only)" type="enum" id="scraper_pcb" default="0"         values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Fanart scraper" type="enum" id="scraper_fanart" default="0"               values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Banner scraper" type="enum" id="scraper_banner" default="0"               values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Marquee scraper (MAME only)" type="enum" id="scraper_marquee" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Clearlogo scraper" type="enum" id="scraper_clearlogo" default="0"         values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting label="Flyer scraper" type="enum" id="scraper_flyer" default="0"                 values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
 </category>
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
