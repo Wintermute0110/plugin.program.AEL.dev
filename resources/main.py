@@ -1980,9 +1980,8 @@ class Main:
                         nointro_xml_FN = FileName(launcher['nointro_xml_file'])
                         if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                             fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
-                            num_tuple = (self.audit_have, self.audit_miss, self.audit_unknown)
                             kodi_notify('Added No-Intro/Redump XML DAT. '
-                                        'Have {0} / Miss {1} / Unknown {2}'.format(num_tuple))
+                                        'Have {0} / Miss {1} / Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
                         else:
                             # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                             self.launchers[launcherID]['nointro_xml_file'] = ''
