@@ -2091,7 +2091,8 @@ class Main:
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
-            minimize_str = 'ON' if self.launchers[launcherID]['minimize'] == True else 'OFF'
+            minimize_str = 'ON' if self.launchers[launcherID]['minimize'] else 'OFF'
+            non_blocking_str = 'ON' if self.launchers[launcherID]['non_blocking'] else 'OFF'
             filter_str   = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
             if self.launchers[launcherID]['application'] == RETROPLAYER_LAUNCHER_APP_NAME:
                 launcher_str = 'Kodi Retroplayer'
@@ -2106,16 +2107,18 @@ class Main:
                                       ["Change Application: {0}".format(launcher_str),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Modify Aditional arguments ...",
-                                       "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
+                                       "Toggle Kodi into windowed mode (now {0})".format(minimize_str),
+                                       "Non-blocking launcher (now {0})".format(non_blocking_str)])
             # --- Standalone launcher -------------------------------------------------------------
             else:
                 type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: {0}".format(launcher_str),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Aditional arguments ...",
-                                       "Change ROM Path: '{0}'".format(self.launchers[launcherID]['rompath']),
-                                       "Modify ROM Extensions: '{0}'".format(self.launchers[launcherID]['romext']),
-                                       "Toggle Kodi into Windowed mode: {0}".format(minimize_str) ])
+                                       "Change ROM path: '{0}'".format(self.launchers[launcherID]['rompath']),
+                                       "Modify ROM extensions: '{0}'".format(self.launchers[launcherID]['romext']),
+                                       "Toggle Kodi into windowed mode (now {0})".format(minimize_str),
+                                       "Non-blocking launcher (now {0})".format(non_blocking_str)])
 
             # --- Launcher application path menu option ---
             type2_nb = 0
@@ -2206,8 +2209,8 @@ class Main:
                 # --- Launcher roms path menu option ---
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
-                    rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', 'files', '',
-                                                       False, False, self.launchers[launcherID]['rompath']).decode('utf-8')
+                    rom_path = dialog.browse(0, 'Select Files path', 'files', '',
+                                             False, False, self.launchers[launcherID]['rompath']).decode('utf-8')
                     self.launchers[launcherID]['rompath'] = rom_path
                     kodi_notify('Changed ROM path')
 
@@ -2221,15 +2224,25 @@ class Main:
                     self.launchers[launcherID]['romext'] = keyboard.getText().decode('utf-8')
                     kodi_notify('Changed ROM extensions')
 
-            # --- Launcher minimize state menu option ---
+            # --- Minimise Kodi window flag ---
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                dialog = xbmcgui.Dialog()
-                type3 = dialog.select('Toggle Kodi Fullscreen', ['OFF (default)', 'ON'])
-                # User canceled select dialog
+                p_idx = 1 if self.launchers[launcherID]['minimize'] else 0
+                type3 = dialog.select('Toggle Kodi into windowed mode', ['OFF (default)', 'ON'], preselect = p_idx)
                 if type3 < 0: return
                 self.launchers[launcherID]['minimize'] = True if type3 == 1 else False
-                kodi_notify('Launcher minimize is {0}'.format('ON' if self.launchers[launcherID]['minimize'] else 'OFF'))
+                minimise_str = 'ON' if self.launchers[launcherID]['minimize'] else 'OFF'
+                kodi_notify('Toggle Kodi into windowed mode {0}'.format(minimise_str))
+
+            # --- Non-blocking launcher flag ---
+            type2_nb = type2_nb + 1
+            if type2 == type2_nb:
+                p_idx = 1 if self.launchers[launcherID]['non_blocking'] else 0
+                type3 = dialog.select('Non-blocking launcher', ['OFF (default)', 'ON'], preselect = p_idx)
+                if type3 < 0: return
+                self.launchers[launcherID]['non_blocking'] = True if type3 == 1 else False
+                non_blocking_str = 'ON' if self.launchers[launcherID]['non_blocking'] else 'OFF'
+                kodi_notify('Launcher Non-blocking is {0}'.format(non_blocking_str))
 
         # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
