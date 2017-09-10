@@ -89,7 +89,7 @@ WIP      ROM scanner should be able to scrap all assets, not just the ones suppo
          selected scraper. This will require a redesign of the current scraping engine.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628383#pid2628383 and next post.
 
-WIP      Port to the ROM scanner the asset file cache.
+WIP      Port to the ROM scanner the asset file cache. This will increase the scanning speed a lot.
 
 HALF     Launcher flag to enable non-blocking launchers. This is required for wrapper scripts
          that close Kodi to avoid problems (such as Kodi getting gamepad commands instead of the

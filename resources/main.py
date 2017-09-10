@@ -1613,8 +1613,7 @@ class Main:
 
                     # --- Traverse ROM list and check local asset/artwork ---
                     pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
-                    roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
                     num_items = len(roms)
                     item_counter = 0
                     for rom_id in roms:
@@ -1736,11 +1735,11 @@ class Main:
                     # --- Update assets on _parents.json ---
                     # >> Here only assets s_* are changed. I think it is not necessary to audit ROMs again.
                     pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
-                    pDialog.update(0)
                     if launcher['nointro_xml_file']:
                         log_verb('Updating artwork on parent JSON database.')
                         parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
                         parent_roms = fs_load_JSON_file(ROMS_DIR, parents_roms_base_noext)
+                        pDialog.update(25)
                         for parent_rom_id in parent_roms:
                             parent_roms[parent_rom_id]['s_banner']    = roms[parent_rom_id]['s_banner']
                             parent_roms[parent_rom_id]['s_boxback']   = roms[parent_rom_id]['s_boxback']
@@ -1758,7 +1757,7 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     pDialog.update(50)
-                    fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                    fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
                     pDialog.update(100)
                     pDialog.close()
                     kodi_notify('Rescaning of ROMs local artwork finished')
@@ -1774,7 +1773,7 @@ class Main:
                     if not ret: return
 
                     # --- Load ROMs for this launcher ---
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
 
                     # --- Remove dead ROMs ---
                     num_removed_roms = self._roms_delete_missing_ROMs(roms)
@@ -1787,27 +1786,33 @@ class Main:
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
-                    fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'], 
-                                       roms, self.launchers[launcherID])
+                    pDialog = xbmcgui.DialogProgress()
+                    pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
+                    fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID], roms)
+                    pDialog.update(100)
+                    pDialog.close()
                     self.launchers[launcherID]['num_roms'] = len(roms)
                     kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
                 # --- Import ROM metadata from NFO files ---
                 elif type2 == 4:
                     # >> Load ROMs, iterate and import NFO files
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
                     num_read_NFO_files = 0
                     for rom_id in roms:
                         if fs_import_ROM_NFO(roms, rom_id, verbose = False): num_read_NFO_files += 1
                     # >> Save ROMs XML file / Launcher/timestamp saved at the end of function
-                    fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'], 
-                                       roms, self.launchers[launcherID])
+                    pDialog = xbmcgui.DialogProgress()
+                    pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
+                    fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID], roms)
+                    pDialog.update(100)
+                    pDialog.close()
                     kodi_notify('Imported {0} NFO files'.format(num_read_NFO_files))
 
                 # --- Export ROM metadata to NFO files ---
                 elif type2 == 5:
                     # >> Load ROMs for current launcher, iterate and write NFO files
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
                     if not roms: return
                     kodi_busydialog_ON()
                     num_nfo_files = 0
@@ -1847,9 +1852,9 @@ class Main:
                     kodi_notify('Deleted {0} NFO files'.format(len(nfo_scanned_files)))
                     return
 
-                # --- Empty Launcher menu option ---
+                # --- Empty Launcher ROMs ---
                 elif type2 == 7:
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
                     num_roms = len(roms)
 
                     # If launcher is empty (no ROMs) do nothing
@@ -1872,7 +1877,7 @@ class Main:
 
                     # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
                     # when user add more ROMs.
-                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
                     self.launchers[launcherID]['num_roms'] = 0
                     kodi_notify('Cleared ROMs from launcher database')
 
@@ -1983,10 +1988,9 @@ class Main:
                         # Note that roms dictionary is updated using Python pass by assigment.
                         # _roms_reset_NoIntro_status() does not save ROMs JSON/XML.
                         launcher = self.launchers[launcherID]
-                        roms_base_noext = launcher['roms_base_noext']
-                        roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+                        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
                         self._roms_reset_NoIntro_status(launcher, roms)
-                        fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                        fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
                         launcher['num_roms'] = len(roms)
                         kodi_notify('Removed No-Intro/Redump XML DAT file')
 
@@ -2004,13 +2008,13 @@ class Main:
                         # Note that roms and launcher dictionaries are updated using Python pass by assigment.
                         # _roms_update_NoIntro_status() does not save ROMs JSON/XML.
                         launcher = self.launchers[launcherID]
-                        roms_base_noext = launcher['roms_base_noext']
-                        roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+                        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
                         nointro_xml_FN = FileName(launcher['nointro_xml_file'])
                         if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
-                            fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                            fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
+                            num_tuple = (self.audit_have, self.audit_miss, self.audit_unknown)
                             kodi_notify('Added No-Intro/Redump XML DAT. '
-                                        'Have {0} / Miss {1} / Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
+                                        'Have {0} / Miss {1} / Unknown {2}'.format(num_tuple))
                         else:
                             # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                             self.launchers[launcherID]['nointro_xml_file'] = ''
@@ -2068,14 +2072,12 @@ class Main:
                     # Note that roms and launcher dictionaries are updated using Python pass by assigment.
                     # _roms_update_NoIntro_status() does not save ROMs JSON/XML.
                     launcher = self.launchers[launcherID]
-                    roms_base_noext = launcher['roms_base_noext']
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
                     nointro_xml_FN = FileName(launcher['nointro_xml_file'])
                     if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                         pDialog = xbmcgui.DialogProgress()
                         pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
-                        pDialog.update(25)
-                        fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                        fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
                         pDialog.update(100)
                         pDialog.close()
                         kodi_notify('Have {0} / Miss {1} / Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
@@ -2240,7 +2242,7 @@ class Main:
                                         'Are you sure you want to delete it?')
             # >> ROMs launcher
             else:
-                roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+                roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
                 num_roms = len(roms)
                 ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs. '.format(launcher_name, num_roms) +
                                         'Are you sure you want to delete it?')
@@ -2676,7 +2678,7 @@ class Main:
                     launcher_IDs.append(launcher_id)
                     launcher_names.append(self.launchers[launcher_id]['m_name'])
 
-                # Order alphabetically both lists
+                # >> Order alphabetically both lists
                 sorted_idx = [i[0] for i in sorted(enumerate(launcher_names), key=lambda x:x[1])]
                 launcher_IDs   = [launcher_IDs[i] for i in sorted_idx]
                 launcher_names = [launcher_names[i] for i in sorted_idx]
@@ -2686,7 +2688,7 @@ class Main:
 
                 # --- STEP 2: select ROMs in that launcher ---
                 launcher_id   = launcher_IDs[selected_launcher]
-                launcher_roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
+                launcher_roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id])
                 if not launcher_roms: return
                 roms_IDs = []
                 roms_names = []
@@ -2757,7 +2759,7 @@ class Main:
                                    'Relink this ROM before copying stuff from parent.')
                     return
                 parent_launcher = self.launchers[fav_launcher_id]
-                launcher_roms   = fs_load_ROMs_JSON(ROMS_DIR, parent_launcher['roms_base_noext'])
+                launcher_roms   = fs_load_ROMs_JSON(ROMS_DIR, parent_launcher)
                 if romID not in launcher_roms:
                     kodi_dialog_OK('Parent ROM not found in Launcher. '
                                    'Relink this ROM before copying stuff from parent.')
@@ -3656,7 +3658,7 @@ class Main:
             kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
-        all_roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher['roms_base_noext'])
+        all_roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher)
         if not all_roms:
             kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -4438,7 +4440,7 @@ class Main:
             launcher = self.launchers[launcher_id]
             # If launcher is standalone skip
             if launcher['rompath'] == '': continue
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
             temp_roms = {}
             for rom_id in roms:
                 temp_rom                = roms[rom_id].copy()
@@ -4483,7 +4485,7 @@ class Main:
         # >> ROMs in standard launcher
         else:
             launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
 
         # >> Sanity check
         if not roms:
@@ -4637,7 +4639,7 @@ class Main:
                 filename_found = False
                 for launcher_id in self.launchers:
                     # >> Load launcher ROMs
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id])
                     for rom_id in roms:
                         ROM_FN = FileName(roms[rom_id]['filename'])
                         fav_name = roms_fav[rom_fav_ID]['m_name']
@@ -4749,7 +4751,7 @@ class Main:
 
                 # >> Get ROMs of launcher
                 launcher_id   = rom_fav['launcherID']
-                launcher_roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
+                launcher_roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id])
 
                 # >> Is there a ROM with same basename (including extension) as the Favourite ROM?
                 filename_found = False
@@ -4874,7 +4876,7 @@ class Main:
             if launcher_id not in self.launchers: continue
 
             # >> Load launcher ROMs
-            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id]['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id])
 
             # Traverse all favourites and check them if belong to this launcher.
             # This should be efficient because traversing favourites is cheap but loading ROMs is expensive.
@@ -5599,7 +5601,7 @@ class Main:
         # >> ROMs in standard launcher
         else:
             launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
 
         # >> Sanity check
         if not roms:
@@ -5692,7 +5694,7 @@ class Main:
             if not rom_file_path.exists():
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
                 return
-            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
 
         # --- Empty ROM dictionary / Loading error ---
         if not roms:
@@ -5817,7 +5819,7 @@ class Main:
             if not rom_file_path.exists():
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
                 return
-            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
 
         # --- Empty ROM dictionary / Loading error ---
         if not roms:
@@ -6112,7 +6114,7 @@ class Main:
                     launcher_in_category = False if categoryID == VCATEGORY_ADDONROOT_ID else True
                     if launcher_in_category: category = self.categories[categoryID]
                     launcher = self.launchers[launcherID]
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+                    roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
                     rom = roms[romID]
                     window_title = 'Launcher ROM data'
 
@@ -6175,7 +6177,7 @@ class Main:
                 return
             # --- If no ROMs in launcher do nothing ---
             launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
             if not roms:
                 kodi_notify_warn('No ROMs in launcher. Report not created')
                 return
@@ -6528,7 +6530,7 @@ class Main:
             if launcher['rompath'] == '': continue
 
             # >> Open launcher and add roms to the big list
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
 
             # >> Add additional fields to ROM to make a Favourites ROM
             # >> Virtual categories/launchers are like Favourite ROMs that cannot be edited.
@@ -6673,7 +6675,7 @@ class Main:
                 if launcher['rompath'] == '': continue
 
                 # >> Open launcher and add roms to the big list
-                roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+                roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
 
                 # >> Add additional fields to ROM to make a Favourites ROM
                 # >> Virtual categories/launchers are like Favourite ROMs that cannot be edited.
@@ -7923,7 +7925,7 @@ class Main:
         log_verb('_roms_add_new_rom() launcher name "{0}"'.format(launcher['m_name']))
 
         # --- Load ROMs for this launcher ---
-        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
 
         # --- Choose ROM file ---
         dialog = xbmcgui.Dialog()
@@ -7994,9 +7996,9 @@ class Main:
 
         # ~~~ Save ROMs XML file ~~~
         # >> Also save categories/launchers to update timestamp
-        self.launchers[launcherID]['num_roms'] = len(roms)
+        launcher['num_roms'] = len(roms)
         launcher['timestamp_launcher'] = time.time()
-        fs_write_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'], roms, self.launchers[launcherID])
+        fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
         kodi_notify('Added ROM. Launcher has now {0} ROMs'.format(len(roms)))
@@ -8033,7 +8035,7 @@ class Main:
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
         report_fobj.write('Loading launcher ROMs ...\n')
-        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
         num_roms = len(roms)
         report_fobj.write('  {0} ROMs currently in database\n'.format(num_roms))
         log_info('Launcher ROM database contain {0} items'.format(num_roms))
@@ -8263,7 +8265,7 @@ class Main:
             roms_base_noext = launcher['roms_base_noext']
             nointro_xml_FN = FileName(launcher['nointro_xml_file'])
             if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
-                fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcherID])
+                fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcherID], roms)
                 kodi_notify('ROM scanner and audit finished. '
                             'Have {0} / Miss {1} / Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
                 # >> _roms_update_NoIntro_status() already prints and audit report on Kodi log
@@ -9268,10 +9270,9 @@ class Main:
         for launcher_id in self.launchers:
             log_debug('_command_edit_rom() Checking Launcher "{0}"'.format(self.launchers[launcher_id]['m_name']))
             # --- Load standard ROM database ---
-            roms_base_noext = self.launchers[launcher_id]['roms_base_noext']
-            roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id])
             for rom_id in roms: self._misc_fix_rom_object(roms[rom_id])
-            fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, self.launchers[launcher_id])
+            fs_write_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id], roms)
 
             # --- If exists, load Parent ROM database ---
             parents_roms_base_noext = self.launchers[launcher_id]['roms_base_noext'] + '_parents'
@@ -9649,7 +9650,7 @@ class Main:
                     roms[rom['id']] = rom
 
                 # >> Save ROMs XML
-                fs_write_ROMs_JSON(ROMS_DIR, roms_base_noext, roms, launcher)
+                fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
             else:
                 launcher['roms_xml_file'] = ''
             # --- Add launcher to AEL launchers ---
