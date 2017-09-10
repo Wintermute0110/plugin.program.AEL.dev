@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.8 | XX July 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.8 | XX November 2017[/B]
 
 WIP      Complete Extranafart support for Categories/Launchers.
 
@@ -59,19 +59,19 @@ WIP      Add an option to see the ROM Manual in PDF if exists. Maybe use GhostSc
 WIP      Add an option to see ROM Maps image if it exists.
          Add an option in context menu "View ROM/Launcher".
 
-
-[B]Advanced Emulator Launcher | version 0.9.7 | XX Sep 2017[/B]
-
 WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
          etc. When a user uses XML to import configurations it is easy to make a typo when
          writing directory names, etc. This command will report if AEL configuration is OK.
 
-WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM Sorting).
-         In "Edit Launcher", "Audit ROMs / Launcher view mode" include a new option like
-         "Create PClone DAT based on ROM filenames"
+
+[B]Advanced Emulator Launcher | version 0.9.7 | XX September 2017[/B]
 
 FEATURE  Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
          PClone information. See previous feature.
+
+WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM Sorting).
+         In "Edit Launcher", "Audit ROMs / Launcher view mode" include a new option like
+         "Create PClone DAT based on ROM filenames"
 
 WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
          This resembles what NARS No-Intro filtering does.
@@ -91,7 +91,7 @@ WIP      ROM scanner should be able to scrap all assets, not just the ones suppo
 
 WIP      Port to the ROM scanner the asset file cache. This will increase the scanning speed a lot.
 
-HALF     Launcher flag to enable non-blocking launchers. This is required for wrapper scripts
+FEATURE  Launcher flag to enable non-blocking launchers. This is required for wrapper scripts
          that close Kodi to avoid problems (such as Kodi getting gamepad commands instead of the
          launcher app or Kodi running in standalone mode withouth a Window manager).
 

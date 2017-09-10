@@ -1782,7 +1782,6 @@ class Main:
                     if self.launchers[launcherID]['nointro_xml_file']:
                         log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
                         self.launchers[launcherID]['nointro_xml_file'] = ''
-                        self.launchers[launcherID]['pclone_launcher'] = False
 
                     # ~~~ Save ROMs XML file ~~~
                     # >> Launcher saved at the end of the function / launcher timestamp updated.
@@ -1873,7 +1872,6 @@ class Main:
                     if self.launchers[launcherID]['nointro_xml_file']:
                         log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
                         self.launchers[launcherID]['nointro_xml_file'] = ''
-                        self.launchers[launcherID]['pclone_launcher'] = False
 
                     # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
                     # when user add more ROMs.
@@ -1981,7 +1979,6 @@ class Main:
                         ret = dialog.yesno('Advanced Emulator Launcher', 'Delete No-Intro/Redump XML DAT file?')
                         if not ret: return
                         self.launchers[launcherID]['nointro_xml_file'] = ''
-                        self.launchers[launcherID]['pclone_launcher'] = False
                         kodi_dialog_OK('No-Intro DAT deleted. No-Intro Missing ROMs will be removed now.')
 
                         # --- Remove No-Intro status and delete missing/dead ROMs to revert launcher to normal ---
@@ -2018,7 +2015,6 @@ class Main:
                         else:
                             # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                             self.launchers[launcherID]['nointro_xml_file'] = ''
-                            self.launchers[launcherID]['pclone_launcher'] = False
                             kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
                         launcher['num_roms'] = len(roms)
 
@@ -2084,7 +2080,6 @@ class Main:
                     else:
                         # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                         self.launchers[launcherID]['nointro_xml_file'] = ''
-                        self.launchers[launcherID]['pclone_launcher'] = False
                         kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
                     launcher['num_roms'] = len(roms)
 
@@ -2661,7 +2656,6 @@ class Main:
                 nointro_xml_FN = FileName(launcher['nointro_xml_file'])
                 if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                     self.launchers[launcherID]['nointro_xml_file'] = ''
-                    self.launchers[launcherID]['pclone_launcher'] = False
                     kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
 
             # --- Notify user ---
@@ -8014,7 +8008,6 @@ class Main:
             nointro_xml_FN = FileName(launcher['nointro_xml_file'])
             if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                 self.launchers[launcherID]['nointro_xml_file'] = ''
-                self.launchers[launcherID]['pclone_launcher'] = False
                 kodi_dialog_OK('Error auditing ROMs. XML DAT file unset.')
         else:
             log_info('No No-Intro/Redump DAT configured. Do not audit ROMs.')
@@ -8304,7 +8297,6 @@ class Main:
             else:
                 # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                 self.launchers[launcherID]['nointro_xml_file'] = ''
-                self.launchers[launcherID]['pclone_launcher'] = False
                 kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
         else:
             log_info('No No-Intro/Redump DAT configured. Do not audit ROMs.')
@@ -8323,13 +8315,19 @@ class Main:
         # >> Update launcher timestamp to update VLaunchers and reports.
         self.launchers[launcherID]['num_roms'] = len(roms)
         self.launchers[launcherID]['timestamp_launcher'] = time.time()
-        fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
+        self.pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        self.pDialog.update(10)
+        fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
+        self.pDialog.update(100)
+        self.pDialog.close()
         kodi_refresh_container()
 
     #
     # launcherID -> [string] MD5 hash (32 hexadecimal digits)
     # ROM        -> [FileName object]
+    #
+    # Returns a ROM dictionary created with fs_new_rom()
     #
     def _roms_process_scanned_ROM(self, launcherID, ROM):
         # --- "Constants" ---
