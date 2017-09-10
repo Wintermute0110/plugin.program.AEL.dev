@@ -99,6 +99,7 @@ def fs_new_launcher():
          'romext' : '',
          'finished': False,
          'minimize' : False,
+         'non_blocking' : False,
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
          'nointro_display_mode' : NOINTRO_DMODE_ALL,
@@ -446,6 +447,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('romext', launcher['romext']))
             str_list.append(XML_text('finished', unicode(launcher['finished'])))
             str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
+            str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
@@ -586,7 +588,7 @@ def fs_load_catfile(categories_file, categories, launchers):
                 if xml_tag == 'args_extra':
                     launcher[xml_tag].append(xml_text)
                 # >> Transform Bool datatype
-                elif xml_tag == 'finished' or xml_tag == 'minimize':
+                elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'non_blocking':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
                 elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \

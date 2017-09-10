@@ -6325,6 +6325,7 @@ class Main:
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
         info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
+        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(launcher['non_blocking'])
         info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
 
         info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
