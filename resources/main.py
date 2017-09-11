@@ -7345,16 +7345,16 @@ class Main:
         log_verb('_roms_create_launcher_reports() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
         log_verb('_roms_create_launcher_reports() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
         roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
-        report_file_name = REPORTS_DIR.join(roms_base_noext + '.txt')
+        report_file_name = REPORTS_DIR.pjoin(roms_base_noext + '.txt')
         log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
 
         # >> Step 1: Build report data
         num_roms = len(roms)
-        missing_m_year = missing_m_genre  = missing_m_developer = missing_m_nplayers = 0
-        missing_m_esrb = missing_m_rating = missing_m_plot   = 0
-        missing_s_title     = missing_s_snap     = missing_s_fanart  = missing_s_banner    = 0
-        missing_s_clearlogo = missing_s_boxfront = missing_s_boxback = missing_s_cartridge = 0
-        missing_s_flyer     = missing_s_map      = missing_s_manual  = missing_s_trailer   = 0
+        missing_m_year      = missing_m_genre    = missing_m_developer = missing_m_nplayers  = 0
+        missing_m_esrb      = missing_m_rating   = missing_m_plot      = 0
+        missing_s_title     = missing_s_snap     = missing_s_fanart    = missing_s_banner    = 0
+        missing_s_clearlogo = missing_s_boxfront = missing_s_boxback   = missing_s_cartridge = 0
+        missing_s_flyer     = missing_s_map      = missing_s_manual    = missing_s_trailer   = 0
         audit_none = audit_have = audit_miss = audit_unknown = 0
         audit_num_parents = audit_num_clones = 0
         check_list = []
@@ -7464,6 +7464,14 @@ class Main:
         have_m_rating = num_roms - missing_m_rating
         have_m_plot = num_roms - missing_m_plot
 
+        have_s_year_pcent = float(have_m_year*100) / num_roms
+        have_s_genre_pcent = float(have_m_genre*100) / num_roms
+        have_s_developer_pcent = float(have_m_developer*100) / num_roms
+        have_s_nplayers_pcent = float(have_m_nplayers*100) / num_roms
+        have_s_esrb_pcent = float(have_m_esrb*100) / num_roms
+        have_s_rating_pcent = float(have_m_rating*100) / num_roms
+        have_s_plot_pcent = float(have_m_plot*100) / num_roms
+
         miss_s_year_pcent = float(missing_m_year*100) / num_roms
         miss_s_genre_pcent = float(missing_m_genre*100) / num_roms
         miss_s_developer_pcent = float(missing_m_developer*100) / num_roms
@@ -7512,13 +7520,20 @@ class Main:
         str_list.append('Clones           {0:5d}\n'.format(audit_num_clones))
         # >> Metadata
         str_list.append('\n<Metadata statistics>\n')
-        str_list.append('Year      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_year, missing_m_year, miss_s_year_pcent))
-        str_list.append('Genre     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_genre, missing_m_genre, miss_s_genre_pcent))
-        str_list.append('Developer {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_developer, missing_m_developer, miss_s_developer_pcent))
-        str_list.append('NPlayers  {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_nplayers, missing_m_nplayers, miss_s_nplayers_pcent))
-        str_list.append('ESRB      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_esrb, missing_m_esrb, miss_s_esrb_pcent))
-        str_list.append('Rating    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_rating, missing_m_rating, miss_s_rating_pcent))
-        str_list.append('Plot      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_m_plot, missing_m_plot, miss_s_plot_pcent))
+        str_list.append('Year      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
+            have_m_year, have_s_year_pcent, missing_m_year, miss_s_year_pcent))
+        str_list.append('Genre     {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
+            have_m_genre, have_s_genre_pcent, missing_m_genre, miss_s_genre_pcent))
+        str_list.append('Developer {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
+            have_m_developer, have_s_developer_pcent, missing_m_developer, miss_s_developer_pcent))
+        str_list.append('NPlayers  {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
+            have_m_nplayers, have_s_nplayers_pcent, missing_m_nplayers, miss_s_nplayers_pcent))
+        str_list.append('ESRB      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
+            have_m_esrb, have_s_esrb_pcent, missing_m_esrb, miss_s_esrb_pcent))
+        str_list.append('Rating    {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
+            have_m_rating, have_s_rating_pcent, missing_m_rating, miss_s_rating_pcent))
+        str_list.append('Plot      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
+            have_m_plot, have_s_plot_pcent, missing_m_plot, miss_s_plot_pcent))
         # >> Assets statistics
         str_list.append('\n<Asset statistics>\n')
         str_list.append('Title     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_title, missing_s_title, miss_s_title_pcent))
