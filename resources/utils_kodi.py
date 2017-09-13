@@ -41,6 +41,7 @@ LOG_DEBUG   = 4
 
 # --- Internal globals --------------------------------------------------------
 current_log_level = LOG_INFO
+use_print_instead = False
 
 # -------------------------------------------------------------------------------------------------
 # Logging functions
@@ -49,6 +50,9 @@ def set_log_level(level):
     global current_log_level
 
     current_log_level = level
+
+def set_use_print(use_print):
+    use_print_instead = use_print
 
 # For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
 #
@@ -60,32 +64,39 @@ def log_debug(str_text):
 
         # At this point we are sure str_text is a unicode string.
         log_text = u'AEL DEBUG: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_VERB)
 
 def log_verb(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL VERB : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_VERB)
 
 def log_info(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL INFO : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_INFO)
 
 def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL WARN : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_WARNING)
 
 def log_error(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = u'AEL ERROR: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_ERROR)
 
+def log(log_text, level):
+    
+    if use_print_instead:
+        print(log_text.encode('utf-8'))
+    else:
+        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+ 
 # -----------------------------------------------------------------------------
 # Kodi notifications and dialogs
 # -----------------------------------------------------------------------------

@@ -789,7 +789,8 @@ def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
 
     # --- If file does not exist return empty dictionary ---
     roms_json_file = roms_dir.join(roms_base_noext + '.json')
-    if not roms_json_file.exists(): return roms
+    if not roms_json_file.exists(): 
+        return roms
 
     # --- Parse using json module ---
     # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises

@@ -38,6 +38,9 @@ from assets import *
 from rom_audit import *
 from scrap import *
 from autoconfig import *
+from launchers import *
+from romsets import *
+from executor import *
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
@@ -90,8 +93,7 @@ VIRTUAL_CAT_STUDIO_DIR   = PLUGIN_DATA_DIR.join('db_studio')
 VIRTUAL_CAT_NPLAYERS_DIR = PLUGIN_DATA_DIR.join('db_nplayers')
 VIRTUAL_CAT_ESRB_DIR     = PLUGIN_DATA_DIR.join('db_esrb')
 VIRTUAL_CAT_RATING_DIR   = PLUGIN_DATA_DIR.join('db_rating')
-VIRTUAL_CAT_CATEGORY_DIR = PLUGIN_DATA_DIR.join('db_category')
-ROMS_DIR                 = PLUGIN_DATA_DIR.join('db_ROMs')
+VIRTUAL_CAT_CATEGORY_DIR = PLUGIN_DATA_DIR.join('db_category')   
 COLLECTIONS_DIR          = PLUGIN_DATA_DIR.join('db_Collections')
 REPORTS_DIR              = PLUGIN_DATA_DIR.join('reports')
 
@@ -187,6 +189,11 @@ class Main:
         if not ROMS_DIR.exists():                 ROMS_DIR.makedirs()
         if not COLLECTIONS_DIR.exists():          COLLECTIONS_DIR.makedirs()
         if not REPORTS_DIR.exists():              REPORTS_DIR.makedirs()
+
+        # -- Bootstrap instances -- 
+        self.romsetFactory = RomSetFactory(PLUGIN_DATA_DIR)
+        executorFactory = ExecutorFactory(self.settings, LAUNCH_LOG_FILE_PATH)
+        self.launcherFactory = LauncherFactory(self.settings, self.romsetFactory, executorFactory)
 
         # --- Process URL ---
         self.base_url     = sys.argv[0]
@@ -1589,8 +1596,10 @@ class Main:
                     # >> Traverse ROM list and check local asset/artwork
                     pDialog = xbmcgui.DialogProgress()
                     pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
-                    roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+                    
+                    romSet = self.romsetFactory.create(launcherID, None, self.launchers[launcherID]['roms_base_noext'])
+                    roms = romSet.loadRoms()
+
                     num_items = len(roms)
                     item_counter = 0
                     for rom_id in roms:
@@ -4216,7 +4225,9 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-        rom_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+        romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID)
+        rom_list = romSet.loadRoms()
+
         if not rom_list:
             kodi_notify('Recently played list is empty. Play some ROMs first!')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -4266,7 +4277,8 @@ class Main:
             all_roms.update(temp_roms)
 
         # --- Load favourites ---
-        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        romSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID)
+        roms_fav = romSet.loadRoms()
         roms_fav_set = set(roms_fav.keys())
 
         # --- Set content type and sorting methods ---
@@ -4282,26 +4294,17 @@ class Main:
     # Adds ROM to favourites
     #
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
-        # >> ROM in Virtual Launcher
-        if categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_CATEGORY_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        # >> ROMs in standard launcher
-        else:
+
+        if categoryID == None or categoryID is '':
+            # >> ROMs in standard launcher
             launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            romSet = self.romsetFactory.create(launcherID, categoryID, launcher['roms_base_noext'] if 'roms_base_noext' in launcher else None)
+            roms = romSet.loadRoms()
+        else:
+            # >> ROM in Virtual Launcher
+            romSet = self.romsetFactory.create(launcherID, categoryID)
+            roms = romSet.loadRoms()
+            launcher = self.launchers[roms[romID]['launcherID']] # why not launchers[id]
 
         # >> Sanity check
         if not roms:
@@ -4309,7 +4312,8 @@ class Main:
             return
 
         # --- Load favourites ---
-        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        favRomSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID)
+        roms_fav = favRomSet.loadRoms()
 
         # --- DEBUG info ---
         log_verb('_command_add_to_favourites() Adding ROM to Favourites')
@@ -5401,23 +5405,17 @@ class Main:
             kodi_notify('Exported ROM Collection {0} metadata and assets.'.format(collection['m_name']))
 
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
-        # >> ROM in Virtual Launcher
-        if categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        # >> ROMs in standard launcher
-        else:
+
+        if categoryID == None or categoryID is '':
+            # >> ROMs in standard launcher
             launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
+            romSet = self.romsetFactory.create(launcherID, categoryID, launcher['roms_base_noext'] if 'roms_base_noext' in launcher else None)
+            roms = romSet.loadRoms()
+        else:
+            # >> ROM in Virtual Launcher
+            romSet = self.romsetFactory.create(launcherID, categoryID)
+            roms = romSet.loadRoms()
+            launcher = self.launchers[roms[romID]['launcherID']] # why not launchers[id]
 
         # >> Sanity check
         if not roms:
@@ -5618,24 +5616,10 @@ class Main:
         else: return
 
         # --- Load Launcher ROMs ---
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-        elif categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-        elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-        elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-        elif categoryID == VCATEGORY_CATEGORY_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
-        else:
-            rom_file_path = ROMS_DIR.join(self.launchers[launcherID]['roms_base_noext'] + '.json')
-            if not rom_file_path.exists():
-                kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
-                return
-            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
+        launcher = self.launchers[launcherID]
+        roms_base_noext = launcher['roms_base_noext'] if 'roms_base_noext' in launcher else None
+        romSet = self.romsetFactory.create(launcherID, categoryID, rom_base_noext)
+        roms = romSet.loadRoms()
 
         # --- Empty ROM dictionary / Loading error ---
         if not roms:
@@ -6560,514 +6544,30 @@ class Main:
     # Launchs a standalone application.
     #
     def _command_run_standalone_launcher(self, categoryID, launcherID):
+        
+        log_info('_command_run_standalone_launcher() Launching Standalone Launcher ...')
+        launcher = self.launcherFactory.create(self.launchers, categoryID, launcherID)
+
         # --- Check launcher is OK ---
-        if launcherID not in self.launchers:
-            kodi_dialog_OK('launcherID not found in self.launchers')
-            return
-        launcher = self.launchers[launcherID]
-        minimize_flag = launcher['minimize']
-
-        # --- Execute Kodi built-in function under certain conditions ---
-        application = FileName(launcher['application'])
-        if application.getBase().lower().replace('.exe' , '') == 'xbmc'  or \
-           'xbmc-fav-' in launcher['application'] or 'xbmc-sea-' in launcher['application']:
-            xbmc.executebuiltin('XBMC.{0}'.format(launcher['args']))
+        if launcher is None:
+            kodi_dialog_OK('Could not start launcher. Check the logs')
             return
 
-        # ~~~~~ External application ~~~~~
-        app_basename   = application.getBase()
-        app_ext        = application.getExt()
-        arguments      = launcher['args']
-        launcher_title = launcher['m_name']
-        log_info('_run_standalone_launcher() categoryID {0}'.format(categoryID))
-        log_info('_run_standalone_launcher() launcherID {0}'.format(launcherID))
-        log_info('_run_standalone_launcher() application   "{0}"'.format(application.getPath()))
-        log_info('_run_standalone_launcher() apppath       "{0}"'.format(application.getDir()))
-        log_info('_run_standalone_launcher() app_basename  "{0}"'.format(app_basename))
-        log_info('_run_standalone_launcher() app_ext       "{0}"'.format(app_ext))
-        log_info('_run_standalone_launcher() launcher name "{0}"'.format(launcher_title))
-
-        # ~~~ Argument substitution ~~~
-        log_info('_run_standalone_launcher() raw arguments   "{0}"'.format(arguments))
-        arguments = arguments.replace('$apppath%' , application.getDir())
-        log_info('_run_standalone_launcher() final arguments "{0}"'.format(arguments))
-
-        # --- Check for errors and abort if errors found ---
-        if not application.exists():
-            log_error('Launching app not found "{0}"'.format(application.getPath()))
-            kodi_notify_warn('App {0} not found.'.format(application.getOriginalPath()))
-            return
-
-        # ~~~~~ Execute external application ~~~~~
-        self._run_before_execution(launcher_title, minimize_flag)
-        self._run_process(application.getPath(), arguments, application.getDir(), app_ext)
-        self._run_after_execution(minimize_flag)
+        launcher.launch()
 
     #
     # Launchs a ROM
     # NOTE args_extre maybe present or not in Favourite ROM. In newer version of AEL always present.
     #
     def _command_run_rom(self, categoryID, launcherID, romID):
-        # --- ROM in Favourites ---
-        if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            log_info('_command_run_rom() Launching ROM in Favourites ...')
-            roms          = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-            rom           = roms[romID]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
-        # --- ROM in Recently played ROMs list ---
-        elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-            log_info('_command_run_rom() Launching ROM in Recently Played ROMs ...')
-            recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
-            current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
-            if current_ROM_position < 0:
-                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
-                return
-            rom           = recent_roms_list[current_ROM_position]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
-        # --- ROM in Most played ROMs ---
-        elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
-            log_info('_command_run_rom() Launching ROM in Most played ROMs ...')
-            most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-            rom           = most_played_roms[romID]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
-        # --- ROM in Collection ---
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_info('_command_run_rom() Launching ROM in Collection ...')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-            current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
-            if current_ROM_position < 0:
-                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
-                return
-            rom           = collection_rom_list[current_ROM_position]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
-        # --- ROM in Virtual Launcher ---
-        elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
-             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID or \
-             categoryID == VCATEGORY_CATEGORY_ID:
-            if categoryID == VCATEGORY_TITLE_ID:
-                log_info('_command_run_rom() Launching ROM in Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-            elif categoryID == VCATEGORY_YEARS_ID:
-                log_info('_command_run_rom() Launching ROM in Year Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-            elif categoryID == VCATEGORY_GENRE_ID:
-                log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-            elif categoryID == VCATEGORY_STUDIO_ID:
-                log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-            elif categoryID == VCATEGORY_CATEGORY_ID:
-                log_info('_command_run_rom() Launching ROM in Category Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
 
-            rom           = roms[romID]
-            recent_rom    = rom
-            minimize_flag = rom['minimize']
-            romext        = rom['romext']
-            standard_app  = rom['application']
-            standard_args = rom['args']
-            args_extra    = rom['args_extra'] if 'args_extra' in rom else list()
-        # --- ROM in standard ROM launcher ---
-        else:
-            log_info('_command_run_rom() Launching ROM in Launcher ...')
-            # --- Check launcher is OK and load ROMs ---
-            if launcherID not in self.launchers:
-                kodi_dialog_OK('launcherID not found in self.launchers')
-                return
-            launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher['roms_base_noext'])
-            # --- Check ROM is in XML data just read ---
-            if romID not in roms:
-                kodi_dialog_OK('romID not in roms dictionary')
-                return
-            rom           = roms[romID]
-            recent_rom    = fs_get_Favourite_from_ROM(rom, launcher)
-            minimize_flag = launcher['minimize']
-            romext        = launcher['romext']
-            standard_app  = launcher['application']
-            standard_args = launcher['args']
-            args_extra    = launcher['args_extra']
-
-        # ~~~~~ Substitue altapp/altarg or additional arguments ~~~~~
-        # >> If ROM has altapp configured, then use altapp/altarg
-        # >> If Launcher has args_extra configured then show a dialog to the user to selec the
-        # >> arguments to launch ROM.
-        if rom['altapp'] or rom['altarg']:
-            log_info('_command_run_rom() Using ROM altapp/altarg')
-            application = rom['altapp'] if rom['altapp'] else standard_app
-            arguments   = rom['altarg'] if rom['altarg'] else standard_args
-        elif args_extra:
-            # >> Ask user what arguments to launch application
-            log_info('_command_run_rom() Using Launcher args_extra')
-            arg_list = [standard_args] + args_extra
-            dialog = xbmcgui.Dialog()
-            dselect_ret = dialog.select('Select launcher arguments', arg_list)
-            if dselect_ret < 0: return
-            log_info('_command_run_rom() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
-            application = standard_app
-            arguments   = arg_list[dselect_ret]
-        else:
-            log_info('_command_run_rom() Using Launcher standard arguments')
-            application = standard_app
-            arguments   = standard_args
-
-        # ~~~ Choose file to launch in multidisc ROM sets ~~~
-        if rom['disks']:
-            log_info('_command_run_rom() Multidisc ROM set detected')
-            dialog = xbmcgui.Dialog()
-            dselect_ret = dialog.select('Select ROM to launch in multidisc set', rom['disks'])
-            if dselect_ret < 0: return
-            selected_rom_base = rom['disks'][dselect_ret]
-            log_info('_command_run_rom() Selected ROM "{0}"'.format(selected_rom_base))
-            ROM_temp = FileName(rom['filename'])
-            ROM_dir = FileName(ROM_temp.getDir())
-            ROMFileName = ROM_dir.pjoin(selected_rom_base)
-        else:
-            log_info('_command_run_rom() Sigle ROM detected (no multidisc)')
-            ROMFileName = FileName(rom['filename'])
-        log_info('_command_run_rom() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
-        log_info('_command_run_rom() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
-
-        # ~~~~~ Launch ROM ~~~~~
-        application   = FileName(application)
-        apppath       = application.getDir()
-        rompath       = ROMFileName.getDir()
-        rombase       = ROMFileName.getBase()
-        rombase_noext = ROMFileName.getBase_noext()
-        romtitle      = rom['m_name']
-        log_info('_command_run_rom() categoryID   {0}'.format(categoryID))
-        log_info('_command_run_rom() launcherID   {0}'.format(launcherID))
-        log_info('_command_run_rom() romID        {0}'.format(romID))
-        log_info('_command_run_rom() romfile      "{0}"'.format(ROMFileName.getPath()))
-        log_info('_command_run_rom() rompath      "{0}"'.format(rompath))
-        log_info('_command_run_rom() rombase      "{0}"'.format(rombase))
-        log_info('_command_run_rom() rombasenoext "{0}"'.format(rombase_noext))
-        log_info('_command_run_rom() romtitle     "{0}"'.format(romtitle))
-        log_info('_command_run_rom() application  "{0}"'.format(application.getPath()))
-        log_info('_command_run_rom() apppath      "{0}"'.format(apppath))
-        log_info('_command_run_rom() romext       "{0}"'.format(romext))
-
-        # --- Check for errors and abort if found --- todo: CHECK
-        if not application.exists() and (
-            application.getOriginalPath() != RETROPLAYER_LAUNCHER_APP_NAME and
-            application.getOriginalPath() != LNK_LAUNCHER_APP_NAME ):
-            log_error('Launching app not found "{0}"'.format(application.getPath()))
-            kodi_notify_warn('Launching app not found {0}'.format(application.getOriginalPath()))
+        log_info('_command_run_rom() Launching ROM in Launcher ...')
+        launcher = self.launcherFactory.create(self.launchers, categoryID, launcherID, romID)
+        
+        # --- Check launcher is OK ---
+        if launcher is None:
+            kodi_dialog_OK('Could not start launcher. Check the logs')
             return
-
-        if not ROMFileName.exists():
-            log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
-            return
-
-        # --- Escape quotes and double quotes in ROMFileName ---
-        # >> This maybe useful to Android users with complex command line arguments
-        if self.settings['escape_romfile']:
-            log_info("_command_run_rom() Escaping ROMFileName ' and \"")
-            ROMFileName.escapeQuotes()
-
-        # ~~~~ Argument substitution ~~~~~
-        log_info('_command_run_rom() raw arguments   "{0}"'.format(arguments))
-        arguments = arguments.replace('$categoryID$', categoryID)
-        arguments = arguments.replace('$launcherID$', launcherID)
-        arguments = arguments.replace('$romID$', romID)
-        arguments = arguments.replace('$rom$', ROMFileName.getPath())
-        arguments = arguments.replace('$romfile$', ROMFileName.getPath())
-        arguments = arguments.replace('$rompath$', rompath)
-        arguments = arguments.replace('$rombase$', rombase)
-        arguments = arguments.replace('$rombasenoext$', rombase_noext)
-        arguments = arguments.replace('$romtitle$', romtitle)
-        arguments = arguments.replace('$apppath$', apppath)
-        # >> Legacy names for argument substitution
-        arguments = arguments.replace('%rom%', ROMFileName.getPath())
-        arguments = arguments.replace('%ROM%', ROMFileName.getPath())
-        log_info('_command_run_rom() final arguments "{0}"'.format(arguments))
-
-        # --- Compute ROM recently played list ---
-        MAX_RECENT_PLAYED_ROMS = 100
-        recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
-        recent_roms_list = [rom for rom in recent_roms_list if rom['id'] != recent_rom['id']]
-        recent_roms_list.insert(0, recent_rom)
-        if len(recent_roms_list) > MAX_RECENT_PLAYED_ROMS:
-            log_debug('_command_run_rom() len(recent_roms_list) = {0}'.format(len(recent_roms_list)))
-            log_debug('_command_run_rom() Trimming list to {0} ROMs'.format(MAX_RECENT_PLAYED_ROMS))
-            temp_list        = recent_roms_list[:MAX_RECENT_PLAYED_ROMS]
-            recent_roms_list = temp_list
-        fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
-
-        # --- Compute most played ROM statistics ---
-        most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-        if recent_rom['id'] in most_played_roms:
-            rom_id = recent_rom['id']
-            most_played_roms[rom_id]['launch_count'] += 1
-        else:
-            # >> Add field launch_count to recent_rom to count how many times have been launched.
-            recent_rom['launch_count'] = 1
-            most_played_roms[recent_rom['id']] = recent_rom
-        fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
-
-        # --- Execute Kodi Retroplayer if launcher configured to do so ---
-        # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
-        # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
-        if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
-            log_info('_command_run_rom() Executing ROM with Kodi Retroplayer ...')
-            # >> Create listitem object
-            label_str = ROMFileName.getBase()
-            listitem = xbmcgui.ListItem(label = label_str, label2 = label_str)
-            # >> Listitem metadata
-            # >> How to fill gameclient = string (game.libretro.fceumm) ???
-            genre_list = list(rom['m_genre'])
-            listitem.setInfo('game', {'title'    : label_str,     'platform'  : 'Test platform',
-                                      'genres'   : genre_list,    'developer' : rom['m_developer'],
-                                      'overview' : rom['m_plot'], 'year'      : rom['m_year'] })
-            log_info('_command_run_rom() application.getOriginalPath() "{0}"'.format(application.getOriginalPath()))
-            log_info('_command_run_rom() ROMFileName.getPath()         "{0}"'.format(ROMFileName.getPath()))
-            log_info('_command_run_rom() label_str                     "{0}"'.format(label_str))
-
-            # --- User notification ---
-            if self.settings['display_launcher_notify']:
-                kodi_notify('Launching "{0}" with Retroplayer'.format(romtitle))
-
-            log_verb('_command_run_rom() Calling xbmc.Player().play() ...')
-            xbmc.Player().play(ROMFileName.getPath(), listitem)
-            log_verb('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
-            return
-        else:
-            log_info('_command_run_rom() Launcher is not Kodi Retroplayer.')
-
-        # ~~~~~ Execute external application ~~~~~
-        self._run_before_execution(romtitle, minimize_flag)
-        self._run_process(application.getPath(), arguments, apppath, romext)
-        self._run_after_execution(minimize_flag)
-
-    #
-    # Launchs a ROM launcher or standalone launcher
-    # For standalone launchers romext is the extension of the application (only used in Windoze)
-    #
-    def _run_process(self, application, arguments, apppath, romext):
-        import shlex
-        import subprocess
-
-        # >> Determine platform and launch application
-        # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-
-        # >> Decompose arguments to call subprocess module
-        arg_list  = shlex.split(arguments)
-        exec_list = [application] + arg_list
-        log_debug('_run_process() arguments = "{0}"'.format(arguments))
-        log_debug('_run_process() arg_list  = {0}'.format(arg_list))
-        log_debug('_run_process() exec_list = {0}'.format(exec_list))
-
-        # >> Windoze
-        # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
-        # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling 
-        # process is inherited by the new process. If the parameter is FALSE, the handles are not 
-        # inherited. Note that inherited handles have the same value and access rights as the original handles.
-        # See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
-        #
-        # Same behaviour can be achieved in current version of subprocess with close_fds.
-        # If close_fds is true, all file descriptors except 0, 1 and 2 will be closed before the 
-        # child process is executed. (Unix only). Or, on Windows, if close_fds is true then no handles 
-        # will be inherited by the child process. Note that on Windows, you cannot set close_fds to 
-        # true and also redirect the standard handles by setting stdin, stdout or stderr.
-        #
-        # If I keep old launcher behaviour in Windows (close_fds = True) then program output cannot
-        # be redirected to a file.
-        #
-        if sys.platform == 'win32':
-            app_ext = application.split('.')[-1]
-            log_debug('_run_process() (Windows) application = "{0}"'.format(application))
-            log_debug('_run_process() (Windows) arguments   = "{0}"'.format(arguments))
-            log_debug('_run_process() (Windows) apppath     = "{0}"'.format(apppath))
-            log_debug('_run_process() (Windows) romext      = "{0}"'.format(romext))
-            log_debug('_run_process() (Windows) app_ext     = "{0}"'.format(app_ext))
-            # >> Standalone launcher where application is a LNK file
-            if app_ext == 'lnk' or app_ext == 'LNK':
-                log_debug('_run_process() (Windows) Launching LNK application')
-                # os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
-                retcode = subprocess.call('start "AEL" /b "{0}"'.format(application).encode('utf-8'), shell = True)
-                log_info('_run_process() (Windows) LNK app retcode = {0}'.format(retcode))
-
-            # >> ROM launcher where ROMs are LNK files
-            elif romext == 'lnk' or romext == 'LNK':
-                log_debug('_run_process() (Windows) Launching LNK ROM')
-                # os.system('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'))
-                retcode = subprocess.call('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'), shell = True)
-                log_info('_run_process() (Windows) LNK ROM retcode = {0}'.format(retcode))
-
-            # >> CMD/BAT files in Windows
-            elif app_ext == 'bat' or app_ext == 'BAT':
-                log_debug('_run_process() (Windows) Launching BAT application')
-                log_debug('_run_process() (Windows) Ignoring setting windows_cd_apppath')
-                log_debug('_run_process() (Windows) Ignoring setting windows_close_fds')
-                log_debug('_run_process() (Windows) show_batch_window = {0}'.format(self.settings['show_batch_window']))
-                info = subprocess.STARTUPINFO()
-                info.dwFlags = 1
-                info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
-                retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
-                log_info('_run_process() (Windows) Process BAR retcode = {0}'.format(retcode))
-
-            else:
-                # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
-                # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
-                # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
-                windows_cd_apppath = self.settings['windows_cd_apppath']
-                windows_close_fds  = self.settings['windows_close_fds']
-                log_debug('_run_process() (Windows) Launching regular application')
-                log_debug('_run_process() (Windows) windows_cd_apppath = {0}'.format(windows_cd_apppath))
-                log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
-                if windows_cd_apppath and windows_close_fds:
-                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
-                elif windows_cd_apppath and not windows_close_fds:
-                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False)
-                elif not windows_cd_apppath and windows_close_fds:
-                    retcode = subprocess.call(exec_list, close_fds = True)
-                elif not windows_cd_apppath and not windows_close_fds:
-                    retcode = subprocess.call(exec_list, close_fds = False)
-                else:
-                    raise Exception('Logical error')
-                log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))
-
-        # >> Linux and Android
-        elif sys.platform.startswith('linux'):
-            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
-
-            # >> Old way of launching child process. os.system() is deprecated and should not
-            # >> be used anymore.
-            # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
-
-            # >> New way of launching, uses subproces module. Also, save child process stdout.
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
-            log_info('_run_process() Process retcode = {0}'.format(retcode))
-
-            if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
-
-        # >> OS X
-        elif sys.platform.startswith('darwin'):
-            # >> Old way
-            # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
-            
-            # >> New way.
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
-            log_info('_run_process() Process retcode = {0}'.format(retcode))
-
-        else:
-            kodi_notify_warn('Cannot determine the running platform')
-
-    #
-    # These two functions do things like stopping music before lunch, toggling full screen, etc.
-    # Variables set in this function:
-    # self.kodi_was_playing      True if Kodi player was ON, False otherwise
-    # self.kodi_audio_suspended  True if Kodi audio suspended before launching
-    #
-    def _run_before_execution(self, rom_title, toggle_screen_flag):
-        # --- User notification ---
-        if self.settings['display_launcher_notify']:
-            kodi_notify('Launching {0}'.format(rom_title))
-
-        # --- Stop/Pause Kodi mediaplayer if requested in settings ---
-        self.kodi_was_playing = False
-        # id="media_state_action" default="0" values="Stop|Pause|Let Play"
-        media_state_action = self.settings['media_state_action']
-        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_run_before_execution() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
-        if media_state_action == 0 and xbmc.Player().isPlaying():
-            log_verb('_run_before_execution() Calling xbmc.Player().stop()')
-            xbmc.Player().stop()
-            xbmc.sleep(100)
-            self.kodi_was_playing = True
-        elif media_state_action == 1 and xbmc.Player().isPlaying():
-            log_verb('_run_before_execution() Calling xbmc.Player().pause()')
-            xbmc.Player().pause()
-            xbmc.sleep(100)
-            self.kodi_was_playing = True
-
-        # --- Force audio suspend if requested in "Settings" --> "Advanced"
-        # >> See http://forum.kodi.tv/showthread.php?tid=164522
-        self.kodi_audio_suspended = False
-        if self.settings['suspend_audio_engine']:
-            log_verb('_run_before_execution() Suspending Kodi audio engine')
-            xbmc.audioSuspend()
-            xbmc.enableNavSounds(False)
-            xbmc.sleep(100)
-            self.kodi_audio_suspended = True
-        else:
-            log_verb('_run_before_execution() DO NOT suspend Kodi audio engine')
-
-        # --- Toggle Kodi windowed/fullscreen if requested ---
-        if toggle_screen_flag:
-            log_verb('_run_before_execution() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
-        else:
-            log_verb('_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
-
-        # --- Pause Kodi execution some time ---
-        delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_run_before_execution() Pausing {0} ms'.format(delay_tempo_ms))
-        xbmc.sleep(delay_tempo_ms)
-        log_debug('_run_before_execution() function ENDS')
-
-    def _run_after_execution(self, toggle_screen_flag):
-        # --- Stop Kodi some time ---
-        delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_run_after_execution() Pausing {0} ms'.format(delay_tempo_ms))
-        xbmc.sleep(delay_tempo_ms)
-
-        # --- Toggle Kodi windowed/fullscreen if requested ---
-        if toggle_screen_flag:
-            log_verb('_run_after_execution() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
-        else:
-            log_verb('_run_after_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
-
-        # --- Resume audio engine if it was suspended ---
-        # Calling xmbc.audioResume() takes a loong time (2/4 secs) if audio was not properly suspended!
-        # Also produces this in Kodi's log:
-        # WARNING: CActiveAE::StateMachine - signal: 0 from port: OutputControlPort not handled for state: 7
-        #   ERROR: ActiveAE::Resume - failed to init
-        if self.kodi_audio_suspended:
-            log_verb('_run_after_execution() Kodi audio engine was suspended before launching')
-            log_verb('_run_after_execution() Resuming Kodi audio engine')
-            xbmc.audioResume()
-            xbmc.enableNavSounds(True)
-            xbmc.sleep(100)
-        else:
-            log_verb('_run_before_execution() DO NOT resume Kodi audio engine')
-
-        # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
-        media_state_action = self.settings['media_state_action']
-        media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_run_after_execution() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
-        log_verb('_run_after_execution() self.kodi_was_playing is {0}'.format(self.kodi_was_playing))
-        if self.kodi_was_playing and media_state_action == 1:
-            log_verb('_run_after_execution() Calling xbmc.Player().play()')
-            xbmc.Player().play()
-        log_debug('_run_after_execution() function ENDS')
 
     #
     # Check if Launcher reports must be created/regenrated
