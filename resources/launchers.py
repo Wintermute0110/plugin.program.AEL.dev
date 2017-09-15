@@ -42,6 +42,10 @@ class LauncherFactory():
             log_error('Rom not found in romset')
             return None
 
+        # proof of concept with launcher types
+        if 'type' in launcher and launcher['type'] == 'retroarch':
+            return RetroarchLauncher(self.settings, self.executorFactory, self.settings['escape_romfile'], launcher, romData)
+
         if 'disks' in romData and romData['disks']:
             return MultiDiscRomLauncher(self.settings, self.executorFactory, self.settings['escape_romfile'], launcher, romData)
         
@@ -382,12 +386,12 @@ class RetroarchLauncher(StandardRomLauncher):
 
         if sys.platform.startswith('linux'):
 
-            self.arguments = 'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER'
-            self.arguments += '-e ROM $rom$'
-            self.arguments += '-e LIBRETRO /data/data/com.retroarch/cores/{0}'.format(retroCore)
-            self.arguments += '-e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg'
+            self.arguments = 'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
+            self.arguments += '-e ROM \'$rom$\' '
+            self.arguments += '-e LIBRETRO /data/data/com.retroarch/cores/{0} '.format(retroCore)
+            self.arguments += '-e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg '
             self.arguments += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture'
             return
 
         #todo other os
-        pass
+        pass 

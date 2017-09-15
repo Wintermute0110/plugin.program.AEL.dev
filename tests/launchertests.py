@@ -327,6 +327,59 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertEqual(expectedArgs, mock.actualArgs)
 
+    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android(self):
+        self.test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android_mocked()
+        
+    @patch('resources.launchers.sys')    
+    @patch('resources.romsets.RomSetFactory')
+    @patch('resources.executors.ExecutorFactory')
+    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android_mocked(self, mock_exeFactory, mock_romsFactory, mock_sys):
+        
+        # arrange
+        mock_sys.configure_mock(platform='linux')
+        set_log_level(LOG_VERB)
+        set_use_print(True)
+
+        launchers = {}
+        launchers['ABC'] = {}
+        launchers['ABC']['type'] = 'retroarch'
+        launchers['ABC']['id'] = 'ABC'
+        launchers['ABC']['minimize'] = True
+        launchers['ABC']['romext'] = None
+        launchers['ABC']['args_extra'] = None
+        launchers['ABC']['roms_base_noext'] = 'snes'
+        launchers['ABC']['core'] = 'mame_libretro_android.so'
+
+        rom = {}
+        rom['id'] = 'qqqq'
+        rom['m_name'] = 'TestCase'
+        rom['filename'] = 'superrom.zip'
+
+        mock_romsFactory.create.return_value = FakeRomSet(rom)
+        mock = FakeExecutor(None)
+        mock_exeFactory.create.return_value = mock
+
+        settings = {}
+        settings['lirc_state'] = True
+        settings['escape_romfile'] = True
+        settings['display_launcher_notify'] = False
+        settings['media_state_action'] = 0
+        settings['suspend_audio_engine'] = False
+        settings['delay_tempo'] = 1
+
+        expected = '/system/bin/am'
+        expectedArgs = "start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM 'superrom.zip' -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture"
+
+        factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
+        launcher = factory.create(launchers, 'CATX', 'ABC', 'qqqq')
+
+        # act
+        launcher.launch()
+
+        # assert
+        self.assertEqual(expected, mock.actualApplication.getPath())
+        self.assertEqual(expectedArgs, mock.actualArgs)
+
 class FakeRomSet(RomSet):
 
     def __init__(self, rom):
