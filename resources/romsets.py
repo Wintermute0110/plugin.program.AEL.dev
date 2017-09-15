@@ -107,8 +107,12 @@ class RomSet():
 
     @abstractmethod
     def loadRoms(self):
-        return None
+        return {}
     
+    @abstractmethod
+    def loadRomsAsList(self):
+        return []
+
     @abstractmethod
     def loadRom(self, romId):
         return None
@@ -136,6 +140,14 @@ class StandardRomSet(RomSet):
 
         log_info('StandardRomSet() Loading ROMs in Launcher ...')
         roms = fs_load_ROMs_JSON(self.romsDir, self.roms_base_noext)
+        return roms
+
+    def loadRomsAsList(self):
+        roms_dict = self.loadRoms()
+        roms = []
+        for key in roms_dict:
+            roms.append(roms_dict[key])
+
         return roms
 
     def loadRom(self, romId):
@@ -196,14 +208,10 @@ class RecentlyPlayedRomSet(RomSet):
     
     def romSetFileExists():
         return self.romsDir.exists()
-
-    def __loadRomsAsList(self):
-        romsList = fs_load_Collection_ROMs_JSON(self.romsDir)
-        return romsList
-
+    
     def loadRoms(self):
         log_info('RecentlyPlayedRomSet() Loading ROMs in Recently Played ROMs ...')
-        romsList = self.__loadRomsAsList()
+        romsList = self.loadRomsAsList()
         
         roms = OrderedDict()
         for rom in romsList:
@@ -211,9 +219,13 @@ class RecentlyPlayedRomSet(RomSet):
             
         return roms
     
+    def loadRomsAsList(self):
+        roms = fs_load_Collection_ROMs_JSON(self.romsDir)
+        return roms
+
     def loadRom(self, romId):
         
-        roms = self.__loadRomsAsList()
+        roms = self.loadRomsAsList()
 
         if roms is None:
             log_error("RecentlyPlayedRomSet(): Could not load roms")
@@ -252,7 +264,7 @@ class CollectionRomSet(RomSet):
         roms_json_file = self.romsDir.join(collection['roms_base_noext'] + '.json')
         return roms_json_file.exists()
     
-    def __loadRomsAsList(self):
+    def loadRomsAsList(self):
         (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
         collection = collections[self.launcherID]
         roms_json_file = self.collection_dir.join(collection['roms_base_noext'] + '.json')
@@ -265,7 +277,7 @@ class CollectionRomSet(RomSet):
     def loadRoms(self):
         log_info('CollectionRomSet() Loading ROMs in Collection ...')
 
-        romsList = self.__loadRomsAsList()
+        romsList = self.loadRomsAsList()
         
         roms = OrderedDict()
         for rom in romsList:
@@ -275,7 +287,7 @@ class CollectionRomSet(RomSet):
     
     def loadRom(self, romId):
         
-        roms = self.__loadRomsAsList()
+        roms = self.loadRomsAsList()
 
         if roms is None:
             log_error("CollectionRomSet(): Could not load roms")

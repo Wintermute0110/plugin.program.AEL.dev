@@ -9,6 +9,7 @@ import xbmc, xbmcgui
 from constants import *
 from executors import *
 from romsets import *
+from romstats import *
 from disk_IO import *
 from utils import *
 from utils_kodi import *
@@ -29,11 +30,11 @@ class LauncherFactory():
         launcher = launchers[launcherID]
 
         if romID is not None:
-            return self.createRomLauncher(launcher, launcherID, romID, categoryID)
+            return self.createRomLauncher(launchers, launcher, launcherID, romID, categoryID)
 
         return ApplicationLauncher(self.settings, self.executorFactory, launcher)
     
-    def createRomLauncher(self, launcher, launcherID, romID, categoryID):
+    def createRomLauncher(self, launchers, launcher, launcherID, romID, categoryID):
         
         romSet = self.romsetFactory.create(launcherID, categoryID, launcher)
         romData = romSet.loadRom(romID)
@@ -42,15 +43,17 @@ class LauncherFactory():
             log_error('Rom not found in romset')
             return None
 
+        statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
+
         # proof of concept with launcher types
         if 'type' in launcher and launcher['type'] == 'retroarch':
-            return RetroarchLauncher(self.settings, self.executorFactory, self.settings['escape_romfile'], launcher, romData)
+            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, romData)
 
         if 'disks' in romData and romData['disks']:
-            return MultiDiscRomLauncher(self.settings, self.executorFactory, self.settings['escape_romfile'], launcher, romData)
+            return MultiDiscRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, romData)
         
         log_info('LauncherFactory() Sigle ROM detected (no multidisc)')
-        return StandardRomLauncher(self.settings, self.executorFactory, self.settings['escape_romfile'], launcher, romData)
+        return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, romData)
 
 
 #
@@ -218,12 +221,14 @@ class ApplicationLauncher(Launcher):
 
 class StandardRomLauncher(Launcher):
 
-    def __init__(self, settings, executorFactory, escape_romfile, launcher, rom):
+    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
         self.launcher = launcher
         self.rom = rom
         self.categoryID = ''
 
         self.escape_romfile = escape_romfile
+
+        self.statsStrategy = statsStrategy
         
         super(StandardRomLauncher, self).__init__(settings, executorFactory, launcher['minimize'])
 
@@ -258,7 +263,8 @@ class StandardRomLauncher(Launcher):
 
     def _selectRomFileToUse(self):
         return FileName(self.rom['filename'])
-
+    
+    # ~~~~ Argument substitution ~~~~~
     def _parseArguments(self, romFile):
         
         # --- Escape quotes and double quotes in ROMFileName ---
@@ -295,7 +301,7 @@ class StandardRomLauncher(Launcher):
         self.arguments = self.arguments.replace('%rom%', romFile.getPath())
         self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
         log_info('StandardRomLauncher() final arguments "{0}"'.format(self.arguments))
-
+        
     def launch(self):
         
         self.title  = self.rom['m_name']
@@ -319,32 +325,8 @@ class StandardRomLauncher(Launcher):
             kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
             return
         
-        # ~~~~ Argument substitution ~~~~~
         self._parseArguments(ROMFileName)
-
-        ## --- Compute ROM recently played list ---
-        #MAX_RECENT_PLAYED_ROMS = 100
-        #recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
-        #recent_roms_list = [rom for rom in recent_roms_list if rom['id'] != recent_rom['id']]
-        #recent_roms_list.insert(0, recent_rom)
-        #if len(recent_roms_list) > MAX_RECENT_PLAYED_ROMS:
-        #    log_debug('_command_run_rom() len(recent_roms_list) = {0}'.format(len(recent_roms_list)))
-        #    log_debug('_command_run_rom() Trimming list to {0} ROMs'.format(MAX_RECENT_PLAYED_ROMS))
-        #    temp_list        = recent_roms_list[:MAX_RECENT_PLAYED_ROMS]
-        #    recent_roms_list = temp_list
-        #fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
-        #
-        ## --- Compute most played ROM statistics ---
-        #most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-        #if recent_rom['id'] in most_played_roms:
-        #    rom_id = recent_rom['id']
-        #    most_played_roms[rom_id]['launch_count'] += 1
-        #else:
-        #    # >> Add field launch_count to recent_rom to count how many times have been launched.
-        #    recent_rom['launch_count'] = 1
-        #    most_played_roms[recent_rom['id']] = recent_rom
-        #
-        #fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+        self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
         
         super(StandardRomLauncher, self).launch()
         pass

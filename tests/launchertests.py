@@ -389,7 +389,10 @@ class FakeRomSet(RomSet):
         return True
             
     def loadRoms(self):
-        return None
+        return {}
+
+    def loadRomsAsList(self):
+        return []
 
     def loadRom(self, romId):
         return self.rom
