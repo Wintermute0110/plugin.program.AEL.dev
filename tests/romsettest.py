@@ -15,11 +15,14 @@ class Test_romsettest(unittest.TestCase):
         # arrange
         mockPath = FileName('mock')
         target = RomSetFactory(mockPath)
-        launcher = {}
-        launcher['roms_base_noext'] = 'test'
+
+        launcherID = 'ut1'
+        launchers = {}
+        launchers[launcherID] = {}
+        launchers[launcherID]['roms_base_noext'] = 'test'
         
         # act
-        actual = target.create(None, None, launcher)
+        actual = target.create(launcherID, None, launchers)
 
         # assert
         self.assertIsNotNone(actual)
@@ -29,11 +32,10 @@ class Test_romsettest(unittest.TestCase):
         # arrange
         mockPath = FileName('mock')
         target = RomSetFactory(mockPath)
-        launcher = {}
-        launcher['roms_base_noext'] = 'test'
+        launchers = {}
         
         # act
-        romset = target.create(None, None)
+        romset = target.create(None, None, launchers)
         actual = romset.__class__.__name__
 
         # assert
@@ -45,12 +47,12 @@ class Test_romsettest(unittest.TestCase):
         # arrange
         mockPath = FileName('mock')
         target = RomSetFactory(mockPath)
-        launcher = {}
+        launchers = {}
         categoryID = VCATEGORY_FAVOURITES_ID
         launcherID = VLAUNCHER_FAVOURITES_ID
 
         # act
-        romset = target.create(launcherID, categoryID)
+        romset = target.create(launcherID, categoryID, launchers)
         actual = romset.__class__.__name__
 
         # assert
@@ -62,12 +64,12 @@ class Test_romsettest(unittest.TestCase):
         # arrange
         mockPath = FileName('mock')
         target = RomSetFactory(mockPath)
-        launcher = {}
+        launchers = {}
         categoryID = VCATEGORY_MOST_PLAYED_ID
         launcherID = VLAUNCHER_MOST_PLAYED_ID
 
         # act
-        romset = target.create(launcherID, categoryID)
+        romset = target.create(launcherID, categoryID, launchers)
         actual = romset.__class__.__name__
 
         # assert
@@ -80,12 +82,13 @@ class Test_romsettest(unittest.TestCase):
         # arrange
         mockPath = FileName('mock')
         target = RomSetFactory(mockPath)
-        
+       
+        launchers = {} 
         categoryID = VCATEGORY_RECENT_ID
         launcherID = VLAUNCHER_RECENT_ID
 
         # act
-        romset = target.create(launcherID, categoryID)
+        romset = target.create(launcherID, categoryID, launchers)
         actual = romset.__class__.__name__
 
         # assert
@@ -98,11 +101,12 @@ class Test_romsettest(unittest.TestCase):
         mockPath = FileName('mock')
         target = RomSetFactory(mockPath)
         
+        launchers = {}
         categoryID = VCATEGORY_COLLECTIONS_ID
         launcherID = 'TestID'
 
         # act
-        romset = target.create(launcherID, categoryID)
+        romset = target.create(launcherID, categoryID, launchers)
         actual = romset.__class__.__name__
 
         # assert
@@ -117,11 +121,12 @@ class Test_romsettest(unittest.TestCase):
         
         categoryIDs = [VCATEGORY_TITLE_ID, VCATEGORY_YEARS_ID, VCATEGORY_GENRE_ID, VCATEGORY_STUDIO_ID, VCATEGORY_CATEGORY_ID]
         launcherID = 'TestID'
+        launchers = {}
         expected = 'VirtualLauncherRomSet'
 
         # act
         for categoryID in categoryIDs:
-            romset = target.create(launcherID, categoryID)
+            romset = target.create(launcherID, categoryID, launchers)
             actual = romset.__class__.__name__
             
             # assert

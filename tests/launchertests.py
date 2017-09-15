@@ -331,12 +331,18 @@ class FakeRomSet(RomSet):
 
     def __init__(self, rom):
         self.rom = rom
-        
+
+    def romSetFileExists():
+        return True
+            
     def loadRoms(self):
         return None
 
     def loadRom(self, romId):
         return self.rom
+
+    def saveRoms(self, roms):
+        pass
 
 class FakeExecutor(Executor):
     

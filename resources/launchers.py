@@ -35,7 +35,7 @@ class LauncherFactory():
     
     def createRomLauncher(self, launcher, launcherID, romID, categoryID):
         
-        romSet = self.romsetFactory.create(launcherID, categoryID, launcher['roms_base_noext'] if 'roms_base_noext' in launcher else None)
+        romSet = self.romsetFactory.create(launcherID, categoryID, launcher)
         romData = romSet.loadRom(romID)
         
         if romData is None:
@@ -223,6 +223,38 @@ class StandardRomLauncher(Launcher):
         
         super(StandardRomLauncher, self).__init__(settings, executorFactory, launcher['minimize'])
 
+    def _selectApplicationToUse(self):
+
+        if self.rom['altapp']:
+            log_info('StandardRomLauncher() Using ROM altapp')
+            self.application = FileName(self.rom['altapp'])
+        else:
+            self.application = FileName(self.launcher['application'])
+
+    def _selectArgumentsToUse(self):
+
+        if self.rom['altarg']:
+            log_info('StandardRomLauncher() Using ROM altarg')
+            self.arguments = self.rom['altarg']
+        elif self.launcher['args_extra']:
+             # >> Ask user what arguments to launch application
+            log_info('StandardRomLauncher() Using Launcher args_extra')
+            launcher_args = self.launcher['args']
+            arg_list = [self.launcher_args] + self.launcher['args_extra']
+            dialog = xbmcgui.Dialog()
+            dselect_ret = dialog.select('Select launcher arguments', arg_list)
+            
+            if dselect_ret < 0: 
+                return
+            
+            log_info('StandardRomLauncher() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
+            self.arguments = arg_list[dselect_ret]
+        else:
+            self.arguments = self.launcher['args']
+
+    def _selectRomFileToUse(self):
+        return FileName(self.rom['filename'])
+
     def _parseArguments(self, romFile):
         
         # --- Escape quotes and double quotes in ROMFileName ---
@@ -264,32 +296,10 @@ class StandardRomLauncher(Launcher):
         
         self.title  = self.rom['m_name']
 
-        if self.rom['altapp']:
-            log_info('StandardRomLauncher() Using ROM altapp')
-            self.application = FileName(self.rom['altapp'])
-        else:
-            self.application = FileName(self.launcher['application'])
-
-        if self.rom['altarg']:
-            log_info('StandardRomLauncher() Using ROM altarg')
-            self.arguments = self.rom['altarg']
-        elif self.launcher['args_extra']:
-             # >> Ask user what arguments to launch application
-            log_info('StandardRomLauncher() Using Launcher args_extra')
-            launcher_args = self.launcher['args']
-            arg_list = [self.launcher_args] + self.launcher['args_extra']
-            dialog = xbmcgui.Dialog()
-            dselect_ret = dialog.select('Select launcher arguments', arg_list)
-            
-            if dselect_ret < 0: 
-                return
-            
-            log_info('StandardRomLauncher() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
-            self.arguments = arg_list[dselect_ret]
-        else:
-            self.arguments = self.launcher['args']
+        self._selectApplicationToUse()
+        self._selectArgumentsToUse()
         
-        ROMFileName = FileName(self.rom['filename'])
+        ROMFileName = self._selectRomFileToUse()
 
         log_info('StandardRomLauncher() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
         log_info('StandardRomLauncher() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
@@ -337,7 +347,7 @@ class StandardRomLauncher(Launcher):
 
 class MultiDiscRomLauncher(StandardRomLauncher):
 
-    def launch(self):
+    def _selectRomFileToUse(self):
 
         log_info('MultiDiscRomLauncher() Multidisc ROM set detected')
         dialog = xbmcgui.Dialog()
@@ -352,7 +362,32 @@ class MultiDiscRomLauncher(StandardRomLauncher):
         ROM_dir = FileName(ROM_temp.getDir())
         ROMFileName = ROM_dir.pjoin(selected_rom_base)
 
-        self.rom['filename'] = ROMFileName.getOriginalPath()
+        return ROMFileName
+
+class RetroarchLauncher(StandardRomLauncher):
+
+    
+    def _selectApplicationToUse(self):
         
-        super(MultiDiscRomLauncher, self).launch()
+        if sys.platform.startswith('linux'):
+            self.application = FileName('/system/bin/am')
+            return
+
+        #todo other os
+        pass
+
+    def _selectArgumentsToUse(self):
+
+        retroCore = self.launcher['core']
+
+        if sys.platform.startswith('linux'):
+
+            self.arguments = 'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER'
+            self.arguments += '-e ROM $rom$'
+            self.arguments += '-e LIBRETRO /data/data/com.retroarch/cores/{0}'.format(retroCore)
+            self.arguments += '-e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg'
+            self.arguments += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture'
+            return
+
+        #todo other os
         pass

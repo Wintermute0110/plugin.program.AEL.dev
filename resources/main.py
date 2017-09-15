@@ -178,16 +178,6 @@ class Main:
         if not DEFAULT_COL_ASSET_DIR.exists():    DEFAULT_COL_ASSET_DIR.makedirs()
         if not DEFAULT_LAUN_ASSET_DIR.exists():   DEFAULT_LAUN_ASSET_DIR.makedirs()
         if not DEFAULT_FAV_ASSET_DIR.exists():    DEFAULT_FAV_ASSET_DIR.makedirs()
-        if not VIRTUAL_CAT_TITLE_DIR.exists():    VIRTUAL_CAT_TITLE_DIR.makedirs()
-        if not VIRTUAL_CAT_YEARS_DIR.exists():    VIRTUAL_CAT_YEARS_DIR.makedirs()
-        if not VIRTUAL_CAT_GENRE_DIR.exists():    VIRTUAL_CAT_GENRE_DIR.makedirs()
-        if not VIRTUAL_CAT_STUDIO_DIR.exists():   VIRTUAL_CAT_STUDIO_DIR.makedirs()
-        if not VIRTUAL_CAT_NPLAYERS_DIR.exists(): VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
-        if not VIRTUAL_CAT_ESRB_DIR.exists():     VIRTUAL_CAT_ESRB_DIR.makedirs()
-        if not VIRTUAL_CAT_RATING_DIR.exists():   VIRTUAL_CAT_RATING_DIR.makedirs()
-        if not VIRTUAL_CAT_CATEGORY_DIR.exists(): VIRTUAL_CAT_CATEGORY_DIR.makedirs()
-        if not ROMS_DIR.exists():                 ROMS_DIR.makedirs()
-        if not COLLECTIONS_DIR.exists():          COLLECTIONS_DIR.makedirs()
         if not REPORTS_DIR.exists():              REPORTS_DIR.makedirs()
 
         # -- Bootstrap instances -- 
@@ -1597,7 +1587,7 @@ class Main:
                     pDialog = xbmcgui.DialogProgress()
                     pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
                     
-                    romSet = self.romsetFactory.create(launcherID, None, self.launchers[launcherID]['roms_base_noext'])
+                    romSet = self.romsetFactory.create(launcherID, None, self.launchers)
                     roms = romSet.loadRoms()
 
                     num_items = len(roms)
@@ -2129,31 +2119,13 @@ class Main:
             return
 
         # --- Load ROMs ---
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            log_debug('_command_edit_rom() Editing Favourite ROM')
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_debug('_command_edit_rom() Editing Collection ROM')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
-
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-            # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
-            #      a dictionary. Convert the Collection list into an ordered dictionary and then
-            #      converted back the ordered dictionary into a list before saving the collection.
-            roms = OrderedDict()
-            for collection_rom in collection_rom_list:
-                roms[collection_rom['id']] = collection_rom
-        else:
-            log_debug('_command_edit_rom() Editing ROM in Launcher')
-            launcher = self.launchers[launcherID]
-            roms_base_noext = launcher['roms_base_noext']
-            roms = fs_load_ROMs_JSON(ROMS_DIR, roms_base_noext)
+        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        roms = romSet.loadRoms()
+        rom = romSet.loadRom(romID)
 
         # --- Show a dialog with ROM editing options ---
-        rom_name = roms[romID]['m_name']
-        finished_display = 'Status: Finished' if roms[romID]['finished'] == True else 'Status: Unfinished'
+        rom_name = rom['m_name']
+        finished_display = 'Status: Finished' if rom['finished'] == True else 'Status: Unfinished'
         dialog = xbmcgui.Dialog()
         if categoryID == VCATEGORY_FAVOURITES_ID:
             type = dialog.select('Edit ROM {0}'.format(rom_name),
@@ -2840,15 +2812,11 @@ class Main:
         # --- Save ROMs or Favourites ROMs ---
         # >> Always save if we reach this point of the function
         if launcherID == VLAUNCHER_FAVOURITES_ID:
-            fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
+            romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+            romSet.saveRoms(roms)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            # >> Convert back the OrderedDict into a list and save Collection
-            collection_rom_list = []
-            for key in roms:
-                collection_rom_list.append(roms[key])
-
-            json_file_path = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-            fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
+            romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+            romSet.saveRoms(roms)
         else:
             # >> Save categories/launchers to update timestamp
             #    Also update changed launcher timestamp
@@ -4112,25 +4080,19 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load virtual launchers in this category ---
-        if virtual_categoryID == VCATEGORY_TITLE_ID:      vcategory_db_dir = VIRTUAL_CAT_TITLE_DIR
-        elif virtual_categoryID == VCATEGORY_YEARS_ID:    vcategory_db_dir = VIRTUAL_CAT_YEARS_DIR
-        elif virtual_categoryID == VCATEGORY_GENRE_ID:    vcategory_db_dir = VIRTUAL_CAT_GENRE_DIR
-        elif virtual_categoryID == VCATEGORY_STUDIO_ID:   vcategory_db_dir = VIRTUAL_CAT_STUDIO_DIR
-        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID: vcategory_db_dir = VIRTUAL_CAT_NPLAYERS_DIR
-        elif virtual_categoryID == VCATEGORY_ESRB_ID:     vcategory_db_dir = VIRTUAL_CAT_ESRB_DIR
-        elif virtual_categoryID == VCATEGORY_RATING_ID:   vcategory_db_dir = VIRTUAL_CAT_RATING_DIR
-        elif virtual_categoryID == VCATEGORY_CATEGORY_ID: vcategory_db_dir = VIRTUAL_CAT_CATEGORY_DIR
-        else:
+        romSet = self.romsetFactory.create(virtual_launcherID, virtual_categoryID, self.launchers)
+
+        if romSet.__class__.__name__ is not 'VirtualLauncherRomSet':
             log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
 
-        # --- Load Virtual Launcher DB ---
-        hashed_db_filename = vcategory_db_dir.join(virtual_launcherID + '.json')
-        if not hashed_db_filename.exists():
+        if not romSet.romSetFileExists():
             kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
             return
-        roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
+
+        roms = romSet.loadRoms()
+
         if not roms:
             kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
             return
@@ -4225,7 +4187,7 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-        romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID)
+        romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
         rom_list = romSet.loadRoms()
 
         if not rom_list:
@@ -4277,7 +4239,7 @@ class Main:
             all_roms.update(temp_roms)
 
         # --- Load favourites ---
-        romSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID)
+        romSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID, self.launchers)
         roms_fav = romSet.loadRoms()
         roms_fav_set = set(roms_fav.keys())
 
@@ -4295,15 +4257,14 @@ class Main:
     #
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
 
+        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        roms = romSet.loadRoms()
+
         if categoryID == None or categoryID is '':
             # >> ROMs in standard launcher
             launcher = self.launchers[launcherID]
-            romSet = self.romsetFactory.create(launcherID, categoryID, launcher['roms_base_noext'] if 'roms_base_noext' in launcher else None)
-            roms = romSet.loadRoms()
         else:
             # >> ROM in Virtual Launcher
-            romSet = self.romsetFactory.create(launcherID, categoryID)
-            roms = romSet.loadRoms()
             launcher = self.launchers[roms[romID]['launcherID']] # why not launchers[id]
 
         # >> Sanity check
@@ -4312,7 +4273,7 @@ class Main:
             return
 
         # --- Load favourites ---
-        favRomSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID)
+        favRomSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID, self.launchers)
         roms_fav = favRomSet.loadRoms()
 
         # --- DEBUG info ---
@@ -5406,15 +5367,14 @@ class Main:
 
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
 
+        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        roms = romSet.loadRoms()
+
         if categoryID == None or categoryID is '':
             # >> ROMs in standard launcher
             launcher = self.launchers[launcherID]
-            romSet = self.romsetFactory.create(launcherID, categoryID, launcher['roms_base_noext'] if 'roms_base_noext' in launcher else None)
-            roms = romSet.loadRoms()
         else:
             # >> ROM in Virtual Launcher
-            romSet = self.romsetFactory.create(launcherID, categoryID)
-            roms = romSet.loadRoms()
             launcher = self.launchers[roms[romID]['launcherID']] # why not launchers[id]
 
         # >> Sanity check
@@ -5490,26 +5450,9 @@ class Main:
         log_debug('_command_search_launcher() launcherID {0}'.format(launcherID))
 
         # --- Load ROMs ---
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-        elif categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-        elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-        elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-        elif categoryID == VCATEGORY_CATEGORY_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
-        else:
-            rom_file_path = ROMS_DIR.join(self.launchers[launcherID]['roms_base_noext'] + '.json')
-            log_debug('_command_search_launcher() rom_file_path "{0}"'.format(rom_file_path.getOriginalPath()))
-            if not rom_file_path.exists():
-                kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
-                return
-            roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID]['roms_base_noext'])
-
+        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        roms = romSet.loadRoms()
+        
         # --- Empty ROM dictionary / Loading error ---
         if not roms:
             kodi_notify('Launcher JSON is empty. Add ROMs to Launcher')
@@ -5616,9 +5559,7 @@ class Main:
         else: return
 
         # --- Load Launcher ROMs ---
-        launcher = self.launchers[launcherID]
-        roms_base_noext = launcher['roms_base_noext'] if 'roms_base_noext' in launcher else None
-        romSet = self.romsetFactory.create(launcherID, categoryID, rom_base_noext)
+        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
         roms = romSet.loadRoms()
 
         # --- Empty ROM dictionary / Loading error ---
@@ -5783,104 +5724,104 @@ class Main:
 
                 elif categoryID == VCATEGORY_TITLE_ID:
                     log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher Title ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher Title'
 
                 elif categoryID == VCATEGORY_YEARS_ID:
                     log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher Year ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher Year'
 
                 elif categoryID == VCATEGORY_GENRE_ID:
                     log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher Genre ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher Genre'
 
                 elif categoryID == VCATEGORY_STUDIO_ID:
                     log_info('_command_view_menu() Viewing ROM in Studio Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher Studio ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher Studio'
 
                 elif categoryID == VCATEGORY_NPLAYERS_ID:
                     log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_NPLAYERS_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher NPlayer ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher NPlayer'
 
                 elif categoryID == VCATEGORY_ESRB_ID:
                     log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_ESRB_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_ESRB_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher ESRB ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher ESRB'
 
                 elif categoryID == VCATEGORY_RATING_ID:
                     log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_RATING_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_RATING_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher Rating ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher Rating'
 
                 elif categoryID == VCATEGORY_CATEGORY_ID:
                     log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_CATEGORY_DIR.join(launcherID + '.json')
-                    if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
-                        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    rom = romSet.loadRom(romID)
+
+                    if rom is None:
+                        kodi_dialog_OK('Virtual launcher rom not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
-                    rom = roms[romID]
+
                     window_title = 'Virtual Launcher Category ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher Category'
@@ -8423,9 +8364,13 @@ class Main:
 
         # >> Load Recently Played ROMs and check/update.
         pDialog.create('Advanced Emulator Launcher', 'Checking Recently Played ROMs ...')
-        recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
-        for rom in recent_roms_list: self._misc_fix_Favourite_rom_object(rom)
-        fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
+        romSet = self.romsetFactory.create(VLAUNCHER_RECENT_ID, VCATEGORY_RECENT_ID, self.launchers)
+        recent_roms_list = romSet.loadRoms()
+
+        for rom in recent_roms_list: 
+            self._misc_fix_Favourite_rom_object(rom)
+
+        romSet.saveRoms(recent_roms_list)
         pDialog.update(100)
         pDialog.close()
 

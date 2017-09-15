@@ -26,45 +26,85 @@ class RomSetFactory():
         self.VIRTUAL_CAT_GENRE_DIR    = pluginDataDir.join('db_genre')
         self.VIRTUAL_CAT_STUDIO_DIR   = pluginDataDir.join('db_studio')
         self.VIRTUAL_CAT_CATEGORY_DIR = pluginDataDir.join('db_category')
+        self.VIRTUAL_CAT_NPLAYERS_DIR = pluginDataDir.join('db_nplayers')
+        self.VIRTUAL_CAT_ESRB_DIR     = pluginDataDir.join('db_esrb')
+        self.VIRTUAL_CAT_RATING_DIR   = pluginDataDir.join('db_rating')
 
-    def create(self, launcherID, categoryID, rom_base_noext = None):
+        if not self.ROMS_DIR.exists():                 self.ROMS_DIR.makedirs()
+        if not self.VIRTUAL_CAT_TITLE_DIR.exists():    self.VIRTUAL_CAT_TITLE_DIR.makedirs()
+        if not self.VIRTUAL_CAT_YEARS_DIR.exists():    self.VIRTUAL_CAT_YEARS_DIR.makedirs()
+        if not self.VIRTUAL_CAT_GENRE_DIR.exists():    self.VIRTUAL_CAT_GENRE_DIR.makedirs()
+        if not self.VIRTUAL_CAT_STUDIO_DIR.exists():   self.VIRTUAL_CAT_STUDIO_DIR.makedirs()
+        if not self.VIRTUAL_CAT_CATEGORY_DIR.exists(): self.VIRTUAL_CAT_CATEGORY_DIR.makedirs()
+        if not self.VIRTUAL_CAT_NPLAYERS_DIR.exists(): self.VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
+        if not self.VIRTUAL_CAT_ESRB_DIR.exists():     self.VIRTUAL_CAT_ESRB_DIR.makedirs()
+        if not self.VIRTUAL_CAT_RATING_DIR.exists():   self.VIRTUAL_CAT_RATING_DIR.makedirs()
+        if not self.COLLECTIONS_DIR.exists():          self.COLLECTIONS_DIR.makedirs()
+
+    def create(self, launcherID, categoryID, launchers):
         
+        launcher = None
+        if launcherID in launchers:
+            launcher = launchers[launcherID]
+        else:
+            log_warning('Launcher "{0}" not found in launchers'.format(launcherID))
+
         # --- ROM in Favourites ---
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            return FavouritesRomSet(self.FAV_JSON_FILE_PATH)
+            return FavouritesRomSet(self.FAV_JSON_FILE_PATH, launcher)
         
         # --- ROM in Most played ROMs ---
         elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-            return FavouritesRomSet(self.MOST_PLAYED_FILE_PATH)
+            return FavouritesRomSet(self.MOST_PLAYED_FILE_PATH, launcher)
 
         # --- ROM in Recently played ROMs list ---
         elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
-            return RecentlyPlayedRomSet(self.RECENT_PLAYED_FILE_PATH)
+            return RecentlyPlayedRomSet(self.RECENT_PLAYED_FILE_PATH, launcher)
 
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            return CollectionRomSet(self.COLLECTIONS_FILE_PATH, self.COLLECTIONS_DIR, launcherID)
+            return CollectionRomSet(self.COLLECTIONS_FILE_PATH, launcher, self.COLLECTIONS_DIR, launcherID)
 
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID:
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_TITLE_DIR, launcherID)
+            log_info('RomSetFactory() loading ROM set Title Virtual Launcher ...')
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_TITLE_DIR, launcher, launcherID)
         elif categoryID == VCATEGORY_YEARS_ID:
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_YEARS_DIR, launcherID)
+            log_info('RomSetFactory() loading ROM set Years Virtual Launcher ...')
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_YEARS_DIR, launcher, launcherID)
         elif categoryID == VCATEGORY_GENRE_ID:
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_GENRE_DIR, launcherID)
+            log_info('RomSetFactory() loading ROM set Genre Virtual Launcher ...')
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_GENRE_DIR, launcher, launcherID)
         elif categoryID == VCATEGORY_STUDIO_ID:
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_STUDIO_DIR, launcherID)
+            log_info('RomSetFactory() loading ROM set Studio Virtual Launcher ...')
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_STUDIO_DIR, launcher, launcherID)
+        elif categoryID == VCATEGORY_NPLAYERS_ID:
+            log_info('RomSetFactory() loading ROM set NPlayers Virtual Launcher ...')
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_NPLAYERS_DIR, launcher, launcherID)
+        elif categoryID == VCATEGORY_ESRB_ID:
+            log_info('RomSetFactory() loading ROM set ESRB Virtual Launcher ...')
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_ESRB_DIR, launcher, launcherID)
+        elif categoryID == VCATEGORY_RATING_ID:
+            log_info('RomSetFactory() loading ROM set Rating Virtual Launcher ...')
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_RATING_DIR, launcher, launcherID)
         elif categoryID == VCATEGORY_CATEGORY_ID:
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_CATEGORY_DIR, launcher, launcherID)
             
-        return StandardRomSet(self.ROMS_DIR, rom_base_noext)
+        
+        log_info('RomSetFactory() loading standard romset...')
+        return StandardRomSet(self.ROMS_DIR, launcher)
 
 class RomSet():
     __metaclass__ = ABCMeta
     
-    def __init__(self, romsDir):
+    def __init__(self, romsDir, launcher):
         self.romsDir = romsDir
+        self.launcher = launcher
     
+    @abstractmethod
+    def romSetFileExists():
+        return False
+
     @abstractmethod
     def loadRoms(self):
         return None
@@ -73,16 +113,28 @@ class RomSet():
     def loadRom(self, romId):
         return None
 
+    @abstractmethod
+    def saveRoms(self, roms):
+        pass
+
 class StandardRomSet(RomSet):
     
-    def __init__(self, romsDir, roms_base_noext):
+    def __init__(self, romsDir, launcher):
         
-        self.roms_base_noext = roms_base_noext
-        super(StandardRomSet, self).__init__(romsDir)
+        self.roms_base_noext = launcher['roms_base_noext'] if launcher is not None and 'roms_base_noext' in launcher else None
+        super(StandardRomSet, self).__init__(romsDir, launcher)
+
+    def romSetFileExists():
+        rom_file_path = self.romsDir.join(self.roms_base_noext + '.json')
+        return rom_file_path.exists()
 
     def loadRoms(self):
-        
-        log_info('StandardRomSet() Loading ROM in Launcher ...')
+
+        if not self.romSetFileExists():
+            log_warning('Launcher "{0}" JSON not found.'.format(self.roms_base_noext))
+            return None
+
+        log_info('StandardRomSet() Loading ROMs in Launcher ...')
         roms = fs_load_ROMs_JSON(self.romsDir, self.roms_base_noext)
         return roms
 
@@ -97,15 +149,17 @@ class StandardRomSet(RomSet):
         romData = roms[romId]
         
         if romData is None:
-            log_warning("StandardRomSet(): Rom with ID '{0}' not found".format(romID))
+            log_warning("StandardRomSet(): Rom with ID '{0}' not found".format(romId))
             return None
 
         return romData
 
-class FavouritesRomSet(StandardRomSet):
+    def saveRoms(self, roms):
+        fs_write_ROMs_JSON(self.romsDir, self.roms_base_noext, roms, self.launcher)
+        pass
 
-    def __init__(self, romsDir):
-        super(FavouritesRomSet, self).__init__(romsDir, None)
+
+class FavouritesRomSet(StandardRomSet):
 
     def loadRoms(self):
         log_info('FavouritesRomSet() Loading ROMs in Favourites ...')
@@ -115,26 +169,51 @@ class FavouritesRomSet(StandardRomSet):
 
 class VirtualLauncherRomSet(StandardRomSet):
     
-    def __init__(self, romsDir, launcherID):
+    def __init__(self, romsDir, launcher, launcherID):
 
         self.launcherID = launcherID
-        super(VirtualLauncherRomSet, self).__init__(romsDir, None)
+        super(VirtualLauncherRomSet, self).__init__(romsDir, launcher)
+
+    def romSetFileExists():
+        hashed_db_filename = self.romsDir.join(self.launcherID + '.json')
+        return hashed_db_filename.exists()
 
     def loadRoms(self):
+
+        if not self.romSetFileExists():
+            log_warning('VirtualCategory "{0}" JSON not found.'.format(self.launcherID))
+            return None
+
         log_info('VirtualCategoryRomSet() Loading ROMs in Virtual Launcher ...')
         roms = fs_load_VCategory_ROMs_JSON(self.romsDir, self.launcherID)
         return roms
 
+    def saveRoms(self, roms):
+        fs_write_Favourites_JSON(self.romsDir, roms)
+        pass
+
 class RecentlyPlayedRomSet(RomSet):
     
+    def romSetFileExists():
+        return self.romsDir.exists()
+
+    def __loadRomsAsList(self):
+        romsList = fs_load_Collection_ROMs_JSON(self.romsDir)
+        return romsList
+
     def loadRoms(self):
         log_info('RecentlyPlayedRomSet() Loading ROMs in Recently Played ROMs ...')
-        roms = fs_load_Collection_ROMs_JSON(self.romsDir)
+        romsList = self.__loadRomsAsList()
+        
+        roms = OrderedDict()
+        for rom in romsList:
+            roms[rom['id']] = rom
+            
         return roms
     
     def loadRom(self, romId):
         
-        roms = self.loadRoms()
+        roms = self.__loadRomsAsList()
 
         if roms is None:
             log_error("RecentlyPlayedRomSet(): Could not load roms")
@@ -153,27 +232,54 @@ class RecentlyPlayedRomSet(RomSet):
 
         return romData
 
+    
+    def saveRoms(self, roms):
+        fs_write_Collection_ROMs_JSON(self.romsDir, roms)
+        pass
+
 class CollectionRomSet(RomSet):
     
-    def __init__(self, romsDir, collection_dir, launcherID):
+    def __init__(self, romsDir, launcher, collection_dir, launcherID):
 
         self.collection_dir = collection_dir
         self.launcherID = launcherID
-        super(CollectionRomSet, self).__init__(romsDir)
+        super(CollectionRomSet, self).__init__(romsDir, launcher)
 
+    def romSetFileExists():
+        (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
+        collection = collections[self.launcherID]
+
+        roms_json_file = self.romsDir.join(collection['roms_base_noext'] + '.json')
+        return roms_json_file.exists()
+    
+    def __loadRomsAsList(self):
+        (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
+        collection = collections[self.launcherID]
+        roms_json_file = self.collection_dir.join(collection['roms_base_noext'] + '.json')
+        romsList = fs_load_Collection_ROMs_JSON(roms_json_file)
+        return romsList
+
+    # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
+    #      a dictionary. Convert the Collection list into an ordered dictionary and then
+    #      converted back the ordered dictionary into a list before saving the collection.
     def loadRoms(self):
         log_info('CollectionRomSet() Loading ROMs in Collection ...')
 
-        (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
-        collection = collections[launcherID]
-        roms_json_file = self.collection_dir.join(collection['roms_base_noext'] + '.json')
-        roms = fs_load_Collection_ROMs_JSON(roms_json_file)
-
+        romsList = self.__loadRomsAsList()
+        
+        roms = OrderedDict()
+        for rom in romsList:
+            roms[rom['id']] = rom
+            
         return roms
     
     def loadRom(self, romId):
         
-        roms = self.loadRoms()
+        roms = self.__loadRomsAsList()
+
+        if roms is None:
+            log_error("CollectionRomSet(): Could not load roms")
+            return None
 
         current_ROM_position = fs_collection_ROM_index_by_romID(romId, roms)
         if current_ROM_position < 0:
@@ -187,3 +293,13 @@ class CollectionRomSet(RomSet):
             return None
 
         return romData
+
+    def saveRoms(self, roms):
+        
+        # >> Convert back the OrderedDict into a list and save Collection
+        collection_rom_list = []
+        for key in roms:
+            collection_rom_list.append(roms[key])
+
+        json_file_path = self.romsDir.join(collection['roms_base_noext'] + '.json')
+        fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
