@@ -40,7 +40,7 @@ from scrap import *
 from autoconfig import *
 from launchers import *
 from romsets import *
-from executor import *
+from executors import *
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
@@ -405,6 +405,7 @@ class Main:
         self.settings = {}
 
         # --- ROM Scanner settings ---
+        dd = __addon_obj__.getSetting(None)
         self.settings['scan_recursive']           = True if __addon_obj__.getSetting('scan_recursive') == 'true' else False
         self.settings['scan_ignore_bios']         = True if __addon_obj__.getSetting('scan_ignore_bios') == 'true' else False
         self.settings['scan_metadata_policy']     = int(__addon_obj__.getSetting('scan_metadata_policy'))
@@ -4001,31 +4002,9 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # --- Load virtual launchers in this category ---
-        if virtual_categoryID == VCATEGORY_TITLE_ID:
-            vcategory_db_filename = VCAT_TITLE_FILE_PATH
-            vcategory_name        = 'Browse by Title'
-        elif virtual_categoryID == VCATEGORY_YEARS_ID:
-            vcategory_db_filename = VCAT_YEARS_FILE_PATH
-            vcategory_name        = 'Browse by Year'
-        elif virtual_categoryID == VCATEGORY_GENRE_ID:
-            vcategory_db_filename = VCAT_GENRE_FILE_PATH
-            vcategory_name        = 'Browse by Genre'
-        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
-            vcategory_db_filename = VCAT_STUDIO_FILE_PATH
-            vcategory_name        = 'Browse by Studio'
-        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
-            vcategory_db_filename = VCAT_NPLAYERS_FILE_PATH
-            vcategory_name        = 'Browse by Number of Players'
-        elif virtual_categoryID == VCATEGORY_ESRB_ID:
-            vcategory_db_filename = VCAT_ESRB_FILE_PATH
-            vcategory_name        = 'Browse by ESRB Rating'
-        elif virtual_categoryID == VCATEGORY_RATING_ID:
-            vcategory_db_filename = VCAT_RATING_FILE_PATH
-            vcategory_name        = 'Browse by User Rating'
-        elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
-            vcategory_db_filename = VCAT_CATEGORY_FILE_PATH
-            vcategory_name        = 'Browse by Category'
-        else:
+        virtualSetDescription = self.romsetFactory.createDescription(virtual_categoryID)
+        
+        if virtualSetDescription is None:
             log_error('_command_render_virtual_category() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
@@ -4206,7 +4185,8 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Most Played favourite ROMs ---
-        roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+        romSet = self.romsetFactory.create(VLAUNCHER_MOST_PLAYED_ID, VCATEGORY_MOST_PLAYED_ID, self.launchers)
+        roms = romSet.loadRomsAsList()
         if not roms:
             kodi_notify('Most played ROMs list  is empty. Play some ROMs first!.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -8354,11 +8334,13 @@ class Main:
 
         # >> Load Most Played ROMs and check/update.
         pDialog.create('Advanced Emulator Launcher', 'Checking Most Played ROMs ...')
-        most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+        mostPlayedRomSet = self.romsetFactory.create(VLAUNCHER_MOST_PLAYED_ID, VCATEGORY_MOST_PLAYED_ID)
+        most_played_roms = mostPlayedRomSet.loadRoms()
         for rom_id in most_played_roms:
             rom = most_played_roms[rom_id]
             self._misc_fix_Favourite_rom_object(rom)
-        fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+
+        mostPlayedRomSet.saveRoms(most_played_roms)
         pDialog.update(100)
         pDialog.close()
 
