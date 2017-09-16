@@ -2919,7 +2919,7 @@ class Main:
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
@@ -2968,7 +2968,7 @@ class Main:
         commands.append(('Add New Launcher',      self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_COLLECTIONS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -2993,7 +2993,7 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_VCATEGORIES_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3016,7 +3016,7 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3039,7 +3039,7 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3060,7 +3060,7 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_RECENTLY_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3081,7 +3081,7 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_MOST_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3178,7 +3178,7 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3217,7 +3217,7 @@ class Main:
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', platform)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3256,7 +3256,7 @@ class Main:
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_LB_SCRAPER_ROMS', platform)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3412,7 +3412,7 @@ class Main:
                 commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)' ))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add Launcher row to ListItem ---
         if launcher_dic['rompath']:
@@ -3888,7 +3888,7 @@ class Main:
             commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Edit Launcher',             self._misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         # URLs must be different depending on the content type. If not Kodi log will be filled with:
@@ -3919,7 +3919,7 @@ class Main:
         # --- Create context menu ---
         commands = []
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
@@ -3945,7 +3945,7 @@ class Main:
         # --- Create context menu ---
         commands = []
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
@@ -4043,7 +4043,7 @@ class Main:
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-            listitem.addContextMenuItems(commands, replaceItems = True)
+            listitem.addContextMenuItems(commands)
 
             url_str = self._misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -4739,7 +4739,7 @@ class Main:
             commands.append(('Import Collection',        self._misc_url_RunPlugin('IMPORT_COLLECTION')))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
             commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-            listitem.addContextMenuItems(commands, replaceItems = True)
+            listitem.addContextMenuItems(commands)
 
             # >> Use ROMs renderer to display collection ROMs
             url_str = self._misc_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
