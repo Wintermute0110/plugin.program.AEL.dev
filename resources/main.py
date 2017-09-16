@@ -2943,7 +2943,7 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        listitem.addContextMenuItems(commands)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_FAVOURITES')
