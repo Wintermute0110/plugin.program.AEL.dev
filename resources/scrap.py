@@ -53,21 +53,21 @@ class Scraper:
 # Metadata scrapers base class
 # All scrapers (offline or online) must implement the abstract methods.
 # -------------------------------------------------------------------------------------------------
-def new_gamedata_dic():
-    gamedata = {
-        'title'     : '',
-        'year'      : '',
-        'genre'     : '',
-        'developer' : '',
-        'nplayers'  : '',
-        'esrb'      : '',
-        'plot'      : ''
-    }
-
-    return gamedata
-
 class Scraper_Metadata(Scraper):
-    # Offline scrapers need to know plugin installation directory.
+    def new_gamedata_dic(self):
+        gamedata = {
+            'title'     : '',
+            'year'      : '',
+            'genre'     : '',
+            'developer' : '',
+            'nplayers'  : '',
+            'esrb'      : '',
+            'plot'      : ''
+        }
+
+        return gamedata
+
+    # Offline scrapers need to know the plugin installation directory.
     # For offline scrapers just pass.
     def set_addon_dir(self, plugin_dir):
         raise NotImplementedError('Subclass must implement set_addon_dir() abstract method')

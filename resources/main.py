@@ -8830,15 +8830,16 @@ class Main:
         else:
             roms[romID]['m_name'] = gamedata['title']
             log_debug('User wants scrapped name. Setting name to "{0}"'.format(roms[romID]['m_name']))
-        roms[romID]['m_year']     = gamedata['year']
-        roms[romID]['m_genre']    = gamedata['genre']
-        roms[romID]['m_studio']   = gamedata['studio']
-        roms[romID]['m_nplayers'] = gamedata['nplayers']
-        roms[romID]['m_esrb']     = gamedata['esrb']
-        roms[romID]['m_plot']     = gamedata['plot']
+        roms[romID]['m_year']      = gamedata['year']
+        roms[romID]['m_genre']     = gamedata['genre']
+        roms[romID]['m_developer'] = gamedata['developer']
+        roms[romID]['m_nplayers']  = gamedata['nplayers']
+        roms[romID]['m_esrb']      = gamedata['esrb']
+        roms[romID]['m_plot']      = gamedata['plot']
 
-        # >> Changes were made
+        # >> Changes were made, return True
         kodi_notify('ROM metadata updated')
+
         return True
 
     #

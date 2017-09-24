@@ -158,7 +158,7 @@ class metadata_Offline(Scraper_Metadata):
 
     # game is dictionary returned by the metadata_Offline.get_game_search()
     def get_metadata(self, game):
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
 
         # --- MAME scraper ---
         if self.cached_platform == 'MAME':
@@ -204,7 +204,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 
     # game is dictionary returned by the Scraper_TheGamesDB.get_game_search()
     def get_metadata(self, game):
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
 
         # --- TheGamesDB returns an XML file with GetGame.php?id ---
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
@@ -258,7 +258,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         page_data = net_get_URL_oneline(game_id_url)
 
         # --- Process metadata ---
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
         gamedata['title'] = game['game_name']
 
         # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 ?</a></li>
@@ -315,7 +315,7 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/game/chakan/release-info">1992</a></div>
         # ...
         # </td>
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
         gamedata['title'] = game['game_name']
 
         # NOTE Year can be
@@ -363,7 +363,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         return Scraper_ArcadeDB.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
 
         # --- Get game page ---
         game_id_url = game['id'] 
