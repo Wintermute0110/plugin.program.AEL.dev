@@ -120,7 +120,7 @@ class Scraper_Asset(Scraper):
 from scrap_metadata import *
 from scrap_asset import *
 
-# This is the official list of supported scrapers.
+# --- Metadata scrapers ---
 # This list MUST match the settings configuration in settings.xml or bad things will happen.
 scrapers_metadata = [
     metadata_Offline(),
@@ -130,19 +130,29 @@ scrapers_metadata = [
     metadata_ArcadeDB()
 ]
 
+# --- Asset scraper objects ---
+# >> There is only one instantiated object for every scraper. Scraper objects cache all possible
+# >> requests made to the scraper to save bandwidth and increase speed.
+NULL_asset_obj       = asset_NULL()
+TheGamesDB_asset_obj = asset_TheGamesDB()
+GameFAQs_asset_obj   = asset_GameFAQs()
+MobyGames_asset_obj  = asset_MobyGames()
+ArcadeDB_asset_obj   = asset_ArcadeDB()
+
+# --- Asset scrapers ---
 # This lists MUST match the settings configuration in settings.xml or bad things will happen.
 # NOTE Should every list contain different instances or references to common instances of the same object?
 #      This will have implications on cache data in the objects!
-scrapers_title      = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_snap       = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_boxfront   = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_cabinet    = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_boxback    = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_cpanel     = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_cartridge  = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_pcb        = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_fanart     = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_banner     = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_marquee    = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_clearlogo  = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
-scrapers_flyer      = [ asset_NULL(), asset_TheGamesDB(), asset_GameFAQs(), asset_MobyGames(), asset_ArcadeDB() ]
+scrapers_title      = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_snap       = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_boxfront   = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_cabinet    = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_boxback    = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_cpanel     = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_cartridge  = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_pcb        = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_fanart     = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_banner     = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_marquee    = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_clearlogo  = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
+scrapers_flyer      = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
