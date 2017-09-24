@@ -93,10 +93,30 @@ FEATURE  Make sure all asset scraper requests are cached in the ROM scanner. For
          scraper choose a game in the list, then Snap scraper for the same ROM must use the
          cached selected game.
 
-WIP      Port to the ROM scanner the asset file cache. This will increase the scanning speed a lot.
+FEATURE  Port to the ROM scanner the asset file cache. This will increase the scanning speed a lot.
 
-WIP      ROMs in UNC paths. It seems Retroarch added UNC path support recently.
+FEATURE  ROMs in UNC paths. It seems Retroarch added UNC path support recently.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2647152#pid2647152
+
+         [Windows]
+         Workaround in _run_process() to add an extra '\\' character if argument starts with
+         a '\\'. This is to fix shlex.split() behaviour.
+         
+         Tested in Windows only with the following configuration:
+             <ROM_path>\\SERVER_NAME\AEL-ROMs\sega-genesis\</ROM_path>
+             <ROM_asset_path>smb://SERVER_NAME/AEL-assets/sega-genesis/</ROM_asset_path>
+
+         This configuration also works in Windows:
+             <ROM_path>smb://SERVER_NAME/AEL-ROMs/sega-genesis/</ROM_path>
+             <ROM_asset_path>smb://SERVER_NAME/AEL-assets/sega-genesis/</ROM_asset_path>
+
+         Artwork is stored in JSON DB as "smb://SERVER_NAME/AEL-assets/sega-genesis/boxbacks\\Sonic.jpg"
+         ROMs are saved in JSON DB as "\\\\SERVER_NAME\\AEL-ROMs\\sega-genesis\\Sonic.md"
+
+         Kodi artwork does not work with paths like \\SERVER_NAME\AEL-ROMs\sega-genesis\image.png.
+         Correct path for artwork is smb://SERVER_NAME/AEL-ROMs/sega-genesis/image.png.
+
+         Retroarch requires a ROM path like \\SERVER_NAME\AEL-ROMs\sega-genesis\Sonic.md.
 
 FEATURE  Launcher flag to enable non-blocking launchers. This is required for wrapper scripts
          that close Kodi to avoid problems (such as Kodi getting gamepad commands instead of the

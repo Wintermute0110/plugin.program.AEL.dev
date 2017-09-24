@@ -6124,9 +6124,9 @@ class Main:
         # NOTE NOT available on Windows. See comments in _run_process()
         elif selected_value == 1:
             # --- Ckeck for errors and read file ---
-            if sys.platform == 'win32':
-                kodi_dialog_OK('This feature is not available on Windows.')
-                return
+            # if sys.platform == 'win32':
+            #     kodi_dialog_OK('This feature is not available on Windows.')
+            #     return
             if not LAUNCH_LOG_FILE_PATH.exists():
                 kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
                 return
@@ -6956,11 +6956,15 @@ class Main:
             log_error('Launching app not found "{0}"'.format(application.getPath()))
             kodi_notify_warn('Launching app not found {0}'.format(application.getOriginalPath()))
             return
+        else:
+            log_info('Launching app found "{0}"'.format(application.getPath()))
 
         if not ROMFileName.exists():
             log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
             kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
             return
+        else:
+            log_info('ROM found "{0}"'.format(ROMFileName.getPath()))
 
         # --- Escape quotes and double quotes in ROMFileName ---
         # >> This maybe useful to Android users with complex command line arguments
@@ -7051,7 +7055,7 @@ class Main:
         # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
 
         # >> Decompose arguments to call subprocess module
-        arg_list  = shlex.split(arguments)
+        arg_list  = shlex.split(arguments, posix = True)
         exec_list = [application] + arg_list
         log_debug('_run_process() arguments = "{0}"'.format(arguments))
         log_debug('_run_process() arg_list  = {0}'.format(arg_list))
@@ -7107,6 +7111,17 @@ class Main:
                 log_info('_run_process() (Windows) Process BAR retcode = {0}'.format(retcode))
 
             else:
+                # --- Workaround to run UNC paths in Windows ---
+                # >> Retroarch now support ROMs in UNC paths (Samba remotes)
+                new_exec_list = list(exec_list)
+                for i, _ in enumerate(exec_list):
+                    if exec_list[i][0] == '\\':
+                        new_exec_list[i] = '\\' + exec_list[i]
+                        log_debug('_run_process() (Windows) Before arg #{0} = "{1}"'.format(i, exec_list[i]))
+                        log_debug('_run_process() (Windows) Now    arg #{0} = "{1}"'.format(i, new_exec_list[i]))
+                exec_list = list(new_exec_list)
+                log_debug('_run_process() (Windows) exec_list = {0}'.format(exec_list))
+
                 # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
                 # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
                 # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
@@ -7115,14 +7130,20 @@ class Main:
                 log_debug('_run_process() (Windows) Launching regular application')
                 log_debug('_run_process() (Windows) windows_cd_apppath = {0}'.format(windows_cd_apppath))
                 log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
+                # >>  Note that on Windows, you cannot set close_fds to true and also redirect the 
+                # >> standard handles by setting stdin, stdout or stderr.
                 if windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
                 elif windows_cd_apppath and not windows_close_fds:
-                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False)
+                    with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
+                        retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False,
+                                                  stdout = f, stderr = subprocess.STDOUT)
                 elif not windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, close_fds = True)
                 elif not windows_cd_apppath and not windows_close_fds:
-                    retcode = subprocess.call(exec_list, close_fds = False)
+                    with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
+                        retcode = subprocess.call(exec_list, close_fds = False,
+                                                  stdout = f, stderr = subprocess.STDOUT)
                 else:
                     raise Exception('Logical error')
                 log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))

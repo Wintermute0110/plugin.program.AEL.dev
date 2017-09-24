@@ -366,8 +366,10 @@ def misc_add_file_cache(dir_str):
     global file_cache
 
     # >> Create a set with all the files in the directory
-    log_debug('misc_add_file_cache() Scanning "{0}"'.format(dir_str))
-    file_list = os.listdir(dir_str)
+    dir_FN = FileName(dir_str)
+    log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
+    log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
+    file_list = os.listdir(dir_FN.getPath())
     file_set = set(file_list)
     # for file in file_set: log_debug('File "{0}"'.format(file))
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
