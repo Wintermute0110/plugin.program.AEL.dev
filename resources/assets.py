@@ -494,30 +494,30 @@ def asset_get_duplicated_dir_list(launcher):
     return duplicated_name_list
 
 #
-# Search for local assets and put found files into a list. List all has assets as defined 
+# Search for local assets and place found files into a list. List all has assets as defined 
 # in ROM_ASSET_LIST.
 #
 # launcher               -> launcher dictionary
 # ROMFile                -> FileName object
 # enabled_ROM_asset_list -> list of booleans
 #
-def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
-    log_verb('assets_search_local_assets() Searching for ROM local assets...')
+def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
+    log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_LIST)
+    rom_basename_noext = ROMFile.getBase_noext()
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         if not enabled_ROM_asset_list[i]:
-            log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
+            log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
-        asset_path = FileName(launcher[AInfo.path_key])
-        local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
+        local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
-            log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+            log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
-            log_verb('assets_search_local_assets() Missing  {0:<9}'.format(AInfo.name))
+            log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
 
     return local_asset_list
 

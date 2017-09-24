@@ -1569,12 +1569,12 @@ class Main:
                     else:
                         log_info('No duplicated asset dirs found')
 
-                    # --- Create cache of assets ---
+                    # --- Create a cache of assets ---
                     # >> misc_add_file_cache() creates a set with all files in a given directory.
                     # >> That set is stored in a function internal cache associated with the path.
                     # >> Files in the cache can be searched with misc_search_file_cache()
                     pDialog = xbmcgui.DialogProgress()
-                    pDialog.create('Advanced Emulator Launcher', 'Scanning asset directories ...')
+                    pDialog.create('Advanced Emulator Launcher', 'Scanning files in asset directories ...')
                     for i, asset_kind in enumerate(ROM_ASSET_LIST):
                         AInfo = assets_get_info_scheme(asset_kind)
                         misc_add_file_cache(launcher[AInfo.path_key])
@@ -8167,7 +8167,7 @@ class Main:
                            'Asset scanner will be disabled for this/those.')
 
         # ~~~ Ensure there is no duplicate asset dirs ~~~
-        # >> Cancel scanning of assets if duplicates found
+        # >> Abort scanning of assets if duplicates found
         log_info('Checking for duplicated artwork directories ...')
         duplicated_name_list = asset_get_duplicated_dir_list(launcher)
         if duplicated_name_list:
@@ -8179,10 +8179,24 @@ class Main:
         else:
             log_info('No duplicated asset dirs found')
 
+        # --- Create a cache of assets ---
+        # >> misc_add_file_cache() creates a set with all files in a given directory.
+        # >> That set is stored in a function internal cache associated with the path.
+        # >> Files in the cache can be searched with misc_search_file_cache()
+        log_info('Scanning and caching files in asset directories ...')
+        pDialog = xbmcgui.DialogProgress()
+        pDialog.create('Advanced Emulator Launcher', 'Scanning files in asset directories ...')
+        for i, asset_kind in enumerate(ROM_ASSET_LIST):
+            AInfo = assets_get_info_scheme(asset_kind)
+            misc_add_file_cache(launcher[AInfo.path_key])
+            pDialog.update((100*i)/len(ROM_ASSET_LIST))
+        pDialog.update(100)
+        pDialog.close()
+
         # --- Progress dialog ---
         # >> Put in in object variables so it can be access in helper functions.
         self.pDialog_verbose = True
-        self.pDialog = xbmcgui.DialogProgress()
+        self.pDialog = pDialog
         self.pDialog_canceled = False
 
         # --- Remove dead entries -----------------------------------------------------------------
@@ -8564,9 +8578,7 @@ class Main:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
         # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # NOTE This must use a cache to speed up the ROM scanner! Currenly most time is spent
-        #      searching for local artwork when using the offline scraper.
-        local_asset_list = assets_search_local_assets(launcher, ROM, self.enabled_asset_list)
+        local_asset_list = assets_search_local_cached_assets(launcher, ROM, self.enabled_asset_list)
 
         # ~~~ Asset scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # settings.xml -> id="scan_asset_policy" default="0" values="Local Assets|Local Assets + Scrapers|Scrapers only"
