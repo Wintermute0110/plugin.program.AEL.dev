@@ -466,10 +466,10 @@ class Main:
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
-        self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
+        # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
         self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
-        self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
-        self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
+        # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
+        # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
 
         # --- Scrapers ---
         # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
@@ -7829,25 +7829,34 @@ class Main:
         # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
         unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
         log_debug('unknown_ROMs_are_parents = {0}'.format(unknown_ROMs_are_parents))
-        if num_dat_clones == 0 and self.settings['audit_create_pclone_groups']:
-            # --- If DAT has no PClone information and user want then generate filename-based PClone groups ---
-            # >> This feature is taken from NARS (NARS Advanced ROM Sorting)
-            log_verb('Generating filename-based Parent/Clone groups')
-            pDialog.update(0, 'Building filename-based Parent/Clone index ...')
-            roms_pclone_index = audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
-            pDialog.update(100)
-            if __debug_progress_dialogs: time.sleep(0.5)
-        else:
-            # --- Make a DAT-based Parent/Clone index ---
-            # >> Here we build a roms_pclone_index with info from the DAT file. 2 issues:
-            # >> A) Redump DATs do not have cloneof information.
-            # >> B) Also, it is at this point where a region custom parent may be chosen instead of
-            # >>    the default one.
-            log_verb('Generating DAT-based Parent/Clone groups')
-            pDialog.update(0, 'Building DAT-based Parent/Clone index ...')
-            roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
-            pDialog.update(100)
-            if __debug_progress_dialogs: time.sleep(0.5)
+        # if num_dat_clones == 0 and self.settings['audit_create_pclone_groups']:
+        #     # --- If DAT has no PClone information and user want then generate filename-based PClone groups ---
+        #     # >> This feature is taken from NARS (NARS Advanced ROM Sorting)
+        #     log_verb('Generating filename-based Parent/Clone groups')
+        #     pDialog.update(0, 'Building filename-based Parent/Clone index ...')
+        #     roms_pclone_index = audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+        #     pDialog.update(100)
+        #     if __debug_progress_dialogs: time.sleep(0.5)
+        # else:
+        #     # --- Make a DAT-based Parent/Clone index ---
+        #     # >> Here we build a roms_pclone_index with info from the DAT file. 2 issues:
+        #     # >> A) Redump DATs do not have cloneof information.
+        #     # >> B) Also, it is at this point where a region custom parent may be chosen instead of
+        #     # >>    the default one.
+        #     log_verb('Generating DAT-based Parent/Clone groups')
+        #     pDialog.update(0, 'Building DAT-based Parent/Clone index ...')
+        #     roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+        #     pDialog.update(100)
+        #     if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Make a DAT-based Parent/Clone index ---
+        # >> For 0.9.7 only use the DAT to make the PClone groups. In 0.9.8 decouple the audit
+        # >> code from the PClone generation code.
+        log_verb('Generating DAT-based Parent/Clone groups')
+        pDialog.update(0, 'Building DAT-based Parent/Clone index ...')
+        roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+        pDialog.update(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Make a Clone/Parent index ---
         # >> This is made exclusively from the Parent/Clone index

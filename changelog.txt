@@ -63,10 +63,7 @@ WIP      Audit all launchers. Check if app exists, ROM path exits, artwork paths
          etc. When a user uses XML to import configurations it is easy to make a typo when
          writing directory names, etc. This command will report if AEL configuration is OK.
 
-
-[B]Advanced Emulator Launcher | version 0.9.7 | XX September 2017[/B]
-
-FEATURE  Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
+WIP      Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
          PClone information. See previous feature.
 
 WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM Sorting).
@@ -75,6 +72,9 @@ WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advance
 
 WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
          This resembles what NARS No-Intro filtering does.
+
+
+[B]Advanced Emulator Launcher | version 0.9.7 | XX September 2017[/B]
 
 FEATURE  Use substituted artwork from the Parent/Clone group.
          So far implemented only in "Edit Launcher", "Manage ROMs", "Rescan ROMs local assets/artwork"
@@ -94,6 +94,9 @@ WIP      Make sure all asset scraper requests are cached in the ROM scanner. For
          cached selected game.
 
 WIP      Port to the ROM scanner the asset file cache. This will increase the scanning speed a lot.
+
+WIP      ROMs in UNC paths. It seems Retroarch added UNC path support recently.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2647152#pid2647152
 
 FEATURE  Launcher flag to enable non-blocking launchers. This is required for wrapper scripts
          that close Kodi to avoid problems (such as Kodi getting gamepad commands instead of the
