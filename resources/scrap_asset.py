@@ -61,12 +61,14 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
 
     # Get a URL text and cache it.
     def get_URL_and_cache(self, game_id_url):
+        log_debug('asset_TheGamesDB::get_URL_and_cache() game_id_url "{0}"'.format(game_id_url))
+
         # >> Check if URL page data is in cache. If so it's a cache hit. If cache miss, then update cache.
         if self.get_images_cached_game_id_url == game_id_url:
-            log_debug('asset_TheGamesDB::get_URL_and_cache Cache HIT')
+            log_debug('asset_TheGamesDB::get_URL_and_cache() Cache HIT')
             page_data = self.get_images_cached_page_data
         else:
-            log_debug('asset_TheGamesDB::get_URL_and_cache Cache MISS. Updating cache')
+            log_debug('asset_TheGamesDB::get_URL_and_cache() Cache MISS. Updating cache')
             page_data = net_get_URL_oneline(game_id_url)
             self.get_images_cached_game_id_url = game_id_url
             self.get_images_cached_page_data   = page_data
@@ -98,8 +100,8 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         # --- Download game page XML data ---
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
         AInfo = assets_get_info_scheme(asset_kind)
-        log_debug('asset_TheGamesDB::get_images game_id_url = {0}'.format(game_id_url))
-        log_debug('asset_TheGamesDB::get_images asset_kind  = {0}'.format(AInfo.name))
+        log_debug('asset_TheGamesDB::get_images() game_id_url = {0}'.format(game_id_url))
+        log_debug('asset_TheGamesDB::get_images() asset_kind  = {0}'.format(AInfo.name))
         page_data = self.get_URL_and_cache(game_id_url)
 
         # --- Parse game thumb information and make list of images ---
@@ -116,7 +118,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
             # [2] -> 'screenshots/thumb/136-1.jpg'
             screenshots = re.findall('<screenshot><original (.*?)>(.*?)</original><thumb>(.*?)</thumb></screenshot>', page_data)
             for index, screenshot in enumerate(screenshots):
-                log_debug('asset_TheGamesDB::get_images '
+                log_debug('asset_TheGamesDB::get_images() '
                           'Adding title #{0} "{1}" (thumb "{2}")'.format(index + 1, screenshot[1], screenshot[2]))
                 images.append({'name' : 'Screenshot {0}'.format(index + 1), 
                                'id' : baseImgUrl + screenshot[1], 'URL' : baseImgUrl + screenshot[2]})
@@ -124,7 +126,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         elif asset_kind == ASSET_SNAP:
             screenshots = re.findall('<screenshot><original (.*?)>(.*?)</original><thumb>(.*?)</thumb></screenshot>', page_data)
             for index, screenshot in enumerate(screenshots):
-                log_debug('asset_TheGamesDB::get_images '
+                log_debug('asset_TheGamesDB::get_images() '
                           'Adding snap #{0} "{1}" (thumb "{2}")'.format(index + 1, screenshot[1], screenshot[2]))
                 images.append({'name' : 'Screenshot {0}'.format(index + 1), 
                                'id' : baseImgUrl + screenshot[1], 'URL' : baseImgUrl + screenshot[2]})
@@ -132,7 +134,7 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         elif asset_kind == ASSET_FANART:
             fanarts = re.findall('<fanart><original (.*?)>(.*?)</original><thumb>(.*?)</thumb></fanart>', page_data)
             for index, fanart in enumerate(fanarts):
-                log_debug('asset_TheGamesDB::get_images '
+                log_debug('asset_TheGamesDB::get_images() '
                           'Adding fanart #{0} "{1}" (thumb "{2}")'.format(index + 1, fanart[1], fanart[2]))
                 images.append({'name' : 'Fanart {0}'.format(index + 1),
                                'id' : baseImgUrl + fanart[1], 'URL' : baseImgUrl + fanart[2]})
@@ -140,35 +142,35 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         elif asset_kind == ASSET_BANNER:
             banners = re.findall('<banner (.*?)>(.*?)</banner>', page_data)
             for index, banner in enumerate(banners):
-                log_debug('asset_TheGamesDB::get_images Adding banner #{0} "{1}"'.format(str(index + 1), banner[1]))
+                log_debug('asset_TheGamesDB::get_images() Adding banner #{0} "{1}"'.format(str(index + 1), banner[1]))
                 images.append({'name' : 'Banner {0}'.format(index + 1), 
                                'id' : baseImgUrl + banner[1], 'URL' : baseImgUrl + banner[1]})
 
         elif asset_kind == ASSET_CLEARLOGO:
             clearlogos = re.findall('<clearlogo (.*?)>(.*?)</clearlogo>', page_data)
             for index, clearlogo in enumerate(clearlogos):
-                log_debug('asset_TheGamesDB::get_images Adding clearlogo #{0} "{1}"'.format(str(index + 1), clearlogo[1]))
+                log_debug('asset_TheGamesDB::get_images() Adding clearlogo #{0} "{1}"'.format(str(index + 1), clearlogo[1]))
                 images.append({'name' : 'Clearlogo {0}'.format(index + 1),
                                'id' : baseImgUrl + clearlogo[1], 'URL' : baseImgUrl + clearlogo[1]})
 
         elif asset_kind == ASSET_BOXFRONT:
             boxarts = re.findall('<boxart side="front" (.*?)>(.*?)</boxart>', page_data)
             for index, boxart in enumerate(boxarts):
-                log_debug('asset_TheGamesDB::get_images Adding boxfront #{0} {1}'.format(str(index + 1), boxart[1]))
+                log_debug('asset_TheGamesDB::get_images() Adding boxfront #{0} {1}'.format(str(index + 1), boxart[1]))
                 images.append({'name' : 'Boxfront ' + str(index + 1),
                                'id' : baseImgUrl + boxart[1], 'URL' : baseImgUrl + boxart[1]})
         
         elif asset_kind == ASSET_BOXBACK:
             boxarts = re.findall('<boxart side="back" (.*?)>(.*?)</boxart>', page_data)
             for index, boxart in enumerate(boxarts):
-                log_debug('asset_TheGamesDB::get_images Adding boxback #{0} {1}'.format(str(index + 1), boxart[1]))
+                log_debug('asset_TheGamesDB::get_images() Adding boxback #{0} {1}'.format(str(index + 1), boxart[1]))
                 images.append({'name' : 'Boxback ' + str(index + 1),
                                'id' : baseImgUrl + boxart[1], 'URL' : baseImgUrl + boxart[1]})
 
         return images
 
     def resolve_image_URL(self, image_dic):
-        log_debug('asset_TheGamesDB::resolve_image_URL Resolving {0}'.format(image_dic['name']))
+        log_debug('asset_TheGamesDB::resolve_image_URL() Resolving {0}'.format(image_dic['name']))
         image_url = image_dic['id']
         image_ext = text_get_image_URL_extension(image_dic['id'])
         

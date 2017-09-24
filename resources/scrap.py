@@ -140,7 +140,11 @@ MobyGames_asset_obj  = asset_MobyGames()
 ArcadeDB_asset_obj   = asset_ArcadeDB()
 
 # --- Asset scrapers ---
-# This lists MUST match the settings configuration in settings.xml or bad things will happen.
+# >> This list is used in _gui_edit_asset()
+scrapers_asset = [TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj]
+
+# >> These lists MUST match the settings configuration in settings.xml or bad things will happen.
+# >> These lists are used in the ROM Scanner
 # NOTE Should every list contain different instances or references to common instances of the same object?
 #      This will have implications on cache data in the objects!
 scrapers_title      = [ NULL_asset_obj, TheGamesDB_asset_obj, GameFAQs_asset_obj, MobyGames_asset_obj, ArcadeDB_asset_obj ]
