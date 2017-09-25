@@ -83,9 +83,10 @@ class asset_TheGamesDB(Scraper_Asset, Scraper_TheGamesDB):
         pass
 
     def supports_asset(self, asset_kind):
-        if asset_kind == ASSET_TITLE   or asset_kind == ASSET_SNAP      or asset_kind == ASSET_FANART   or \
-           asset_kind == ASSET_BANNER  or asset_kind == ASSET_CLEARLOGO or asset_kind == ASSET_BOXFRONT or \
-           asset_kind == ASSET_BOXBACK:
+        if asset_kind == ASSET_TITLE    or asset_kind == ASSET_SNAP or \
+           asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK or \
+           asset_kind == ASSET_FANART   or \
+           asset_kind == ASSET_BANNER   or asset_kind == ASSET_CLEARLOGO:
            return True
 
         return False
@@ -607,10 +608,9 @@ class asset_ArcadeDB(Scraper_Asset, Scraper_ArcadeDB):
         pass
 
     def supports_asset(self, asset_kind):
-        if asset_kind == ASSET_TITLE     or asset_kind == ASSET_SNAP      or \
-           asset_kind == ASSET_BANNER    or asset_kind == ASSET_CLEARLOGO or \
-           asset_kind == ASSET_BOXFRONT  or asset_kind == ASSET_BOXBACK   or \
-           asset_kind == ASSET_CARTRIDGE or asset_kind == ASSET_FLYER:
+        if asset_kind == ASSET_TITLE    or asset_kind == ASSET_SNAP      or \
+           asset_kind == ASSET_BOXFRONT or asset_kind == ASSET_BOXBACK   or asset_kind == ASSET_CARTRIDGE or \
+           asset_kind == ASSET_BANNER   or asset_kind == ASSET_CLEARLOGO or asset_kind == ASSET_FLYER:
            return True
 
         return False
