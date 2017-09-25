@@ -8148,9 +8148,15 @@ class Main:
         log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
         # >> Flyer
+        # >> Flyers only supported by ArcadeDB (for MAME). If platform is not MAME then deactivate
+        # >> this scraper.
         A = assets_get_info_scheme(ASSET_FLYER)
-        self.scraper_dic[A.key] = scrapers_flyer[self.settings['scraper_flyer']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        if launcher['platform'] != 'MAME':
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        else:
+            self.scraper_dic[A.key] = scrapers_flyer[self.settings['scraper_flyer']]
+            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME flyers)'.format(A.name, self.scraper_dic[A.key].name))
 
         # >> Map (not supported yet, use a null scraper)
         A = assets_get_info_scheme(ASSET_MAP)
@@ -8725,11 +8731,12 @@ class Main:
                     self.pDialog.close()
 
                     # >> Display game list found so user choses
-                    dialog = xbmcgui.Dialog()
                     rom_name_list = []
                     for game in search_results:
                         rom_name_list.append(game['display_name'])
-                    selected_game_index = dialog.select('Select game for ROM "{0}"'.format(ROM.getBase_noext()), rom_name_list)
+                    selected_game_index = xbmcgui.Dialog().select(
+                        '{0} game for ROM "{1}"'.format(scraper_obj.name, ROM.getBase_noext()),
+                        rom_name_list)
                     if selected_game_index < 0: selected_game_index = 0
 
                     # >> Open progress dialog again
@@ -8767,13 +8774,13 @@ class Main:
         if scraping_mode == 0:
             # >> If there is a local image add it to the list and show it to the user
             if os.path.isfile(local_asset_path):
-                image_list.insert(0, {'name' : 'Current local image', 
-                                      'id'   : local_asset_path,
-                                      'URL'  : local_asset_path})
+                image_list.insert(0, {'name'       : 'Current local image', 
+                                      'id'         : local_asset_path,
+                                      'URL'        : local_asset_path,
+                                      'asset_kind' : asset_kind})
 
             # >> If image_list has only 1 element do not show select dialog. Note that the length
-            # >> of image_list is 1 only if scraper returned 1 image and a local image does not
-            # >> exist.
+            # >> of image_list is 1 only if scraper returned 1 image and a local image does not exist.
             if len(image_list) == 1:
                 image_selected_index = 0
             else:
@@ -8805,12 +8812,14 @@ class Main:
             scraper_text = 'Scraping {0} with {1}. Downloading image ...'.format(A.name, scraper_obj.name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
 
-        # --- Resolve image URL ---
-        image_url, image_ext = scraper_obj.resolve_image_URL(selected_image)
-        log_debug('Selected image URL "{1}"'.format(A.name, image_url))
+        # --- If user chose the local image don't download anything ---
+        if selected_image['id'] != local_asset_path:
+            log_debug('_roms_scrap_asset() Downloading selected image ...')
 
-        # If user chose the local image don't download anything
-        if image_url != local_asset_path:
+            # --- Resolve image URL ---
+            image_url, image_ext = scraper_obj.resolve_image_URL(selected_image)
+            log_debug('Selected image URL "{1}"'.format(A.name, image_url))
+
             # ~~~ Download image ~~~
             image_path = asset_path_noext_FN.append(image_ext).getPath()
             log_verb('Downloading URL  "{0}"'.format(image_url))
@@ -8827,8 +8836,8 @@ class Main:
             # --- Return value is downloaded image ---
             ret_asset_path = image_path
         else:
-            log_debug('{0} scraper: user chose local image "{1}"'.format(A.name, image_url))
-            ret_asset_path = image_url
+            log_debug('_roms_scrap_asset() User chose local {0} "{1}"'.format(A.name, local_asset_path))
+            ret_asset_path = local_asset_path
 
         # --- Returned value ---
         return ret_asset_path
@@ -9252,9 +9261,10 @@ class Main:
             # --- Always do semi-automatic scraping when editing images ---
             # If there is a local image add it to the list and show it to the user
             if current_asset_path.exists():
-                image_list.insert(0, {'name' : 'Current local image', 
-                                      'id' : current_asset_path.getPath(),
-                                      'URL' : current_asset_path.getPath()})
+                image_list.insert(0, {'name'       : 'Current local image', 
+                                      'id'         : current_asset_path.getPath(),
+                                      'URL'        : current_asset_path.getPath(),
+                                      'asset_kind' : asset_kind})
 
             # >> Convert list returned by scraper into a list the select window uses
             ListItem_list = []
