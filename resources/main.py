@@ -8175,8 +8175,7 @@ class Main:
         # --- Initialise cache used in _roms_scrap_asset() ---
         # >> This cache is used to store the selected game from the get_search() returned list.
         # >> The idea is that get_search() is used only once for each asset.
-        self.scrap_asset_cached_ROM_base_noext = ''
-        self.scrap_asset_cached_platform       = ''
+        self.scrap_asset_cached_dic = {}
 
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
@@ -8430,8 +8429,8 @@ class Main:
                 self.launchers[launcherID]['nointro_xml_file'] = ''
                 kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
         else:
-            log_info('No No-Intro/Redump DAT configured. Do not audit ROMs.')
-            report_fobj.write('No No-Intro/Redump DAT configured. Do not audit ROMs.\n')
+            log_info('No-Intro/Redump DAT not configured. Do not audit ROMs.')
+            report_fobj.write('No-Intro/Redump DAT not configured. Do not audit ROMs.\n')
             if num_new_roms == 0:
                 kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
             else:
@@ -8625,8 +8624,8 @@ class Main:
                 else:
                     log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
                     # >> Set the asset-specific scraper before calling _roms_scrap_asset()
-                    self.scraper_asset = self.scraper_dic[A.key]
-                    romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM, launcher)
+                    romdata[A.key] = self._roms_scrap_asset(self.scraper_dic[A.key], asset_kind,
+                                                            local_asset_list[i], ROM, launcher)
 
         elif scan_asset_policy == 2:
             log_verb('Asset policy: scraper will overwrite local assets | Scraper ON')
@@ -8639,8 +8638,8 @@ class Main:
                     continue
                 log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
                 # >> Set the asset-specific scraper before calling _roms_scrap_asset()
-                self.scraper_asset = self.scraper_dic[A.key]
-                romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM, launcher)
+                romdata[A.key] = self._roms_scrap_asset(self.scraper_dic[A.key], asset_kind, 
+                                                        local_asset_list[i], ROM, launcher)
 
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
@@ -8661,7 +8660,7 @@ class Main:
     # Returns a valid filename of the downloaded scrapped image, filename of local image
     # or empty string if scraper finds nothing or download failed.
     #
-    def _roms_scrap_asset(self, asset_kind, local_asset_path, ROM, launcher):
+    def _roms_scrap_asset(self, scraper_obj, asset_kind, local_asset_path, ROM, launcher):
         # >> By default always use local image in case scraper fails
         ret_asset_path = local_asset_path
 
@@ -8669,7 +8668,6 @@ class Main:
         A = assets_get_info_scheme(asset_kind)
         asset_directory  = FileName(launcher[A.path_key])
         asset_path_noext_FN = assets_get_path_noext_DIR(A, asset_directory, ROM)
-        scraper_obj = self.scraper_asset
         platform = launcher['platform']
 
         # --- Updated progress dialog ---
@@ -8691,11 +8689,19 @@ class Main:
         scraping_mode = self.settings['asset_scraper_mode']
 
         # --- Check cache to check if user choose a game previously ---
+        # >> id(object)
+        # >> This is an integer (or long integer) which is guaranteed to be unique and constant for 
+        # >> this object during its lifetime.
+        scraper_id = id(scraper_obj)
+        log_debug('_roms_scrap_asset() Scraper ID          "{0}"'.format(scraper_id))
+        log_debug('_roms_scrap_asset() Scraper obj name    "{0}"'.format(scraper_obj.name))
         log_debug('_roms_scrap_asset() ROM.getBase_noext() "{0}"'.format(ROM.getBase_noext()))
         log_debug('_roms_scrap_asset() platform            "{0}"'.format(platform))
-        if self.scrap_asset_cached_ROM_base_noext == ROM.getBase_noext() and \
-           self.scrap_asset_cached_platform == platform:
-            selected_game = self.scrap_asset_cached_game_dic
+        log_debug('_roms_scrap_asset() Entries in cache    {0}'.format(len(self.scrap_asset_cached_dic)))
+        if scraper_id in self.scrap_asset_cached_dic and \
+           self.scrap_asset_cached_dic[scraper_id]['ROM_base_noext'] == ROM.getBase_noext() and \
+           self.scrap_asset_cached_dic[scraper_id]['platform'] == platform:
+            selected_game = self.scrap_asset_cached_dic[scraper_id]['game_dic']
             log_debug('_roms_scrap_asset() Cache HIT. Using cached game "{0}"'.format(selected_game['display_name']))
         else:
             log_debug('_roms_scrap_asset() Cache MISS. Calling scraper_obj.get_search()')
@@ -8737,13 +8743,17 @@ class Main:
                 selected_game_index = 0
 
             # --- Cache selected game from get_search() ---
-            self.scrap_asset_cached_ROM_base_noext = ROM.getBase_noext()
-            self.scrap_asset_cached_platform       = platform
-            self.scrap_asset_cached_game_dic       = search_results[selected_game_index]
-            selected_game = self.scrap_asset_cached_game_dic
+            self.scrap_asset_cached_dic[scraper_id] = {
+                'ROM_base_noext' : ROM.getBase_noext(),
+                'platform' : platform,
+                'game_dic' : search_results[selected_game_index]
+            }
+            selected_game = self.scrap_asset_cached_dic[scraper_id]['game_dic']
             log_error('_roms_scrap_asset() Caching selected game "{0}"'.format(selected_game['display_name']))
+            log_error('_roms_scrap_asset() Scraper object ID {0} (name {1})'.format(id(scraper_obj), scraper_obj.name))
 
         # --- Grab list of images for the selected game ---
+        # >> ::get_images() always caches URLs for a given selected_game internally.
         if self.pDialog_verbose:
             scraper_text = 'Scraping {0} with {1}. Getting list of images ...'.format(A.name, scraper_obj.name)
             self.pDialog.update(self.progress_number, self.file_text, scraper_text)
@@ -9225,7 +9235,7 @@ class Main:
                 rom_name_list = []
                 for game in results:
                     rom_name_list.append(game['display_name'])
-                selectgame = xbmcgui.Dialog().select('Select game for {0}'.format(search_string), rom_name_list)
+                selectgame = xbmcgui.Dialog().select('Select game for "{0}"'.format(search_string), rom_name_list)
                 if selectgame < 0: return False
 
             # --- Grab list of images for the selected game ---
