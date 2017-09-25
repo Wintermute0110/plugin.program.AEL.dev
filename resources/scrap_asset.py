@@ -418,12 +418,12 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
                 art_disp_URL = 'http://www.mobygames.com' + rtuple[2]
                 # >> NOTE: thumbnail is JPG and the actual screenshoot could be PNG. An auxiliar 
                 # >> function that gets the actual image URL is required.
-                if asset_kind == ASSET_TITLE and art_name.find('Title') >= 0:
+                if asset_kind == ASSET_TITLE and (art_name.find('Title') >= 0 or art_name.find('title') >= 0):
                     log_debug('asset_MobyGames::get_images() Adding Title #{0} {1}'.format(cover_index, art_name))
                     img_name = 'Title #{0:02d}: {1}'.format(cover_index, art_name)
                     images.append({'name' : img_name, 'id' : art_page_URL, 'URL' : art_disp_URL, 'asset_kind' : asset_kind})
                     cover_index += 1
-                elif asset_kind == ASSET_SNAP and not art_name.find('Title') >= 0:
+                elif asset_kind == ASSET_SNAP and not (art_name.find('Title') >= 0 or art_name.find('title') >= 0):
                     log_debug('asset_MobyGames::get_images() Adding Snap #{0} {1}'.format(cover_index, art_name))
                     img_name = 'Snap #{0:02d}: {1}'.format(cover_index, art_name)
                     images.append({'name' : img_name, 'id' : art_page_URL, 'URL' : art_disp_URL, 'asset_kind' : asset_kind})
