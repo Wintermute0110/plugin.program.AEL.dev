@@ -2283,7 +2283,7 @@ class Main:
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
 
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
@@ -2991,7 +2991,7 @@ class Main:
             for key in roms:
                 collection_rom_list.append(roms[key])
 
-            json_file_path = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            json_file_path = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
         else:
             # >> Save categories/launchers to update timestamp
@@ -3651,7 +3651,7 @@ class Main:
 
         # --- Load parent/clone index ---
         index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
-        index_file_path = ROMS_DIR.join(index_base_noext + '.json')
+        index_file_path = ROMS_DIR.pjoin(index_base_noext + '.json')
         if not index_file_path.exists():
             kodi_notify('Parent list JSON not found.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -4286,7 +4286,7 @@ class Main:
             return
 
         # --- Load Virtual Launcher DB ---
-        hashed_db_filename = vcategory_db_dir.join(virtual_launcherID + '.json')
+        hashed_db_filename = vcategory_db_dir.pjoin(virtual_launcherID + '.json')
         if not hashed_db_filename.exists():
             kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
             return
@@ -4324,10 +4324,10 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
-        log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path))
-        games = audit_load_OfflineScraper_XML(xml_path)
+        xml_path_FN = CURRENT_ADDON_DIR.pjoin(xml_file)
+        log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
+        log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
+        games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
         # --- Display offline scraper ROMs ---
         loading_ticks_end = time.time()
@@ -4359,10 +4359,10 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
-        log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path))
-        games = audit_load_OfflineScraper_XML(xml_path)
+        xml_path_FN = CURRENT_ADDON_DIR.pjoin(xml_file)
+        log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
+        log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
+        games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
         # --- Display offline scraper ROMs ---
         loading_ticks_end = time.time()
@@ -4524,7 +4524,7 @@ class Main:
             log_debug('_command_manage_favourites() Managing Collection ROMs')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
@@ -4802,7 +4802,7 @@ class Main:
             collection_rom_list = []
             for key in roms_fav:
                 collection_rom_list.append(roms_fav[key])
-            json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
 
@@ -4977,7 +4977,7 @@ class Main:
         # --- Load Collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
@@ -5246,7 +5246,7 @@ class Main:
         # --- Load collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
 
         # --- Confirm deletion ---
@@ -5257,7 +5257,7 @@ class Main:
         if not ret: return
 
         # --- Remove JSON file and delete collection object ---
-        collection_file_path = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        collection_file_path = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
         try:
             if collection_file_path.exists(): collection_file_path.unlink()
@@ -5337,7 +5337,7 @@ class Main:
                     continue
                 log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
                 asset_dic = assets_dic[asset_noext_FN.getBase()]
-                new_asset_FN = collections_asset_dir_FN.join(asset_dic['basename'])
+                new_asset_FN = collections_asset_dir_FN.pjoin(asset_dic['basename'])
 
                 # >> Create asset file
                 asset_base64_data = asset_dic['data']
@@ -5378,7 +5378,7 @@ class Main:
                         continue
                     log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
                     asset_dic = assets_dic[ROM_asset_FN.getBase_noext()]                        
-                    new_asset_FN = collections_asset_dir_FN.join(asset_dic['basename'])
+                    new_asset_FN = collections_asset_dir_FN.pjoin(asset_dic['basename'])
 
                     # >> Create asset file
                     asset_base64_data = asset_dic['data']
@@ -5407,7 +5407,7 @@ class Main:
 
         # --- Write ROM Collection databases ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR.join(collection_base_name + '.json'), collection_rom_list)
+        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR.pjoin(collection_base_name + '.json'), collection_rom_list)
         if import_collection_assets:
             kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
         else:
@@ -5432,7 +5432,7 @@ class Main:
         # --- Load collection ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
@@ -5550,17 +5550,17 @@ class Main:
                 fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
                 log_info('_command_export_collection() Collection assets were copied. Saving Collection index ...')
             if ROM_assets_were_copied:
-                json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+                json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                 fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
                 log_info('_command_export_collection() Collection ROM assets were copied. Saving Collection database ...')
 
         # --- Export collection metadata (Always) ---
-        output_FileName = output_dir_FileName.join(collection['m_name'] + '.json')
+        output_FileName = output_dir_FileName.pjoin(collection['m_name'] + '.json')
         fs_export_ROM_collection(output_FileName, collection, collection_rom_list)
 
         # --- Export collection assets (Optional) ---
         if export_type == 1:
-            output_FileName = output_dir_FileName.join(collection['m_name'] + '_assets.json')
+            output_FileName = output_dir_FileName.pjoin(collection['m_name'] + '_assets.json')
             fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_list, collections_asset_dir_FN)
 
         # >> User info
@@ -5614,7 +5614,7 @@ class Main:
 
         # --- Load Collection ROMs ---
         collection = collections[collectionID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         log_info('Adding ROM to Collection')
         log_info('Collection {0}'.format(collection['m_name']))
@@ -5648,7 +5648,7 @@ class Main:
         # >> Add ROM to the last position in the collection
         collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
         collection_rom_list.append(collection_rom)
-        json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
         kodi_notify('Added ROM to Collection "{0}"'.format(collection['m_name']))
@@ -5674,7 +5674,7 @@ class Main:
         elif categoryID == VCATEGORY_CATEGORY_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
         else:
-            rom_file_path = ROMS_DIR.join(self.launchers[launcherID]['roms_base_noext'] + '.json')
+            rom_file_path = ROMS_DIR.pjoin(self.launchers[launcherID]['roms_base_noext'] + '.json')
             log_debug('_command_search_launcher() rom_file_path "{0}"'.format(rom_file_path.getOriginalPath()))
             if not rom_file_path.exists():
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
@@ -5800,7 +5800,7 @@ class Main:
         elif categoryID == VCATEGORY_CATEGORY_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
         else:
-            rom_file_path = ROMS_DIR.join(self.launchers[launcherID]['roms_base_noext'] + '.json')
+            rom_file_path = ROMS_DIR.pjoin(self.launchers[launcherID]['roms_base_noext'] + '.json')
             if not rom_file_path.exists():
                 kodi_notify('Launcher JSON not found. Add ROMs to Launcher')
                 return
@@ -6051,7 +6051,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_TITLE_ID:
                     log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6064,7 +6064,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_YEARS_ID:
                     log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6077,7 +6077,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_GENRE_ID:
                     log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6090,7 +6090,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_STUDIO_ID:
                     log_info('_command_view_menu() Viewing ROM in Studio Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6103,7 +6103,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_NPLAYERS_ID:
                     log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_NPLAYERS_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_NPLAYERS_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6116,7 +6116,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_ESRB_ID:
                     log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_ESRB_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_ESRB_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6129,7 +6129,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_RATING_ID:
                     log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_RATING_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_RATING_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6142,7 +6142,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_CATEGORY_ID:
                     log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_CATEGORY_DIR.join(launcherID + '.json')
+                    hashed_db_filename = VIRTUAL_CAT_CATEGORY_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
@@ -6158,7 +6158,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Collection ...')
                     (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
                     collection = collections[launcherID]
-                    roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+                    roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                     collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
                     if current_ROM_position < 0:
@@ -6943,7 +6943,7 @@ class Main:
             log_info('_command_run_rom() Launching ROM in Collection ...')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
             if current_ROM_position < 0:
@@ -9699,7 +9699,7 @@ class Main:
             if collection['default_clearlogo'] == 's_flyer': collection['default_clearlogo'] = 's_poster'
 
             # >> Fix collection ROMs
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             for rom in collection_rom_list: self._misc_fix_Favourite_rom_object(rom)
             fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
@@ -10008,8 +10008,8 @@ class Main:
 
         kodi_notify('Importing AL launchers.xml ...')
         AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
-        LAUNCHERS_FILE_PATH = AL_DATA_DIR.join('launchers.xml')
-        FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.join('fixed_launchers.xml')
+        LAUNCHERS_FILE_PATH = AL_DATA_DIR.pjoin('launchers.xml')
+        FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.pjoin('fixed_launchers.xml')
 
         # >> Check that launchers.xml exist
         if not LAUNCHERS_FILE_PATH.exists():
@@ -10163,12 +10163,12 @@ class Main:
             skinshortcutsAddon = xbmcaddon.Addon('script.skinshortcuts')
             path = FileName(skinshortcutsAddon.getAddonInfo('path'))
 
-            libPath = path.join('resources', 'lib')
+            libPath = path.pjoin('resources', 'lib')
             sys.path.append(libPath.getPath())
 
             unidecodeModule = xbmcaddon.Addon('script.module.unidecode')
             libPath = FileName(unidecodeModule.getAddonInfo('path'))
-            libPath = libPath.join('lib')
+            libPath = libPath.pjoin('lib')
             sys.path.append(libPath.getPath())
 
             sys.modules[ "__main__" ].ADDON    = skinshortcutsAddon
