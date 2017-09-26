@@ -440,24 +440,49 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         categories[categoryID]['Asset_Prefix'] = i_category['Asset_Prefix']
         log_debug('Imported Asset_Prefix "{0}"'.format(i_category['Asset_Prefix']))
     Asset_Prefix = i_category['Asset_Prefix']
-    log_debug('Importing category assets with prefix "{0}"'.format(Asset_Prefix))
-    # log_debug('import_FN "{0}"'.format(import_FN.getPath()))
+    if Asset_Prefix:
+        log_debug('Asset_Prefix non empty. Looking for asset files.')
+        (Asset_Prefix_head, Asset_Prefix_tail) = os.path.split(Asset_Prefix)
+        log_debug('Effective Asset_Prefix "{0}"'.format(Asset_Prefix))
+        log_debug('Asset_Prefix_head      "{0}"'.format(Asset_Prefix_head))
+        log_debug('Asset_Prefix_tail      "{0}"'.format(Asset_Prefix_tail))
+        if Asset_Prefix_head:
+            log_debug('Asset_Prefix head not empty')
+            asset_dir_FN = FileName(import_FN.getDir()).pjoin(Asset_Prefix_head)
+            norm_asset_dir_FN = FileName(os.path.normpath(asset_dir_FN.getPath()))
+            effective_Asset_Prefix = Asset_Prefix_tail
+        else:
+            log_debug('Asset_Prefix head is empty. Assets in same dir as XML file')
+            asset_dir_FN = FileName(import_FN.getDir())
+            norm_asset_dir_FN = FileName(os.path.normpath(asset_dir_FN.getPath()))
+            effective_Asset_Prefix = Asset_Prefix_tail
+        log_debug('import_FN              "{0}"'.format(import_FN.getPath()))
+        log_debug('asset_dir_FN           "{0}"'.format(asset_dir_FN.getPath()))
+        log_debug('norm_asset_dir_FN      "{0}"'.format(norm_asset_dir_FN.getPath()))
+        log_debug('effective_Asset_Prefix "{0}"'.format(effective_Asset_Prefix))
 
-    # >> Get a list of all files in the XML config file directory.
-    # >> This list has filenames withouth path.
-    file_list = sorted(os.listdir(import_FN.getDir()))
-    # log_debug('--- File list ---')
-    # for file in file_list: log_debug('--- "{0}"'.format(file))
+        # >> Get a list of all files in the directory pointed by Asset_Prefix and use this list as
+        # >> a file cache. This list has filenames withouth path.
+        log_debug('Scanning files in dir "{0}"'.format(norm_asset_dir_FN.getPath()))
+        file_list = sorted(os.listdir(norm_asset_dir_FN.getPath()))
+        log_debug('Found {0} files'.format(len(file_list)))
+        # log_debug('--- File list ---')
+        # for file in file_list: log_debug('--- "{0}"'.format(file))
+    else:
+        log_debug('Asset_Prefix empty. Not looking for any asset files.')
+        norm_asset_dir_FN = None
+        effective_Asset_Prefix = ''
+        file_list = []
 
     # >> Traverse list of category assets and search for image files for each asset
     for cat_asset in CATEGORY_ASSET_LIST:
         # >> Bypass trailers now
         if cat_asset == ASSET_TRAILER: continue
 
-        # >> Look for assets using the <Asset_Prefix> tag
+        # >> Look for assets using the file list cache.
         AInfo = assets_get_info_scheme(cat_asset)
         log_debug('>> Asset "{0}"'.format(AInfo.name))
-        asset_file_list = autoconfig_search_asset_file_list(Asset_Prefix, AInfo, import_FN, file_list)
+        asset_file_list = autoconfig_search_asset_file_list(effective_Asset_Prefix, AInfo, norm_asset_dir_FN, file_list)
 
         # --- Create image list for selection dialog ---
         listitems_list = []
@@ -732,15 +757,40 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID]['Asset_Prefix'] = i_launcher['Asset_Prefix']
         log_debug('Imported Asset_Prefix "{0}"'.format(i_launcher['Asset_Prefix']))
     Asset_Prefix = i_launcher['Asset_Prefix']
-    log_debug('Importing launcher assets with prefix "{0}"'.format(Asset_Prefix))
-    # log_debug('import_FN "{0}"'.format(import_FN.getPath()))
+    # >> Look at autoconfig_import_category() for a reference implementation.
+    if Asset_Prefix:
+        log_debug('Asset_Prefix non empty. Looking for asset files.')
+        (Asset_Prefix_head, Asset_Prefix_tail) = os.path.split(Asset_Prefix)
+        log_debug('Effective Asset_Prefix "{0}"'.format(Asset_Prefix))
+        log_debug('Asset_Prefix_head      "{0}"'.format(Asset_Prefix_head))
+        log_debug('Asset_Prefix_tail      "{0}"'.format(Asset_Prefix_tail))
+        if Asset_Prefix_head:
+            log_debug('Asset_Prefix head not empty')
+            asset_dir_FN = FileName(import_FN.getDir()).pjoin(Asset_Prefix_head)
+            norm_asset_dir_FN = FileName(os.path.normpath(asset_dir_FN.getPath()))
+            effective_Asset_Prefix = Asset_Prefix_tail
+        else:
+            log_debug('Asset_Prefix head is empty. Assets in same dir as XML file')
+            asset_dir_FN = FileName(import_FN.getDir())
+            norm_asset_dir_FN = FileName(os.path.normpath(asset_dir_FN.getPath()))
+            effective_Asset_Prefix = Asset_Prefix_tail
+        log_debug('import_FN              "{0}"'.format(import_FN.getPath()))
+        log_debug('asset_dir_FN           "{0}"'.format(asset_dir_FN.getPath()))
+        log_debug('norm_asset_dir_FN      "{0}"'.format(norm_asset_dir_FN.getPath()))
+        log_debug('effective_Asset_Prefix "{0}"'.format(effective_Asset_Prefix))
 
-    # >> Have a look at autoconfig_import_category() for a reference implementation.
-    # >> Get a list of all files in the XML config file directory.
-    # >> This list has filenames withouth path.
-    file_list = sorted(os.listdir(import_FN.getDir()))
-    # log_debug('--- File list ---')
-    # for file in file_list: log_debug('--- "{0}"'.format(file))
+        # >> Get a list of all files in the directory pointed by Asset_Prefix and use this list as
+        # >> a file cache. This list has filenames withouth path.
+        log_debug('Scanning files in dir "{0}"'.format(norm_asset_dir_FN.getPath()))
+        file_list = sorted(os.listdir(norm_asset_dir_FN.getPath()))
+        log_debug('Found {0} files'.format(len(file_list)))
+        # log_debug('--- File list ---')
+        # for file in file_list: log_debug('--- "{0}"'.format(file))
+    else:
+        log_debug('Asset_Prefix empty. Not looking for any asset files.')
+        norm_asset_dir_FN = None
+        effective_Asset_Prefix = ''
+        file_list = []
 
     # >> Traverse list of category assets and search for image files for each asset
     for laun_asset in LAUNCHER_ASSET_LIST:
@@ -750,7 +800,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         # >> Look for assets
         AInfo = assets_get_info_scheme(laun_asset)
         log_debug('>> Asset "{0}"'.format(AInfo.name))
-        asset_file_list = autoconfig_search_asset_file_list(Asset_Prefix, AInfo, import_FN, file_list)
+        asset_file_list = autoconfig_search_asset_file_list(effective_Asset_Prefix, AInfo, norm_asset_dir_FN, file_list)
         # --- Create image list for selection dialog ---
         listitems_list = []
         listitems_asset_paths = []
@@ -830,21 +880,19 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
 #   C) <asset_path_prefix>_<icon|fanart|banner|poster|clearlogo>_NN[_Comment].<asset_extensions>
 #
 # N is a number [0-9]
+# Comment may have spaces
 #
-def autoconfig_search_asset_file_list(asset_prefix, AInfo, import_FN, file_list):
-    # log_debug('autoconfig_search_asset_file_list() BEGIN asset infix "{0}"'.format(AInfo.fname_infix))
-
-    asset_dir_FN = FileName(import_FN.getDir())
-    # log_debug('asset_dir_FN "{0}"'.format(asset_dir_FN.getPath()))
+def autoconfig_search_asset_file_list(asset_prefix, AInfo, norm_asset_dir_FN, file_list):
+    log_debug('autoconfig_search_asset_file_list() BEGIN asset infix "{0}"'.format(AInfo.fname_infix))
 
     # >> Traverse list of filenames (no paths)
     filename_noext = asset_prefix + '_' + AInfo.fname_infix
     # log_debug('filename_noext "{0}"'.format(filename_noext))
     img_ext_regexp = asset_get_regexp_extension_list(IMAGE_EXTENSIONS)
     # log_debug('img_ext_regexp "{0}"'.format(img_ext_regexp))
-    pattern = '({0})([\w]*?)\.{1}'.format(filename_noext, img_ext_regexp)
-    # log_debug('Pattern "{0}"'.format(pattern))
-    
+    pattern = '({0})([ \w]*?)\.{1}'.format(filename_noext, img_ext_regexp)
+    log_debug('autoconfig_search_asset_file_list() pattern "{0}"'.format(pattern))
+
     # --- Search for files in case A, B and C ---
     asset_file_list = []
     for file in file_list:
@@ -852,7 +900,7 @@ def autoconfig_search_asset_file_list(asset_prefix, AInfo, import_FN, file_list)
         m = re.match(pattern, file)
         if m:
             # log_debug('MATCH   "{0}"'.format(m.group(0)))
-            asset_full_path = asset_dir_FN.pjoin(file)
+            asset_full_path = norm_asset_dir_FN.pjoin(file)
             # log_verb('Adding  "{0}"'.format(asset_full_path.getPath()))
             asset_file_list.append(asset_full_path.getPath())
     # log_debug('autoconfig_search_asset_file_list() END')
