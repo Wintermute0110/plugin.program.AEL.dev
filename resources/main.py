@@ -6308,7 +6308,13 @@ class Main:
 
             # >> Show map image
             s_map = rom['s_map']
+            if not s_map:
+                kodi_dialog_OK('Map image file not set for ROM "{0}"'.format(rom['m_name']))
+                return
             map_FN = FileName(s_map)
+            if not map_FN.exists():
+                kodi_dialog_OK('Map image file not found.')
+                return
             xbmc.executebuiltin('ShowPicture("{0}")'.format(map_FN.getPath()))
 
         # --- View last execution output ---

@@ -56,9 +56,6 @@ WIP      Add an option to see the ROM Manual in PDF if exists. Maybe use GhostSc
          the PDF into images like HyperLauncher does?
          Add an option in context menu "View ROM/Launcher".
 
-WIP      Add an option to see ROM Maps image if it exists.
-         Add an option in context menu "View ROM/Launcher".
-
 WIP      Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
          PClone information. See previous feature.
 
@@ -71,6 +68,9 @@ WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe,
 
 
 [B]Advanced Emulator Launcher | version 0.9.7 | XX September 2017[/B]
+
+FEATURE  Add an option to see ROM Maps image if it exists.
+         Add an option in context menu "View ROM/Launcher".
 
 FEATURE  Audit all launchers. Check if app exists, ROM path exits, artwork paths are configured,
          etc. When a user uses XML to import configurations it is easy to make a typo when
