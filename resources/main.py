@@ -5845,6 +5845,18 @@ class Main:
         VIEW_ROM_LAUNCHER      = 400
         VIEW_ROM_VLAUNCHER     = 500
 
+        ACTION_VIEW_CATEGORY          = 100
+        ACTION_VIEW_LAUNCHER          = 200
+        ACTION_VIEW_COLLECTION        = 300
+        ACTION_VIEW_ROM               = 400
+        ACTION_VIEW_LAUNCHER_STATS    = 500
+        ACTION_VIEW_LAUNCHER_METADATA = 600
+        ACTION_VIEW_LAUNCHER_ASSETS   = 700
+        ACTION_VIEW_LAUNCHER_SCANNER  = 800
+        ACTION_VIEW_MANUAL            = 900
+        ACTION_VIEW_MAP               = 1000
+        ACTION_VIEW_EXEC_OUTPUT       = 1100
+
         # >> Determine if we are in a cateogory, launcher or ROM
         log_debug('_command_view_menu() categoryID = {0}'.format(categoryID))
         log_debug('_command_view_menu() launcherID = {0}'.format(launcherID))
@@ -5868,7 +5880,7 @@ class Main:
             view_type = VIEW_CATEGORY
         log_debug('_command_view_menu() view_type = {0}'.format(view_type))
 
-        # >> Build menu base on view_type
+        # --- Build menu base on view_type ---
         if LAUNCH_LOG_FILE_PATH.exists():
             stat_stdout = LAUNCH_LOG_FILE_PATH.stat()
             size_stdout = stat_stdout.st_size
@@ -5884,36 +5896,107 @@ class Main:
                 Report_status = '{0} bytes'.format(size_stdout)
             else:
                 Report_status = 'not found'
+
         if view_type == VIEW_CATEGORY:
-            d_list = ['View Category data',
-                      'View last execution output ({0})'.format(STD_status)]
+            d_list = [
+                'View Category data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
         elif view_type == VIEW_LAUNCHER:
-            d_list = ['View Launcher data',
-                      'View last execution output ({0})'.format(STD_status),
-                      'View Launcher statistics',
-                      'View Launcher metadata/audit report',
-                      'View Launcher assets report',
-                      'View Launcher scanner report ({0})'.format(Report_status)]
-        elif view_type == VIEW_ROM_LAUNCHER:
-            d_list = ['View ROM data',
-                      'View last execution output ({0})'.format(STD_status),
-                      'View Launcher statistics',
-                      'View Launcher metadata/audit report',
-                      'View Launcher assets report',
-                      'View Launcher scanner report ({0})'.format(Report_status)]
+            d_list = [
+                'View Launcher data',
+                'View Launcher statistics',
+                'View Launcher metadata/audit report',
+                'View Launcher assets report',
+                'View Launcher scanner report ({0})'.format(Report_status),
+                'View last execution output ({0})'.format(STD_status),
+            ]
         elif view_type == VIEW_COLLECTION:
-            d_list = ['View Collection data',
-                      'View last execution output ({0})'.format(STD_status)]
-        # >> ROM in virtual launcher (no report)
+            d_list = [
+                'View Collection data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
+        elif view_type == VIEW_ROM_LAUNCHER:
+            d_list = [
+                'View ROM manual',
+                'View ROM map',
+                'View ROM data',
+                'View Launcher statistics',
+                'View Launcher metadata/audit report',
+                'View Launcher assets report',
+                'View Launcher scanner report ({0})'.format(Report_status),
+                'View last execution output ({0})'.format(STD_status),
+            ]
+        elif view_type == VIEW_ROM_VLAUNCHER:
+            # >> ROM in virtual launcher (no launcher report)
+            d_list = [
+                'View ROM manual',
+                'View ROM map',
+                'View ROM data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
         else:
-            d_list = ['View ROM data',
-                      'View last execution output ({0})'.format(STD_status)]
-        dialog = xbmcgui.Dialog()
-        selected_value = dialog.select('View', d_list)
+            kodi_dialog_OK('Wrong view_type = {0}. This is a bug, please report it.'.format(view_type))
+            return
+        selected_value = xbmcgui.Dialog().select('View', d_list)
         if selected_value < 0: return
 
-        # --- View Category/Launcher/ROM data ---
-        if selected_value == 0:
+        # --- Polymorphic menu. Determine action to do. ---
+        if view_type == VIEW_CATEGORY:
+            if   selected_value == 0: action = ACTION_VIEW_CATEGORY
+            elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_CATEGORY and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_LAUNCHER:
+            if   selected_value == 0: action = ACTION_VIEW_LAUNCHER
+            elif selected_value == 1: action = ACTION_VIEW_LAUNCHER_STATS
+            elif selected_value == 2: action = ACTION_VIEW_LAUNCHER_METADATA
+            elif selected_value == 3: action = ACTION_VIEW_LAUNCHER_ASSETS
+            elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_SCANNER
+            elif selected_value == 5: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_LAUNCHER and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_COLLECTION:
+            if selected_value == 0:   action = ACTION_VIEW_COLLECTION
+            elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_COLLECTION and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_ROM_LAUNCHER:
+            if   selected_value == 0: action = ACTION_VIEW_MANUAL
+            elif selected_value == 1: action = ACTION_VIEW_MAP
+            elif selected_value == 2: action = ACTION_VIEW_ROM
+            elif selected_value == 3: action = ACTION_VIEW_LAUNCHER_STATS
+            elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_METADATA
+            elif selected_value == 5: action = ACTION_VIEW_LAUNCHER_ASSETS
+            elif selected_value == 6: action = ACTION_VIEW_LAUNCHER_SCANNER
+            elif selected_value == 7: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_ROM_LAUNCHER and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_ROM_VLAUNCHER:
+            if   selected_value == 0: action = ACTION_VIEW_MANUAL
+            elif selected_value == 1: action = ACTION_VIEW_MAP
+            elif selected_value == 2: action = ACTION_VIEW_ROM
+            elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_ROM_VLAUNCHER and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        else:
+            kodi_dialog_OK('Wrong view_type == {0}. '.format(view_type) +
+                           'This is a bug, please report it.')
+            return
+
+        # --- Execute action ---
+        if action == ACTION_VIEW_CATEGORY or action == ACTION_VIEW_LAUNCHER or \
+           action == ACTION_VIEW_COLLECTION or action == ACTION_VIEW_ROM:
             if view_type == VIEW_CATEGORY:
                 window_title = 'Category data'
                 category = self.categories[categoryID]
@@ -6128,31 +6211,10 @@ class Main:
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
-        # --- View last execution output ---
-        # NOTE NOT available on Windows. See comments in _run_process()
-        elif selected_value == 1:
-            # --- Ckeck for errors and read file ---
-            # if sys.platform == 'win32':
-            #     kodi_dialog_OK('This feature is not available on Windows.')
-            #     return
-            if not LAUNCH_LOG_FILE_PATH.exists():
-                kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
-                return
-            info_text = ''
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
-                info_text = myfile.read()
-
-            # --- Show information window ---
-            window_title = 'Launcher last execution stdout'
-            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-            dialog = xbmcgui.Dialog()
-            dialog.textviewer(window_title, info_text)
-            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
-
-        # --- Launcher statistics ---
-        elif selected_value == 2 or selected_value == 3 or selected_value == 4:
+        # --- Launcher statistical reports ---
+        elif action == ACTION_VIEW_LAUNCHER_STATS or \
+             action == ACTION_VIEW_LAUNCHER_METADATA or \
+             action == ACTION_VIEW_LAUNCHER_ASSETS:
             # --- Standalone launchers do not have reports! ---
             if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
             else:                             category_name = VCATEGORY_ADDONROOT_ID
@@ -6180,17 +6242,17 @@ class Main:
 
             # --- Read report file ---
             try:
-                if selected_value == 2:
+                if action == ACTION_VIEW_LAUNCHER_STATS:
                     window_title = 'Launcher "{0}" Statistics Report'.format(launcher['m_name'])
                     file = open(report_stats_FN.getPath(), 'r')
                     info_text = file.read().decode('utf-8')
                     file.close()
-                elif selected_value == 3:
+                elif action == ACTION_VIEW_LAUNCHER_METADATA:
                     window_title = 'Launcher "{0}" Metadata Report'.format(launcher['m_name'])
                     file = open(report_meta_FN.getPath(), 'r')
                     info_text = file.read().decode('utf-8')
                     file.close()
-                elif selected_value == 4:
+                elif action == ACTION_VIEW_LAUNCHER_ASSETS:
                     window_title = 'Launcher "{0}" Asset Report'.format(launcher['m_name'])
                     file = open(report_assets_FN.getPath(), 'r')
                     info_text = file.read().decode('utf-8')
@@ -6211,8 +6273,8 @@ class Main:
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
-        # --- ROM scanner report ---
-        elif selected_value == 5:
+        # --- Launcher ROM scanner report ---
+        elif action == ACTION_VIEW_LAUNCHER_SCANNER:
             # --- Ckeck for errors and read file ---
             if not launcher_report_FN.exists():
                 kodi_dialog_OK('ROM scanner report not found.')
@@ -6229,6 +6291,47 @@ class Main:
             dialog.textviewer(window_title, info_text)
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+        # --- View ROM Manual ---
+        # >> Use Ghostscript like HyperLauncher?
+        # >> Or use plugin.image.pdfreader plugin?
+        # >> Or ask core developers to incorporate a native PDF reader?
+        elif action == ACTION_VIEW_MANUAL:
+            kodi_dialog_OK('View ROM manual not implemented yet. Sorry.')
+
+        # --- View ROM Map ---
+        elif action == ACTION_VIEW_MAP:
+            # >> Load ROMs
+            launcher = self.launchers[launcherID]
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
+            rom = roms[romID]
+
+            # >> Show map image
+            s_map = rom['s_map']
+            map_FN = FileName(s_map)
+            xbmc.executebuiltin('ShowPicture("{0}")'.format(map_FN.getPath()))
+
+        # --- View last execution output ---
+        elif action == ACTION_VIEW_EXEC_OUTPUT:
+            # --- Ckeck for errors and read file ---
+            if not LAUNCH_LOG_FILE_PATH.exists():
+                kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
+                return
+            info_text = ''
+            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
+                info_text = myfile.read()
+
+            # --- Show information window ---
+            window_title = 'Launcher last execution stdout'
+            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+            dialog = xbmcgui.Dialog()
+            dialog.textviewer(window_title, info_text)
+            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+        else:
+            kodi_dialog_OK('Wrong action == {0}. This is a bug, please report it.'.format(action))
 
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
