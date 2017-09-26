@@ -74,6 +74,7 @@ GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
 LAUNCHBOX_INFO_DIR        = CURRENT_ADDON_DIR.pjoin('LaunchBox')
 LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
 BIOS_REPORT_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('report_BIOS.txt')
+LAUNCHER_REPORT_FILE_PATH = PLUGIN_DATA_DIR.pjoin('report_Launchers.txt')
 
 # --- Artwork and NFO for Categories and Launchers ---
 DEFAULT_CAT_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-categories')
@@ -9651,9 +9652,106 @@ class Main:
             rom.pop('roms_default_thumb')
 
     def _command_check_launchers(self):
-        kodi_dialog_OK('_command_check_launchers() not implemented yet. Sorry.')
+        log_info('_command_check_launchers() Checking all Launchers configuration ...')
 
-    # 
+        str_list = []
+        for launcher_id in self.launchers:
+            launcher = self.launchers[launcher_id]
+            problems_found = False
+            str_list.append('[COLOR orange]Launcher "{0}"[/COLOR]\n'.format(launcher['m_name']))
+
+            # >> Check that platform is on AEL official platform list
+            platform = launcher['platform']
+            if platform not in AEL_platform_list:
+                problems_found = True
+                str_list.append('Unrecognised platform "{0}"\n'.format(platform))
+
+            # >> Check that category exists
+            categoryID = launcher['categoryID']
+            if categoryID != VCATEGORY_ADDONROOT_ID and categoryID not in self.categories:
+                problems_found = True
+                str_list.append('Category not found (unlinked launcher)\n')
+
+            # >> Check that application exists
+            app_FN = FileName(launcher['application'])
+            if not app_FN.exists():
+                problems_found = True
+                str_list.append('Application "{0}" not found\n'.format(app_FN.getPath()))
+
+            # >> Check that rompath exists if rompath is not empty
+            # >> Empty rompath means standalone launcher
+            rompath = launcher['rompath']
+            rompath_FN = FileName(rompath)
+            if rompath and not rompath_FN.exists():
+                problems_found = True
+                str_list.append('ROM path "{0}" not found\n'.format(rompath_FN.getPath()))
+
+            # >> Check that DAT file exists if not empty
+            nointro_xml_file = launcher['nointro_xml_file']
+            nointro_xml_file_FN = FileName(nointro_xml_file)
+            if nointro_xml_file and not nointro_xml_file_FN.exists():
+                problems_found = True
+                str_list.append('DAT file "{0}" not found\n'.format(nointro_xml_file_FN.getPath()))
+
+            # >> Test that artwork files exist if not empty (s_* fields)
+            self._aux_check_for_file(str_list, 's_icon', launcher)
+            self._aux_check_for_file(str_list, 's_fanart', launcher)
+            self._aux_check_for_file(str_list, 's_banner', launcher)
+            self._aux_check_for_file(str_list, 's_poster', launcher)
+            self._aux_check_for_file(str_list, 's_clearlogo', launcher)
+            self._aux_check_for_file(str_list, 's_controller', launcher)
+            self._aux_check_for_file(str_list, 's_trailer', launcher)
+
+            # >> Test that ROM_asset_path exists if not empty
+            ROM_asset_path = launcher['ROM_asset_path']
+            ROM_asset_path_FN = FileName(ROM_asset_path)
+            if ROM_asset_path and not ROM_asset_path_FN.exists():
+                problems_found = True
+                str_list.append('ROM_asset_path "{0}" not found\n'.format(ROM_asset_path_FN.getPath()))
+
+            # >> Test that ROM asset paths exist if not empty (path_* fields)
+            self._aux_check_for_file(str_list, 'path_title', launcher)
+            self._aux_check_for_file(str_list, 'path_snap', launcher)
+            self._aux_check_for_file(str_list, 'path_boxfront', launcher)
+            self._aux_check_for_file(str_list, 'path_boxback', launcher)
+            self._aux_check_for_file(str_list, 'path_cartridge', launcher)
+            self._aux_check_for_file(str_list, 'path_fanart', launcher)
+            self._aux_check_for_file(str_list, 'path_banner', launcher)
+            self._aux_check_for_file(str_list, 'path_clearlogo', launcher)
+            self._aux_check_for_file(str_list, 'path_flyer', launcher)
+            self._aux_check_for_file(str_list, 'path_map', launcher)
+            self._aux_check_for_file(str_list, 'path_manual', launcher)
+            self._aux_check_for_file(str_list, 'path_trailer', launcher)
+
+            # >> Check for duplicate asset paths
+            
+
+            # >> End
+            if not problems_found: str_list.append('No problems found\n')
+            str_list.append('\n')
+
+        # >> Stats report
+        log_info('Writing report file "{0}"'.format(LAUNCHER_REPORT_FILE_PATH.getPath()))
+        full_string = ''.join(str_list).encode('utf-8')
+        file = open(LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
+        file.write(full_string)
+        file.close()
+
+        # >> Display report TXT file.
+        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+        dialog = xbmcgui.Dialog()
+        dialog.textviewer('Launchers report', full_string)
+        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+    def _aux_check_for_file(self, str_list, dic_key_name, launcher):
+        path = launcher[dic_key_name]
+        path_FN = FileName(path)
+        if path and not path_FN.exists():
+            problems_found = True
+            str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
+
     def _command_check_retro_BIOS(self):
         log_info('_command_check_retro_BIOS() Checking Retroarch BIOSes ...')
         check_only_mandatory = self.settings['io_retroarch_only_mandatory']
