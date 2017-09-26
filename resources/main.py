@@ -508,7 +508,7 @@ class Main:
         self.settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- I/O ---
-        self.settings['io_retroarch_only_mandatory'] = o.getSetting('io_retroarch_only_mandatory').decode('utf-8')
+        self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
         self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
         # --- Advanced ---
@@ -9656,18 +9656,14 @@ class Main:
     # 
     def _command_check_retro_BIOS(self):
         log_info('_command_check_retro_BIOS() Checking Retroarch BIOSes ...')
+        check_only_mandatory = self.settings['io_retroarch_only_mandatory']
+        log_info('_command_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
 
         # >> If Retroarch System dir not configured or found abort.
         sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
         if not sys_dir_FN.exists():
             kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
             return
-
-        # >> Get a list of files in Retroarch system dir
-        # file_list = sorted(os.listdir(sys_dir_FN.getDir()))
-        # log_debug('--- File list ---')
-        # for file in file_list: log_debug('--- "{0}"'.format(file))
-        # file_set = set(file_list)
 
         # >> Progress dialog
         pDialog = xbmcgui.DialogProgress()
@@ -9685,6 +9681,10 @@ class Main:
         #    5) Write results into a report TXT file.
         BIOS_status_dic = {}
         for BIOS_dic in Libretro_BIOS_list:
+            if check_only_mandatory and not BIOS_dic['mandatory']:
+                log_debug('BIOS "{0}" is not mandatory. Skipping check.'.format(BIOS_dic['filename']))
+                continue
+
             BIOS_file_FN = sys_dir_FN.pjoin(BIOS_dic['filename'])
             log_debug('Testing BIOS "{0}"'.format(BIOS_file_FN.getPath()))
 
@@ -9753,6 +9753,8 @@ class Main:
 
         for BIOS_dic in Libretro_BIOS_list:
             BIOS_filename = BIOS_dic['filename']
+            # >> If BIOS was skipped continue loop
+            if BIOS_filename not in BIOS_status_dic: continue
             status = BIOS_status_dic[BIOS_filename]
             filename_str = '{0}{1}'.format(BIOS_filename, ' ' * (max_size_BIOS_filename - len(BIOS_filename)))
             mandatory_str = 'YES      ' if BIOS_dic['mandatory'] else 'NO       '
