@@ -439,30 +439,36 @@ class Main:
         # --- ROM Scanner settings ---
         self.settings['scan_recursive']           = True if o.getSetting('scan_recursive') == 'true' else False
         self.settings['scan_ignore_bios']         = True if o.getSetting('scan_ignore_bios') == 'true' else False
-        self.settings['scan_metadata_policy']     = int(o.getSetting('scan_metadata_policy'))
-        self.settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
         self.settings['scan_update_NFO_files']    = True if o.getSetting('scan_update_NFO_files') == 'true' else False
         self.settings['scan_ignore_scrap_title']  = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
         self.settings['scan_clean_tags']          = True if o.getSetting('scan_clean_tags') == 'true' else False
-
-        # --- ROM scraping ---
+        self.settings['scan_metadata_policy']     = int(o.getSetting('scan_metadata_policy'))
+        self.settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
         self.settings['metadata_scraper_mode']    = int(o.getSetting('metadata_scraper_mode'))
         self.settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
 
-        self.settings['scraper_metadata']         = int(o.getSetting('scraper_metadata'))
-        self.settings['scraper_title']            = int(o.getSetting('scraper_title'))
-        self.settings['scraper_snap']             = int(o.getSetting('scraper_snap'))
-        self.settings['scraper_bfront']           = int(o.getSetting('scraper_bfront'))
-        self.settings['scraper_cabinet']          = int(o.getSetting('scraper_cabinet'))
-        self.settings['scraper_bback']            = int(o.getSetting('scraper_bback'))
-        self.settings['scraper_cpanel']           = int(o.getSetting('scraper_cpanel'))
-        self.settings['scraper_cart']             = int(o.getSetting('scraper_cart'))
-        self.settings['scraper_pcb']              = int(o.getSetting('scraper_pcb'))
-        self.settings['scraper_fanart']           = int(o.getSetting('scraper_fanart'))
-        self.settings['scraper_banner']           = int(o.getSetting('scraper_banner'))
-        self.settings['scraper_marquee']          = int(o.getSetting('scraper_marquee'))
-        self.settings['scraper_clearlogo']        = int(o.getSetting('scraper_clearlogo'))
-        self.settings['scraper_flyer']            = int(o.getSetting('scraper_flyer'))
+        # --- ROM scraping ---
+        self.settings['scraper_metadata']       = int(o.getSetting('scraper_metadata'))
+        self.settings['scraper_metadata_MAME']  = int(o.getSetting('scraper_metadata_MAME'))
+
+        self.settings['scraper_title']          = int(o.getSetting('scraper_title'))
+        self.settings['scraper_snap']           = int(o.getSetting('scraper_snap'))
+        self.settings['scraper_boxfront']       = int(o.getSetting('scraper_boxfront'))
+        self.settings['scraper_boxback']        = int(o.getSetting('scraper_boxback'))
+        self.settings['scraper_cart']           = int(o.getSetting('scraper_cart'))
+        self.settings['scraper_fanart']         = int(o.getSetting('scraper_fanart'))
+        self.settings['scraper_banner']         = int(o.getSetting('scraper_banner'))
+        self.settings['scraper_clearlogo']      = int(o.getSetting('scraper_clearlogo'))
+
+        self.settings['scraper_title_MAME']     = int(o.getSetting('scraper_title_MAME'))
+        self.settings['scraper_snap_MAME']      = int(o.getSetting('scraper_snap_MAME'))
+        self.settings['scraper_cabinet_MAME']   = int(o.getSetting('scraper_cabinet_MAME'))
+        self.settings['scraper_cpanel_MAME']    = int(o.getSetting('scraper_cpanel_MAME'))
+        self.settings['scraper_pcb_MAME']       = int(o.getSetting('scraper_pcb_MAME'))
+        self.settings['scraper_fanart_MAME']    = int(o.getSetting('scraper_fanart_MAME'))
+        self.settings['scraper_marquee_MAME']   = int(o.getSetting('scraper_marquee_MAME'))
+        self.settings['scraper_clearlogo_MAME'] = int(o.getSetting('scraper_clearlogo_MAME'))
+        self.settings['scraper_flyer_MAME']     = int(o.getSetting('scraper_flyer_MAME'))
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
@@ -502,13 +508,14 @@ class Main:
         self.settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- I/O ---
-        self.settings['io_retroarch_sys_dir']     = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
+        self.settings['io_retroarch_only_mandatory'] = o.getSetting('io_retroarch_only_mandatory').decode('utf-8')
+        self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
         # --- Advanced ---
         self.settings['media_state_action']       = int(o.getSetting('media_state_action'))
         self.settings['delay_tempo']              = int(round(float(o.getSetting('delay_tempo'))))
         self.settings['suspend_audio_engine']     = True if o.getSetting('suspend_audio_engine') == 'true' else False
-        self.settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
+        # self.settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
         self.settings['escape_romfile']           = True if o.getSetting('escape_romfile') == 'true' else False
         self.settings['lirc_state']               = True if o.getSetting('lirc_state') == 'true' else False
         self.settings['show_batch_window']        = True if o.getSetting('show_batch_window') == 'true' else False
@@ -8075,103 +8082,138 @@ class Main:
         report_fobj.write('Loading launcher ROMs ...\n')
         roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
         num_roms = len(roms)
-        report_fobj.write('  {0} ROMs currently in database\n'.format(num_roms))
+        report_fobj.write('{0} ROMs currently in database\n'.format(num_roms))
         log_info('Launcher ROM database contain {0} items'.format(num_roms))
 
         # --- Load metadata/asset scrapers --------------------------------------------------------
-        # --- Metadata scraper ---
-        # Scraper objects are created and inserted into a list. This list order matches
-        # exactly the number returned by the settings. If scrapers are changed make sure the
-        # list in scrapers.py and in settings.xml have same values!
-        self.scraper_data = scrapers_metadata[self.settings['scraper_metadata']]
-        self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
-        log_verb('Loaded metadata scraper "{0}"'.format(self.scraper_data.name))
-
-        # --- Asset scrapers ---
         # >> Create a dictionary with references to the asset srapers
         self.scraper_dic = {}
 
-        # >> Titles
-        A = assets_get_info_scheme(ASSET_TITLE)
-        self.scraper_dic[A.key] = scrapers_title[self.settings['scraper_title']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        # >> Scrapers for MAME platform are different than rest of the platforms
+        if launcher['platform'] == 'MAME':
+            # --- Metadata scraper ---
+            # Scraper objects are created and inserted into a list. This list order matches
+            # exactly the number returned by the settings. If scrapers are changed make sure the
+            # list in scrapers.py and in settings.xml have same values!
+            self.scraper_data = scrapers_metadata_MAME[self.settings['scraper_metadata_MAME']]
+            self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+            log_verb('Loaded metadata MAME scraper "{0}"'.format(self.scraper_data.name))
 
-        # >> Snaps
-        A = assets_get_info_scheme(ASSET_SNAP)
-        self.scraper_dic[A.key] = scrapers_snap[self.settings['scraper_snap']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            # --- Asset scrapers ---
+            A = assets_get_info_scheme(ASSET_TITLE)
+            self.scraper_dic[A.key] = scrapers_title_MAME[self.settings['scraper_title_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Boxfronts or MAME Cabinet
-        A = assets_get_info_scheme(ASSET_BOXFRONT)
-        if launcher['platform'] != 'MAME':
-            self.scraper_dic[A.key] = scrapers_boxfront[self.settings['scraper_bfront']]
-            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            A = assets_get_info_scheme(ASSET_SNAP)
+            self.scraper_dic[A.key] = scrapers_snap_MAME[self.settings['scraper_snap_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Boxfront -> Cabinet
+            A = assets_get_info_scheme(ASSET_BOXFRONT)
+            self.scraper_dic[A.key] = scrapers_cabinet_MAME[self.settings['scraper_cabinet_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME Cabinets)'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Boxback -> Control Panel
+            A = assets_get_info_scheme(ASSET_BOXBACK)
+            self.scraper_dic[A.key] = scrapers_cpanel_MAME[self.settings['scraper_cpanel_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME CPanels)'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Cartridge -> PCB
+            A = assets_get_info_scheme(ASSET_CARTRIDGE)
+            self.scraper_dic[A.key] = scrapers_pcb_MAME[self.settings['scraper_pcb_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME PCBs)'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_FANART)
+            self.scraper_dic[A.key] = scrapers_fanart_MAME[self.settings['scraper_fanart_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Banner -> Marquee
+            A = assets_get_info_scheme(ASSET_BANNER)
+            self.scraper_dic[A.key] = scrapers_marquee_MAME[self.settings['scraper_marquee_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME Marquees)'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_CLEARLOGO)
+            self.scraper_dic[A.key] = scrapers_clearlogo_MAME[self.settings['scraper_clearlogo_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_FLYER)
+            self.scraper_dic[A.key] = scrapers_flyer_MAME[self.settings['scraper_flyer_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME flyers)'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Map (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MAP)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Manual (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MANUAL)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Trailer (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_TRAILER)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
         else:
-            self.scraper_dic[A.key] = scrapers_cabinet[self.settings['scraper_cabinet']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME Cabinets)'.format(A.name, self.scraper_dic[A.key].name))
+            # --- Metadata scraper ---
+            self.scraper_data = scrapers_metadata[self.settings['scraper_metadata']]
+            self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+            log_verb('Loaded metadata scraper "{0}"'.format(self.scraper_data.name))
 
-        # >> Boxback or MAME CPanel
-        A = assets_get_info_scheme(ASSET_BOXBACK)
-        if launcher['platform'] != 'MAME':
-            self.scraper_dic[A.key] = scrapers_boxback[self.settings['scraper_bback']]
+            # --- Asset scrapers ---
+            A = assets_get_info_scheme(ASSET_TITLE)
+            self.scraper_dic[A.key] = scrapers_title[self.settings['scraper_title']]
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_cpanel[self.settings['scraper_cpanel']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME CPanels)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Cartridge or MAME PCB
-        A = assets_get_info_scheme(ASSET_CARTRIDGE)
-        if launcher['platform'] != 'MAME':
+            A = assets_get_info_scheme(ASSET_SNAP)
+            self.scraper_dic[A.key] = scrapers_snap[self.settings['scraper_snap']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_BOXFRONT)
+            self.scraper_dic[A.key] = scrapers_boxfront[self.settings['scraper_boxfront']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_BOXBACK)
+            self.scraper_dic[A.key] = scrapers_boxback[self.settings['scraper_boxback']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_CARTRIDGE)
             self.scraper_dic[A.key] = scrapers_cartridge[self.settings['scraper_cart']]
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_pcb[self.settings['scraper_pcb']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME PCBs)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Fanart
-        A = assets_get_info_scheme(ASSET_FANART)
-        self.scraper_dic[A.key] = scrapers_fanart[self.settings['scraper_fanart']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            A = assets_get_info_scheme(ASSET_FANART)
+            self.scraper_dic[A.key] = scrapers_fanart[self.settings['scraper_fanart']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Banner or MAME Marquee
-        A = assets_get_info_scheme(ASSET_BANNER)
-        if launcher['platform'] != 'MAME':
+            A = assets_get_info_scheme(ASSET_BANNER)
             self.scraper_dic[A.key] = scrapers_banner[self.settings['scraper_banner']]
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_marquee[self.settings['scraper_marquee']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME Marquees)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Clearlogo
-        A = assets_get_info_scheme(ASSET_CLEARLOGO)
-        self.scraper_dic[A.key] = scrapers_clearlogo[self.settings['scraper_clearlogo']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            A = assets_get_info_scheme(ASSET_CLEARLOGO)
+            self.scraper_dic[A.key] = scrapers_clearlogo[self.settings['scraper_clearlogo']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Flyer
-        # >> Flyers only supported by ArcadeDB (for MAME). If platform is not MAME then deactivate
-        # >> this scraper.
-        A = assets_get_info_scheme(ASSET_FLYER)
-        if launcher['platform'] != 'MAME':
+            # >> Flyers only supported by ArcadeDB (for MAME). If platform is not MAME then deactivate
+            # >> this scraper.
+            A = assets_get_info_scheme(ASSET_FLYER)
             self.scraper_dic[A.key] = NULL_obj
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_flyer[self.settings['scraper_flyer']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME flyers)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Map (not supported yet, use a null scraper)
-        A = assets_get_info_scheme(ASSET_MAP)
-        self.scraper_dic[A.key] = asset_NULL()
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+            # >> Map (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MAP)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Manual (not supported yet, use a null scraper)
-        A = assets_get_info_scheme(ASSET_MANUAL)
-        self.scraper_dic[A.key] = asset_NULL()
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+            # >> Manual (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MANUAL)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Trailer (not supported yet, use a null scraper)
-        A = assets_get_info_scheme(ASSET_TRAILER)
-        self.scraper_dic[A.key] = asset_NULL()
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+            # >> Trailer (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_TRAILER)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
         # >> Initialise options of the thumb scraper (NOT SUPPORTED YET)
         # region = self.settings['scraper_region']

@@ -120,14 +120,21 @@ class Scraper_Asset(Scraper):
 from scrap_metadata import *
 from scrap_asset import *
 
+# --- Metadata scraper objects ---
+Offline_meta_obj    = metadata_Offline()
+TheGamesDB_meta_obj = metadata_TheGamesDB()
+GameFAQs_meta_obj   = metadata_GameFAQs()
+MobyGames_meta_obj  = metadata_MobyGames()
+ArcadeDB_meta_obj   = metadata_ArcadeDB()
+
 # --- Metadata scrapers ---
-# This list MUST match the settings configuration in settings.xml or bad things will happen.
+# >> This list MUST match the settings configuration in settings.xml or bad things will happen.
 scrapers_metadata = [
-    metadata_Offline(),
-    metadata_TheGamesDB(),
-    metadata_GameFAQs(),
-    metadata_MobyGames(),
-    metadata_ArcadeDB()
+    Offline_meta_obj, TheGamesDB_meta_obj, GameFAQs_meta_obj, MobyGames_meta_obj
+]
+
+scrapers_metadata_MAME = [
+    Offline_meta_obj, TheGamesDB_meta_obj, GameFAQs_meta_obj, MobyGames_meta_obj, ArcadeDB_meta_obj
 ]
 
 # --- Asset scraper objects ---
@@ -149,16 +156,22 @@ scrapers_asset = [TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj]
 # >> Boxback   -> CPanel
 # >> Cartridge -> PCB
 # >> Banner    -> Marquee
-scrapers_title      = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
-scrapers_snap       = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
-scrapers_boxfront   = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
-scrapers_cabinet    = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
-scrapers_boxback    = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
-scrapers_cpanel     = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
-scrapers_cartridge  = [ NULL_obj,                               MobyGames_obj, ArcadeDB_obj ]
-scrapers_pcb        = [ NULL_obj,                               MobyGames_obj, ArcadeDB_obj ]
-scrapers_fanart     = [ NULL_obj, TheGamesDB_obj,                                           ]
-scrapers_banner     = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
-scrapers_marquee    = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
-scrapers_clearlogo  = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
-scrapers_flyer      = [ NULL_obj,                                              ArcadeDB_obj ]
+scrapers_title          = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj               ]
+scrapers_snap           = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj               ]
+scrapers_boxfront       = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj               ]
+scrapers_boxback        = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj               ]
+scrapers_cartridge      = [ NULL_obj,                               MobyGames_obj               ]
+scrapers_fanart         = [ NULL_obj, TheGamesDB_obj                                            ]
+scrapers_banner         = [ NULL_obj, TheGamesDB_obj                                            ]
+scrapers_clearlogo      = [ NULL_obj, TheGamesDB_obj                                            ]
+
+# >> MAME scrapers
+scrapers_title_MAME     = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_snap_MAME      = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_cabinet_MAME   = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_cpanel_MAME    = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_pcb_MAME       = [ NULL_obj,                               MobyGames_obj, ArcadeDB_obj ]
+scrapers_fanart_MAME    = [ NULL_obj, TheGamesDB_obj                                            ]
+scrapers_marquee_MAME   = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
+scrapers_clearlogo_MAME = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
+scrapers_flyer_MAME     = [ NULL_obj,                                              ArcadeDB_obj ]
