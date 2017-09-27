@@ -548,53 +548,54 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         log_debug('old_launcher_name "{0}"'.format(old_launcher_name))
         log_debug('new_launcher_name "{0}"'.format(new_launcher_name))
         launchers[launcherID]['m_name'] = i_launcher['name']
-        log_debug('Imported m_name      "{0}"'.format(i_launcher['name']))
+        log_debug('Imported m_name "{0}"'.format(i_launcher['name']))
 
     # >> Process <Launcher_NFO> before any metadata tag
     if i_launcher['Launcher_NFO']:
+        log_debug('Imported Launcher_NFO "{0}"'.format(i_launcher['Launcher_NFO']))
         Launcher_NFO_FN = FileName(import_FN.getDir()).pjoin(i_launcher['Launcher_NFO'])
         Launcher_NFO_meta = fs_read_launcher_NFO(Launcher_NFO_FN)
-        log_debug('NFO year             "{0}"'.format(Launcher_NFO_meta['year']))
-        log_debug('NFO genre            "{0}"'.format(Launcher_NFO_meta['genre']))
-        log_debug('NFO developer        "{0}"'.format(Launcher_NFO_meta['developer']))
-        log_debug('NFO rating           "{0}"'.format(Launcher_NFO_meta['rating']))
-        log_debug('NFO plot             "{0}"'.format(Launcher_NFO_meta['plot']))
+        log_debug('NFO year      "{0}"'.format(Launcher_NFO_meta['year']))
+        log_debug('NFO genre     "{0}"'.format(Launcher_NFO_meta['genre']))
+        log_debug('NFO developer "{0}"'.format(Launcher_NFO_meta['developer']))
+        log_debug('NFO rating    "{0}"'.format(Launcher_NFO_meta['rating']))
+        log_debug('NFO plot      "{0}"'.format(Launcher_NFO_meta['plot']))
 
     # >> Process XML metadata and put in temporal dictionary
     if i_launcher['year']:
         XML_meta['year'] = i_launcher['year']
-        log_debug('XML year             "{0}"'.format(i_launcher['year']))
+        log_debug('XML year      "{0}"'.format(i_launcher['year']))
 
     if i_launcher['genre']:
         XML_meta['genre'] = i_launcher['genre']
-        log_debug('XML genre            "{0}"'.format(i_launcher['genre']))
+        log_debug('XML genre     "{0}"'.format(i_launcher['genre']))
 
     if i_launcher['developer']:
         XML_meta['developer'] = i_launcher['developer']
-        log_debug('XML developer        "{0}"'.format(i_launcher['developer']))
+        log_debug('XML developer "{0}"'.format(i_launcher['developer']))
 
     if i_launcher['rating']:
         XML_meta['rating'] = i_launcher['rating']
-        log_debug('XML rating           "{0}"'.format(i_launcher['rating']))
+        log_debug('XML rating    "{0}"'.format(i_launcher['rating']))
 
     if i_launcher['plot']:
         XML_meta['plot'] = i_launcher['plot']
-        log_debug('XML plot             "{0}"'.format(i_launcher['plot']))
+        log_debug('XML plot      "{0}"'.format(i_launcher['plot']))
 
     # >> Process metadata. XML metadata overrides Launcher_NFO metadata, if exists.
     if XML_meta['year']:
         launchers[launcherID]['m_year'] = XML_meta['year']
-        log_debug('Imported m_year      "{0}"'.format(XML_meta['year']))
+        log_debug('Imported m_year "{0}"'.format(XML_meta['year']))
     elif Launcher_NFO_meta['year']:
         launchers[launcherID]['m_year'] = Launcher_NFO_meta['year']
-        log_debug('Imported m_year      "{0}"'.format(Launcher_NFO_meta['year']))
+        log_debug('Imported m_year "{0}"'.format(Launcher_NFO_meta['year']))
 
     if XML_meta['genre']:
         launchers[launcherID]['m_genre'] = XML_meta['genre']
-        log_debug('Imported m_genre     "{0}"'.format(XML_meta['genre']))
+        log_debug('Imported m_genre "{0}"'.format(XML_meta['genre']))
     elif Launcher_NFO_meta['genre']:
         launchers[launcherID]['m_genre'] = Launcher_NFO_meta['genre']
-        log_debug('Imported m_genre     "{0}"'.format(Launcher_NFO_meta['genre']))
+        log_debug('Imported m_genre "{0}"'.format(Launcher_NFO_meta['genre']))
 
     if XML_meta['developer']:
         launchers[launcherID]['m_developer'] = XML_meta['developer']
@@ -605,17 +606,17 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
 
     if XML_meta['rating']:
         launchers[launcherID]['m_rating'] = XML_meta['rating']
-        log_debug('Imported m_rating    "{0}"'.format(XML_meta['rating']))
+        log_debug('Imported m_rating "{0}"'.format(XML_meta['rating']))
     elif Launcher_NFO_meta['rating']:
         launchers[launcherID]['m_rating'] = Launcher_NFO_meta['rating']
-        log_debug('Imported m_rating    "{0}"'.format(Launcher_NFO_meta['rating']))
+        log_debug('Imported m_rating "{0}"'.format(Launcher_NFO_meta['rating']))
 
     if XML_meta['plot']:
         launchers[launcherID]['m_plot'] = XML_meta['plot']
-        log_debug('Imported m_plot      "{0}"'.format(XML_meta['plot']))
+        log_debug('Imported m_plot "{0}"'.format(XML_meta['plot']))
     elif Launcher_NFO_meta['plot']:
         launchers[launcherID]['m_plot'] = Launcher_NFO_meta['plot']
-        log_debug('Imported m_plot      "{0}"'.format(Launcher_NFO_meta['plot']))
+        log_debug('Imported m_plot "{0}"'.format(Launcher_NFO_meta['plot']))
 
     # --- Launcher stuff ---
     # >> If platform cannot be found in the official list then warn user and set it to 'Unknown'
@@ -629,7 +630,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             log_debug('Unrecognised platform name "{0}". Setting to Unknown'.format(i_launcher['platform']))
             platform = 'Unknown'
         launchers[launcherID]['platform'] = platform
-        log_debug('Imported platform    "{0}"'.format(platform))
+        log_debug('Imported platform "{0}"'.format(platform))
 
     # >> If application not found warn user.
     if i_launcher['application']:
@@ -644,8 +645,8 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         log_debug('Imported application "{0}"'.format(i_launcher['application']))
 
     if i_launcher['args']:
-        launchers[launcherID]['args']        = i_launcher['args']
-        log_debug('Imported args        "{0}"'.format(i_launcher['args']))
+        launchers[launcherID]['args'] = i_launcher['args']
+        log_debug('Imported args "{0}"'.format(i_launcher['args']))
 
     # >> For every args_extra item add one entry to the list
     if i_launcher['args_extra']:
@@ -653,7 +654,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID]['args_extra'] = []
         for args in i_launcher['args_extra']:
             launchers[launcherID]['args_extra'].append(args)
-            log_debug('Imported args_extra  "{0}"'.format(args))
+            log_debug('Imported args_extra "{0}"'.format(args))
 
     # >> Warn user if rompath directory does not exist
     if i_launcher['ROM_path']:
@@ -667,17 +668,51 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         else:
             log_debug('ROM_path found.')
         launchers[launcherID]['rompath'] = i_launcher['ROM_path']
-        log_debug('Imported rompath     "{0}"'.format(i_launcher['ROM_path']))
+        log_debug('Imported rompath "{0}"'.format(i_launcher['ROM_path']))
 
     if i_launcher['ROM_ext']:
         launchers[launcherID]['romext'] = i_launcher['ROM_ext']
-        log_debug('Imported romext      "{0}"'.format(i_launcher['ROM_ext']))
+        log_debug('Imported romext "{0}"'.format(i_launcher['ROM_ext']))
+
+    # --- Launcher options ---
+    if i_launcher['Options']:
+        opt_string = unicode(i_launcher['Options']).strip()
+        log_debug('Imported Options "{0}"'.format(opt_string))
+        # >> Parse options
+        raw_opt_list = opt_string.split(',')
+        opt_list = [w.strip() for w in raw_opt_list]
+        log_debug('Stripped options list {0}'.format(unicode(opt_list)))
+        launcher = launchers[launcherID]
+        for option in opt_list:
+            if option == 'Blocking':
+                launcher['non_blocking'] = False
+                log_debug('Set launcher non_blocking to {0}'.format(launcher['non_blocking']))
+            elif option == 'NonBlocking':
+                launcher['non_blocking'] = True
+                log_debug('Set launcher non_blocking to {0}'.format(launcher['non_blocking']))
+
+            elif option == 'StaticWindow':
+                launcher['minimize'] = False
+                log_debug('Set launcher minimize to {0}'.format(launcher['minimize']))
+            elif option == 'ToggleWindow':
+                launcher['minimize'] = True
+                log_debug('Set launcher minimize to {0}'.format(launcher['minimize']))
+
+            elif option == 'Unfinished':
+                launcher['finished'] = False
+                log_debug('Set launcher finished to {0}'.format(launcher['finished']))
+            elif option == 'Finished':
+                launcher['finished'] = True
+                log_debug('Set launcher finished to {0}'.format(launcher['finished']))
+
+            else:
+                kodi_dialog_OK('Unrecognised launcher <Option> "{0}"'.format(option))
 
     # --- ROM assets path ---
     # >> If ROM_asset_path not found warn the user and tell him if should be created or not.
     if i_launcher['ROM_asset_path']:
         launchers[launcherID]['ROM_asset_path'] = i_launcher['ROM_asset_path']
-        log_debug('Imported ROM_asset_path "{0}"'.format(i_launcher['ROM_asset_path']))
+        log_debug('Imported ROM_asset_path  "{0}"'.format(i_launcher['ROM_asset_path']))
         ROM_asset_path_FN = FileName(i_launcher['ROM_asset_path'])
         log_debug('ROM_asset_path_FN OP "{0}"'.format(ROM_asset_path_FN.getOriginalPath()))
         log_debug('ROM_asset_path_FN  P "{0}"'.format(ROM_asset_path_FN.getPath()))
@@ -698,7 +733,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             log_debug('ROM_asset_path path found. Creating assets subdirectories.')
             assets_init_asset_dir(ROM_asset_path_FN, launchers[launcherID])
         else:
-            log_debug('ROM_asset_path path found after asking user to create it.')
+            log_debug('ROM_asset_path path not found even after asking user to create it or not.')
             log_debug('ROM asset directories left blank or as there were.')
 
     # --- <path_*> tags override <ROM_asset_path> ---
