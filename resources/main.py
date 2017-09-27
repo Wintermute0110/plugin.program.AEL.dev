@@ -61,7 +61,7 @@ COLLECTIONS_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('collections.xml')
 VCAT_TITLE_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_title.xml')
 VCAT_YEARS_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_years.xml')
 VCAT_GENRE_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_genre.xml')
-VCAT_STUDIO_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('vcat_studio.xml')
+VCAT_DEVELOPER_FILE_PATH  = PLUGIN_DATA_DIR.pjoin('vcat_developers.xml')
 VCAT_NPLAYERS_FILE_PATH   = PLUGIN_DATA_DIR.pjoin('vcat_nplayers.xml')
 VCAT_ESRB_FILE_PATH       = PLUGIN_DATA_DIR.pjoin('vcat_esrb.xml')
 VCAT_RATING_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('vcat_rating.xml')
@@ -82,10 +82,10 @@ DEFAULT_COL_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-collections')
 DEFAULT_LAUN_ASSET_DIR    = PLUGIN_DATA_DIR.pjoin('asset-launchers')
 DEFAULT_FAV_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-favourites')
 VIRTUAL_CAT_TITLE_DIR     = PLUGIN_DATA_DIR.pjoin('db_title')
-VIRTUAL_CAT_YEARS_DIR     = PLUGIN_DATA_DIR.pjoin('db_years')
+VIRTUAL_CAT_YEARS_DIR     = PLUGIN_DATA_DIR.pjoin('db_year')
 VIRTUAL_CAT_GENRE_DIR     = PLUGIN_DATA_DIR.pjoin('db_genre')
-VIRTUAL_CAT_STUDIO_DIR    = PLUGIN_DATA_DIR.pjoin('db_studio')
-VIRTUAL_CAT_NPLAYERS_DIR  = PLUGIN_DATA_DIR.pjoin('db_nplayers')
+VIRTUAL_CAT_DEVELOPER_DIR = PLUGIN_DATA_DIR.pjoin('db_developer')
+VIRTUAL_CAT_NPLAYERS_DIR  = PLUGIN_DATA_DIR.pjoin('db_nplayer')
 VIRTUAL_CAT_ESRB_DIR      = PLUGIN_DATA_DIR.pjoin('db_esrb')
 VIRTUAL_CAT_RATING_DIR    = PLUGIN_DATA_DIR.pjoin('db_rating')
 VIRTUAL_CAT_CATEGORY_DIR  = PLUGIN_DATA_DIR.pjoin('db_category')
@@ -200,22 +200,22 @@ class Main:
             # log_debug('Response  ''{0}'''.format(response.decode('utf-8')))
 
         # --- Addon data paths creation ---
-        if not PLUGIN_DATA_DIR.exists():          PLUGIN_DATA_DIR.makedirs()
-        if not DEFAULT_CAT_ASSET_DIR.exists():    DEFAULT_CAT_ASSET_DIR.makedirs()
-        if not DEFAULT_COL_ASSET_DIR.exists():    DEFAULT_COL_ASSET_DIR.makedirs()
-        if not DEFAULT_LAUN_ASSET_DIR.exists():   DEFAULT_LAUN_ASSET_DIR.makedirs()
-        if not DEFAULT_FAV_ASSET_DIR.exists():    DEFAULT_FAV_ASSET_DIR.makedirs()
-        if not VIRTUAL_CAT_TITLE_DIR.exists():    VIRTUAL_CAT_TITLE_DIR.makedirs()
-        if not VIRTUAL_CAT_YEARS_DIR.exists():    VIRTUAL_CAT_YEARS_DIR.makedirs()
-        if not VIRTUAL_CAT_GENRE_DIR.exists():    VIRTUAL_CAT_GENRE_DIR.makedirs()
-        if not VIRTUAL_CAT_STUDIO_DIR.exists():   VIRTUAL_CAT_STUDIO_DIR.makedirs()
-        if not VIRTUAL_CAT_NPLAYERS_DIR.exists(): VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
-        if not VIRTUAL_CAT_ESRB_DIR.exists():     VIRTUAL_CAT_ESRB_DIR.makedirs()
-        if not VIRTUAL_CAT_RATING_DIR.exists():   VIRTUAL_CAT_RATING_DIR.makedirs()
-        if not VIRTUAL_CAT_CATEGORY_DIR.exists(): VIRTUAL_CAT_CATEGORY_DIR.makedirs()
-        if not ROMS_DIR.exists():                 ROMS_DIR.makedirs()
-        if not COLLECTIONS_DIR.exists():          COLLECTIONS_DIR.makedirs()
-        if not REPORTS_DIR.exists():              REPORTS_DIR.makedirs()
+        if not PLUGIN_DATA_DIR.exists():           PLUGIN_DATA_DIR.makedirs()
+        if not DEFAULT_CAT_ASSET_DIR.exists():     DEFAULT_CAT_ASSET_DIR.makedirs()
+        if not DEFAULT_COL_ASSET_DIR.exists():     DEFAULT_COL_ASSET_DIR.makedirs()
+        if not DEFAULT_LAUN_ASSET_DIR.exists():    DEFAULT_LAUN_ASSET_DIR.makedirs()
+        if not DEFAULT_FAV_ASSET_DIR.exists():     DEFAULT_FAV_ASSET_DIR.makedirs()
+        if not VIRTUAL_CAT_TITLE_DIR.exists():     VIRTUAL_CAT_TITLE_DIR.makedirs()
+        if not VIRTUAL_CAT_YEARS_DIR.exists():     VIRTUAL_CAT_YEARS_DIR.makedirs()
+        if not VIRTUAL_CAT_GENRE_DIR.exists():     VIRTUAL_CAT_GENRE_DIR.makedirs()
+        if not VIRTUAL_CAT_DEVELOPER_DIR.exists(): VIRTUAL_CAT_DEVELOPER_DIR.makedirs()
+        if not VIRTUAL_CAT_NPLAYERS_DIR.exists():  VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
+        if not VIRTUAL_CAT_ESRB_DIR.exists():      VIRTUAL_CAT_ESRB_DIR.makedirs()
+        if not VIRTUAL_CAT_RATING_DIR.exists():    VIRTUAL_CAT_RATING_DIR.makedirs()
+        if not VIRTUAL_CAT_CATEGORY_DIR.exists():  VIRTUAL_CAT_CATEGORY_DIR.makedirs()
+        if not ROMS_DIR.exists():                  ROMS_DIR.makedirs()
+        if not COLLECTIONS_DIR.exists():           COLLECTIONS_DIR.makedirs()
+        if not REPORTS_DIR.exists():               REPORTS_DIR.makedirs()
 
         # --- Process URL ---
         self.base_url     = sys.argv[0]
@@ -3289,7 +3289,7 @@ class Main:
         self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
         self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
-        self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_DEVELOPER_ID)
         self._gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
         self._gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
         self._gui_render_virtual_category_row(VCATEGORY_RATING_ID)
@@ -3318,13 +3318,13 @@ class Main:
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'Genre'
-        elif virtual_category_kind == VCATEGORY_STUDIO_ID:
-            vcategory_name   = 'Browse by Studio'
+        elif virtual_category_kind == VCATEGORY_DEVELOPER_ID:
+            vcategory_name   = 'Browse by Developer'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
-            vcategory_label  = 'Studio'
+            vcategory_label  = 'Developer'
         elif virtual_category_kind == VCATEGORY_NPLAYERS_ID:
             vcategory_name   = 'Browse by Number of Players'
             vcategory_thumb  = 'DefaultFolder.png'
@@ -3360,7 +3360,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4,
                                    'plot' : 'Shows virtual launchers in {0} virtual category'.format(vcategory_label)})
-        listitem.setArt({'thumb'  : vcategory_thumb,  'fanart' : vcategory_fanart, 
+        listitem.setArt({'icon'   : vcategory_thumb,  'fanart' : vcategory_fanart, 
                          'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
         commands = []
@@ -3916,7 +3916,7 @@ class Main:
             else:
                 rom_name = '{0} [COLOR orange][{1} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
-             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
+             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
              categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
             icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
@@ -4062,7 +4062,7 @@ class Main:
         elif categoryID == VCATEGORY_RECENT_ID or categoryID == VCATEGORY_MOST_PLAYED_ID:
             commands.append(('View ROM data', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID  or \
-             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
+             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID   or \
              categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
             commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
@@ -4202,9 +4202,9 @@ class Main:
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
             vcategory_db_filename = VCAT_GENRE_FILE_PATH
             vcategory_name        = 'Browse by Genre'
-        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
-            vcategory_db_filename = VCAT_STUDIO_FILE_PATH
-            vcategory_name        = 'Browse by Studio'
+        elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
+            vcategory_db_filename = VCAT_DEVELOPER_FILE_PATH
+            vcategory_name        = 'Browse by Developer'
         elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
             vcategory_db_filename = VCAT_NPLAYERS_FILE_PATH
             vcategory_name        = 'Browse by Number of Players'
@@ -4272,14 +4272,14 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load virtual launchers in this category ---
-        if virtual_categoryID == VCATEGORY_TITLE_ID:      vcategory_db_dir = VIRTUAL_CAT_TITLE_DIR
-        elif virtual_categoryID == VCATEGORY_YEARS_ID:    vcategory_db_dir = VIRTUAL_CAT_YEARS_DIR
-        elif virtual_categoryID == VCATEGORY_GENRE_ID:    vcategory_db_dir = VIRTUAL_CAT_GENRE_DIR
-        elif virtual_categoryID == VCATEGORY_STUDIO_ID:   vcategory_db_dir = VIRTUAL_CAT_STUDIO_DIR
-        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID: vcategory_db_dir = VIRTUAL_CAT_NPLAYERS_DIR
-        elif virtual_categoryID == VCATEGORY_ESRB_ID:     vcategory_db_dir = VIRTUAL_CAT_ESRB_DIR
-        elif virtual_categoryID == VCATEGORY_RATING_ID:   vcategory_db_dir = VIRTUAL_CAT_RATING_DIR
-        elif virtual_categoryID == VCATEGORY_CATEGORY_ID: vcategory_db_dir = VIRTUAL_CAT_CATEGORY_DIR
+        if   virtual_categoryID == VCATEGORY_TITLE_ID:     vcategory_db_dir = VIRTUAL_CAT_TITLE_DIR
+        elif virtual_categoryID == VCATEGORY_YEARS_ID:     vcategory_db_dir = VIRTUAL_CAT_YEARS_DIR
+        elif virtual_categoryID == VCATEGORY_GENRE_ID:     vcategory_db_dir = VIRTUAL_CAT_GENRE_DIR
+        elif virtual_categoryID == VCATEGORY_DEVELOPER_ID: vcategory_db_dir = VIRTUAL_CAT_DEVELOPER_DIR
+        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:  vcategory_db_dir = VIRTUAL_CAT_NPLAYERS_DIR
+        elif virtual_categoryID == VCATEGORY_ESRB_ID:      vcategory_db_dir = VIRTUAL_CAT_ESRB_DIR
+        elif virtual_categoryID == VCATEGORY_RATING_ID:    vcategory_db_dir = VIRTUAL_CAT_RATING_DIR
+        elif virtual_categoryID == VCATEGORY_CATEGORY_ID:  vcategory_db_dir = VIRTUAL_CAT_CATEGORY_DIR
         else:
             log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
@@ -4461,8 +4461,8 @@ class Main:
         elif categoryID == VCATEGORY_GENRE_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+        elif categoryID == VCATEGORY_DEVELOPER_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
         elif categoryID == VCATEGORY_CATEGORY_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
@@ -5580,8 +5580,8 @@ class Main:
         elif categoryID == VCATEGORY_GENRE_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+        elif categoryID == VCATEGORY_DEVELOPER_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
         # >> ROMs in standard launcher
         else:
@@ -5669,8 +5669,8 @@ class Main:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
         elif categoryID == VCATEGORY_GENRE_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+        elif categoryID == VCATEGORY_DEVELOPER_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
         elif categoryID == VCATEGORY_CATEGORY_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
         else:
@@ -5795,8 +5795,8 @@ class Main:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
         elif categoryID == VCATEGORY_GENRE_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-        elif categoryID == VCATEGORY_STUDIO_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+        elif categoryID == VCATEGORY_DEVELOPER_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
         elif categoryID == VCATEGORY_CATEGORY_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
         else:
@@ -5863,19 +5863,19 @@ class Main:
         log_debug('_command_view_menu() romID      = {0}'.format(romID))
         if launcherID and romID:
             if categoryID == VCATEGORY_FAVOURITES_ID or \
-               categoryID == VCATEGORY_COLLECTIONS_ID or \
-               categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
-               categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
-               categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
-               categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID or \
                categoryID == VCATEGORY_RECENT_ID or \
-               categoryID == VCATEGORY_MOST_PLAYED_ID:
+               categoryID == VCATEGORY_MOST_PLAYED_ID or \
+               categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
+               categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
+               categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
+               categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
                 view_type = VIEW_ROM_VLAUNCHER
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                view_type = VIEW_COLLECTION
             else:
                 view_type = VIEW_ROM_LAUNCHER
         elif launcherID and not romID:
-            if categoryID == VCATEGORY_COLLECTIONS_ID: view_type = VIEW_COLLECTION
-            else:                                      view_type = VIEW_LAUNCHER
+            view_type = VIEW_LAUNCHER
         else:
             view_type = VIEW_CATEGORY
         log_debug('_command_view_menu() view_type = {0}'.format(view_type))
@@ -5961,7 +5961,7 @@ class Main:
                                'This is a bug, please report it.')
                 return
         elif view_type == VIEW_COLLECTION:
-            if selected_value == 0:   action = ACTION_VIEW_COLLECTION
+            if   selected_value == 0: action = ACTION_VIEW_COLLECTION
             elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
             else:
                 kodi_dialog_OK('view_type == VIEW_COLLECTION and selected_value = {0}. '.format(selected_value) +
@@ -5993,6 +5993,7 @@ class Main:
             kodi_dialog_OK('Wrong view_type == {0}. '.format(view_type) +
                            'This is a bug, please report it.')
             return
+        log_debug('_command_view_menu() action = {0}'.format(action))
 
         # --- Execute action ---
         if action == ACTION_VIEW_CATEGORY or action == ACTION_VIEW_LAUNCHER or \
@@ -6088,14 +6089,14 @@ class Main:
                     regular_launcher = False
                     vlauncher_label = 'Virtual Launcher Genre'
 
-                elif categoryID == VCATEGORY_STUDIO_ID:
-                    log_info('_command_view_menu() Viewing ROM in Studio Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_STUDIO_DIR.pjoin(launcherID + '.json')
+                elif categoryID == VCATEGORY_DEVELOPER_ID:
+                    log_info('_command_view_menu() Viewing ROM in Developer Virtual Launcher ...')
+                    hashed_db_filename = VIRTUAL_CAT_DEVELOPER_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher Studio ROM data'
                     regular_launcher = False
@@ -6302,9 +6303,41 @@ class Main:
         # --- View ROM Map ---
         elif action == ACTION_VIEW_MAP:
             # >> Load ROMs
-            launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
-            rom = roms[romID]
+            if categoryID == VCATEGORY_FAVOURITES_ID:
+                roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+                rom = roms[romID]
+            elif categoryID == VCATEGORY_MOST_PLAYED_ID:
+                most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+                rom = most_played_roms[romID]
+            elif categoryID == VCATEGORY_RECENT_ID:
+                recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+                current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
+                if current_ROM_position < 0:
+                    kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                    return
+                rom = recent_roms_list[current_ROM_position]
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+                collection = collections[launcherID]
+                roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+                collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+                current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
+                if current_ROM_position < 0:
+                    kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                    return
+                rom = collection_rom_list[current_ROM_position]
+            elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
+                 categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
+                 categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
+                 categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
+                kodi_dialog_OK('ROM-loading factory not implemented yet. '
+                               'Until then you cannot see maps in Virtual Launchers. '
+                               'Sorry.')
+                return
+            else:
+                launcher = self.launchers[launcherID]
+                roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
+                rom = roms[romID]
 
             # >> Show map image
             s_map = rom['s_map']
@@ -6319,20 +6352,24 @@ class Main:
 
         # --- View last execution output ---
         elif action == ACTION_VIEW_EXEC_OUTPUT:
+            log_debug('_command_view_menu() Executing action == ACTION_VIEW_EXEC_OUTPUT')
+
             # --- Ckeck for errors and read file ---
             if not LAUNCH_LOG_FILE_PATH.exists():
                 kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
                 return
+            # >> Kodi BUG: if the log file size is 0 (it is empty) then Kodi displays in the
+            # >> text window the last displayed text.
             info_text = ''
             with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
+                log_debug('_command_view_menu() Reading launcher.log ...')
                 info_text = myfile.read()
 
             # --- Show information window ---
             window_title = 'Launcher last execution stdout'
             log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-            dialog = xbmcgui.Dialog()
-            dialog.textviewer(window_title, info_text)
+            xbmcgui.Dialog().textviewer(window_title, info_text)
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
@@ -6647,7 +6684,7 @@ class Main:
         self._command_update_virtual_category_db(VCATEGORY_TITLE_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_YEARS_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_GENRE_ID, all_roms)
-        self._command_update_virtual_category_db(VCATEGORY_STUDIO_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_DEVELOPER_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_NPLAYERS_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_ESRB_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_RATING_ID, all_roms)
@@ -6660,31 +6697,31 @@ class Main:
     def _command_update_virtual_category_db(self, virtual_categoryID, all_roms_external = None):
         # --- Customise function depending on virtual category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
-            log_info('_command_update_virtual_category_db() Updating Titles DB')
+            log_info('_command_update_virtual_category_db() Updating Title DB')
             vcategory_db_directory = VIRTUAL_CAT_TITLE_DIR
             vcategory_db_filename  = VCAT_TITLE_FILE_PATH
             vcategory_field_name   = 'm_name'
             vcategory_name         = 'Titles'
         elif virtual_categoryID == VCATEGORY_YEARS_ID:
-            log_info('_command_update_virtual_category_db() Updating Years DB')
+            log_info('_command_update_virtual_category_db() Updating Year DB')
             vcategory_db_directory = VIRTUAL_CAT_YEARS_DIR
             vcategory_db_filename  = VCAT_YEARS_FILE_PATH
             vcategory_field_name   = 'm_year'
             vcategory_name         = 'Years'
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
-            log_info('_command_update_virtual_category_db() Updating Genres DB')
+            log_info('_command_update_virtual_category_db() Updating Genre DB')
             vcategory_db_directory = VIRTUAL_CAT_GENRE_DIR
             vcategory_db_filename  = VCAT_GENRE_FILE_PATH
             vcategory_field_name   = 'm_genre'
             vcategory_name         = 'Genres'
-        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
-            log_info('_command_update_virtual_category_db() Updating Studios DB')
-            vcategory_db_directory = VIRTUAL_CAT_STUDIO_DIR
-            vcategory_db_filename  = VCAT_STUDIO_FILE_PATH
-            vcategory_field_name   = 'm_studio'
-            vcategory_name         = 'Studios'
+        elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
+            log_info('_command_update_virtual_category_db() Updating Developer DB')
+            vcategory_db_directory = VIRTUAL_CAT_DEVELOPER_DIR
+            vcategory_db_filename  = VCAT_DEVELOPER_FILE_PATH
+            vcategory_field_name   = 'm_developer'
+            vcategory_name         = 'Developers'
         elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
-            log_info('_command_update_virtual_category_db() Updating NPlayers DB')
+            log_info('_command_update_virtual_category_db() Updating NPlayer DB')
             vcategory_db_directory = VIRTUAL_CAT_NPLAYERS_DIR
             vcategory_db_filename  = VCAT_NPLAYERS_FILE_PATH
             vcategory_field_name   = 'm_nplayers'
@@ -6702,7 +6739,7 @@ class Main:
             vcategory_field_name   = 'm_rating'
             vcategory_name         = 'Rating'
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
-            log_info('_command_update_virtual_category_db() Updating Categories DB')
+            log_info('_command_update_virtual_category_db() Updating Category DB')
             vcategory_db_directory = VIRTUAL_CAT_CATEGORY_DIR
             vcategory_db_filename  = VCAT_CATEGORY_FILE_PATH
             vcategory_field_name   = ''
@@ -6959,7 +6996,7 @@ class Main:
             args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
-             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_STUDIO_ID or \
+             categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_CATEGORY_ID:
             if categoryID == VCATEGORY_TITLE_ID:
                 log_info('_command_run_rom() Launching ROM in Virtual Launcher ...')
@@ -6970,9 +7007,9 @@ class Main:
             elif categoryID == VCATEGORY_GENRE_ID:
                 log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-            elif categoryID == VCATEGORY_STUDIO_ID:
-                log_info('_command_run_rom() Launching ROM in Studio Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_STUDIO_DIR, launcherID)
+            elif categoryID == VCATEGORY_DEVELOPER_ID:
+                log_info('_command_run_rom() Launching ROM in Developer Virtual Launcher ...')
+                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
             elif categoryID == VCATEGORY_CATEGORY_ID:
                 log_info('_command_run_rom() Launching ROM in Category Virtual Launcher ...')
                 roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
@@ -7347,8 +7384,8 @@ class Main:
         # >> See https://forum.kodi.tv/showthread.php?tid=157499&pid=1722549&highlight=input.enablejoystick#pid1722549
         # >> See https://forum.kodi.tv/showthread.php?tid=313615
         self.kodi_joystick_suspended = False
-        if self.settings['suspend_joystick_engine']:
-            log_verb('_run_before_execution() Suspending Kodi joystick engine')
+        # if self.settings['suspend_joystick_engine']:
+            # log_verb('_run_before_execution() Suspending Kodi joystick engine')
             # >> Research. Get the value of the setting first
             # >> Apparently input.enablejoystick is not supported on Kodi Krypton anymore.
             # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
@@ -7366,9 +7403,9 @@ class Main:
             # log_debug('Response  ''{0}'''.format(response))
             # self.kodi_joystick_suspended = True
 
-            log_error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
-        else:
-            log_verb('_run_before_execution() DO NOT suspend Kodi joystick engine')
+            # log_error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
+        # else:
+            # log_verb('_run_before_execution() DO NOT suspend Kodi joystick engine')
 
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
