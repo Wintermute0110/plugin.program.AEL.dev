@@ -51,6 +51,36 @@ class Test_maintests(unittest.TestCase):
         # assert
         pass
 
+    def test_when_adding_new_category_the_correct_data_gets_stored(self):
+        self.test_when_adding_new_category_the_correct_data_gets_stored_mocked()
+        
+    @patch('resources.main.xbmc.Keyboard.getText', autospec=True)
+    @patch('resources.main.fs_write_catfile')
+    @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
+    def test_when_adding_new_category_the_correct_data_gets_stored_mocked(self, mock_addon, mock_writecatfile, mock_keyboard):
+        
+        # arrange
+        expected =  'MyTestCategory'
+
+        mock_keyboard.return_value = expected
+        target = main.Main()
+        
+        # act
+        target._cat_create_default()
+        target._command_add_new_category()
+
+        args = mock_writecatfile.call_args
+        stored_categories = args[0][1]
+        actual_category1 = stored_categories.items()[0][1]
+        actual_category2 = stored_categories.items()[1][1]
+
+        actuals = [actual_category1[u'm_name'],actual_category2[u'm_name']]
+        print(stored_categories)
+
+        # assert
+        self.assertTrue(mock_writecatfile.called)
+        self.assertIn(expected, actuals)
+
 
 if __name__ == '__main__':
     unittest.main()

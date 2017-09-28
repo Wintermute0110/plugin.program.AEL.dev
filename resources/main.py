@@ -4002,9 +4002,31 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # --- Load virtual launchers in this category ---
-        virtualSetDescription = self.romsetFactory.createDescription(virtual_categoryID)
-        
-        if virtualSetDescription is None:
+        if virtual_categoryID == VCATEGORY_TITLE_ID:
+            vcategory_db_filename = VCAT_TITLE_FILE_PATH
+            vcategory_name        = 'Browse by Title'
+        elif virtual_categoryID == VCATEGORY_YEARS_ID:
+            vcategory_db_filename = VCAT_YEARS_FILE_PATH
+            vcategory_name        = 'Browse by Year'
+        elif virtual_categoryID == VCATEGORY_GENRE_ID:
+            vcategory_db_filename = VCAT_GENRE_FILE_PATH
+            vcategory_name        = 'Browse by Genre'
+        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
+            vcategory_db_filename = VCAT_STUDIO_FILE_PATH
+            vcategory_name        = 'Browse by Studio'
+        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
+            vcategory_db_filename = VCAT_NPLAYERS_FILE_PATH
+            vcategory_name        = 'Browse by Number of Players'
+        elif virtual_categoryID == VCATEGORY_ESRB_ID:
+            vcategory_db_filename = VCAT_ESRB_FILE_PATH
+            vcategory_name        = 'Browse by ESRB Rating'
+        elif virtual_categoryID == VCATEGORY_RATING_ID:
+            vcategory_db_filename = VCAT_RATING_FILE_PATH
+            vcategory_name        = 'Browse by User Rating'
+        elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
+            vcategory_db_filename = VCAT_CATEGORY_FILE_PATH
+            vcategory_name        = 'Browse by Category'
+        else:
             log_error('_command_render_virtual_category() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             return
@@ -4043,7 +4065,7 @@ class Main:
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-            listitem.addContextMenuItems(commands)
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
             url_str = self._misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
