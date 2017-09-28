@@ -1680,22 +1680,21 @@ def fs_read_launcher_NFO(nfo_FileName):
     launcher_dic = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
 
     # --- Get NFO file name ---
-    log_debug('fs_read_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_read_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
 
     # --- Import data ---
-    if os.path.isfile(nfo_FileName.getPath()):
+    if nfo_FileName.exists():
         # >> Read NFO file data
         try:
-            file = codecs.open(nfo_FileName.getPath(), 'r', 'utf-8')
-            item_nfo = file.read().replace('\r', '').replace('\n', '')
-            file.close()
+            item_nfo = nfo_FileName.readAllUnicode()
+            item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
-            log_error("fs_read_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+            kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getBase()))
+            log_error("fs_read_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
             return launcher_dic
     else:
-        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getPath())))
-        log_info("fs_read_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+        kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
+        log_info("fs_read_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
         return launcher_dic
 
     # Find data
@@ -1711,7 +1710,7 @@ def fs_read_launcher_NFO(nfo_FileName):
     if item_rating:    launcher_dic['rating']    = text_unescape_XML(item_rating[0])
     if item_plot:      launcher_dic['plot']      = text_unescape_XML(item_plot[0])
 
-    log_verb("fs_read_launcher_NFO() Read '{0}'".format(nfo_FileName.getPath()))
+    log_verb("fs_read_launcher_NFO() Read '{0}'".format(nfo_FileName.getOriginalPath()))
 
     return launcher_dic
 

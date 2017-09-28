@@ -8773,7 +8773,8 @@ class Main:
         # --- Semi-automatic scraping (user choses an image from a list) ---
         if scraping_mode == 0:
             # >> If there is a local image add it to the list and show it to the user
-            if os.path.isfile(local_asset_path):
+            local_asset_obj = FileName(local_asset_path)
+            if local_asset_obj.exists():
                 image_list.insert(0, {'name'       : 'Current local image', 
                                       'id'         : local_asset_path,
                                       'URL'        : local_asset_path,
