@@ -346,17 +346,15 @@ def text_get_multidisc_info(ROM_FN):
 # Get extension of URL. Returns '' if not found.
 #
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
     
-    return ext
+    urlPath = FileName(url)
+    return urlPath.getExt()
 
 #
 # Defaults to .jpg if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
+    ext = text_get_URL_extension(url)
     ret = '.jpg' if ext == '' else ext
 
     return ret
@@ -372,7 +370,8 @@ def misc_add_file_cache(dir_str):
     dir_FN = FileName(dir_str)
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
     log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
-    file_list = os.listdir(dir_FN.getPath())
+
+    file_list = dir_FN.scanFilesInPath()
     file_set = set(file_list)
     # for file in file_set: log_debug('File "{0}"'.format(file))
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
