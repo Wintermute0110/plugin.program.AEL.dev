@@ -5844,6 +5844,7 @@ class Main:
         VIEW_COLLECTION        = 300
         VIEW_ROM_LAUNCHER      = 400
         VIEW_ROM_VLAUNCHER     = 500
+        VIEW_ROM_COLLECTION    = 500
 
         ACTION_VIEW_CATEGORY          = 100
         ACTION_VIEW_LAUNCHER          = 200
@@ -5871,11 +5872,14 @@ class Main:
                categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
                 view_type = VIEW_ROM_VLAUNCHER
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                view_type = VIEW_COLLECTION
+                view_type = VIEW_ROM_COLLECTION
             else:
                 view_type = VIEW_ROM_LAUNCHER
         elif launcherID and not romID:
-            view_type = VIEW_LAUNCHER
+            if categoryID == VCATEGORY_COLLECTIONS_ID:
+                view_type = VIEW_COLLECTION
+            else:
+                view_type = VIEW_LAUNCHER
         else:
             view_type = VIEW_CATEGORY
         log_debug('_command_view_menu() view_type = {0}'.format(view_type))
@@ -5928,7 +5932,14 @@ class Main:
                 'View last execution output ({0})'.format(STD_status),
             ]
         elif view_type == VIEW_ROM_VLAUNCHER:
-            # >> ROM in virtual launcher (no launcher report)
+            # >> ROM in Favourites or Virtual Launcher (no launcher report)
+            d_list = [
+                'View ROM manual',
+                'View ROM map',
+                'View ROM data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
+        elif view_type == VIEW_ROM_COLLECTION:
             d_list = [
                 'View ROM manual',
                 'View ROM map',
@@ -5987,6 +5998,15 @@ class Main:
             elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
             else:
                 kodi_dialog_OK('view_type == VIEW_ROM_VLAUNCHER and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_ROM_COLLECTION:
+            if   selected_value == 0: action = ACTION_VIEW_MANUAL
+            elif selected_value == 1: action = ACTION_VIEW_MAP
+            elif selected_value == 2: action = ACTION_VIEW_ROM
+            elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_ROM_COLLECTION and selected_value = {0}. '.format(selected_value) +
                                'This is a bug, please report it.')
                 return
         else:
