@@ -78,14 +78,15 @@ def autoconfig_export_all(categories, launchers, export_FN):
             return
         log_verb('autoconfig_export_all() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
 
-        # >> WORKAROUND Take titles path and remove trailing subdirectory.
-        path_titles = launcher['path_title']
-        (head, tail) = os.path.split(path_titles)
-        path_assets = head
-        log_verb('autoconfig_export_all() path_titles "{0}"'.format(path_titles))
-        log_verb('autoconfig_export_all() head        "{0}"'.format(head))
-        log_verb('autoconfig_export_all() tail        "{0}"'.format(tail))
-        log_verb('autoconfig_export_all() path_assets "{0}"'.format(path_assets))
+        # >> Check if all artwork paths share the same ROM_asset_path. Unless the user has
+        # >> customised the ROM artwork paths this should be the case.
+        # >> A) This function checks if all path_* share a common root directory. If so
+        # >>    this function returns that common directory as an Unicode string. In this
+        # >>    case AEL will write the tag <ROM_asset_path> only.
+        # >> B) If path_* do not share a common root directory this function returns '' and then
+        # >>    AEL writes all <path_*> tags in the XML file.
+        ROM_asset_path = assets_get_ROM_asset_path(launcher)
+        log_verb('autoconfig_export_all() ROM_asset_path "{0}"'.format(ROM_asset_path))
 
         # >> Export Launcher
         str_list.append('<launcher>\n')
@@ -105,7 +106,21 @@ def autoconfig_export_all(categories, launchers, export_FN):
             str_list.append(XML_text('args_extra', ''))
         str_list.append(XML_text('ROM_path', launcher['rompath']))
         str_list.append(XML_text('ROM_ext', launcher['romext']))
-        str_list.append(XML_text('ROM_asset_path', launcher['ROM_asset_path']))
+        if ROM_asset_path:
+            str_list.append(XML_text('ROM_asset_path', ROM_asset_path))
+        else:
+            str_list.append(XML_text('path_title', launcher['path_title']))
+            str_list.append(XML_text('path_snap', launcher['path_snap']))
+            str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
+            str_list.append(XML_text('path_boxback', launcher['path_boxback']))
+            str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
+            str_list.append(XML_text('path_fanart', launcher['path_fanart']))
+            str_list.append(XML_text('path_banner', launcher['path_banner']))
+            str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
+            str_list.append(XML_text('path_flyer', launcher['path_flyer']))
+            str_list.append(XML_text('path_map', launcher['path_map']))
+            str_list.append(XML_text('path_manual', launcher['path_manual']))
+            str_list.append(XML_text('path_trailer', launcher['path_trailer']))
         str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
         str_list.append(XML_text('s_icon', launcher['s_icon']))
         str_list.append(XML_text('s_fanart', launcher['s_fanart']))
@@ -160,6 +175,7 @@ def autoconfig_get_default_import_launcher():
     l = {
         'name' : '',
         'category' : 'root_category',
+        'Launcher_NFO' : '',
         'year' : '',
         'genre' : '',
         'developer' : '',
@@ -172,6 +188,18 @@ def autoconfig_get_default_import_launcher():
         'ROM_path' : '',
         'ROM_ext' : '',
         'ROM_asset_path' : '',
+        'path_title' : '',
+        'path_snap' : '',
+        'path_boxfront' : '',
+        'path_boxback' : '',
+        'path_cartridge' : '',
+        'path_fanart' : '',
+        'path_banner' : '',
+        'path_clearlogo' : '',
+        'path_flyer' : '',
+        'path_map' : '',
+        'path_manual' : '',
+        'path_trailer' : '',
         'Asset_Prefix' : '',
         's_icon' : '',
         's_fanart' : '',
@@ -377,17 +405,12 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
             # >> Both category and launcher exists (by name). Overwrite?
             log_debug('Case C) Category and Launcher found.')
             cat_name = i_launcher['category'] if i_launcher['category'] != VCATEGORY_ADDONROOT_ID else 'Root Category'
-            ret = kodi_dialog_yesno('Launcher {0} in Category {1} '.format(i_launcher['name'], cat_name) +
+            ret = kodi_dialog_yesno('Launcher "{0}" in Category "{1}" '.format(i_launcher['name'], cat_name) +
                                     'found in AEL database. Overwrite?')
             if ret < 1: continue
 
             # >> Import launcher. Only import fields that are not empty strings.
             autoconfig_import_launcher(ROMS_DIR, categories, launchers, s_categoryID, s_launcherID, i_launcher, import_FN)
-
-    # --- Save Categories/Launchers, update timestamp and notify user ---
-    fs_write_catfile(CATEGORIES_FILE_PATH, categories, launchers)
-    kodi_refresh_container()
-    kodi_notify('Finished importing Categories/Launchers')
 
 #
 # Imports/edits a category with an extenal XML config file.
@@ -490,6 +513,8 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
 def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, launcherID, i_launcher, import_FN):
     log_debug('autoconfig_import_launcher() categoryID = {0}'.format(categoryID))
     log_debug('autoconfig_import_launcher() launcherID = {0}'.format(launcherID))
+    Launcher_NFO_meta = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
+    XML_meta          = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
 
     # --- Launcher metadata ---
     if i_launcher['name']:
@@ -500,25 +525,72 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID]['m_name'] = i_launcher['name']
         log_debug('Imported m_name      "{0}"'.format(i_launcher['name']))
 
+    # >> Process <Launcher_NFO> before any metadata tag
+    if i_launcher['Launcher_NFO']:
+        Launcher_NFO_FN = FileName(import_FN.getDir()).pjoin(i_launcher['Launcher_NFO'])
+        Launcher_NFO_meta = fs_read_launcher_NFO(Launcher_NFO_FN)
+        log_debug('NFO year             "{0}"'.format(Launcher_NFO_meta['year']))
+        log_debug('NFO genre            "{0}"'.format(Launcher_NFO_meta['genre']))
+        log_debug('NFO developer        "{0}"'.format(Launcher_NFO_meta['developer']))
+        log_debug('NFO rating           "{0}"'.format(Launcher_NFO_meta['rating']))
+        log_debug('NFO plot             "{0}"'.format(Launcher_NFO_meta['plot']))
+
+    # >> Process XML metadata and put in temporal dictionary
     if i_launcher['year']:
-        launchers[launcherID]['m_year'] = i_launcher['year']
-        log_debug('Imported m_year      "{0}"'.format(i_launcher['year']))
+        XML_meta['year'] = i_launcher['year']
+        log_debug('XML year             "{0}"'.format(i_launcher['year']))
 
     if i_launcher['genre']:
-        launchers[launcherID]['m_genre'] = i_launcher['genre']
-        log_debug('Imported m_genre     "{0}"'.format(i_launcher['genre']))
+        XML_meta['genre'] = i_launcher['genre']
+        log_debug('XML genre            "{0}"'.format(i_launcher['genre']))
 
     if i_launcher['developer']:
-        launchers[launcherID]['m_studio'] = i_launcher['developer']
-        log_debug('Imported m_studio    "{0}"'.format(i_launcher['developer']))
+        XML_meta['developer'] = i_launcher['developer']
+        log_debug('XML developer        "{0}"'.format(i_launcher['developer']))
 
     if i_launcher['rating']:
-        launchers[launcherID]['m_rating'] = i_launcher['rating']
-        log_debug('Imported m_rating    "{0}"'.format(i_launcher['rating']))
+        XML_meta['rating'] = i_launcher['rating']
+        log_debug('XML rating           "{0}"'.format(i_launcher['rating']))
 
     if i_launcher['plot']:
-        launchers[launcherID]['m_plot'] = i_launcher['plot']
-        log_debug('Imported m_plot      "{0}"'.format(i_launcher['plot']))
+        XML_meta['plot'] = i_launcher['plot']
+        log_debug('XML plot             "{0}"'.format(i_launcher['plot']))
+
+    # >> Process metadata. XML metadata overrides Launcher_NFO metadata, if exists.
+    if XML_meta['year']:
+        launchers[launcherID]['m_year'] = XML_meta['year']
+        log_debug('Imported m_year      "{0}"'.format(XML_meta['year']))
+    elif Launcher_NFO_meta['year']:
+        launchers[launcherID]['m_year'] = Launcher_NFO_meta['year']
+        log_debug('Imported m_year      "{0}"'.format(Launcher_NFO_meta['year']))
+
+    if XML_meta['genre']:
+        launchers[launcherID]['m_genre'] = XML_meta['genre']
+        log_debug('Imported m_genre     "{0}"'.format(XML_meta['genre']))
+    elif Launcher_NFO_meta['genre']:
+        launchers[launcherID]['m_genre'] = Launcher_NFO_meta['genre']
+        log_debug('Imported m_genre     "{0}"'.format(Launcher_NFO_meta['genre']))
+
+    if XML_meta['developer']:
+        launchers[launcherID]['m_developer'] = XML_meta['developer']
+        log_debug('Imported m_developer "{0}"'.format(XML_meta['developer']))
+    elif Launcher_NFO_meta['developer']:
+        launchers[launcherID]['m_developer'] = Launcher_NFO_meta['developer']
+        log_debug('Imported m_developer "{0}"'.format(Launcher_NFO_meta['developer']))
+
+    if XML_meta['rating']:
+        launchers[launcherID]['m_rating'] = XML_meta['rating']
+        log_debug('Imported m_rating    "{0}"'.format(XML_meta['rating']))
+    elif Launcher_NFO_meta['rating']:
+        launchers[launcherID]['m_rating'] = Launcher_NFO_meta['rating']
+        log_debug('Imported m_rating    "{0}"'.format(Launcher_NFO_meta['rating']))
+
+    if XML_meta['plot']:
+        launchers[launcherID]['m_plot'] = XML_meta['plot']
+        log_debug('Imported m_plot      "{0}"'.format(XML_meta['plot']))
+    elif Launcher_NFO_meta['plot']:
+        launchers[launcherID]['m_plot'] = Launcher_NFO_meta['plot']
+        log_debug('Imported m_plot      "{0}"'.format(Launcher_NFO_meta['plot']))
 
     # --- Launcher stuff ---
     # >> If platform cannot be found in the official list then warn user and set it to 'Unknown'
@@ -604,6 +676,57 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             log_debug('ROM_asset_path path found after asking user to create it.')
             log_debug('ROM asset directories left blank or as there were.')
 
+    # --- <path_*> tags override <ROM_asset_path> ---
+    # >> This paths will be imported in a raw way, no existance checkings will be done.
+    # >> Note that path_* tags will be imported only if they are non-empty.
+    if i_launcher['path_title']:
+        launchers[launcherID]['path_title'] = i_launcher['path_title']
+        log_debug('Imported path_title "{0}"'.format(i_launcher['path_title']))
+
+    if i_launcher['path_snap']:
+        launchers[launcherID]['path_snap'] = i_launcher['path_snap']
+        log_debug('Imported path_snap "{0}"'.format(i_launcher['path_snap']))
+
+    if i_launcher['path_boxfront']:
+        launchers[launcherID]['path_boxfront'] = i_launcher['path_boxfront']
+        log_debug('Imported path_boxfront "{0}"'.format(i_launcher['path_boxfront']))
+
+    if i_launcher['path_boxback']:
+        launchers[launcherID]['path_boxback'] = i_launcher['path_boxback']
+        log_debug('Imported path_boxback "{0}"'.format(i_launcher['path_boxback']))
+
+    if i_launcher['path_cartridge']:
+        launchers[launcherID]['path_cartridge'] = i_launcher['path_cartridge']
+        log_debug('Imported path_cartridge "{0}"'.format(i_launcher['path_cartridge']))
+
+    if i_launcher['path_fanart']:
+        launchers[launcherID]['path_fanart'] = i_launcher['path_fanart']
+        log_debug('Imported path_fanart "{0}"'.format(i_launcher['path_fanart']))
+
+    if i_launcher['path_banner']:
+        launchers[launcherID]['path_banner'] = i_launcher['path_banner']
+        log_debug('Imported path_banner "{0}"'.format(i_launcher['path_banner']))
+
+    if i_launcher['path_clearlogo']:
+        launchers[launcherID]['path_clearlogo'] = i_launcher['path_clearlogo']
+        log_debug('Imported path_clearlogo "{0}"'.format(i_launcher['path_clearlogo']))
+
+    if i_launcher['path_flyer']:
+        launchers[launcherID]['path_flyer'] = i_launcher['path_flyer']
+        log_debug('Imported path_flyer "{0}"'.format(i_launcher['path_flyer']))
+
+    if i_launcher['path_map']:
+        launchers[launcherID]['path_map'] = i_launcher['path_map']
+        log_debug('Imported path_map "{0}"'.format(i_launcher['path_map']))
+
+    if i_launcher['path_manual']:
+        launchers[launcherID]['path_manual'] = i_launcher['path_manual']
+        log_debug('Imported path_manual "{0}"'.format(i_launcher['path_manual']))
+
+    if i_launcher['path_trailer']:
+        launchers[launcherID]['path_trailer'] = i_launcher['path_trailer']
+        log_debug('Imported path_trailer "{0}"'.format(i_launcher['path_trailer']))
+
     # --- Launcher assets/artwork ---
     if i_launcher['Asset_Prefix']:
         launchers[launcherID]['Asset_Prefix'] = i_launcher['Asset_Prefix']
@@ -634,22 +757,28 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         # >> Current image if found
         current_FN = FileName(launchers[launcherID][AInfo.key])
         if current_FN.exists():
+            log_debug('Current asset found "{0}"'.format(current_FN.getPath()))
             asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
             asset_listitem.setArt({'icon' : current_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(current_FN.getPath())
+        else:
+            log_debug('Current asset NOT found "{0}"'.format(current_FN.getPath()))
         # >> Image in <s_icon>, <s_fanart>, ... tags if found
         tag_asset_FN = FileName(i_launcher[AInfo.key])
         if tag_asset_FN.exists():
+            log_debug('<{0}> tag found "{1}"'.format(AInfo.key, tag_asset_FN.getPath()))
             asset_listitem = xbmcgui.ListItem(label = 'XML <{0}> image'.format(AInfo.key),
                                               label2 = tag_asset_FN.getPath())
             asset_listitem.setArt({'icon' : tag_asset_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(tag_asset_FN.getPath())
+        else:
+            log_debug('<{0}> tag NOT found "{1}"'.format(AInfo.key, tag_asset_FN.getPath()))
         # >> Images found in XML configuration via <Asset_Prefix> tag
         image_count = 1
         for asset_file_name in asset_file_list:
-            log_debug('asset_file_name "{0}"'.format(asset_file_name))
+            log_debug('Asset_Prefix found "{0}"'.format(asset_file_name))
             asset_FN = FileName(asset_file_name)
             asset_listitem = xbmcgui.ListItem(label = '<Asset_Prefix> #{0} "{1}"'.format(image_count, asset_FN.getBase()),
                                               label2 = asset_file_name)
@@ -675,45 +804,19 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID][AInfo.key] = listitems_asset_paths[ret_idx]
         log_verb('Set launcher artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
-    # >> Name of launcher has changed.
-    #    Regenerate roms_base_noext and rename old one if necessary.
-    category_name = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
-    old_roms_base_noext          = launchers[launcherID]['roms_base_noext']
-    old_roms_file_json           = ROMS_DIR.join(old_roms_base_noext + '.json')
-    old_roms_file_xml            = ROMS_DIR.join(old_roms_base_noext + '.xml')
-    old_PClone_index_file_json   = ROMS_DIR.join(old_roms_base_noext + '_PClone_index.json')
-    old_PClone_parents_file_json = ROMS_DIR.join(old_roms_base_noext + '_PClone_parents.json')
-    log_debug('old_roms_base_noext "{0}"'.format(old_roms_base_noext))
-    new_roms_base_noext          = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-    new_roms_file_json           = ROMS_DIR.join(new_roms_base_noext + '.json')
-    new_roms_file_xml            = ROMS_DIR.join(new_roms_base_noext + '.xml')
-    new_PClone_index_file_json   = ROMS_DIR.join(new_roms_base_noext + '_PClone_index.json')
-    new_PClone_parents_file_json = ROMS_DIR.join(new_roms_base_noext + '_PClone_parents.json')
-    log_debug('new_roms_base_noext "{0}"'.format(new_roms_base_noext))
-
     # >> Rename ROMS JSON/XML only if there is a change in filenames.
+    #    Regenerate roms_base_noext and rename old one if necessary.
+    old_roms_base_noext = launchers[launcherID]['roms_base_noext']
+    category_name       = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
+    new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
+    log_debug('old_roms_base_noext "{0}"'.format(old_roms_base_noext))
+    log_debug('new_roms_base_noext "{0}"'.format(new_roms_base_noext))
     if old_roms_base_noext != new_roms_base_noext:
         log_debug('Renaming JSON/XML launcher databases')
         launchers[launcherID]['roms_base_noext'] = new_roms_base_noext
-        # >> Only rename files if originals found.
-        if old_roms_file_json.exists():
-            old_roms_file_json.rename(new_roms_file_json)
-            log_debug('RENAMED {0}'.format(old_roms_file_json.getOriginalPath()))
-            log_debug('   into {0}'.format(new_roms_file_json.getOriginalPath()))
-        if old_roms_file_xml.exists():
-            old_roms_file_xml.rename(new_roms_file_xml)
-            log_debug('RENAMED {0}'.format(old_roms_file_xml.getOriginalPath()))
-            log_debug('   into {0}'.format(new_roms_file_xml.getOriginalPath()))
-        if old_PClone_index_file_json.exists():
-            old_PClone_index_file_json.rename(new_PClone_index_file_json)
-            log_debug('RENAMED {0}'.format(old_PClone_index_file_json.getOriginalPath()))
-            log_debug('   into {0}'.format(new_PClone_index_file_json.getOriginalPath()))
-        if old_PClone_parents_file_json.exists():
-            old_PClone_parents_file_json.rename(new_PClone_parents_file_json)
-            log_debug('RENAMED {0}'.format(old_PClone_parents_file_json.getOriginalPath()))
-            log_debug('   into {0}'.format(new_PClone_parents_file_json.getOriginalPath()))
+        fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
     else:
-        log_debug('Not renaming databases (old and new names are equal)')
+        log_debug('Not renaming ROM databases (old and new names are equal)')
 
 #
 # Search for asset files and return a list of found asset files.

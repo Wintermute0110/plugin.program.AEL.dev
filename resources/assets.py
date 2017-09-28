@@ -57,7 +57,7 @@ ROM_ASSET_LIST = [
 
 # --- Plugin will search these file extensions for assets ---
 # >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
-IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'jpeg', 'bmp']
+IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'bmp']
 MANUAL_EXTENSIONS  = ['pdf']
 TRAILER_EXTENSIONS = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
 
@@ -383,7 +383,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(MANUAL_EXTENSIONS)
         A.path_key    = 'path_manual'
     else:
-        log_error('assets_get_info_scheme_A() Wrong asset_kind = {0}'.format(asset_kind))
+        log_error('assets_get_info_scheme() Wrong asset_kind = {0}'.format(asset_kind))
 
     # --- Ultra DEBUG ---
     # log_debug('assets_get_info_scheme() asset_kind    {0}'.format(asset_kind))
@@ -428,21 +428,23 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
     asset_path_noext_FileName = FileName('')
     objectID_str = '_' + objectID[0:3]
 
-    if   Asset.kind == ASSET_TITLE:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_title')
-    elif Asset.kind == ASSET_SNAP:      asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_snap')
-    elif Asset.kind == ASSET_FANART:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_fanart')
-    elif Asset.kind == ASSET_BANNER:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_banner')
-    elif Asset.kind == ASSET_CLEARLOGO: asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_clearlogo')
-    elif Asset.kind == ASSET_BOXFRONT:  asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_boxfront')
-    elif Asset.kind == ASSET_BOXBACK:   asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_boxback')
-    elif Asset.kind == ASSET_CARTRIDGE: asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_cartridge')
-    elif Asset.kind == ASSET_FLYER:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_flyer')
-    elif Asset.kind == ASSET_MAP:       asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_map')
-    elif Asset.kind == ASSET_MANUAL:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_manual')
-    elif Asset.kind == ASSET_TRAILER:   asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_trailer')
-    elif Asset.kind == ASSET_THUMB:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_thumb')
+    if   Asset.kind == ASSET_ICON:       asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_icon')
+    elif Asset.kind == ASSET_FANART:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_fanart')
+    elif Asset.kind == ASSET_BANNER:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_banner')
+    elif Asset.kind == ASSET_POSTER:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_poster')
+    elif Asset.kind == ASSET_CLEARLOGO:  asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_clearlogo')
+    elif Asset.kind == ASSET_CONTROLLER: asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_controller')
+    elif Asset.kind == ASSET_TRAILER:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_trailer')
+    elif Asset.kind == ASSET_TITLE:      asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_title')
+    elif Asset.kind == ASSET_SNAP:       asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_snap')
+    elif Asset.kind == ASSET_BOXFRONT:   asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_boxfront')
+    elif Asset.kind == ASSET_BOXBACK:    asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_boxback')
+    elif Asset.kind == ASSET_CARTRIDGE:  asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_cartridge')
+    elif Asset.kind == ASSET_FLYER:      asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_flyer')
+    elif Asset.kind == ASSET_MAP:        asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_map')
+    elif Asset.kind == ASSET_MANUAL:     asset_path_noext_FileName = AssetPath.join(asset_base_noext + objectID_str + '_manual')
     else:
-        log_error('assets_get_info_scheme_B() Wrong asset kind = {0}'.format(Asset.kind))
+        log_error('assets_get_path_noext_SUFIX() Wrong asset kind = {0}'.format(Asset.kind))
 
     return asset_path_noext_FileName
 
@@ -492,29 +494,49 @@ def asset_get_duplicated_dir_list(launcher):
     return duplicated_name_list
 
 #
-# Search for local assets and put found files into a list. List all has assets as defined 
+# Search for local assets and place found files into a list. List all has assets as defined 
 # in ROM_ASSET_LIST.
 #
 # launcher               -> launcher dictionary
 # ROMFile                -> FileName object
 # enabled_ROM_asset_list -> list of booleans
 #
-def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
-    log_verb('assets_search_local_assets() Searching for ROM local assets...')
+def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
+    log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_LIST)
+    rom_basename_noext = ROMFile.getBase_noext()
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         if not enabled_ROM_asset_list[i]:
-            log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
+            log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
-        asset_path = FileName(launcher[AInfo.path_key])
-        local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
+        local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
-            log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+            log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
-            log_verb('assets_search_local_assets() Missing  {0:<9}'.format(AInfo.name))
+            log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
 
     return local_asset_list
+
+#
+# A) This function checks if all path_* share a common root directory. If so
+#    this function returns that common directory as an Unicode string.
+# B) If path_* do not share a common root directory this function returns ''.
+#
+def assets_get_ROM_asset_path(launcher):
+    ROM_asset_path = ''
+    duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
+    AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
+    path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
+    log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
+    log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
+    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+        AInfo = assets_get_info_scheme(asset_kind)
+        current_path_FN = FileName(launcher[AInfo.path_key])
+        if current_path_FN.getDir() == path_first_asset_FN.getDir():
+            duplicated_bool_list[i] = True
+
+    return path_first_asset_FN.getDir() if all(duplicated_bool_list) else ''

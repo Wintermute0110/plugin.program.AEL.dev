@@ -346,20 +346,51 @@ def text_get_multidisc_info(ROM_FN):
 # Get extension of URL. Returns '' if not found.
 #
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
     
-    return ext
+    urlPath = FileName(url)
+    return urlPath.getExt()
 
 #
 # Defaults to .jpg if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
+    ext = text_get_URL_extension(url)
     ret = '.jpg' if ext == '' else ext
 
     return ret
+
+# -------------------------------------------------------------------------------------------------
+# File cache
+# -------------------------------------------------------------------------------------------------
+file_cache = {}
+def misc_add_file_cache(dir_str):
+    global file_cache
+
+    # >> Create a set with all the files in the directory
+    dir_FN = FileName(dir_str)
+    log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
+    log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
+
+    file_list = dir_FN.scanFilesInPath()
+    file_set = set(file_list)
+    # for file in file_set: log_debug('File "{0}"'.format(file))
+    log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
+    file_cache[dir_str] = file_set
+
+#
+# See misc_look_for_file() documentation below.
+#
+def misc_search_file_cache(dir_str, filename_noext, file_exts):
+    # log_debug('misc_search_file_cache() Searching in  "{0}"'.format(dir_str))
+    current_cache_set = file_cache[dir_str]
+    for ext in file_exts:
+        file_base = filename_noext + '.' + ext
+        # log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
+        if file_base in current_cache_set:
+            # log_debug('misc_search_file_cache() Found in cache')
+            return FileName(dir_str).pjoin(file_base)
+
+    return None
 
 # -------------------------------------------------------------------------------------------------
 # Misc stuff
@@ -377,7 +408,7 @@ def text_get_image_URL_extension(url):
 #
 def misc_look_for_file(rootPath, filename_noext, file_exts):
     for ext in file_exts:
-        file_path = rootPath.join(filename_noext + '.' + ext)
+        file_path = rootPath.pjoin(filename_noext + '.' + ext)
         if file_path.exists():
             return file_path
 
@@ -431,15 +462,7 @@ class FileName:
 
         return self
 
-    # Behaves like os.path.join(). Returns a FileName object
-    # DEPRECATED
-    def join(self, *args):
-        child = FileName(self.originalPath)
-        for arg in args:
-            child._join_raw(arg)
-
-        return child
-
+    # >> Joins paths. Returns a new FileName object
     def pjoin(self, *args):
         child = FileName(self.originalPath)
         for arg in args:

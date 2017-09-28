@@ -36,9 +36,9 @@ class Scraper_TheGamesDB():
         if self.get_search_cached_search_string  == search_string and \
            self.get_search_cached_rom_base_noext == rom_base_noext and \
            self.get_search_cached_platform       == platform:
-           log_debug('Scraper_TheGamesDB::check_cache Cache HIT.')
-           return True
-        log_debug('Scraper_TheGamesDB::check_cache Cache MISS. Updating cache.')
+            log_debug('Scraper_TheGamesDB::check_cache() Cache HIT.')
+            return True
+        log_debug('Scraper_TheGamesDB::check_cache() Cache MISS. Updating cache.')
 
         return False
 
@@ -61,10 +61,10 @@ class Scraper_TheGamesDB():
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         if DEBUG_SCRAPERS:
-            log_debug('Scraper_TheGamesDB::get_search search_string       "{0}"'.format(search_string))
-            log_debug('Scraper_TheGamesDB::get_search rom_base_noext      "{0}"'.format(rom_base_noext))
-            log_debug('Scraper_TheGamesDB::get_search AEL platform        "{0}"'.format(platform))
-            log_debug('Scraper_TheGamesDB::get_search TheGamesDB platform "{0}"'.format(scraper_platform))
+            log_debug('Scraper_TheGamesDB::get_search() search_string       "{0}"'.format(search_string))
+            log_debug('Scraper_TheGamesDB::get_search() rom_base_noext      "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_TheGamesDB::get_search() AEL platform        "{0}"'.format(platform))
+            log_debug('Scraper_TheGamesDB::get_search() TheGamesDB platform "{0}"'.format(scraper_platform))
 
         # >> Check if URL page data is in cache. If so it's a cache hit.
         # >> If cache miss, then update cache.

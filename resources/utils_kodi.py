@@ -152,8 +152,8 @@ def kodi_refresh_container():
     xbmc.executebuiltin('Container.Refresh')
 
 def kodi_toogle_fullscreen():
-    # Frodo and up compatible
-    xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
+    # >> Frodo and up compatible
+    xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
 
 def kodi_kodi_read_favourites():
     favourites = []

@@ -161,16 +161,16 @@ class metadata_Offline(Scraper_Metadata):
 
     # game is dictionary returned by the metadata_Offline.get_game_search()
     def get_metadata(self, game):
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
 
         # --- MAME scraper ---
         if self.cached_platform == 'MAME':
             key = game['id']
             log_verb("metadata_Offline::get_metadata Mode MAME id = '{0}'".format(key))
-            gamedata['title']  = self.games[key]['description']
-            gamedata['year']   = self.games[key]['year']
-            gamedata['genre']  = self.games[key]['genre']
-            gamedata['studio'] = self.games[key]['manufacturer']
+            gamedata['title']     = self.games[key]['description']
+            gamedata['year']      = self.games[key]['year']
+            gamedata['genre']     = self.games[key]['genre']
+            gamedata['developer'] = self.games[key]['manufacturer']
 
         # >> Unknown platform. Behave like NULL scraper
         elif self.cached_platform == 'Unknown':
@@ -180,13 +180,13 @@ class metadata_Offline(Scraper_Metadata):
         else:
             key = game['id']
             log_verb("metadata_Offline::get_metadata Mode No-Intro id = '{0}'".format(key))
-            gamedata['title']    = self.games[key]['description']
-            gamedata['year']     = self.games[key]['year']
-            gamedata['genre']    = self.games[key]['genre']
-            gamedata['studio']   = self.games[key]['manufacturer']
-            gamedata['nplayers'] = self.games[key]['player']
-            gamedata['esrb']     = self.games[key]['rating']
-            gamedata['plot']     = self.games[key]['story']
+            gamedata['title']     = self.games[key]['description']
+            gamedata['year']      = self.games[key]['year']
+            gamedata['genre']     = self.games[key]['genre']
+            gamedata['developer'] = self.games[key]['manufacturer']
+            gamedata['nplayers']  = self.games[key]['player']
+            gamedata['esrb']      = self.games[key]['rating']
+            gamedata['plot']      = self.games[key]['story']
 
         return gamedata
 
@@ -207,7 +207,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
 
     # game is dictionary returned by the Scraper_TheGamesDB.get_game_search()
     def get_metadata(self, game):
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
 
         # --- TheGamesDB returns an XML file with GetGame.php?id ---
         game_id_url = 'http://thegamesdb.net/api/GetGame.php?id=' + game['id']
@@ -225,7 +225,7 @@ class metadata_TheGamesDB(Scraper_Metadata, Scraper_TheGamesDB):
         gamedata['genre'] = text_unescape_and_untag_HTML(game_genre) if game_genre else ''
 
         game_studio = ''.join(re.findall('<Developer>(.*?)</Developer>', page_data))
-        gamedata['studio'] = text_unescape_and_untag_HTML(game_studio) if game_studio else ''
+        gamedata['developer'] = text_unescape_and_untag_HTML(game_studio) if game_studio else ''
 
         game_studio = ''.join(re.findall('<Players>(.*?)</Players>', page_data))
         gamedata['nplayers'] = text_unescape_and_untag_HTML(game_studio) if game_studio else ''
@@ -261,7 +261,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         page_data = net_get_URL_oneline(game_id_url)
 
         # --- Process metadata ---
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
         gamedata['title'] = game['game_name']
 
         # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 ?</a></li>
@@ -281,7 +281,7 @@ class metadata_GameFAQs(Scraper_Metadata, Scraper_GameFAQs):
         game_studio = re.findall('<li><a href="/company/(.*?)">(.*?)</a>', page_data)
         if game_studio:
             p = re.compile(r'<.*?>')
-            gamedata['studio'] = p.sub('', game_studio[0][1])
+            gamedata['developer'] = p.sub('', game_studio[0][1])
 
         game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page_data)
         if game_plot: gamedata['plot'] = text_unescape_and_untag_HTML(game_plot[0])
@@ -318,7 +318,7 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         # <div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="/game/chakan/release-info">1992</a></div>
         # ...
         # </td>
-        gamedata = new_gamedata_dic()
+        gamedata = self.new_gamedata_dic()
         gamedata['title'] = game['game_name']
 
         # NOTE Year can be
@@ -343,7 +343,7 @@ class metadata_MobyGames(Scraper_Metadata, Scraper_MobyGames):
         if game_genre: gamedata['genre'] = text_unescape_and_untag_HTML(game_genre[0][1])
 
         game_studio = re.findall('Published by</div><div style="font-size: 90%; padding-left: 1em; padding-bottom: 0.25em;"><a href="(.*?)">(.*?)</a>', page_data)
-        if game_studio: gamedata['studio'] = text_unescape_and_untag_HTML(game_studio[0][1])
+        if game_studio: gamedata['developer'] = text_unescape_and_untag_HTML(game_studio[0][1])
 
         game_description = re.findall('<h2>Description</h2>(.*?)<div class="sideBarLinks">', page_data)
         if game_description: gamedata['plot'] = text_unescape_and_untag_HTML(game_description[0])
@@ -366,7 +366,7 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         return Scraper_ArcadeDB.get_search(self, search_string, rom_base_noext, platform)
 
     def get_metadata(self, game):
-        gamedata = {'title' : '', 'genre' : '', 'year' : '', 'studio' : '', 'plot' : '', 'nplayers' : '', 'esrb' : '', 'plot': ''}
+        gamedata = self.new_gamedata_dic()
 
         # --- Get game page ---
         game_id_url = game['id'] 
@@ -392,10 +392,10 @@ class metadata_ArcadeDB(Scraper_Metadata, Scraper_ArcadeDB):
         fa_year = re.findall('<div class="table_caption">Year: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
         if fa_year: gamedata['year'] = fa_year[0]
 
-        # --- Studio ---
+        # --- Developer ---
         # <div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">Konami</span> </div>
-        fa_studio = re.findall('<div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span>', page_data)
-        if fa_studio: gamedata['studio'] = fa_studio[0]
+        fa_studio = re.findall('<div class="table_caption">Manufacturer: </div> <div class="table_value"> <span class="dettaglio">(.*?)</span> </div>', page_data)
+        if fa_studio: gamedata['developer'] = fa_studio[0]
         
         # --- Plot ---
         # <div id="history_detail" class="extra_info_detail"><div class="history_title"></div>Aliens © 1990 Konami........&amp;id=63&amp;o=2</div>
