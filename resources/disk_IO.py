@@ -35,6 +35,7 @@ import errno
 import xml.etree.ElementTree as ET
 
 # --- AEL packages ---
+from constants import *
 from utils import *
 from utils_kodi import *
 from assets import *
@@ -81,24 +82,6 @@ def fs_new_category():
 
     return c
 
-# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
-NOINTRO_DMODE_ALL       = 'All ROMs'
-NOINTRO_DMODE_HAVE      = 'Have ROMs'
-NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
-NOINTRO_DMODE_HAVE_MISS = 'Have or Missing ROMs'
-NOINTRO_DMODE_MISS      = 'Missing ROMs'
-NOINTRO_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
-NOINTRO_DMODE_UNK       = 'Unknown ROMs'
-NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
-                           NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
-                           NOINTRO_DMODE_UNK]
-
-# launcher['launcher_display_mode'] values default LAUNCHER_DMODE_FLAT
-LAUNCHER_DMODE_FLAT   = 'Flat mode'
-LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
-LAUNCHER_DMODE_1G1R   = '1G1R mode'
-LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
-
 def fs_new_launcher():
     l = {'id' : '',
          'm_name' : '',
@@ -116,6 +99,7 @@ def fs_new_launcher():
          'romext' : '',
          'finished': False,
          'minimize' : False,
+         'non_blocking' : False,
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
          'nointro_display_mode' : NOINTRO_DMODE_ALL,
@@ -164,48 +148,6 @@ def fs_new_launcher():
 
     return l
 
-# Mandatory variables in XML:
-# id              string MD5 hash
-# name            string ROM name
-# finished        bool default False
-# nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
-NOINTRO_STATUS_HAVE    = 'Have'
-NOINTRO_STATUS_MISS    = 'Miss'
-NOINTRO_STATUS_UNKNOWN = 'Unknown'
-NOINTRO_STATUS_NONE    = 'None'
-NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE, NOINTRO_STATUS_MISS, NOINTRO_STATUS_UNKNOWN, 
-                          NOINTRO_STATUS_NONE]
-
-PCLONE_STATUS_PARENT = 'Parent'
-PCLONE_STATUS_CLONE  = 'Clone'
-PCLONE_STATUS_NONE   = 'None'
-PCLONE_STATUS_LIST   = [PCLONE_STATUS_PARENT, PCLONE_STATUS_CLONE, PCLONE_STATUS_NONE]
-
-# m_esrb string ESRB_LIST default ESRB_PENDING
-ESRB_PENDING     = 'RP (Rating Pending)'
-ESRB_EARLY       = 'EC (Early Childhood)'
-ESRB_EVERYONE    = 'E (Everyone)'
-ESRB_EVERYONE_10 = 'E10+ (Everyone 10+)'
-ESRB_TEEN        = 'T (Teen)'
-ESRB_MATURE      = 'M (Mature)'
-ESRB_ADULTS_ONLY = 'AO (Adults Only)'
-ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
-                    ESRB_MATURE, ESRB_ADULTS_ONLY]
-
-# m_nplayers values default ''
-NP_1P     = '1P'
-NP_2P_SIM = '2P sim'
-NP_2P_ALT = '2P alt'
-NP_3P_SIM = '3P sim'
-NP_3P_ALT = '3P alt'
-NP_4P_SIM = '4P sim'
-NP_4P_ALT = '4P alt'
-NP_6P_SIM = '6P sim'
-NP_6P_ALT = '6P alt'
-NP_8P_SIM = '8P sim'
-NP_8P_ALT = '8P alt'
-NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, NP_4P_ALT, 
-                        NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
 def fs_new_rom():
     r = {'id' : '',
          'm_name' : '',
@@ -223,6 +165,7 @@ def fs_new_rom():
          'finished' : False,
          'nointro_status' : NOINTRO_STATUS_NONE,
          'pclone_status' : PCLONE_STATUS_NONE,
+         'cloneof' : '',
          's_title' : '',
          's_snap' : '',
          's_boxfront' : '',
@@ -295,6 +238,7 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['rompath']                = launcher['rompath']
     favourite['romext']                 = launcher['romext']
     favourite['minimize']               = launcher['minimize']
+    favourite['non_blocking']           = launcher['non_blocking']
     favourite['roms_default_icon']      = launcher['roms_default_icon']
     favourite['roms_default_fanart']    = launcher['roms_default_fanart']
     favourite['roms_default_banner']    = launcher['roms_default_banner']
@@ -355,25 +299,30 @@ def fs_aux_copy_ROM_main_stuff(source_launcher, source_rom, dest_rom):
     dest_rom['fav_status']  = 'OK'
 
 def fs_aux_copy_ROM_launcher_info(source_launcher, dest_rom):
-    dest_rom['platform']    = source_launcher['platform']
-    dest_rom['application'] = source_launcher['application']
-    dest_rom['args']        = source_launcher['args']
-    dest_rom['args_extra']  = source_launcher['args_extra']
-    dest_rom['rompath']     = source_launcher['rompath']
-    dest_rom['romext']      = source_launcher['romext']
-    dest_rom['minimize']    = source_launcher['minimize']
+    dest_rom['platform']     = source_launcher['platform']
+    dest_rom['application']  = source_launcher['application']
+    dest_rom['args']         = source_launcher['args']
+    dest_rom['args_extra']   = source_launcher['args_extra']
+    dest_rom['rompath']      = source_launcher['rompath']
+    dest_rom['romext']       = source_launcher['romext']
+    dest_rom['minimize']     = source_launcher['minimize']
+    dest_rom['non_blocking'] = source_launcher['non_blocking']
 
 def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['m_name']         = source_rom['m_name']
     dest_rom['m_year']         = source_rom['m_year']
     dest_rom['m_genre']        = source_rom['m_genre']
     dest_rom['m_developer']    = source_rom['m_developer']
+    dest_rom['m_nplayers']     = source_rom['m_nplayers']
+    dest_rom['m_esrb']         = source_rom['m_esrb']
     dest_rom['m_rating']       = source_rom['m_rating']
     dest_rom['m_plot']         = source_rom['m_plot']
     dest_rom['altapp']         = source_rom['altapp']
     dest_rom['altarg']         = source_rom['altarg']
     dest_rom['finished']       = source_rom['finished']
     dest_rom['nointro_status'] = source_rom['nointro_status']
+    dest_rom['pclone_status']  = source_rom['pclone_status']
+    dest_rom['cloneof']        = source_rom['cloneof']
 
 def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
     dest_rom['s_title']     = source_rom['s_title']
@@ -504,6 +453,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('romext', launcher['romext']))
             str_list.append(XML_text('finished', unicode(launcher['finished'])))
             str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
+            str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
@@ -639,7 +589,7 @@ def fs_load_catfile(categories_file, categories, launchers):
                 if xml_tag == 'args_extra':
                     launcher[xml_tag].append(xml_text)
                 # >> Transform Bool datatype
-                elif xml_tag == 'finished' or xml_tag == 'minimize':
+                elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'non_blocking':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
                 elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
@@ -699,40 +649,104 @@ def fs_load_JSON_file(file_dir, file_base_noext):
     return data
 
 # -------------------------------------------------------------------------------------------------
-# Standard ROMs
+# Standard ROM databases
 # -------------------------------------------------------------------------------------------------
 #
-# Return ROMs database file name.
-# NOTE that JSON ROM writer creates 2 files: one JSON with main DB and one small XML with associated
-# launcher info. When removing launchers both the JSON and XML files must be removed.
+# <roms_base_noext>.json
+# <roms_base_noext>.xml
+# <roms_base_noext>_index_CParent.json
+# <roms_base_noext>_index_PClone.json
+# <roms_base_noext>_parents.json
+# <roms_base_noext>_DAT.json
 #
-def fs_get_ROMs_XML_file_path(roms_dir, roms_base_noext):
-    roms_file_path = roms_dir.join(roms_base_noext + '.xml')
+def fs_unlink_ROMs_database(roms_dir_FN, launcher):
+    roms_base_noext = launcher['roms_base_noext']
 
-    return roms_file_path
-
-def fs_get_ROMs_JSON_file_path(roms_dir, roms_base_noext):
-    roms_file_path = roms_dir.join(roms_base_noext + '.json')
-
-    return roms_file_path
-
-def fs_unlink_ROMs_database(roms_dir, roms_base_noext):
-    # >> Delete ROMs info XML file
-    roms_xml_file = fs_get_ROMs_XML_file_path(roms_dir, roms_base_noext)
-    if roms_xml_file.exists():
-        log_info('Deleting ROMs XML  "{0}"'.format(roms_xml_file.getOriginalPath()))
-        roms_xml_file.unlink()
     # >> Delete ROMs JSON file
-    roms_json_file = fs_get_ROMs_JSON_file_path(roms_dir, roms_base_noext)
-    if roms_json_file.exists():
-        log_info('Deleting ROMs JSON "{0}"'.format(roms_json_file.getOriginalPath()))
-        roms_json_file.unlink()
+    roms_json_FN = roms_dir_FN.pjoin(roms_base_noext + '.json')
+    if roms_json_FN.exists():
+        log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_FN.getOriginalPath()))
+        roms_json_FN.unlink()
 
-def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
+    # >> Delete ROMs info XML file
+    roms_xml_FN = roms_dir_FN.pjoin(roms_base_noext + '.xml')
+    if roms_xml_FN.exists():
+        log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_FN.getOriginalPath()))
+        roms_xml_FN.unlink()
+
+    # >> Delete No-Intro/Redump stuff if exist
+    roms_index_CParent_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_CParent.json')
+    if roms_index_CParent_FN.exists():
+        log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_FN.getOriginalPath()))
+        roms_index_CParent_FN.unlink()
+
+    roms_index_PClone_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_PClone.json')
+    if roms_index_PClone_FN.exists():
+        log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_FN.getOriginalPath()))
+        roms_index_PClone_FN.unlink()
+
+    roms_parents_FN = roms_dir_FN.pjoin(roms_base_noext + '_parents.json')
+    if roms_parents_FN.exists():
+        log_info('Deleting parents JSON "{0}"'.format(roms_parents_FN.getOriginalPath()))
+        roms_parents_FN.unlink()
+
+    roms_DAT_FN = roms_dir_FN.pjoin(roms_base_noext + '_DAT.json')
+    if roms_DAT_FN.exists():
+        log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getOriginalPath()))
+        roms_DAT_FN.unlink()
+
+def fs_rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
+    old_roms_json_FN          = roms_dir_FN.pjoin(old_roms_base_noext + '.json')
+    old_roms_xml_FN           = roms_dir_FN.pjoin(old_roms_base_noext + '.xml')
+    old_roms_index_CParent_FN = roms_dir_FN.pjoin(old_roms_base_noext + '_index_CParent.json')
+    old_roms_index_PClone_FN  = roms_dir_FN.pjoin(old_roms_base_noext + '_index_PClone.json')
+    old_roms_parents_FN       = roms_dir_FN.pjoin(old_roms_base_noext + '_parents.json')
+    old_roms_DAT_FN           = roms_dir_FN.pjoin(old_roms_base_noext + '_DAT.json')
+
+    new_roms_json_FN          = roms_dir_FN.pjoin(new_roms_base_noext + '.json')
+    new_roms_xml_FN           = roms_dir_FN.pjoin(new_roms_base_noext + '.xml')
+    new_roms_index_CParent_FN = roms_dir_FN.pjoin(new_roms_base_noext + '_index_CParent.json')
+    new_roms_index_PClone_FN  = roms_dir_FN.pjoin(new_roms_base_noext + '_index_PClone.json')
+    new_roms_parents_FN       = roms_dir_FN.pjoin(new_roms_base_noext + '_parents.json')
+    new_roms_DAT_FN           = roms_dir_FN.pjoin(new_roms_base_noext + '_DAT.json')
+
+    # >> Only rename files if originals found.
+    if old_roms_json_FN.exists():
+        old_roms_json_FN.rename(new_roms_json_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_json_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_json_FN.getOriginalPath()))
+
+    if old_roms_xml_FN.exists():
+        old_roms_xml_FN.rename(new_roms_xml_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_xml_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_xml_FN.getOriginalPath()))
+
+    if old_roms_index_CParent_FN.exists():
+        old_roms_index_CParent_FN.rename(new_roms_index_CParent_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_index_CParent_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_index_CParent_FN.getOriginalPath()))
+
+    if old_roms_index_PClone_FN.exists():
+        old_roms_index_PClone_FN.rename(new_roms_index_PClone_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_index_PClone_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_index_PClone_FN.getOriginalPath()))
+
+    if old_roms_parents_FN.exists():
+        old_roms_parents_FN.rename(new_roms_parents_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_parents_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_parents_FN.getOriginalPath()))
+
+    if old_roms_DAT_FN.exists():
+        old_roms_DAT_FN.rename(new_roms_DAT_FN)
+        log_debug('RENAMED OP {0}'.format(old_roms_DAT_FN.getOriginalPath()))
+        log_debug('   into OP {0}'.format(new_roms_DAT_FN.getOriginalPath()))
+
+def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # >> Get file names
-    roms_json_file = roms_dir.join(roms_base_noext + '.json')
-    roms_xml_file  = roms_dir.join(roms_base_noext + '.xml')
-    log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir.getOriginalPath()))
+    roms_base_noext = launcher['roms_base_noext']
+    roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
+    roms_xml_file  = roms_dir_FN.pjoin(roms_base_noext + '.xml')
+    log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
     log_verb('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     log_verb('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
 
@@ -784,25 +798,26 @@ def fs_write_ROMs_JSON(roms_dir, roms_base_noext, roms, launcher):
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
 #
-def fs_load_ROMs_JSON(roms_dir, roms_base_noext):
+def fs_load_ROMs_JSON(roms_dir_FN, launcher):
     roms = {}
 
     # --- If file does not exist return empty dictionary ---
-    roms_json_file = roms_dir.join(roms_base_noext + '.json')
+    roms_base_noext = launcher['roms_base_noext']
+    roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
     if not roms_json_file.exists(): return roms
 
     # --- Parse using json module ---
     # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
     #    exception exceptions.ValueError and launcher cannot be deleted. Deal
     #    with this exception so at least launcher can be rescanned.
-    log_verb('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir.getOriginalPath()))
+    log_verb('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
     log_verb('fs_load_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
     try:
         roms = roms_json_file.readJson()
     except ValueError:
         statinfo = roms_json_file.stat()
         log_error('fs_load_ROMs_JSON() ValueError exception in json.load() function')
-        log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir.getOriginalPath()))
+        log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
         log_error('fs_load_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
         log_error('fs_load_ROMs_JSON() Size {0}'.format(statinfo.st_size))
 
@@ -998,20 +1013,22 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
         'version' : AEL_STORAGE_FORMAT
     }
     collection_dic = {
-        'id'             : collection['id'],
-        'm_name'         : collection['m_name'],
-        'm_genre'        : collection['m_genre'],
-        'm_rating'       : collection['m_rating'],
-        'm_plot'         : collection['m_plot'],
-        'default_thumb'  : collection['default_thumb'],
-        'default_fanart' : collection['default_fanart'],
-        'default_banner' : collection['default_banner'],
-        'default_poster' : collection['default_poster'],
-        's_thumb'        : collection['s_thumb'],
-        's_fanart'       : collection['s_fanart'],
-        's_banner'       : collection['s_banner'],
-        's_flyer'        : collection['s_flyer'],
-        's_trailer'      : collection['s_trailer']
+        'id'                : collection['id'],
+        'm_name'            : collection['m_name'],
+        'm_genre'           : collection['m_genre'],
+        'm_rating'          : collection['m_rating'],
+        'm_plot'            : collection['m_plot'],
+        'default_icon'      : collection['default_icon'],
+        'default_fanart'    : collection['default_fanart'],
+        'default_banner'    : collection['default_banner'],
+        'default_poster'    : collection['default_poster'],
+        'default_clearlogo' : collection['default_clearlogo'],
+        's_icon'            : collection['s_icon'],
+        's_fanart'          : collection['s_fanart'],
+        's_banner'          : collection['s_banner'],
+        's_poster'          : collection['s_poster'],
+        's_clearlogo'       : collection['s_clearlogo'],
+        's_trailer'         : collection['s_trailer']
     }
     raw_data = []
     raw_data.append(control_dic)
@@ -1044,7 +1061,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
     # --- Export Collection assets ---
     assets_dic = {}
     log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
-    for asset_kind in [ASSET_THUMB, ASSET_FANART, ASSET_BANNER, ASSET_FLYER, ASSET_TRAILER]:
+    for asset_kind in CATEGORY_ASSET_LIST:
         AInfo    = assets_get_info_scheme(asset_kind)
         asset_FN = FileName(collection[AInfo.key])
         if not collection[AInfo.key]:
@@ -1296,117 +1313,6 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
     return roms
 
 # -------------------------------------------------------------------------------------------------
-# No-Intro and Offline scrapers
-# -------------------------------------------------------------------------------------------------
-# -- id of the fake ROM parent of all Unknown ROMs ---
-UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
-
-#
-# Creates and returns Parent/Clone MD5 index dictionary.
-# This dictionary will be save in database roms_base_noext_PClone_index.json.
-#
-# unknown_ROMs_are_parents = True
-#   roms_pclone_index_by_id = {
-#       'parent_id_1'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#       'parent_id_2'      : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#        ... ,
-#       'unknown_rom_id_1' : [], # Unknown ROMs never have clones
-#       'unknown_rom_id_2' : [],
-#       ...
-#   }
-#
-# unknown_ROMs_are_parents = False
-#   roms_pclone_index_by_id = {
-#       'parent_id_1'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#       'parent_id_2'          : ['clone_id_1', 'clone_id_2', 'clone_id_3'],
-#        ... ,
-#       UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
-#   }
-#
-def fs_generate_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
-    roms_pclone_index_by_id = {}
-
-    # --- Create a dictionary to convert ROMbase_noext names into IDs ---
-    names_to_ids_dic = {}
-    for rom_id in roms:
-        rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
-        rom_name = ROMFileName.getBase_noext()
-        # log_debug('{0} --> {1}'.format(rom_name, rom_id))
-        # log_debug('{0}'.format(rom))
-        names_to_ids_dic[rom_name] = rom_id
-
-    # --- Build PClone dictionary using ROM base_noext names ---
-    for rom_id in roms:
-        rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
-        rom_nointro_name = ROMFileName.getBase_noext()
-        # log_debug('rom_id {0}'.format(rom_id))
-        # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
-        # log_debug('  filename         "{0}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
-        # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
-
-        if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
-            if unknown_ROMs_are_parents:
-                # >> Unknown ROMs are parents
-                if rom_id not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[rom_id] = []
-            else:
-                # >> Unknown ROMs are clones
-                #    Also, if the parent ROMs of all clones does not exist yet then create it
-                if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
-                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
-                else:
-                    roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
-        else:
-            nointro_rom = roms_nointro[rom_nointro_name]
-
-            # >> ROM is a parent
-            if nointro_rom['cloneof'] == '':
-                if rom_id not in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[rom_id] = []
-            # >> ROM is a clone
-            else:
-                parent_name = nointro_rom['cloneof']
-                parent_id   = names_to_ids_dic[parent_name]
-                clone_id    = rom['id']
-                if parent_id in roms_pclone_index_by_id:
-                    roms_pclone_index_by_id[parent_id].append(clone_id)
-                else:
-                    roms_pclone_index_by_id[parent_id] = []
-                    roms_pclone_index_by_id[parent_id].append(clone_id)
-
-    return roms_pclone_index_by_id
-
-#
-# Returns a dictionary with parent ROMs to be stored in database roms_base_noext_parents.json
-# If the parent of the Unknown ROMs is detected in the Parent dictionary then create fake
-# metadata for it.
-#
-def fs_generate_parent_ROMs_dic(roms, roms_pclone_index):
-    p_roms = {}
-
-    # --- Build parent ROM dictionary ---
-    for rom_id in roms_pclone_index:
-        # >> roms_pclone_index make contain the fake ROM id. Skip it if so because the fake
-        # >> ROM is not in roms dictionary (KeyError exception)
-        if rom_id == UNKNOWN_ROMS_PARENT_ID:
-            rom = fs_new_rom()
-            rom['id']                      = UNKNOWN_ROMS_PARENT_ID
-            rom['m_name']                  = '[Unknown ROMs]'
-            rom['m_plot']                  = 'Special virtual ROM parent of all Unknown ROMs'
-            rom['nointro_status']          = NOINTRO_STATUS_NONE
-            p_roms[UNKNOWN_ROMS_PARENT_ID] = rom
-        else:
-            # >> Make a copy of the dictionary or the original dictionary in ROMs will be modified!
-            # >> Clean parent ROM name tags from ROM Name
-            p_roms[rom_id] = dict(roms[rom_id])
-
-    return p_roms
-
-# -------------------------------------------------------------------------------------------------
 # Fixes launchers.xml invalid XML characters, if present.
 # Both argument filenames must be Unicode strings.
 # See tools/read_AL_launchers_XML.py for details of this function/
@@ -1635,16 +1541,16 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         item_title     = re.findall('<title>(.*?)</title>', nfo_str)
         item_year      = re.findall('<year>(.*?)</year>', nfo_str)
         item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
-        item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
+        item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
         item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
         item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
-        if len(item_title) > 0:     roms[romID]['m_name']   = text_unescape_XML(item_title[0])
-        if len(item_year) > 0:      roms[romID]['m_year']   = text_unescape_XML(item_year[0])
-        if len(item_genre) > 0:     roms[romID]['m_genre']  = text_unescape_XML(item_genre[0])
-        if len(item_publisher) > 0: roms[romID]['m_studio'] = text_unescape_XML(item_publisher[0])
-        if len(item_rating) > 0:    roms[romID]['m_rating'] = text_unescape_XML(item_rating[0])
-        if len(item_plot) > 0:      roms[romID]['m_plot']   = text_unescape_XML(item_plot[0])
+        if len(item_title) > 0:     roms[romID]['m_name']      = text_unescape_XML(item_title[0])
+        if len(item_year) > 0:      roms[romID]['m_year']      = text_unescape_XML(item_year[0])
+        if len(item_genre) > 0:     roms[romID]['m_genre']     = text_unescape_XML(item_genre[0])
+        if len(item_developer) > 0: roms[romID]['m_developer'] = text_unescape_XML(item_developer[0])
+        if len(item_rating) > 0:    roms[romID]['m_rating']    = text_unescape_XML(item_rating[0])
+        if len(item_plot) > 0:      roms[romID]['m_plot']      = text_unescape_XML(item_plot[0])
 
         if verbose:
             kodi_notify('Imported {0}'.format(nfo_file_path.getPath()))
@@ -1661,7 +1567,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 #
 def fs_import_NFO_file_scanner(nfo_file_path):
-    nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'publisher' : '', 'rating' : '', 'plot' : '' }
+    nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : '' }
 
     # >> Read file, put in a string and remove line endings
     nfo_str = nfo_file_path.readAllUnicode()
@@ -1671,14 +1577,14 @@ def fs_import_NFO_file_scanner(nfo_file_path):
     item_title     = re.findall('<title>(.*?)</title>', nfo_str)
     item_year      = re.findall('<year>(.*?)</year>', nfo_str)
     item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
-    item_publisher = re.findall('<publisher>(.*?)</publisher>', nfo_str)
+    item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
     item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
     item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
     if len(item_title) > 0:     nfo_dic['title']     = text_unescape_XML(item_title[0])
     if len(item_year) > 0:      nfo_dic['year']      = text_unescape_XML(item_year[0])
     if len(item_genre) > 0:     nfo_dic['genre']     = text_unescape_XML(item_genre[0])
-    if len(item_publisher) > 0: nfo_dic['publisher'] = text_unescape_XML(item_publisher[0])
+    if len(item_developer) > 0: nfo_dic['developer'] = text_unescape_XML(item_developer[0])
     if len(item_rating) > 0:    nfo_dic['rating']    = text_unescape_XML(item_rating[0])
     if len(item_plot) > 0:      nfo_dic['plot']      = text_unescape_XML(item_plot[0])
 
@@ -1702,7 +1608,7 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     nfo_content.append('<launcher>\n')
     nfo_content.append(XML_text('year',      launcher['m_year']))
     nfo_content.append(XML_text('genre',     launcher['m_genre']))
-    nfo_content.append(XML_text('publisher', launcher['m_studio']))
+    nfo_content.append(XML_text('developer', launcher['m_developer']))
     nfo_content.append(XML_text('rating',    launcher['m_rating']))
     nfo_content.append(XML_text('plot',      launcher['m_plot']))
     nfo_content.append('</launcher>\n')
@@ -1750,25 +1656,64 @@ def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
     # Find data
     item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
     item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
-    item_publisher = re.findall('<publisher>(.*?)</publisher>', item_nfo)
+    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
     item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
     item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
-    # log_debug("fs_import_launcher_NFO() item_year      '{0}'".format(item_year[0]))
-    # log_debug("fs_import_launcher_NFO() item_publisher '{0}'".format(item_publisher[0]))
-    # log_debug("fs_import_launcher_NFO() item_genre     '{0}'".format(item_genre[0]))
-    # log_debug("fs_import_launcher_NFO() item_plot      '{0}'".format(item_plot[0]))
 
     # >> Careful about object mutability! This should modify the dictionary
     # >> passed as argument outside this function.
-    if item_year:      launchers[launcherID]['m_year']   = text_unescape_XML(item_year[0])
-    if item_genre:     launchers[launcherID]['m_genre']  = text_unescape_XML(item_genre[0])
-    if item_publisher: launchers[launcherID]['m_studio'] = text_unescape_XML(item_publisher[0])
-    if item_rating:    launchers[launcherID]['m_rating'] = text_unescape_XML(item_rating[0])
-    if item_plot:      launchers[launcherID]['m_plot']   = text_unescape_XML(item_plot[0])
+    if item_year:      launchers[launcherID]['m_year']      = text_unescape_XML(item_year[0])
+    if item_genre:     launchers[launcherID]['m_genre']     = text_unescape_XML(item_genre[0])
+    if item_developer: launchers[launcherID]['m_developer'] = text_unescape_XML(item_developer[0])
+    if item_rating:    launchers[launcherID]['m_rating']    = text_unescape_XML(item_rating[0])
+    if item_plot:      launchers[launcherID]['m_plot']      = text_unescape_XML(item_plot[0])
 
     log_verb("fs_import_launcher_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
 
     return True
+
+#
+# Used by autoconfig_import_launcher(). Returns a dictionary with the Launcher NFO file information.
+# If there is any error return a dictionary with empty information.
+#
+def fs_read_launcher_NFO(nfo_FileName):
+    launcher_dic = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
+
+    # --- Get NFO file name ---
+    log_debug('fs_read_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+
+    # --- Import data ---
+    if os.path.isfile(nfo_FileName.getPath()):
+        # >> Read NFO file data
+        try:
+            file = codecs.open(nfo_FileName.getPath(), 'r', 'utf-8')
+            item_nfo = file.read().replace('\r', '').replace('\n', '')
+            file.close()
+        except:
+            kodi_notify_warn('Exception reading NFO file {0}'.format(os.path.basename(nfo_FileName.getPath())))
+            log_error("fs_read_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+            return launcher_dic
+    else:
+        kodi_notify_warn('NFO file not found {0}'.format(os.path.basename(nfo_FileName.getPath())))
+        log_info("fs_read_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+        return launcher_dic
+
+    # Find data
+    item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+    item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
+    item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
+    item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
+
+    if item_year:      launcher_dic['year']      = text_unescape_XML(item_year[0])
+    if item_genre:     launcher_dic['genre']     = text_unescape_XML(item_genre[0])
+    if item_developer: launcher_dic['developer'] = text_unescape_XML(item_developer[0])
+    if item_rating:    launcher_dic['rating']    = text_unescape_XML(item_rating[0])
+    if item_plot:      launcher_dic['plot']      = text_unescape_XML(item_plot[0])
+
+    log_verb("fs_read_launcher_NFO() Read '{0}'".format(nfo_FileName.getPath()))
+
+    return launcher_dic
 
 #
 # Returns a FileName object

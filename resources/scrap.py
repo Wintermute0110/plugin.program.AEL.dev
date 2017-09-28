@@ -53,21 +53,21 @@ class Scraper:
 # Metadata scrapers base class
 # All scrapers (offline or online) must implement the abstract methods.
 # -------------------------------------------------------------------------------------------------
-def new_gamedata_dic():
-    gamedata = {
-        'title'    : '',
-        'year'     : '',
-        'genre'    : '',
-        'studio'   : '',
-        'nplayers' : '',
-        'esrb'     : '',
-        'plot'     : ''
-    }
-
-    return gamedata
-
 class Scraper_Metadata(Scraper):
-    # Offline scrapers need to know plugin installation directory.
+    def new_gamedata_dic(self):
+        gamedata = {
+            'title'     : '',
+            'year'      : '',
+            'genre'     : '',
+            'developer' : '',
+            'nplayers'  : '',
+            'esrb'      : '',
+            'plot'      : ''
+        }
+
+        return gamedata
+
+    # Offline scrapers need to know the plugin installation directory.
     # For offline scrapers just pass.
     def set_addon_dir(self, plugin_dir):
         raise NotImplementedError('Subclass must implement set_addon_dir() abstract method')
@@ -120,8 +120,8 @@ class Scraper_Asset(Scraper):
 from scrap_metadata import *
 from scrap_asset import *
 
-# This is the official list of supported scrapers. This list MUST match the settings configuration 
-# in settings.xml or bad things will happen.
+# --- Metadata scrapers ---
+# This list MUST match the settings configuration in settings.xml or bad things will happen.
 scrapers_metadata = [
     metadata_Offline(),
     metadata_TheGamesDB(),
@@ -130,9 +130,35 @@ scrapers_metadata = [
     metadata_ArcadeDB()
 ]
 
-scrapers_asset = [
-    asset_TheGamesDB(),
-    asset_GameFAQs(),
-    asset_MobyGames(),
-    asset_ArcadeDB()
-]
+# --- Asset scraper objects ---
+# >> There is only one instantiated object for every scraper. Scraper objects cache all possible
+# >> requests made to the scraper to save bandwidth and increase speed.
+NULL_obj       = asset_NULL()
+TheGamesDB_obj = asset_TheGamesDB()
+GameFAQs_obj   = asset_GameFAQs()
+MobyGames_obj  = asset_MobyGames()
+ArcadeDB_obj   = asset_ArcadeDB()
+
+# --- Asset scrapers ---
+# >> This list is used in _gui_edit_asset()
+scrapers_asset = [TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj]
+
+# >> These lists MUST match the settings configuration in settings.xml or bad things will happen.
+# >> These lists are used in the ROM Scanner.
+# >> Boxfront  -> Cabinet
+# >> Boxback   -> CPanel
+# >> Cartridge -> PCB
+# >> Banner    -> Marquee
+scrapers_title      = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_snap       = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_boxfront   = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_cabinet    = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_boxback    = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_cpanel     = [ NULL_obj, TheGamesDB_obj, GameFAQs_obj, MobyGames_obj, ArcadeDB_obj ]
+scrapers_cartridge  = [ NULL_obj,                               MobyGames_obj, ArcadeDB_obj ]
+scrapers_pcb        = [ NULL_obj,                               MobyGames_obj, ArcadeDB_obj ]
+scrapers_fanart     = [ NULL_obj, TheGamesDB_obj,                                           ]
+scrapers_banner     = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
+scrapers_marquee    = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
+scrapers_clearlogo  = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
+scrapers_flyer      = [ NULL_obj,                                              ArcadeDB_obj ]

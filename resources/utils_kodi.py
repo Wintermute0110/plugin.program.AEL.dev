@@ -59,31 +59,31 @@ def log_debug(str_text):
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
 
         # At this point we are sure str_text is a unicode string.
-        log_text = u'AEL DEBUG: ' + str_text
+        log_text = 'AEL DEBUG: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_verb(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL VERB : ' + str_text
+        log_text = 'AEL VERB : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_info(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL INFO : ' + str_text
+        log_text = 'AEL INFO : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL WARN : ' + str_text
+        log_text = 'AEL WARN : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_error(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL ERROR: ' + str_text
+        log_text = 'AEL ERROR: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 # -----------------------------------------------------------------------------
@@ -141,8 +141,8 @@ def kodi_refresh_container():
     xbmc.executebuiltin('Container.Refresh')
 
 def kodi_toogle_fullscreen():
-    # Frodo and up compatible
-    xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Input.ExecuteAction","params":{"action":"togglefullscreen"},"id":"1"}')
+    # >> Frodo and up compatible
+    xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
 
 def kodi_kodi_read_favourites():
     favourites = []
