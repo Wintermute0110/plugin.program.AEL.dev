@@ -187,6 +187,7 @@ def autoconfig_get_default_import_launcher():
         'args_extra' : [],
         'ROM_path' : '',
         'ROM_ext' : '',
+        'Options' : '',
         'ROM_asset_path' : '',
         'path_title' : '',
         'path_snap' : '',
