@@ -9941,6 +9941,7 @@ class Main:
         #    4) Unknwon files in Retroarch System dir are ignored and non-reported.
         #    5) Write results into a report TXT file.
         BIOS_status_dic = {}
+        BIOS_status_dic_colour = {}
         for BIOS_dic in Libretro_BIOS_list:
             if check_only_mandatory and not BIOS_dic['mandatory']:
                 log_debug('BIOS "{0}" is not mandatory. Skipping check.'.format(BIOS_dic['filename']))
@@ -9952,6 +9953,7 @@ class Main:
             if not BIOS_file_FN.exists():
                 log_info('Not found "{0}"'.format(BIOS_file_FN.getPath()))
                 BIOS_status_dic[BIOS_dic['filename']] = 'Not found'
+                BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Not found[/COLOR]'
                 continue
 
             BIOS_stat = BIOS_file_FN.stat()
@@ -9960,6 +9962,7 @@ class Main:
                 log_info('Wrong size "{0}"'.format(BIOS_file_FN.getPath()))
                 log_info('It is {0} and must be {1}'.format(file_size, BIOS_dic['size']))
                 BIOS_status_dic[BIOS_dic['filename']] = 'Wrong size'
+                BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong size[/COLOR]'
                 continue
 
             hash_md5 = hashlib.md5()
@@ -9973,9 +9976,11 @@ class Main:
                 log_info('It is       "{0}"'.format(file_MD5))
                 log_info('and must be "{0}"'.format(BIOS_dic['md5']))
                 BIOS_status_dic[BIOS_dic['filename']] = 'Wrong MD5'
+                BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong MD5[/COLOR]'
                 continue
             log_info('BIOS OK "{0}"'.format(BIOS_file_FN.getPath()))
             BIOS_status_dic[BIOS_dic['filename']] = 'OK'
+            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR lime]OK[/COLOR]'
 
             # >> Update progress
             file_count += 1
@@ -9985,12 +9990,12 @@ class Main:
         pDialog.close()
 
         # >> Output format:
-        #    BIOS name             Status      Cores affected 
+        #    BIOS name             Mandatory  Status      Cores affected 
         #    -------------------------------------------------
-        #    5200.rom              OK          ---            
-        #    7800 BIOS (E).rom     Wrong MD5   core a name    
-        #                                      core b name    
-        #    7800 BIOS (U).rom     OK          ---            
+        #    5200.rom              YES        OK          ---            
+        #    7800 BIOS (E).rom     NO         Wrong MD5   core a name    
+        #                                                 core b name    
+        #    7800 BIOS (U).rom     YES        OK          ---            
         #
         max_size_BIOS_filename = 0
         for BIOS_dic in Libretro_BIOS_list:
@@ -10003,7 +10008,11 @@ class Main:
                 max_size_status = len(BIOS_status_dic[key])
 
         str_list = []
-        str_list.append('Retroarch system dir "{0}"\n\n'.format(sys_dir_FN.getPath()))
+        str_list.append('Retroarch system dir "{0}"\n'.format(sys_dir_FN.getPath()))
+        if check_only_mandatory:
+            str_list.append('Checking only mandatory BIOSes.\n\n')
+        else:
+            str_list.append('Checking mandatory and optional BIOSes.\n\n')
         bios_str      = '{0}{1}'.format('BIOS name', ' ' * (max_size_BIOS_filename - len('BIOS name')))
         mandatory_str = 'Mandatory'
         status_str    = '{0}{1}'.format('Status', ' ' * (max_size_status - len('Status')))
@@ -10016,10 +10025,12 @@ class Main:
             BIOS_filename = BIOS_dic['filename']
             # >> If BIOS was skipped continue loop
             if BIOS_filename not in BIOS_status_dic: continue
-            status = BIOS_status_dic[BIOS_filename]
+            status_text = BIOS_status_dic[BIOS_filename]
+            status_text_colour = BIOS_status_dic_colour[BIOS_filename]
             filename_str = '{0}{1}'.format(BIOS_filename, ' ' * (max_size_BIOS_filename - len(BIOS_filename)))
             mandatory_str = 'YES      ' if BIOS_dic['mandatory'] else 'NO       '
-            status_str = '{0}{1}'.format(status, ' ' * (max_size_status - len(status)))
+            status_str = '{0}{1}'.format(status_text_colour, ' ' * (max_size_status - len(status_text)))
+            len_status_str = len('{0}{1}'.format(status_text, ' ' * (max_size_status - len(status_text))))
 
             # >> Print affected core list
             core_list = BIOS_dic['cores']
@@ -10027,7 +10038,7 @@ class Main:
                 line_str = '{0}  {1}  {2}\n'.format(filename_str, mandatory_str, status_str)
                 str_list.append(line_str)
             else:
-                num_spaces = len(filename_str) + 9 + len(status_str) + 4
+                num_spaces = len(filename_str) + 9 + len_status_str + 4
                 for i, core_name in enumerate(core_list):
                     beautiful_core_name = Retro_core_dic[core_name] if core_name in Retro_core_dic else core_name
                     if i == 0:

@@ -633,9 +633,10 @@ def audit_get_ROM_base_name(romFileName):
 # -------------------------------------------------------------------------------------------------
 # Retroarch System directory BIOS audit
 # -------------------------------------------------------------------------------------------------
+# Ordered as they show in the BIOS check report.
 Retro_core_dic = {
-    'atari800'  : 'Atari800',
-    'prosystem' : 'ProSystem',
+    'atari800'  : 'Atari 8-bit computer systems and 5200 (Atari800)',
+    'prosystem' : 'Atari 7800 (ProSystem)',
     'mednafen_lynx' : 'Atari Lynx (Beetle Handy)',
     'handy' : 'Atari Lynx (Handy)',
     'hatari' : 'Atari ST/STE/TT/Falcon (Hatari)',
@@ -643,6 +644,38 @@ Retro_core_dic = {
     'fmsx' : 'MSX (fMSX)',
     'mednafen_pce_fast' : 'PC Engine/PCE-CD (Beetle PCE FAST)',
     'mednafen_supergrafx' : 'PC Engine SuperGrafx (Beetle SGX)',
+    'mednafen_pcfx' : 'PC-FX (Beetle PC-FX)',
+    'fceumm' : 'NES / Famicom (FCEUmm)',
+    'nestopia' : 'NES / Famicom (Nestopia UE)',
+    'gambatte' : 'Game Boy / Game Boy Color (Gambatte)',
+    'gpsp' : 'Game Boy Advance (gpSP)',
+    'mednafen_gba' : 'Game Boy Advance (Beetle GBA)',
+    'mgba' : 'Game Boy Advance (mGBA)',
+    'tempgba' : 'Game Boy Advance (TempGBA)',
+    'vba_next' : 'Game Boy Advance (VBA Next)',
+    'dolphin' : 'GameCube / Wii (Dolphin)',
+    'parallel_n64' : 'Nintendo 64 (ParaLLEl N64)',
+    'pokemini' : 'Pokémon Mini (PokeMini)',
+    'bsnes_accuracy' : 'SNES / Super Famicom (bsnes Accuracy)',
+    'bsnes_balanced' : 'SNES / Super Famicom (bsnes Balanced)',
+    'bsnes_performance' : 'SNES / Super Famicom (bsnes Performance)',
+    'bsnes_mercury_accuracy' : 'SNES / Super Famicom (bsnes-mercury Accuracy)',
+    'bsnes_mercury_balanced' : 'SNES / Super Famicom (bsnes-mercury Balanced)',
+    'bsnes_mercury_performance' : 'SNES / Super Famicom (bsnes-mercury Performance)',
+    'reicast' : 'Sega Dreamcast (Reicast)',
+    'redream' : 'Sega Dreamcast (Redream)',
+    'genesis_plus_gx' : 'Sega MS/GG/MD/CD (Genesis Plus GX)',
+    'picodrive' : 'Sega MS/MD/CD/32X (PicoDrive)',
+    'mednafen_saturn' : 'Sega Saturn (Beetle Saturn)',
+    'yabause' : 'Sega Saturn (Yabause)',
+    'px68k' : 'Sharp X68000 (Portable SHARP X68000 Emulator)',
+    'mednafen_psx' : 'PlayStation (Beetle PSX)',
+    'mednafen_psx_hw' : 'PlayStation (Beetle PSX HW)',
+    'pcsx_rearmed' : 'PlayStation (PCSX ReARMed)',
+    'pcsx1' : 'PlayStation (PCSX1)',
+    'ppsspp' : 'PSP (PPSSPP)',
+    'psp1' : 'psp1',
+    '4do' : '3DO (4DO)',
 }
 
 # See https://github.com/libretro/libretro-database/blob/master/dat/BIOS.dat
