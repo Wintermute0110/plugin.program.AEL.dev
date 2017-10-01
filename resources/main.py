@@ -9821,7 +9821,7 @@ class Main:
         log_info('_command_check_launchers() Checking all Launchers configuration ...')
 
         main_str_list = []
-        for launcher_id in self.launchers:
+        for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             launcher = self.launchers[launcher_id]
             l_str = []
             main_str_list.append('[COLOR orange]Launcher "{0}"[/COLOR]\n'.format(launcher['m_name']))
@@ -9885,7 +9885,6 @@ class Main:
 
             # >> Check for duplicate asset paths
             
-
             # >> If l_str is empty is because no problems were found.
             if l_str:
                 main_str_list.extend(l_str)
