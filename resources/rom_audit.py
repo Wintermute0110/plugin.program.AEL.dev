@@ -954,7 +954,7 @@ Libretro_BIOS_list = [
 
     # --- Sony PlayStation Portable ---
     # https://github.com/libretro/libretro-super/blob/master/dist/info/ppsspp_libretro.info
-    {'filename' : 'ppge_atlas.zim', 'size' : 784968, 'md5': 'a93fc411c1ce7d001a2a812643c70085',
+    {'filename' : 'PPSSPP/ppge_atlas.zim', 'size' : 784968, 'md5': 'a93fc411c1ce7d001a2a812643c70085',
      'mandatory' : True, 'cores' : ['ppsspp', 'psp1']},
 
     # --- The 3DO Company - 3DO ---
