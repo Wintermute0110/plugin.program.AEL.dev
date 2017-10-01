@@ -9821,6 +9821,7 @@ class Main:
         log_info('_command_check_launchers() Checking all Launchers configuration ...')
 
         main_str_list = []
+        main_str_list.append('Number of launchers: {0}\n\n'.format(len(self.launchers)))
         for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             launcher = self.launchers[launcher_id]
             l_str = []
