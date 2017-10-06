@@ -18,16 +18,55 @@
 from __future__ import unicode_literals
 
 # -------------------------------------------------------------------------------------------------
-# This dictionary has the AEL "official" game system list.
+# New platform engine
+# -------------------------------------------------------------------------------------------------
+DAT_MAME    = 'MAME'
+DAT_NOINTRO = 'No-Intro'
+DAT_REDUMP  = 'Redump'
+DAT_NONE    = ''
+class Platform:
+    def __init__(self, name, shortname, DAT, aliasof = ''):
+        self.name      = name
+        self.shortname = shortname
+        self.DAT       = DAT
+        self.aliasof   = aliasof
+
+#
+# From this list create simplified list to access platform information
+#
+AEL_platforms = [
+    # --- MAME/Arcade ---
+    Platform('MAME', 'mame', DAT_MAME),
+
+    # --- Amstrad ---
+    Platform('Amstrad CPC', 'cpc', DAT_NONE),
+
+    # --- Atari ---
+    Platform('Atari 2600', 'a2600', DAT_NOINTRO),
+
+    # --- Coleco ---
+    Platform('Colecovision', 'coleco', DAT_NOINTRO),
+]
+
+AEL_p_list = []
+AEL_p_short_list = []
+for p_obj in AEL_platforms:
+    AEL_p_list.append(p_obj.name)
+    AEL_p_short_list.append(p_obj.shortname)
+
+# -------------------------------------------------------------------------------------------------
+# Old platform engine
 # -------------------------------------------------------------------------------------------------
 # >> When possible user No-Intro DAT-o-MATIC names
 # >> Fallback to Wikipedia names
 #
 AEL_platform_list = [
-    # --- MAME/Arcade ---
-    'MAME',
+    # --- 3DO ---
+    '3DO Interactive Multiplayer',
+
     # --- Amstrad ---
-    # 'Amstrad CPC',
+    'Amstrad CPC',
+
     # --- Atari ---
     'Atari 2600',
     'Atari 5200',
@@ -36,24 +75,46 @@ AEL_platform_list = [
     'Atari Jaguar CD',
     'Atari Lynx',
     'Atari ST',
+
+    # --- Bandai ---
+    'Bandai WonderSwan',
+    'Bandai WonderSwan Color',
+
     # --- Coleco ---
     'Colecovision',
+
     # --- Commodore ---
     'Commodore 64',
     'Commodore Amiga',
+    'Commodore Amiga CD32',
     'Commodore Plus-4',
     'Commodore VIC-20',
+
+    # --- Fujitsu ---
+    'Fujitsu FM Towns',
+    'Fujitsu FM Towns Marty',
+
+    # --- GCE ---
+    'GCE Vectrex',
+
     # --- Magnavox ---
     'Magnavox Odyssey2',
-    'Philips Videopac G7000',
+
+    # --- MAME/Arcade ---
+    'MAME',
+
+    # --- Mattel ---
+    'Mattel Intellivision',
+
     # --- Microsoft ---
-    'Microsoft MSX',
-    'Microsoft MSX 2',
     'Microsoft MS-DOS',
+    'Microsoft MSX',
+    'Microsoft MSX2',
     'Microsoft Windows',
     'Microsoft Xbox',
     'Microsoft Xbox 360',
     'Microsoft Xbox One',
+
     # --- NEC ---
     'NEC PC Engine',
     'NEC PC Engine CDROM2',
@@ -61,49 +122,69 @@ AEL_platform_list = [
     'NEC TurboGrafx CD',
     'NEC SuperGrafx',
     'NEC PC-FX',
+
     # --- Nintendo ---
-    'Nintendo GameBoy',
-    'Nintendo GameBoy Color',
-    'Nintendo GameBoy Advance',
+    'Nintendo 3DS',
+    'Nintendo 64',
+    'Nintendo 64DD',
     'Nintendo DS',
     'Nintendo DSi',
-    'Nintendo 3DS',
+    'Nintendo Famicom',             # Alias of NES
     'Nintendo Famicom Disk System',
-    'Nintendo NES',
-    'Nintendo Famicom',
-    'Nintendo SNES',
-    'Nintendo Virtual Boy',
-    'Nintendo 64',
+    'Nintendo GameBoy',
+    'Nintendo GameBoy Advance',
+    'Nintendo GameBoy Color',
     'Nintendo GameCube',
+    'Nintendo NES',
+    'Nintendo Pokemon Mini',
+    'Nintendo SNES',
+    'Nintendo Switch',
+    'Nintendo Virtual Boy',
     'Nintendo Wii',
     'Nintendo Wii U',
-    'Nintendo Switch',
-    # --- 3DO ---
-    'Panasonic 3DO',
+
+    # --- Philips ---
+    'Philips Videopac G7000',      # Alias of 'Magnavox Odyssey2'
+    'Philips Videopac Plus G7400',
+
+    # --- ScummVM ---
+    'ScummVM',
+
     # --- Sega ---
-    'Sega SG-1000',
-    'Sega Master System',
-    'Sega Game Gear',
-    'Sega MegaDrive',
-    'Sega Genesis',
-    'Sega MegaCD',
-    'Sega SegaCD',
     'Sega 32X',
+    'Sega Dreamcast',
+    'Sega Game Gear',
+    'Sega Genesis',
+    'Sega Master System',
+    'Sega MegaCD', # Alias of 'Sega SegaCD'
+    'Sega MegaDrive', # Alias of 'Sega Genesis'
     'Sega PICO',
     'Sega Saturn',
-    'Sega Dreamcast',
+    'Sega SC-3000',
+    'Sega SegaCD',
+    'Sega SG-1000',
+
+    # --- Sharp ---
+    'Sharp X68000',
+
     # --- Sinclair ---
     'Sinclair ZX Spectrum',
+
     # --- SNK ---
+    'SNK Neo-Geo AES', # Alias of MAME? AES has some exclusive games.
     'SNK Neo-Geo CD',
+    'SNK Neo-Geo MVS', # Alias of MAME
     'SNK Neo-Geo Pocket',
     'SNK Neo-Geo Pocket Color',
+
     # --- SONY ---
     'Sony PlayStation',
     'Sony PlayStation 2',
     'Sony PlayStation 3',
     'Sony PlayStation 4',
     'Sony PlayStation Portable',
+    'Sony PlayStation Vita',
+
     # --- Unknown ---
     'Unknown'
 ]
