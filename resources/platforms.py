@@ -208,7 +208,10 @@ def get_AEL_platform_index(platform_name):
 # GameDBInfo XML database files.
 #
 platform_AEL_to_Offline_GameDBInfo_XML = {
-    'MAME'                        : 'GameDBInfo/MAME.xml',
+    '3DO Interactive Multiplayer' : 'GameDBInfo/Panasonic 3DO.xml',
+
+    'Amstrad CPC'                 : '',
+
     'Atari 2600'                  : 'GameDBInfo/Atari 2600.xml',
     'Atari 5200'                  : 'GameDBInfo/Atari 5200.xml',
     'Atari 7800'                  : 'GameDBInfo/Atari 7800.xml',
@@ -216,20 +219,32 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Atari Jaguar CD'             : 'GameDBInfo/Atari Jaguar CD.xml',
     'Atari Lynx'                  : 'GameDBInfo/Atari Lynx.xml',
     'Atari ST'                    : 'GameDBInfo/Atari ST.xml',
-    
+
+    'Bandai WonderSwan'           : '',
+    'Bandai WonderSwan Color'     : '',
+
     'Colecovision'                : 'GameDBInfo/Colecovision.xml',
 
     'Commodore 64'                : 'GameDBInfo/Commodore 64.xml',
     'Commodore Amiga'             : 'GameDBInfo/Commodore Amiga.xml',
+    'Commodore Amiga CD32'        : '',
     'Commodore Plus-4'            : 'GameDBInfo/Commodore Plus-4.xml',
     'Commodore VIC-20'            : 'GameDBInfo/Commodore VIC-20.xml',
 
-    'Magnavox Odyssey2'           : 'GameDBInfo/Magnavox Odyssey2.xml',
-    'Philips Videopac G7000'      : 'GameDBInfo/Magnavox Odyssey2.xml',
+    'Fujitsu FM Towns'            : '',
+    'Fujitsu FM Towns Marty'      : '',
+    
+    'GCE Vectrex'                 : '',
 
-    'Microsoft MSX'               : '',
-    'Microsoft MSX 2'             : 'GameDBInfo/Microsoft MSX 2.xml',
+    'Magnavox Odyssey2'           : 'GameDBInfo/Magnavox Odyssey2.xml',
+
+    'MAME'                        : 'GameDBInfo/MAME.xml',
+
+    'Mattel Intellivision'        : '',
+
     'Microsoft MS-DOS'            : 'GameDBInfo/Microsoft MS-DOS.xml',
+    'Microsoft MSX'               : '',
+    'Microsoft MSX2'              : 'GameDBInfo/Microsoft MSX 2.xml',
     'Microsoft Windows'           : '',
     'Microsoft Xbox'              : '',
     'Microsoft Xbox 360'          : '',
@@ -242,40 +257,50 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'NEC SuperGrafx'              : 'GameDBInfo/NEC SuperGrafx.xml',
     'NEC PC-FX'                   : 'GameDBInfo/NEC PC-FX.xml',
 
-    'Nintendo GameBoy'            : 'GameDBInfo/Nintendo Game Boy.xml',
-    'Nintendo GameBoy Color'      : 'GameDBInfo/Nintendo Game Boy Color.xml',
-    'Nintendo GameBoy Advance'    : 'GameDBInfo/Nintendo Game Boy Advance.xml',
+    'Nintendo 3DS'                : '',
+    'Nintendo 64'                 : 'GameDBInfo/Nintendo 64.xml',
+    'Nintendo 64DD'                 : '',
     'Nintendo DS'                 : 'GameDBInfo/Nintendo DS.xml',
     'Nintendo DSi'                : '',
-    'Nintendo 3DS'                : '',
-    'Nintendo Famicom Disk System': 'GameDBInfo/Nintendo Famicom Disk System.xml',
-    'Nintendo NES'                : 'GameDBInfo/Nintendo NES.xml',
     'Nintendo Famicom'            : 'GameDBInfo/Nintendo NES.xml',
-    'Nintendo SNES'               : 'GameDBInfo/Nintendo SNES.xml',
-    'Nintendo Virtual Boy'        : 'GameDBInfo/Nintendo Virtual Boy.xml',
-    'Nintendo 64'                 : 'GameDBInfo/Nintendo 64.xml',    
+    'Nintendo Famicom Disk System': 'GameDBInfo/Nintendo Famicom Disk System.xml',
+    'Nintendo GameBoy'            : 'GameDBInfo/Nintendo Game Boy.xml',
+    'Nintendo GameBoy Advance'    : 'GameDBInfo/Nintendo Game Boy Advance.xml',
+    'Nintendo GameBoy Color'      : 'GameDBInfo/Nintendo Game Boy Color.xml',
     'Nintendo GameCube'           : 'GameDBInfo/Nintendo GameCube.xml',
+    'Nintendo NES'                : 'GameDBInfo/Nintendo NES.xml',
+    'Nintendo Pokemon Mini'               : '',
+    'Nintendo SNES'               : 'GameDBInfo/Nintendo SNES.xml',
+    'Nintendo Switch'             : '',
+    'Nintendo Virtual Boy'        : 'GameDBInfo/Nintendo Virtual Boy.xml',
     'Nintendo Wii'                : 'GameDBInfo/Nintendo Wii.xml',
     'Nintendo Wii U'              : '',
-    'Nintendo Switch'             : '',
 
-    'Panasonic 3DO'               : 'GameDBInfo/Panasonic 3DO.xml',
+    'Philips Videopac G7000'      : 'GameDBInfo/Magnavox Odyssey2.xml',
+    'Philips Videopac Plus G7400' : '',
 
-    'Sega SG-1000'                : 'GameDBInfo/Sega SG-1000.xml',
-    'Sega Master System'          : 'GameDBInfo/Sega Master System.xml',
-    'Sega Game Gear'              : 'GameDBInfo/Sega Game Gear.xml',
-    'Sega MegaDrive'              : 'GameDBInfo/Sega MegaDrive.xml',
-    'Sega Genesis'                : 'GameDBInfo/Sega MegaDrive.xml',
-    'Sega MegaCD'                 : 'GameDBInfo/Sega CD.xml',
-    'Sega SegaCD'                 : 'GameDBInfo/Sega CD.xml',
+    'ScummVM'      : '',
+
     'Sega 32X'                    : 'GameDBInfo/Sega 32x.xml',
+    'Sega Dreamcast'              : 'GameDBInfo/Sega Dreamcast.xml',
+    'Sega Game Gear'              : 'GameDBInfo/Sega Game Gear.xml',
+    'Sega Genesis'                : 'GameDBInfo/Sega MegaDrive.xml',
+    'Sega Master System'          : 'GameDBInfo/Sega Master System.xml',
+    'Sega MegaCD'                 : 'GameDBInfo/Sega CD.xml',
+    'Sega MegaDrive'              : 'GameDBInfo/Sega MegaDrive.xml',
     'Sega PICO'                   : '',
     'Sega Saturn'                 : 'GameDBInfo/Sega Saturn.xml',
-    'Sega Dreamcast'              : 'GameDBInfo/Sega Dreamcast.xml',
+    'Sega SC-3000'                : '',
+    'Sega SegaCD'                 : 'GameDBInfo/Sega CD.xml',
+    'Sega SG-1000'                : 'GameDBInfo/Sega SG-1000.xml',
+
+    'Sharp X68000'                : '',
 
     'Sinclair ZX Spectrum'        : 'GameDBInfo/Sinclair ZX Spectrum.xml',
 
+    'SNK Neo-Geo AES'             : '',
     'SNK Neo-Geo CD'              : 'GameDBInfo/SNK Neo-Geo CD.xml',
+    'SNK Neo-Geo MVS'             : '',
     'SNK Neo-Geo Pocket'          : 'GameDBInfo/SNK Neo-Geo Pocket.xml',
     'SNK Neo-Geo Pocket Color'    : 'GameDBInfo/SNK Neo-Geo Pocket Color.xml',
 
@@ -284,6 +309,7 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Sony PlayStation 3'          : '',
     'Sony PlayStation 4'          : '',
     'Sony PlayStation Portable'   : 'GameDBInfo/Sony PlayStation Portable.xml',
+    'Sony PlayStation Vita'       : '',
 
     'Unknown'                     : ''
 }
@@ -292,7 +318,10 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
 # LaunchBox XML database files.
 #
 platform_AEL_to_LB_XML = {
-    'MAME'                        : '',
+    '3DO Interactive Multiplayer' : '',
+
+    'Amstrad CPC'                 : '',
+
     'Atari 2600'                  : '',
     'Atari 5200'                  : '',
     'Atari 7800'                  : '',
@@ -300,20 +329,32 @@ platform_AEL_to_LB_XML = {
     'Atari Jaguar CD'             : '',
     'Atari Lynx'                  : '',
     'Atari ST'                    : '',
-    
+
+    'Bandai WonderSwan'           : '',
+    'Bandai WonderSwan Color'     : '',
+
     'Colecovision'                : '',
 
     'Commodore 64'                : '',
     'Commodore Amiga'             : '',
+    'Commodore Amiga CD32'        : '',
     'Commodore Plus-4'            : '',
     'Commodore VIC-20'            : '',
 
-    'Magnavox Odyssey2'           : '',
-    'Philips Videopac G7000'      : '',
+    'Fujitsu FM Towns'            : '',
+    'Fujitsu FM Towns Marty'      : '',
 
-    'Microsoft MSX'               : '',
-    'Microsoft MSX 2'             : '',
+    'GCE Vectrex'                 : '',
+
+    'Magnavox Odyssey2'           : '',
+
+    'MAME'                        : '',
+
+    'Mattel Intellivision'        : '',
+
     'Microsoft MS-DOS'            : '',
+    'Microsoft MSX'               : '',
+    'Microsoft MSX2'              : '',
     'Microsoft Windows'           : '',
     'Microsoft Xbox'              : '',
     'Microsoft Xbox 360'          : '',
@@ -326,40 +367,50 @@ platform_AEL_to_LB_XML = {
     'NEC SuperGrafx'              : '',
     'NEC PC-FX'                   : '',
 
-    'Nintendo GameBoy'            : '',
-    'Nintendo GameBoy Color'      : '',
-    'Nintendo GameBoy Advance'    : '',
+    'Nintendo 3DS'                : '',
+    'Nintendo 64'                 : '',
+    'Nintendo 64DD'               : '',
     'Nintendo DS'                 : '',
     'Nintendo DSi'                : '',
-    'Nintendo 3DS'                : '',
-    'Nintendo Famicom Disk System': '',
-    'Nintendo NES'                : '',
     'Nintendo Famicom'            : '',
-    'Nintendo SNES'               : '',
-    'Nintendo Virtual Boy'        : '',
-    'Nintendo 64'                 : '',
+    'Nintendo Famicom Disk System': '',
+    'Nintendo GameBoy'            : '',
+    'Nintendo GameBoy Advance'    : '',
+    'Nintendo GameBoy Color'      : '',
     'Nintendo GameCube'           : '',
+    'Nintendo NES'                : '',
+    'Nintendo Pokemon Mini'       : '',
+    'Nintendo SNES'               : '',
+    'Nintendo Switch'             : '',
+    'Nintendo Virtual Boy'        : '',
     'Nintendo Wii'                : '',
     'Nintendo Wii U'              : '',
-    'Nintendo Switch'             : '',
 
-    'Panasonic 3DO'               : '',
+    'Philips Videopac G7000'      : '',
+    'Philips Videopac Plus G7400' : '',
 
-    'Sega SG-1000'                : '',
-    'Sega Master System'          : '',
-    'Sega Game Gear'              : '',
-    'Sega MegaDrive'              : 'LaunchBox/Sega Genesis.xml',
-    'Sega Genesis'                : '',
-    'Sega MegaCD'                 : '',
-    'Sega SegaCD'                 : '',
+    'ScummVM'                     : '',
+
     'Sega 32X'                    : '',
+    'Sega Dreamcast'              : '',
+    'Sega Game Gear'              : '',
+    'Sega Genesis'                : 'LaunchBox/Sega Genesis.xml',
+    'Sega Master System'          : '',
+    'Sega MegaCD'                 : '',
+    'Sega MegaDrive'              : 'LaunchBox/Sega Genesis.xml',
     'Sega PICO'                   : '',
     'Sega Saturn'                 : '',
-    'Sega Dreamcast'              : '',
+    'Sega SC-3000'                : '',
+    'Sega SegaCD'                 : '',
+    'Sega SG-1000'                : '',
+
+    'Sharp X68000'                : '',
 
     'Sinclair ZX Spectrum'        : '',
 
+    'SNK Neo-Geo AES'             : '',
     'SNK Neo-Geo CD'              : '',
+    'SNK Neo-Geo MVS'             : '',
     'SNK Neo-Geo Pocket'          : '',
     'SNK Neo-Geo Pocket Color'    : '',
 
@@ -368,6 +419,7 @@ platform_AEL_to_LB_XML = {
     'Sony PlayStation 3'          : '',
     'Sony PlayStation 4'          : '',
     'Sony PlayStation Portable'   : '',
+    'Sony PlayStation Vita'       : '',
 
     'Unknown'                     : ''
 }

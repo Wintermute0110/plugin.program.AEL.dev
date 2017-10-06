@@ -1,4 +1,10 @@
 {
+ "3DO Interactive Multiplayer":{
+  "numROMs":216
+ },
+ "Amstrad CPC":{
+  "numROMs":0
+ },
  "Atari 2600":{
   "numROMs":471
  },
@@ -20,6 +26,12 @@
  "Atari ST":{
   "numROMs":2904
  },
+ "Bandai WonderSwan":{
+  "numROMs":0
+ },
+ "Bandai WonderSwan Color":{
+  "numROMs":0
+ },
  "Colecovision":{
   "numROMs":140
  },
@@ -29,11 +41,23 @@
  "Commodore Amiga":{
   "numROMs":2083
  },
+ "Commodore Amiga CD32":{
+  "numROMs":0
+ },
  "Commodore Plus-4":{
   "numROMs":661
  },
  "Commodore VIC-20":{
   "numROMs":1356
+ },
+ "Fujitsu FM Towns":{
+  "numROMs":0
+ },
+ "Fujitsu FM Towns Marty":{
+  "numROMs":0
+ },
+ "GCE Vectrex":{
+  "numROMs":0
  },
  "MAME":{
   "numROMs":37317
@@ -41,13 +65,16 @@
  "Magnavox Odyssey2":{
   "numROMs":99
  },
+ "Mattel Intellivision":{
+  "numROMs":0
+ },
  "Microsoft MS-DOS":{
   "numROMs":5194
  },
  "Microsoft MSX":{
   "numROMs":0
  },
- "Microsoft MSX 2":{
+ "Microsoft MSX2":{
   "numROMs":165
  },
  "Microsoft Windows":{
@@ -86,6 +113,9 @@
  "Nintendo 64":{
   "numROMs":303
  },
+ "Nintendo 64DD":{
+  "numROMs":0
+ },
  "Nintendo DS":{
   "numROMs":2222
  },
@@ -113,6 +143,9 @@
  "Nintendo NES":{
   "numROMs":893
  },
+ "Nintendo Pokemon Mini":{
+  "numROMs":0
+ },
  "Nintendo SNES":{
   "numROMs":807
  },
@@ -128,20 +161,29 @@
  "Nintendo Wii U":{
   "numROMs":0
  },
- "Panasonic 3DO":{
-  "numROMs":216
- },
  "Philips Videopac G7000":{
   "numROMs":99
  },
+ "Philips Videopac Plus G7400":{
+  "numROMs":0
+ },
+ "SNK Neo-Geo AES":{
+  "numROMs":0
+ },
  "SNK Neo-Geo CD":{
   "numROMs":90
+ },
+ "SNK Neo-Geo MVS":{
+  "numROMs":0
  },
  "SNK Neo-Geo Pocket":{
   "numROMs":10
  },
  "SNK Neo-Geo Pocket Color":{
   "numROMs":40
+ },
+ "ScummVM":{
+  "numROMs":0
  },
  "Sega 32X":{
   "numROMs":33
@@ -167,6 +209,9 @@
  "Sega PICO":{
   "numROMs":0
  },
+ "Sega SC-3000":{
+  "numROMs":0
+ },
  "Sega SG-1000":{
   "numROMs":75
  },
@@ -174,6 +219,9 @@
   "numROMs":303
  },
  "Sega SegaCD":{
+  "numROMs":0
+ },
+ "Sharp X68000":{
   "numROMs":0
  },
  "Sinclair ZX Spectrum":{
@@ -193,6 +241,9 @@
  },
  "Sony PlayStation Portable":{
   "numROMs":1008
+ },
+ "Sony PlayStation Vita":{
+  "numROMs":0
  },
  "Unknown":{
   "numROMs":0
