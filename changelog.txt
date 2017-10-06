@@ -67,7 +67,7 @@ WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe,
          This resembles what NARS No-Intro filtering does.
 
 
-[B]Advanced Emulator Launcher | version 0.9.7 | XX September 2017[/B]
+[B]Advanced Emulator Launcher | version 0.9.7 | XX October 2017[/B]
 
 FEATURE  Added a lot of new platforms.
 

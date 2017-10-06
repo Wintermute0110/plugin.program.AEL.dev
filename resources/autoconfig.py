@@ -622,14 +622,13 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
     # --- Launcher stuff ---
     # >> If platform cannot be found in the official list then warn user and set it to 'Unknown'
     if i_launcher['platform']:
+        platform = i_launcher['platform']
         if i_launcher['platform'] in AEL_platform_list:
-            log_debug('Platform name recognised')
-            platform = i_launcher['platform']
+            log_debug('Platform name "{0}" recognised'.format(platform))
         else:
-            kodi_dialog_OK('Unrecognised platform name "{0}". Setting platform to "Unknown"'.format(i_launcher['platform']),
+            kodi_dialog_OK('Unrecognised platform name "{0}".'.format(),
                            title = 'Launcher "{0}"'.format(i_launcher['name']))
-            log_debug('Unrecognised platform name "{0}". Setting to Unknown'.format(i_launcher['platform']))
-            platform = 'Unknown'
+            log_debug('Unrecognised platform name "{0}".'.format(platform))
         launchers[launcherID]['platform'] = platform
         log_debug('Imported platform "{0}"'.format(platform))
 
