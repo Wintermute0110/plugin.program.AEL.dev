@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.program.advanced.emulator.launcher" name="Advanced Emulator Launcher"
-       version="0.9.7~alpha" provider-name="Wintermute0110">
+       version="0.9.7~beta1" provider-name="Wintermute0110">
   <requires>
     <!-- See https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/addon.xml
          2.24.0  Jarvis 16.x
