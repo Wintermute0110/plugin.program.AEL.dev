@@ -5570,28 +5570,40 @@ class Main:
             kodi_notify('Exported ROM Collection {0} metadata and assets.'.format(collection['m_name']))
 
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
+        # >> ROM in Favourites
+        if categoryID == VCATEGORY_FAVOURITES_ID:
+            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            new_collection_rom = roms[romID]
         # >> ROM in Virtual Launcher
-        if categoryID == VCATEGORY_TITLE_ID:
+        elif categoryID == VCATEGORY_TITLE_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
+            new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_YEARS_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
+            new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_GENRE_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
+            new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_DEVELOPER_ID:
             roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
-            launcher = self.launchers[roms[romID]['launcherID']]
-        # >> ROMs in standard launcher
+            new_collection_rom = roms[romID]
+        elif categoryID == VCATEGORY_NPLAYERS_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
+            new_collection_rom = roms[romID]
+        elif categoryID == VCATEGORY_ESRB_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_ESRB_DIR, launcherID)
+            new_collection_rom = roms[romID]
+        elif categoryID == VCATEGORY_RATING_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_RATING_DIR, launcherID)
+            new_collection_rom = roms[romID]
+        elif categoryID == VCATEGORY_CATEGORY_ID:
+            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+            new_collection_rom = roms[romID]
         else:
+            # >> ROMs in standard launcher
             launcher = self.launchers[launcherID]
             roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
-
-        # >> Sanity check
-        if not roms:
-            kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
-            return
+            new_collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
 
         # --- Load Collection index ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -5646,10 +5658,9 @@ class Main:
 
         # --- Add ROM to favourites ROMs and save to disk ---
         # >> Add ROM to the last position in the collection
-        collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
-        collection_rom_list.append(collection_rom)
-        json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
+        collection_rom_list.append(new_collection_rom)
+        collection_json_FN = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        fs_write_Collection_ROMs_JSON(collection_json_FN, collection_rom_list)
         kodi_refresh_container()
         kodi_notify('Added ROM to Collection "{0}"'.format(collection['m_name']))
 
