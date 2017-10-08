@@ -7699,6 +7699,19 @@ class Main:
         have_s_manual = num_roms - missing_s_manual
         have_s_trailer = num_roms - missing_s_trailer
 
+        have_s_title_pcent = float(have_s_title*100) / num_roms
+        have_s_snap_pcent = float(have_s_snap*100) / num_roms
+        have_s_boxfront_pcent = float(have_s_boxfront*100) / num_roms
+        have_s_boxback_pcent = float(have_s_boxback*100) / num_roms
+        have_s_cartridge_pcent = float(have_s_cartridge*100) / num_roms
+        have_s_fanart_pcent = float(have_s_fanart*100) / num_roms
+        have_s_banner_pcent = float(have_s_banner*100) / num_roms
+        have_s_clearlogo_pcent = float(have_s_clearlogo*100) / num_roms
+        have_s_flyer_pcent = float(have_s_flyer*100) / num_roms
+        have_s_map_pcent = float(have_s_map*100) / num_roms
+        have_s_manual_pcent = float(have_s_manual*100) / num_roms
+        have_s_trailer_pcent = float(have_s_trailer*100) / num_roms
+
         miss_s_title_pcent = float(missing_s_title*100) / num_roms
         miss_s_snap_pcent = float(missing_s_snap*100) / num_roms
         miss_s_boxfront_pcent = float(missing_s_boxfront*100) / num_roms
@@ -7726,34 +7739,46 @@ class Main:
         str_list.append('Clones           {0:5d}\n'.format(audit_num_clones))
         # >> Metadata
         str_list.append('\n<Metadata statistics>\n')
-        str_list.append('Year      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_year, have_s_year_pcent, missing_m_year, miss_s_year_pcent))
-        str_list.append('Genre     {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_genre, have_s_genre_pcent, missing_m_genre, miss_s_genre_pcent))
-        str_list.append('Developer {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_developer, have_s_developer_pcent, missing_m_developer, miss_s_developer_pcent))
-        str_list.append('NPlayers  {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_nplayers, have_s_nplayers_pcent, missing_m_nplayers, miss_s_nplayers_pcent))
-        str_list.append('ESRB      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_esrb, have_s_esrb_pcent, missing_m_esrb, miss_s_esrb_pcent))
-        str_list.append('Rating    {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_rating, have_s_rating_pcent, missing_m_rating, miss_s_rating_pcent))
-        str_list.append('Plot      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_plot, have_s_plot_pcent, missing_m_plot, miss_s_plot_pcent))
+        str_list.append('Year      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_year, missing_m_year, have_s_year_pcent, miss_s_year_pcent))
+        str_list.append('Genre     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_genre, missing_m_genre, have_s_genre_pcent, miss_s_genre_pcent))
+        str_list.append('Developer {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_developer, missing_m_developer, have_s_developer_pcent, miss_s_developer_pcent))
+        str_list.append('NPlayers  {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_nplayers, missing_m_nplayers, have_s_nplayers_pcent, miss_s_nplayers_pcent))
+        str_list.append('ESRB      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_esrb, missing_m_esrb, have_s_esrb_pcent, miss_s_esrb_pcent))
+        str_list.append('Rating    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_rating, missing_m_rating, have_s_rating_pcent, miss_s_rating_pcent))
+        str_list.append('Plot      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_plot, missing_m_plot, have_s_plot_pcent, miss_s_plot_pcent))
         # >> Assets statistics
         str_list.append('\n<Asset statistics>\n')
-        str_list.append('Title     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_title, missing_s_title, miss_s_title_pcent))
-        str_list.append('Snap      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_snap, missing_s_snap, miss_s_snap_pcent))
-        str_list.append('Boxfront  {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_boxfront, missing_s_boxfront, miss_s_boxfront_pcent))
-        str_list.append('Boxback   {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_boxback, missing_s_boxback, miss_s_boxback_pcent))
-        str_list.append('Cartridge {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_cartridge, missing_s_cartridge, miss_s_cartridge_pcent))
-        str_list.append('Fanart    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_fanart, missing_s_fanart, miss_s_fanart_pcent))
-        str_list.append('Banner    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_banner, missing_s_banner, miss_s_banner_pcent))
-        str_list.append('Clearlogo {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_clearlogo, missing_s_clearlogo, miss_s_clearlogo_pcent))
-        str_list.append('Flyer     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_flyer, missing_s_flyer, miss_s_flyer_pcent))
-        str_list.append('Map       {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_map, missing_s_map, miss_s_map_pcent))
-        str_list.append('Manual    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_manual, missing_s_manual, miss_s_manual_pcent))
-        str_list.append('Trailer   {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_trailer, missing_s_trailer, miss_s_trailer_pcent))
+        str_list.append('Title     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_title, missing_s_title, have_s_title_pcent, miss_s_title_pcent))
+        str_list.append('Snap      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_snap, missing_s_snap, have_s_snap_pcent, miss_s_snap_pcent))
+        str_list.append('Boxfront  {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_boxfront, missing_s_boxfront, have_s_boxfront_pcent, miss_s_boxfront_pcent))
+        str_list.append('Boxback   {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_boxback, missing_s_boxback, have_s_boxback_pcent, miss_s_boxback_pcent))
+        str_list.append('Cartridge {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_cartridge, missing_s_cartridge, have_s_cartridge_pcent, miss_s_cartridge_pcent))
+        str_list.append('Fanart    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_fanart, missing_s_fanart, have_s_fanart_pcent, miss_s_fanart_pcent))
+        str_list.append('Banner    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_banner, missing_s_banner, have_s_banner_pcent, miss_s_banner_pcent))
+        str_list.append('Clearlogo {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_clearlogo, missing_s_clearlogo, have_s_clearlogo_pcent, miss_s_clearlogo_pcent))
+        str_list.append('Flyer     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_flyer, missing_s_flyer, have_s_flyer_pcent, miss_s_flyer_pcent))
+        str_list.append('Map       {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_map, missing_s_map, have_s_map_pcent, miss_s_map_pcent))
+        str_list.append('Manual    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_manual, missing_s_manual, have_s_manual_pcent, miss_s_manual_pcent))
+        str_list.append('Trailer   {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_trailer, missing_s_trailer, have_s_trailer_pcent, miss_s_trailer_pcent))
 
         # >> Step 3: Metadata report
         str_meta_list = []
