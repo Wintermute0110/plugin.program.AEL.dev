@@ -78,9 +78,9 @@ class RomSetFactory():
         elif categoryID == VCATEGORY_GENRE_ID:
             log_info('RomSetFactory() loading ROM set Genre Virtual Launcher ...')
             return VirtualLauncherRomSet(self.VIRTUAL_CAT_GENRE_DIR, launcher, launcherID, description)
-        elif categoryID == VCATEGORY_STUDIO_ID:
+        elif categoryID == VCATEGORY_DEVELOPER_ID:
             log_info('RomSetFactory() loading ROM set Studio Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_STUDIO_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VCAT_DEVELOPER_FILE_PATH, launcher, launcherID, description)
         elif categoryID == VCATEGORY_NPLAYERS_ID:
             log_info('RomSetFactory() loading ROM set NPlayers Virtual Launcher ...')
             return VirtualLauncherRomSet(self.VIRTUAL_CAT_NPLAYERS_DIR, launcher, launcherID, description)
@@ -115,7 +115,7 @@ class RomSetFactory():
             return RomSetDescription('Virtual Launcher Years', 'Browse by Year')
         elif categoryID == VCATEGORY_GENRE_ID:
             return RomSetDescription('Virtual Launcher Genre', 'Browse by Genre')
-        elif categoryID == VCATEGORY_STUDIO_ID:
+        elif categoryID == VCATEGORY_DEVELOPER_ID:
             return RomSetDescription('Virtual Launcher Studio','Browse by Studio')
         elif categoryID == VCATEGORY_NPLAYERS_ID:
             return RomSetDescription('Virtual Launcher NPlayers', 'Browse by Number of Players')

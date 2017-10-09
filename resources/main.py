@@ -6191,7 +6191,7 @@ class Main:
                     info_text = report_meta_FN.readAll()
                 elif action == ACTION_VIEW_LAUNCHER_ASSETS:
                     window_title = 'Launcher "{0}" Asset Report'.format(launcher['m_name'])
-                     info_text = report_assets_FN.readAll()
+                    info_text = report_assets_FN.readAll()
             except IOError:
                 log_error('_command_view_menu() (IOError) Exception reading report TXT file')
                 window_title = 'Error'

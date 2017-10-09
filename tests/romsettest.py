@@ -128,7 +128,7 @@ class Test_romsettest(unittest.TestCase):
         mockPath = FileName('mock')
         target = RomSetFactory(mockPath)
         
-        categoryIDs = [VCATEGORY_TITLE_ID, VCATEGORY_YEARS_ID, VCATEGORY_GENRE_ID, VCATEGORY_STUDIO_ID, VCATEGORY_CATEGORY_ID]
+        categoryIDs = [VCATEGORY_TITLE_ID, VCATEGORY_YEARS_ID, VCATEGORY_GENRE_ID, VCATEGORY_DEVELOPER_ID, VCATEGORY_CATEGORY_ID]
         launcherID = 'TestID'
         expected = 'VirtualLauncherRomSet'
         launchers = {}
