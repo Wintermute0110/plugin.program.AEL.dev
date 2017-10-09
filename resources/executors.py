@@ -194,16 +194,16 @@ class WindowsExecutor(Executor):
         # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
         # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
         log_debug('Executor (Windows) Launching regular application')
-        log_debug('Executor (Windows) windows_cd_apppath = {0}'.format(windows_cd_apppath))
-        log_debug('Executor (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
+        log_debug('Executor (Windows) windows_cd_apppath = {0}'.format(self.windows_cd_apppath))
+        log_debug('Executor (Windows) windows_close_fds  = {0}'.format(self.windows_close_fds))
        
-        if windows_cd_apppath and windows_close_fds:
+        if self.windows_cd_apppath and self.windows_close_fds:
             retcode = subprocess.call(command, cwd = apppath.encode('utf-8'), close_fds = True)
-        elif windows_cd_apppath and not windows_close_fds:
+        elif self.windows_cd_apppath and not self.windows_close_fds:
             retcode = subprocess.call(command, cwd = apppath.encode('utf-8'), close_fds = False)
-        elif not windows_cd_apppath and windows_close_fds:
+        elif not self.windows_cd_apppath and self.windows_close_fds:
             retcode = subprocess.call(command, close_fds = True)
-        elif not windows_cd_apppath and not windows_close_fds:
+        elif not self.windows_cd_apppath and not self.windows_close_fds:
             retcode = subprocess.call(command, close_fds = False)
         else:
             raise Exception('Logical error')

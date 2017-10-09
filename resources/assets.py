@@ -152,7 +152,7 @@ def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
 #
 def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]
-    thumb_path     = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
+    thumb_path     = object_dic[conf_asset_key] if conf_asset_key in object_dic and object_dic[conf_asset_key] else default_asset
 
     return thumb_path
 
@@ -160,6 +160,10 @@ def asset_get_default_asset_Category(object_dic, object_key, default_asset = '')
 # Same for ROMs
 #
 def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
+
+    if object_key not in launcher:
+        return default_asset
+
     conf_asset_key = launcher[object_key]
     thumb_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
 

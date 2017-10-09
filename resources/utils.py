@@ -538,7 +538,7 @@ class FileName:
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
-    def scanFilesInPath(self, mask):
+    def scanFilesInPath(self, mask = '*.*'):
         files = []
 
         subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
@@ -547,7 +547,7 @@ class FileName:
 
         return files
 
-    def scanFilesInPathAsPaths(self, mask):
+    def scanFilesInPathAsPaths(self, mask = '*.*'):
         files = []
         
         subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
@@ -557,7 +557,7 @@ class FileName:
 
         return files
 
-    def recursiveScanFilesInPath(self, mask):
+    def recursiveScanFilesInPath(self, mask = '*.*'):
         files = []
         
         subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))

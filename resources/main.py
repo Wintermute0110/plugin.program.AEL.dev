@@ -3942,7 +3942,7 @@ class Main:
             if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
 
         # --- Set common flags to all launchers---
-        if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
+        if  'disks' in rom and rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
         # --- Add ROM to lisitem ---
         ICON_OVERLAY = 5 if rom['finished'] else 4
@@ -4340,7 +4340,7 @@ class Main:
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
         romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
-        rom_list = romSet.loadRoms()
+        rom_list = romSet.loadRoms() if romSet is not None else None
 
         if not rom_list:
             kodi_notify('Recently played list is empty. Play some ROMs first!')
@@ -4359,7 +4359,7 @@ class Main:
 
         # --- Load Most Played favourite ROMs ---
         romSet = self.romsetFactory.create(VLAUNCHER_MOST_PLAYED_ID, VCATEGORY_MOST_PLAYED_ID, self.launchers)
-        roms = romSet.loadRomsAsList()
+        roms = romSet.loadRomsAsList() if romSet is not None else None
         if not roms:
             kodi_notify('Most played ROMs list  is empty. Play some ROMs first!.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -7424,7 +7424,12 @@ class Main:
         # >> Check if there is an XML for this launcher. If so, load it.
         # >> If file does not exist or is empty then return an empty dictionary.
         report_fobj.write('Loading launcher ROMs ...\n')
-        roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
+        
+        romset = self.romsetFactory.create(launcherID, None, self.launchers)
+        roms = romset.loadRoms()
+        if roms is None:
+            roms = {}
+
         num_roms = len(roms)
         report_fobj.write('  {0} ROMs currently in database\n'.format(num_roms))
         log_info('Launcher ROM database contain {0} items'.format(num_roms))
