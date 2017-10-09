@@ -68,7 +68,7 @@ COLLECTIONS_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('collections.xml')
 VCAT_TITLE_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_title.xml')
 VCAT_YEARS_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_years.xml')
 VCAT_GENRE_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_genre.xml')
-VCAT_STUDIO_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('vcat_studio.xml')
+VCAT_DEVELOPER_FILE_PATH  = PLUGIN_DATA_DIR.pjoin('vcat_developers.xml')
 VCAT_NPLAYERS_FILE_PATH   = PLUGIN_DATA_DIR.pjoin('vcat_nplayers.xml')
 VCAT_ESRB_FILE_PATH       = PLUGIN_DATA_DIR.pjoin('vcat_esrb.xml')
 VCAT_RATING_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('vcat_rating.xml')
@@ -81,22 +81,24 @@ GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
 LAUNCHBOX_INFO_DIR        = CURRENT_ADDON_DIR.pjoin('LaunchBox')
 LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
 BIOS_REPORT_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('report_BIOS.txt')
+LAUNCHER_REPORT_FILE_PATH = PLUGIN_DATA_DIR.pjoin('report_Launchers.txt')
 
 # --- Artwork and NFO for Categories and Launchers ---
-DEFAULT_CAT_ASSET_DIR    = PLUGIN_DATA_DIR.pjoin('asset-categories')
-DEFAULT_COL_ASSET_DIR    = PLUGIN_DATA_DIR.pjoin('asset-collections')
-DEFAULT_LAUN_ASSET_DIR   = PLUGIN_DATA_DIR.pjoin('asset-launchers')
-DEFAULT_FAV_ASSET_DIR    = PLUGIN_DATA_DIR.pjoin('asset-favourites')
-VIRTUAL_CAT_TITLE_DIR    = PLUGIN_DATA_DIR.pjoin('db_title')
-VIRTUAL_CAT_YEARS_DIR    = PLUGIN_DATA_DIR.pjoin('db_years')
-VIRTUAL_CAT_GENRE_DIR    = PLUGIN_DATA_DIR.pjoin('db_genre')
-VIRTUAL_CAT_STUDIO_DIR   = PLUGIN_DATA_DIR.pjoin('db_studio')
-VIRTUAL_CAT_NPLAYERS_DIR = PLUGIN_DATA_DIR.pjoin('db_nplayers')
-VIRTUAL_CAT_ESRB_DIR     = PLUGIN_DATA_DIR.pjoin('db_esrb')
-VIRTUAL_CAT_RATING_DIR   = PLUGIN_DATA_DIR.pjoin('db_rating')
-VIRTUAL_CAT_CATEGORY_DIR = PLUGIN_DATA_DIR.pjoin('db_category')   
-COLLECTIONS_DIR          = PLUGIN_DATA_DIR.pjoin('db_Collections')
-REPORTS_DIR              = PLUGIN_DATA_DIR.pjoin('reports')
+DEFAULT_CAT_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-categories')
+DEFAULT_COL_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-collections')
+DEFAULT_LAUN_ASSET_DIR    = PLUGIN_DATA_DIR.pjoin('asset-launchers')
+DEFAULT_FAV_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-favourites')
+VIRTUAL_CAT_TITLE_DIR     = PLUGIN_DATA_DIR.pjoin('db_title')
+VIRTUAL_CAT_YEARS_DIR     = PLUGIN_DATA_DIR.pjoin('db_year')
+VIRTUAL_CAT_GENRE_DIR     = PLUGIN_DATA_DIR.pjoin('db_genre')
+VIRTUAL_CAT_DEVELOPER_DIR = PLUGIN_DATA_DIR.pjoin('db_developer')
+VIRTUAL_CAT_NPLAYERS_DIR  = PLUGIN_DATA_DIR.pjoin('db_nplayer')
+VIRTUAL_CAT_ESRB_DIR      = PLUGIN_DATA_DIR.pjoin('db_esrb')
+VIRTUAL_CAT_RATING_DIR    = PLUGIN_DATA_DIR.pjoin('db_rating')
+VIRTUAL_CAT_CATEGORY_DIR  = PLUGIN_DATA_DIR.pjoin('db_category')
+ROMS_DIR                  = PLUGIN_DATA_DIR.pjoin('db_ROMs')
+COLLECTIONS_DIR           = PLUGIN_DATA_DIR.pjoin('db_Collections')
+REPORTS_DIR               = PLUGIN_DATA_DIR.pjoin('reports')
 
 #
 # Make AEL to run only 1 single instance
@@ -109,7 +111,6 @@ AEL_LOCK_VALUE    = 'True'
 
 class SingleInstance:
     def __enter__(self):
-        return True
         # --- If property is True then another instance of AEL is running ---
         if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
             log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
@@ -206,12 +207,22 @@ class Main:
             # log_debug('Response  ''{0}'''.format(response.decode('utf-8')))
 
         # --- Addon data paths creation ---
-        if not PLUGIN_DATA_DIR.exists():          PLUGIN_DATA_DIR.makedirs()
-        if not DEFAULT_CAT_ASSET_DIR.exists():    DEFAULT_CAT_ASSET_DIR.makedirs()
-        if not DEFAULT_COL_ASSET_DIR.exists():    DEFAULT_COL_ASSET_DIR.makedirs()
-        if not DEFAULT_LAUN_ASSET_DIR.exists():   DEFAULT_LAUN_ASSET_DIR.makedirs()
-        if not DEFAULT_FAV_ASSET_DIR.exists():    DEFAULT_FAV_ASSET_DIR.makedirs()
-        if not REPORTS_DIR.exists():              REPORTS_DIR.makedirs()
+        if not PLUGIN_DATA_DIR.exists():           PLUGIN_DATA_DIR.makedirs()
+        if not DEFAULT_CAT_ASSET_DIR.exists():     DEFAULT_CAT_ASSET_DIR.makedirs()
+        if not DEFAULT_COL_ASSET_DIR.exists():     DEFAULT_COL_ASSET_DIR.makedirs()
+        if not DEFAULT_LAUN_ASSET_DIR.exists():    DEFAULT_LAUN_ASSET_DIR.makedirs()
+        if not DEFAULT_FAV_ASSET_DIR.exists():     DEFAULT_FAV_ASSET_DIR.makedirs()
+        if not VIRTUAL_CAT_TITLE_DIR.exists():     VIRTUAL_CAT_TITLE_DIR.makedirs()
+        if not VIRTUAL_CAT_YEARS_DIR.exists():     VIRTUAL_CAT_YEARS_DIR.makedirs()
+        if not VIRTUAL_CAT_GENRE_DIR.exists():     VIRTUAL_CAT_GENRE_DIR.makedirs()
+        if not VIRTUAL_CAT_DEVELOPER_DIR.exists(): VIRTUAL_CAT_DEVELOPER_DIR.makedirs()
+        if not VIRTUAL_CAT_NPLAYERS_DIR.exists():  VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
+        if not VIRTUAL_CAT_ESRB_DIR.exists():      VIRTUAL_CAT_ESRB_DIR.makedirs()
+        if not VIRTUAL_CAT_RATING_DIR.exists():    VIRTUAL_CAT_RATING_DIR.makedirs()
+        if not VIRTUAL_CAT_CATEGORY_DIR.exists():  VIRTUAL_CAT_CATEGORY_DIR.makedirs()
+        if not ROMS_DIR.exists():                  ROMS_DIR.makedirs()
+        if not COLLECTIONS_DIR.exists():           COLLECTIONS_DIR.makedirs()
+        if not REPORTS_DIR.exists():               REPORTS_DIR.makedirs()
 
         # -- Bootstrap instances -- 
         self.romsetFactory = RomSetFactory(PLUGIN_DATA_DIR)
@@ -441,30 +452,36 @@ class Main:
         # --- ROM Scanner settings ---
         self.settings['scan_recursive']           = True if o.getSetting('scan_recursive') == 'true' else False
         self.settings['scan_ignore_bios']         = True if o.getSetting('scan_ignore_bios') == 'true' else False
-        self.settings['scan_metadata_policy']     = int(o.getSetting('scan_metadata_policy'))
-        self.settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
         self.settings['scan_update_NFO_files']    = True if o.getSetting('scan_update_NFO_files') == 'true' else False
         self.settings['scan_ignore_scrap_title']  = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
         self.settings['scan_clean_tags']          = True if o.getSetting('scan_clean_tags') == 'true' else False
-
-        # --- ROM scraping ---
+        self.settings['scan_metadata_policy']     = int(o.getSetting('scan_metadata_policy'))
+        self.settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
         self.settings['metadata_scraper_mode']    = int(o.getSetting('metadata_scraper_mode'))
         self.settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
 
-        self.settings['scraper_metadata']         = int(o.getSetting('scraper_metadata'))
-        self.settings['scraper_title']            = int(o.getSetting('scraper_title'))
-        self.settings['scraper_snap']             = int(o.getSetting('scraper_snap'))
-        self.settings['scraper_bfront']           = int(o.getSetting('scraper_bfront'))
-        self.settings['scraper_cabinet']          = int(o.getSetting('scraper_cabinet'))
-        self.settings['scraper_bback']            = int(o.getSetting('scraper_bback'))
-        self.settings['scraper_cpanel']           = int(o.getSetting('scraper_cpanel'))
-        self.settings['scraper_cart']             = int(o.getSetting('scraper_cart'))
-        self.settings['scraper_pcb']              = int(o.getSetting('scraper_pcb'))
-        self.settings['scraper_fanart']           = int(o.getSetting('scraper_fanart'))
-        self.settings['scraper_banner']           = int(o.getSetting('scraper_banner'))
-        self.settings['scraper_marquee']          = int(o.getSetting('scraper_marquee'))
-        self.settings['scraper_clearlogo']        = int(o.getSetting('scraper_clearlogo'))
-        self.settings['scraper_flyer']            = int(o.getSetting('scraper_flyer'))
+        # --- ROM scraping ---
+        self.settings['scraper_metadata']       = int(o.getSetting('scraper_metadata'))
+        self.settings['scraper_metadata_MAME']  = int(o.getSetting('scraper_metadata_MAME'))
+
+        self.settings['scraper_title']          = int(o.getSetting('scraper_title'))
+        self.settings['scraper_snap']           = int(o.getSetting('scraper_snap'))
+        self.settings['scraper_boxfront']       = int(o.getSetting('scraper_boxfront'))
+        self.settings['scraper_boxback']        = int(o.getSetting('scraper_boxback'))
+        self.settings['scraper_cart']           = int(o.getSetting('scraper_cart'))
+        self.settings['scraper_fanart']         = int(o.getSetting('scraper_fanart'))
+        self.settings['scraper_banner']         = int(o.getSetting('scraper_banner'))
+        self.settings['scraper_clearlogo']      = int(o.getSetting('scraper_clearlogo'))
+
+        self.settings['scraper_title_MAME']     = int(o.getSetting('scraper_title_MAME'))
+        self.settings['scraper_snap_MAME']      = int(o.getSetting('scraper_snap_MAME'))
+        self.settings['scraper_cabinet_MAME']   = int(o.getSetting('scraper_cabinet_MAME'))
+        self.settings['scraper_cpanel_MAME']    = int(o.getSetting('scraper_cpanel_MAME'))
+        self.settings['scraper_pcb_MAME']       = int(o.getSetting('scraper_pcb_MAME'))
+        self.settings['scraper_fanart_MAME']    = int(o.getSetting('scraper_fanart_MAME'))
+        self.settings['scraper_marquee_MAME']   = int(o.getSetting('scraper_marquee_MAME'))
+        self.settings['scraper_clearlogo_MAME'] = int(o.getSetting('scraper_clearlogo_MAME'))
+        self.settings['scraper_flyer_MAME']     = int(o.getSetting('scraper_flyer_MAME'))
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
@@ -504,13 +521,14 @@ class Main:
         self.settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- I/O ---
-        self.settings['io_retroarch_sys_dir']     = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
+        self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
+        self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
         # --- Advanced ---
         self.settings['media_state_action']       = int(o.getSetting('media_state_action'))
         self.settings['delay_tempo']              = int(round(float(o.getSetting('delay_tempo'))))
         self.settings['suspend_audio_engine']     = True if o.getSetting('suspend_audio_engine') == 'true' else False
-        self.settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
+        # self.settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
         self.settings['escape_romfile']           = True if o.getSetting('escape_romfile') == 'true' else False
         self.settings['lirc_state']               = True if o.getSetting('lirc_state') == 'true' else False
         self.settings['show_batch_window']        = True if o.getSetting('show_batch_window') == 'true' else False
@@ -3266,7 +3284,7 @@ class Main:
         self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
         self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
-        self._gui_render_virtual_category_row(VCATEGORY_STUDIO_ID)
+        self._gui_render_virtual_category_row(VCATEGORY_DEVELOPER_ID)
         self._gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
         self._gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
         self._gui_render_virtual_category_row(VCATEGORY_RATING_ID)
@@ -3295,13 +3313,13 @@ class Main:
             vcategory_banner = ''
             vcategory_flyer  = ''
             vcategory_label  = 'Genre'
-        elif virtual_category_kind == VCATEGORY_STUDIO_ID:
-            vcategory_name   = 'Browse by Studio'
+        elif virtual_category_kind == VCATEGORY_DEVELOPER_ID:
+            vcategory_name   = 'Browse by Developer'
             vcategory_thumb  = 'DefaultFolder.png'
             vcategory_fanart = ''
             vcategory_banner = ''
             vcategory_flyer  = ''
-            vcategory_label  = 'Studio'
+            vcategory_label  = 'Developer'
         elif virtual_category_kind == VCATEGORY_NPLAYERS_ID:
             vcategory_name   = 'Browse by Number of Players'
             vcategory_thumb  = 'DefaultFolder.png'
@@ -3337,7 +3355,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4,
                                    'plot' : 'Shows virtual launchers in {0} virtual category'.format(vcategory_label)})
-        listitem.setArt({'thumb'  : vcategory_thumb,  'fanart' : vcategory_fanart, 
+        listitem.setArt({'icon'   : vcategory_thumb,  'fanart' : vcategory_fanart, 
                          'banner' : vcategory_banner, 'poster' : vcategory_flyer})
 
         commands = []
@@ -3628,7 +3646,7 @@ class Main:
 
         # --- Load parent/clone index ---
         index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
-        index_file_path = ROMS_DIR.join(index_base_noext + '.json')
+        index_file_path = ROMS_DIR.pjoin(index_base_noext + '.json')
         if not index_file_path.exists():
             kodi_notify('Parent list JSON not found.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -3872,7 +3890,7 @@ class Main:
             else:
                 rom_name = '{0} [COLOR orange][{1} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
-             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
+             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
              categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
             icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
@@ -4022,7 +4040,7 @@ class Main:
         elif categoryID == VCATEGORY_RECENT_ID or categoryID == VCATEGORY_MOST_PLAYED_ID:
             commands.append(('View ROM data', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID  or \
-             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
+             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID   or \
              categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
             commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
@@ -4162,9 +4180,9 @@ class Main:
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
             vcategory_db_filename = VCAT_GENRE_FILE_PATH
             vcategory_name        = 'Browse by Genre'
-        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
-            vcategory_db_filename = VCAT_STUDIO_FILE_PATH
-            vcategory_name        = 'Browse by Studio'
+        elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
+            vcategory_db_filename = VCAT_DEVELOPER_FILE_PATH
+            vcategory_name        = 'Browse by Developer'
         elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
             vcategory_db_filename = VCAT_NPLAYERS_FILE_PATH
             vcategory_name        = 'Browse by Number of Players'
@@ -4278,10 +4296,10 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
-        log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path.getOriginalPath()))
-        games = audit_load_OfflineScraper_XML(xml_path)
+        xml_path_FN = CURRENT_ADDON_DIR.pjoin(xml_file)
+        log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
+        log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
+        games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
         # --- Display offline scraper ROMs ---
         loading_ticks_end = time.time()
@@ -4313,10 +4331,10 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
-        log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading XML {0}'.format(xml_path.getOriginalPath()))
-        games = audit_load_OfflineScraper_XML(xml_path)
+        xml_path_FN = CURRENT_ADDON_DIR.pjoin(xml_file)
+        log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
+        log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
+        games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
         # --- Display offline scraper ROMs ---
         loading_ticks_end = time.time()
@@ -4473,7 +4491,7 @@ class Main:
             log_debug('_command_manage_favourites() Managing Collection ROMs')
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
@@ -4751,7 +4769,7 @@ class Main:
             collection_rom_list = []
             for key in roms_fav:
                 collection_rom_list.append(roms_fav[key])
-            json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
 
@@ -4926,7 +4944,7 @@ class Main:
         # --- Load Collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
@@ -5195,7 +5213,7 @@ class Main:
         # --- Load collection index and ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
 
         # --- Confirm deletion ---
@@ -5206,7 +5224,7 @@ class Main:
         if not ret: return
 
         # --- Remove JSON file and delete collection object ---
-        collection_file_path = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        collection_file_path = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
         try:
             if collection_file_path.exists(): collection_file_path.unlink()
@@ -5286,7 +5304,7 @@ class Main:
                     continue
                 log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
                 asset_dic = assets_dic[asset_noext_FN.getBase()]
-                new_asset_FN = collections_asset_dir_FN.join(asset_dic['basename'])
+                new_asset_FN = collections_asset_dir_FN.pjoin(asset_dic['basename'])
 
                 # >> Create asset file
                 asset_base64_data = asset_dic['data']
@@ -5327,7 +5345,7 @@ class Main:
                         continue
                     log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
                     asset_dic = assets_dic[ROM_asset_FN.getBase_noext()]                        
-                    new_asset_FN = collections_asset_dir_FN.join(asset_dic['basename'])
+                    new_asset_FN = collections_asset_dir_FN.pjoin(asset_dic['basename'])
 
                     # >> Create asset file
                     asset_base64_data = asset_dic['data']
@@ -5355,7 +5373,7 @@ class Main:
 
         # --- Write ROM Collection databases ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR.join(collection_base_name + '.json'), collection_rom_list)
+        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR.pjoin(collection_base_name + '.json'), collection_rom_list)
         if import_collection_assets:
             kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
         else:
@@ -5380,7 +5398,7 @@ class Main:
         # --- Load collection ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
@@ -5498,17 +5516,17 @@ class Main:
                 fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
                 log_info('_command_export_collection() Collection assets were copied. Saving Collection index ...')
             if ROM_assets_were_copied:
-                json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+                json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                 fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
                 log_info('_command_export_collection() Collection ROM assets were copied. Saving Collection database ...')
 
         # --- Export collection metadata (Always) ---
-        output_FileName = output_dir_FileName.join(collection['m_name'] + '.json')
+        output_FileName = output_dir_FileName.pjoin(collection['m_name'] + '.json')
         fs_export_ROM_collection(output_FileName, collection, collection_rom_list)
 
         # --- Export collection assets (Optional) ---
         if export_type == 1:
-            output_FileName = output_dir_FileName.join(collection['m_name'] + '_assets.json')
+            output_FileName = output_dir_FileName.pjoin(collection['m_name'] + '_assets.json')
             fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_list, collections_asset_dir_FN)
 
         # >> User info
@@ -5528,11 +5546,6 @@ class Main:
         else:
             # >> ROM in Virtual Launcher
             launcher = self.launchers[roms[romID]['launcherID']] # why not launchers[id]
-
-        # >> Sanity check
-        if not roms:
-            kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
-            return
 
         # --- Load Collection index ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -5555,7 +5568,7 @@ class Main:
 
         # --- Load Collection ROMs ---
         collection = collections[collectionID]
-        roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         log_info('Adding ROM to Collection')
         log_info('Collection {0}'.format(collection['m_name']))
@@ -5587,10 +5600,9 @@ class Main:
 
         # --- Add ROM to favourites ROMs and save to disk ---
         # >> Add ROM to the last position in the collection
-        collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
-        collection_rom_list.append(collection_rom)
-        json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
-        fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
+        collection_rom_list.append(new_collection_rom)
+        collection_json_FN = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        fs_write_Collection_ROMs_JSON(collection_json_FN, collection_rom_list)
         kodi_refresh_container()
         kodi_notify('Added ROM to Collection "{0}"'.format(collection['m_name']))
 
@@ -5752,6 +5764,19 @@ class Main:
         VIEW_COLLECTION        = 300
         VIEW_ROM_LAUNCHER      = 400
         VIEW_ROM_VLAUNCHER     = 500
+        VIEW_ROM_COLLECTION    = 500
+
+        ACTION_VIEW_CATEGORY          = 100
+        ACTION_VIEW_LAUNCHER          = 200
+        ACTION_VIEW_COLLECTION        = 300
+        ACTION_VIEW_ROM               = 400
+        ACTION_VIEW_LAUNCHER_STATS    = 500
+        ACTION_VIEW_LAUNCHER_METADATA = 600
+        ACTION_VIEW_LAUNCHER_ASSETS   = 700
+        ACTION_VIEW_LAUNCHER_SCANNER  = 800
+        ACTION_VIEW_MANUAL            = 900
+        ACTION_VIEW_MAP               = 1000
+        ACTION_VIEW_EXEC_OUTPUT       = 1100
 
         # >> Determine if we are in a cateogory, launcher or ROM
         log_debug('_command_view_menu() categoryID = {0}'.format(categoryID))
@@ -5759,24 +5784,27 @@ class Main:
         log_debug('_command_view_menu() romID      = {0}'.format(romID))
         if launcherID and romID:
             if categoryID == VCATEGORY_FAVOURITES_ID or \
-               categoryID == VCATEGORY_COLLECTIONS_ID or \
-               categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
-               categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_STUDIO_ID or \
-               categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
-               categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID or \
                categoryID == VCATEGORY_RECENT_ID or \
-               categoryID == VCATEGORY_MOST_PLAYED_ID:
+               categoryID == VCATEGORY_MOST_PLAYED_ID or \
+               categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
+               categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
+               categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
+               categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
                 view_type = VIEW_ROM_VLAUNCHER
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                view_type = VIEW_ROM_COLLECTION
             else:
                 view_type = VIEW_ROM_LAUNCHER
         elif launcherID and not romID:
-            if categoryID == VCATEGORY_COLLECTIONS_ID: view_type = VIEW_COLLECTION
-            else:                                      view_type = VIEW_LAUNCHER
+            if categoryID == VCATEGORY_COLLECTIONS_ID:
+                view_type = VIEW_COLLECTION
+            else:
+                view_type = VIEW_LAUNCHER
         else:
             view_type = VIEW_CATEGORY
         log_debug('_command_view_menu() view_type = {0}'.format(view_type))
 
-        # >> Build menu base on view_type
+        # --- Build menu base on view_type ---
         if LAUNCH_LOG_FILE_PATH.exists():
             stat_stdout = LAUNCH_LOG_FILE_PATH.stat()
             size_stdout = stat_stdout.st_size
@@ -5792,36 +5820,124 @@ class Main:
                 Report_status = '{0} bytes'.format(size_stdout)
             else:
                 Report_status = 'not found'
+
         if view_type == VIEW_CATEGORY:
-            d_list = ['View Category data',
-                      'View last execution output ({0})'.format(STD_status)]
+            d_list = [
+                'View Category data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
         elif view_type == VIEW_LAUNCHER:
-            d_list = ['View Launcher data',
-                      'View last execution output ({0})'.format(STD_status),
-                      'View Launcher statistics',
-                      'View Launcher metadata/audit report',
-                      'View Launcher assets report',
-                      'View Launcher scanner report ({0})'.format(Report_status)]
-        elif view_type == VIEW_ROM_LAUNCHER:
-            d_list = ['View ROM data',
-                      'View last execution output ({0})'.format(STD_status),
-                      'View Launcher statistics',
-                      'View Launcher metadata/audit report',
-                      'View Launcher assets report',
-                      'View Launcher scanner report ({0})'.format(Report_status)]
+            d_list = [
+                'View Launcher data',
+                'View Launcher statistics',
+                'View Launcher metadata/audit report',
+                'View Launcher assets report',
+                'View Launcher scanner report ({0})'.format(Report_status),
+                'View last execution output ({0})'.format(STD_status),
+            ]
         elif view_type == VIEW_COLLECTION:
-            d_list = ['View Collection data',
-                      'View last execution output ({0})'.format(STD_status)]
-        # >> ROM in virtual launcher (no report)
+            d_list = [
+                'View Collection data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
+        elif view_type == VIEW_ROM_LAUNCHER:
+            d_list = [
+                'View ROM manual',
+                'View ROM map',
+                'View ROM data',
+                'View Launcher statistics',
+                'View Launcher metadata/audit report',
+                'View Launcher assets report',
+                'View Launcher scanner report ({0})'.format(Report_status),
+                'View last execution output ({0})'.format(STD_status),
+            ]
+        elif view_type == VIEW_ROM_VLAUNCHER:
+            # >> ROM in Favourites or Virtual Launcher (no launcher report)
+            d_list = [
+                'View ROM manual',
+                'View ROM map',
+                'View ROM data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
+        elif view_type == VIEW_ROM_COLLECTION:
+            d_list = [
+                'View ROM manual',
+                'View ROM map',
+                'View ROM data',
+                'View last execution output ({0})'.format(STD_status),
+            ]
         else:
-            d_list = ['View ROM data',
-                      'View last execution output ({0})'.format(STD_status)]
-        dialog = xbmcgui.Dialog()
-        selected_value = dialog.select('View', d_list)
+            kodi_dialog_OK('Wrong view_type = {0}. This is a bug, please report it.'.format(view_type))
+            return
+        selected_value = xbmcgui.Dialog().select('View', d_list)
         if selected_value < 0: return
 
-        # --- View Category/Launcher/ROM data ---
-        if selected_value == 0:
+        # --- Polymorphic menu. Determine action to do. ---
+        if view_type == VIEW_CATEGORY:
+            if   selected_value == 0: action = ACTION_VIEW_CATEGORY
+            elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_CATEGORY and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_LAUNCHER:
+            if   selected_value == 0: action = ACTION_VIEW_LAUNCHER
+            elif selected_value == 1: action = ACTION_VIEW_LAUNCHER_STATS
+            elif selected_value == 2: action = ACTION_VIEW_LAUNCHER_METADATA
+            elif selected_value == 3: action = ACTION_VIEW_LAUNCHER_ASSETS
+            elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_SCANNER
+            elif selected_value == 5: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_LAUNCHER and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_COLLECTION:
+            if   selected_value == 0: action = ACTION_VIEW_COLLECTION
+            elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_COLLECTION and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_ROM_LAUNCHER:
+            if   selected_value == 0: action = ACTION_VIEW_MANUAL
+            elif selected_value == 1: action = ACTION_VIEW_MAP
+            elif selected_value == 2: action = ACTION_VIEW_ROM
+            elif selected_value == 3: action = ACTION_VIEW_LAUNCHER_STATS
+            elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_METADATA
+            elif selected_value == 5: action = ACTION_VIEW_LAUNCHER_ASSETS
+            elif selected_value == 6: action = ACTION_VIEW_LAUNCHER_SCANNER
+            elif selected_value == 7: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_ROM_LAUNCHER and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_ROM_VLAUNCHER:
+            if   selected_value == 0: action = ACTION_VIEW_MANUAL
+            elif selected_value == 1: action = ACTION_VIEW_MAP
+            elif selected_value == 2: action = ACTION_VIEW_ROM
+            elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_ROM_VLAUNCHER and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        elif view_type == VIEW_ROM_COLLECTION:
+            if   selected_value == 0: action = ACTION_VIEW_MANUAL
+            elif selected_value == 1: action = ACTION_VIEW_MAP
+            elif selected_value == 2: action = ACTION_VIEW_ROM
+            elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
+            else:
+                kodi_dialog_OK('view_type == VIEW_ROM_COLLECTION and selected_value = {0}. '.format(selected_value) +
+                               'This is a bug, please report it.')
+                return
+        else:
+            kodi_dialog_OK('Wrong view_type == {0}. '.format(view_type) +
+                           'This is a bug, please report it.')
+            return
+        log_debug('_command_view_menu() action = {0}'.format(action))
+
+        # --- Execute action ---
+        if action == ACTION_VIEW_CATEGORY or action == ACTION_VIEW_LAUNCHER or \
+           action == ACTION_VIEW_COLLECTION or action == ACTION_VIEW_ROM:
             if view_type == VIEW_CATEGORY:
                 window_title = 'Category data'
                 category = self.categories[categoryID]
@@ -5983,7 +6099,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Collection ...')
                     (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
                     collection = collections[launcherID]
-                    roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+                    roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                     collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
                     if current_ROM_position < 0:
@@ -6036,30 +6152,10 @@ class Main:
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
-        # --- View last execution output ---
-        # NOTE NOT available on Windows. See comments in _run_process()
-        elif selected_value == 1:
-            # --- Ckeck for errors and read file ---
-            # if sys.platform == 'win32':
-            #     kodi_dialog_OK('This feature is not available on Windows.')
-            #     return
-            if not LAUNCH_LOG_FILE_PATH.exists():
-                kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
-                return
-            info_text = ''
-            info_text = LAUNCH_LOG_FILE_PATH.readAll()
-
-            # --- Show information window ---
-            window_title = 'Launcher last execution stdout'
-            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-            dialog = xbmcgui.Dialog()
-            dialog.textviewer(window_title, info_text)
-            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
-
-        # --- Launcher statistics ---
-        elif selected_value == 2 or selected_value == 3 or selected_value == 4:
+        # --- Launcher statistical reports ---
+        elif action == ACTION_VIEW_LAUNCHER_STATS or \
+             action == ACTION_VIEW_LAUNCHER_METADATA or \
+             action == ACTION_VIEW_LAUNCHER_ASSETS:
             # --- Standalone launchers do not have reports! ---
             if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
             else:                             category_name = VCATEGORY_ADDONROOT_ID
@@ -6087,15 +6183,15 @@ class Main:
 
             # --- Read report file ---
             try:
-                if selected_value == 2:
-                    window_title = 'Launcher {0} Statistics Report'.format(launcher['m_name'])
+                if action == ACTION_VIEW_LAUNCHER_STATS:
+                    window_title = 'Launcher "{0}" Statistics Report'.format(launcher['m_name'])
                     info_text = report_stats_FN.readAll()
-                elif selected_value == 3:
-                    window_title = 'Launcher {0} Metadata Report'.format(launcher['m_name'])
+                elif action == ACTION_VIEW_LAUNCHER_METADATA:
+                    window_title = 'Launcher "{0}" Metadata Report'.format(launcher['m_name'])
                     info_text = report_meta_FN.readAll()
-                elif selected_value == 4:
-                    window_title = 'Launcher {0} Asset Report'.format(launcher['m_name'])
-                    info_text = report_assets_FN.readAll()
+                elif action == ACTION_VIEW_LAUNCHER_ASSETS:
+                    window_title = 'Launcher "{0}" Asset Report'.format(launcher['m_name'])
+                     info_text = report_assets_FN.readAll()
             except IOError:
                 log_error('_command_view_menu() (IOError) Exception reading report TXT file')
                 window_title = 'Error'
@@ -6112,8 +6208,8 @@ class Main:
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
-        # --- ROM scanner report ---
-        elif selected_value == 5:
+        # --- Launcher ROM scanner report ---
+        elif action == ACTION_VIEW_LAUNCHER_SCANNER:
             # --- Ckeck for errors and read file ---
             if not launcher_report_FN.exists():
                 kodi_dialog_OK('ROM scanner report not found.')
@@ -6130,6 +6226,89 @@ class Main:
             dialog.textviewer(window_title, info_text)
             log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
             xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+        # --- View ROM Manual ---
+        # >> Use Ghostscript like HyperLauncher?
+        # >> Or use plugin.image.pdfreader plugin?
+        # >> Or ask core developers to incorporate a native PDF reader?
+        elif action == ACTION_VIEW_MANUAL:
+            kodi_dialog_OK('View ROM manual not implemented yet. Sorry.')
+
+        # --- View ROM Map ---
+        elif action == ACTION_VIEW_MAP:
+            # >> Load ROMs
+            if categoryID == VCATEGORY_FAVOURITES_ID:
+                roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+                rom = roms[romID]
+            elif categoryID == VCATEGORY_MOST_PLAYED_ID:
+                most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+                rom = most_played_roms[romID]
+            elif categoryID == VCATEGORY_RECENT_ID:
+                recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+                current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
+                if current_ROM_position < 0:
+                    kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                    return
+                rom = recent_roms_list[current_ROM_position]
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+                collection = collections[launcherID]
+                roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+                collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+                current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
+                if current_ROM_position < 0:
+                    kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                    return
+                rom = collection_rom_list[current_ROM_position]
+            elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
+                 categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
+                 categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
+                 categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
+                kodi_dialog_OK('ROM-loading factory not implemented yet. '
+                               'Until then you cannot see maps in Virtual Launchers. '
+                               'Sorry.')
+                return
+            else:
+                launcher = self.launchers[launcherID]
+                roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
+                rom = roms[romID]
+
+            # >> Show map image
+            s_map = rom['s_map']
+            if not s_map:
+                kodi_dialog_OK('Map image file not set for ROM "{0}"'.format(rom['m_name']))
+                return
+            map_FN = FileName(s_map)
+            if not map_FN.exists():
+                kodi_dialog_OK('Map image file not found.')
+                return
+            xbmc.executebuiltin('ShowPicture("{0}")'.format(map_FN.getPath()))
+
+        # --- View last execution output ---
+        elif action == ACTION_VIEW_EXEC_OUTPUT:
+            log_debug('_command_view_menu() Executing action == ACTION_VIEW_EXEC_OUTPUT')
+
+            # --- Ckeck for errors and read file ---
+            if not LAUNCH_LOG_FILE_PATH.exists():
+                kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
+                return
+            # >> Kodi BUG: if the log file size is 0 (it is empty) then Kodi displays in the
+            # >> text window the last displayed text.
+            info_text = ''
+            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
+                log_debug('_command_view_menu() Reading launcher.log ...')
+                info_text = myfile.read()
+
+            # --- Show information window ---
+            window_title = 'Launcher last execution stdout'
+            log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+            xbmcgui.Dialog().textviewer(window_title, info_text)
+            log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+            xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+        else:
+            kodi_dialog_OK('Wrong action == {0}. This is a bug, please report it.'.format(action))
 
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
@@ -6438,7 +6617,7 @@ class Main:
         self._command_update_virtual_category_db(VCATEGORY_TITLE_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_YEARS_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_GENRE_ID, all_roms)
-        self._command_update_virtual_category_db(VCATEGORY_STUDIO_ID, all_roms)
+        self._command_update_virtual_category_db(VCATEGORY_DEVELOPER_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_NPLAYERS_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_ESRB_ID, all_roms)
         self._command_update_virtual_category_db(VCATEGORY_RATING_ID, all_roms)
@@ -6451,31 +6630,31 @@ class Main:
     def _command_update_virtual_category_db(self, virtual_categoryID, all_roms_external = None):
         # --- Customise function depending on virtual category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
-            log_info('_command_update_virtual_category_db() Updating Titles DB')
+            log_info('_command_update_virtual_category_db() Updating Title DB')
             vcategory_db_directory = VIRTUAL_CAT_TITLE_DIR
             vcategory_db_filename  = VCAT_TITLE_FILE_PATH
             vcategory_field_name   = 'm_name'
             vcategory_name         = 'Titles'
         elif virtual_categoryID == VCATEGORY_YEARS_ID:
-            log_info('_command_update_virtual_category_db() Updating Years DB')
+            log_info('_command_update_virtual_category_db() Updating Year DB')
             vcategory_db_directory = VIRTUAL_CAT_YEARS_DIR
             vcategory_db_filename  = VCAT_YEARS_FILE_PATH
             vcategory_field_name   = 'm_year'
             vcategory_name         = 'Years'
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
-            log_info('_command_update_virtual_category_db() Updating Genres DB')
+            log_info('_command_update_virtual_category_db() Updating Genre DB')
             vcategory_db_directory = VIRTUAL_CAT_GENRE_DIR
             vcategory_db_filename  = VCAT_GENRE_FILE_PATH
             vcategory_field_name   = 'm_genre'
             vcategory_name         = 'Genres'
-        elif virtual_categoryID == VCATEGORY_STUDIO_ID:
-            log_info('_command_update_virtual_category_db() Updating Studios DB')
-            vcategory_db_directory = VIRTUAL_CAT_STUDIO_DIR
-            vcategory_db_filename  = VCAT_STUDIO_FILE_PATH
-            vcategory_field_name   = 'm_studio'
-            vcategory_name         = 'Studios'
+        elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
+            log_info('_command_update_virtual_category_db() Updating Developer DB')
+            vcategory_db_directory = VIRTUAL_CAT_DEVELOPER_DIR
+            vcategory_db_filename  = VCAT_DEVELOPER_FILE_PATH
+            vcategory_field_name   = 'm_developer'
+            vcategory_name         = 'Developers'
         elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
-            log_info('_command_update_virtual_category_db() Updating NPlayers DB')
+            log_info('_command_update_virtual_category_db() Updating NPlayer DB')
             vcategory_db_directory = VIRTUAL_CAT_NPLAYERS_DIR
             vcategory_db_filename  = VCAT_NPLAYERS_FILE_PATH
             vcategory_field_name   = 'm_nplayers'
@@ -6493,7 +6672,7 @@ class Main:
             vcategory_field_name   = 'm_rating'
             vcategory_name         = 'Rating'
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
-            log_info('_command_update_virtual_category_db() Updating Categories DB')
+            log_info('_command_update_virtual_category_db() Updating Category DB')
             vcategory_db_directory = VIRTUAL_CAT_CATEGORY_DIR
             vcategory_db_filename  = VCAT_CATEGORY_FILE_PATH
             vcategory_field_name   = ''
@@ -6865,6 +7044,19 @@ class Main:
         have_s_manual = num_roms - missing_s_manual
         have_s_trailer = num_roms - missing_s_trailer
 
+        have_s_title_pcent = float(have_s_title*100) / num_roms
+        have_s_snap_pcent = float(have_s_snap*100) / num_roms
+        have_s_boxfront_pcent = float(have_s_boxfront*100) / num_roms
+        have_s_boxback_pcent = float(have_s_boxback*100) / num_roms
+        have_s_cartridge_pcent = float(have_s_cartridge*100) / num_roms
+        have_s_fanart_pcent = float(have_s_fanart*100) / num_roms
+        have_s_banner_pcent = float(have_s_banner*100) / num_roms
+        have_s_clearlogo_pcent = float(have_s_clearlogo*100) / num_roms
+        have_s_flyer_pcent = float(have_s_flyer*100) / num_roms
+        have_s_map_pcent = float(have_s_map*100) / num_roms
+        have_s_manual_pcent = float(have_s_manual*100) / num_roms
+        have_s_trailer_pcent = float(have_s_trailer*100) / num_roms
+
         miss_s_title_pcent = float(missing_s_title*100) / num_roms
         miss_s_snap_pcent = float(missing_s_snap*100) / num_roms
         miss_s_boxfront_pcent = float(missing_s_boxfront*100) / num_roms
@@ -6892,34 +7084,46 @@ class Main:
         str_list.append('Clones           {0:5d}\n'.format(audit_num_clones))
         # >> Metadata
         str_list.append('\n<Metadata statistics>\n')
-        str_list.append('Year      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_year, have_s_year_pcent, missing_m_year, miss_s_year_pcent))
-        str_list.append('Genre     {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_genre, have_s_genre_pcent, missing_m_genre, miss_s_genre_pcent))
-        str_list.append('Developer {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_developer, have_s_developer_pcent, missing_m_developer, miss_s_developer_pcent))
-        str_list.append('NPlayers  {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_nplayers, have_s_nplayers_pcent, missing_m_nplayers, miss_s_nplayers_pcent))
-        str_list.append('ESRB      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_esrb, have_s_esrb_pcent, missing_m_esrb, miss_s_esrb_pcent))
-        str_list.append('Rating    {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_rating, have_s_rating_pcent, missing_m_rating, miss_s_rating_pcent))
-        str_list.append('Plot      {0:5d} have {1:6.2f}% / {2:5d} miss {3:6.2f}%\n'.format(
-            have_m_plot, have_s_plot_pcent, missing_m_plot, miss_s_plot_pcent))
+        str_list.append('Year      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_year, missing_m_year, have_s_year_pcent, miss_s_year_pcent))
+        str_list.append('Genre     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_genre, missing_m_genre, have_s_genre_pcent, miss_s_genre_pcent))
+        str_list.append('Developer {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_developer, missing_m_developer, have_s_developer_pcent, miss_s_developer_pcent))
+        str_list.append('NPlayers  {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_nplayers, missing_m_nplayers, have_s_nplayers_pcent, miss_s_nplayers_pcent))
+        str_list.append('ESRB      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_esrb, missing_m_esrb, have_s_esrb_pcent, miss_s_esrb_pcent))
+        str_list.append('Rating    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_rating, missing_m_rating, have_s_rating_pcent, miss_s_rating_pcent))
+        str_list.append('Plot      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_m_plot, missing_m_plot, have_s_plot_pcent, miss_s_plot_pcent))
         # >> Assets statistics
         str_list.append('\n<Asset statistics>\n')
-        str_list.append('Title     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_title, missing_s_title, miss_s_title_pcent))
-        str_list.append('Snap      {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_snap, missing_s_snap, miss_s_snap_pcent))
-        str_list.append('Boxfront  {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_boxfront, missing_s_boxfront, miss_s_boxfront_pcent))
-        str_list.append('Boxback   {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_boxback, missing_s_boxback, miss_s_boxback_pcent))
-        str_list.append('Cartridge {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_cartridge, missing_s_cartridge, miss_s_cartridge_pcent))
-        str_list.append('Fanart    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_fanart, missing_s_fanart, miss_s_fanart_pcent))
-        str_list.append('Banner    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_banner, missing_s_banner, miss_s_banner_pcent))
-        str_list.append('Clearlogo {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_clearlogo, missing_s_clearlogo, miss_s_clearlogo_pcent))
-        str_list.append('Flyer     {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_flyer, missing_s_flyer, miss_s_flyer_pcent))
-        str_list.append('Map       {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_map, missing_s_map, miss_s_map_pcent))
-        str_list.append('Manual    {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_manual, missing_s_manual, miss_s_manual_pcent))
-        str_list.append('Trailer   {0:5d} have, {1:5d} miss  {2:6.2f}%\n'.format(have_s_trailer, missing_s_trailer, miss_s_trailer_pcent))
+        str_list.append('Title     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_title, missing_s_title, have_s_title_pcent, miss_s_title_pcent))
+        str_list.append('Snap      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_snap, missing_s_snap, have_s_snap_pcent, miss_s_snap_pcent))
+        str_list.append('Boxfront  {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_boxfront, missing_s_boxfront, have_s_boxfront_pcent, miss_s_boxfront_pcent))
+        str_list.append('Boxback   {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_boxback, missing_s_boxback, have_s_boxback_pcent, miss_s_boxback_pcent))
+        str_list.append('Cartridge {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_cartridge, missing_s_cartridge, have_s_cartridge_pcent, miss_s_cartridge_pcent))
+        str_list.append('Fanart    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_fanart, missing_s_fanart, have_s_fanart_pcent, miss_s_fanart_pcent))
+        str_list.append('Banner    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_banner, missing_s_banner, have_s_banner_pcent, miss_s_banner_pcent))
+        str_list.append('Clearlogo {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_clearlogo, missing_s_clearlogo, have_s_clearlogo_pcent, miss_s_clearlogo_pcent))
+        str_list.append('Flyer     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_flyer, missing_s_flyer, have_s_flyer_pcent, miss_s_flyer_pcent))
+        str_list.append('Map       {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_map, missing_s_map, have_s_map_pcent, miss_s_map_pcent))
+        str_list.append('Manual    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_manual, missing_s_manual, have_s_manual_pcent, miss_s_manual_pcent))
+        str_list.append('Trailer   {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
+            have_s_trailer, missing_s_trailer, have_s_trailer_pcent, miss_s_trailer_pcent))
 
         # >> Step 3: Metadata report
         str_meta_list = []
@@ -7431,103 +7635,138 @@ class Main:
             roms = {}
 
         num_roms = len(roms)
-        report_fobj.write('  {0} ROMs currently in database\n'.format(num_roms))
+        report_fobj.write('{0} ROMs currently in database\n'.format(num_roms))
         log_info('Launcher ROM database contain {0} items'.format(num_roms))
 
         # --- Load metadata/asset scrapers --------------------------------------------------------
-        # --- Metadata scraper ---
-        # Scraper objects are created and inserted into a list. This list order matches
-        # exactly the number returned by the settings. If scrapers are changed make sure the
-        # list in scrapers.py and in settings.xml have same values!
-        self.scraper_data = scrapers_metadata[self.settings['scraper_metadata']]
-        self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
-        log_verb('Loaded metadata scraper "{0}"'.format(self.scraper_data.name))
-
-        # --- Asset scrapers ---
         # >> Create a dictionary with references to the asset srapers
         self.scraper_dic = {}
 
-        # >> Titles
-        A = assets_get_info_scheme(ASSET_TITLE)
-        self.scraper_dic[A.key] = scrapers_title[self.settings['scraper_title']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+        # >> Scrapers for MAME platform are different than rest of the platforms
+        if launcher['platform'] == 'MAME':
+            # --- Metadata scraper ---
+            # Scraper objects are created and inserted into a list. This list order matches
+            # exactly the number returned by the settings. If scrapers are changed make sure the
+            # list in scrapers.py and in settings.xml have same values!
+            self.scraper_data = scrapers_metadata_MAME[self.settings['scraper_metadata_MAME']]
+            self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+            log_verb('Loaded metadata MAME scraper "{0}"'.format(self.scraper_data.name))
 
-        # >> Snaps
-        A = assets_get_info_scheme(ASSET_SNAP)
-        self.scraper_dic[A.key] = scrapers_snap[self.settings['scraper_snap']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            # --- Asset scrapers ---
+            A = assets_get_info_scheme(ASSET_TITLE)
+            self.scraper_dic[A.key] = scrapers_title_MAME[self.settings['scraper_title_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Boxfronts or MAME Cabinet
-        A = assets_get_info_scheme(ASSET_BOXFRONT)
-        if launcher['platform'] != 'MAME':
-            self.scraper_dic[A.key] = scrapers_boxfront[self.settings['scraper_bfront']]
-            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            A = assets_get_info_scheme(ASSET_SNAP)
+            self.scraper_dic[A.key] = scrapers_snap_MAME[self.settings['scraper_snap_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Boxfront -> Cabinet
+            A = assets_get_info_scheme(ASSET_BOXFRONT)
+            self.scraper_dic[A.key] = scrapers_cabinet_MAME[self.settings['scraper_cabinet_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME Cabinets)'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Boxback -> Control Panel
+            A = assets_get_info_scheme(ASSET_BOXBACK)
+            self.scraper_dic[A.key] = scrapers_cpanel_MAME[self.settings['scraper_cpanel_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME CPanels)'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Cartridge -> PCB
+            A = assets_get_info_scheme(ASSET_CARTRIDGE)
+            self.scraper_dic[A.key] = scrapers_pcb_MAME[self.settings['scraper_pcb_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME PCBs)'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_FANART)
+            self.scraper_dic[A.key] = scrapers_fanart_MAME[self.settings['scraper_fanart_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Banner -> Marquee
+            A = assets_get_info_scheme(ASSET_BANNER)
+            self.scraper_dic[A.key] = scrapers_marquee_MAME[self.settings['scraper_marquee_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME Marquees)'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_CLEARLOGO)
+            self.scraper_dic[A.key] = scrapers_clearlogo_MAME[self.settings['scraper_clearlogo_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_FLYER)
+            self.scraper_dic[A.key] = scrapers_flyer_MAME[self.settings['scraper_flyer_MAME']]
+            log_verb('Loaded {0:<10} MAME scraper "{1}" (MAME flyers)'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Map (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MAP)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Manual (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MANUAL)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            # >> Trailer (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_TRAILER)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} MAME scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
         else:
-            self.scraper_dic[A.key] = scrapers_cabinet[self.settings['scraper_cabinet']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME Cabinets)'.format(A.name, self.scraper_dic[A.key].name))
+            # --- Metadata scraper ---
+            self.scraper_data = scrapers_metadata[self.settings['scraper_metadata']]
+            self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+            log_verb('Loaded metadata scraper "{0}"'.format(self.scraper_data.name))
 
-        # >> Boxback or MAME CPanel
-        A = assets_get_info_scheme(ASSET_BOXBACK)
-        if launcher['platform'] != 'MAME':
-            self.scraper_dic[A.key] = scrapers_boxback[self.settings['scraper_bback']]
+            # --- Asset scrapers ---
+            A = assets_get_info_scheme(ASSET_TITLE)
+            self.scraper_dic[A.key] = scrapers_title[self.settings['scraper_title']]
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_cpanel[self.settings['scraper_cpanel']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME CPanels)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Cartridge or MAME PCB
-        A = assets_get_info_scheme(ASSET_CARTRIDGE)
-        if launcher['platform'] != 'MAME':
+            A = assets_get_info_scheme(ASSET_SNAP)
+            self.scraper_dic[A.key] = scrapers_snap[self.settings['scraper_snap']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_BOXFRONT)
+            self.scraper_dic[A.key] = scrapers_boxfront[self.settings['scraper_boxfront']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_BOXBACK)
+            self.scraper_dic[A.key] = scrapers_boxback[self.settings['scraper_boxback']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+
+            A = assets_get_info_scheme(ASSET_CARTRIDGE)
             self.scraper_dic[A.key] = scrapers_cartridge[self.settings['scraper_cart']]
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_pcb[self.settings['scraper_pcb']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME PCBs)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Fanart
-        A = assets_get_info_scheme(ASSET_FANART)
-        self.scraper_dic[A.key] = scrapers_fanart[self.settings['scraper_fanart']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            A = assets_get_info_scheme(ASSET_FANART)
+            self.scraper_dic[A.key] = scrapers_fanart[self.settings['scraper_fanart']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Banner or MAME Marquee
-        A = assets_get_info_scheme(ASSET_BANNER)
-        if launcher['platform'] != 'MAME':
+            A = assets_get_info_scheme(ASSET_BANNER)
             self.scraper_dic[A.key] = scrapers_banner[self.settings['scraper_banner']]
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_marquee[self.settings['scraper_marquee']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME Marquees)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Clearlogo
-        A = assets_get_info_scheme(ASSET_CLEARLOGO)
-        self.scraper_dic[A.key] = scrapers_clearlogo[self.settings['scraper_clearlogo']]
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
+            A = assets_get_info_scheme(ASSET_CLEARLOGO)
+            self.scraper_dic[A.key] = scrapers_clearlogo[self.settings['scraper_clearlogo']]
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Flyer
-        # >> Flyers only supported by ArcadeDB (for MAME). If platform is not MAME then deactivate
-        # >> this scraper.
-        A = assets_get_info_scheme(ASSET_FLYER)
-        if launcher['platform'] != 'MAME':
+            # >> Flyers only supported by ArcadeDB (for MAME). If platform is not MAME then deactivate
+            # >> this scraper.
+            A = assets_get_info_scheme(ASSET_FLYER)
             self.scraper_dic[A.key] = NULL_obj
             log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
-        else:
-            self.scraper_dic[A.key] = scrapers_flyer[self.settings['scraper_flyer']]
-            log_verb('Loaded {0:<10} asset scraper "{1}" (MAME flyers)'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Map (not supported yet, use a null scraper)
-        A = assets_get_info_scheme(ASSET_MAP)
-        self.scraper_dic[A.key] = asset_NULL()
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+            # >> Map (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MAP)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Manual (not supported yet, use a null scraper)
-        A = assets_get_info_scheme(ASSET_MANUAL)
-        self.scraper_dic[A.key] = asset_NULL()
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+            # >> Manual (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_MANUAL)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
-        # >> Trailer (not supported yet, use a null scraper)
-        A = assets_get_info_scheme(ASSET_TRAILER)
-        self.scraper_dic[A.key] = asset_NULL()
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, 'NULL'))
+            # >> Trailer (not supported yet, use a null scraper)
+            A = assets_get_info_scheme(ASSET_TRAILER)
+            self.scraper_dic[A.key] = NULL_obj
+            log_verb('Loaded {0:<10} asset scraper "{1}"'.format(A.name, self.scraper_dic[A.key].name))
 
         # >> Initialise options of the thumb scraper (NOT SUPPORTED YET)
         # region = self.settings['scraper_region']
@@ -8905,7 +9144,7 @@ class Main:
             if collection['default_clearlogo'] == 's_flyer': collection['default_clearlogo'] = 's_poster'
 
             # >> Fix collection ROMs
-            roms_json_file = COLLECTIONS_DIR.join(collection['roms_base_noext'] + '.json')
+            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             for rom in collection_rom_list: self._misc_fix_Favourite_rom_object(rom)
             fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
@@ -8973,23 +9212,113 @@ class Main:
             rom.pop('roms_default_thumb')
 
     def _command_check_launchers(self):
-        kodi_dialog_OK('_command_check_launchers() not implemented yet. Sorry.')
+        log_info('_command_check_launchers() Checking all Launchers configuration ...')
 
-    # 
+        main_str_list = []
+        main_str_list.append('Number of launchers: {0}\n\n'.format(len(self.launchers)))
+        for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+            launcher = self.launchers[launcher_id]
+            l_str = []
+            main_str_list.append('[COLOR orange]Launcher "{0}"[/COLOR]\n'.format(launcher['m_name']))
+
+            # >> Check that platform is on AEL official platform list
+            platform = launcher['platform']
+            if platform not in AEL_platform_list:
+                l_str.append('Unrecognised platform "{0}"\n'.format(platform))
+
+            # >> Check that category exists
+            categoryID = launcher['categoryID']
+            if categoryID != VCATEGORY_ADDONROOT_ID and categoryID not in self.categories:
+                l_str.append('Category not found (unlinked launcher)\n')
+
+            # >> Check that application exists
+            app_FN = FileName(launcher['application'])
+            if not app_FN.exists():
+                l_str.append('Application "{0}" not found\n'.format(app_FN.getPath()))
+
+            # >> Check that rompath exists if rompath is not empty
+            # >> Empty rompath means standalone launcher
+            rompath = launcher['rompath']
+            rompath_FN = FileName(rompath)
+            if rompath and not rompath_FN.exists():
+                l_str.append('ROM path "{0}" not found\n'.format(rompath_FN.getPath()))
+
+            # >> Check that DAT file exists if not empty
+            nointro_xml_file = launcher['nointro_xml_file']
+            nointro_xml_file_FN = FileName(nointro_xml_file)
+            if nointro_xml_file and not nointro_xml_file_FN.exists():
+                l_str.append('DAT file "{0}" not found\n'.format(nointro_xml_file_FN.getPath()))
+
+            # >> Test that artwork files exist if not empty (s_* fields)
+            self._aux_check_for_file(l_str, 's_icon', launcher)
+            self._aux_check_for_file(l_str, 's_fanart', launcher)
+            self._aux_check_for_file(l_str, 's_banner', launcher)
+            self._aux_check_for_file(l_str, 's_poster', launcher)
+            self._aux_check_for_file(l_str, 's_clearlogo', launcher)
+            self._aux_check_for_file(l_str, 's_controller', launcher)
+            self._aux_check_for_file(l_str, 's_trailer', launcher)
+
+            # >> Test that ROM_asset_path exists if not empty
+            ROM_asset_path = launcher['ROM_asset_path']
+            ROM_asset_path_FN = FileName(ROM_asset_path)
+            if ROM_asset_path and not ROM_asset_path_FN.exists():
+                l_str.append('ROM_asset_path "{0}" not found\n'.format(ROM_asset_path_FN.getPath()))
+
+            # >> Test that ROM asset paths exist if not empty (path_* fields)
+            self._aux_check_for_file(l_str, 'path_title', launcher)
+            self._aux_check_for_file(l_str, 'path_snap', launcher)
+            self._aux_check_for_file(l_str, 'path_boxfront', launcher)
+            self._aux_check_for_file(l_str, 'path_boxback', launcher)
+            self._aux_check_for_file(l_str, 'path_cartridge', launcher)
+            self._aux_check_for_file(l_str, 'path_fanart', launcher)
+            self._aux_check_for_file(l_str, 'path_banner', launcher)
+            self._aux_check_for_file(l_str, 'path_clearlogo', launcher)
+            self._aux_check_for_file(l_str, 'path_flyer', launcher)
+            self._aux_check_for_file(l_str, 'path_map', launcher)
+            self._aux_check_for_file(l_str, 'path_manual', launcher)
+            self._aux_check_for_file(l_str, 'path_trailer', launcher)
+
+            # >> Check for duplicate asset paths
+            
+            # >> If l_str is empty is because no problems were found.
+            if l_str:
+                main_str_list.extend(l_str)
+            else:
+                main_str_list.append('No problems found\n')
+            main_str_list.append('\n')
+
+        # >> Stats report
+        log_info('Writing report file "{0}"'.format(LAUNCHER_REPORT_FILE_PATH.getPath()))
+        full_string = ''.join(main_str_list).encode('utf-8')
+        file = open(LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
+        file.write(full_string)
+        file.close()
+
+        # >> Display report TXT file.
+        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+        dialog = xbmcgui.Dialog()
+        dialog.textviewer('Launchers report', full_string)
+        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+    def _aux_check_for_file(self, str_list, dic_key_name, launcher):
+        path = launcher[dic_key_name]
+        path_FN = FileName(path)
+        if path and not path_FN.exists():
+            problems_found = True
+            str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
+
     def _command_check_retro_BIOS(self):
         log_info('_command_check_retro_BIOS() Checking Retroarch BIOSes ...')
+        check_only_mandatory = self.settings['io_retroarch_only_mandatory']
+        log_info('_command_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
 
         # >> If Retroarch System dir not configured or found abort.
         sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
         if not sys_dir_FN.exists():
             kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
             return
-
-        # >> Get a list of files in Retroarch system dir
-        # file_list = sorted(os.listdir(sys_dir_FN.getDir()))
-        # log_debug('--- File list ---')
-        # for file in file_list: log_debug('--- "{0}"'.format(file))
-        # file_set = set(file_list)
 
         # >> Progress dialog
         pDialog = xbmcgui.DialogProgress()
@@ -9006,13 +9335,19 @@ class Main:
         #    4) Unknwon files in Retroarch System dir are ignored and non-reported.
         #    5) Write results into a report TXT file.
         BIOS_status_dic = {}
+        BIOS_status_dic_colour = {}
         for BIOS_dic in Libretro_BIOS_list:
+            if check_only_mandatory and not BIOS_dic['mandatory']:
+                log_debug('BIOS "{0}" is not mandatory. Skipping check.'.format(BIOS_dic['filename']))
+                continue
+
             BIOS_file_FN = sys_dir_FN.pjoin(BIOS_dic['filename'])
             log_debug('Testing BIOS "{0}"'.format(BIOS_file_FN.getPath()))
 
             if not BIOS_file_FN.exists():
                 log_info('Not found "{0}"'.format(BIOS_file_FN.getPath()))
                 BIOS_status_dic[BIOS_dic['filename']] = 'Not found'
+                BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Not found[/COLOR]'
                 continue
 
             BIOS_stat = BIOS_file_FN.stat()
@@ -9021,6 +9356,7 @@ class Main:
                 log_info('Wrong size "{0}"'.format(BIOS_file_FN.getPath()))
                 log_info('It is {0} and must be {1}'.format(file_size, BIOS_dic['size']))
                 BIOS_status_dic[BIOS_dic['filename']] = 'Wrong size'
+                BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong size[/COLOR]'
                 continue
 
             hash_md5 = hashlib.md5()
@@ -9034,9 +9370,11 @@ class Main:
                 log_info('It is       "{0}"'.format(file_MD5))
                 log_info('and must be "{0}"'.format(BIOS_dic['md5']))
                 BIOS_status_dic[BIOS_dic['filename']] = 'Wrong MD5'
+                BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong MD5[/COLOR]'
                 continue
             log_info('BIOS OK "{0}"'.format(BIOS_file_FN.getPath()))
             BIOS_status_dic[BIOS_dic['filename']] = 'OK'
+            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR lime]OK[/COLOR]'
 
             # >> Update progress
             file_count += 1
@@ -9046,12 +9384,12 @@ class Main:
         pDialog.close()
 
         # >> Output format:
-        #    BIOS name             Status      Cores affected 
+        #    BIOS name             Mandatory  Status      Cores affected 
         #    -------------------------------------------------
-        #    5200.rom              OK          ---            
-        #    7800 BIOS (E).rom     Wrong MD5   core a name    
-        #                                      core b name    
-        #    7800 BIOS (U).rom     OK          ---            
+        #    5200.rom              YES        OK          ---            
+        #    7800 BIOS (E).rom     NO         Wrong MD5   core a name    
+        #                                                 core b name    
+        #    7800 BIOS (U).rom     YES        OK          ---            
         #
         max_size_BIOS_filename = 0
         for BIOS_dic in Libretro_BIOS_list:
@@ -9064,7 +9402,11 @@ class Main:
                 max_size_status = len(BIOS_status_dic[key])
 
         str_list = []
-        str_list.append('Retroarch system dir "{0}"\n\n'.format(sys_dir_FN.getPath()))
+        str_list.append('Retroarch system dir "{0}"\n'.format(sys_dir_FN.getPath()))
+        if check_only_mandatory:
+            str_list.append('Checking only mandatory BIOSes.\n\n')
+        else:
+            str_list.append('Checking mandatory and optional BIOSes.\n\n')
         bios_str      = '{0}{1}'.format('BIOS name', ' ' * (max_size_BIOS_filename - len('BIOS name')))
         mandatory_str = 'Mandatory'
         status_str    = '{0}{1}'.format('Status', ' ' * (max_size_status - len('Status')))
@@ -9075,10 +9417,14 @@ class Main:
 
         for BIOS_dic in Libretro_BIOS_list:
             BIOS_filename = BIOS_dic['filename']
-            status = BIOS_status_dic[BIOS_filename]
+            # >> If BIOS was skipped continue loop
+            if BIOS_filename not in BIOS_status_dic: continue
+            status_text = BIOS_status_dic[BIOS_filename]
+            status_text_colour = BIOS_status_dic_colour[BIOS_filename]
             filename_str = '{0}{1}'.format(BIOS_filename, ' ' * (max_size_BIOS_filename - len(BIOS_filename)))
             mandatory_str = 'YES      ' if BIOS_dic['mandatory'] else 'NO       '
-            status_str = '{0}{1}'.format(status, ' ' * (max_size_status - len(status)))
+            status_str = '{0}{1}'.format(status_text_colour, ' ' * (max_size_status - len(status_text)))
+            len_status_str = len('{0}{1}'.format(status_text, ' ' * (max_size_status - len(status_text))))
 
             # >> Print affected core list
             core_list = BIOS_dic['cores']
@@ -9086,7 +9432,7 @@ class Main:
                 line_str = '{0}  {1}  {2}\n'.format(filename_str, mandatory_str, status_str)
                 str_list.append(line_str)
             else:
-                num_spaces = len(filename_str) + 9 + len(status_str) + 4
+                num_spaces = len(filename_str) + 9 + len_status_str + 4
                 for i, core_name in enumerate(core_list):
                     beautiful_core_name = Retro_core_dic[core_name] if core_name in Retro_core_dic else core_name
                     if i == 0:
@@ -9121,8 +9467,8 @@ class Main:
 
         kodi_notify('Importing AL launchers.xml ...')
         AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
-        LAUNCHERS_FILE_PATH = AL_DATA_DIR.join('launchers.xml')
-        FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.join('fixed_launchers.xml')
+        LAUNCHERS_FILE_PATH = AL_DATA_DIR.pjoin('launchers.xml')
+        FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.pjoin('fixed_launchers.xml')
 
         # >> Check that launchers.xml exist
         if not LAUNCHERS_FILE_PATH.exists():
@@ -9276,12 +9622,12 @@ class Main:
             skinshortcutsAddon = xbmcaddon.Addon('script.skinshortcuts')
             path = FileName(skinshortcutsAddon.getAddonInfo('path'))
 
-            libPath = path.join('resources', 'lib')
+            libPath = path.pjoin('resources', 'lib')
             sys.path.append(libPath.getPath())
 
             unidecodeModule = xbmcaddon.Addon('script.module.unidecode')
             libPath = FileName(unidecodeModule.getAddonInfo('path'))
-            libPath = libPath.join('lib')
+            libPath = libPath.pjoin('lib')
             sys.path.append(libPath.getPath())
 
             sys.modules[ "__main__" ].ADDON    = skinshortcutsAddon

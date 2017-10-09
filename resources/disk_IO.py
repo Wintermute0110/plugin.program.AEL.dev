@@ -1281,7 +1281,7 @@ def fs_load_VCategory_XML(roms_xml_file):
 # Write virtual category ROMs
 #
 def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
-    roms_json_file = roms_dir.join(roms_base_noext + '.json')
+    roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file.getOriginalPath()))
     try:
         roms_json_file.writeJson(roms)
@@ -1295,7 +1295,7 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
 #
 def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
     # --- If file does not exist return empty dictionary ---
-    roms_json_file = roms_dir.join(roms_base_noext + '.json')
+    roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
     if not roms_json_file.exists(): return {}
 
     # --- Parse using cElementTree ---
