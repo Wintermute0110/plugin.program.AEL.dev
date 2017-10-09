@@ -96,7 +96,7 @@ class RomSetFactory():
         elif categoryID == VCATEGORY_PCLONES_ID \
             and 'launcher_display_mode' in launcher \
             and launcher['launcher_display_mode'] != LAUNCHER_DMODE_FLAT:
-            return PcloneRomset(self.ROMS_DIR, launcher, description)
+            return PcloneRomSet(self.ROMS_DIR, launcher, description)
         
         log_info('RomSetFactory() loading standard romset...')
         return StandardRomSet(self.ROMS_DIR, launcher, description)
@@ -173,7 +173,7 @@ class RomSet():
         self.description = description
         
     @abstractmethod
-    def romSetFileExists():
+    def romSetFileExists(self):
         return False
 
     @abstractmethod
@@ -206,7 +206,7 @@ class StandardRomSet(RomSet):
 
         super(StandardRomSet, self).__init__(romsDir, launcher, description)
 
-    def romSetFileExists():
+    def romSetFileExists(self):
         return self.repositoryFile.exists()
 
     def loadRoms(self):
@@ -261,11 +261,11 @@ class StandardRomSet(RomSet):
         fs_write_ROMs_JSON(self.romsDir, self.roms_base_noext, roms, self.launcher)
         pass
 
-class PcloneRomset(StandardRomSet):
+class PcloneRomSet(StandardRomSet):
 
     def __init__(self, romsDir, launcher, description):
 
-        super(PcloneRomset, self).__init__(romsDir, launcher, description)
+        super(PcloneRomSet, self).__init__(romsDir, launcher, description)
         
         self.roms_base_noext = launcher['roms_base_noext'] if launcher is not None and 'roms_base_noext' in launcher else None
         self.repositoryFile = self.romsDir.pjoin(self.roms_base_noext + '_index_PClone.json')
@@ -305,7 +305,7 @@ class VirtualLauncherRomSet(StandardRomSet):
 
 class RecentlyPlayedRomSet(RomSet):
     
-    def romSetFileExists():
+    def romSetFileExists(self):
         return self.romsDir.exists()
     
     def loadRoms(self):
@@ -356,7 +356,7 @@ class CollectionRomSet(RomSet):
         self.launcherID = launcherID
         super(CollectionRomSet, self).__init__(romsDir, launcher, description)
 
-    def romSetFileExists():
+    def romSetFileExists(self):
         (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
         collection = collections[self.launcherID]
 

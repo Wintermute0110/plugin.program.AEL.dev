@@ -41,11 +41,11 @@ VCATEGORY_CATEGORY_ID    = 'vcat_category'
 VCATEGORY_RECENT_ID      = 'vcat_recent'
 VCATEGORY_MOST_PLAYED_ID = 'vcat_most_played'
 VCATEGORY_OFF_SCRAPER_ID = 'vcat_offline_scraper'
+VCATEGORY_PCLONES_ID     = 'vcat_pclone'
 VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
 VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
-VCATEGORY_PCLONES_ID     = 'vcat_pclone'
 
 # --- Content type property to be used by skins ---
 AEL_CONTENT_WINDOW_ID       = 10000

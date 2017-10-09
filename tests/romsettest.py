@@ -143,6 +143,26 @@ class Test_romsettest(unittest.TestCase):
             # assert
             self.assertEqual(actual, expected)
 
+    def test_when_loading_pclone_collection_it_will_return_the_correct_romset_type(self):
+        
+        # arrange
+        mockPath = FileName('mock')
+        target = RomSetFactory(mockPath)
+
+        categoryID = VCATEGORY_PCLONES_ID
+        launcherID = 'ut1'
+        launchers = {}
+        launchers[launcherID] = {}
+        launchers[launcherID]['roms_base_noext'] = 'test'
+        launchers[launcherID]['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
+        
+        # act
+        romset = target.create(launcherID, categoryID, launchers)
+        actual = romset.__class__.__name__
+
+        # assert
+        expected = 'PcloneRomSet'
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()

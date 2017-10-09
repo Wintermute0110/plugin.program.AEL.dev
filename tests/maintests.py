@@ -5,6 +5,7 @@ from mock import *
 import xbmcaddon
 
 import resources.main as main
+from resources.constants import *
 
 class Test_maintests(unittest.TestCase):
     
@@ -81,6 +82,27 @@ class Test_maintests(unittest.TestCase):
         self.assertTrue(mock_writecatfile.called)
         self.assertIn(expected, actuals)
 
+    def test_when_rendering_roms_it_will_return_a_proper_result(self):
+        self.test_when_rendering_roms_it_will_return_a_proper_result_mocked()
+    
+    @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
+    def test_when_rendering_roms_it_will_return_a_proper_result_mocked(self, mock_addon):
+        
+        # arrange
+        target = main.Main()
+        target.addon_handle = 0
+
+        launcherID = 'my-launcher'
+        target.launchers = {}
+        target.launchers[launcherID] = {}
+        target.launchers[launcherID]['roms_base_noext'] = 'test'
+        target.launchers[launcherID]['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
+
+        # act
+        target._cat_create_default()
+        target._command_render_roms(None, launcherID)
+                
+        # assert
 
 if __name__ == '__main__':
     unittest.main()

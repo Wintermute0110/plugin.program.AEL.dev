@@ -3703,8 +3703,6 @@ class Main:
             kodi_dialog_OK('_command_render_roms(): Launcher ID not found in self.launchers. Report this bug.')
             return
 
-        #selectedLauncher = self.launchers[launcherID]
-        #view_mode = selectedLauncher['launcher_display_mode']
         
         # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
         # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
@@ -3726,6 +3724,7 @@ class Main:
         pclone_index = pcloneset.loadRoms()
         
         selectedLauncher = romset.launcher
+        view_mode = selectedLauncher['launcher_display_mode']
 
         # --- ROM display filter ---
         dp_mode = selectedLauncher['nointro_display_mode']
@@ -3735,7 +3734,7 @@ class Main:
                 rom = roms[rom_id]
                 # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
                 # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
-                if not selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
+                if not view_mode == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
                     filtered_roms[rom_id] = rom
                     continue
                 # >> Filter ROM
