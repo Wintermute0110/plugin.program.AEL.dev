@@ -3702,50 +3702,30 @@ class Main:
             log_error('_command_render_roms() Launcher ID not found in self.launchers')
             kodi_dialog_OK('_command_render_roms(): Launcher ID not found in self.launchers. Report this bug.')
             return
-        selectedLauncher = self.launchers[launcherID]
-        view_mode = selectedLauncher['launcher_display_mode']
 
+        #selectedLauncher = self.launchers[launcherID]
+        #view_mode = selectedLauncher['launcher_display_mode']
+        
         # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
         # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
         loading_ticks_start = time.time()
-        if view_mode == LAUNCHER_DMODE_FLAT:
-            # --- Load ROMs for this launcher ---
-            roms_json_FN = ROMS_DIR.pjoin(selectedLauncher['roms_base_noext'] + '.json')
-            if not roms_json_FN.exists():
-                kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
-            roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher)
-            if not roms:
-                kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
-        else:
-            # --- Load parent ROMs ---
-            parent_roms_base_noext = selectedLauncher['roms_base_noext'] + '_parents'
-            parents_FN = ROMS_DIR.pjoin(parent_roms_base_noext + '.json')
-            if not parents_FN.exists():
-                kodi_notify('Parent ROMs JSON not found.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
-            roms = fs_load_JSON_file(ROMS_DIR, parent_roms_base_noext)
-            if not roms:
-                kodi_notify('Parent ROMs JSON is empty.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
+        
+        romset = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        if romset is None:
+            log_error('_command_render_roms() Rom set not found')
+            kodi_dialog_OK('_command_render_roms(): Romset not found. Report this bug.')
+            return
 
-            # --- Load parent/clone index ---
-            index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
-            index_FN = ROMS_DIR.pjoin(index_base_noext + '.json')
-            if not index_FN.exists():
-                kodi_notify('PClone index JSON not found.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
-            pclone_index = fs_load_JSON_file(ROMS_DIR, index_base_noext)
-            if not pclone_index:
-                kodi_notify('PClone index dict is empty.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
+        roms = romset.loadRoms()
+        if not roms:
+            kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        pcloneset = self.romsetFactory.create(launcherID, VCATEGORY_PCLONES_ID, self.launchers)
+        pclone_index = pcloneset.loadRoms()
+        
+        selectedLauncher = romset.launcher
 
         # --- ROM display filter ---
         dp_mode = selectedLauncher['nointro_display_mode']

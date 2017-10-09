@@ -45,6 +45,8 @@ VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
 VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
+VCATEGORY_PCLONES_ID     = 'vcat_pclone'
+
 # --- Content type property to be used by skins ---
 AEL_CONTENT_WINDOW_ID       = 10000
 AEL_CONTENT_LABEL           = 'AEL_Content'

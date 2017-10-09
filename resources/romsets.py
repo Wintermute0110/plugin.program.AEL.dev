@@ -48,6 +48,7 @@ class RomSetFactory():
             launcher = launchers[launcherID]
         else:
             log_warning('Launcher "{0}" not found in launchers'.format(launcherID))
+            return None
 
         description = self.createDescription(categoryID)
 
@@ -91,7 +92,11 @@ class RomSetFactory():
             return VirtualLauncherRomSet(self.VIRTUAL_CAT_RATING_DIR, launcher, launcherID, description)
         elif categoryID == VCATEGORY_CATEGORY_ID:
             return VirtualLauncherRomSet(self.VIRTUAL_CAT_CATEGORY_DIR, launcher, launcherID, description)
-            
+          
+        elif categoryID == VCATEGORY_PCLONES_ID \
+            and 'launcher_display_mode' in launcher \
+            and launcher['launcher_display_mode'] != LAUNCHER_DMODE_FLAT:
+            return PcloneRomset(self.ROMS_DIR, launcher, description)
         
         log_info('RomSetFactory() loading standard romset...')
         return StandardRomSet(self.ROMS_DIR, launcher, description)
@@ -192,11 +197,17 @@ class StandardRomSet(RomSet):
     def __init__(self, romsDir, launcher, description):
         
         self.roms_base_noext = launcher['roms_base_noext'] if launcher is not None and 'roms_base_noext' in launcher else None
+        self.view_mode = launcher['launcher_display_mode'] if launcher is not None and 'launcher_display_mode' in launcher else None
+
+        if self.view_mode == LAUNCHER_DMODE_FLAT:
+            self.repositoryFile = romsDir.pjoin(self.roms_base_noext + '.json')
+        else:
+            self.repositoryFile = romsDir.pjoin(self.roms_base_noext + '_parents.json')
+
         super(StandardRomSet, self).__init__(romsDir, launcher, description)
 
     def romSetFileExists():
-        rom_file_path = self.romsDir.join(self.roms_base_noext + '.json')
-        return rom_file_path.exists()
+        return self.repositoryFile.exists()
 
     def loadRoms(self):
 
@@ -205,7 +216,21 @@ class StandardRomSet(RomSet):
             return None
 
         log_info('StandardRomSet() Loading ROMs in Launcher ...')
-        roms = fs_load_ROMs_JSON(self.romsDir, self.roms_base_noext)
+        # was disk_IO.fs_load_ROMs_JSON()
+        roms = {}
+        # --- Parse using json module ---
+        # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
+        #    exception exceptions.ValueError and launcher cannot be deleted. Deal
+        #    with this exception so at least launcher can be rescanned.
+        log_verb('StandardRomSet.loadRoms() FILE  {0}'.format(self.repositoryFile.getOriginalPath()))
+        try:
+            roms = self.repositoryFile.readJson()
+        except ValueError:
+            statinfo = roms_json_file.stat()
+            log_error('StandardRomSet.loadRoms() ValueError exception in json.load() function')
+            log_error('StandardRomSet.loadRoms() Dir  {0}'.format(self.repositoryFile.getOriginalPath()))
+            log_error('StandardRomSet.loadRoms() Size {0}'.format(statinfo.st_size))
+
         return roms
 
     def loadRomsAsList(self):
@@ -236,6 +261,14 @@ class StandardRomSet(RomSet):
         fs_write_ROMs_JSON(self.romsDir, self.roms_base_noext, roms, self.launcher)
         pass
 
+class PcloneRomset(StandardRomSet):
+
+    def __init__(self, romsDir, launcher, description):
+
+        super(PcloneRomset, self).__init__(romsDir, launcher, description)
+        
+        self.roms_base_noext = launcher['roms_base_noext'] if launcher is not None and 'roms_base_noext' in launcher else None
+        self.repositoryFile = self.romsDir.pjoin(self.roms_base_noext + '_index_PClone.json')
 
 class FavouritesRomSet(StandardRomSet):
     
