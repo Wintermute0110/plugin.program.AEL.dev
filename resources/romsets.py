@@ -286,7 +286,7 @@ class VirtualLauncherRomSet(StandardRomSet):
         super(VirtualLauncherRomSet, self).__init__(romsDir, launcher, description)
 
     def romSetFileExists():
-        hashed_db_filename = self.romsDir.join(self.launcherID + '.json')
+        hashed_db_filename = self.romsDir.pjoin(self.launcherID + '.json')
         return hashed_db_filename.exists()
 
     def loadRoms(self):
@@ -360,13 +360,13 @@ class CollectionRomSet(RomSet):
         (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
         collection = collections[self.launcherID]
 
-        roms_json_file = self.romsDir.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = self.romsDir.pjoin(collection['roms_base_noext'] + '.json')
         return roms_json_file.exists()
     
     def loadRomsAsList(self):
         (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
         collection = collections[self.launcherID]
-        roms_json_file = self.collection_dir.join(collection['roms_base_noext'] + '.json')
+        roms_json_file = self.collection_dir.pjoin(collection['roms_base_noext'] + '.json')
         romsList = fs_load_Collection_ROMs_JSON(roms_json_file)
         return romsList
 
@@ -412,5 +412,5 @@ class CollectionRomSet(RomSet):
         for key in roms:
             collection_rom_list.append(roms[key])
 
-        json_file_path = self.romsDir.join(collection['roms_base_noext'] + '.json')
+        json_file_path = self.romsDir.pjoin(collection['roms_base_noext'] + '.json')
         fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)

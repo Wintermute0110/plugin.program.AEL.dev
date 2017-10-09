@@ -35,7 +35,7 @@ def kodi_get_cached_image(image_path):
     # --- Get the Kodi cached image ---
     # This function return the cache file base name
     base_name = xbmc.getCacheThumbName(image_path.getOriginalPath())
-    cache_file_path = THUMBS_CACHE_PATH.join(base_name[0]).join(base_name)
+    cache_file_path = THUMBS_CACHE_PATH.pjoin(base_name[0]).pjoin(base_name)
 
     return cache_file_path
 
