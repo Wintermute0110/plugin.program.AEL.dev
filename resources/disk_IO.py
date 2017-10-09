@@ -1501,7 +1501,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
     nfo_content.append(XML_text('title',     rom['m_name']))
     nfo_content.append(XML_text('year',      rom['m_year']))
     nfo_content.append(XML_text('genre',     rom['m_genre']))
-    nfo_content.append(XML_text('publisher', rom['m_studio']))
+    nfo_content.append(XML_text('publisher', rom['m_developer']))
     nfo_content.append(XML_text('rating',    rom['m_rating']))
     nfo_content.append(XML_text('plot',      rom['m_plot']))
     nfo_content.append('</game>\n')
