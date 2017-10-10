@@ -8126,7 +8126,7 @@ class Main:
                 romdata['m_name']      = nfo_dic['title']     # <title>
                 romdata['m_year']      = nfo_dic['year']      # <year>
                 romdata['m_genre']     = nfo_dic['genre']     # <genre>
-                romdata['m_developer'] = nfo_dic['publisher'] # <publisher> rename to <developer>
+                romdata['m_developer'] = nfo_dic['publisher'] if 'publisher' in nfo_dic else nfo_dic['developer'] # <publisher> rename to <developer>
                 # romdata['m_nplayers']  = nfo_dic['nplayers']  # <nplayers>
                 # romdata['m_esrb']      = nfo_dic['esrb']      # <esrb>
                 # romdata['m_rating']    = nfo_dic['rating']    # <rating>
