@@ -4357,7 +4357,7 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-        romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
+        romSet = self.romsetFactory.create(VLAUNCHER_RECENT_ID, VCATEGORY_RECENT_ID, self.launchers)
         rom_list = romSet.loadRoms() if romSet is not None else None
 
         if not rom_list:

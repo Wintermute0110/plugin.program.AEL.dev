@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 import os
+from collections import OrderedDict
 
 # --- Kodi stuff ---
 import xbmc
@@ -43,12 +44,14 @@ class RomSetFactory():
 
     def create(self, launcherID, categoryID, launchers):
         
+        log_debug('romsetfactory.create(): launcherID={0}'.format(launcherID))
+        log_debug('romsetfactory.create(): categoryID={0}'.format(categoryID))
+        
         launcher = None
         if launcherID in launchers:
             launcher = launchers[launcherID]
         else:
-            log_warning('Launcher "{0}" not found in launchers'.format(launcherID))
-            return None
+            log_warning('romsetfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
 
         description = self.createDescription(categoryID)
 

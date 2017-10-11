@@ -24,7 +24,7 @@ class LauncherFactory():
     def create(self, launchers, categoryID, launcherID, romID = None):
                 
         if launcherID not in launchers:
-            log_error('launcherID not found in launchers')
+            log_error('launcherfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
             return None
 
         launcher = launchers[launcherID]
@@ -36,7 +36,12 @@ class LauncherFactory():
     
     def createRomLauncher(self, launchers, launcher, launcherID, romID, categoryID):
         
-        romSet = self.romsetFactory.create(launcherID, categoryID, launcher)
+        romSet = self.romsetFactory.create(launcherID, categoryID, launchers)
+
+        if romSet is None:
+            log_error('Unable to load romset')
+            return None
+
         romData = romSet.loadRom(romID)
         
         if romData is None:
