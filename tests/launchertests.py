@@ -15,7 +15,7 @@ class Test_Launcher(unittest.TestCase):
 
         # act
         factory = LauncherFactory(None, None, None)
-        actual = factory.create(launchers, None, 'ABC', None)
+        actual = factory.create('ABC', launchers)
         
         # assert
         self.assertIsNone(actual)
@@ -45,7 +45,7 @@ class Test_Launcher(unittest.TestCase):
 
         # act
         factory = LauncherFactory(settings, None, mock_exeFactory)
-        launcher = factory.create(launchers, None, 'ABC', None)
+        launcher = factory.create('ABC', launchers)
         
         # assert        
         actual = launcher.__class__.__name__
@@ -84,7 +84,7 @@ class Test_Launcher(unittest.TestCase):
         mock_exeFactory.create.return_value = mock
 
         factory = LauncherFactory(settings, None, mock_exeFactory)
-        launcher = factory.create(launchers, None, 'ABC', None)
+        launcher = factory.create('ABC', launchers)
 
         # act
         launcher.launch()
@@ -125,7 +125,7 @@ class Test_Launcher(unittest.TestCase):
         settings['delay_tempo'] = 1
         
         factory = LauncherFactory(settings, None, mock_exeFactory)
-        launcher = factory.create(launchers, None, 'ABC', None)
+        launcher = factory.create('ABC', launchers)
 
         # act
         launcher.launch()
@@ -134,12 +134,12 @@ class Test_Launcher(unittest.TestCase):
         self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
 
-    def test_when_using_romids_the_factory_will_get_the_correct_launcher(self):
-        self.test_when_using_romids_the_factory_will_get_the_correct_launcher_mocked()
+    def test_when_using_rom_the_factory_will_get_the_correct_launcher(self):
+        self.test_when_using_rom_the_factory_will_get_the_correct_launcher_mocked()
     
     @patch('resources.romsets.RomSetFactory')
     @patch('resources.executors.ExecutorFactory')
-    def test_when_using_romids_the_factory_will_get_the_correct_launcher_mocked(self, mock_exeFactory, mock_romsFactory):
+    def test_when_using_rom_the_factory_will_get_the_correct_launcher_mocked(self, mock_exeFactory, mock_romsFactory):
         
         # arrange
         set_log_level(LOG_VERB)
@@ -158,17 +158,13 @@ class Test_Launcher(unittest.TestCase):
         rom = {}
         rom['m_name'] = 'TestCase'        
 
-        mock_romsFactory.create.return_value = FakeRomSet(rom)
-        mock = FakeExecutor(None)
-        mock_exeFactory.create.return_value = mock
-
         settings = {}
         settings['lirc_state'] = True
         settings['escape_romfile'] = True
 
         # act
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create(launchers, None, 'ABC', 'qqqq')
+        launcher = factory.create('ABC', launchers, rom)
         
         # assert
         actual = launcher.__class__.__name__
@@ -203,11 +199,7 @@ class Test_Launcher(unittest.TestCase):
         rom['filename'] = 'testing.zip'
         rom['altapp'] = ''
         rom['altarg'] = ''
-
-        mock_romsFactory.create.return_value = FakeRomSet(rom)
-        mock = FakeExecutor(None)
-        mock_exeFactory.create.return_value = mock
-
+        
         settings = {}
         settings['lirc_state'] = True
         settings['escape_romfile'] = True
@@ -216,11 +208,15 @@ class Test_Launcher(unittest.TestCase):
         settings['suspend_audio_engine'] = False
         settings['delay_tempo'] = 1
 
+        mock_romsFactory.create.return_value = FakeRomSet(rom)
+        mock = FakeExecutor(None)
+        mock_exeFactory.create.return_value = mock
+
         expected = launchers['ABC']['application']
         expectedArgs = '-a -b -c -d -e testing.zip -yes'
 
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create(launchers, 'CATX', 'ABC', 'qqqq')
+        launcher = factory.create('ABC', launchers, rom)
 
         # act
         launcher.launch()
@@ -264,7 +260,7 @@ class Test_Launcher(unittest.TestCase):
 
         # act
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create(launchers, None, 'ABC', 'qqqq')
+        launcher = factory.create('ABC', launchers, rom)
         
         # assert        
         actual = launcher.__class__.__name__
@@ -319,7 +315,7 @@ class Test_Launcher(unittest.TestCase):
         expectedArgs = '-a -b -c -d -e d:\\games\\disc02.zip -yes'
 
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create(launchers, 'CATX', 'ABC', 'qqqq')
+        launcher = factory.create('ABC', launchers, rom)
 
         # act
         launcher.launch()
@@ -371,7 +367,7 @@ class Test_Launcher(unittest.TestCase):
         expectedArgs = "start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM 'superrom.zip' -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture"
 
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create(launchers, 'CATX', 'ABC', 'qqqq')
+        launcher = factory.create('ABC', launchers, rom)
 
         # act
         launcher.launch()

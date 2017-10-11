@@ -21,44 +21,32 @@ class LauncherFactory():
         self.romsetFactory = romsetFactory
         self.executorFactory = executorFactory
 
-    def create(self, launchers, categoryID, launcherID, romID = None):
-                
+    def create(self, launcherID, launchers, rom = None):
+             
         if launcherID not in launchers:
             log_error('launcherfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
             return None
-
+        
         launcher = launchers[launcherID]
 
-        if romID is not None:
-            return self.createRomLauncher(launchers, launcher, launcherID, romID, categoryID)
+        if rom is not None:
+            return self._createRomLauncher(launcher, rom, launchers)
 
         return ApplicationLauncher(self.settings, self.executorFactory, launcher)
-    
-    def createRomLauncher(self, launchers, launcher, launcherID, romID, categoryID):
+
+    def _createRomLauncher(self, launcher, rom, launchers):
         
-        romSet = self.romsetFactory.create(categoryID, launcherID, launchers)
-
-        if romSet is None:
-            log_error('Unable to load romset')
-            return None
-
-        romData = romSet.loadRom(romID)
-        
-        if romData is None:
-            log_error('Rom not found in romset')
-            return None
-
         statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
 
         # proof of concept with launcher types
         if 'type' in launcher and launcher['type'] == 'retroarch':
-            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, romData)
+            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
 
-        if 'disks' in romData and romData['disks']:
-            return MultiDiscRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, romData)
+        if 'disks' in rom and rom['disks']:
+            return MultiDiscRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
         
         log_info('LauncherFactory() Sigle ROM detected (no multidisc)')
-        return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, romData)
+        return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
 
 
 #

@@ -6822,7 +6822,7 @@ class Main:
     def _command_run_standalone_launcher(self, categoryID, launcherID):
         
         log_info('_command_run_standalone_launcher() Launching Standalone Launcher ...')
-        launcher = self.launcherFactory.create(self.launchers, categoryID, launcherID)
+        launcher = self.launcherFactory.create(launcherID, self.launchers)
 
         # --- Check launcher is OK ---
         if launcher is None:
@@ -6838,7 +6838,21 @@ class Main:
     def _command_run_rom(self, categoryID, launcherID, romID):
 
         log_info('_command_run_rom() Launching ROM in Launcher ...')
-        launcher = self.launcherFactory.create(self.launchers, categoryID, launcherID, romID)
+
+        romset = self.romsetFactory.create(categoryID, launcherID, self.launchers)
+        if romset is None:
+            log_error('Unable to load romset')
+            kodi_dialog_OK('Could not load roms. Check the logs')
+            return
+        
+        rom = romset.loadRom(romID)
+        
+        if rom is None:
+            log_error('RomID {0} not found in romset'.format(romID))
+            kodi_dialog_OK('Could not load rom. Check the logs')
+            return
+
+        launcher = self.launcherFactory.create(launcherID, self.launchers, rom)
         
         # --- Check launcher is OK ---
         if launcher is None:
