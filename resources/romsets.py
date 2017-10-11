@@ -194,7 +194,7 @@ class RomSet():
     @abstractmethod
     def saveRoms(self, roms):
         pass
-
+    
 class StandardRomSet(RomSet):
     
     def __init__(self, romsDir, launcher, description):
@@ -202,7 +202,9 @@ class StandardRomSet(RomSet):
         self.roms_base_noext = launcher['roms_base_noext'] if launcher is not None and 'roms_base_noext' in launcher else None
         self.view_mode = launcher['launcher_display_mode'] if launcher is not None and 'launcher_display_mode' in launcher else None
 
-        if self.view_mode == LAUNCHER_DMODE_FLAT:
+        if self.roms_base_noext is None:
+            self.repositoryFile = romsDir
+        elif self.view_mode == LAUNCHER_DMODE_FLAT:
             self.repositoryFile = romsDir.pjoin(self.roms_base_noext + '.json')
         else:
             self.repositoryFile = romsDir.pjoin(self.roms_base_noext + '_parents.json')
@@ -261,7 +263,7 @@ class StandardRomSet(RomSet):
         return romData
 
     def saveRoms(self, roms):
-        fs_write_ROMs_JSON(self.romsDir, self.roms_base_noext, roms, self.launcher)
+        fs_write_ROMs_JSON(self.repositoryFile, self.launcher, roms)
         pass
 
 class PcloneRomSet(StandardRomSet):
@@ -277,9 +279,12 @@ class FavouritesRomSet(StandardRomSet):
     
     def loadRoms(self):
         log_info('FavouritesRomSet() Loading ROMs in Favourites ...')
-        roms = fs_load_Favourites_JSON(self.romsDir)
+        roms = fs_load_Favourites_JSON(self.repositoryFile)
         return roms
 
+    def saveRoms(self, roms):
+        log_info('FavouritesRomSet() Saving Favourites ROMs ...')
+        fs_write_Favourites_JSON(self.repositoryFile, roms)
 
 class VirtualLauncherRomSet(StandardRomSet):
     

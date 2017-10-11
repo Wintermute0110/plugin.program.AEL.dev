@@ -9185,12 +9185,15 @@ class Main:
         # >> Load Recently Played ROMs and check/update.
         pDialog.update(0, 'Checking Recently Played ROMs ...')
         romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
-        recent_roms_list = romSet.loadRoms()
+        recent_roms_list = romSet.loadRomsAsList()
 
-        for rom in recent_roms_list: 
-            self._misc_fix_Favourite_rom_object(rom)
+        if recent_roms_list is None:
+            log_warning('Recently played romset not loaded')
+        else:
+            for rom in recent_roms_list: 
+                self._misc_fix_Favourite_rom_object(rom)
+            romSet.saveRoms(recent_roms_list)
 
-        romSet.saveRoms(recent_roms_list)
         pDialog.update(100)
         pDialog.close()
 
