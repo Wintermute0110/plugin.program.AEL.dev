@@ -36,7 +36,7 @@ class LauncherFactory():
     
     def createRomLauncher(self, launchers, launcher, launcherID, romID, categoryID):
         
-        romSet = self.romsetFactory.create(launcherID, categoryID, launchers)
+        romSet = self.romsetFactory.create(categoryID, launcherID, launchers)
 
         if romSet is None:
             log_error('Unable to load romset')

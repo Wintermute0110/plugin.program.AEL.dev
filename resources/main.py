@@ -1605,7 +1605,7 @@ class Main:
                     # --- Traverse ROM list and check local asset/artwork ---
                     pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
                     
-                    romSet = self.romsetFactory.create(launcherID, None, self.launchers)
+                    romSet = self.romsetFactory.create(None, launcherID, self.launchers)
                     roms = romSet.loadRoms()
 
                     num_items = len(roms)
@@ -2291,7 +2291,7 @@ class Main:
             return
 
         # --- Load ROMs ---
-        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
         roms = romSet.loadRoms()
         rom = romSet.loadRom(romID)
 
@@ -2983,10 +2983,10 @@ class Main:
         # --- Save ROMs or Favourites ROMs or Collection ROMs ---
         # >> Always save if we reach this point of the function
         if launcherID == VLAUNCHER_FAVOURITES_ID:
-            romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+            romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
             romSet.saveRoms(roms)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+            romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
             romSet.saveRoms(roms)
         else:
             # >> Save categories/launchers to update timestamp
@@ -3726,7 +3726,7 @@ class Main:
         # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
         loading_ticks_start = time.time()
         
-        romset = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        romset = self.romsetFactory.create(categoryID, launcherID, self.launchers)
         if romset is None:
             log_error('_command_render_roms() Rom set not found')
             kodi_dialog_OK('_command_render_roms(): Romset not found. Report this bug.')
@@ -3738,7 +3738,7 @@ class Main:
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
-        pcloneset = self.romsetFactory.create(launcherID, VCATEGORY_PCLONES_ID, self.launchers)
+        pcloneset = self.romsetFactory.create(VCATEGORY_PCLONES_ID, launcherID, self.launchers)
         pclone_index = pcloneset.loadRoms()
         
         selectedLauncher = romset.launcher
@@ -3811,6 +3811,7 @@ class Main:
     def _gui_render_rom_row(self, categoryID, launcherID, rom,
                             rom_in_fav = False, view_mode = LAUNCHER_DMODE_FLAT,
                             is_parent_launcher = False, num_clones = 0):
+
         # --- Do not render row if ROM is finished ---
         if rom['finished'] and self.settings['display_hide_finished']: return
 
@@ -4250,7 +4251,7 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load virtual launchers in this category ---
-        romSet = self.romsetFactory.create(virtual_launcherID, virtual_categoryID, self.launchers)
+        romSet = self.romsetFactory.create(virtual_categoryID, virtual_launcherID, self.launchers)
 
         if romSet.__class__.__name__ is not 'VirtualLauncherRomSet':
             log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
@@ -4357,7 +4358,7 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-        romSet = self.romsetFactory.create(VLAUNCHER_RECENT_ID, VCATEGORY_RECENT_ID, self.launchers)
+        romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
         rom_list = romSet.loadRoms() if romSet is not None else None
 
         if not rom_list:
@@ -4376,7 +4377,7 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Most Played favourite ROMs ---
-        romSet = self.romsetFactory.create(VLAUNCHER_MOST_PLAYED_ID, VCATEGORY_MOST_PLAYED_ID, self.launchers)
+        romSet = self.romsetFactory.create(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, self.launchers)
         roms = romSet.loadRomsAsList() if romSet is not None else None
         if not roms:
             kodi_notify('Most played ROMs list  is empty. Play some ROMs first!.')
@@ -4410,7 +4411,7 @@ class Main:
             all_roms.update(temp_roms)
 
         # --- Load favourites ---
-        romSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID, self.launchers)
+        romSet = self.romsetFactory.create(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, self.launchers)
         roms_fav = romSet.loadRoms()
         roms_fav_set = set(roms_fav.keys())
 
@@ -4428,7 +4429,7 @@ class Main:
     #
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
 
-        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
         roms = romSet.loadRoms()
 
         if categoryID == None or categoryID is '':
@@ -4444,7 +4445,7 @@ class Main:
             return
 
         # --- Load favourites ---
-        favRomSet = self.romsetFactory.create(VLAUNCHER_FAVOURITES_ID, VCATEGORY_FAVOURITES_ID, self.launchers)
+        favRomSet = self.romsetFactory.create(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, self.launchers)
         roms_fav = favRomSet.loadRoms()
 
         # --- DEBUG info ---
@@ -5537,7 +5538,7 @@ class Main:
 
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
 
-        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
         roms = romSet.loadRoms()
 
         if categoryID == None or categoryID is '':
@@ -5614,7 +5615,7 @@ class Main:
         log_debug('_command_search_launcher() launcherID {0}'.format(launcherID))
 
         # --- Load ROMs ---
-        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
         roms = romSet.loadRoms()
         
         # --- Empty ROM dictionary / Loading error ---
@@ -5723,7 +5724,7 @@ class Main:
         else: return
 
         # --- Load Launcher ROMs ---
-        romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+        romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
         roms = romSet.loadRoms()
 
         # --- Empty ROM dictionary / Loading error ---
@@ -5992,7 +5993,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_TITLE_ID:
                     log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -6005,7 +6006,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_YEARS_ID:
                     log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -6018,7 +6019,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_GENRE_ID:
                     log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -6031,7 +6032,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_STUDIO_ID:
                     log_info('_command_view_menu() Viewing ROM in Studio Virtual Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -6044,7 +6045,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_NPLAYERS_ID:
                     log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -6057,7 +6058,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_ESRB_ID:
                     log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -6070,7 +6071,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_RATING_ID:
                     log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -6083,7 +6084,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_CATEGORY_ID:
                     log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
-                    romSet = self.romsetFactory.create(launcherID, categoryID, self.launchers)
+                    romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -7629,7 +7630,7 @@ class Main:
         # >> If file does not exist or is empty then return an empty dictionary.
         report_fobj.write('Loading launcher ROMs ...\n')
         
-        romset = self.romsetFactory.create(launcherID, None, self.launchers)
+        romset = self.romsetFactory.create(None, launcherID, self.launchers)
         roms = romset.loadRoms()
         if roms is None:
             roms = {}
@@ -9158,7 +9159,7 @@ class Main:
 
         # >> Load Most Played ROMs and check/update.
         pDialog.update(0, 'Checking Most Played ROMs ...')
-        mostPlayedRomSet = self.romsetFactory.create(VLAUNCHER_MOST_PLAYED_ID, VCATEGORY_MOST_PLAYED_ID)
+        mostPlayedRomSet = self.romsetFactory.create(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, self.launchers)
         most_played_roms = mostPlayedRomSet.loadRoms()
         for rom_id in most_played_roms:
             rom = most_played_roms[rom_id]
@@ -9169,7 +9170,7 @@ class Main:
 
         # >> Load Recently Played ROMs and check/update.
         pDialog.update(0, 'Checking Recently Played ROMs ...')
-        romSet = self.romsetFactory.create(VLAUNCHER_RECENT_ID, VCATEGORY_RECENT_ID, self.launchers)
+        romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
         recent_roms_list = romSet.loadRoms()
 
         for rom in recent_roms_list: 

@@ -16,36 +16,36 @@ class RomSetFactory():
     
     def __init__(self, pluginDataDir):
 
-        self.ROMS_DIR                 = pluginDataDir.pjoin('db_ROMs')
-        self.FAV_JSON_FILE_PATH       = pluginDataDir.pjoin('favourites.json')
-        self.RECENT_PLAYED_FILE_PATH  = pluginDataDir.pjoin('history.json')
-        self.MOST_PLAYED_FILE_PATH    = pluginDataDir.pjoin('most_played.json')
-        self.COLLECTIONS_FILE_PATH    = pluginDataDir.pjoin('collections.xml')
-        self.COLLECTIONS_DIR          = pluginDataDir.pjoin('db_Collections')
-        self.VIRTUAL_CAT_TITLE_DIR    = pluginDataDir.pjoin('db_title')
-        self.VIRTUAL_CAT_YEARS_DIR    = pluginDataDir.pjoin('db_years')
-        self.VIRTUAL_CAT_GENRE_DIR    = pluginDataDir.pjoin('db_genre')
-        self.VCAT_DEVELOPER_FILE_PATH = pluginDataDir.pjoin('vcat_developers.xml')
-        self.VIRTUAL_CAT_CATEGORY_DIR = pluginDataDir.pjoin('db_category')
-        self.VIRTUAL_CAT_NPLAYERS_DIR = pluginDataDir.pjoin('db_nplayers')
-        self.VIRTUAL_CAT_ESRB_DIR     = pluginDataDir.pjoin('db_esrb')
-        self.VIRTUAL_CAT_RATING_DIR   = pluginDataDir.pjoin('db_rating')
+        self.ROMS_DIR                   = pluginDataDir.pjoin('db_ROMs')
+        self.FAV_JSON_FILE_PATH         = pluginDataDir.pjoin('favourites.json')
+        self.RECENT_PLAYED_FILE_PATH    = pluginDataDir.pjoin('history.json')
+        self.MOST_PLAYED_FILE_PATH      = pluginDataDir.pjoin('most_played.json')
+        self.COLLECTIONS_FILE_PATH      = pluginDataDir.pjoin('collections.xml')
+        self.COLLECTIONS_DIR            = pluginDataDir.pjoin('db_Collections')
+        self.VIRTUAL_CAT_TITLE_DIR      = pluginDataDir.pjoin('db_title')
+        self.VIRTUAL_CAT_YEARS_DIR      = pluginDataDir.pjoin('db_years')
+        self.VIRTUAL_CAT_GENRE_DIR      = pluginDataDir.pjoin('db_genre')
+        self.VIRTUAL_CAT_DEVELOPER_DIR  = pluginDataDir.pjoin('db_developer')
+        self.VIRTUAL_CAT_CATEGORY_DIR   = pluginDataDir.pjoin('db_category')
+        self.VIRTUAL_CAT_NPLAYERS_DIR   = pluginDataDir.pjoin('db_nplayers')
+        self.VIRTUAL_CAT_ESRB_DIR       = pluginDataDir.pjoin('db_esrb')
+        self.VIRTUAL_CAT_RATING_DIR     = pluginDataDir.pjoin('db_rating')
 
-        if not self.ROMS_DIR.exists():                 self.ROMS_DIR.makedirs()
-        if not self.VIRTUAL_CAT_TITLE_DIR.exists():    self.VIRTUAL_CAT_TITLE_DIR.makedirs()
-        if not self.VIRTUAL_CAT_YEARS_DIR.exists():    self.VIRTUAL_CAT_YEARS_DIR.makedirs()
-        if not self.VIRTUAL_CAT_GENRE_DIR.exists():    self.VIRTUAL_CAT_GENRE_DIR.makedirs()
-        if not self.VCAT_DEVELOPER_FILE_PATH.exists(): self.VCAT_DEVELOPER_FILE_PATH.makedirs()
-        if not self.VIRTUAL_CAT_CATEGORY_DIR.exists(): self.VIRTUAL_CAT_CATEGORY_DIR.makedirs()
-        if not self.VIRTUAL_CAT_NPLAYERS_DIR.exists(): self.VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
-        if not self.VIRTUAL_CAT_ESRB_DIR.exists():     self.VIRTUAL_CAT_ESRB_DIR.makedirs()
-        if not self.VIRTUAL_CAT_RATING_DIR.exists():   self.VIRTUAL_CAT_RATING_DIR.makedirs()
-        if not self.COLLECTIONS_DIR.exists():          self.COLLECTIONS_DIR.makedirs()
+        if not self.ROMS_DIR.exists():                  self.ROMS_DIR.makedirs()
+        if not self.VIRTUAL_CAT_TITLE_DIR.exists():     self.VIRTUAL_CAT_TITLE_DIR.makedirs()
+        if not self.VIRTUAL_CAT_YEARS_DIR.exists():     self.VIRTUAL_CAT_YEARS_DIR.makedirs()
+        if not self.VIRTUAL_CAT_GENRE_DIR.exists():     self.VIRTUAL_CAT_GENRE_DIR.makedirs()
+        if not self.VIRTUAL_CAT_DEVELOPER_DIR.exists(): self.VIRTUAL_CAT_DEVELOPER_DIR.makedirs()
+        if not self.VIRTUAL_CAT_CATEGORY_DIR.exists():  self.VIRTUAL_CAT_CATEGORY_DIR.makedirs()
+        if not self.VIRTUAL_CAT_NPLAYERS_DIR.exists():  self.VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
+        if not self.VIRTUAL_CAT_ESRB_DIR.exists():      self.VIRTUAL_CAT_ESRB_DIR.makedirs()
+        if not self.VIRTUAL_CAT_RATING_DIR.exists():    self.VIRTUAL_CAT_RATING_DIR.makedirs()
+        if not self.COLLECTIONS_DIR.exists():           self.COLLECTIONS_DIR.makedirs()
 
-    def create(self, launcherID, categoryID, launchers):
+    def create(self, categoryID, launcherID, launchers):
         
-        log_debug('romsetfactory.create(): launcherID={0}'.format(launcherID))
         log_debug('romsetfactory.create(): categoryID={0}'.format(categoryID))
+        log_debug('romsetfactory.create(): launcherID={0}'.format(launcherID))
         
         launcher = None
         if launcherID in launchers:
@@ -83,7 +83,7 @@ class RomSetFactory():
             return VirtualLauncherRomSet(self.VIRTUAL_CAT_GENRE_DIR, launcher, launcherID, description)
         elif categoryID == VCATEGORY_DEVELOPER_ID:
             log_info('RomSetFactory() loading ROM set Studio Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VCAT_DEVELOPER_FILE_PATH, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_DEVELOPER_DIR, launcher, launcherID, description)
         elif categoryID == VCATEGORY_NPLAYERS_ID:
             log_info('RomSetFactory() loading ROM set NPlayers Virtual Launcher ...')
             return VirtualLauncherRomSet(self.VIRTUAL_CAT_NPLAYERS_DIR, launcher, launcherID, description)
