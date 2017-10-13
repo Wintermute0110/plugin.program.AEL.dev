@@ -997,7 +997,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
         log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(roms_json_file.getOriginalPath()))
         log_error('fs_load_Collection_ROMs_JSON() Size {0}'.format(statinfo.st_size))
         return []
-
+    
     # --- Extract roms from JSON data structe and ensure version is correct ---
     control_str = raw_data[0]['control']
     version_int = raw_data[0]['version']

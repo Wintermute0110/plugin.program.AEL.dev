@@ -4359,7 +4359,7 @@ class Main:
 
         # --- Load Recently Played favourite ROM list and create and OrderedDict ---
         romSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
-        rom_list = romSet.loadRoms() if romSet is not None else None
+        rom_list = romSet.loadRomsAsList() if romSet is not None else None
 
         if not rom_list:
             kodi_notify('Recently played list is empty. Play some ROMs first!')
@@ -4385,8 +4385,9 @@ class Main:
             return
 
         # --- Display most played ROMs, order by number of launchs ---
-        for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
-            self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
+        for rom in sorted(roms, key = lambda rom : rom['launch_count'], reverse = True):
+            self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, rom)
+
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -4430,19 +4431,20 @@ class Main:
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
 
         romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
-        roms = romSet.loadRoms()
+        rom = romSet.loadRom(romID)
+
+        # >> Sanity check
+        if not rom:
+            kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
+            return
 
         if categoryID == None or categoryID is '':
             # >> ROMs in standard launcher
             launcher = self.launchers[launcherID]
         else:
             # >> ROM in Virtual Launcher
-            launcher = self.launchers[roms[romID]['launcherID']] # why not launchers[id]
-
-        # >> Sanity check
-        if not roms:
-            kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
-            return
+            virtualLauncherID = rom['launcherID']
+            launcher = self.launchers[virtualLauncherID]
 
         # --- Load favourites ---
         favRomSet = self.romsetFactory.create(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, self.launchers)
@@ -4451,14 +4453,14 @@ class Main:
         # --- DEBUG info ---
         log_verb('_command_add_to_favourites() Adding ROM to Favourites')
         log_verb('_command_add_to_favourites() romID  {0}'.format(romID))
-        log_verb('_command_add_to_favourites() m_name {0}'.format(roms[romID]['m_name']))
+        log_verb('_command_add_to_favourites() m_name {0}'.format(rom['m_name']))
 
         # Check if ROM already in favourites an warn user if so
         if romID in roms_fav:
             log_verb('Already in favourites')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'ROM {0} is already on AEL Favourites. Overwrite it?'.format(roms[romID]['m_name']))
+                               'ROM {0} is already on AEL Favourites. Overwrite it?'.format(rom['m_name']))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
@@ -4466,18 +4468,18 @@ class Main:
         else:
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                                'ROM {0}. Add this ROM to AEL Favourites?'.format(roms[romID]['m_name']))
+                                'ROM {0}. Add this ROM to AEL Favourites?'.format(rom['m_name']))
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
 
         # --- Add ROM to favourites ROMs and save to disk ---
-        roms_fav[romID] = fs_get_Favourite_from_ROM(roms[romID], launcher)
+        roms_fav[romID] = fs_get_Favourite_from_ROM(rom, launcher)
         # >> If thumb is empty then use launcher thum. / If fanart is empty then use launcher fanart.
         # if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = launcher['thumb']
         # if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = launcher['fanart']
         fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
-        kodi_notify('ROM {0} added to Favourites'.format(roms[romID]['m_name']))
+        kodi_notify('ROM {0} added to Favourites'.format(rom['m_name']))
         kodi_refresh_container()
 
     #
@@ -5539,14 +5541,15 @@ class Main:
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
 
         romSet = self.romsetFactory.create(categoryID, launcherID, self.launchers)
-        roms = romSet.loadRoms()
+        rom = romSet.loadRom(romID)
 
         if categoryID == None or categoryID is '':
             # >> ROMs in standard launcher
             launcher = self.launchers[launcherID]
         else:
             # >> ROM in Virtual Launcher
-            launcher = self.launchers[roms[romID]['launcherID']] # why not launchers[id]
+            virtualLauncherID = rom['launcherID']
+            launcher = self.launchers[virtualLauncherID]
 
         # --- Load Collection index ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -5574,19 +5577,20 @@ class Main:
         log_info('Adding ROM to Collection')
         log_info('Collection {0}'.format(collection['m_name']))
         log_info('romID      {0}'.format(romID))
-        log_info('ROM m_name {0}'.format(roms[romID]['m_name']))
+        log_info('ROM m_name {0}'.format(rom['m_name']))
 
         # >> Check if ROM already in this collection an warn user if so
         rom_already_in_collection = False
-        for rom in collection_rom_list:
-            if romID == rom['id']:
+        for collection_rom in collection_rom_list:
+            if romID == collection_rom['id']:
                 rom_already_in_collection = True
                 break
+
         if rom_already_in_collection:
             log_info('ROM already in collection')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(roms[romID]['m_name'], collection['m_name']))
+                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(rom['m_name'], collection['m_name']))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
@@ -5594,7 +5598,7 @@ class Main:
         else:
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(roms[romID]['m_name'], collection['m_name']))
+                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(rom2['m_name'], collection['m_name']))
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
