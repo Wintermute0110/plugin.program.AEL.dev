@@ -28,10 +28,10 @@ class LauncherFactory():
             return None
         
         launcher = launchers[launcherID]
-        launcherType = launcherdata['type'] if type in launcherdata else None
+        launcherType = launcher['type'] if 'type' in launcher else None
 
         if launcherType is None:
-            launcherType = self._determineType() # backwardscompatibilty
+            launcherType = self._determineType(rom) # backwardscompatibilty
             
         if launcherType == LAUNCHER_STANDALONE:
             return ApplicationLauncher(self.settings, self.executorFactory, launcher)
@@ -274,7 +274,8 @@ class StandardRomLauncher(Launcher):
 
         self.statsStrategy = statsStrategy
         
-        super(StandardRomLauncher, self).__init__(settings, executorFactory, launcher['minimize'], launcher['non_blocking'])
+        non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
+        super(StandardRomLauncher, self).__init__(settings, executorFactory, launcher['minimize'], non_blocking_flag)
 
     def _selectApplicationToUse(self):
 
@@ -307,7 +308,7 @@ class StandardRomLauncher(Launcher):
 
     def _selectRomFileToUse(self):
         
-        if not 'disks' in rom or not rom['disks']:
+        if not 'disks' in self.rom or not self.rom['disks']:
             return FileName(self.rom['filename'])
                 
         log_info('StandardRomLauncher() Multidisc ROM set detected')
@@ -437,6 +438,7 @@ class RetroarchLauncher(StandardRomLauncher):
             return
 
         #todo other os
+        self.application = ''
         pass
 
     def _selectArgumentsToUse(self):

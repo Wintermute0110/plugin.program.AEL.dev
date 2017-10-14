@@ -7,6 +7,8 @@ from resources.disk_IO import *
 from resources.launchers import *
 from resources.utils_kodi import *
 
+import resources.constants
+
 class Test_Launcher(unittest.TestCase):
 
     def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
@@ -264,7 +266,7 @@ class Test_Launcher(unittest.TestCase):
         
         # assert        
         actual = launcher.__class__.__name__
-        expected = 'MultiDiscRomLauncher'
+        expected = 'StandardRomLauncher'
         self.assertEqual(actual, expected)
 
     def test_if_rom_launcher_will_apply_the_correct_disc_in_a_multidisc_situation(self):
@@ -338,18 +340,20 @@ class Test_Launcher(unittest.TestCase):
 
         launchers = {}
         launchers['ABC'] = {}
-        launchers['ABC']['type'] = 'retroarch'
+        launchers['ABC']['type'] = LAUNCHER_RETROARCH
         launchers['ABC']['id'] = 'ABC'
         launchers['ABC']['minimize'] = True
         launchers['ABC']['romext'] = None
         launchers['ABC']['args_extra'] = None
         launchers['ABC']['roms_base_noext'] = 'snes'
         launchers['ABC']['core'] = 'mame_libretro_android.so'
+        launchers['ABC']['application'] = None
 
         rom = {}
         rom['id'] = 'qqqq'
         rom['m_name'] = 'TestCase'
         rom['filename'] = 'superrom.zip'
+        rom['altapp'] = None
 
         mock_romsFactory.create.return_value = FakeRomSet(rom)
         mock = FakeExecutor(None)
@@ -398,7 +402,7 @@ class FakeRomSet(RomSet):
 
 class FakeExecutor(Executor):
     
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
         self.actualApplication = application
         self.actualArgs = arguments
         pass
