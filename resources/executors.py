@@ -56,7 +56,7 @@ class Executor():
         self.logFile = logFile
         
     @abstractmethod
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
         pass
 
 class XbmcExecutor(Executor):
@@ -66,7 +66,13 @@ class XbmcExecutor(Executor):
 
         xbmc.executebuiltin('XBMC.{0}'.format(arguments))
         pass
-
+    
+# >> Linux and Android
+# >> New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
+# >> process. This is to avoid Kodi opens sockets be inherited by the child process. A
+# >> wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
+# >> closed Kodi will complain that the remote interfacte cannot be initialised. I believe
+# >> the cause is that the socket is kept open by the wrapper script.
 class LinuxExecutor(Executor):
 
     def __init__(self, logFile, lirc_state):
@@ -74,28 +80,31 @@ class LinuxExecutor(Executor):
         
         super(LinuxExecutor, self).__init__(logFile)
 
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
         import subprocess
         import shlex
 
         if self.lirc_state:
            xbmc.executebuiltin('LIRC.stop')
 
-        arg_list  = shlex.split(arguments)
+        arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
 
         # >> Old way of launching child process. os.system() is deprecated and should not
         # >> be used anymore.
         # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
 
-        # >> New way of launching, uses subproces module. Also, save child process stdout.
-        with open(self.logFile.getPath(), 'w') as f:
-            retcode = subprocess.call(command, stdout = f, stderr = subprocess.STDOUT)
-        
-        log_info('Executor (Linux) Process retcode = {0}'.format(retcode))
-        
-        if self.lirc_state:
-            xbmc.executebuiltin('LIRC.start')
+         # >> New way of launching, uses subproces module. Also, save child process stdout.
+        if non_blocking:
+            # >> In a non-blocking launch stdout/stderr of child process cannot be recorded.
+            log_info('LinuxExecutor: Launching non-blocking process subprocess.Popen()')
+            p = subprocess.Popen(exec_list, close_fds = True)
+        else:
+            with open(self.logFile.getPath(), 'w') as f:
+                retcode = subprocess.call(command, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
+            log_info('LinuxExecutor: Process retcode = {0}'.format(retcode))
+            if self.lirc_state:
+                xbmc.executebuiltin('LIRC.start')
 
         pass
 
@@ -105,7 +114,7 @@ class OSXExecutor(Executor):
         import subprocess
         import shlex
         
-        arg_list  = shlex.split(arguments)
+        arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
         
         # >> Old way
@@ -115,7 +124,7 @@ class OSXExecutor(Executor):
         with open(self.logFile.getPath(), 'w') as f:
             retcode = subprocess.call(command, stdout = f, stderr = subprocess.STDOUT)
 
-        log_info('Executor (OSX) Process retcode = {0}'.format(retcode))
+        log_info('OSXExecutor: Process retcode = {0}'.format(retcode))
 
         pass
 
@@ -141,7 +150,7 @@ class WindowsBatchFileExecutor(Executor):
         import subprocess
         import shlex
         
-        arg_list  = shlex.split(arguments)
+        arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
         apppath = application.getDir()
 
@@ -186,9 +195,20 @@ class WindowsExecutor(Executor):
         import subprocess
         import shlex
         
-        arg_list  = shlex.split(arguments)
+        arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
         apppath = application.getDir()
+        
+        # --- Workaround to run UNC paths in Windows ---
+        # >> Retroarch now support ROMs in UNC paths (Samba remotes)
+        new_command = list(command)
+        for i, _ in enumerate(command):
+            if command[i][0] == '\\':
+                new_command[i] = '\\' + command[i]
+                log_debug('WindowsExecutor: Before arg #{0} = "{1}"'.format(i, command[i]))
+                log_debug('WindowsExecutor: Now    arg #{0} = "{1}"'.format(i, new_command[i]))
+        command = list(new_command)
+        log_debug('WindowsExecutor: command = {0}'.format(command))
 
         # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
         # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
@@ -197,14 +217,19 @@ class WindowsExecutor(Executor):
         log_debug('Executor (Windows) windows_cd_apppath = {0}'.format(self.windows_cd_apppath))
         log_debug('Executor (Windows) windows_close_fds  = {0}'.format(self.windows_close_fds))
        
+        # >>  Note that on Windows, you cannot set close_fds to true and also redirect the 
+        # >> standard handles by setting stdin, stdout or stderr.
         if self.windows_cd_apppath and self.windows_close_fds:
             retcode = subprocess.call(command, cwd = apppath.encode('utf-8'), close_fds = True)
         elif self.windows_cd_apppath and not self.windows_close_fds:
-            retcode = subprocess.call(command, cwd = apppath.encode('utf-8'), close_fds = False)
+            with open(self.logFile.getPath(), 'w') as f:
+                retcode = subprocess.call(command, cwd = apppath.encode('utf-8'), close_fds = False,
+                                            stdout = f, stderr = subprocess.STDOUT)
         elif not self.windows_cd_apppath and self.windows_close_fds:
             retcode = subprocess.call(command, close_fds = True)
         elif not self.windows_cd_apppath and not self.windows_close_fds:
-            retcode = subprocess.call(command, close_fds = False)
+            with open(self.logFile.getPath(), 'w') as f:
+                retcode = subprocess.call(command, close_fds = False, stdout = f, stderr = subprocess.STDOUT)
         else:
             raise Exception('Logical error')
         

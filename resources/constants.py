@@ -47,6 +47,13 @@ VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
 VCATEGORY_PCLONES_ID     = 'vcat_pclone'
 
+# LAUNCHER TYPES
+LAUNCHER_STANDALONE  = 1
+LAUNCHER_ROM         = 2
+LAUNCHER_RETROPLAYER = 3
+LAUNCHER_LNK         = 4
+LAUNCHER_RETROARCH   = 5
+
 # --- Content type property to be used by skins ---
 AEL_CONTENT_WINDOW_ID       = 10000
 AEL_CONTENT_LABEL           = 'AEL_Content'

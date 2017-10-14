@@ -28,26 +28,36 @@ class LauncherFactory():
             return None
         
         launcher = launchers[launcherID]
+        launcherType = launcherdata['type'] if type in launcherdata else None
 
-        if rom is not None:
-            return self._createRomLauncher(launcher, rom, launchers)
+        if launcherType is None:
+            launcherType = self._determineType() # backwardscompatibilty
+            
+        if launcherType == LAUNCHER_STANDALONE:
+            return ApplicationLauncher(self.settings, self.executorFactory, launcher)
 
-        return ApplicationLauncher(self.settings, self.executorFactory, launcher)
-
-    def _createRomLauncher(self, launcher, rom, launchers):
+        if rom is None:
+            return None
         
         statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
 
-        # proof of concept with launcher types
-        if 'type' in launcher and launcher['type'] == 'retroarch':
+        if launcherType == LAUNCHER_RETROPLAYER:
+            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher, rom)
+
+        if launcherType == LAUNCHER_RETROARCH:
             return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
 
-        if 'disks' in rom and rom['disks']:
-            return MultiDiscRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
-        
-        log_info('LauncherFactory() Sigle ROM detected (no multidisc)')
-        return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
+        if launcherType == LAUNCHER_ROM:
+            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
 
+        return None
+
+    # for backwards compatibility
+    def _determineType(self, rom):
+        if rom is None:
+            return LAUNCHER_STANDALONE
+
+        return LAUNCHER_ROM
 
 #
 # Abstract base class for launching anything that is supported.
@@ -56,12 +66,14 @@ class LauncherFactory():
 class Launcher():
     __metaclass__ = ABCMeta
     
-    def __init__(self, settings, executorFactory, minimize_flag):
+    def __init__(self, settings, executorFactory, minimize_flag, non_blocking = False):
 
         self.settings        = settings
         self.executorFactory = executorFactory
 
         self.minimize_flag  = minimize_flag
+        self.non_blocking   = non_blocking
+
         self.application    = None
         self.arguments      = None
         self.title          = None
@@ -86,7 +98,7 @@ class Launcher():
         log_debug('Launcher executor = "{0}"'.format(executor.__class__.__name__))
 
         self.preExecution(self.title, self.minimize_flag)
-        executor.execute(self.application, self.arguments)
+        executor.execute(self.application, self.arguments, self.non_blocking)
         self.postExecution(self.minimize_flag)
 
         pass
@@ -133,6 +145,34 @@ class Launcher():
         else:
             log_verb('_run_before_execution() DO NOT suspend Kodi audio engine')
 
+        # --- Force joystick suspend if requested in "Settings" --> "Advanced"
+        # >> See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
+        # >> See https://forum.kodi.tv/showthread.php?tid=157499&pid=1722549&highlight=input.enablejoystick#pid1722549
+        # >> See https://forum.kodi.tv/showthread.php?tid=313615
+        self.kodi_joystick_suspended = False
+        # if self.settings['suspend_joystick_engine']:
+            # log_verb('_run_before_execution() Suspending Kodi joystick engine')
+            # >> Research. Get the value of the setting first
+            # >> Apparently input.enablejoystick is not supported on Kodi Krypton anymore.
+            # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
+            #          ' "method" : "Settings.GetSettingValue",'
+            #          ' "params" : {"setting":"input.enablejoystick"}}')
+            # response = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response))
+
+            # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
+            #          ' "method" : "Settings.SetSettingValue",'
+            #          ' "params" : {"setting" : "input.enablejoystick", "value" : false} }')
+            # response = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response))
+            # self.kodi_joystick_suspended = True
+
+            # log_error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
+        # else:
+            # log_verb('_run_before_execution() DO NOT suspend Kodi joystick engine')
+
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_run_before_execution() Toggling Kodi fullscreen')
@@ -173,6 +213,17 @@ class Launcher():
             xbmc.sleep(100)
         else:
             log_verb('_run_before_execution() DO NOT resume Kodi audio engine')
+
+        # --- Resume joystick engine if it was suspended ---
+        if self.kodi_joystick_suspended:
+            log_verb('postExecution() Kodi joystick engine was suspended before launching')
+            log_verb('postExecution() Resuming Kodi joystick engine')
+            # response = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response))
+            log_verb('postExecution() Not supported on Kodi Krypton!')
+        else:
+            log_verb('postExecution() DO NOT resume Kodi joystick engine')
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']
@@ -223,7 +274,7 @@ class StandardRomLauncher(Launcher):
 
         self.statsStrategy = statsStrategy
         
-        super(StandardRomLauncher, self).__init__(settings, executorFactory, launcher['minimize'])
+        super(StandardRomLauncher, self).__init__(settings, executorFactory, launcher['minimize'], launcher['non_blocking'])
 
     def _selectApplicationToUse(self):
 
@@ -255,7 +306,24 @@ class StandardRomLauncher(Launcher):
             self.arguments = self.launcher['args']
 
     def _selectRomFileToUse(self):
-        return FileName(self.rom['filename'])
+        
+        if not 'disks' in rom or not rom['disks']:
+            return FileName(self.rom['filename'])
+                
+        log_info('StandardRomLauncher() Multidisc ROM set detected')
+        dialog = xbmcgui.Dialog()
+        dselect_ret = dialog.select('Select ROM to launch in multidisc set', self.rom['disks'])
+        if dselect_ret < 0:
+           return
+
+        selected_rom_base = self.rom['disks'][dselect_ret]
+        log_info('StandardRomLauncher() Selected ROM "{0}"'.format(selected_rom_base))
+
+        ROM_temp = FileName(self.rom['filename'])
+        ROM_dir = FileName(ROM_temp.getDir())
+        ROMFileName = ROM_dir.pjoin(selected_rom_base)
+
+        return ROMFileName
     
     # ~~~~ Argument substitution ~~~~~
     def _parseArguments(self, romFile):
@@ -324,24 +392,40 @@ class StandardRomLauncher(Launcher):
         super(StandardRomLauncher, self).launch()
         pass
 
-class MultiDiscRomLauncher(StandardRomLauncher):
+# --- Execute Kodi Retroplayer if launcher configured to do so ---
+# See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
+# See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
+class RetroplayerLauncher(StandardRomSet):
 
-    def _selectRomFileToUse(self):
+    def launch(self):
+        log_info('RetroplayerLauncher() Executing ROM with Kodi Retroplayer ...')
+                
+        self.title = self.rom['m_name']
+        self._selectApplicationToUse()
 
-        log_info('MultiDiscRomLauncher() Multidisc ROM set detected')
-        dialog = xbmcgui.Dialog()
-        dselect_ret = dialog.select('Select ROM to launch in multidisc set', self.rom['disks'])
-        if dselect_ret < 0:
-           return
+        ROMFileName = self._selectRomFileToUse()
+                
+        # >> Create listitem object
+        label_str = ROMFileName.getBase()
+        listitem = xbmcgui.ListItem(label = label_str, label2 = label_str)
+        # >> Listitem metadata
+        # >> How to fill gameclient = string (game.libretro.fceumm) ???
+        genre_list = list(rom['m_genre'])
+        listitem.setInfo('game', {'title'    : label_str,     'platform'  : 'Test platform',
+                                    'genres'   : genre_list,    'developer' : rom['m_developer'],
+                                    'overview' : rom['m_plot'], 'year'      : rom['m_year'] })
+        log_info('RetroplayerLauncher() application.getOriginalPath() "{0}"'.format(application.getOriginalPath()))
+        log_info('RetroplayerLauncher() ROMFileName.getOriginalPath() "{0}"'.format(ROMFileName.getOriginalPath()))
+        log_info('RetroplayerLauncher() label_str                     "{0}"'.format(label_str))
 
-        selected_rom_base = self.rom['disks'][dselect_ret]
-        log_info('MultiDiscRomLauncher() Selected ROM "{0}"'.format(selected_rom_base))
+        # --- User notification ---
+        if self.settings['display_launcher_notify']:
+            kodi_notify('Launching "{0}" with Retroplayer'.format(self.title))
 
-        ROM_temp = FileName(self.rom['filename'])
-        ROM_dir = FileName(ROM_temp.getDir())
-        ROMFileName = ROM_dir.pjoin(selected_rom_base)
-
-        return ROMFileName
+        log_verb('RetroplayerLauncher() Calling xbmc.Player().play() ...')
+        xbmc.Player().play(ROMFileName.getOriginalPath(), listitem)
+        log_verb('RetroplayerLauncher() Calling xbmc.Player().play() returned. Leaving function.')
+        pass
 
 class RetroarchLauncher(StandardRomLauncher):
 

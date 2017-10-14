@@ -861,10 +861,6 @@ class Main:
         kodi_refresh_container()
 
     def _command_add_new_launcher(self, categoryID):
-        LAUNCHER_STANDALONE  = 1
-        LAUNCHER_ROM         = 2
-        LAUNCHER_RETROPLAYER = 3
-        LAUNCHER_LNK         = 4
 
         # >> If categoryID not found user is creating a new launcher using the context menu
         # >> of a launcher in addon root.
@@ -1031,6 +1027,7 @@ class Main:
             # NOTE than in the database original paths are always stored.
             launcherdata = fs_new_launcher()
             launcherdata['id']                 = launcherID
+            launcherdata['type']               = launcher_type
             launcherdata['m_name']             = title
             launcherdata['platform']           = launcher_platform
             launcherdata['categoryID']         = launcher_categoryID
@@ -2113,9 +2110,6 @@ class Main:
             type2_nb = 0
             if type2 == type2_nb:
                 # >> Choose launching mechanism
-                LAUNCHER_ROM         = 1
-                LAUNCHER_RETROPLAYER = 2
-                LAUNCHER_LNK         = 3
                 if sys.platform == 'win32':
                     answer = dialog.select('Choose launcher mechanism',
                                           ['Use Kodi Retroplayer',
@@ -3384,6 +3378,11 @@ class Main:
         for platform in AEL_platform_list:
             # >> Do not show Unknown platform
             if platform == 'Unknown': continue
+            
+            if not platform in gamedb_info_dic:
+                log_warning('_gui_render_AEL_scraper_launchers: Platform {0} not found in collection'.format(platform))
+                continue
+
             db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform]
             self._gui_render_AEL_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -3423,6 +3422,11 @@ class Main:
         for platform in AEL_platform_list:
             # >> Do not show Unknown platform
             if platform == 'Unknown': continue
+
+            if not platform in gamedb_info_dic:
+                log_warning('_gui_render_LB_scraper_launchers: Platform {0} not found in collection'.format(platform))
+                continue
+
             db_suffix = platform_AEL_to_LB_XML[platform]
             self._gui_render_LB_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
