@@ -62,7 +62,7 @@ class Executor():
 class XbmcExecutor(Executor):
 
     # --- Execute Kodi built-in function under certain conditions ---
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
 
         xbmc.executebuiltin('XBMC.{0}'.format(arguments))
         pass
@@ -110,7 +110,7 @@ class LinuxExecutor(Executor):
 
 class OSXExecutor(Executor):
 
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
         import subprocess
         import shlex
         
@@ -130,7 +130,7 @@ class OSXExecutor(Executor):
 
 class WindowsLnkFileExecutor(Executor):
 
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
                 
         log_debug('Executor (Windows) Launching LNK application')
         # os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
@@ -146,7 +146,7 @@ class WindowsBatchFileExecutor(Executor):
 
         super(WindowsBatchFileExecutor, self).__init__(logFile)
 
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
         import subprocess
         import shlex
         
@@ -191,7 +191,7 @@ class WindowsExecutor(Executor):
     # If I keep old launcher behaviour in Windows (close_fds = True) then program output cannot
     # be redirected to a file.
     #
-    def execute(self, application, arguments):
+    def execute(self, application, arguments, non_blocking):
         import subprocess
         import shlex
         

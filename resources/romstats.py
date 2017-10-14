@@ -18,7 +18,7 @@ class RomStatisticsStrategy():
     def updateRecentlyPlayedRom(self, recent_rom):
 
         ## --- Compute ROM recently played list ---
-        recentlyPlayedRomSet = self.romsetFactory.create(VLAUNCHER_RECENT_ID, VCATEGORY_RECENT_ID, self.launchers)
+        recentlyPlayedRomSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
 
         recent_roms_list = recentlyPlayedRomSet.loadRomsAsList()
         recent_roms_list = [rom for rom in recent_roms_list if rom['id'] != recent_rom['id']]
@@ -33,7 +33,7 @@ class RomStatisticsStrategy():
         recentlyPlayedRomSet.saveRoms(recent_roms_list)
         
         # --- Compute most played ROM statistics ---
-        mostPlayedRomSet = self.romsetFactory.create(VLAUNCHER_MOST_PLAYED_ID, VCATEGORY_MOST_PLAYED_ID, self.launchers)
+        mostPlayedRomSet = self.romsetFactory.create(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, self.launchers)
         
         most_played_roms = mostPlayedRomSet.loadRoms()
         if recent_rom['id'] in most_played_roms:

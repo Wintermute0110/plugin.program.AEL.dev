@@ -6863,6 +6863,8 @@ class Main:
             kodi_dialog_OK('Could not start launcher. Check the logs')
             return
 
+        launcher.launch()
+
     #
     # Check if Launcher reports must be created/regenrated
     #

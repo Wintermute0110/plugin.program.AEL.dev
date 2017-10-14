@@ -240,6 +240,10 @@ class StandardRomSet(RomSet):
 
     def loadRomsAsList(self):
         roms_dict = self.loadRoms()
+
+        if roms_dict is None:
+            return None
+
         roms = []
         for key in roms_dict:
             roms.append(roms_dict[key])
