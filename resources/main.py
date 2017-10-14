@@ -4252,14 +4252,10 @@ class Main:
 
         # --- Load virtual launchers in this category ---
         romSet = self.romsetFactory.create(virtual_categoryID, virtual_launcherID, self.launchers)
-
-        if romSet.__class__.__name__ is not 'VirtualLauncherRomSet':
+        
+        if not romSet.__class__.__name__ == 'VirtualLauncherRomSet':
             log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
-            return
-
-        if not romSet.romSetFileExists():
-            kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
             return
 
         roms = romSet.loadRoms()
@@ -6694,14 +6690,14 @@ class Main:
 
         # --- Delete previous hashed database XMLs ---
         log_info('_command_update_virtual_category_db() Cleaning hashed database old XMLs')
-        for the_file in vcategory_db_directory.scanFilesInPathAsPaths('*.*'):
+        for the_file in vcategory_db_directory.scanFilesInPathAsFileNameObjects('*.*'):
             file_extension = the_file.getExt()
             if file_extension.lower() != '.xml' and file_extension.lower() != '.json':
                 # >> There should be only XMLs or JSON in this directory
-                log_error('_command_update_virtual_category_db() Non XML/JSON file "{0}"'.format(the_file.getPath()))
+                log_error('_command_update_virtual_category_db() Non XML/JSON file "{0}"'.format(the_file.getOriginalPath()))
                 log_error('_command_update_virtual_category_db() Skipping it from deletion')
                 continue
-            log_verb('_command_update_virtual_category_db() Deleting "{0}"'.format(the_file.getPath()))
+            log_verb('_command_update_virtual_category_db() Deleting "{0}"'.format(the_file.getOriginalPath()))
             try:
                 if the_file.exists():
                     the_file.unlink()

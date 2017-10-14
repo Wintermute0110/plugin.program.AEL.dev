@@ -293,7 +293,7 @@ class VirtualLauncherRomSet(StandardRomSet):
         self.launcherID = launcherID
         super(VirtualLauncherRomSet, self).__init__(romsDir, launcher, description)
 
-    def romSetFileExists():
+    def romSetFileExists(self):
         hashed_db_filename = self.romsDir.pjoin(self.launcherID + '.json')
         return hashed_db_filename.exists()
 

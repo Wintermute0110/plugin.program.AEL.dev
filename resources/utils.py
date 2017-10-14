@@ -547,13 +547,13 @@ class FileName:
 
         return files
 
-    def scanFilesInPathAsPaths(self, mask = '*.*'):
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
         
         subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
             filePath = self.pjoin(self._decodeName(filename))
-            files.append(filePath.getOriginalPath())
+            files.append(FileName(filePath.getOriginalPath()))
 
         return files
 

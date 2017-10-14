@@ -381,7 +381,7 @@ class FakeRomSet(RomSet):
     def __init__(self, rom):
         self.rom = rom
 
-    def romSetFileExists():
+    def romSetFileExists(self):
         return True
             
     def loadRoms(self):
