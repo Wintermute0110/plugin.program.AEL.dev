@@ -5869,7 +5869,7 @@ class Main:
         ACTION_VIEW_MAP               = 1000
         ACTION_VIEW_EXEC_OUTPUT       = 1100
 
-        # >> Determine if we are in a cateogory, launcher or ROM
+        # --- Determine if we are in a category, launcher or ROM ---
         log_debug('_command_view_menu() categoryID = {0}'.format(categoryID))
         log_debug('_command_view_menu() launcherID = {0}'.format(launcherID))
         log_debug('_command_view_menu() romID      = {0}'.format(romID))
