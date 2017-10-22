@@ -34,13 +34,10 @@ class Test_maintests(unittest.TestCase):
             return 0
 
         return '1'
-    
-    def test_when_running_the_plugin_no_errors_occur(self):
-        self.test_when_running_the_plugin_no_errors_occur_mocked()
-       
+           
     @patch('resources.main.sys')
     @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    def test_when_running_the_plugin_no_errors_occur_mocked(self, mock_addon, mock_sys):
+    def test_when_running_the_plugin_no_errors_occur(self, mock_addon, mock_sys):
         
         # arrange
         mock_sys.args.return_value = ['contenttype', 'noarg']
@@ -51,14 +48,11 @@ class Test_maintests(unittest.TestCase):
 
         # assert
         pass
-
-    def test_when_adding_new_category_the_correct_data_gets_stored(self):
-        self.test_when_adding_new_category_the_correct_data_gets_stored_mocked()
-        
+            
     @patch('resources.main.xbmc.Keyboard.getText', autospec=True)
     @patch('resources.main.fs_write_catfile')
     @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    def test_when_adding_new_category_the_correct_data_gets_stored_mocked(self, mock_addon, mock_writecatfile, mock_keyboard):
+    def test_when_adding_new_category_the_correct_data_gets_stored(self, mock_addon, mock_writecatfile, mock_keyboard):
         
         # arrange
         expected =  'MyTestCategory'
@@ -81,12 +75,9 @@ class Test_maintests(unittest.TestCase):
         # assert
         self.assertTrue(mock_writecatfile.called)
         self.assertIn(expected, actuals)
-
-    def test_when_rendering_roms_it_will_return_a_proper_result(self):
-        self.test_when_rendering_roms_it_will_return_a_proper_result_mocked()
-    
+            
     @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    def test_when_rendering_roms_it_will_return_a_proper_result_mocked(self, mock_addon):
+    def test_when_rendering_roms_it_will_return_a_proper_result(self, mock_addon):
         
         # arrange
         target = main.Main()

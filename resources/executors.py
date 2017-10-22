@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-import os
+import os, re
 
 # --- Kodi stuff ---
 import xbmc
@@ -28,6 +28,9 @@ class ExecutorFactory():
         if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
             or 'xbmc-fav-' in application.getOriginalPath() or 'xbmc-sea-' in application.getOriginalPath():
             return XbmcExecutor(self.logFile)
+
+        if re.search('.*://.*', application.getOriginalPath())
+            return WebBrowserExecutor(self.logFile)
         
         if sys.platform == 'win32':
             
@@ -235,4 +238,15 @@ class WindowsExecutor(Executor):
         
         log_info('Executor (Windows) Process retcode = {0}'.format(retcode))
            
+        pass
+
+    
+class WebBrowserExecutor(Executor):
+
+    def execute(self, application, arguments, non_blocking):
+        import webbrowser
+        
+        command = application.getOriginalPath() + arguments
+        webbrowser.open(command)
+
         pass

@@ -50,6 +50,9 @@ class LauncherFactory():
         if launcherType == LAUNCHER_ROM:
             return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
 
+        if launcherType == LAUNCHER_STEAM:
+            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
+
         return None
 
     # for backwards compatibility
@@ -429,10 +432,14 @@ class RetroplayerLauncher(StandardRomSet):
         pass
 
 class RetroarchLauncher(StandardRomLauncher):
-
-    
+        
     def _selectApplicationToUse(self):
         
+        if sys.platform == 'win32':
+            self.application = FileName(self.settings['io_retroarch_sys_dir'])
+            self.application = self.application.append('retroarch.exe')  
+            return
+
         if sys.platform.startswith('linux'):
             self.application = FileName('/system/bin/am')
             return
@@ -444,6 +451,14 @@ class RetroarchLauncher(StandardRomLauncher):
     def _selectArgumentsToUse(self):
 
         retroCore = self.launcher['core']
+            
+        if sys.platform == 'win32':
+            appPath = FileName(self.settings['io_retroarch_sys_dir'])
+            corePath = appPath.pjoin(FileName('core', retroCore))
+            
+            self.arguments = "-L  {0} ".format(corePath.getOriginalPath())
+            self.arguments += "'$rom$'"
+            return
 
         if sys.platform.startswith('linux'):
 
@@ -456,3 +471,17 @@ class RetroarchLauncher(StandardRomLauncher):
 
         #todo other os
         pass 
+
+class SteamLauncher(StandardRomLauncher):
+    import webbrowser
+
+    def _selectApplicationToUse(self):
+        url = 'steam://rungameid/'
+        self.application = FileName('steam://rungameid/')
+        pass
+
+    
+    def _selectArgumentsToUse(self):
+
+        self.arguments = '$rom$'
+        return

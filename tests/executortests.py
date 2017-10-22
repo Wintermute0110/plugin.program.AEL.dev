@@ -9,11 +9,8 @@ from resources.utils_kodi import *
 
 class Test_executortests(unittest.TestCase):
     
-    def test_if_on_linux_factory_loads_with_correct_executor(self):
-        self.test_if_on_linux_factory_loads_with_correct_executor_mocked()
-
     @patch('resources.executors.sys')            
-    def test_if_on_linux_factory_loads_with_correct_executor_mocked(self, mock_sys):
+    def test_if_on_linux_factory_loads_with_correct_executor(self, mock_sys):
         
         # arrange
         mock_sys.configure_mock(platform='linux')
@@ -33,12 +30,9 @@ class Test_executortests(unittest.TestCase):
         actual = executor.__class__.__name__
         expected = 'LinuxExecutor'
         self.assertEqual(actual, expected)
-
-    def test_if_on_windows_factory_loads_with_correct_executor(self):
-        self.test_if_on_windows_factory_loads_with_correct_executor_mocked()
-        
+                
     @patch('resources.executors.sys')            
-    def test_if_on_windows_factory_loads_with_correct_executor_mocked(self, mock_sys):
+    def test_if_on_windows_factory_loads_with_correct_executor(self, mock_sys):
         
         # arrange
         mock_sys.configure_mock(platform='win32')
@@ -60,11 +54,8 @@ class Test_executortests(unittest.TestCase):
         expected = 'WindowsExecutor'
         self.assertEqual(actual, expected)  
         
-    def test_if_on_windows_with_bat_files_factory_loads_with_correct_executor(self):
-        self.test_if_on_windows_with_bat_files_factory_loads_with_correct_executor_mocked()
-
     @patch('resources.executors.sys')            
-    def test_if_on_windows_with_bat_files_factory_loads_with_correct_executor_mocked(self, mock_sys):
+    def test_if_on_windows_with_bat_files_factory_loads_with_correct_executor(self, mock_sys):
 
         # arrange
         mock_sys.configure_mock(platform='win32')
@@ -85,12 +76,9 @@ class Test_executortests(unittest.TestCase):
         expected = 'WindowsBatchFileExecutor'
         self.assertEqual(actual, expected)  
 
-                
-    def test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor(self):
-        self.test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor_mocked()
-        
+                        
     @patch('resources.executors.sys')            
-    def test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor_mocked(self, mock_sys):
+    def test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor(self, mock_sys):
 
         # arrange
         mock_sys.configure_mock(platform='win32')
@@ -128,12 +116,9 @@ class Test_executortests(unittest.TestCase):
         actual = executor.__class__.__name__
         expected = 'XbmcExecutor'
         self.assertEqual(actual, expected)
-
-    def test_if_on_osx_factory_loads_with_correct_executor(self):
-        self.test_if_on_osx_factory_loads_with_correct_executor_mocked()
-
+        
     @patch('resources.executors.sys')            
-    def test_if_on_osx_factory_loads_with_correct_executor_mocked(self, mock_sys):
+    def test_if_on_osx_factory_loads_with_correct_executor(self, mock_sys):
 
         # arrange
         mock_sys.configure_mock(platform='darwin')

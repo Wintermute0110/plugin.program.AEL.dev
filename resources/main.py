@@ -27,6 +27,7 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 # --- Modules/packages in this plugin ---
 from constants import *
 from utils import *
+from utils_ui import *
 from utils_kodi import *
 from utils_kodi_cache import *
 from scrap import *
@@ -38,10 +39,11 @@ from assets import *
 from rom_audit import *
 from scrap import *
 from autoconfig import *
+
+from launcher_management_service import *
 from launchers import *
 from romsets import *
 from executors import *
-from launcher_wizards import *
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
@@ -863,143 +865,7 @@ class Main:
 
     def _command_add_new_launcher(self, categoryID):
 
-        # >> If categoryID not found user is creating a new launcher using the context menu
-        # >> of a launcher in addon root.
-        if categoryID not in self.categories:
-            log_info('Category ID not found. Creating laucher in addon root.')
-            launcher_categoryID = VCATEGORY_ADDONROOT_ID
-        else:
-            # --- Ask user if launcher is created on selected category or on root menu ---
-            category_name = self.categories[categoryID]['m_name']
-            dialog = xbmcgui.Dialog()
-            type = dialog.select('Choose Launcher category',
-                                ['Create Launcher in "{0}" category'.format(category_name),
-                                 'Create Launcher in addon root'])
-            if type < 0:
-                return
-            elif type == 0:
-                launcher_categoryID = categoryID
-            elif type == 1:
-                launcher_categoryID = VCATEGORY_ADDONROOT_ID
-            else:
-                kodi_notify_warn('_command_add_new_launcher() Wring type value. Report this bug.')
-                return
-
-        # --- Show "Create New Launcher" dialog ---
-        dialog = xbmcgui.Dialog()
-        if sys.platform == 'win32':
-            type = dialog.select('Create New Launcher',
-                                 ['Standalone launcher (Game/Application)',
-                                  'ROM launcher (Emulator)',
-                                  'ROM launcher (Kodi Retroplayer)',
-                                  'LNK launcher (Windows only)'])
-        else:
-            type = dialog.select('Create New Launcher',
-                                 ['Standalone launcher (Game/Application)',
-                                  'ROM launcher (Emulator)',
-                                  'ROM launcher (Kodi Retroplayer)',])
-        if type < 0: return
-
-        # --- Select type of new launcher ---
-        filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
-        if   type == 0: launcher_type = LAUNCHER_STANDALONE
-        elif type == 1: launcher_type = LAUNCHER_ROM
-        elif type == 2: launcher_type = LAUNCHER_RETROPLAYER
-        elif type == 3: launcher_type = LAUNCHER_LNK
-        else:
-            kodi_dialog_OK('Error creating launcher (type = {0}). This is a bug, pleas report it.'.format(type))
-            return
-        log_info('_command_add_new_launcher() New launcher (launcher_type = {0})'.format(launcher_type))
-        
-        # --- Standalone launcher ---
-        if launcher_type == LAUNCHER_STANDALONE:
-
-            wizard = DummyWizardPage('categoryID', launcher_categoryID, None)
-            wizard = DummyWizardPage('type', launcher_type, wizard)
-            wizard = FileBrowseWizardPage('application', 'Select the launcher application', 1, wizard)
-            wizard = DummyWizardPage('args', '', wizard)
-            wizard = KeyboardWizardPage('args', 'Application arguments', wizard)
-            wizard = DummyWizardPage('m_name', '', wizard, getTitleFromAppPath)
-            wizard = KeyboardWizardPage('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
-            wizard = ComboboxWizardPage('platform', 'Select the platform', AEL_platform_list, wizard)
-            
-        # --- ROM Launcher ---
-        elif launcher_type == LAUNCHER_ROM:
-        
-            wizard = DummyWizardPage('categoryID', launcher_categoryID, None)
-            wizard = DummyWizardPage('type', launcher_type, wizard)
-            wizard = FileBrowseWizardPage('application', 'Select the launcher application', 1, wizard) 
-            wizard = FileBrowseWizardPage('rompath', 'Select the ROMs path', 0, wizard)
-            wizard = DummyWizardPage('romext', '', wizard, getExtensionsFromAppPath)
-            wizard = KeyboardWizardPage('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
-            wizard = DummyWizardPage('args', '', wizard, getArgumentsFromAppPath)
-            wizard = KeyboardWizardPage('args', 'Application arguments', wizard)
-            wizard = DummyWizardPage('m_name', '', wizard, getTitleFromAppPath)
-            wizard = KeyboardWizardPage('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
-            wizard = ComboboxWizardPage('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = DummyWizardPage('assets_path', '', wizard, getValueFromRomPath)
-            wizard = FileBrowseWizardPage('assets_path', 'Select asset/artwork directory', 0, wizard) 
-
-        # --- Retroplayer Launcher ---
-        elif launcher_type == LAUNCHER_RETROPLAYER:
-            wizard = DummyWizardPage('categoryID', launcher_categoryID, None)
-            wizard = DummyWizardPage('type', launcher_type, wizard)
-            wizard = DummyWizardPage('application', RETROPLAYER_LAUNCHER_APP_NAME, wizard)
-            wizard = FileBrowseWizardPage('rompath', 'Select the ROMs path', 0, wizard) 
-            wizard = DummyWizardPage('romext', '', wizard, getExtensionsFromAppPath)
-            wizard = KeyboardWizardPage('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
-            wizard = DummyWizardPage('args', '%rom%', wizard)
-            wizard = DummyWizardPage('m_name', '', wizard, getTitleFromAppPath)
-            wizard = KeyboardWizardPage('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
-            wizard = ComboboxWizardPage('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = DummyWizardPage('assets_path', '', wizard, getValueFromRomPath)
-            wizard = FileBrowseWizardPage('assets_path', 'Select asset/artwork directory', 0, wizard) 
-            
-        # --- LNK launcher (Windows only) ---
-        elif launcher_type == LAUNCHER_LNK:
-            wizard = DummyWizardPage('categoryID', launcher_categoryID, None)
-            wizard = DummyWizardPage('type', launcher_type, wizard)
-            wizard = DummyWizardPage('application', LNK_LAUNCHER_APP_NAME, wizard)
-            wizard = FileBrowseWizardPage('rompath', 'Select the LNKs path', 0, wizard) 
-            wizard = DummyWizardPage('romext', 'lnk', wizard)
-            wizard = DummyWizardPage('args', '%rom%', wizard)
-            wizard = DummyWizardPage('m_name', '', wizard, getTitleFromAppPath)
-            wizard = KeyboardWizardPage('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
-            wizard = ComboboxWizardPage('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = DummyWizardPage('assets_path', '', wizard, getValueFromRomPath)
-            wizard = FileBrowseWizardPage('assets_path', 'Select asset/artwork directory', 0, wizard) 
-
-        # --- Create new launcher. categories.xml is save at the end of this function ---
-        # NOTE than in the database original paths are always stored.
-        launcher = wizard.runWizard()
-        launcherID = launcher['id']
-
-        # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
-        # even launcher with the same name in the same category.
-        if launcher_type is not LAUNCHER_STANDALONE:        
-            category_name   = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
-            roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
-            launcher['roms_base_noext'] = roms_base_noext
-            
-            # --- Selected asset path ---
-            # A) User chooses one and only one assets path
-            # B) If this path is different from the ROM path then asset naming scheme 1 is used.
-            # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
-            # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
-            # >> launcher is edited using Python passing by assignment.
-            assets_init_asset_dir(FileName(launcher['assets_path']), launcher)
-
-
-        self.launchers[launcherID] = launcher
-        # >> Notify user
-        if   launcher_type == LAUNCHER_STANDALONE:  kodi_notify('Created Standalone launcher {0}'.format(launcher['m_name']))
-        elif launcher_type == LAUNCHER_ROM:         kodi_notify('Created ROM launcher {0}'.format(launcher['m_name']))
-        elif launcher_type == LAUNCHER_RETROPLAYER: kodi_notify('Created Retroplayer launcher {0}'.format(launcher['m_name']))
-        elif launcher_type == LAUNCHER_LNK:         kodi_notify('Created LNK launcher {0}'.format(launcher['m_name']))
-
-        # >> If this point is reached then changes to metadata/images were made.
-        # >> Save categories and update container contents so user sees those changes inmediately.
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        createLauncher(categoryID, self.launchers, self.categories, self.settings)
         kodi_refresh_container()
 
     def _command_edit_launcher(self, categoryID, launcherID):

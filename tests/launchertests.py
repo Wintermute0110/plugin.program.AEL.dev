@@ -21,12 +21,9 @@ class Test_Launcher(unittest.TestCase):
         
         # assert
         self.assertIsNone(actual)
-
-    def test_when_its_an_app_factory_loads_with_correct_launcher(self):
-        self.test_when_its_an_app_factory_loads_with_correct_launcher_mocked()
-        
+                
     @patch('resources.executors.ExecutorFactory')    
-    def test_when_its_an_app_factory_loads_with_correct_launcher_mocked(self, mock_exeFactory):
+    def test_when_its_an_app_factory_loads_with_correct_launcher(self, mock_exeFactory):
 
         # arrange
         mock_exeFactory.create.return_value = FakeExecutor(None)
@@ -54,11 +51,8 @@ class Test_Launcher(unittest.TestCase):
         expected = 'ApplicationLauncher'
         self.assertEqual(actual, expected)
         
-    def test_if_app_launcher_will_correctly_passthrough_parameters_when_launching(self):
-        self.test_if_app_launcher_will_correctly_passthrough_parameters_when_launching_mocked()
-
     @patch('resources.executors.ExecutorFactory')
-    def test_if_app_launcher_will_correctly_passthrough_parameters_when_launching_mocked(self, mock_exeFactory):
+    def test_if_app_launcher_will_correctly_passthrough_parameters_when_launching(self, mock_exeFactory):
 
         # arrange
         set_log_level(LOG_VERB)
@@ -95,11 +89,8 @@ class Test_Launcher(unittest.TestCase):
         self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
         
-    def test_if_app_launcher_will_correctly_alter_arguments_when_launching(self):
-        self.test_if_app_launcher_will_correctly_alter_arguments_when_launching_mocked()
-
     @patch('resources.executors.ExecutorFactory')
-    def test_if_app_launcher_will_correctly_alter_arguments_when_launching_mocked(self, mock_exeFactory):
+    def test_if_app_launcher_will_correctly_alter_arguments_when_launching(self, mock_exeFactory):
 
         # arrange
         set_log_level(LOG_VERB)
@@ -135,13 +126,10 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
-
-    def test_when_using_rom_the_factory_will_get_the_correct_launcher(self):
-        self.test_when_using_rom_the_factory_will_get_the_correct_launcher_mocked()
-    
+            
     @patch('resources.romsets.RomSetFactory')
     @patch('resources.executors.ExecutorFactory')
-    def test_when_using_rom_the_factory_will_get_the_correct_launcher_mocked(self, mock_exeFactory, mock_romsFactory):
+    def test_when_using_rom_the_factory_will_get_the_correct_launcher(self, mock_exeFactory, mock_romsFactory):
         
         # arrange
         set_log_level(LOG_VERB)
@@ -172,13 +160,10 @@ class Test_Launcher(unittest.TestCase):
         actual = launcher.__class__.__name__
         expected = 'StandardRomLauncher'
         self.assertEqual(actual, expected)
-
-    def test_if_rom_launcher_will_correctly_passthrough_the_application_when_launching(self):
-        self.test_if_rom_launcher_will_correctly_passthrough_the_application_when_launching_mocked()
-        
+                
     @patch('resources.romsets.RomSetFactory')
     @patch('resources.executors.ExecutorFactory')
-    def test_if_rom_launcher_will_correctly_passthrough_the_application_when_launching_mocked(self, mock_exeFactory, mock_romsFactory):
+    def test_if_rom_launcher_will_correctly_passthrough_the_application_when_launching(self, mock_exeFactory, mock_romsFactory):
         
         # arrange
         set_log_level(LOG_VERB)
@@ -226,13 +211,10 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertEqual(expected, mock.actualApplication.getOriginalPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
-
-    def test_if_rom_launcher_will_use_the_multidisk_launcher_when_romdata_has_disks_field_filled_in(self):
-        self.test_if_rom_launcher_will_use_the_multidisk_launcher_when_romdata_has_disks_field_filled_in_mocked()
-        
+                
     @patch('resources.romsets.RomSetFactory')
     @patch('resources.executors.ExecutorFactory')
-    def test_if_rom_launcher_will_use_the_multidisk_launcher_when_romdata_has_disks_field_filled_in_mocked(self, mock_exeFactory, mock_romsFactory):
+    def test_if_rom_launcher_will_use_the_multidisk_launcher_when_romdata_has_disks_field_filled_in(self, mock_exeFactory, mock_romsFactory):
         
         # arrange
         set_log_level(LOG_VERB)
@@ -268,14 +250,11 @@ class Test_Launcher(unittest.TestCase):
         actual = launcher.__class__.__name__
         expected = 'StandardRomLauncher'
         self.assertEqual(actual, expected)
-
-    def test_if_rom_launcher_will_apply_the_correct_disc_in_a_multidisc_situation(self):
-        self.test_if_rom_launcher_will_apply_the_correct_disc_in_a_multidisc_situation_mocked()
-        
+                
     @patch('resources.romsets.RomSetFactory')
     @patch('resources.launchers.xbmcgui.Dialog.select')
     @patch('resources.executors.ExecutorFactory')
-    def test_if_rom_launcher_will_apply_the_correct_disc_in_a_multidisc_situation_mocked(self, mock_exeFactory, mock_dialog, mock_romsFactory):
+    def test_if_rom_launcher_will_apply_the_correct_disc_in_a_multidisc_situation(self, mock_exeFactory, mock_dialog, mock_romsFactory):
 
         # arrange
         set_log_level(LOG_VERB)
@@ -324,14 +303,11 @@ class Test_Launcher(unittest.TestCase):
 
         # assert
         self.assertEqual(expectedArgs, mock.actualArgs)
-
-    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android(self):
-        self.test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android_mocked()
-        
+                
     @patch('resources.launchers.sys')    
     @patch('resources.romsets.RomSetFactory')
     @patch('resources.executors.ExecutorFactory')
-    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android_mocked(self, mock_exeFactory, mock_romsFactory, mock_sys):
+    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android(self, mock_exeFactory, mock_romsFactory, mock_sys):
         
         # arrange
         mock_sys.configure_mock(platform='linux')

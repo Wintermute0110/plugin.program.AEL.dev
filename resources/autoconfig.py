@@ -136,9 +136,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
     # >> Strings in the list are Unicode. Encode to UTF-8. Join string, and save categories.xml file
     try:
         full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(export_FN.getPath(), 'w')
-        file_obj.write(full_string)
-        file_obj.close()
+        export_FN.writeAll(full_string)
     except OSError:
         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
