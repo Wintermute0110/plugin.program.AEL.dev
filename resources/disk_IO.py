@@ -1856,35 +1856,3 @@ def fs_get_collection_NFO_name(settings, collection):
     log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
-
-def get_available_retroarch_cores(settings):
-
-    cores = []
-    
-    if sys.platform == 'win32':
-        retroarchFolder = FileName(settings['io_retroarch_sys_dir'])
-        retroarchFolder.append('cores\\')
-        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(retroarchFolder.getOriginalPath()))
-
-        if retroarchFolder.exists():
-            files = retroarchFolder.scanFilesInPathAsFileNameObjects('*.dll')
-            for file in files:
-                log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
-                cores.append(file.getBase())
-
-            return cores
-
-    if sys.platform.startswith('linux'):
-        androidFolder = FileName('/data/data/com.retroarch/cores/')
-        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(androidFolder.getOriginalPath()))
-
-        if androidFolder.exists():
-            files = androidFolder.scanFilesInPathAsFileNameObjects('*.so')
-            for file in files:
-                log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
-                cores.append(file.getBase())
-
-            return cores
-
-
-    return cores

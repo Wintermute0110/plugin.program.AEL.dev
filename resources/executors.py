@@ -29,7 +29,7 @@ class ExecutorFactory():
             or 'xbmc-fav-' in application.getOriginalPath() or 'xbmc-sea-' in application.getOriginalPath():
             return XbmcExecutor(self.logFile)
 
-        if re.search('.*://.*', application.getOriginalPath())
+        if re.search('.*://.*', application.getOriginalPath()):
             return WebBrowserExecutor(self.logFile)
         
         if sys.platform == 'win32':

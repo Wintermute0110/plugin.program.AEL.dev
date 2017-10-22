@@ -1,3 +1,9 @@
+
+from collections import OrderedDict
+
+# --- Kodi stuff ---
+import xbmc, xbmcgui
+
 # --- Modules/packages in this plugin ---
 from constants import *
 from utils import *
@@ -6,7 +12,7 @@ from utils_kodi import *
 from disk_IO import *
 from platforms import *
 
-def createLauncher(categoryID, launchers, categories, settings):
+def createLauncher(categoryID, launchers, categories, settings, categories_file_path):
     
     # >> If categoryID not found user is creating a new launcher using the context menu
     # >> of a launcher in addon root.
@@ -27,7 +33,7 @@ def createLauncher(categoryID, launchers, categories, settings):
         return
        
     # --- Show "Create New Launcher" dialog ---
-    typeOptions = {}
+    typeOptions = OrderedDict()
     typeOptions[LAUNCHER_STANDALONE]  = 'Standalone launcher (Game/Application)'
     typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
     typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
@@ -123,7 +129,7 @@ def createLauncher(categoryID, launchers, categories, settings):
         wizard = KeyboardWizardPage('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
         wizard = SelectionWizardPage('platform', 'Select the platform', AEL_platform_list, wizard)
         wizard = DummyWizardPage('assets_path', '', wizard, getValueFromRomPath)
-        wizard = FileBrowseWizardPage('assets_path', 'Select asset/artwork directory', 0, wizard) 
+        wizard = FileBrowseWizardPage('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
     
     # --- Steam launcher ---
     elif launcher_type == LAUNCHER_STEAM:
@@ -133,12 +139,11 @@ def createLauncher(categoryID, launchers, categories, settings):
         wizard = KeyboardWizardPage('steamkey','Steam API key', wizard)
         wizard = KeyboardWizardPage('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
         wizard = SelectionWizardPage('platform', 'Select the platform', AEL_platform_list, wizard)
-        wizard = DummyWizardPage('assets_path', '', wizard, getValueFromRomPath)
         wizard = FileBrowseWizardPage('assets_path', 'Select asset/artwork directory', 0, '', wizard)         
 
     # --- Create new launcher. categories.xml is save at the end of this function ---
     # NOTE than in the database original paths are always stored.
-    launcher = wizard.runWizard()
+    launcher = wizard.runWizard(launcher)
     if not launcher:
         return
 
@@ -161,11 +166,11 @@ def createLauncher(categoryID, launchers, categories, settings):
 
     launchers[launcherID] = launcher
     # >> Notify user
-    kodi_notify('Created {0} {1}'.format(getLauncherTypeName(launcher_type, launcher['m_name'])))
+    kodi_notify('Created {0} {1}'.format(getLauncherTypeName(launcher_type), launcher['m_name']))
 
     # >> If this point is reached then changes to metadata/images were made.
     # >> Save categories and update container contents so user sees those changes inmediately.
-    fs_write_catfile(CATEGORIES_FILE_PATH, categories, launchers)
+    fs_write_catfile(categories_file_path, categories, launchers)
 
 def getLauncherTypeName(launcher_type):
     
@@ -228,3 +233,35 @@ def getValueFromRomPath(input, launcher):
 
     romPath = launcher['rompath']
     return romPath
+
+
+def get_available_retroarch_cores(settings):
+
+    cores = []
+    
+    if sys.platform == 'win32':
+        retroarchFolder = FileName(settings['io_retroarch_sys_dir'])
+        retroarchFolder.append('cores\\')
+        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(retroarchFolder.getOriginalPath()))
+
+        if retroarchFolder.exists():
+            files = retroarchFolder.scanFilesInPathAsFileNameObjects('*.dll')
+            for file in files:
+                log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
+                cores.append(file.getBase())
+
+            return cores
+
+    if sys.platform.startswith('linux'):
+        androidFolder = FileName('/data/com.retroarch/cores/')
+        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(androidFolder.getOriginalPath()))
+
+        if androidFolder.exists():
+            files = androidFolder.scanFilesInPathAsFileNameObjects('*.so')
+            for file in files:
+                log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
+                cores.append(file.getBase())
+
+            return cores
+
+    return cores
