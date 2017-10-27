@@ -74,6 +74,7 @@ AEL_platform_list = [
     'Atari Jaguar',
     'Atari Jaguar CD',
     'Atari Lynx',
+    'Atari 8-bit',
     'Atari ST',
 
     # --- Bandai ---
@@ -89,6 +90,12 @@ AEL_platform_list = [
     'Commodore Amiga CD32',
     'Commodore Plus-4',
     'Commodore VIC-20',
+
+    # --- Emerson ---
+    'Emerson Arcadia 2001',
+
+    # --- Fairchild ---
+    'Fairchild Channel F',
 
     # --- Fujitsu ---
     'Fujitsu FM Towns Marty',
@@ -146,6 +153,9 @@ AEL_platform_list = [
     'Philips Videopac G7000',      # Alias of 'Magnavox Odyssey2'
     'Philips Videopac Plus G7400',
 
+    # --- RCA ---
+    'RCA Studio II',
+
     # --- ScummVM ---
     'ScummVM',
 
@@ -184,6 +194,9 @@ AEL_platform_list = [
     'Sony PlayStation Portable',
     'Sony PlayStation Vita',
 
+    # --- Watara ---
+    'Watara Supervision',
+
     # --- Unknown ---
     'Unknown'
 ]
@@ -217,6 +230,7 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Atari Jaguar'                : 'GameDBInfo/Atari Jaguar.xml',
     'Atari Jaguar CD'             : 'GameDBInfo/Atari Jaguar CD.xml',
     'Atari Lynx'                  : 'GameDBInfo/Atari Lynx.xml',
+    'Atari 8-bit'                 : '',
     'Atari ST'                    : 'GameDBInfo/Atari ST.xml',
 
     'Bandai WonderSwan'           : '',
@@ -229,6 +243,10 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Commodore Amiga CD32'        : '',
     'Commodore Plus-4'            : 'GameDBInfo/Commodore Plus-4.xml',
     'Commodore VIC-20'            : 'GameDBInfo/Commodore VIC-20.xml',
+
+    'Emerson Arcadia 2001'        : '',
+
+    'Fairchild Channel F'         : '',
 
     'Fujitsu FM Towns Marty'      : '',
     
@@ -277,6 +295,8 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Philips Videopac G7000'      : 'GameDBInfo/Magnavox Odyssey2.xml',
     'Philips Videopac Plus G7400' : '',
 
+    'RCA Studio II'               : '',
+
     'ScummVM'                     : '',
 
     'Sega 32X'                    : 'GameDBInfo/Sega 32x.xml',
@@ -309,6 +329,8 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
     'Sony PlayStation Portable'   : 'GameDBInfo/Sony PlayStation Portable.xml',
     'Sony PlayStation Vita'       : '',
 
+    'Watara Supervision'          : '',
+
     'Unknown'                     : ''
 }
 
@@ -326,6 +348,7 @@ platform_AEL_to_LB_XML = {
     'Atari Jaguar'                : '',
     'Atari Jaguar CD'             : '',
     'Atari Lynx'                  : '',
+    'Atari 8-bit'                 : '',
     'Atari ST'                    : '',
 
     'Bandai WonderSwan'           : '',
@@ -338,6 +361,10 @@ platform_AEL_to_LB_XML = {
     'Commodore Amiga CD32'        : '',
     'Commodore Plus-4'            : '',
     'Commodore VIC-20'            : '',
+
+    'Emerson Arcadia 2001'        : '',
+
+    'Fairchild Channel F'         : '',
 
     'Fujitsu FM Towns Marty'      : '',
 
@@ -386,6 +413,8 @@ platform_AEL_to_LB_XML = {
     'Philips Videopac G7000'      : '',
     'Philips Videopac Plus G7400' : '',
 
+    'RCA Studio II'               : '',
+
     'ScummVM'                     : '',
 
     'Sega 32X'                    : '',
@@ -417,6 +446,8 @@ platform_AEL_to_LB_XML = {
     'Sony PlayStation 4'          : '',
     'Sony PlayStation Portable'   : '',
     'Sony PlayStation Vita'       : '',
+
+    'Watara Supervision'          : '',
 
     'Unknown'                     : ''
 }
