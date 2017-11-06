@@ -7284,7 +7284,7 @@ class Main:
                 log_info('_run_process() (Windows) LNK ROM retcode = {0}'.format(retcode))
 
             # >> CMD/BAT files in Windows
-            elif app_ext == 'bat' or app_ext == 'BAT':
+            elif app_ext == 'bat' or app_ext == 'BAT' or app_ext == 'cmd' or app_ext == 'CMD':
                 # --- Workaround to run UNC paths in Windows ---
                 # >> Retroarch now support ROMs in UNC paths (Samba remotes)
                 new_exec_list = list(exec_list)
@@ -7295,7 +7295,6 @@ class Main:
                         log_debug('_run_process() (Windows) Now    arg #{0} = "{1}"'.format(i, new_exec_list[i]))
                 exec_list = list(new_exec_list)
                 log_debug('_run_process() (Windows) exec_list = {0}'.format(exec_list))
-                
                 log_debug('_run_process() (Windows) Launching BAT application')
                 log_debug('_run_process() (Windows) Ignoring setting windows_cd_apppath')
                 log_debug('_run_process() (Windows) Ignoring setting windows_close_fds')
