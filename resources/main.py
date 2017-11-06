@@ -7284,7 +7284,7 @@ class Main:
                 log_info('_run_process() (Windows) LNK ROM retcode = {0}'.format(retcode))
 
             # >> CMD/BAT files in Windows
-            elif app_ext == 'bat' or app_ext == 'BAT':
+            elif app_ext == 'bat' or app_ext == 'BAT' or app_ext == 'cmd' or app_ext == 'CMD':
                 log_debug('_run_process() (Windows) Launching BAT application')
                 log_debug('_run_process() (Windows) Ignoring setting windows_cd_apppath')
                 log_debug('_run_process() (Windows) Ignoring setting windows_close_fds')
