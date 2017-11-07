@@ -61,7 +61,7 @@ def text_str_2_Uni(string):
     if type(string).__name__ == 'unicode':
         unicode_str = string
     elif type(string).__name__ == 'str':
-        unicode_str = string.decode('ascii', errors = 'replace')
+        unicode_str = string.decode('utf-8', errors = 'replace')
     else:
         print('TypeError: ' + type(string).__name__)
         raise TypeError
