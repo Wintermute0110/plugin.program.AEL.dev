@@ -84,7 +84,7 @@ FIX      Poster artworks do not appear anymore (got them mapped to flyers for al
          then AEL is throwing me an error.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2660404#pid2660404
 
-WIP      Fix crash in the ROM scanner.
+FIX      Fix crash in "Add ROMs", "Manually Add ROM".
          Error Type: <type 'exceptions.NameError'>
          Error Contents: global name 'assets_search_local_assets' is not defined
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2665544#pid2665544
