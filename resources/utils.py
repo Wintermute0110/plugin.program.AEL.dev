@@ -298,7 +298,7 @@ def text_get_multidisc_info(ROM_FN):
     MultDiscFound = False
     for index, token in enumerate(tokens):
         # --- Redump ---
-        matchObj = re.match(r'\(Disc ([0-9]+)\)', token)
+        matchObj = re.match(r'\(Dis[ck] ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched Redump multidisc ROM ###')
             tokens_idx = range(0, len(tokens))
@@ -309,7 +309,7 @@ def text_get_multidisc_info(ROM_FN):
             break
 
         # --- TOSEC/Trurip ---
-        matchObj = re.match(r'\(Disc ([0-9]+) of ([0-9]+)\)', token)
+        matchObj = re.match(r'\(Dis[ck] ([0-9]+) of ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
             tokens_idx = range(0, len(tokens))

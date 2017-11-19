@@ -8460,34 +8460,32 @@ class Main:
         else:
             log_info('No duplicated asset dirs found')
 
+        # --- Progress dialog ---
+        # >> Put in in object variables so it can be access in helper functions.
+        self.pDialog_verbose = True
+        self.pDialog_canceled = False
+        self.pDialog = xbmcgui.DialogProgress()
+
         # --- Create a cache of assets ---
         # >> misc_add_file_cache() creates a set with all files in a given directory.
         # >> That set is stored in a function internal cache associated with the path.
         # >> Files in the cache can be searched with misc_search_file_cache()
         log_info('Scanning and caching files in asset directories ...')
-        pDialog = xbmcgui.DialogProgress()
-        pDialog.create('Advanced Emulator Launcher', 'Scanning files in asset directories ...')
+        self.pDialog.create('Advanced Emulator Launcher', 'Scanning files in asset directories ...')
         for i, asset_kind in enumerate(ROM_ASSET_LIST):
             AInfo = assets_get_info_scheme(asset_kind)
             misc_add_file_cache(launcher[AInfo.path_key])
-            pDialog.update((100*i)/len(ROM_ASSET_LIST))
-        pDialog.update(100)
-        pDialog.close()
-
-        # --- Progress dialog ---
-        # >> Put in in object variables so it can be access in helper functions.
-        self.pDialog_verbose = True
-        self.pDialog = pDialog
-        self.pDialog_canceled = False
+            self.pDialog.update((100*i)/len(ROM_ASSET_LIST))
+        self.pDialog.update(100)
+        self.pDialog.close()
 
         # --- Remove dead entries -----------------------------------------------------------------
         log_info('Removing dead ROMs ...'.format())
         report_fobj.write('Removing dead ROMs ...\n')
         num_removed_roms = 0
         if num_roms > 0:
-            log_debug('Starting dead items scan')
-            i = 0
             self.pDialog.create('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
+            i = 0
             for key in sorted(roms.iterkeys()):
                 log_debug('Searching {0}'.format(roms[key]['filename']))
                 self.pDialog.update(i * 100 / num_roms)
@@ -8508,8 +8506,8 @@ class Main:
         else:
             log_info('Launcher is empty. No dead ROM check.')
 
-        # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        kodi_busydialog_ON()
+        # ~~~ Scan all files in ROMpath (mask *.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.pDialog.create('Advanced Emulator Launcher', 'Scanning and caching files in ROM path ...')
         files = []
         log_info('Scanning files in {0}'.format(launcher_path.getPath()))
         report_fobj.write('Scanning files ...\n')
@@ -8520,10 +8518,11 @@ class Main:
         else:
             log_info('Recursive scan not activated')
             files = launcher_path.scanFilesInPath('*.*')
-        kodi_busydialog_OFF()
         num_files = len(files)
         log_info('File scanner found {0} files'.format(num_files))
         report_fobj.write('  File scanner found {0} files\n'.format(num_files))
+        self.pDialog.update(100)
+        self.pDialog.close()
 
         # ~~~ Now go processing file by file ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.pDialog.create('Advanced Emulator Launcher', 'Scanning {0}'.format(launcher_path))
