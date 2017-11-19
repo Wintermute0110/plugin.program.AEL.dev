@@ -74,10 +74,10 @@ FIX      Currently AEL multid-disc parser supports "Rom name (disc 1).bin".
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2656844#pid2656844
          and https://forum.kodi.tv/showthread.php?tid=287826&pid=2657243#pid2657243
 
-WIP      Fix export of Categories, Launcher and ROMs NFO files.
+FIX      Fix export of Launcher and ROM NFO files.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2658080#pid2658080
 
-WIP      Fix import of Categories, Launcher and ROMs NFO files.
+FIX      Fix import of Launcher and ROM NFO files.
 
 WIP      I use the minimize/make kodi a window option in order to prevent kodi from capturing input
          from my gamepad. With 0.9.7-beta1, when I launch a rom from Collection->Launcher (the

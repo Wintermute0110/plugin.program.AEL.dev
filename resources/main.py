@@ -601,7 +601,7 @@ class Main:
         if type == 0:
             NFO_FileName = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
             NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-            plot_str = text_limit_string(self.categories[categoryID]['m_plot'], DESCRIPTION_MAXSIZE)
+            plot_str = text_limit_string(self.categories[categoryID]['m_plot'], PLOT_STR_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
                                   ["Edit Title: '{0}'".format(self.categories[categoryID]['m_name']),
@@ -1078,9 +1078,8 @@ class Main:
 
             # >> Metadata edit dialog
             NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
-            NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-            plot_str = text_limit_string(self.launchers[launcherID]['m_plot'], DESCRIPTION_MAXSIZE)
-            dialog = xbmcgui.Dialog()
+            NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+            plot_str = text_limit_string(self.launchers[launcherID]['m_plot'], PLOT_STR_MAXSIZE)
             menu_list = ["Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
                          "Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
                          "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
@@ -1088,9 +1087,10 @@ class Main:
                          "Edit Developer: '{0}'".format(self.launchers[launcherID]['m_developer']),
                          "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
                          "Edit Plot: '{0}'".format(plot_str),
-                         'Import NFO file (default, {0})'.format(NFO_str),
+                         'Import NFO file (default, {0})'.format(NFO_found_str),
                          'Import NFO file (browse NFO file) ...',
                          'Save NFO file (default location)']
+            dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Launcher Metadata', menu_list + scraper_menu_list)
             if type2 < 0: return
 
@@ -2331,8 +2331,9 @@ class Main:
                 log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
 
             # >> Metadata edit dialog
-            dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string(roms[romID]['m_plot'], DESCRIPTION_MAXSIZE)
+            NFO_FileName = fs_get_ROM_NFO_name(roms[romID])
+            NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+            plot_str = text_limit_string(roms[romID]['m_plot'], PLOT_STR_MAXSIZE)
             menu_list = ["Edit Title: '{0}'".format(roms[romID]['m_name']),
                          "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
                          "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
@@ -2340,10 +2341,11 @@ class Main:
                          "Edit NPlayers: '{0}'".format(roms[romID]['m_nplayers']),
                          "Edit ESRB rating: '{0}'".format(roms[romID]['m_esrb']),
                          "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
-                         "Edit Plot: '{0}'".format(desc_str),
+                         "Edit Plot: '{0}'".format(plot_str),
                          'Load Plot from TXT file ...',
-                         'Import metadata from NFO file ...',
-                         'Save metadata to NFO file']
+                         'Import NFO file ({0})'.format(NFO_found_str),
+                         'Save NFO file']
+            dialog = xbmcgui.Dialog()
             type2 = dialog.select('Modify ROM metadata', menu_list + scraper_menu_list)
             if type2 < 0: return
 
@@ -2448,7 +2450,7 @@ class Main:
                     roms[romID]['m_plot'] = file_data
                     kodi_notify('Imported ROM Plot')
                 else:
-                    desc_str = text_limit_string(roms[romID]['m_plot'], DESCRIPTION_MAXSIZE)
+                    desc_str = text_limit_string(roms[romID]['m_plot'], PLOT_STR_MAXSIZE)
                     kodi_dialog_OK("Launcher plot '{0}' not changed".format(desc_str))
                     return
 
@@ -5041,7 +5043,7 @@ class Main:
         if type == 0:
             NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)            
             NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-            plot_str = text_limit_string(collection['m_plot'], DESCRIPTION_MAXSIZE)
+            plot_str = text_limit_string(collection['m_plot'], PLOT_STR_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
                                   ["Edit Title: '{0}'".format(collection['m_name']),
@@ -8533,7 +8535,7 @@ class Main:
         for f_path in sorted(files):
             # --- Get all file name combinations ---
             ROM = FileName(f_path)
-            log_debug('========== Processing File ==========')
+            log_debug('---------- Processing cached file ----------')
             log_debug('ROM.getPath()         "{0}"'.format(ROM.getPath()))
             log_debug('ROM.getOriginalPath() "{0}"'.format(ROM.getOriginalPath()))
             # log_debug('ROM.getPath_noext()   "{0}"'.format(ROM.getPath_noext()))
@@ -8651,11 +8653,11 @@ class Main:
                 log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
                 return
         self.pDialog.close()
-        log_info('********** ROM scanner finished. Report **********')
+        log_info('******************** ROM scanner finished. Report ********************')
         log_info('Removed dead ROMs {0:6d}'.format(num_removed_roms))
         log_info('Files checked     {0:6d}'.format(num_files_checked))
         log_info('New added ROMs    {0:6d}'.format(num_new_roms))
-        report_fobj.write('********** ROM scanner finished **********\n')
+        report_fobj.write('******************** ROM scanner finished ********************\n')
         report_fobj.write('Removed dead ROMs {0:6d}\n'.format(num_removed_roms))
         report_fobj.write('Files checked     {0:6d}\n'.format(num_files_checked))
         report_fobj.write('New added ROMs    {0:6d}\n'.format(num_new_roms))
@@ -8736,10 +8738,11 @@ class Main:
         # ~~~~~ Scrape game metadata information ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # >> Test if NFO file exists
         NFO_file = FileName(ROM.getPath_noext() + '.nfo')
-        log_debug('Testing NFO file "{0}"'.format(NFO_file.getPath()))
         found_NFO_file = True if NFO_file.exists() else False
+        if found_NFO_file: log_debug('NFO file found "{0}"'.format(NFO_file.getPath()))
+        else:              log_debug('NFO file NOT found "{0}"'.format(NFO_file.getPath()))
 
-        # >> Determine metadata action based on policy
+        # >> Determine metadata action based on configured metadata policy
         # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
         scan_metadata_policy       = self.settings['scan_metadata_policy']
         scan_clean_tags            = self.settings['scan_clean_tags']
@@ -8766,33 +8769,29 @@ class Main:
         else:
             log_error('Invalid scan_metadata_policy value = {0}'.format(scan_metadata_policy))
 
-        # >> Do metadata action based on policy
+        # >> Do metadata action
         if metadata_action == META_TITLE_ONLY:
             if self.pDialog_verbose:
                 scraper_text = 'Formatting ROM name.'
                 self.pDialog.update(self.progress_number, self.file_text, scraper_text)
             romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
         elif metadata_action == META_NFO_FILE:
-            nfo_file_path = FileName(ROM.getPath_noext() + ".nfo")
             if self.pDialog_verbose:
-                scraper_text = 'Loading NFO file {0}'.format(nfo_file_path.getOriginalPath())
+                scraper_text = 'Loading NFO file {0}'.format(NFO_file.getPath())
                 self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-            log_debug('Testing NFO file "{0}"'.format(nfo_file_path.getPath()))
-            if nfo_file_path.exists():
-                log_debug('NFO file found. Loading it.')
-                nfo_dic = fs_import_NFO_file_scanner(nfo_file_path)
-                # NOTE <platform> is chosen by AEL, never read from NFO files
-                romdata['m_name']      = nfo_dic['title']     # <title>
-                romdata['m_year']      = nfo_dic['year']      # <year>
-                romdata['m_genre']     = nfo_dic['genre']     # <genre>
-                romdata['m_developer'] = nfo_dic['publisher'] # <publisher> rename to <developer>
-                # romdata['m_nplayers']  = nfo_dic['nplayers']  # <nplayers>
-                # romdata['m_esrb']      = nfo_dic['esrb']      # <esrb>
-                # romdata['m_rating']    = nfo_dic['rating']    # <rating>
-                romdata['m_plot']      = nfo_dic['plot']      # <plot>
-            else:
-                log_debug('NFO file not found. Only cleaning ROM name.')
-                romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
+            # >> If this point is reached the NFO file was found previosly.
+            log_debug('Loading NFO P "{0}"'.format(NFO_file.getPath()))
+            nfo_dic = fs_import_ROM_NFO_file_scanner(NFO_file)
+            # NOTE <platform> is chosen by AEL, never read from NFO files. Indeed, platform
+            #      is a Launcher property, not a ROM property.
+            romdata['m_name']      = nfo_dic['title']     # <title>
+            romdata['m_year']      = nfo_dic['year']      # <year>
+            romdata['m_genre']     = nfo_dic['genre']     # <genre>
+            romdata['m_developer'] = nfo_dic['developer'] # <developer>
+            romdata['m_nplayers']  = nfo_dic['nplayers']  # <nplayers>
+            romdata['m_esrb']      = nfo_dic['esrb']      # <esrb>
+            romdata['m_rating']    = nfo_dic['rating']    # <rating>
+            romdata['m_plot']      = nfo_dic['plot']      # <plot>
         elif metadata_action == META_SCRAPER:
             if self.pDialog_verbose:
                 scraper_text = 'Scraping metadata with {0}. Searching for matching games ...'.format(self.scraper_data.name)

@@ -1523,11 +1523,11 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
 # NFO files
 # -------------------------------------------------------------------------------------------------
 #
-# When called from "Edit ROM" --> "Edit Metadata" --> "Import metadata from NFO file" function should
-# be verbose and print notifications.
+# When called from "Edit ROM" --> "Edit Metadata" --> "Import metadata from NFO file" function
+# should be verbose and print notifications.
 # However, this function is also used to export launcher ROMs in bulk in
-# "Edit Launcher" --> "Manage ROM List" --> "Export ROMs metadata to NFO files". In that case, function
-# must not be verbose because it can be called thousands of times for big ROM sets!
+# "Edit Launcher" --> "Manage ROM List" --> "Export ROMs metadata to NFO files". In that case,
+# function must not be verbose because it can be called thousands of times for big ROM sets!
 #
 def fs_export_ROM_NFO(rom, verbose = True):
     # >> Skip No-Intro Added ROMs. rom['filename'] will be empty.
@@ -1539,11 +1539,14 @@ def fs_export_ROM_NFO(rom, verbose = True):
     # Always overwrite NFO files.
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<game>\n')
     nfo_content.append(XML_text('title',     rom['m_name']))
     nfo_content.append(XML_text('year',      rom['m_year']))
     nfo_content.append(XML_text('genre',     rom['m_genre']))
-    nfo_content.append(XML_text('publisher', rom['m_studio']))
+    nfo_content.append(XML_text('developer', rom['m_developer']))
+    nfo_content.append(XML_text('nplayers',  rom['m_nplayers']))
+    nfo_content.append(XML_text('esrb',      rom['m_esrb']))
     nfo_content.append(XML_text('rating',    rom['m_rating']))
     nfo_content.append(XML_text('plot',      rom['m_plot']))
     nfo_content.append('</game>\n')
@@ -1571,7 +1574,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     ROMFileName = FileName(roms[romID]['filename'])
     nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
-    log_debug('fs_export_ROM_NFO() Loading "{0}"'.format(nfo_file_path))
+    log_debug('fs_import_ROM_NFO() Loading "{0}"'.format(nfo_file_path))
 
     # --- Import data ---
     if os.path.isfile(nfo_file_path):
@@ -1582,18 +1585,26 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         nfo_str = file.read().replace('\r', '').replace('\n', '')
         file.close()
 
-        # Search for items
+        # Search for metadata tags. Regular expression is non-greedy.
+        # See https://docs.python.org/2/library/re.html#re.findall
+        # If RE has no groups it returns a list of strings with the matches.
+        # If RE has groups then it returns a list of groups.
         item_title     = re.findall('<title>(.*?)</title>', nfo_str)
         item_year      = re.findall('<year>(.*?)</year>', nfo_str)
         item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
         item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
+        item_nplayers  = re.findall('<nplayers>(.*?)</nplayers>', nfo_str)
+        item_esrb      = re.findall('<esrb>(.*?)</esrb>', nfo_str)
         item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
         item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
+        # >> Future work: ESRB and maybe nplayer fields must be sanitized.
         if len(item_title) > 0:     roms[romID]['m_name']      = text_unescape_XML(item_title[0])
         if len(item_year) > 0:      roms[romID]['m_year']      = text_unescape_XML(item_year[0])
         if len(item_genre) > 0:     roms[romID]['m_genre']     = text_unescape_XML(item_genre[0])
         if len(item_developer) > 0: roms[romID]['m_developer'] = text_unescape_XML(item_developer[0])
+        if len(item_nplayers) > 0:  roms[romID]['m_nplayers']  = text_unescape_XML(item_nplayers[0])
+        if len(item_esrb) > 0:      roms[romID]['m_esrb']      = text_unescape_XML(item_esrb[0])
         if len(item_rating) > 0:    roms[romID]['m_rating']    = text_unescape_XML(item_rating[0])
         if len(item_plot) > 0:      roms[romID]['m_plot']      = text_unescape_XML(item_plot[0])
 
@@ -1611,11 +1622,14 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 # This file is called by the ROM scanner to read a ROM info file automatically.
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 #
-def fs_import_NFO_file_scanner(nfo_file_path):
-    nfo_dic = {'title' : '', 'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : '' }
+def fs_import_ROM_NFO_file_scanner(NFO_FN):
+    nfo_dic = {
+        'title' : '', 'year' : '', 'genre' : '', 'developer' : '',
+        'nplayers' : '', 'esrb' : '', 'rating' : '', 'plot' : ''
+    }
 
     # >> Read file, put in a string and remove line endings
-    file = codecs.open(nfo_file_path.getPath(), 'r', 'utf-8')
+    file = codecs.open(NFO_FN.getPath(), 'r', 'utf-8')
     nfo_str = file.read().replace('\r', '').replace('\n', '')
     file.close()
 
@@ -1624,17 +1638,32 @@ def fs_import_NFO_file_scanner(nfo_file_path):
     item_year      = re.findall('<year>(.*?)</year>', nfo_str)
     item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
     item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
+    item_nplayers  = re.findall('<nplayers>(.*?)</nplayers>', nfo_str)
+    item_esrb      = re.findall('<esrb>(.*?)</esrb>', nfo_str)
     item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
     item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
 
+    # >> Future work: ESRB and maybe nplayer fields must be sanitized.
     if len(item_title) > 0:     nfo_dic['title']     = text_unescape_XML(item_title[0])
     if len(item_year) > 0:      nfo_dic['year']      = text_unescape_XML(item_year[0])
     if len(item_genre) > 0:     nfo_dic['genre']     = text_unescape_XML(item_genre[0])
     if len(item_developer) > 0: nfo_dic['developer'] = text_unescape_XML(item_developer[0])
+    if len(item_nplayers) > 0:  nfo_dic['nplayers']  = text_unescape_XML(item_nplayers[0])
+    if len(item_esrb) > 0:      nfo_dic['esrb']      = text_unescape_XML(item_esrb[0])
     if len(item_rating) > 0:    nfo_dic['rating']    = text_unescape_XML(item_rating[0])
     if len(item_plot) > 0:      nfo_dic['plot']      = text_unescape_XML(item_plot[0])
 
     return nfo_dic
+
+#
+# Returns a FileName object
+#
+def fs_get_ROM_NFO_name(rom):
+    ROMFileName = FileName(rom['filename'])
+    nfo_file_path = FileName(ROMFileName.getPath_noext() + '.nfo')
+    log_debug("fs_get_ROM_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
+
+    return nfo_file_path
 
 #
 # Standalone launchers:
@@ -1651,6 +1680,7 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<launcher>\n')
     nfo_content.append(XML_text('year',      launcher['m_year']))
     nfo_content.append(XML_text('genre',     launcher['m_genre']))
@@ -1786,6 +1816,7 @@ def fs_export_category_NFO(nfo_FileName, category):
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<category>\n')
     nfo_content.append(XML_text('genre',  category['m_genre']))
     nfo_content.append(XML_text('rating', category['m_rating']))
@@ -1856,6 +1887,7 @@ def fs_export_collection_NFO(nfo_FileName, collection):
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<collection>\n')
     nfo_content.append(XML_text('genre',  collection['m_genre']))
     nfo_content.append(XML_text('rating', collection['m_rating']))
