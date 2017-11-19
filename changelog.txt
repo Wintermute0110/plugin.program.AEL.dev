@@ -79,13 +79,7 @@ FIX      Fix export of Launcher and ROM NFO files.
 
 FIX      Fix import of Launcher and ROM NFO files.
 
-WIP      I use the minimize/make kodi a window option in order to prevent kodi from capturing input
-         from my gamepad. With 0.9.7-beta1, when I launch a rom from Collection->Launcher (the
-         regular way), this works great. However, when I launch a rom from the favorites menu, it
-         seems to skip this step and doesn't put kodi into windowed mode.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2659604#pid2659604
-
-WIP      Poster artworks do not appear anymore (got them mapped to flyers for all launchers).
+FIX      Poster artworks do not appear anymore (got them mapped to flyers for all launchers).
          When I try to change the mapping (manage rom/choose roms default assets/artworks),
          then AEL is throwing me an error.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2660404#pid2660404

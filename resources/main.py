@@ -729,10 +729,10 @@ class Main:
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, category): return
 
-        # --- Choose default thumb/fanart ---
+        # --- Choose Category default icon/fanart/banner/poster/clearlogo ---
         elif type == 2:
             category = self.categories[categoryID]
-            # >> Label1 an label2
+            # >> Label1 and label2
             asset_icon_str      = assets_get_asset_name_str(category['default_icon'])
             asset_fanart_str    = assets_get_asset_name_str(category['default_fanart'])
             asset_banner_str    = assets_get_asset_name_str(category['default_banner'])
@@ -771,6 +771,7 @@ class Main:
             type2 = dialog.select('Edit Category default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
+            # >> Build ListItem of assets that can be mapped.
             Category_asset_ListItem_list = [
                 xbmcgui.ListItem(label = 'Icon',      label2 = category['s_icon'] if category['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',    label2 = category['s_fanart'] if category['s_fanart'] else 'Not set'),
@@ -784,26 +785,47 @@ class Main:
             Category_asset_ListItem_list[3].setArt({'icon' : category['s_poster'] if category['s_poster'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[4].setArt({'icon' : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'})
 
+            # >> Krypton feature: User preselected item in select() dialog.
             if type2 == 0:
-                type_s = dialog.select('Choose default Asset for Icon', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_icon')
+                type_s = dialog.select('Choose Category default asset for Icon',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_icon', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_icon', type_s)
+                asset_name = assets_get_asset_name_str(category['default_icon'])
+                kodi_notify('Category Icon mapped to {0}'.format(asset_name))
             elif type2 == 1:
-                type_s = dialog.select('Choose default Asset for Fanart', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_fanart')
+                type_s = dialog.select('Choose Category default asset for Fanart',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_fanart', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_fanart', type_s)
+                asset_name = assets_get_asset_name_str(category['default_fanart'])
+                kodi_notify('Category Fanart mapped to {0}'.format(asset_name))
             elif type2 == 2:
-                type_s = dialog.select('Choose default Asset for Banner', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_banner')
+                type_s = dialog.select('Choose Category default asset for Banner',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_banner', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_banner', type_s)
+                asset_name = assets_get_asset_name_str(category['default_banner'])
+                kodi_notify('Category Banner mapped to {0}'.format(asset_name))
             elif type2 == 3:
-                type_s = dialog.select('Choose default Asset for Poster', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_poster')
+                type_s = dialog.select('Choose Category default asset for Poster',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_poster', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_poster', type_s)
+                asset_name = assets_get_asset_name_str(category['default_poster'])
+                kodi_notify('Category Poster mapped to {0}'.format(asset_name))
             elif type2 == 4:
-                type_s = dialog.select('Choose default Asset for Clearlogo', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_clearlogo')
+                type_s = dialog.select('Choose Category default asset for Clearlogo',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_clearlogo', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_clearlogo', type_s)
+                asset_name = assets_get_asset_name_str(category['default_clearlogo'])
+                kodi_notify('Category Clearlogo mapped to {0}'.format(asset_name))
 
         # --- Category status ---
         elif type == 3:
@@ -1268,14 +1290,14 @@ class Main:
             if type2 < 0: return
 
             # --- Edit Assets ---
-            # >> If this function returns False no changes were made. No need to save categories XML
-            # >> and update container.
+            # >> If this function returns False no changes were made. No need to save categories
+            # >> XML and update container.
             asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER,
                           ASSET_CLEARLOGO, ASSET_CONTROLLER, ASSET_TRAILER]
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_LAUNCHER, asset_kind, launcher): return
 
-        # --- Choose Launcher default thumb/fanart/banner/poster/clearlogo ---
+        # --- Choose Launcher default icon/fanart/banner/poster/clearlogo ---
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
@@ -1318,6 +1340,7 @@ class Main:
             type2 = dialog.select('Edit Launcher default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
+            # >> Build ListItem of assets that can be mapped.
             Launcher_asset_ListItem_list = [
                 xbmcgui.ListItem(label = 'Icon',       label2 = launcher['s_icon'] if launcher['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',     label2 = launcher['s_fanart'] if launcher['s_fanart'] else 'Not set'),
@@ -1333,26 +1356,47 @@ class Main:
             Launcher_asset_ListItem_list[4].setArt({'icon' : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'})
             Launcher_asset_ListItem_list[5].setArt({'icon' : launcher['s_controller'] if launcher['s_controller'] else 'DefaultAddonNone.png'})
 
+            # >> Krypton feature: User preselected item in select() dialog.
             if type2 == 0:
-                type_s = dialog.select('Choose default Asset for Icon', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_icon')
+                type_s = dialog.select('Choose Launcher default asset for Icon', 
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_icon', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_icon', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_icon'])
+                kodi_notify('Launcher Icon mapped to {0}'.format(asset_name))
             elif type2 == 1:
-                type_s = dialog.select('Choose default Asset for Fanart', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_fanart')
+                type_s = dialog.select('Choose default asset for Fanart',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_fanart', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_fanart', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_fanart'])
+                kodi_notify('Launcher Fanart mapped to {0}'.format(asset_name))
             elif type2 == 2:
-                type_s = dialog.select('Choose default Asset for Banner', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_banner')
+                type_s = dialog.select('Choose default asset for Banner',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_banner', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_banner', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_banner'])
+                kodi_notify('Launcher Banner mapped to {0}'.format(asset_name))
             elif type2 == 3:
-                type_s = dialog.select('Choose default Asset for Poster', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_poster')
+                type_s = dialog.select('Choose default asset for Poster',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_poster', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_poster', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_poster'])
+                kodi_notify('Launcher Poster mapped to {0}'.format(asset_name))
             elif type2 == 4:
-                type_s = dialog.select('Choose default Asset for Clearlogo', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_clearlogo')
+                type_s = dialog.select('Choose default asset for Clearlogo',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_clearlogo', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_clearlogo', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_clearlogo'])
+                kodi_notify('Launcher Clearlogo mapped to {0}'.format(asset_name))
 
         # --- Change launcher's Category ---
         type_nb = type_nb + 1
@@ -1425,41 +1469,65 @@ class Main:
                 # --- Choose default ROMs assets/artwork ---
                 if type2 == 0:
                     launcher        = self.launchers[launcherID]
-                    asset_thumb     = assets_get_asset_name_str(launcher['roms_default_thumb'])
-                    asset_fanart    = assets_get_asset_name_str(launcher['roms_default_fanart'])
-                    asset_banner    = assets_get_asset_name_str(launcher['roms_default_banner'])
-                    asset_poster    = assets_get_asset_name_str(launcher['roms_default_poster'])
-                    asset_clearlogo = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
+                    asset_icon_str      = assets_get_asset_name_str(launcher['roms_default_icon'])
+                    asset_fanart_str    = assets_get_asset_name_str(launcher['roms_default_fanart'])
+                    asset_banner_str    = assets_get_asset_name_str(launcher['roms_default_banner'])
+                    asset_poster_str    = assets_get_asset_name_str(launcher['roms_default_poster'])
+                    asset_clearlogo_str = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
+
+                    # >> Execute select dialog
                     dialog = xbmcgui.Dialog()
                     type3 = dialog.select('Edit ROMs default Assets/Artwork',
-                                          ['Choose asset for Thumb (currently {0})'.format(asset_thumb),
-                                           'Choose asset for Fanart (currently {0})'.format(asset_fanart),
-                                           'Choose asset for Banner (currently {0})'.format(asset_banner),
-                                           'Choose asset for Poster (currently {0})'.format(asset_poster),
-                                           'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+                                          ['Choose asset for Icon (currently {0})'.format(asset_icon_str),
+                                           'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
+                                           'Choose asset for Banner (currently {0})'.format(asset_banner_str),
+                                           'Choose asset for Poster (currently {0})'.format(asset_poster_str),
+                                           'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str)])
+                    if type3 < 0: return
 
+                    # >> Krypton feature: User preselected item in select() dialog.
+                    ROM_asset_str_list = ['Title', 'Snap', 'Boxfront', 'Boxback', 'Cartridge',
+                                          'Fanart', 'Banner', 'Clearlogo', 'Flyer', 'Map']
                     if type3 == 0:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_icon')
+                        type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Icon',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_thumb', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_icon', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_icon'])
+                        kodi_notify('ROMs Icon mapped to {0}'.format(asset_name))
                     elif type3 == 1:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_fanart')
+                        type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Fanart',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_fanart', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_fanart', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_fanart'])
+                        kodi_notify('ROMs Fanart mapped to {0}'.format(asset_name))
                     elif type3 == 2:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_banner')
+                        type_s = xbmcgui.Dialog().select('Choose ROMS default asset for Banner',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_banner', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_banner', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_banner'])
+                        kodi_notify('ROMs Banner mapped to {0}'.format(asset_name))
                     elif type3 == 3:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_poster')
+                        type_s = xbmcgui.Dialog().select('Choose ROMS default asset for Poster',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_poster', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_poster', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_poster'])
+                        kodi_notify('ROMs Poster mapped to {0}'.format(asset_name))
                     elif type3 == 4:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_clearlogo')
+                        type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Clearlogo',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_clearlogo', type_s)
-                    # >> User canceled select dialog
-                    elif type3 < 0: return
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_clearlogo', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
+                        kodi_notify('ROMs Clearlogo mapped to {0}'.format(asset_name))
 
                 # --- Manage ROM Asset directories ---
                 elif type2 == 1:

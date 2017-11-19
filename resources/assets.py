@@ -148,22 +148,22 @@ def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
     subPath.makedirs()
 
 #
-# Get artwork user configured to be used as thumb/fanart/... for Categories/Launchers
+# Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
 #
 def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]
-    thumb_path     = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
+    asset_path     = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
 
-    return thumb_path
+    return asset_path
 
 #
 # Same for ROMs
 #
 def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
     conf_asset_key = launcher[object_key]
-    thumb_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
+    asset_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
 
-    return thumb_path
+    return asset_path
 
 #
 # Gets a human readable name string for the asset field name.
@@ -195,10 +195,9 @@ def assets_get_asset_name_str(default_asset):
     return asset_name_str
 
 #
-# Used in Category context menu, "Choose defaul Assets/Artwork ..."
-# Order here must match order in list Category_asset_ListItem_list
+# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
 #
-def assets_choose_category_artwork(dict_object, key, index):
+def assets_choose_Category_mapped_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_icon'
     elif index == 1: dict_object[key] = 's_fanart'
     elif index == 2: dict_object[key] = 's_banner'
@@ -206,10 +205,22 @@ def assets_choose_category_artwork(dict_object, key, index):
     elif index == 4: dict_object[key] = 's_clearlogo'
 
 #
-# Used in Launcher context menu, "Choose defaul Assets/Artwork ..."
-# Order here must match order in list Launcher_asset_ListItem_list
+# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
 #
-def assets_choose_launcher_artwork(dict_object, key, index):
+def assets_get_Category_mapped_asset_idx(dict_object, key):
+    if   dict_object[key] == 's_icon':       index = 0
+    elif dict_object[key] == 's_fanart':     index = 1
+    elif dict_object[key] == 's_banner':     index = 2
+    elif dict_object[key] == 's_poster':     index = 3
+    elif dict_object[key] == 's_clearlogo':  index = 4
+    else:                                    index = 0
+
+    return index
+
+#
+# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
+#
+def assets_choose_Launcher_mapped_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_icon'
     elif index == 1: dict_object[key] = 's_fanart'
     elif index == 2: dict_object[key] = 's_banner'
@@ -217,17 +228,52 @@ def assets_choose_launcher_artwork(dict_object, key, index):
     elif index == 4: dict_object[key] = 's_clearlogo'
     elif index == 5: dict_object[key] = 's_controller'
 
-def assets_choose_category_ROM(dict_object, key, index):
+#
+# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
+#
+def assets_get_Launcher_mapped_asset_idx(dict_object, key):
+    if   dict_object[key] == 's_icon':       index = 0
+    elif dict_object[key] == 's_fanart':     index = 1
+    elif dict_object[key] == 's_banner':     index = 2
+    elif dict_object[key] == 's_poster':     index = 3
+    elif dict_object[key] == 's_clearlogo':  index = 4
+    elif dict_object[key] == 's_controller': index = 5
+    else:                                    index = 0
+
+    return index
+
+#
+# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
+#
+def assets_choose_ROM_mapped_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_title'
     elif index == 1: dict_object[key] = 's_snap'
-    elif index == 5: dict_object[key] = 's_boxfront'
-    elif index == 6: dict_object[key] = 's_boxback'
-    elif index == 7: dict_object[key] = 's_cartridge'
-    elif index == 2: dict_object[key] = 's_fanart'
-    elif index == 3: dict_object[key] = 's_banner'
-    elif index == 4: dict_object[key] = 's_clearlogo'
+    elif index == 2: dict_object[key] = 's_boxfront'
+    elif index == 3: dict_object[key] = 's_boxback'
+    elif index == 4: dict_object[key] = 's_cartridge'
+    elif index == 5: dict_object[key] = 's_fanart'
+    elif index == 6: dict_object[key] = 's_banner'
+    elif index == 7: dict_object[key] = 's_clearlogo'
     elif index == 8: dict_object[key] = 's_flyer'
     elif index == 9: dict_object[key] = 's_map'
+
+#
+# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
+#
+def assets_get_ROM_mapped_asset_idx(dict_object, key):
+    if   dict_object[key] == 's_title':     index = 0
+    elif dict_object[key] == 's_snap':      index = 1
+    elif dict_object[key] == 's_boxfront':  index = 2
+    elif dict_object[key] == 's_boxback':   index = 3
+    elif dict_object[key] == 's_cartridge': index = 4
+    elif dict_object[key] == 's_fanart':    index = 5
+    elif dict_object[key] == 's_banner':    index = 6
+    elif dict_object[key] == 's_clearlogo': index = 7
+    elif dict_object[key] == 's_flyer':     index = 8
+    elif dict_object[key] == 's_map':       index = 9
+    else:                                   index = 0
+
+    return index
 
 # -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
