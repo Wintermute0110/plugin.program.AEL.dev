@@ -5449,6 +5449,7 @@ class Main:
                 else:
                     log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
                 # >> Update imported asset filename in database.
+                log_debug('{0:<9s} collection[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
                 collection_dic[AInfo.key] = new_asset_FN.getOriginalPath()
 
             # --- Import ROM assets ---
@@ -5490,6 +5491,7 @@ class Main:
                     else:
                         log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
                     # >> Update asset info in database
+                    log_debug('{0:<9s} rom_item[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
                     rom_item[AInfo.key] = new_asset_FN.getOriginalPath()
             log_debug('_command_import_collection() Finished importing assets')
 
