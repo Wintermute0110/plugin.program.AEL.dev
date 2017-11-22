@@ -10,99 +10,11 @@
                 "img_logo_url": "1790d2672b3de3a9aa57e0f41bccf8d4b4285c46"
             },
             {
-                "appid": 2350,
-                "name": "Quake III: Team Arena",
-                "playtime_forever": 0,
-                "img_icon_url": "95327dd5e7e4e79e275a220d9043e574cb518977",
-                "img_logo_url": "9cb36376ea8acbe0ae21e0df50fbd0c2ce87c5a7"
-            },
-            {
-                "appid": 12120,
-                "name": "Grand Theft Auto: San Andreas",
-                "playtime_forever": 1,
-                "img_icon_url": "895e9391da2b8155989022d9dd95b12e09766375",
-                "img_logo_url": "32e2d1d2054295603724f30c81c3cf46dc6392c0",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 12250,
-                "name": "Grand Theft Auto: San Andreas",
-                "playtime_forever": 0,
-                "img_icon_url": "",
-                "img_logo_url": "32e2d1d2054295603724f30c81c3cf46dc6392c0",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 45740,
-                "name": "Dead Rising 2",
-                "playtime_forever": 1,
-                "img_icon_url": "1a8ab50763c91798622cc43eaad21960bf4d4b1a",
-                "img_logo_url": "0a981863c79af886690c9f9e05a7f3a75135b2d9",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 205100,
-                "name": "Dishonored",
-                "playtime_forever": 0,
-                "img_icon_url": "74f8ee1ba536e0759e64a9bf801fc013e16c8dd1",
-                "img_logo_url": "b94f5ff693304b7f70f88403d444686c4af3b940",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 238260,
-                "name": "Pinball Arcade",
-                "playtime_forever": 5,
-                "img_icon_url": "f75915d17b3449067f901c612d95c7286a5dfb83",
-                "img_logo_url": "bbccee3097f4f5f7a93e07a4fcd73605a71cb070",
-                "has_community_visible_stats": true
-            },
-            {
                 "appid": 252950,
                 "name": "Rocket League",
                 "playtime_forever": 3189,
                 "img_icon_url": "9ad6dd3d173523354385955b5fb2af87639c4163",
                 "img_logo_url": "3854e40582bc14b8ba3c9ee163a0fa64bc538def",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 238090,
-                "name": "Sniper Elite 3",
-                "playtime_forever": 604,
-                "img_icon_url": "addaab4e7308d808f53d32fbcdec0d9c2deb20fd",
-                "img_logo_url": "bd0bbf10de9f7ca196ca598ae11218e36ed2025c",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 310560,
-                "name": "DiRT Rally",
-                "playtime_2weeks": 59,
-                "playtime_forever": 167,
-                "img_icon_url": "6af1249ba4f9c521ce981ee040ffa3b9ca603911",
-                "img_logo_url": "ac1200d420a187ec457597d7b954bac14693f573",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 291480,
-                "name": "Warface",
-                "playtime_forever": 4,
-                "img_icon_url": "fb8ff6e843ac7020086431da50a8b0a5d31c7bcc",
-                "img_logo_url": "3e7109f2f82da9c498806d962601c4b40dbc6bd8",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 45770,
-                "name": "Dead Rising 2: Off the Record",
-                "playtime_forever": 1,
-                "img_icon_url": "390b241cf36d54a3cb59be36a72c35ed41f6172b",
-                "img_logo_url": "305469a745b2eb470daea8a30a282c79fa52d940",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 238320,
-                "name": "Outlast",
-                "playtime_forever": 0,
-                "img_icon_url": "46bd3df92d4693d3b2af113bf8f31c2cbdadb20a",
-                "img_logo_url": "7d02a2286fd5d4ce42cfc1ecc78e08c89e542f87",
                 "has_community_visible_stats": true
             },
             {
@@ -114,121 +26,11 @@
                 "has_community_visible_stats": true
             },
             {
-                "appid": 427190,
-                "name": "Dead Rising",
-                "playtime_2weeks": 1,
-                "playtime_forever": 9,
-                "img_icon_url": "74ffef15e4897d294a86e5e33e7b427ce37f2219",
-                "img_logo_url": "f77418310c04d3b81500dff57b34026d8753cac3",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 239140,
-                "name": "Dying Light",
-                "playtime_forever": 0,
-                "img_icon_url": "d6eafb4fab916ac475bf67054332dd1c0659f8d6",
-                "img_logo_url": "a2656cade3af57d07d0a9622d3b52745b26b2225",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 4520,
-                "name": "Full Spectrum Warrior",
-                "playtime_forever": 1,
-                "img_icon_url": "123a07859884932cd2fa5f3159fa9e001730a505",
-                "img_logo_url": "0dfe63aa591499ee7028cb23de77ecd35a9074fa"
-            },
-            {
-                "appid": 4530,
-                "name": "Full Spectrum Warrior: Ten Hammers",
-                "playtime_forever": 0,
-                "img_icon_url": "e647427559701c2ce2907c9996ab73f213f719df",
-                "img_logo_url": "62ee3e42ba14ba521a882ca991b514886b747cc7"
-            },
-            {
-                "appid": 9460,
-                "name": "Frontlines: Fuel of War",
-                "playtime_forever": 2,
-                "img_icon_url": "11c7e899769cc8827e86e1f33e94442d68d67f14",
-                "img_logo_url": "ff2ec38d0f22cdf825875bf0221933dabbf5706b"
-            },
-            {
-                "appid": 20500,
-                "name": "Red Faction: Guerrilla Steam Edition",
-                "playtime_forever": 10,
-                "img_icon_url": "e7f356bc74c871f6955c9caec5d38a8d56f49490",
-                "img_logo_url": "27632013243c01b01cbbc7a34184d93b08bd5f9f",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 50620,
-                "name": "Darksiders",
-                "playtime_forever": 0,
-                "img_icon_url": "e429cee10d864faf2aae2ea9cd75e8e1942fbe08",
-                "img_logo_url": "14bd29bc9b291081b63258e3bfbbf5bb655c2347",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 55110,
-                "name": "Red Faction: Armageddon",
-                "playtime_forever": 0,
-                "img_icon_url": "e59c7e741c05c9071176b270bdbb733afe55c751",
-                "img_logo_url": "19f894d0e08dff8e284d4facc5968a1025da997d",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 55140,
-                "name": "MX vs. ATV Reflex",
-                "playtime_forever": 8,
-                "img_icon_url": "69f8e590cd2da3b15d2a8c1becf789ffdcd2052e",
-                "img_logo_url": "fb372666bccf7a46a4041b324b0a44078e35827a",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 388410,
-                "name": "Darksiders II Deathinitive Edition",
-                "playtime_forever": 0,
-                "img_icon_url": "a2d5549090144f1bfd9e00f1b460c1ad0aa9c366",
-                "img_logo_url": "56b6070f07938b73cbf8b80c5b53b7245a832bce",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 462780,
-                "name": "Darksiders Warmastered Edition",
-                "playtime_forever": 584,
-                "img_icon_url": "4616a0d94eb5864f2933fd0157bb60a27b14d5fe",
-                "img_logo_url": "f188a32787983ef5346157473a4d8ba0ed024d98",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 475150,
-                "name": "Titan Quest Anniversary Edition",
-                "playtime_forever": 0,
-                "img_icon_url": "be3384e7936f548303c77ee2abc4c9026285f554",
-                "img_logo_url": "0d487100eb46ae08f9be7a8e2e09486511819bdd",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 530700,
-                "name": "Argo",
-                "playtime_forever": 9,
-                "img_icon_url": "b827f64552754338bd272d6d2095714d77fa15cb",
-                "img_logo_url": "065b70a44a0abdd53068358407cb873f1048ebaa",
-                "has_community_visible_stats": true
-            },
-            {
                 "appid": 233130,
                 "name": "Shadow Warrior",
                 "playtime_forever": 45,
                 "img_icon_url": "5d7c205ce18f17a99c95ff81499c2f496e0570f2",
                 "img_logo_url": "30d29d6ec47f0b586349106f8265e69ee091ce95",
-                "has_community_visible_stats": true
-            },
-            {
-                "appid": 255520,
-                "name": "Viscera Cleanup Detail: Shadow Warrior",
-                "playtime_forever": 0,
-                "img_icon_url": "56c3840d52a0da4f397d9991d368c75ed53d99fa",
-                "img_logo_url": "09a86e49413f57dc99f2e7f54b029868ffb5cbc8",
                 "has_community_visible_stats": true
             },
             {

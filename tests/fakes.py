@@ -85,5 +85,7 @@ class FakeScraper(Scraper):
             rom['m_genre']     = self.rom_data_to_apply['m_genre'] if 'm_genre' in self.rom_data_to_apply else ''  
             rom['m_developer'] = self.rom_data_to_apply['m_developer']if 'm_developer' in self.rom_data_to_apply else ''
             rom['m_plot']      = self.rom_data_to_apply['m_plot'] if 'm_plot' in self.rom_data_to_apply else ''     
+        else:
+            rom['m_name'] = romPath.getBase_noext()
 
         return True
