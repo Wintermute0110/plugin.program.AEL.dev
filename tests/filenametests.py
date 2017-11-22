@@ -1,5 +1,6 @@
 import unittest
 from resources.utils import *
+from resources.utils_kodi import *
 from resources.disk_IO import *
 from resources.scrap import *
 from resources.scrap_common import *
@@ -10,6 +11,10 @@ from resources.launchers import *
 import resources.rom_audit
 
 class Test_filenametests(unittest.TestCase):
+    
+    @classmethod
+    def setUpClass(cls):
+        set_use_print(True)
 
     def test_isdir_works_with_directories_with_an_endslash(self):
         testFile = FileName('smb://192.168.0.5/Media6/Roms/SNK/')

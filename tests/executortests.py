@@ -9,6 +9,10 @@ from resources.utils_kodi import *
 
 class Test_executortests(unittest.TestCase):
     
+    @classmethod
+    def setUpClass(cls):
+        set_use_print(True)
+
     @patch('resources.executors.sys')            
     def test_if_on_linux_factory_loads_with_correct_executor(self, mock_sys):
         

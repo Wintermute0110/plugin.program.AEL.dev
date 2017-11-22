@@ -69,8 +69,9 @@ class LauncherFactory():
 class Launcher():
     __metaclass__ = ABCMeta
     
-    def __init__(self, settings, executorFactory, minimize_flag, non_blocking = False):
-
+    def __init__(self, launcher, settings, executorFactory, minimize_flag, non_blocking = False):
+        
+        self.launcher        = launcher
         self.settings        = settings
         self.executorFactory = executorFactory
 
@@ -105,7 +106,7 @@ class Launcher():
         self.postExecution(self.minimize_flag)
 
         pass
-      
+    
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     # Variables set in this function:
@@ -241,9 +242,8 @@ class Launcher():
 class ApplicationLauncher(Launcher):
     
     def __init__(self, settings, executorFactory, launcher):
-
-        self.launcher = launcher                
-        super(ApplicationLauncher, self).__init__(settings, executorFactory, launcher['minimize'])
+        
+        super(ApplicationLauncher, self).__init__(launcher, settings, executorFactory, launcher['minimize'])
         
     def launch(self):
 
@@ -269,16 +269,15 @@ class ApplicationLauncher(Launcher):
 class StandardRomLauncher(Launcher):
 
     def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
-        self.launcher = launcher
+
         self.rom = rom
         self.categoryID = ''
 
         self.escape_romfile = escape_romfile
-
         self.statsStrategy = statsStrategy
-        
+
         non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
-        super(StandardRomLauncher, self).__init__(settings, executorFactory, launcher['minimize'], non_blocking_flag)
+        super(StandardRomLauncher, self).__init__(launcher, settings, executorFactory, launcher['minimize'], non_blocking_flag)
 
     def _selectApplicationToUse(self):
 
@@ -473,7 +472,6 @@ class RetroarchLauncher(StandardRomLauncher):
         pass 
 
 class SteamLauncher(StandardRomLauncher):
-    import webbrowser
 
     def _selectApplicationToUse(self):
         url = 'steam://rungameid/'

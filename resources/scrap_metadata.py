@@ -79,8 +79,8 @@ class metadata_Offline(Scraper_Metadata):
 
         # Load XML database and keep it in memory for subsequent calls
         #xml_path = os.path.join(self.addon_dir, xml_file)
-        xml_path = Path(self.addon_dir)
-        xml_path = xml_path.join(xml_file)
+        xml_path = FileName(self.addon_dir)
+        xml_path = xml_path.pjoin(xml_file)
         log_debug('metadata_Offline::initialise_scraper Loading XML {0}'.format(xml_path))
         self.games = rom_audit.audit_load_OfflineScraper_XML(xml_path)
         if not self.games:

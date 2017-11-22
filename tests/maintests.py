@@ -1,14 +1,19 @@
 import unittest
 import mock
 from mock import *
+from fakes import *
 
 import xbmcaddon
 
 import resources.main as main
 from resources.constants import *
+from resources.utils_kodi import *
 
 class Test_maintests(unittest.TestCase):
     
+    @classmethod
+    def setUpClass(cls):
+        set_use_print(True)
 
     # todo: replace by moving settings to external class and mock a simple dictionary
     def mocked_settings(arg):

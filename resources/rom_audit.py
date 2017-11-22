@@ -223,9 +223,10 @@ def audit_load_OfflineScraper_XML(xml_file):
     try:
         xml_root = xml_file.readXml()
     except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) Exception parsing XML {0}'.format(xml_file.getOriginalPath()))
         log_error('(ParseError) {0}'.format(str(e)))
         return games
+
     for game_element in xml_root:
         if __debug_xml_parser:
             log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))

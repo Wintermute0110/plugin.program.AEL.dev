@@ -1,33 +1,39 @@
 import unittest
 import mock
 from mock import *
+from fakes import *
 
 import xbmcaddon
 
-from resources.utils_ui import *
+from resources.utils_kodi import *
 from resources.constants import *
 
-class Test_wizardtests(unittest.TestCase):
+
+class Test_utils_kodi_tests(unittest.TestCase):
     
+    @classmethod
+    def setUpClass(cls):
+        set_use_print(True)
+
     def test_building_a_wizards_works(self):
         
-        page1 = KeyboardWizardPage('x', 'abc', None)
-        page2 = SelectionWizardPage('x2',['aa'], 'abc2', page1)
-        page3 = KeyboardWizardPage('x3', 'abc3', page2)
+        page1 = KeyboardWizardDialog('x', 'abc', None)
+        page2 = SelectionWizardDialog('x2',['aa'], 'abc2', page1)
+        page3 = KeyboardWizardDialog('x3', 'abc3', page2)
 
         props = {}
 
         page3.runWizard(props)
         
-    @patch('resources.utils_ui.xbmc.Keyboard', autospec=True)     
+    @patch('resources.utils_kodi.xbmc.Keyboard', autospec=True)     
     def test_starting_wizard_calls_pages_in_right_order(self, mock_keyboard): 
         
         # arrange
         mock_keyboard.getText().return_value = 'test'
 
-        wizard = KeyboardWizardPage('x1', 'expected1', None)
-        wizard = KeyboardWizardPage('x2', 'expected2', wizard)
-        wizard = KeyboardWizardPage('x3', 'expected3', wizard)
+        wizard = KeyboardWizardDialog('x1', 'expected1', None)
+        wizard = KeyboardWizardDialog('x2', 'expected2', wizard)
+        wizard = KeyboardWizardDialog('x3', 'expected3', wizard)
 
         props = {}
 
@@ -41,7 +47,7 @@ class Test_wizardtests(unittest.TestCase):
         self.assertEqual(call('','expected2'), calls[1])
         self.assertEqual(call('','expected3'), calls[2])
 
-    @patch('resources.utils_ui.xbmc.Keyboard.getText', autospec=True)     
+    @patch('resources.utils_kodi.xbmc.Keyboard.getText', autospec=True)     
     def test_when_i_give_the_wizardpage_a_custom_function_it_calls_it_as_expected(self, mock_keyboard): 
         
         # arrange
@@ -49,7 +55,7 @@ class Test_wizardtests(unittest.TestCase):
         fake = FakeClass()
 
         props = {}
-        page1 = KeyboardWizardPage('key','title1', None, fake.FakeMethod)
+        page1 = KeyboardWizardDialog('key','title1', None, fake.FakeMethod)
 
         # act
         page1.runWizard(props)
@@ -57,7 +63,7 @@ class Test_wizardtests(unittest.TestCase):
         # assert
         self.assertEqual('expected', fake.value)
                 
-    @patch('resources.utils_ui.xbmcgui.Dialog.select', autospec=True)
+    @patch('resources.utils_kodi.xbmcgui.Dialog.select', autospec=True)
     def test_when_using_dictionary_select_dialog_it_gives_me_the_correct_result(self, mocked_dialog):
 
         # arrange
@@ -77,12 +83,6 @@ class Test_wizardtests(unittest.TestCase):
         # assert
         self.assertIsNotNone(actual)
         self.assertEqual(actual, expected)
-
-
-class FakeClass():
-
-    def FakeMethod(self, value, launcher):
-        self.value = value
-
+        
 if __name__ == '__main__':
     unittest.main()

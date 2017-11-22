@@ -2,12 +2,17 @@ import unittest
 import mock
 from mock import *
 
-import xbmcaddon
+import xbmcaddon, xbmc
 
 import resources.utils as utils
+from resources.utils_kodi import *
 
 class Test_utilstests(unittest.TestCase):
     
+    @classmethod
+    def setUpClass(cls):
+        set_use_print(True)
+
     def test_when_getting_url_extension_it_returns_the_correct_extension(self):
 
         # arrange

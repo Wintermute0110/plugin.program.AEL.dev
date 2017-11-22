@@ -10,6 +10,10 @@ from resources.constants import *
 
 class Test_romsettest(unittest.TestCase):
    
+    @classmethod
+    def setUpClass(cls):
+        set_use_print(True)
+
     def test_when_loading_a_normal_rom_list_it_succeeds(self):
         
         # arrange

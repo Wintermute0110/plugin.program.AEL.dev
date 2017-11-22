@@ -1,15 +1,22 @@
 import unittest
 import mock
 from mock import *
+from fakes import *
+
+from resources.launchers import *
 
 from resources.utils import *
 from resources.disk_IO import *
-from resources.launchers import *
 from resources.utils_kodi import *
 
-import resources.constants
+from resources.constants import *
 
 class Test_Launcher(unittest.TestCase):
+    
+    @classmethod
+    def setUpClass(cls):
+        set_use_print(True)
+        set_log_level(LOG_DEBUG)
 
     def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
         # arrange
@@ -27,9 +34,7 @@ class Test_Launcher(unittest.TestCase):
 
         # arrange
         mock_exeFactory.create.return_value = FakeExecutor(None)
-        set_log_level(LOG_VERB)
-        set_use_print(True)
-
+        
         launchers = {}
         launchers['ABC'] = {}
         launchers['ABC']['application'] = 'path'
@@ -55,9 +60,6 @@ class Test_Launcher(unittest.TestCase):
     def test_if_app_launcher_will_correctly_passthrough_parameters_when_launching(self, mock_exeFactory):
 
         # arrange
-        set_log_level(LOG_VERB)
-        set_use_print(True)
-
         expectedApp = 'AbcDefGhiJlkMnoPqrStuVw'
         expectedArgs = 'doop dap dib'
 
@@ -355,34 +357,6 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertEqual(expected, mock.actualApplication.getPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
-
-class FakeRomSet(RomSet):
-
-    def __init__(self, rom):
-        self.rom = rom
-
-    def romSetFileExists(self):
-        return True
-            
-    def loadRoms(self):
-        return {}
-
-    def loadRomsAsList(self):
-        return []
-
-    def loadRom(self, romId):
-        return self.rom
-
-    def saveRoms(self, roms):
-        pass
-
-class FakeExecutor(Executor):
-    
-    def execute(self, application, arguments, non_blocking):
-        self.actualApplication = application
-        self.actualArgs = arguments
-        pass
-
 
 if __name__ == '__main__':
    unittest.main()
