@@ -14,6 +14,9 @@
  "Atari 7800":{
   "numROMs":0
  },
+ "Atari 8-bit":{
+  "numROMs":0
+ },
  "Atari Jaguar":{
   "numROMs":0
  },
@@ -48,6 +51,12 @@
   "numROMs":0
  },
  "Commodore VIC-20":{
+  "numROMs":0
+ },
+ "Emerson Arcadia 2001":{
+  "numROMs":0
+ },
+ "Fairchild Channel F":{
   "numROMs":0
  },
  "Fujitsu FM Towns Marty":{
@@ -164,6 +173,9 @@
  "Philips Videopac Plus G7400":{
   "numROMs":0
  },
+ "RCA Studio II":{
+  "numROMs":0
+ },
  "SNK Neo-Geo AES":{
   "numROMs":0
  },
@@ -243,6 +255,9 @@
   "numROMs":0
  },
  "Unknown":{
+  "numROMs":0
+ },
+ "Watara Supervision":{
   "numROMs":0
  }
 }
