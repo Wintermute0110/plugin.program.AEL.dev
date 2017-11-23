@@ -1128,56 +1128,69 @@ class Main:
                 new_launcher_name = title.rstrip()
                 log_debug('_command_edit_launcher() Edit Title: old_launcher_name "{0}"'.format(old_launcher_name))
                 log_debug('_command_edit_launcher() Edit Title: new_launcher_name "{0}"'.format(new_launcher_name))
-                if old_launcher_name == new_launcher_name: return
+                if old_launcher_name == new_launcher_name:
+                    kodi_notify('Launcher Title not changed')
+                    return
 
                 # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-                old_roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-                categoryID          = self.launchers[launcherID]['categoryID']
-                category_name       = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
+                old_roms_base_noext = launcher['roms_base_noext']
+                categoryID = launcher['categoryID']
+                category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
                 new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-                log_debug('_command_edit_launcher() old_roms_base_noext "{0}"'.format(old_roms_base_noext))
-                log_debug('_command_edit_launcher() new_roms_base_noext "{0}"'.format(new_roms_base_noext))
-                if old_roms_base_noext != new_roms_base_noext:
-                    log_debug('Renaming JSON/XML launcher databases')
-                    launchers[launcherID]['roms_base_noext'] = new_roms_base_noext
-                    fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
-                else:
-                    log_debug('Not renaming ROM databases (old and new names are equal)')
+                fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
                 launcher['m_name'] = new_launcher_name
                 launcher['roms_base_noext'] = new_roms_base_noext
-                kodi_notify('Changed Launcher Title')
+                kodi_notify('Launcher Title is now {0}'.format(new_launcher_name))
 
             # --- Selection of the launcher platform from AEL "official" list ---
             elif type2 == 1:
                 p_idx = get_AEL_platform_index(self.launchers[launcherID]['platform'])
                 sel_platform = xbmcgui.Dialog().select('Select the platform', AEL_platform_list, preselect = p_idx)
                 if sel_platform < 0: return
+                if p_idx == sel_platform:
+                    kodi_notify('Launcher Platform not changed')
+                    return
                 self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
                 kodi_notify('Launcher Platform is now {0}'.format(AEL_platform_list[sel_platform]))
 
             # --- Edition of the launcher release date (year) ---
             elif type2 == 2:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_year'], 'Edit release year')
+                old_year_str = self.launchers[launcherID]['m_year']
+                keyboard = xbmc.Keyboard(old_year_str, 'Edit Launcher release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_year'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Year')
+                new_year_str = keyboard.getText().decode('utf-8')
+                if old_year_str == new_year_str:
+                    kodi_notify('Launcher Year not changed')
+                    return
+                self.launchers[launcherID]['m_year'] = new_year_str
+                kodi_notify('Launcher Year is now {0}'.format(new_year_str))
 
             # --- Edition of the launcher genre ---
             elif type2 == 3:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_genre'], 'Edit genre')
+                old_genre_str = self.launchers[launcherID]['m_genre']
+                keyboard = xbmc.Keyboard(old_genre_str, 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_genre'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Genre')
+                new_genre_str = keyboard.getText().decode('utf-8')
+                if old_genre_str == new_genre_str:
+                    kodi_notify('Launcher Genre not changed')
+                    return
+                self.launchers[launcherID]['m_genre'] = new_genre_str
+                kodi_notify('Launcher Genre is now {0}'.format(new_genre_str))
 
             # --- Edition of the launcher developer ---
             elif type2 == 4:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_developer'], 'Edit developer')
+                old_developer_str = self.launchers[launcherID]['m_developer']
+                keyboard = xbmc.Keyboard(old_developer_str, 'Edit developer')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_developer'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Developer')
+                new_developer_str = keyboard.getText().decode('utf-8')
+                if old_developer_str == new_developer_str:
+                    kodi_notify('Launcher Developer not changed')
+                    return
+                self.launchers[launcherID]['m_developer'] = new_developer_str
+                kodi_notify('Launcher Developer is now {0}'.format(new_developer_str))
 
             # --- Edition of the launcher rating ---
             elif type2 == 5:
@@ -1190,20 +1203,25 @@ class Main:
                     kodi_notify('Launcher Rating changed to Not Set')
                 elif rating >= 1 and rating <= 11:
                     self.launchers[launcherID]['m_rating'] = '{0}'.format(rating - 1)
-                    kodi_notify('Changed Launcher Rating')
+                    kodi_notify('Launcher Rating is now {0}'.format(self.launchers[launcherID]['m_rating']))
                 elif rating < 0:
-                    kodi_dialog_OK("Launcher rating '{0}' not changed".format(self.launchers[launcherID]['m_rating']))
+                    kodi_notify('Launcher Rating not changed')
                     return
 
             # --- Edit launcher description (plot) ---
             elif type2 == 6:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_plot'], 'Edit plot')
+                old_plot_str = self.launchers[launcherID]['m_plot']
+                keyboard = xbmc.Keyboard(old_plot_str, 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_plot'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Plot')
+                new_plot_str = keyboard.getText().decode('utf-8')
+                if old_plot_str == new_plot_str:
+                    kodi_notify('Launcher Plot not changed')
+                    return
+                self.launchers[launcherID]['m_plot'] = new_plot_str
+                kodi_notify('Launcher Plot is now "{0}"'.format())
 
-            # --- Import launcher metadata from NFO file (automatic) ---
+            # --- Import launcher metadata from NFO file (default location) ---
             elif type2 == 7:
                 # >> Get NFO file name for launcher
                 # >> Launcher is edited using Python passing by assigment
@@ -1227,8 +1245,8 @@ class Main:
             elif type2 == 9:
                 NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
                 if not fs_export_launcher_NFO(NFO_FileName, self.launchers[launcherID]): return
-                # >> No need to save launchers
                 kodi_notify('Exported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
+                # >> No need to save launchers so return
                 return
 
             # --- Scrape launcher metadata ---

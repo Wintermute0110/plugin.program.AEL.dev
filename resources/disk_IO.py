@@ -704,6 +704,13 @@ def fs_unlink_ROMs_database(roms_dir_FN, launcher):
         roms_DAT_FN.unlink()
 
 def fs_rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
+    # >> Only rename if base names are different
+    log_debug('fs_rename_ROMs_database() old_roms_base_noext "{0}"'.format(old_roms_base_noext))
+    log_debug('fs_rename_ROMs_database() new_roms_base_noext "{0}"'.format(new_roms_base_noext))
+    if old_roms_base_noext == new_roms_base_noext:
+        log_debug('fs_rename_ROMs_database() Exiting because old and new names are equal')
+        return
+
     old_roms_json_FN          = roms_dir_FN.pjoin(old_roms_base_noext + '.json')
     old_roms_xml_FN           = roms_dir_FN.pjoin(old_roms_base_noext + '.xml')
     old_roms_index_CParent_FN = roms_dir_FN.pjoin(old_roms_base_noext + '_index_CParent.json')

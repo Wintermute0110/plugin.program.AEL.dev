@@ -67,6 +67,11 @@ WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe,
          This resembles what NARS No-Intro filtering does.
 
 
+[B]Advanced Emulator Launcher | version 0.9.7 | 23 November 2017[/B]
+
+FIX      Fixed crash when editing Launchr Title in context menu.
+
+
 [B]Advanced Emulator Launcher | version 0.9.7-beta2 | 19 November 2017[/B]
 
 FIX      Currently AEL multid-disc parser supports "Rom name (disc 1).bin".
