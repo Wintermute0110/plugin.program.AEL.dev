@@ -39,8 +39,79 @@ from platforms import *
 # Exports launchers to an XML file.
 # Currently categories are not supported.
 # -------------------------------------------------------------------------------------------------
+# Export Category
+def autoconfig_export_category_str_list(category, str_list):
+    str_list.append('<category>\n')
+    str_list.append(XML_text('name', category['m_name']))
+    str_list.append(XML_text('genre', category['m_genre']))
+    str_list.append(XML_text('rating', category['m_rating']))
+    str_list.append(XML_text('plot', category['m_plot']))
+    str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
+    str_list.append(XML_text('s_icon', category['s_icon']))
+    str_list.append(XML_text('s_fanart', category['s_fanart']))
+    str_list.append(XML_text('s_banner', category['s_banner']))
+    str_list.append(XML_text('s_poster', category['s_poster']))
+    str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
+    str_list.append(XML_text('s_trailer', category['s_trailer']))
+    str_list.append('</category>\n')
+
+# Export Launcher
+def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
+    # >> Check if all artwork paths share the same ROM_asset_path. Unless the user has
+    # >> customised the ROM artwork paths this should be the case.
+    # >> A) This function checks if all path_* share a common root directory. If so
+    # >>    this function returns that common directory as an Unicode string. In this
+    # >>    case AEL will write the tag <ROM_asset_path> only.
+    # >> B) If path_* do not share a common root directory this function returns '' and then
+    # >>    AEL writes all <path_*> tags in the XML file.
+    ROM_asset_path = assets_get_ROM_asset_path(launcher)
+    log_verb('autoconfig_export_all() ROM_asset_path "{0}"'.format(ROM_asset_path))
+
+    # >> Export Launcher
+    str_list.append('<launcher>\n')
+    str_list.append(XML_text('name', launcher['m_name']))
+    str_list.append(XML_text('category', category_name))
+    str_list.append(XML_text('year', launcher['m_year']))
+    str_list.append(XML_text('genre', launcher['m_genre']))
+    str_list.append(XML_text('developer', launcher['m_developer']))
+    str_list.append(XML_text('rating', launcher['m_rating']))
+    str_list.append(XML_text('plot', launcher['m_plot']))
+    str_list.append(XML_text('platform', launcher['platform']))
+    str_list.append(XML_text('application', launcher['application']))
+    str_list.append(XML_text('args', launcher['args']))
+    if launcher['args_extra']:
+        for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
+    else:
+        str_list.append(XML_text('args_extra', ''))
+    str_list.append(XML_text('ROM_path', launcher['rompath']))
+    str_list.append(XML_text('ROM_ext', launcher['romext']))
+    if ROM_asset_path:
+        str_list.append(XML_text('ROM_asset_path', ROM_asset_path))
+    else:
+        str_list.append(XML_text('path_title', launcher['path_title']))
+        str_list.append(XML_text('path_snap', launcher['path_snap']))
+        str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
+        str_list.append(XML_text('path_boxback', launcher['path_boxback']))
+        str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
+        str_list.append(XML_text('path_fanart', launcher['path_fanart']))
+        str_list.append(XML_text('path_banner', launcher['path_banner']))
+        str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
+        str_list.append(XML_text('path_flyer', launcher['path_flyer']))
+        str_list.append(XML_text('path_map', launcher['path_map']))
+        str_list.append(XML_text('path_manual', launcher['path_manual']))
+        str_list.append(XML_text('path_trailer', launcher['path_trailer']))
+    str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
+    str_list.append(XML_text('s_icon', launcher['s_icon']))
+    str_list.append(XML_text('s_fanart', launcher['s_fanart']))
+    str_list.append(XML_text('s_banner', launcher['s_banner']))
+    str_list.append(XML_text('s_poster', launcher['s_poster']))
+    str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
+    str_list.append(XML_text('s_controller', launcher['s_controller']))
+    str_list.append(XML_text('s_trailer', launcher['s_trailer']))
+    str_list.append('</launcher>\n')
+
 def autoconfig_export_all(categories, launchers, export_FN):
-    # >> Traverse all launchers and add to the XML file.
+    # --- XML header ---
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     str_list.append('<advanced_emulator_launcher_configuration>\n')
@@ -50,20 +121,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
     for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
         category = categories[categoryID]
         log_verb('autoconfig_export_all() Category "{0}" (ID "{1}")'.format(category['m_name'], categoryID))
-        # >> Export Category
-        str_list.append('<category>\n')
-        str_list.append(XML_text('name', category['m_name']))
-        str_list.append(XML_text('genre', category['m_genre']))
-        str_list.append(XML_text('rating', category['m_rating']))
-        str_list.append(XML_text('plot', category['m_plot']))
-        str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
-        str_list.append(XML_text('s_icon', category['s_icon']))
-        str_list.append(XML_text('s_fanart', category['s_fanart']))
-        str_list.append(XML_text('s_banner', category['s_banner']))
-        str_list.append(XML_text('s_poster', category['s_poster']))
-        str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
-        str_list.append(XML_text('s_trailer', category['s_trailer']))
-        str_list.append('</category>\n')
+        autoconfig_export_category_str_list(category, str_list)
 
     # --- Export Launchers ---
     # >> Data which is not string must be converted to string
@@ -77,59 +135,9 @@ def autoconfig_export_all(categories, launchers, export_FN):
             kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
             return
         log_verb('autoconfig_export_all() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
+        autoconfig_export_launcher_str_list(launcher, category_name, str_list)
 
-        # >> Check if all artwork paths share the same ROM_asset_path. Unless the user has
-        # >> customised the ROM artwork paths this should be the case.
-        # >> A) This function checks if all path_* share a common root directory. If so
-        # >>    this function returns that common directory as an Unicode string. In this
-        # >>    case AEL will write the tag <ROM_asset_path> only.
-        # >> B) If path_* do not share a common root directory this function returns '' and then
-        # >>    AEL writes all <path_*> tags in the XML file.
-        ROM_asset_path = assets_get_ROM_asset_path(launcher)
-        log_verb('autoconfig_export_all() ROM_asset_path "{0}"'.format(ROM_asset_path))
-
-        # >> Export Launcher
-        str_list.append('<launcher>\n')
-        str_list.append(XML_text('name', launcher['m_name']))
-        str_list.append(XML_text('category', category_name))
-        str_list.append(XML_text('year', launcher['m_year']))
-        str_list.append(XML_text('genre', launcher['m_genre']))
-        str_list.append(XML_text('developer', launcher['m_developer']))
-        str_list.append(XML_text('rating', launcher['m_rating']))
-        str_list.append(XML_text('plot', launcher['m_plot']))
-        str_list.append(XML_text('platform', launcher['platform']))
-        str_list.append(XML_text('application', launcher['application']))
-        str_list.append(XML_text('args', launcher['args']))
-        if launcher['args_extra']:
-            for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
-        else:
-            str_list.append(XML_text('args_extra', ''))
-        str_list.append(XML_text('ROM_path', launcher['rompath']))
-        str_list.append(XML_text('ROM_ext', launcher['romext']))
-        if ROM_asset_path:
-            str_list.append(XML_text('ROM_asset_path', ROM_asset_path))
-        else:
-            str_list.append(XML_text('path_title', launcher['path_title']))
-            str_list.append(XML_text('path_snap', launcher['path_snap']))
-            str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
-            str_list.append(XML_text('path_boxback', launcher['path_boxback']))
-            str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
-            str_list.append(XML_text('path_fanart', launcher['path_fanart']))
-            str_list.append(XML_text('path_banner', launcher['path_banner']))
-            str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
-            str_list.append(XML_text('path_flyer', launcher['path_flyer']))
-            str_list.append(XML_text('path_map', launcher['path_map']))
-            str_list.append(XML_text('path_manual', launcher['path_manual']))
-            str_list.append(XML_text('path_trailer', launcher['path_trailer']))
-        str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
-        str_list.append(XML_text('s_icon', launcher['s_icon']))
-        str_list.append(XML_text('s_fanart', launcher['s_fanart']))
-        str_list.append(XML_text('s_banner', launcher['s_banner']))
-        str_list.append(XML_text('s_poster', launcher['s_poster']))
-        str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
-        str_list.append(XML_text('s_controller', launcher['s_controller']))
-        str_list.append(XML_text('s_trailer', launcher['s_trailer']))
-        str_list.append('</launcher>\n')
+    # --- XML tail ---
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
     # >> Export file
@@ -150,6 +158,46 @@ def autoconfig_export_all(categories, launchers, export_FN):
     log_verb('autoconfig_export_all() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
     log_verb('autoconfig_export_all() Exported  P "{0}"'.format(export_FN.getPath()))
     kodi_notify('Exported AEL Categories and Launchers XML configuration')
+
+#
+# Export a single Launcher XML configuration.
+#
+def autoconfig_export_launcher(launcher, export_FN, categories):
+    # --- Export single Launcher ---
+    launcherID = launcher['id']
+    if launcher['categoryID'] in categories:
+        category_name = categories[launcher['categoryID']]['m_name']
+    elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        category_name = VCATEGORY_ADDONROOT_ID
+    else:
+        kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
+        return
+    log_verb('autoconfig_export_launcher() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
+
+    # --- Create list of strings ---
+    str_list = []
+    str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    str_list.append('<advanced_emulator_launcher_configuration>\n')
+    autoconfig_export_launcher_str_list(launcher, category_name, str_list)
+    str_list.append('</advanced_emulator_launcher_configuration>\n')
+
+    # >> Export file. Strings in the list are Unicode. Encode to UTF-8.
+    # >> Join string, and save categories.xml file
+    try:
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(export_FN.getPath(), 'w')
+        file_obj.write(full_string)
+        file_obj.close()
+    except OSError:
+        log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+        kodi_notify_warn('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+        return
+    except IOError:
+        log_error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
+        kodi_notify_warn('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
+        return
+    log_verb('autoconfig_export_launcher() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
+    log_verb('autoconfig_export_launcher() Exported  P "{0}"'.format(export_FN.getPath()))
 
 # -------------------------------------------------------------------------------------------------
 # Import AEL launcher configuration

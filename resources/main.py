@@ -1078,13 +1078,13 @@ class Main:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                                   'Change Category: {0}'.format(category_name), finished_display,
-                                  'Advanced Modifications ...', 'Delete Launcher'])
+                                  'Advanced Modifications ...', 'Export Launcher XML configuration ...', 'Delete Launcher'])
         else:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                                   'Change Category: {0}'.format(category_name), finished_display,
                                   'Manage ROMs ...', 'Audit ROMs / Launcher view mode ...',
-                                  'Advanced Modifications ...', 'Delete Launcher'])
+                                  'Advanced Modifications ...', 'Export Launcher XML configuration ...', 'Delete Launcher'])
         if type < 0: return
 
         # --- Edition of the launcher metadata ---
@@ -2303,10 +2303,35 @@ class Main:
                 non_blocking_str = 'ON' if self.launchers[launcherID]['non_blocking'] else 'OFF'
                 kodi_notify('Launcher Non-blocking is {0}'.format(non_blocking_str))
 
+        # --- Export Launcher XML configuration ---
+        type_nb = type_nb + 1
+        if type == type_nb:
+            launcher = self.launchers[launcherID]
+            launcher_fn_str = text_title_to_filename_str(launcher['m_name']) + '.xml'
+            log_debug('_command_edit_launcher() Exporting Launcher configuration')
+            log_debug('_command_edit_launcher() Name     "{0}"'.format(launcher['m_name']))
+            log_debug('_command_edit_launcher() ID       {0}'.format(launcher['id']))
+            log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
+
+            # >> Ask user for a path to export the launcher configuration
+            dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
+                                               '', False, False).decode('utf-8')
+            if not dir_path: return
+            export_FN = FileName(dir_path).pjoin(launcher_fn_str)
+            if export_FN.exists():
+                ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
+                if not ret:
+                    kodi_notify_warn('Export of Launcher XML cancelled')
+                    return
+            autoconfig_export_launcher(launcher, export_FN, self.categories)
+            kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
+            # >> No need to update categories.xml and timestamps so return now.
+            return
+
         # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
-            rompath       = self.launchers[launcherID]['rompath']
+            rompath = self.launchers[launcherID]['rompath']
             launcher_name = self.launchers[launcherID]['m_name']
             # >> Standalone launcher
             if rompath == '':
@@ -2320,12 +2345,11 @@ class Main:
                                         'Are you sure you want to delete it?')
             if not ret: return
 
-            # --- Remove JSON/XML file if exist ---
+            # >> Remove JSON/XML file if exist
+            # >> Remove launcher from database. Categories.xml will be saved at the end of function
             fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
-
-            # --- Remove launcher from database. Categories.xml will be saved at the end of function ---
             self.launchers.pop(launcherID)
-            kodi_notify('Deleted launcher {0}'.format(launcher_name))
+            kodi_notify('Deleted Launcher {0}'.format(launcher_name))
 
         # User pressed cancel or close dialog
         if type < 0: return
@@ -2333,8 +2357,7 @@ class Main:
         # >> If this point is reached then changes to launcher metadata/assets were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
         # NOTE Update edited launcher timestamp only if launcher was not deleted!
-        if launcherID in self.launchers:
-            self.launchers[launcherID]['timestamp_launcher'] = time.time()
+        if launcherID in self.launchers: self.launchers[launcherID]['timestamp_launcher'] = time.time()
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 

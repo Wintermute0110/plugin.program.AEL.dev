@@ -42,6 +42,17 @@ def text_limit_string(string, max_length):
   return string
 
 #
+# Given a Category/Launcher name clean it so the cleaned srt can be used as a filename.
+#  1) Convert any non-printable character into '_'
+#  2) Convert spaces ' ' into '_'
+#
+def text_title_to_filename_str(title_str):
+    cleaned_str_1 = ''.join([i if i in string.printable else '_' for i in title_str])
+    cleaned_str_2 = cleaned_str_1.replace(' ', '_')
+
+    return cleaned_str_2
+
+#
 # Writes a XML text tag line, indented 2 spaces by default.
 # Both tag_name and tag_text must be Unicode strings.
 # Returns an Unicode string.
