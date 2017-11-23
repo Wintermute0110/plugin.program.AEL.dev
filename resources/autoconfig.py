@@ -16,6 +16,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 import os
+import time
 
 # --- XML stuff ---
 # ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
@@ -114,6 +115,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
     # --- XML header ---
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     str_list.append('<advanced_emulator_launcher_configuration>\n')
 
     # --- Export Categories ---
@@ -177,6 +179,7 @@ def autoconfig_export_launcher(launcher, export_FN, categories):
     # --- Create list of strings ---
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     str_list.append('<advanced_emulator_launcher_configuration>\n')
     autoconfig_export_launcher_str_list(launcher, category_name, str_list)
     str_list.append('</advanced_emulator_launcher_configuration>\n')

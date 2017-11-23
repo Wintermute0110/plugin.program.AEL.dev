@@ -377,6 +377,9 @@ def misc_add_file_cache(dir_str):
     global file_cache
 
     # >> Create a set with all the files in the directory
+    if not dir_str:
+        log_debug('misc_add_file_cache() Empty dir_str. Exiting')
+        return
     dir_FN = FileName(dir_str)
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
     log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))

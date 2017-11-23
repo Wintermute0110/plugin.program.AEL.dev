@@ -73,6 +73,8 @@ FEATURE  Export individual Launcher XML configuration.
 
 FIX      Fixed crash when editing Launchr Title in context menu.
 
+FIX      Fixed crash in the ROM Scanner when Launcher had unconfigured ROM asset paths.
+
 
 [B]Advanced Emulator Launcher | version 0.9.7-beta2 | 19 November 2017[/B]
 
