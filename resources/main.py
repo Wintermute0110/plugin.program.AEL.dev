@@ -3749,27 +3749,27 @@ class Main:
         view_mode = selectedLauncher['launcher_display_mode']
 
         # --- Load ROMs for this launcher ---
-        roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
-        if not roms_file_path.exists():
-            kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
+        roms_json_FN = ROMS_DIR.pjoin(selectedLauncher['roms_base_noext'] + '.json')
+        if not roms_json_FN.exists():
+            kodi_notify('Launcher JSON database not found. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
         all_roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher)
         if not all_roms:
-            kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
+            kodi_notify('Launcher JSON database empty. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
         # --- Load parent/clone index ---
         index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
-        index_file_path = ROMS_DIR.pjoin(index_base_noext + '.json')
-        if not index_file_path.exists():
-            kodi_notify('Parent list JSON not found.')
+        index_json_FN = ROMS_DIR.pjoin(index_base_noext + '.json')
+        if not index_json_FN.exists():
+            kodi_notify('Parent list JSON database not found.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
         pclone_index = fs_load_JSON_file(ROMS_DIR, index_base_noext)
         if not pclone_index:
-            kodi_notify('Parent list is empty.')
+            kodi_notify('Parent list JSON database is empty.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
@@ -3846,12 +3846,12 @@ class Main:
             # --- Load ROMs for this launcher ---
             roms_json_FN = ROMS_DIR.pjoin(selectedLauncher['roms_base_noext'] + '.json')
             if not roms_json_FN.exists():
-                kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
+                kodi_notify('Launcher JSON database not found. Add ROMs to launcher.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
             roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher)
             if not roms:
-                kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
+                kodi_notify('Launcher JSON database empty. Add ROMs to launcher.')
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
         else:
