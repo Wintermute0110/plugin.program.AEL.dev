@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.8 | XX February 2018[/B]
+[B]Advanced Emulator Launcher | version 0.9.9 | XX February 2018[/B]
 
 WIP      Complete Extranafart support for Categories/Launchers.
 
@@ -65,6 +65,10 @@ WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advance
 
 WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
          This resembles what NARS No-Intro filtering does.
+
+[B]Advanced Emulator Launcher | version 0.9.8 | XX January 2018[/B]
+
+FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
 
 
 [B]Advanced Emulator Launcher | version 0.9.7 | 23 November 2017[/B]

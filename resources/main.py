@@ -9343,10 +9343,10 @@ class Main:
         kodi_busydialog_OFF()
         log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
-            kodi_notify_warn('Scraper found no matches')
+            kodi_notify('Scraper found no matches')
             return False
 
-        # Display corresponding game list found so user choses
+        # --- Display corresponding game list found so user choses ---
         rom_name_list = []
         for game in results: rom_name_list.append(game['display_name'])
         if len(rom_name_list) == 1:
@@ -9356,7 +9356,6 @@ class Main:
             if selectgame < 0: return False
 
         # --- Grab metadata for selected game ---
-        # >> Prevent race conditions
         kodi_busydialog_ON()
         gamedata = scraper_obj.get_metadata(results[selectgame])
         kodi_busydialog_OFF()
@@ -9366,10 +9365,11 @@ class Main:
 
         # --- Put metadata into launcher dictionary ---
         # >> Scraper should not change launcher title
-        self.launchers[launcherID]['m_year']   = gamedata['year']
-        self.launchers[launcherID]['m_genre']  = gamedata['genre']
-        self.launchers[launcherID]['m_studio'] = gamedata['studio']
-        self.launchers[launcherID]['m_plot']   = gamedata['plot']
+        # >> 'nplayers' and 'esrb' ignored for launchers
+        launcher['m_year']      = gamedata['year']
+        launcher['m_genre']     = gamedata['genre']
+        launcher['m_developer'] = gamedata['developer']
+        launcher['m_plot']      = gamedata['plot']
 
         # >> Changes were made
         return True
