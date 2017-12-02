@@ -2305,11 +2305,11 @@ class Main:
             # --- Minimise Kodi window flag ---
             type2_nb = type2_nb + 1
             if type2 == type2_nb:
-                p_idx = 1 if self.launchers[launcherID]['minimize'] else 0
+                p_idx = 1 if self.launchers[launcherID]['toggle_window'] else 0
                 type3 = dialog.select('Toggle Kodi into windowed mode', ['OFF (default)', 'ON'], preselect = p_idx)
                 if type3 < 0: return
-                self.launchers[launcherID]['minimize'] = True if type3 == 1 else False
-                minimise_str = 'ON' if self.launchers[launcherID]['minimize'] else 'OFF'
+                self.launchers[launcherID]['toggle_window'] = True if type3 == 1 else False
+                minimise_str = 'ON' if self.launchers[launcherID]['toggle_window'] else 'OFF'
                 kodi_notify('Toggle Kodi into windowed mode {0}'.format(minimise_str))
 
             # --- Non-blocking launcher flag ---
@@ -7089,7 +7089,7 @@ class Main:
             kodi_dialog_OK('launcherID not found in self.launchers')
             return
         launcher = self.launchers[launcherID]
-        minimize_flag = launcher['minimize']
+        minimize_flag = launcher['toggle_window']
 
         # --- Execute Kodi built-in function under certain conditions ---
         application = FileName(launcher['application'])
@@ -7139,7 +7139,7 @@ class Main:
             roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
             rom = roms[romID]
             recent_rom = rom
-            minimize_flag     = rom['minimize']
+            minimize_flag     = rom['toggle_window']
             non_blocking_flag = rom['non_blocking']
             romext            = rom['romext']
             standard_app      = rom['application']
@@ -7155,7 +7155,7 @@ class Main:
                 return
             rom = recent_roms_list[current_ROM_position]
             recent_rom = rom
-            minimize_flag     = rom['minimize']
+            minimize_flag     = rom['toggle_window']
             non_blocking_flag = rom['non_blocking']
             romext            = rom['romext']
             standard_app      = rom['application']
@@ -7167,7 +7167,7 @@ class Main:
             most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
             rom = most_played_roms[romID]
             recent_rom = rom
-            minimize_flag     = rom['minimize']
+            minimize_flag     = rom['toggle_window']
             non_blocking_flag = rom['non_blocking']
             romext            = rom['romext']
             standard_app      = rom['application']
@@ -7186,7 +7186,7 @@ class Main:
                 return
             rom = collection_rom_list[current_ROM_position]
             recent_rom = rom
-            minimize_flag     = rom['minimize']
+            minimize_flag     = rom['toggle_window']
             non_blocking_flag = rom['non_blocking']
             romext            = rom['romext']
             standard_app      = rom['application']
@@ -7214,7 +7214,7 @@ class Main:
 
             rom = roms[romID]
             recent_rom = rom
-            minimize_flag     = rom['minimize']
+            minimize_flag     = rom['toggle_window']
             non_blocking_flag = rom['non_blocking']
             romext            = rom['romext']
             standard_app      = rom['application']
@@ -7235,7 +7235,7 @@ class Main:
                 return
             rom = roms[romID]
             recent_rom = fs_get_Favourite_from_ROM(rom, launcher)
-            minimize_flag     = launcher['minimize']
+            minimize_flag     = launcher['toggle_window']
             non_blocking_flag = launcher['non_blocking']
             romext            = launcher['romext']
             standard_app      = launcher['application']
@@ -10349,7 +10349,7 @@ class Main:
             launcher['rompath']      = AL_launcher['rompath']
             launcher['romext']       = AL_launcher['romext']
             launcher['finished']     = False if AL_launcher['finished'] == 'false' else True
-            launcher['minimize']     = False if AL_launcher['minimize'] == 'false' else True
+            launcher['toggle_window'] = False if AL_launcher['minimize'] == 'false' else True
             # >> 'lnk' ignored, always active in AEL
             launcher['s_thumb']      = AL_launcher['thumb']
             launcher['s_fanart']     = AL_launcher['fanart']
