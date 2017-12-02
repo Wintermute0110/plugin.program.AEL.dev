@@ -98,8 +98,9 @@ def fs_new_launcher():
          'rompath' : '',
          'romext' : '',
          'finished': False,
-         'minimize' : False,
+         'toggle_window' : False, # Former 'minimize'
          'non_blocking' : False,
+         'multidisc' : True,
          'roms_base_noext' : '',
          'nointro_xml_file' : '',
          'nointro_display_mode' : NOINTRO_DMODE_ALL,
@@ -237,7 +238,7 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['args_extra']             = launcher['args_extra']
     favourite['rompath']                = launcher['rompath']
     favourite['romext']                 = launcher['romext']
-    favourite['minimize']               = launcher['minimize']
+    favourite['toggle_window']          = launcher['toggle_window']
     favourite['non_blocking']           = launcher['non_blocking']
     favourite['roms_default_icon']      = launcher['roms_default_icon']
     favourite['roms_default_fanart']    = launcher['roms_default_fanart']
@@ -299,14 +300,14 @@ def fs_aux_copy_ROM_main_stuff(source_launcher, source_rom, dest_rom):
     dest_rom['fav_status']  = 'OK'
 
 def fs_aux_copy_ROM_launcher_info(source_launcher, dest_rom):
-    dest_rom['platform']     = source_launcher['platform']
-    dest_rom['application']  = source_launcher['application']
-    dest_rom['args']         = source_launcher['args']
-    dest_rom['args_extra']   = source_launcher['args_extra']
-    dest_rom['rompath']      = source_launcher['rompath']
-    dest_rom['romext']       = source_launcher['romext']
-    dest_rom['minimize']     = source_launcher['minimize']
-    dest_rom['non_blocking'] = source_launcher['non_blocking']
+    dest_rom['platform']      = source_launcher['platform']
+    dest_rom['application']   = source_launcher['application']
+    dest_rom['args']          = source_launcher['args']
+    dest_rom['args_extra']    = source_launcher['args_extra']
+    dest_rom['rompath']       = source_launcher['rompath']
+    dest_rom['romext']        = source_launcher['romext']
+    dest_rom['toggle_window'] = source_launcher['toggle_window']
+    dest_rom['non_blocking']  = source_launcher['non_blocking']
 
 def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['m_name']         = source_rom['m_name']
@@ -452,8 +453,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('rompath', launcher['rompath']))
             str_list.append(XML_text('romext', launcher['romext']))
             str_list.append(XML_text('finished', unicode(launcher['finished'])))
-            str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
+            str_list.append(XML_text('toggle_window', unicode(launcher['toggle_window'])))
             str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))
+            str_list.append(XML_text('multidisc', unicode(launcher['multidisc'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
             str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
@@ -594,7 +596,8 @@ def fs_load_catfile(categories_file, categories, launchers):
                 if xml_tag == 'args_extra':
                     launcher[xml_tag].append(xml_text)
                 # >> Transform Bool datatype
-                elif xml_tag == 'finished' or xml_tag == 'minimize' or xml_tag == 'non_blocking':
+                elif xml_tag == 'finished' or xml_tag == 'toggle_window' or xml_tag == 'non_blocking' or \
+                     xml_tag == 'multidisc':
                     launcher[xml_tag] = True if xml_text == 'True' else False
                 # >> Transform Int datatype
                 elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \

@@ -1069,22 +1069,33 @@ class Main:
     def _command_edit_launcher(self, categoryID, launcherID):
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
-        finished_display = 'Status : Finished' if self.launchers[launcherID]['finished'] == True else 'Status : Unfinished'
+        finished_str = 'Finished' if self.launchers[launcherID]['finished'] == True else 'Unfinished'
         if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
             category_name = 'Addon root (no category)'
         else:
             category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
         if self.launchers[launcherID]['rompath'] == '':
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
-                                  'Change Category: {0}'.format(category_name), finished_display,
-                                  'Advanced Modifications ...', 'Export Launcher XML configuration ...', 'Delete Launcher'])
+                                 ['Edit Metadata ...',
+                                  'Edit Assets/Artwork ...',
+                                  'Choose default Assets/Artwork ...',
+                                  'Change Category: {0}'.format(category_name),
+                                  'Launcher status: {0}'.format(finished_str),
+                                  'Advanced Modifications ...',
+                                  'Export Launcher XML configuration ...',
+                                  'Delete Launcher'])
         else:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
-                                  'Change Category: {0}'.format(category_name), finished_display,
-                                  'Manage ROMs ...', 'Audit ROMs / Launcher view mode ...',
-                                  'Advanced Modifications ...', 'Export Launcher XML configuration ...', 'Delete Launcher'])
+                                 ['Edit Metadata ...',
+                                  'Edit Assets/Artwork ...',
+                                  'Choose default Assets/Artwork ...',
+                                  'Change Category: {0}'.format(category_name),
+                                  'Launcher status: {0}'.format(finished_str),
+                                  'Manage ROMs ...',
+                                  'Audit ROMs / Launcher view mode ...',
+                                  'Advanced Modifications ...',
+                                  'Export Launcher XML configuration ...',
+                                  'Delete Launcher'])
         if type < 0: return
 
         # --- Edition of the launcher metadata ---
@@ -2156,8 +2167,9 @@ class Main:
         # --- Launcher Advanced Modifications menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
-            minimize_str = 'ON' if self.launchers[launcherID]['minimize'] else 'OFF'
+            toggle_window_str = 'ON' if self.launchers[launcherID]['toggle_window'] else 'OFF'
             non_blocking_str = 'ON' if self.launchers[launcherID]['non_blocking'] else 'OFF'
+            multidisc_str = 'ON' if self.launchers[launcherID]['multidisc'] else 'OFF'
             filter_str   = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
             if self.launchers[launcherID]['application'] == RETROPLAYER_LAUNCHER_APP_NAME:
                 launcher_str = 'Kodi Retroplayer'
@@ -2166,15 +2178,15 @@ class Main:
             else:
                 launcher_str = "'{0}'".format(self.launchers[launcherID]['application'])
 
-            # --- ROMS launcher -------------------------------------------------------------------
+            # --- Standalone launcher -------------------------------------------------------------
             if self.launchers[launcherID]['rompath'] == '':
                 type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: {0}".format(launcher_str),
                                        "Modify Arguments: '{0}'".format(self.launchers[launcherID]['args']),
                                        "Modify Aditional arguments ...",
-                                       "Toggle Kodi into windowed mode (now {0})".format(minimize_str),
+                                       "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str),
                                        "Non-blocking launcher (now {0})".format(non_blocking_str)])
-            # --- Standalone launcher -------------------------------------------------------------
+            # --- ROMS launcher -------------------------------------------------------------------
             else:
                 type2 = dialog.select('Launcher Advanced Modifications',
                                       ["Change Application: {0}".format(launcher_str),
@@ -2182,8 +2194,9 @@ class Main:
                                        "Aditional arguments ...",
                                        "Change ROM path: '{0}'".format(self.launchers[launcherID]['rompath']),
                                        "Modify ROM extensions: '{0}'".format(self.launchers[launcherID]['romext']),
-                                       "Toggle Kodi into windowed mode (now {0})".format(minimize_str),
-                                       "Non-blocking launcher (now {0})".format(non_blocking_str)])
+                                       "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str),
+                                       "Non-blocking launcher (now {0})".format(non_blocking_str),
+                                       "Multidisc ROM support (now {0})".format(multidisc_str)])
 
             # --- Launcher application path menu option ---
             type2_nb = 0
@@ -2271,7 +2284,7 @@ class Main:
                         kodi_notify('Changed launcher extra arguments {0}'.format(type_aux))
 
             if self.launchers[launcherID]['rompath'] != '':
-                # --- Launcher roms path menu option ---
+                # --- Launcher ROM path menu option (Only ROM launchers) ---
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
                     rom_path = dialog.browse(0, 'Select Files path', 'files', '',
@@ -2279,7 +2292,7 @@ class Main:
                     self.launchers[launcherID]['rompath'] = rom_path
                     kodi_notify('Changed ROM path')
 
-                # --- Edition of the launcher rom extensions (only for emulator launcher) ---
+                # --- Edition of the launcher ROM extension (Only ROM launchers) ---
                 type2_nb = type2_nb + 1
                 if type2 == type2_nb:
                     keyboard = xbmc.Keyboard(self.launchers[launcherID]['romext'],
@@ -2307,7 +2320,18 @@ class Main:
                 if type3 < 0: return
                 self.launchers[launcherID]['non_blocking'] = True if type3 == 1 else False
                 non_blocking_str = 'ON' if self.launchers[launcherID]['non_blocking'] else 'OFF'
-                kodi_notify('Launcher Non-blocking is {0}'.format(non_blocking_str))
+                kodi_notify('Launcher Non-blocking is now {0}'.format(non_blocking_str))
+
+            # --- Multidisc ROM support (Only ROM launchers) ---
+            if self.launchers[launcherID]['rompath'] != '':
+                type2_nb = type2_nb + 1
+                if type2 == type2_nb:
+                    p_idx = 1 if self.launchers[launcherID]['multidisc'] else 0
+                    type3 = dialog.select('Non-blocking launcher', ['OFF', 'ON (default)'], preselect = p_idx)
+                    if type3 < 0: return
+                    self.launchers[launcherID]['multidisc'] = True if type3 == 1 else False
+                    multidisc_str = 'ON' if self.launchers[launcherID]['multidisc'] else 'OFF'
+                    kodi_notify('Launcher Multidisc support is now {0}'.format(multidisc_str))
 
         # --- Export Launcher XML configuration ---
         type_nb = type_nb + 1
@@ -6594,7 +6618,7 @@ class Main:
         info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(rom['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(rom['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
-        info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(rom['minimize'])
+        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(rom['toggle_window'])
         info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(rom['non_blocking'])
         info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(rom['roms_default_icon'])
         info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(rom['roms_default_fanart'])
@@ -6627,11 +6651,13 @@ class Main:
         info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(launcher['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
+        # Bool settings
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
-        info_text += "[COLOR skyblue]minimize[/COLOR]: {0}\n".format(launcher['minimize'])
+        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(launcher['toggle_window'])
         info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(launcher['non_blocking'])
-        info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
+        info_text += "[COLOR skyblue]multidisc[/COLOR]: {0}\n".format(launcher['multidisc'])
 
+        info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
         info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
         info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher['nointro_display_mode'])
         info_text += "[COLOR violet]launcher_display_mode[/COLOR]: '{0}'\n".format(launcher['launcher_display_mode'])
@@ -8409,14 +8435,16 @@ class Main:
         log_debug('========== _roms_import_roms() BEGIN ==================================================')
 
         # --- Get information from launcher ---
-        launcher      = self.launchers[launcherID]
-        launcher_path = FileName(launcher['rompath'])
-        launcher_exts = launcher['romext']
+        launcher           = self.launchers[launcherID]
+        launcher_path      = FileName(launcher['rompath'])
+        launcher_exts      = launcher['romext']
+        launcher_multidisc = launcher['multidisc']
         log_info('_roms_import_roms() Starting ROM scanner ...')
         log_info('Launcher name "{0}"'.format(launcher['m_name']))
         log_info('launcher ID   "{0}"'.format(launcher['id']))
         log_info('ROM path      "{0}"'.format(launcher_path.getPath()))
-        log_info('ROM ext       "{0}"'.format(launcher_exts))
+        log_info('ROM exts      "{0}"'.format(launcher_exts))
+        log_info('Multidisc     {0}'.format(launcher_multidisc))
         log_info('Platform      "{0}"'.format(launcher['platform']))
 
         # --- Open ROM scanner report file ---
@@ -8711,7 +8739,7 @@ class Main:
             # --- Check if ROM belongs to a multidisc set ---
             MultiDiscInROMs = False
             MDSet = text_get_multidisc_info(ROM)
-            if MDSet.isMultiDisc:
+            if MDSet.isMultiDisc and launcher_multidisc:
                 log_info('ROM belongs to a multidisc set.')
                 log_info('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
                 log_info('setName     "{0}"'.format(MDSet.setName))
@@ -8733,7 +8761,7 @@ class Main:
                 # >> If the set is not in the ROMs then this ROM is the first of the set.
                 # >> Add the set
                 if not MultiDiscInROMs:
-                    log_info('First ROM in the set. Adding to ROMs ...')
+                    log_info('First ROM in the multidisc set.')
                     # >> Manipulate ROM so filename is the name of the set
                     ROM_dir = FileName(ROM.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
@@ -8742,13 +8770,16 @@ class Main:
                     ROM = ROM_temp
                 # >> If set already in ROMs, just add this disk into the set disks field.
                 else:
-                    log_info('Adding additional disk "{0}"'.format(MDSet.discName))
+                    log_info('Adding additional disk "{0}" to set'.format(MDSet.discName))
                     roms[MultiDisc_rom_id]['disks'].append(MDSet.discName)
                     # >> Reorder disks like Disk 1, Disk 2, ...
                     
                     # >> Process next file
                     log_info('Processing next file ...')
                     continue
+            elif MDSet.isMultiDisc and not launcher_multidisc:
+                log_info('ROM belongs to a multidisc set but Multidisc support is disabled.')
+                report_fobj.write('  ROM belongs to a multidisc set but Multidisc support is disabled.\n')
             else:
                 log_info('ROM does not belong to a multidisc set.')
                 report_fobj.write('  ROM does not belong to a multidisc set.\n')
@@ -8781,10 +8812,10 @@ class Main:
             num_new_roms += 1
 
             # --- This was the first ROM in a multidisc set ---
-            if MDSet.isMultiDisc and not MultiDiscInROMs:
-                log_info('Adding first disk "{0}"'.format(MDSet.discName))
+            if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
+                log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
                 roms[romID]['disks'].append(MDSet.discName)
-            
+
             # ~~~ Check if user pressed the cancel button ~~~
             if self.pDialog.iscanceled() or self.pDialog_canceled:
                 self.pDialog.close()
@@ -9999,6 +10030,9 @@ class Main:
         if 'roms_default_thumb' in rom:
             rom['roms_default_icon'] = rom['roms_default_thumb']
             rom.pop('roms_default_thumb')
+        if 'minimize' in rom:
+            rom['toggle_window'] = rom['minimize']
+            rom.pop('minimize')
 
     def _command_check_launchers(self):
         log_info('_command_check_launchers() Checking all Launchers configuration ...')
