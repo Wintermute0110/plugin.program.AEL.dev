@@ -1474,9 +1474,10 @@ class Main:
             if type == type_nb:
                 dialog = xbmcgui.Dialog()
                 type2 = dialog.select('Manage ROMs',
-                                      ['Choose ROMs default assets/artwork ...',
+                                      ['Choose ROMs default artwork ...',
                                        'Manage ROMs asset directories ...',
-                                       'Rescan ROMs local assets/artwork',
+                                       'Scan ROMs local artwork',
+                                       'Scrape ROMs local artwork',
                                        'Remove dead/missing ROMs',
                                        'Import ROMs metadata from NFO files',
                                        'Export ROMs metadata to NFO files',
@@ -1635,7 +1636,7 @@ class Main:
                         kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
                                        'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
-                # --- Rescan local assets/artwork ---
+                # --- Scan ROMs local artwork ---
                 # >> A) First, local assets are searched for every ROM based on the filename.
                 # >> B) Next, missing assets are searched in the Parent/Clone group using the files
                 #       found in the previous step. This is much faster than searching for files again.
@@ -1827,8 +1828,13 @@ class Main:
                     pDialog.close()
                     kodi_notify('Rescaning of ROMs local artwork finished')
 
-                # --- Remove Remove dead/missing ROMs ROMs ---
+                # --- Scrape ROMs local artwork ---
                 elif type2 == 3:
+                    kodi_dialog_OK('Feature not coded yet, sorry.')
+                    return
+
+                # --- Remove Remove dead/missing ROMs ROMs ---
+                elif type2 == 4:
                     if self.launchers[launcherID]['nointro_xml_file']:
                         ret = kodi_dialog_yesno('This launcher has an XML DAT configured. Removing '
                                                 'dead ROMs will disable the DAT file. '
@@ -1859,7 +1865,7 @@ class Main:
                     kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
                 # --- Import ROM metadata from NFO files ---
-                elif type2 == 4:
+                elif type2 == 5:
                     # >> Load ROMs, iterate and import NFO files
                     roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
                     num_read_NFO_files = 0
@@ -1874,7 +1880,7 @@ class Main:
                     kodi_notify('Imported {0} NFO files'.format(num_read_NFO_files))
 
                 # --- Export ROM metadata to NFO files ---
-                elif type2 == 5:
+                elif type2 == 6:
                     # >> Load ROMs for current launcher, iterate and write NFO files
                     roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
                     if not roms: return
@@ -1891,7 +1897,7 @@ class Main:
                     return
 
                 # --- Delete ROMs metadata NFO files ---
-                elif type2 == 6:
+                elif type2 == 7:
                     # --- Get list of NFO files ---
                     ROMPath_FileName = FileName(self.launchers[launcherID]['rompath'])
                     log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(ROMPath_FileName.getPath()))
@@ -1916,8 +1922,8 @@ class Main:
                     kodi_notify('Deleted {0} NFO files'.format(len(nfo_scanned_files)))
                     return
 
-                # --- Empty Launcher ROMs ---
-                elif type2 == 7:
+                # --- Clear ROMs from launcher ---
+                elif type2 == 8:
                     roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
                     num_roms = len(roms)
 

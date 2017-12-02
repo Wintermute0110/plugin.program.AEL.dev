@@ -75,6 +75,10 @@ FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher meta
 
 FEATURE  Export individual Launcher XML configuration.
 
+FEATURE  Per-launcher setting to disable multi-disc ROM support.
+
+WIP      Option to rescrape all assets from launcher in a similar fashion to "Scan ROMs local artwork".
+
 FIX      Fixed crash when editing Launchr Title in context menu.
 
 FIX      Fixed crash in the ROM Scanner when Launcher had unconfigured ROM asset paths.
