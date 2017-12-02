@@ -560,6 +560,7 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
 
     return local_asset_list
 
+
 #
 # A) This function checks if all path_* share a common root directory. If so
 #    this function returns that common directory as an Unicode string.

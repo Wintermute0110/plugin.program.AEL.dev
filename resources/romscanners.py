@@ -25,7 +25,7 @@ class RomScannersFactory():
 
     def create(self, launcher, romset, scrapers):
 
-        launcherType = launcher['type']
+        launcherType = launcher['type'] if 'type' in launcher else LAUNCHER_ROM
 
         if launcherType is LAUNCHER_STANDALONE:
             return NullScanner(launcher, self.settings)
@@ -126,17 +126,11 @@ class RomFolderScanner(RomScannerStrategy):
             launcher_report.close()
             kodi_dialog_OK('No ROMs found! Make sure launcher directory and file extensions are correct.')
             return None
-                
-        # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
-        if self.launcher['nointro_xml_file']:
-            self._auditRomsOnNoIntro(roms, launcher_report)
+        
+        if num_new_roms == 0:
+            kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
         else:
-            log_info('No-Intro/Redump DAT not configured. Do not audit ROMs.')
-            launcher_report.write('No-Intro/Redump DAT not configured. Do not audit ROMs.\n')
-            if num_new_roms == 0:
-                kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
-            else:
-                kodi_notify('Added {0} new ROMs'.format(num_new_roms))
+            kodi_notify('Added {0} new ROMs'.format(num_new_roms))
 
         # --- Close ROM scanner report file ---
         launcher_report.write('*** END of the ROM scanner report ***\n')
@@ -157,7 +151,7 @@ class RomFolderScanner(RomScannerStrategy):
         launcher_exts = self.launcher['romext']
         log_info('RomFolderScanner() Starting ROM scanner ...')
         log_info('Launcher name "{0}"'.format(self.launcher['m_name']))
-        log_info('Launcher type "{0}"'.format(self.launcher['type']))
+        log_info('Launcher type "{0}"'.format(self.launcher['type'] if 'type' in self.launcher else 'Unknown'))
         log_info('launcher ID   "{0}"'.format(self.launcher['id']))
         log_info('ROM path      "{0}"'.format(launcher_path.getPath()))
         log_info('ROM ext       "{0}"'.format(launcher_exts))
@@ -165,7 +159,7 @@ class RomFolderScanner(RomScannerStrategy):
 
         launcher_report.write('*** Starting ROM scanner ... ***\n'.format())
         launcher_report.write('  Launcher name "{0}"\n'.format(self.launcher['m_name']))
-        launcher_report.write('  Launcher type "{0}"\n'.format(self.launcher['type']))
+        launcher_report.write('  Launcher type "{0}"\n'.format(self.launcher['type'] if 'type' in self.launcher else 'Unknown'))
         launcher_report.write('  launcher ID   "{0}"\n'.format(self.launcher['id']))
         launcher_report.write('  ROM path      "{0}"\n'.format(launcher_path.getPath()))
         launcher_report.write('  ROM ext       "{0}"\n'.format(launcher_exts))
@@ -251,8 +245,7 @@ class RomFolderScanner(RomScannerStrategy):
 
             # ~~~ Update progress dialog ~~~
             file_text = 'ROM {0}'.format(ROM.getBase())
-            activity_text = 'Checking if has ROM extension ...'
-            self._updateProgressMessage(file_text, activity_text)
+            self._updateProgressMessage(file_text, 'Checking if has ROM extension ...')
                         
             # --- Check if filename matchs ROM extensions ---
             # The recursive scan has scanned all files. Check if this file matches some of 
@@ -272,6 +265,8 @@ class RomFolderScanner(RomScannerStrategy):
                 continue
                         
             # --- Check if ROM belongs to a multidisc set ---
+            self._updateProgressMessage(file_text, 'Checking if ROM belongs to multidisc set..')
+
             MultiDiscInROMs = False
             MDSet = text_get_multidisc_info(ROM)
             if MDSet.isMultiDisc:
@@ -319,9 +314,11 @@ class RomFolderScanner(RomScannerStrategy):
  
             # --- Check that ROM is not already in the list of ROMs ---
             # >> If file already in ROM list skip it
+            self._updateProgressMessage(file_text, 'Checking if ROM is not already in collection...')
             repeatedROM = False
             for rom_id in roms:
-                if roms[rom_id]['filename'] == item: 
+                rpath = roms[rom_id]['filename'] 
+                if rpath == item: 
                     repeatedROM = True
         
             if repeatedROM:
@@ -343,14 +340,15 @@ class RomFolderScanner(RomScannerStrategy):
             # ~~~~~ Process new ROM and add to the list ~~~~~
             # --- Create new rom dictionary ---
             # >> Database always stores the original (non transformed/manipulated) path
-            romdata  = fs_new_rom()
+            romdata             = fs_new_rom()
             romdata['id']       = misc_generate_random_SID()
             romdata['filename'] = ROM.getOriginalPath()
-
-            searchTerm = ROM.getBase_noext()
+               
+            searchTerm = text_format_ROM_name_for_scraping(ROM.getBase_noext())
 
             if self.scrapers:
                 for scraper in self.scrapers:
+                    self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
                     scraper.scrape(searchTerm, ROM, romdata)
             
             log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
@@ -365,13 +363,13 @@ class RomFolderScanner(RomScannerStrategy):
             log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
             log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
             log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-            
-            new_roms.append(romdata)
 
             # --- This was the first ROM in a multidisc set ---
             if MDSet.isMultiDisc and not MultiDiscInROMs:
                 log_info('Adding first disk "{0}"'.format(MDSet.discName))
                 romdata['disks'].append(MDSet.discName)
+            
+            new_roms.append(romdata)
             
             # ~~~ Check if user pressed the cancel button ~~~
             if self._isProgressCanceled():
@@ -384,29 +382,6 @@ class RomFolderScanner(RomScannerStrategy):
            
         self._endProgressPhase()
         return new_roms
- 
-    def _auditRomsOnNoIntro(self, roms, launcher_report):
-        log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
-        launcher_report.write('No-Intro/Redump DAT configured. Starting ROM audit ...\n')
-        roms_base_noext = self.launcher['roms_base_noext']
-        nointro_xml_FN = FileName(self.launcher['nointro_xml_file'])
-
-        if self._roms_update_NoIntro_status(self.launcher, roms, nointro_xml_FN):
-            fs_write_ROMs_JSON(ROMS_DIR, self.launcher, roms)
-            kodi_notify('ROM scanner and audit finished. '
-                        'Have {0} / Miss {1} / Unknown {2}'.format(self.audit_have, self.audit_miss, self.audit_unknown))
-            # >> _roms_update_NoIntro_status() already prints and audit report on Kodi log
-            launcher_report.write('********** No-Intro/Redump audit finished. Report ***********\n')
-            launcher_report.write('Have ROMs    {0:6d}\n'.format(self.audit_have))
-            launcher_report.write('Miss ROMs    {0:6d}\n'.format(self.audit_miss))
-            launcher_report.write('Unknown ROMs {0:6d}\n'.format(self.audit_unknown))
-            launcher_report.write('Total ROMs   {0:6d}\n'.format(self.audit_total))
-            launcher_report.write('Parent ROMs  {0:6d}\n'.format(self.audit_parents))
-            launcher_report.write('Clone ROMs   {0:6d}\n'.format(self.audit_clones))
-        else:
-            # >> ERROR when auditing the ROMs. Unset nointro_xml_file
-            self.launcher['nointro_xml_file'] = ''
-            kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
 
 class SteamScanner(RomFolderScanner):
     
@@ -506,6 +481,7 @@ class SteamScanner(RomFolderScanner):
 
                 if self.scrapers:
                     for scraper in self.scrapers:
+                        self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(scraper.getName()))
                         scraper.scrape(searchTerm, None, romdata)
             
                 log_verb('Set Title     file "{0}"'.format(romdata['s_title']))

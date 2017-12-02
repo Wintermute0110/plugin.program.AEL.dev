@@ -267,7 +267,7 @@ class StandardRomSet(RomSet):
         return romData
 
     def saveRoms(self, roms):
-        fs_write_ROMs_JSON(self.repositoryFile, self.launcher, roms)
+        fs_write_ROMs_JSON(self.romsDir, self.launcher, roms)
         pass
 
 class PcloneRomSet(StandardRomSet):

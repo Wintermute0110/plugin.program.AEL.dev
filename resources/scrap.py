@@ -182,6 +182,14 @@ def getScraper(asset_kind, settings, useMame = False):
         return getMameScraper(asset_kind, settings)
 
     key = ASSET_SETTING_KEYS[asset_kind]
+        
+    if key == '':
+        return None
+
+    if key not in settings:
+        log_warning("Scraper with key {} not set in settings".format(key))
+        return None
+
     scraper_index = settings[key]
 
     if asset_kind == ASSET_TITLE:
@@ -218,6 +226,14 @@ def getScraper(asset_kind, settings, useMame = False):
 def getMameScraper(asset_kind, settings):
     
     key = MAME_ASSET_SETTING_KEYS[asset_kind]
+    
+    if key == '':
+        return None
+    
+    if key not in settings:
+        log_warning("Scraper with key {} not set in settings".format(key))
+        return None
+
     scraper_index = settings[key]
     
     if asset_kind == ASSET_TITLE:

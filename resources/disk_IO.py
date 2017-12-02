@@ -747,8 +747,8 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
     roms_xml_file  = roms_dir_FN.pjoin(roms_base_noext + '.xml')
     log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
-    log_verb('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
-    log_verb('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
+    log_verb('fs_write_ROMs_JSON() JSON {0}'.format(roms_json_file.getOriginalPath()))
+    log_verb('fs_write_ROMs_JSON() XML  {0}'.format(roms_xml_file.getOriginalPath()))
 
     # >> JSON files cannot have comments. Write an auxiliar NFO file with same prefix
     # >> to store launcher information for a set of ROMs
@@ -789,11 +789,14 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
         # unicode(json_data) auto-decodes data to unicode if str
         json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                 indent = JSON_indent, separators = JSON_separators)
+
         roms_json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getOriginalPath()))
+        log_error('fs_write_ROMs_JSON() (OSError) Cannot write {0} file'.format(roms_json_file.getOriginalPath()))
     except IOError:
         kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getOriginalPath()))
+        log_error('fs_write_ROMs_JSON() (IOError) Cannot write {0} file'.format(roms_json_file.getOriginalPath()))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs

@@ -189,7 +189,7 @@ class Test_romscannerstests(unittest.TestCase):
 
         recursive_scan_mock.return_value = fake_files
         progress_canceled_mock.return_value = False
-        file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake//')
+        file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
 
         settings = self._getFakeSettings()
         scraped_rom = {}
@@ -202,16 +202,16 @@ class Test_romscannerstests(unittest.TestCase):
         roms = {}
         roms['1']= {}
         roms['1']['m_name'] = 'this-one-will-be-deleted'
-        roms['1']['filename'] = '//not-existing//byebye.zip'
+        roms['1']['filename'] = '//not-existing/byebye.zip'
         roms['2']= {}
         roms['2']['m_name'] = 'this-one-will-be-deleted-too'
-        roms['2']['filename'] =  '//not-existing//byebye.zip'
+        roms['2']['filename'] =  '//not-existing/byebye.zip'
         roms['3']= {}
         roms['3']['m_name'] = 'Rocket League'
-        roms['3']['filename'] =  '//fake//folder//rocket.zip'
+        roms['3']['filename'] =  '//fake/folder/rocket.zip'
         roms['4']= {}
         roms['4']['m_name'] = 'this-one-will-be-deleted-again'
-        roms['4']['filename'] = '//not-existing//byebye.zip'
+        roms['4']['filename'] = '//not-existing/byebye.zip'
         romset = FakeRomSet(None, roms)
 
         report_dir = FakeFile('//fake_reports/')
@@ -230,8 +230,7 @@ class Test_romscannerstests(unittest.TestCase):
 
         self.assertEqual(expectedRomCount, actualRomCount)
         print report_dir.getFakeContent()
-    
-        
+           
     @patch('resources.utils.FileName.exists', autospec=True)
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
     @patch('resources.utils.FileName.recursiveScanFilesInPath')
@@ -246,7 +245,7 @@ class Test_romscannerstests(unittest.TestCase):
 
         recursive_scan_mock.return_value = fake_files
         progress_canceled_mock.return_value = False
-        file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake//')
+        file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
 
         settings = self._getFakeSettings()
         scrapers = [FakeScraper(None)]
@@ -257,7 +256,7 @@ class Test_romscannerstests(unittest.TestCase):
         roms = {}
         roms['1']= {}
         roms['1']['m_name'] = 'Rocket League'
-        roms['1']['filename'] =  '//fake//folder//rocket.zip'
+        roms['1']['filename'] =  '//fake/folder/rocket.zip'
         romset = FakeRomSet(None, roms)
 
         report_dir = FakeFile('//fake_reports/')
@@ -277,13 +276,116 @@ class Test_romscannerstests(unittest.TestCase):
         i=0
         for x, rom in actualRoms.iteritems():
             i+=1
-            print '{} ------------------------'.format(i)
+            print '- {} ------------------------'.format(i)
             for key, value in rom.iteritems():
                 print '[{}] {}'.format(key, value)
 
         self.assertEqual(expectedRomCount, actualRomCount)
     
+    @patch('resources.utils.FileName.exists', autospec=True)
+    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.utils.FileName.recursiveScanFilesInPath')
+    def test_when_scanning_with_a_normal_rom_scanner_existing_items_wont_end_up_double(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
+        
+        # arrange
+        fake_files = [
+           '//fake/folder/zelda.zip',
+           '//fake/folder/donkey kong.zip', 
+           '//fake/folder/tetris.zip']
 
+        recursive_scan_mock.return_value = fake_files
+        progress_canceled_mock.return_value = False
+        file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
+
+        settings = self._getFakeSettings()
+        scrapers = [FakeScraper(None)]
+        
+        launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
+        launcher['nointro_xml_file'] = None
+
+        roms = {}
+        roms['1']= {}
+        roms['1']['m_name'] = 'Rocket League'
+        roms['1']['filename'] =  '//fake/folder/rocket.zip'
+        roms['2']= {}
+        roms['2']['m_name'] = 'Zelda'
+        roms['2']['filename'] =  '//fake/folder/zelda.zip'
+        roms['3']= {}
+        roms['3']['m_name'] = 'Tetris'
+        roms['3']['filename'] =  '//fake/folder/tetris.zip'
+        romset = FakeRomSet(None, roms)
+
+        report_dir = FakeFile('//fake_reports/')
+        addon_dir = FileName('//fake_addon/')
+        
+        target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        
+        expectedRomCount = 4
+
+        # act
+        actualRoms = target.scan()
+
+        # assert
+        self.assertIsNotNone(actualRoms)
+        actualRomCount = len(actualRoms)
+
+        i=0
+        for x, rom in actualRoms.iteritems():
+            i+=1
+            print '- {} ------------------------'.format(i)
+            for key, value in rom.iteritems():
+                print '[{}] {}'.format(key, value)
+
+        self.assertEqual(expectedRomCount, actualRomCount)
+        
+    @patch('resources.utils.FileName.exists', autospec=True)
+    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.utils.FileName.recursiveScanFilesInPath')
+    def test_when_scanning_with_a_normal_rom_scanner_and_bios_roms_must_be_skipped_they_wont_be_added(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
+        
+        # arrange
+        fake_files = [
+           '//fake/folder/zelda.zip',
+           '//fake/folder/donkey kong.zip', 
+           '//fake/folder/[BIOS] dinkytoy.zip', 
+           '//fake/folder/tetris.zip']
+
+        recursive_scan_mock.return_value = fake_files
+        progress_canceled_mock.return_value = False
+        file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
+
+        settings = self._getFakeSettings()
+        scrapers = [FakeScraper(None)]
+        
+        launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
+        launcher['nointro_xml_file'] = None
+
+        roms = {}
+        romset = FakeRomSet(None, roms)
+
+        report_dir = FakeFile('//fake_reports/')
+        addon_dir = FileName('//fake_addon/')
+        
+        target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        
+        expectedRomCount = 3
+
+        # act
+        actualRoms = target.scan()
+
+        # assert
+        self.assertIsNotNone(actualRoms)
+        actualRomCount = len(actualRoms)
+
+        i=0
+        for x, rom in actualRoms.iteritems():
+            i+=1
+            print '- {} ------------------------'.format(i)
+            for key, value in rom.iteritems():
+                print '[{}] {}'.format(key, value)
+
+        self.assertEqual(expectedRomCount, actualRomCount)
+        
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
     @patch('resources.romscanners.urllib2.urlopen')
     def test_when_scanning_your_steam_account_not_existing_dead_roms_will_be_correctly_removed(self, mock_urlopen, progress_canceled_mock):

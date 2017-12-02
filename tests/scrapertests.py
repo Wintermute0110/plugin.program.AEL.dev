@@ -8,6 +8,7 @@ from resources.utils import *
 from resources.utils_kodi import *
 from resources.scrapers import *
 from resources.scrap import *
+from resources.assets import *
 
 class Test_scrapertests(unittest.TestCase):
       
@@ -80,9 +81,10 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_metadata_policy'] = 0
         settings['scan_asset_policy'] = 0
         settings['metadata_scraper_mode'] = 0
+        settings['asset_scraper_mode'] = 0
         settings['scan_clean_tags'] = True
 
-        settings['scraper_title'] = 0 # NullScraper
+        settings['scraper_title'] = 1 # TheGamesDB
 
         launcher = self._get_fake_launcher()
         launcher['path_title'] = '//abc/a/b/c'
@@ -168,12 +170,14 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['metadata_scraper_mode'] = 0
 
+        launcher = self._get_fake_launcher()
+
         rom = {}
         rom['m_name'] = ''
 
         romPath = FileName('/don/el_juan [DUMMY].zip')
 
-        target = CleanTitleScraper(settings)
+        target = CleanTitleScraper(settings, launcher)
 
         expected = 'el_juan'
 
@@ -196,13 +200,16 @@ class Test_scrapertests(unittest.TestCase):
         settings = {}
         settings['scan_clean_tags'] = True
         settings['metadata_scraper_mode'] = 0
+        
+        launcher = self._get_fake_launcher()
+        launcher['platform'] = 'Sega 32X'
 
         rom = {}
         rom['m_name'] = ''
 
         romPath = FileName('/don/el_juan [DUMMY].zip')
 
-        target = NfoScraper(settings)
+        target = NfoScraper(settings, launcher)
 
         expected = 'Pitfall: The Mayan Adventure'
         
@@ -232,13 +239,15 @@ class Test_scrapertests(unittest.TestCase):
         settings['metadata_scraper_mode'] = 0
         settings['scan_ignore_scrap_title'] = False
 
+        launcher = self._get_fake_launcher()
+        launcher['platform'] = 'Sega 32X'
+
         rom = {}
         rom['m_name'] = ''
-        rom['platform'] = 'Sega 32X'
 
         romPath = FileName('/roms/Pitfall.zip')
 
-        target = OnlineMetadataScraper(scraper_obj, settings)
+        target = OnlineMetadataScraper(scraper_obj, settings, launcher)
 
         expected = 'Pitfall: The Mayan Adventure'
         
@@ -251,8 +260,90 @@ class Test_scrapertests(unittest.TestCase):
 
         actual = rom['m_name']
         self.assertEqual(actual, expected)
+        
+    @patch('resources.scrapers.kodi_update_image_cache')
+    @patch('resources.scrapers.net_download_img')
+    @patch('resources.scrap_asset.net_get_URL_oneline')
+    @patch('resources.scrap_common.net_get_URL_oneline')
+    def test_when_scraping_online_assets_it_will_give_the_correct_result(self, mock_search, mock_singlehit, mock_imgdownload, mock_cache):
+        
+        # arrange
+        test_dir = os.path.dirname(os.path.abspath(__file__))
+        root_dir = os.path.abspath(os.path.join(test_dir, os.pardir))
+        mock_search.return_value = self.read_file(test_dir + "\\gamesdb_search.xml").replace('\r\n', '').replace('\n', '')
+        mock_singlehit.return_value = self.read_file(test_dir + "\\gamesdb_singlehit.xml").replace('\r\n', '').replace('\n', '')
 
+        scraper_obj = asset_TheGamesDB()
 
+        settings = {}
+        settings['scan_asset_policy'] = 1
+        settings['asset_scraper_mode'] = 0
+        settings['metadata_scraper_mode'] = 0
+
+        launcher = self._get_fake_launcher()
+        launcher['platform'] = 'Sega 32X'
+        launcher['path_title'] = '/fake/title/'
+
+        rom = {}
+        rom['m_name'] = ''
+
+        romPath = FileName('/roms/Pitfall.zip')
+        asset_kind = ASSET_TITLE
+        asset_info = assets_get_info_scheme(asset_kind)
+        
+        target = OnlineAssetScraper(scraper_obj, asset_kind, asset_info, settings, launcher)
+
+        expected = '/fake/title/Pitfall.jpg'
+        
+        # act
+        actualResult = target.scrape('Pitfall', romPath, rom)
+        
+        # assert
+        self.assertIsNotNone(actualResult)
+        self.assertTrue(actualResult)
+        
+        actual = rom['s_title']
+        log_verb('Set Title file "{0}"'.format(actual))
+
+        self.assertEqual(actual, expected)
+    
+    @patch('resources.utils.FileName.scanFilesInPath')
+    @patch('resources.scrapers.kodi_update_image_cache')
+    def test_when_scraping_local_assets_it_will_give_the_correct_result(self, mock_cache, mock_filescan):
+        
+        # arrange
+        mock_filescan.return_value = [u'x.jpg',u'y.jpg', u'pitfall.jpg', u'donkeykong.jpg']
+
+        settings = {}
+        settings['scan_asset_policy'] = 1
+        settings['asset_scraper_mode'] = 0
+        settings['metadata_scraper_mode'] = 0
+
+        launcher = self._get_fake_launcher()
+        launcher['platform'] = 'Sega 32X'
+        launcher['path_title'] = '/fake/title/'
+
+        rom = {}
+        rom['m_name'] = ''
+
+        romPath = FileName('/roms/Pitfall.zip')
+        asset_kind = ASSET_TITLE
+        asset_info = assets_get_info_scheme(asset_kind)
+
+        target = LocalAssetScraper(asset_kind, asset_info, settings, launcher)
+        expected = '/fake/title/pitfall.jpg'
+        
+        # act
+        actualResult = target.scrape('Pitfall', romPath, rom)
+        
+        # assert
+        self.assertIsNotNone(actualResult)
+        self.assertTrue(actualResult)
+        
+        actual = rom['s_title']
+        log_verb('Set Title file "{0}"'.format(actual))
+
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()

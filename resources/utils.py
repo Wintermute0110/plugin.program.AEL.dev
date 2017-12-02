@@ -372,7 +372,9 @@ def misc_add_file_cache(dir_str):
     log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
 
     file_list = dir_FN.scanFilesInPath()
-    file_set = set(file_list)
+    # lower all filenames for easier matching
+    file_set = [file.lower() for file in file_list]
+    #file_set = set(file_list)
     # for file in file_set: log_debug('File "{0}"'.format(file))
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
     file_cache[dir_str] = file_set
@@ -382,9 +384,14 @@ def misc_add_file_cache(dir_str):
 #
 def misc_search_file_cache(dir_str, filename_noext, file_exts):
     # log_debug('misc_search_file_cache() Searching in  "{0}"'.format(dir_str))
+    if dir_str not in file_cache:
+        log_warning('Directory {0} not in file_cache'.format(dir_str))
+        return None
+
     current_cache_set = file_cache[dir_str]
     for ext in file_exts:
         file_base = filename_noext + '.' + ext
+        file_base = file_base.lower()
         # log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
         if file_base in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')

@@ -71,10 +71,13 @@ class FakeScraper(Scraper):
     def __init__(self, rom_data_to_apply = None):
         self.rom_data_to_apply = rom_data_to_apply
 
+    def getName(self):
+        return 'FakeScraper'
+
     def _getCandidates(self, searchTerm, romPath, rom):
         return ['fake']
 
-    def _loadCandidate(self, candidate):
+    def _loadCandidate(self, candidate, romPath):
         pass
 
     def _applyCandidate(self, romPath, rom):
