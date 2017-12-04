@@ -1,6 +1,7 @@
 import unittest
 import mock
 from mock import *
+from mock import ANY
 from fakes import *
 import xml.etree.ElementTree as ET
 
@@ -306,6 +307,54 @@ class Test_scrapertests(unittest.TestCase):
         log_verb('Set Title file "{0}"'.format(actual))
 
         self.assertEqual(actual, expected)
+    
+    @patch('resources.scrapers.kodi_update_image_cache')
+    @patch('resources.scrapers.net_download_img')
+    def test_when_scraping_online_assets_for_a_cached_result_it_will_load_that_one(self, mock_imgdownload, mock_cache):
+        
+        # arrange
+        test_dir = os.path.dirname(os.path.abspath(__file__))
+        root_dir = os.path.abspath(os.path.join(test_dir, os.pardir))
+        
+        scraper_obj = asset_TheGamesDB()
+
+        settings = {}
+        settings['scan_asset_policy'] = 1
+        settings['asset_scraper_mode'] = 0
+        settings['metadata_scraper_mode'] = 0
+
+        launcher = self._get_fake_launcher()
+        launcher['platform'] = 'Sega 32X'
+        launcher['path_title'] = '/fake/title/'
+
+        rom = {}
+        rom['m_name'] = ''
+
+        romPath = FileName('/roms/Pitfall.zip')
+        asset_kind = ASSET_TITLE
+        asset_info = assets_get_info_scheme(asset_kind)
+        
+        target = OnlineAssetScraper(scraper_obj, asset_kind, asset_info, settings, launcher)
+        
+        expectedCandidate = {}
+        expectedCandidate['display_name'] = 'Pitfall'
+        expectedCandidate['id'] = '12345'
+
+        OnlineAssetScraper.scrap_asset_cached_dic[target.scraper_id] = {
+            'ROM_base_noext' : romPath.getBase_noext(),
+            'platform' : launcher['platform'],
+            'game_dic' : expectedCandidate
+        }
+
+        expectedUrl = u'http://thegamesdb.net/banners/screenshots/12345-1.jpg'
+                
+        # act
+        actualResult = target.scrape('Pitfall', romPath, rom)
+        
+        # assert
+        self.assertIsNotNone(actualResult)
+        self.assertTrue(actualResult)
+        mock_imgdownload.assert_called_with(expectedUrl, ANY)
     
     @patch('resources.utils.FileName.scanFilesInPath')
     @patch('resources.scrapers.kodi_update_image_cache')

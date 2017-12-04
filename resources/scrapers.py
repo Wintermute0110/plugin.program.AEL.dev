@@ -168,10 +168,10 @@ class Scraper():
     def scrape(self, searchTerm, romPath, rom):
                 
         results = self._getCandidates(searchTerm, romPath, rom)
-        log_debug('Scraper found {0} result/s'.format(len(results)))
+        log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(results)))
 
         if not results or len(results) == 0:
-            log_verb('Scraper found no games after searching.')
+            log_verb('Scraper \'{0}\' found no games after searching.'.format(self.getName()))
             
             if self.fallbackScraper:
                 return self.fallbackScraper.scrape(searchTerm, romPath, rom)
@@ -201,9 +201,10 @@ class Scraper():
         scraper_applied = self._applyCandidate(romPath, rom)
                 
         if not scraper_applied and self.fallbackScraper is not None:
-            log_verb('Scraper did not get the correct data. Using fallback scraping method.')
+            log_verb('Scraper \'{0}\' did not get the correct data. Using fallback scraping method: {1}.'.format(self.getName(), self.fallbackScraper.getName()))
             scraper_applied = self.fallbackScraper.scrape(searchTerm, romPath, rom)
         
+        log_verb('Scraper \'{0}\' could not be applied.'.format(self.getName()))
         return scraper_applied
     
     @abstractmethod
@@ -250,11 +251,7 @@ class CleanTitleScraper(Scraper):
         super(CleanTitleScraper, self).__init__(settings, launcher, 1)
 
     def getName(self):
-        name = ''
-        if self.fallbackScraper:
-            name = self.fallbackScraper.getName() + ' / '
-        
-        return name + 'Clean title only scraper'
+        return 'Clean title only scraper'
 
     def _getCandidates(self, searchTerm, romPath, rom):
         games = []
@@ -278,11 +275,7 @@ class NfoScraper(Scraper):
         super(NfoScraper, self).__init__(settings, launcher, 1, fallbackScraper)
 
     def getName(self):
-        name = ''
-        if self.fallbackScraper:
-            name = self.fallbackScraper.getName() + ' / '
-        
-        return name + 'NFO scraper'
+        return 'NFO scraper'
 
     def _getCandidates(self, searchTerm, romPath, rom):
         NFO_file = romPath.switchExtension('nfo')
@@ -332,11 +325,7 @@ class OnlineMetadataScraper(Scraper):
         super(OnlineMetadataScraper, self).__init__(settings, launcher, scraping_mode, fallbackScraper)
         
     def getName(self):
-        name = ''
-        if self.fallbackScraper:
-            name = self.fallbackScraper.getName() + ' / '
-        
-        return name + 'Online scraper'
+        return 'Online Metadata scraper using {0}'.format(self.scraper_implementation.name)
 
     def _getCandidates(self, searchTerm, romPath, rom):
         
@@ -389,11 +378,7 @@ class LocalAssetScraper(Scraper):
         super(LocalAssetScraper, self).__init__(settings, launcher, scraping_mode, fallbackScraper)
         
     def getName(self):
-        name = ''
-        if self.fallbackScraper:
-            name = self.fallbackScraper.getName() + ' / '
-        
-        return name + 'Local assets scraper'
+        return 'Local assets scraper'
 
     def _getCandidates(self, searchTerm, romPath, rom):
 
@@ -429,6 +414,8 @@ class LocalAssetScraper(Scraper):
 
 class OnlineAssetScraper(Scraper):
     
+    scrap_asset_cached_dic = None
+
     def __init__(self, scraper_implementation, asset_kind, asset_info, settings, launcher, fallbackScraper = None): 
 
         self.scraper_implementation = scraper_implementation
@@ -447,16 +434,13 @@ class OnlineAssetScraper(Scraper):
         # --- Initialise cache used in OnlineAssetScraper() as a static variable ---
         # >> This cache is used to store the selected game from the get_search() returned list.
         # >> The idea is that get_search() is used only once for each asset.
-        OnlineAssetScraper.scrap_asset_cached_dic = {}
+        if OnlineAssetScraper.scrap_asset_cached_dic is None:
+            OnlineAssetScraper.scrap_asset_cached_dic = {}
         
         super(OnlineAssetScraper, self).__init__(settings, launcher, scraping_mode, fallbackScraper)
     
     def getName(self):
-        name = ''
-        if self.fallbackScraper:
-            name = self.fallbackScraper.getName() + ' / '
-        
-        return name + 'Online assets scraper for \'{0}\' ({1})'.format(self.asset_info.name, self.scraper_implementation.name)
+        return 'Online assets scraper for \'{0}\' ({1})'.format(self.asset_info.name, self.scraper_implementation.name)
 
     def _getCandidates(self, searchTerm, romPath, rom):
         log_verb('OnlineAssetScraper._getCandidates(): Scraping {0} with {1}. Searching for matching games ...'.format(self.asset_info.name, self.scraper_implementation.name))
@@ -468,6 +452,15 @@ class OnlineAssetScraper(Scraper):
         log_debug('_getCandidates() ROM.getBase_noext() "{0}"'.format(romPath.getBase_noext()))
         log_debug('_getCandidates() platform            "{0}"'.format(platform))
         log_debug('_getCandidates() Entries in cache    {0}'.format(len(self.scrap_asset_cached_dic)))
+
+        if self.scraper_id in OnlineAssetScraper.scrap_asset_cached_dic and \
+           OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['ROM_base_noext'] == romPath.getBase_noext() and \
+           OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['platform'] == platform:
+            cached_game = OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['game_dic']
+            log_debug('OnlineAssetScraper._getCandidates() Cache HIT. Using cached game "{0}"'.format(cached_game['display_name']))
+            return [cached_game]
+        
+        log_debug('OnlineAssetScraper._getCandidates() Cache MISS. Calling scraper_implementation.get_search()')
 
         # --- Call scraper and get a list of games ---
         search_results = self.scraper_implementation.get_search(searchTerm, romPath.getBase_noext(), platform)
@@ -560,53 +553,8 @@ class OnlineAssetScraper(Scraper):
         rom[self.asset_info.key] = image_path.getOriginalPath()
         
         return True
-                        
-   #    asset_info = assets_get_info_scheme(asset_kind)
-   #    # >> Set the asset-specific scraper before calling _roms_scrap_asset()
-   #    rom[asset_info.key] = self._roms_scrap_asset(self.scraper_implementation, asset_kind, local_asset_list[i], ROM)
-   #
-   #    # ~~~ Asset scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   #    # settings.xml -> id="scan_asset_policy" default="0" values="Local Assets|Local Assets + Scrapers|Scrapers only"
-   #    scan_asset_policy = self.settings['scan_asset_policy']
-   #    if scan_asset_policy == 0:
-   #        log_verb('Asset policy: local images only | Scraper OFF')
-   #        for i, asset_kind in enumerate(ROM_ASSET_LIST):
-   #            A = assets_get_info_scheme(asset_kind)
-   #            romdata[A.key] = local_asset_list[i]
-   #
-   #    elif scan_asset_policy == 1:
-   #        log_verb('Asset policy: if not Local Image then Scraper ON')
-   #        # selected_title = self._roms_process_asset_policy_2(ASSET_TITLE, local_title, ROM, launcher)
-   #        for i, asset_kind in enumerate(ROM_ASSET_LIST):
-   #            A = assets_get_info_scheme(asset_kind)
-   #            if not self.enabled_asset_list[i]:
-   #                romdata[A.key] = ''
-   #                log_verb('Skipped {0} (dir not configured)'.format(A.name))
-   #                continue
-   #            if local_asset_list[i]:
-   #                log_verb('Asset policy: local {0} FOUND | Scraper OFF'.format(A.name))
-   #                romdata[A.key] = local_asset_list[i]
-   #            else:
-   #                log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
-   #                # >> Set the asset-specific scraper before calling _roms_scrap_asset()
-   #                romdata[A.key] = self._roms_scrap_asset(self.scraper_dic[A.key], asset_kind, local_asset_list[i], ROM)
-   #
-   #    elif scan_asset_policy == 2:
-   #        log_verb('Asset policy: scraper will overwrite local assets | Scraper ON')
-   #        # selected_title = self._roms_scrap_asset(ASSET_TITLE, local_title, ROM, launcher)
-   #        for i, asset_kind in enumerate(ROM_ASSET_LIST):
-   #            A = assets_get_info_scheme(asset_kind)
-   #            if not self.enabled_asset_list[i]:
-   #                romdata[A.key] = ''
-   #                log_verb('Skipped {0} (dir not configured)'.format(A.name))
-   #                continue
-   #            log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
-   #            # >> Set the asset-specific scraper before calling _roms_scrap_asset()
-   #            romdata[A.key] = self._roms_scrap_asset(self.scraper_dic[A.key], asset_kind, local_asset_list[i], ROM)
-   #
-    
-   
-   #
+  
+    #
     # Returns a valid filename of the downloaded scrapped image, filename of local image
     # or empty string if scraper finds nothing or download failed.
     #
