@@ -495,10 +495,11 @@ class SteamScanner(RomScannerStrategy):
                 # --- Create new rom dictionary ---
                 # >> Database always stores the original (non transformed/manipulated) path
                 romdata  = fs_new_rom()
-                romdata['id']       = misc_generate_random_SID()
-                romdata['filename'] = romPath.getOriginalPath()
-                romdata['steamid']  = steamGame['appid']
-                romdata['m_name']   = steamGame['name']
+                romdata['id']           = misc_generate_random_SID()
+                romdata['filename']     = romPath.getOriginalPath()
+                romdata['steamid']      = steamGame['appid']
+                romdata['steam_name']   = steamGame['name'] # so that we always have the original name
+                romdata['m_name']       = steamGame['name']
 
                 searchTerm = steamGame['name']
                 

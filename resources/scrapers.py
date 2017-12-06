@@ -205,7 +205,6 @@ class Scraper():
             log_verb('Scraper \'{0}\' did not get the correct data. Using fallback scraping method: {1}.'.format(self.getName(), self.fallbackScraper.getName()))
             scraper_applied = self.fallbackScraper.scrape(searchTerm, romPath, rom)
         
-        log_verb('Scraper \'{0}\' could not be applied.'.format(self.getName()))
         return scraper_applied
     
     @abstractmethod
@@ -265,7 +264,7 @@ class CleanTitleScraper(Scraper):
     def _applyCandidate(self, romPath, rom):        
 
         if self.launcher['type'] == LAUNCHER_STEAM:
-            log_debug('Detected Steam launcher, leaving rom name untouched.')
+            log_debug('CleanTitleScraper: Detected Steam launcher, leaving rom name untouched.')
             return True
 
         log_debug('Only cleaning ROM name.')
@@ -454,6 +453,7 @@ class OnlineAssetScraper(Scraper):
         # --- Check cache to check if user choose a game previously ---
         log_debug('_getCandidates() Scraper ID          "{0}"'.format(self.scraper_id))
         log_debug('_getCandidates() Scraper obj name    "{0}"'.format(self.scraper_implementation.name))
+        log_debug('_getCandidates() searchTerm          "{0}"'.format(searchTerm))
         log_debug('_getCandidates() ROM.getBase_noext() "{0}"'.format(romPath.getBase_noext()))
         log_debug('_getCandidates() platform            "{0}"'.format(platform))
         log_debug('_getCandidates() Entries in cache    {0}'.format(len(self.scrap_asset_cached_dic)))

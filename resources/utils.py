@@ -371,11 +371,10 @@ def misc_add_file_cache(dir_str):
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
     log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
 
-    file_list = dir_FN.scanFilesInPath()
+    file_list = dir_FN.scanFilesInPathAsFileNameObjects()
     # lower all filenames for easier matching
-    file_set = [file.lower() for file in file_list]
-    #file_set = set(file_list)
-    # for file in file_set: log_debug('File "{0}"'.format(file))
+    file_set = [file.getBase().lower() for file in file_list]
+
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
     file_cache[dir_str] = file_set
 
@@ -392,7 +391,7 @@ def misc_search_file_cache(dir_str, filename_noext, file_exts):
     for ext in file_exts:
         file_base = filename_noext + '.' + ext
         file_base = file_base.lower()
-        # log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
+        #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
         if file_base in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
             return FileName(dir_str).pjoin(file_base)
@@ -539,6 +538,9 @@ class FileName:
         ext = self.getExt()
         copiedPath = self.originalPath
         
+        if not targetExt.startswith('.'):
+            targetExt = '.{0}'.format(targetExt)
+
         new_path = FileName(copiedPath.replace(ext, targetExt))
         return new_path
 
