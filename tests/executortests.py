@@ -12,7 +12,8 @@ class Test_executortests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         set_use_print(True)
-
+        set_log_level(LOG_DEBUG)
+        
     @patch('resources.executors.sys')            
     def test_if_on_linux_factory_loads_with_correct_executor(self, mock_sys):
         
@@ -80,7 +81,6 @@ class Test_executortests(unittest.TestCase):
         expected = 'WindowsBatchFileExecutor'
         self.assertEqual(actual, expected)  
 
-                        
     @patch('resources.executors.sys')            
     def test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor(self, mock_sys):
 
@@ -141,6 +141,22 @@ class Test_executortests(unittest.TestCase):
         actual = executor.__class__.__name__
         expected = 'OSXExecutor'
         self.assertEqual(actual, expected)
+       
+    def test_when_using_urls_the_correct_web_executor_loads(self):
         
+        # arrange
+        launcherPath = FileName('durp\\apple\\durp')
+
+        settings = {}
+
+        # act
+        factory = ExecutorFactory(settings, None)
+        executor = factory.create(FileName('steam://rungameid/'))
+
+        # assert
+        actual = executor.__class__.__name__
+        expected = 'WebBrowserExecutor'
+        self.assertEqual(actual, expected)
+
 if __name__ == '__main__':
     unittest.main()

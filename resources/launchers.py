@@ -51,7 +51,7 @@ class LauncherFactory():
             return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
 
         if launcherType == LAUNCHER_STEAM:
-            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
+            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher, rom)
 
         return None
 
@@ -471,15 +471,28 @@ class RetroarchLauncher(StandardRomLauncher):
         #todo other os
         pass 
 
-class SteamLauncher(StandardRomLauncher):
+class SteamLauncher(Launcher):
 
-    def _selectApplicationToUse(self):
+    def __init__(self, settings, executorFactory, statsStrategy, launcher, rom):
+
+        self.rom = rom
+        self.categoryID = ''
+        self.statsStrategy = statsStrategy
+
+        non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
+        super(SteamLauncher, self).__init__(launcher, settings, executorFactory, launcher['minimize'], non_blocking_flag)
+        
+    def launch(self):
+        
+        self.title  = self.rom['m_name']
+        
         url = 'steam://rungameid/'
+
         self.application = FileName('steam://rungameid/')
+        self.arguments = str(self.rom['steamid'])
+
+        log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
+        self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
+        
+        super(SteamLauncher, self).launch()
         pass
-
-    
-    def _selectArgumentsToUse(self):
-
-        self.arguments = '$rom$'
-        return

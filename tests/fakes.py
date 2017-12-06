@@ -35,6 +35,9 @@ class FakeRomSet(RomSet):
     def saveRoms(self, roms):
         pass
 
+    def clear(self):
+        pass
+
 class FakeExecutor(Executor):
     
     def execute(self, application, arguments, non_blocking):

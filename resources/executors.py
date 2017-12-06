@@ -247,6 +247,7 @@ class WebBrowserExecutor(Executor):
         import webbrowser
         
         command = application.getOriginalPath() + arguments
+        log_debug('WebBrowserExecutor.execute() Launching URL: {0}'.format(command))
         webbrowser.open(command)
 
         pass

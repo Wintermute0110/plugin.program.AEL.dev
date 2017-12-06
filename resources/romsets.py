@@ -362,9 +362,11 @@ class RecentlyPlayedRomSet(RomSet):
 
         return romData
 
-    
     def saveRoms(self, roms):
         fs_write_Collection_ROMs_JSON(self.romsDir, roms)
+        pass
+    
+    def clear(self):
         pass
 
 class CollectionRomSet(RomSet):
@@ -433,3 +435,6 @@ class CollectionRomSet(RomSet):
 
         json_file_path = self.romsDir.pjoin(collection['roms_base_noext'] + '.json')
         fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
+
+    def clear(self):
+        pass
