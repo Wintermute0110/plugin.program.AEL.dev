@@ -194,6 +194,10 @@ class RomSet():
     @abstractmethod
     def saveRoms(self, roms):
         pass
+
+    @abstractmethod
+    def clear(self):
+        pass
     
 class StandardRomSet(RomSet):
     
@@ -269,6 +273,9 @@ class StandardRomSet(RomSet):
     def saveRoms(self, roms):
         fs_write_ROMs_JSON(self.romsDir, self.launcher, roms)
         pass
+
+    def clear(self):
+        fs_unlink_ROMs_database(self.romsDir, self.launcher)
 
 class PcloneRomSet(StandardRomSet):
 

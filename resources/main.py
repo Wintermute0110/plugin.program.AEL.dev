@@ -1671,10 +1671,13 @@ class Main:
 
                 # --- Empty Launcher ROMs ---
                 elif type2 == 7:
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
-                    num_roms = len(roms)
+                    
+                    launcher    = self.launchers[launcherID]
+                    romset      = self.romsetFactory.create(None, launcherID, self.launchers)
+                    roms        = romset.loadRoms()
 
                     # If launcher is empty (no ROMs) do nothing
+                    num_roms = len(roms)
                     if num_roms == 0:
                         kodi_dialog_OK('Launcher has no ROMs. Nothing to do.')
                         return
@@ -1683,7 +1686,7 @@ class Main:
                     dialog = xbmcgui.Dialog()
                     ret = dialog.yesno('Advanced Emulator Launcher',
                                        "Launcher '{0}' has {1} ROMs. Are you sure you want to delete them "
-                                       "from AEL database?".format(self.launchers[launcherID]['m_name'], num_roms))
+                                       "from AEL database?".format(launcher['m_name'], num_roms))
                     if not ret: return
 
                     # --- If there is a No-Intro XML DAT configured remove it ---
@@ -1693,7 +1696,7 @@ class Main:
 
                     # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
                     # when user add more ROMs.
-                    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
+                    romset.clear()
                     self.launchers[launcherID]['num_roms'] = 0
                     kodi_notify('Cleared ROMs from launcher database')
 

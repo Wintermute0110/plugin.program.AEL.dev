@@ -605,11 +605,11 @@ class FileName:
             return False
 
         try:
-            self.open()
+            self.open('r')
             self.close()
         except:
             return True
-
+        
         return False
         #return os.path.isdir(self.path)
         
@@ -633,6 +633,7 @@ class FileName:
             xbmcvfs.delete(self.originalPath)
 
             # hard delete if it doesnt succeed
+            log_debug('xbmcvfs.delete() failed, applying hard delete')
             if self.exists():
                 os.remove(self.path)
         else:
