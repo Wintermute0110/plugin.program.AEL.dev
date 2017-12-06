@@ -263,7 +263,7 @@ class CleanTitleScraper(Scraper):
 
     def _applyCandidate(self, romPath, rom):        
 
-        if self.launcher['type'] == LAUNCHER_STEAM:
+        if 'type' in self.launcher and self.launcher['type'] == LAUNCHER_STEAM:
             log_debug('CleanTitleScraper: Detected Steam launcher, leaving rom name untouched.')
             return True
 

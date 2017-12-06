@@ -1587,11 +1587,16 @@ class Main:
                     if not ret: return
 
                     # --- Load ROMs for this launcher ---
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
+                    launcher    = self.launchers[launcherID]
+                    romset      = self.romsetFactory.create(None, launcherID, self.launchers)
+        
+                    scrapers    = self.scraperFactory.create(launcher)
+                    romScanner  = self.romscannerFactory.create(launcher, romset, scrapers)
 
                     # --- Remove dead ROMs ---
-                    num_removed_roms = self._roms_delete_missing_ROMs(roms)
-
+                    #num_removed_roms = self._roms_delete_missing_ROMs(roms)
+                    roms = romScanner.cleanup()
+        
                     # --- If there is a No-Intro XML DAT configured remove it ---
                     if self.launchers[launcherID]['nointro_xml_file']:
                         log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
@@ -1605,7 +1610,6 @@ class Main:
                     pDialog.update(100)
                     pDialog.close()
                     self.launchers[launcherID]['num_roms'] = len(roms)
-                    kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
                 # --- Import ROM metadata from NFO files ---
                 elif type2 == 4:

@@ -356,12 +356,12 @@ class Test_scrapertests(unittest.TestCase):
         self.assertTrue(actualResult)
         mock_imgdownload.assert_called_with(expectedUrl, ANY)
     
-    @patch('resources.utils.FileName.scanFilesInPath')
+    @patch('resources.utils.FileName.scanFilesInPathAsFileNameObjects')
     @patch('resources.scrapers.kodi_update_image_cache')
     def test_when_scraping_local_assets_it_will_give_the_correct_result(self, mock_cache, mock_filescan):
         
         # arrange
-        mock_filescan.return_value = [u'x.jpg',u'y.jpg', u'pitfall.jpg', u'donkeykong.jpg']
+        mock_filescan.return_value = [FileName('x.jpg'),FileName('y.jpg'), FileName('pitfall.jpg'), FileName('donkeykong.jpg')]
 
         settings = {}
         settings['scan_asset_policy'] = 1

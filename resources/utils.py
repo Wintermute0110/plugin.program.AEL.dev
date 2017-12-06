@@ -369,7 +369,6 @@ def misc_add_file_cache(dir_str):
     # >> Create a set with all the files in the directory
     dir_FN = FileName(dir_str)
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
-    log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
 
     file_list = dir_FN.scanFilesInPathAsFileNameObjects()
     # lower all filenames for easier matching
