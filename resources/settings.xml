@@ -10,6 +10,7 @@
     <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
     <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
     <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
+    <setting label="Steam API key" type="text" id="steam-api-key" default="123abc" />
 </category>
 <category label="ROM scraping">
     <setting id="separator" type="lsep" label="Metadata scrapers"/>

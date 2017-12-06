@@ -7,6 +7,7 @@ from utils_kodi_cache import *
 
 from scrap import *
 from assets import *
+from constants import *
 
 class ScraperFactory(ProgressDialogStrategy):
     
@@ -262,6 +263,10 @@ class CleanTitleScraper(Scraper):
         return super(CleanTitleScraper, self)._loadCandidate(candidate, romPath)
 
     def _applyCandidate(self, romPath, rom):        
+
+        if self.launcher['type'] == LAUNCHER_STEAM:
+            log_debug('Detected Steam launcher, leaving rom name untouched.')
+            return True
 
         log_debug('Only cleaning ROM name.')
         rom['m_name'] = text_format_ROM_title(romPath.getBase_noext(), self.scan_clean_tags)
@@ -553,185 +558,3 @@ class OnlineAssetScraper(Scraper):
         rom[self.asset_info.key] = image_path.getOriginalPath()
         
         return True
-  
-    #
-    # Returns a valid filename of the downloaded scrapped image, filename of local image
-    # or empty string if scraper finds nothing or download failed.
-    #
-    def _roms_scrap_asset(self, scraper_obj, asset_kind, local_asset_path, ROM):
-        # >> By default always use local image in case scraper fails
-        ret_asset_path = local_asset_path
-
-        # --- Customise function depending of image_king ---
-        A = assets_get_info_scheme(asset_kind)
-        asset_directory  = FileName(self.launcher[A.path_key])
-        asset_path_noext_FN = assets_get_path_noext_DIR(A, asset_directory, ROM)
-        platform = self.launcher['platform']
-
-        # --- Updated progress dialog ---
-        if self.pDialog_verbose:
-            scraper_text = 'Scraping {0} with {1}. Searching for matching games ...'.format(A.name, scraper_obj.name)
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-        log_verb('_roms_scrap_asset() Scraping {0} with {1}'.format(A.name, scraper_obj.name))
-        log_debug('_roms_scrap_asset() local_asset_path "{0}"'.format(local_asset_path))
-        log_debug('_roms_scrap_asset() asset_path_noext "{0}"'.format(asset_path_noext_FN.getPath()))
-
-        # --- If scraper does not support particular asset return inmediately ---
-        if not scraper_obj.supports_asset(asset_kind):
-            log_debug('_roms_scrap_asset() Scraper {0} does not support asset {1}. '
-                      'Skipping.'.format(scraper_obj.name, A.name))
-            return ret_asset_path
-
-        # --- Set scraping mode ---
-        # settings.xml: id="asset_scraper_mode"  default="0" values="Semi-automatic|Automatic"
-        scraping_mode = self.settings['asset_scraper_mode']
-
-
-        # --- Check cache to check if user choose a game previously ---
-        # >> id(object)
-        # >> This is an integer (or long integer) which is guaranteed to be unique and constant for 
-        # >> this object during its lifetime.
-        scraper_id = id(scraper_obj)
-        log_debug('_roms_scrap_asset() Scraper ID          "{0}"'.format(scraper_id))
-        log_debug('_roms_scrap_asset() Scraper obj name    "{0}"'.format(scraper_obj.name))
-        log_debug('_roms_scrap_asset() ROM.getBase_noext() "{0}"'.format(ROM.getBase_noext()))
-        log_debug('_roms_scrap_asset() platform            "{0}"'.format(platform))
-        log_debug('_roms_scrap_asset() Entries in cache    {0}'.format(len(self.scrap_asset_cached_dic)))
-        if scraper_id in self.scrap_asset_cached_dic and \
-           self.scrap_asset_cached_dic[scraper_id]['ROM_base_noext'] == ROM.getBase_noext() and \
-           self.scrap_asset_cached_dic[scraper_id]['platform'] == platform:
-            selected_game = self.scrap_asset_cached_dic[scraper_id]['game_dic']
-            log_debug('_roms_scrap_asset() Cache HIT. Using cached game "{0}"'.format(selected_game['display_name']))
-        else:
-            log_debug('_roms_scrap_asset() Cache MISS. Calling scraper_obj.get_search()')
-            # --- Call scraper and get a list of games ---
-            rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-            search_results = scraper_obj.get_search(rom_name_scraping, ROM.getBase_noext(), platform)
-            log_debug('{0} scraper found {1} result/s'.format(A.name, len(search_results)))
-            if not search_results:
-                log_debug('{0} scraper did not found any game'.format(A.name))
-                return ret_asset_path
-
-            # --- Choose game to download image ---
-            if scraping_mode == 0:
-                if len(search_results) == 1:
-                    log_debug('get_search() returned 1 game. Automatically selected.')
-                    selected_game_index = 0
-                else:
-                    log_debug('{0} semi-automatic scraping. User chooses game.'.format(A.name))
-                    # >> Close progress dialog (and check it was not canceled)
-                    if self.pDialog.iscanceled(): self.pDialog_canceled = True
-                    self.pDialog.close()
-
-                    # >> Display game list found so user choses
-                    rom_name_list = []
-                    for game in search_results:
-                        rom_name_list.append(game['display_name'])
-                    selected_game_index = xbmcgui.Dialog().select(
-                        '{0} game for ROM "{1}"'.format(scraper_obj.name, ROM.getBase_noext()),
-                        rom_name_list)
-                    if selected_game_index < 0: selected_game_index = 0
-
-                    # >> Open progress dialog again
-                    self.pDialog.create('Advanced Emulator Launcher')
-                    if not self.pDialog_verbose: self.pDialog.update(self.progress_number, self.file_text)
-            elif scraping_mode == 1:
-                log_debug('{0} automatic scraping. Selecting first result.'.format(A.name))
-                selected_game_index = 0
-            else:
-                log_error('{0} invalid scraping_mode {1}'.format(A.name, scraping_mode))
-                selected_game_index = 0
-
-            # --- Cache selected game from get_search() ---
-            self.scrap_asset_cached_dic[scraper_id] = {
-                'ROM_base_noext' : ROM.getBase_noext(),
-                'platform' : platform,
-                'game_dic' : search_results[selected_game_index]
-            }
-            selected_game = self.scrap_asset_cached_dic[scraper_id]['game_dic']
-            log_error('_roms_scrap_asset() Caching selected game "{0}"'.format(selected_game['display_name']))
-            log_error('_roms_scrap_asset() Scraper object ID {0} (name {1})'.format(id(scraper_obj), scraper_obj.name))
-
-        # --- Grab list of images for the selected game ---
-        # >> ::get_images() always caches URLs for a given selected_game internally.
-        if self.pDialog_verbose:
-            scraper_text = 'Scraping {0} with {1}. Getting list of images ...'.format(A.name, scraper_obj.name)
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-        image_list = scraper_obj.get_images(selected_game, asset_kind)
-        log_verb('{0} scraper returned {1} images'.format(A.name, len(image_list)))
-        if not image_list:
-            log_debug('{0} scraper get_images() returned no images.'.format(A.name))
-            return ret_asset_path
-
-        # --- Semi-automatic scraping (user choses an image from a list) ---
-        if scraping_mode == 0:
-            # >> If there is a local image add it to the list and show it to the user
-            local_asset_obj = FileName(local_asset_path)
-            if local_asset_obj.exists():
-                image_list.insert(0, {'name'       : 'Current local image', 
-                                      'id'         : local_asset_path,
-                                      'URL'        : local_asset_path,
-                                      'asset_kind' : asset_kind})
-
-            # >> If image_list has only 1 element do not show select dialog. Note that the length
-            # >> of image_list is 1 only if scraper returned 1 image and a local image does not exist.
-            if len(image_list) == 1:
-                image_selected_index = 0
-            else:
-                # >> Close progress dialog before opening image chosing dialog
-                if self.pDialog.iscanceled(): self.pDialog_canceled = True
-                self.pDialog.close()
-
-                # >> Convert list returned by scraper into a list the select window uses
-                ListItem_list = []
-                for item in image_list:
-                    listitem_obj = xbmcgui.ListItem(label = item['name'], label2 = item['URL'])
-                    listitem_obj.setArt({'icon' : item['URL']})
-                    ListItem_list.append(listitem_obj)
-                image_selected_index = xbmcgui.Dialog().select('Select {0} image'.format(A.name),
-                                                               list = ListItem_list, useDetails = True)
-                log_debug('{0} dialog returned index {1}'.format(A.name, image_selected_index))
-                if image_selected_index < 0: image_selected_index = 0
-
-                # >> Reopen progress dialog
-                self.pDialog.create('Advanced Emulator Launcher')
-                if not self.pDialog_verbose: self.pDialog.update(self.progress_number, self.file_text)
-        # --- Automatic scraping. Pick first image. ---
-        else:
-            image_selected_index = 0
-        selected_image = image_list[image_selected_index]
-
-        # --- Update progress dialog ---
-        if self.pDialog_verbose:
-            scraper_text = 'Scraping {0} with {1}. Downloading image ...'.format(A.name, scraper_obj.name)
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
-
-        # --- If user chose the local image don't download anything ---
-        if selected_image['id'] != local_asset_path:
-            log_debug('_roms_scrap_asset() Downloading selected image ...')
-
-            # --- Resolve image URL ---
-            image_url, image_ext = scraper_obj.resolve_image_URL(selected_image)
-            log_debug('Selected image URL "{1}"'.format(A.name, image_url))
-
-            # ~~~ Download image ~~~
-            image_path = asset_path_noext_FN.append(image_ext)
-            log_verb('Downloading URL  "{0}"'.format(image_url))
-            log_verb('Into local file  "{0}"'.format(image_path.getPath()))
-            try:
-                net_download_img(image_url, image_path)
-            except socket.timeout:
-                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(A.name))
-
-            # ~~~ Update Kodi cache with downloaded image ~~~
-            # Recache only if local image is in the Kodi cache, this function takes care of that.
-            kodi_update_image_cache(image_path)
-
-            # --- Return value is downloaded image ---
-            ret_asset_path = image_path.getOriginalPath()
-        else:
-            log_debug('{0} scraper: user chose local image "{1}"'.format(A.name, image_url))
-            ret_asset_path = image_url
-
-        # --- Returned value ---
-        return ret_asset_path

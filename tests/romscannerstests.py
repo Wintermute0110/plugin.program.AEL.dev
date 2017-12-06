@@ -16,6 +16,10 @@ class Test_romscannerstests(unittest.TestCase):
         set_use_print(True)
         set_log_level(LOG_DEBUG)
 
+    def read_file(self, path):
+        with open(path, 'r') as f:
+            return f.read()
+
     def test_creating_new_scanner_gives_no_exceptions(self):
         
         # arrange
@@ -387,12 +391,12 @@ class Test_romscannerstests(unittest.TestCase):
         self.assertEqual(expectedRomCount, actualRomCount)
         
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.romscanners.urllib2.urlopen')
+    @patch('resources.romscanners.net_get_URL_original')
     def test_when_scanning_your_steam_account_not_existing_dead_roms_will_be_correctly_removed(self, mock_urlopen, progress_canceled_mock):
 
         # arrange
         test_file_dir = os.path.dirname(os.path.abspath(__file__))
-        mock_urlopen.return_value = open(test_file_dir + "\\steamresponse.json", "r") 
+        mock_urlopen.return_value = self.read_file(test_file_dir + "\\steamresponse.json")
         
         progress_canceled_mock.return_value = False
 

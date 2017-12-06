@@ -49,9 +49,10 @@ class launcherBuilder():
     
         log_info('_command_add_new_launcher() New launcher (launcher_type = {0})'.format(launcher_type))
 
-        launcherID      = misc_generate_random_SID()
-        launcher        = fs_new_launcher()
-        launcher['id']  = launcherID
+        launcherID       = misc_generate_random_SID()
+        launcher         = fs_new_launcher()
+        launcher['id']   = launcherID
+        launcher['type'] = launcher_type
 
         filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
             
@@ -140,7 +141,8 @@ class launcherBuilder():
             wizard = KeyboardWizardDialog('steamid','Steam ID', wizard)
             wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)         
+            wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
+            wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)         
 
         # --- Create new launcher. categories.xml is save at the end of this function ---
         # NOTE than in the database original paths are always stored.
@@ -235,6 +237,15 @@ def getValueFromRomPath(input, launcher):
     romPath = launcher['rompath']
     return romPath
 
+def getValueFromAssetsPath(input, launcher):
+
+    if input:
+        return input
+
+    romPath = FileName(launcher['assets_path'])
+    romPath = romPath.pjoin('games')
+
+    return romPath.getOriginalPath()
 
 def get_available_retroarch_cores(settings):
 
