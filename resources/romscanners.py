@@ -327,7 +327,7 @@ class RomFolderScanner(RomScannerStrategy):
                     # >> Process next file
                     log_info('Processing next file ...')
                     continue
-             elif MDSet.isMultiDisc and not launcher_multidisc:
+            elif MDSet.isMultiDisc and not launcher_multidisc:
                 launcher_report.write('  ROM belongs to a multidisc set but Multidisc support is disabled.')
             else:
                 launcher_report.write('  ROM does not belong to a multidisc set.')
