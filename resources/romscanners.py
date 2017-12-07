@@ -255,6 +255,7 @@ class RomFolderScanner(RomScannerStrategy):
         num_items_checked = 0
         
         allowedExtensions = self.launcher['romext'].split("|")
+        launcher_multidisc = self.launcher['multidisc']
 
         for item in sorted(items):
             self._updateProgress(num_items_checked * 100 / num_items)
@@ -284,10 +285,10 @@ class RomFolderScanner(RomScannerStrategy):
                         
             # --- Check if ROM belongs to a multidisc set ---
             self._updateProgressMessage(file_text, 'Checking if ROM belongs to multidisc set..')
-
+                       
             MultiDiscInROMs = False
             MDSet = text_get_multidisc_info(ROM)
-            if MDSet.isMultiDisc:
+            if MDSet.isMultiDisc and launcher_multidisc:
                 log_info('ROM belongs to a multidisc set.')
                 log_info('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
                 log_info('setName     "{0}"'.format(MDSet.setName))
@@ -326,6 +327,8 @@ class RomFolderScanner(RomScannerStrategy):
                     # >> Process next file
                     log_info('Processing next file ...')
                     continue
+             elif MDSet.isMultiDisc and not launcher_multidisc:
+                launcher_report.write('  ROM belongs to a multidisc set but Multidisc support is disabled.')
             else:
                 launcher_report.write('  ROM does not belong to a multidisc set.')
  
@@ -378,10 +381,10 @@ class RomFolderScanner(RomScannerStrategy):
             log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
             log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
             log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-
+            
             # --- This was the first ROM in a multidisc set ---
-            if MDSet.isMultiDisc and not MultiDiscInROMs:
-                log_info('Adding first disk "{0}"'.format(MDSet.discName))
+            if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
+                log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
                 romdata['disks'].append(MDSet.discName)
             
             new_roms.append(romdata)

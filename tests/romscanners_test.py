@@ -125,6 +125,7 @@ class Test_romscannerstests(unittest.TestCase):
         launcher['rompath'] = '//fake/folder/'
         launcher['romext'] = ext
         launcher['roms_base_noext'] = 'roms_test_launcher'
+        launcher['multidisc'] = False
 
         launcher['path_title'] = '//fake_title/'
         launcher['path_snap'] = '//fake_snap/'
