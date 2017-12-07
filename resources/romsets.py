@@ -390,7 +390,7 @@ class CollectionRomSet(RomSet):
         roms_json_file = self.collection_dir.pjoin(collection['roms_base_noext'] + '.json')
         romsList = fs_load_Collection_ROMs_JSON(roms_json_file)
         return romsList
-
+    
     # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
     #      a dictionary. Convert the Collection list into an ordered dictionary and then
     #      converted back the ordered dictionary into a list before saving the collection.

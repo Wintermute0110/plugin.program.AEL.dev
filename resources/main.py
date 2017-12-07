@@ -1695,7 +1695,6 @@ class Main:
                     pDialog.update(100)
                     pDialog.close()
                     self.launchers[launcherID]['num_roms'] = len(roms)
-                    #kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
                 # --- Import ROM metadata from NFO files ---
                 elif type2 == 4:
@@ -3683,7 +3682,6 @@ class Main:
             kodi_dialog_OK('_command_render_roms(): Launcher ID not found in self.launchers. Report this bug.')
             return
 
-        
         # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
         # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
         loading_ticks_start = time.time()

@@ -33,8 +33,8 @@ class ExecutorFactory():
             return WebBrowserExecutor(self.logFile)
         
         if sys.platform == 'win32':
-            
-            if application.getExt().lower() == '.bat':
+
+            if application.getExt().lower() == '.bat' or application.getExt().lower() == '.cmd' :
                 return WindowsBatchFileExecutor(self.logFile, self.settings['show_batch_window'])
             
             # >> Standalone launcher where application is a LNK file
