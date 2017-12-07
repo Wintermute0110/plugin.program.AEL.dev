@@ -45,6 +45,17 @@ def text_limit_string(string, max_length):
   return string
 
 #
+# Given a Category/Launcher name clean it so the cleaned srt can be used as a filename.
+#  1) Convert any non-printable character into '_'
+#  2) Convert spaces ' ' into '_'
+#
+def text_title_to_filename_str(title_str):
+    cleaned_str_1 = ''.join([i if i in string.printable else '_' for i in title_str])
+    cleaned_str_2 = cleaned_str_1.replace(' ', '_')
+
+    return cleaned_str_2
+
+#
 # Writes a XML text tag line, indented 2 spaces by default.
 # Both tag_name and tag_text must be Unicode strings.
 # Returns an Unicode string.
@@ -64,7 +75,7 @@ def text_str_2_Uni(string):
     if type(string).__name__ == 'unicode':
         unicode_str = string
     elif type(string).__name__ == 'str':
-        unicode_str = string.decode('ascii', errors = 'replace')
+        unicode_str = string.decode('utf-8', errors = 'replace')
     else:
         print('TypeError: ' + type(string).__name__)
         raise TypeError
@@ -301,7 +312,7 @@ def text_get_multidisc_info(ROM_FN):
     MultDiscFound = False
     for index, token in enumerate(tokens):
         # --- Redump ---
-        matchObj = re.match(r'\(Disc ([0-9]+)\)', token)
+        matchObj = re.match(r'\(Dis[ck] ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched Redump multidisc ROM ###')
             tokens_idx = range(0, len(tokens))
@@ -312,7 +323,7 @@ def text_get_multidisc_info(ROM_FN):
             break
 
         # --- TOSEC/Trurip ---
-        matchObj = re.match(r'\(Disc ([0-9]+) of ([0-9]+)\)', token)
+        matchObj = re.match(r'\(Dis[ck] ([0-9]+) of ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
             tokens_idx = range(0, len(tokens))
@@ -367,6 +378,9 @@ def misc_add_file_cache(dir_str):
     global file_cache
 
     # >> Create a set with all the files in the directory
+    if not dir_str:
+        log_debug('misc_add_file_cache() Empty dir_str. Exiting')
+        return
     dir_FN = FileName(dir_str)
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
 

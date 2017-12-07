@@ -18,11 +18,11 @@
 from __future__ import unicode_literals
 
 # --- Misc "constants" ---
-KIND_CATEGORY         = 1
-KIND_COLLECTION       = 2
-KIND_LAUNCHER         = 3
-KIND_ROM              = 4
-DESCRIPTION_MAXSIZE   = 40
+KIND_CATEGORY    = 1
+KIND_COLLECTION  = 2
+KIND_LAUNCHER    = 3
+KIND_ROM         = 4
+PLOT_STR_MAXSIZE = 40
 RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
 LNK_LAUNCHER_APP_NAME         = 'lnk_launcher_app'
 

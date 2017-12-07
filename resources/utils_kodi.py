@@ -109,14 +109,13 @@ def log(log_text, level):
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AEL - Launcher')
 #
 def kodi_dialog_OK(row1, row2='', row3='', title = 'Advanced Emulator Launcher'):
-    dialog = xbmcgui.Dialog()
-    dialog.ok(title, row1, row2, row3)
+    xbmcgui.Dialog().ok(title, row1, row2, row3)
 
 #
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
+#
 def kodi_dialog_yesno(row1, row2='', row3='', title = 'Advanced Emulator Launcher'):
-    dialog = xbmcgui.Dialog()
-    ret = dialog.yesno(title, row1, row2, row3)
+    ret = xbmcgui.Dialog().yesno(title, row1, row2, row3)
 
     return ret
 
@@ -128,20 +127,21 @@ def kodi_notify(text, title = 'Advanced Emulator Launcher', time = 5000):
     # xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
 
     # --- New way ---
-    dialog = xbmcgui.Dialog()
-    dialog.notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
+    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
 def kodi_notify_warn(text, title = 'Advanced Emulator Launcher warning', time = 7000):
-    dialog = xbmcgui.Dialog()
-    dialog.notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
+    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 #
 # Do not use this function much because it is the same icon as when Python fails, and that may confuse the user.
 #
 def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7000):
-    dialog = xbmcgui.Dialog()
-    dialog.notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
+    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
+#
+# NOTE I think Krypton introduced new API functions to activate the busy dialog window. Check that
+#      out!
+#
 def kodi_busydialog_ON():
     xbmc.executebuiltin('ActivateWindow(busydialog)')
 

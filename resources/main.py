@@ -621,7 +621,7 @@ class Main:
         if type == 0:
             NFO_FileName = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
             NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-            plot_str = text_limit_string(self.categories[categoryID]['m_plot'], DESCRIPTION_MAXSIZE)
+            plot_str = text_limit_string(self.categories[categoryID]['m_plot'], PLOT_STR_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
                                   ["Edit Title: '{0}'".format(self.categories[categoryID]['m_name']),
@@ -749,10 +749,10 @@ class Main:
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, category): return
 
-        # --- Choose default thumb/fanart ---
+        # --- Choose Category default icon/fanart/banner/poster/clearlogo ---
         elif type == 2:
             category = self.categories[categoryID]
-            # >> Label1 an label2
+            # >> Label1 and label2
             asset_icon_str      = assets_get_asset_name_str(category['default_icon'])
             asset_fanart_str    = assets_get_asset_name_str(category['default_fanart'])
             asset_banner_str    = assets_get_asset_name_str(category['default_banner'])
@@ -791,6 +791,7 @@ class Main:
             type2 = dialog.select('Edit Category default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
+            # >> Build ListItem of assets that can be mapped.
             Category_asset_ListItem_list = [
                 xbmcgui.ListItem(label = 'Icon',      label2 = category['s_icon'] if category['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',    label2 = category['s_fanart'] if category['s_fanart'] else 'Not set'),
@@ -804,26 +805,47 @@ class Main:
             Category_asset_ListItem_list[3].setArt({'icon' : category['s_poster'] if category['s_poster'] else 'DefaultAddonNone.png'})
             Category_asset_ListItem_list[4].setArt({'icon' : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'})
 
+            # >> Krypton feature: User preselected item in select() dialog.
             if type2 == 0:
-                type_s = dialog.select('Choose default Asset for Icon', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_icon')
+                type_s = dialog.select('Choose Category default asset for Icon',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_icon', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_icon', type_s)
+                asset_name = assets_get_asset_name_str(category['default_icon'])
+                kodi_notify('Category Icon mapped to {0}'.format(asset_name))
             elif type2 == 1:
-                type_s = dialog.select('Choose default Asset for Fanart', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_fanart')
+                type_s = dialog.select('Choose Category default asset for Fanart',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_fanart', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_fanart', type_s)
+                asset_name = assets_get_asset_name_str(category['default_fanart'])
+                kodi_notify('Category Fanart mapped to {0}'.format(asset_name))
             elif type2 == 2:
-                type_s = dialog.select('Choose default Asset for Banner', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_banner')
+                type_s = dialog.select('Choose Category default asset for Banner',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_banner', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_banner', type_s)
+                asset_name = assets_get_asset_name_str(category['default_banner'])
+                kodi_notify('Category Banner mapped to {0}'.format(asset_name))
             elif type2 == 3:
-                type_s = dialog.select('Choose default Asset for Poster', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_poster')
+                type_s = dialog.select('Choose Category default asset for Poster',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_poster', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_poster', type_s)
+                asset_name = assets_get_asset_name_str(category['default_poster'])
+                kodi_notify('Category Poster mapped to {0}'.format(asset_name))
             elif type2 == 4:
-                type_s = dialog.select('Choose default Asset for Clearlogo', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_clearlogo')
+                type_s = dialog.select('Choose Category default asset for Clearlogo',
+                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(category, 'default_clearlogo', type_s)
+                assets_choose_Category_mapped_artwork(category, 'default_clearlogo', type_s)
+                asset_name = assets_get_asset_name_str(category['default_clearlogo'])
+                kodi_notify('Category Clearlogo mapped to {0}'.format(asset_name))
 
         # --- Category status ---
         elif type == 3:
@@ -887,13 +909,13 @@ class Main:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                                   'Change Category: {0}'.format(category_name), finished_display,
-                                  'Advanced Modifications ...', 'Delete Launcher'])
+                                  'Advanced Modifications ...', 'Export Launcher XML configuration ...', 'Delete Launcher'])
         else:
             type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
                                   'Change Category: {0}'.format(category_name), finished_display,
                                   'Manage ROMs ...', 'Audit ROMs / Launcher view mode ...',
-                                  'Advanced Modifications ...', 'Delete Launcher'])
+                                  'Advanced Modifications ...', 'Export Launcher XML configuration ...', 'Delete Launcher'])
         if type < 0: return
 
         # --- Edition of the launcher metadata ---
@@ -909,9 +931,8 @@ class Main:
 
             # >> Metadata edit dialog
             NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
-            NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-            plot_str = text_limit_string(self.launchers[launcherID]['m_plot'], DESCRIPTION_MAXSIZE)
-            dialog = xbmcgui.Dialog()
+            NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+            plot_str = text_limit_string(self.launchers[launcherID]['m_plot'], PLOT_STR_MAXSIZE)
             menu_list = ["Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
                          "Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
                          "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
@@ -919,9 +940,10 @@ class Main:
                          "Edit Developer: '{0}'".format(self.launchers[launcherID]['m_developer']),
                          "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
                          "Edit Plot: '{0}'".format(plot_str),
-                         'Import NFO file (default, {0})'.format(NFO_str),
+                         'Import NFO file (default, {0})'.format(NFO_found_str),
                          'Import NFO file (browse NFO file) ...',
                          'Save NFO file (default location)']
+            dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Launcher Metadata', menu_list + scraper_menu_list)
             if type2 < 0: return
 
@@ -937,56 +959,69 @@ class Main:
                 new_launcher_name = title.rstrip()
                 log_debug('_command_edit_launcher() Edit Title: old_launcher_name "{0}"'.format(old_launcher_name))
                 log_debug('_command_edit_launcher() Edit Title: new_launcher_name "{0}"'.format(new_launcher_name))
-                if old_launcher_name == new_launcher_name: return
+                if old_launcher_name == new_launcher_name:
+                    kodi_notify('Launcher Title not changed')
+                    return
 
                 # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-                old_roms_base_noext = self.launchers[launcherID]['roms_base_noext']
-                categoryID          = self.launchers[launcherID]['categoryID']
-                category_name       = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
+                old_roms_base_noext = launcher['roms_base_noext']
+                categoryID = launcher['categoryID']
+                category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
                 new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-                log_debug('_command_edit_launcher() old_roms_base_noext "{0}"'.format(old_roms_base_noext))
-                log_debug('_command_edit_launcher() new_roms_base_noext "{0}"'.format(new_roms_base_noext))
-                if old_roms_base_noext != new_roms_base_noext:
-                    log_debug('Renaming JSON/XML launcher databases')
-                    launchers[launcherID]['roms_base_noext'] = new_roms_base_noext
-                    fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
-                else:
-                    log_debug('Not renaming ROM databases (old and new names are equal)')
+                fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
                 launcher['m_name'] = new_launcher_name
                 launcher['roms_base_noext'] = new_roms_base_noext
-                kodi_notify('Changed Launcher Title')
+                kodi_notify('Launcher Title is now {0}'.format(new_launcher_name))
 
             # --- Selection of the launcher platform from AEL "official" list ---
             elif type2 == 1:
                 p_idx = get_AEL_platform_index(self.launchers[launcherID]['platform'])
                 sel_platform = xbmcgui.Dialog().select('Select the platform', AEL_platform_list, preselect = p_idx)
                 if sel_platform < 0: return
+                if p_idx == sel_platform:
+                    kodi_notify('Launcher Platform not changed')
+                    return
                 self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
                 kodi_notify('Launcher Platform is now {0}'.format(AEL_platform_list[sel_platform]))
 
             # --- Edition of the launcher release date (year) ---
             elif type2 == 2:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_year'], 'Edit release year')
+                old_year_str = self.launchers[launcherID]['m_year']
+                keyboard = xbmc.Keyboard(old_year_str, 'Edit Launcher release year')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_year'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Year')
+                new_year_str = keyboard.getText().decode('utf-8')
+                if old_year_str == new_year_str:
+                    kodi_notify('Launcher Year not changed')
+                    return
+                self.launchers[launcherID]['m_year'] = new_year_str
+                kodi_notify('Launcher Year is now {0}'.format(new_year_str))
 
             # --- Edition of the launcher genre ---
             elif type2 == 3:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_genre'], 'Edit genre')
+                old_genre_str = self.launchers[launcherID]['m_genre']
+                keyboard = xbmc.Keyboard(old_genre_str, 'Edit genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_genre'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Genre')
+                new_genre_str = keyboard.getText().decode('utf-8')
+                if old_genre_str == new_genre_str:
+                    kodi_notify('Launcher Genre not changed')
+                    return
+                self.launchers[launcherID]['m_genre'] = new_genre_str
+                kodi_notify('Launcher Genre is now {0}'.format(new_genre_str))
 
             # --- Edition of the launcher developer ---
             elif type2 == 4:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_developer'], 'Edit developer')
+                old_developer_str = self.launchers[launcherID]['m_developer']
+                keyboard = xbmc.Keyboard(old_developer_str, 'Edit developer')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_developer'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Developer')
+                new_developer_str = keyboard.getText().decode('utf-8')
+                if old_developer_str == new_developer_str:
+                    kodi_notify('Launcher Developer not changed')
+                    return
+                self.launchers[launcherID]['m_developer'] = new_developer_str
+                kodi_notify('Launcher Developer is now {0}'.format(new_developer_str))
 
             # --- Edition of the launcher rating ---
             elif type2 == 5:
@@ -999,20 +1034,25 @@ class Main:
                     kodi_notify('Launcher Rating changed to Not Set')
                 elif rating >= 1 and rating <= 11:
                     self.launchers[launcherID]['m_rating'] = '{0}'.format(rating - 1)
-                    kodi_notify('Changed Launcher Rating')
+                    kodi_notify('Launcher Rating is now {0}'.format(self.launchers[launcherID]['m_rating']))
                 elif rating < 0:
-                    kodi_dialog_OK("Launcher rating '{0}' not changed".format(self.launchers[launcherID]['m_rating']))
+                    kodi_notify('Launcher Rating not changed')
                     return
 
             # --- Edit launcher description (plot) ---
             elif type2 == 6:
-                keyboard = xbmc.Keyboard(self.launchers[launcherID]['m_plot'], 'Edit plot')
+                old_plot_str = self.launchers[launcherID]['m_plot']
+                keyboard = xbmc.Keyboard(old_plot_str, 'Edit plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.launchers[launcherID]['m_plot'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Launcher Plot')
+                new_plot_str = keyboard.getText().decode('utf-8')
+                if old_plot_str == new_plot_str:
+                    kodi_notify('Launcher Plot not changed')
+                    return
+                self.launchers[launcherID]['m_plot'] = new_plot_str
+                kodi_notify('Launcher Plot is now "{0}"'.format())
 
-            # --- Import launcher metadata from NFO file (automatic) ---
+            # --- Import launcher metadata from NFO file (default location) ---
             elif type2 == 7:
                 # >> Get NFO file name for launcher
                 # >> Launcher is edited using Python passing by assigment
@@ -1036,8 +1076,8 @@ class Main:
             elif type2 == 9:
                 NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
                 if not fs_export_launcher_NFO(NFO_FileName, self.launchers[launcherID]): return
-                # >> No need to save launchers
                 kodi_notify('Exported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
+                # >> No need to save launchers so return
                 return
 
             # --- Scrape launcher metadata ---
@@ -1099,14 +1139,14 @@ class Main:
             if type2 < 0: return
 
             # --- Edit Assets ---
-            # >> If this function returns False no changes were made. No need to save categories XML
-            # >> and update container.
+            # >> If this function returns False no changes were made. No need to save categories
+            # >> XML and update container.
             asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER,
                           ASSET_CLEARLOGO, ASSET_CONTROLLER, ASSET_TRAILER]
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_LAUNCHER, asset_kind, launcher): return
 
-        # --- Choose Launcher default thumb/fanart/banner/poster/clearlogo ---
+        # --- Choose Launcher default icon/fanart/banner/poster/clearlogo ---
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
@@ -1149,6 +1189,7 @@ class Main:
             type2 = dialog.select('Edit Launcher default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
+            # >> Build ListItem of assets that can be mapped.
             Launcher_asset_ListItem_list = [
                 xbmcgui.ListItem(label = 'Icon',       label2 = launcher['s_icon'] if launcher['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',     label2 = launcher['s_fanart'] if launcher['s_fanart'] else 'Not set'),
@@ -1164,26 +1205,47 @@ class Main:
             Launcher_asset_ListItem_list[4].setArt({'icon' : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'})
             Launcher_asset_ListItem_list[5].setArt({'icon' : launcher['s_controller'] if launcher['s_controller'] else 'DefaultAddonNone.png'})
 
+            # >> Krypton feature: User preselected item in select() dialog.
             if type2 == 0:
-                type_s = dialog.select('Choose default Asset for Icon', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_icon')
+                type_s = dialog.select('Choose Launcher default asset for Icon', 
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_icon', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_icon', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_icon'])
+                kodi_notify('Launcher Icon mapped to {0}'.format(asset_name))
             elif type2 == 1:
-                type_s = dialog.select('Choose default Asset for Fanart', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_fanart')
+                type_s = dialog.select('Choose default asset for Fanart',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_fanart', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_fanart', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_fanart'])
+                kodi_notify('Launcher Fanart mapped to {0}'.format(asset_name))
             elif type2 == 2:
-                type_s = dialog.select('Choose default Asset for Banner', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_banner')
+                type_s = dialog.select('Choose default asset for Banner',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_banner', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_banner', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_banner'])
+                kodi_notify('Launcher Banner mapped to {0}'.format(asset_name))
             elif type2 == 3:
-                type_s = dialog.select('Choose default Asset for Poster', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_poster')
+                type_s = dialog.select('Choose default asset for Poster',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_poster', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_poster', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_poster'])
+                kodi_notify('Launcher Poster mapped to {0}'.format(asset_name))
             elif type2 == 4:
-                type_s = dialog.select('Choose default Asset for Clearlogo', list = Launcher_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_clearlogo')
+                type_s = dialog.select('Choose default asset for Clearlogo',
+                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_launcher_artwork(launcher, 'default_clearlogo', type_s)
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_clearlogo', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_clearlogo'])
+                kodi_notify('Launcher Clearlogo mapped to {0}'.format(asset_name))
 
         # --- Change launcher's Category ---
         type_nb = type_nb + 1
@@ -1236,7 +1298,7 @@ class Main:
             self.launchers[launcherID]['finished'] = finished
             kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]['m_name'], finished_display))
 
-        # --- Launcher's Manage ROMs menu option ---
+        # --- Launcher Manage ROMs menu option ---
         # ONLY for ROM launchers, not for standalone launchers
         if self.launchers[launcherID]['rompath'] != '':
             type_nb = type_nb + 1
@@ -1256,41 +1318,65 @@ class Main:
                 # --- Choose default ROMs assets/artwork ---
                 if type2 == 0:
                     launcher        = self.launchers[launcherID]
-                    asset_thumb     = assets_get_asset_name_str(launcher['roms_default_thumb'])
-                    asset_fanart    = assets_get_asset_name_str(launcher['roms_default_fanart'])
-                    asset_banner    = assets_get_asset_name_str(launcher['roms_default_banner'])
-                    asset_poster    = assets_get_asset_name_str(launcher['roms_default_poster'])
-                    asset_clearlogo = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
+                    asset_icon_str      = assets_get_asset_name_str(launcher['roms_default_icon'])
+                    asset_fanart_str    = assets_get_asset_name_str(launcher['roms_default_fanart'])
+                    asset_banner_str    = assets_get_asset_name_str(launcher['roms_default_banner'])
+                    asset_poster_str    = assets_get_asset_name_str(launcher['roms_default_poster'])
+                    asset_clearlogo_str = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
+
+                    # >> Execute select dialog
                     dialog = xbmcgui.Dialog()
                     type3 = dialog.select('Edit ROMs default Assets/Artwork',
-                                          ['Choose asset for Thumb (currently {0})'.format(asset_thumb),
-                                           'Choose asset for Fanart (currently {0})'.format(asset_fanart),
-                                           'Choose asset for Banner (currently {0})'.format(asset_banner),
-                                           'Choose asset for Poster (currently {0})'.format(asset_poster),
-                                           'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo)])
+                                          ['Choose asset for Icon (currently {0})'.format(asset_icon_str),
+                                           'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
+                                           'Choose asset for Banner (currently {0})'.format(asset_banner_str),
+                                           'Choose asset for Poster (currently {0})'.format(asset_poster_str),
+                                           'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str)])
+                    if type3 < 0: return
 
+                    # >> Krypton feature: User preselected item in select() dialog.
+                    ROM_asset_str_list = ['Title', 'Snap', 'Boxfront', 'Boxback', 'Cartridge',
+                                          'Fanart', 'Banner', 'Clearlogo', 'Flyer', 'Map']
                     if type3 == 0:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Thumb', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_icon')
+                        type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Icon',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_thumb', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_icon', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_icon'])
+                        kodi_notify('ROMs Icon mapped to {0}'.format(asset_name))
                     elif type3 == 1:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Fanart', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_fanart')
+                        type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Fanart',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_fanart', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_fanart', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_fanart'])
+                        kodi_notify('ROMs Fanart mapped to {0}'.format(asset_name))
                     elif type3 == 2:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Banner', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_banner')
+                        type_s = xbmcgui.Dialog().select('Choose ROMS default asset for Banner',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_banner', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_banner', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_banner'])
+                        kodi_notify('ROMs Banner mapped to {0}'.format(asset_name))
                     elif type3 == 3:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Poster', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_poster')
+                        type_s = xbmcgui.Dialog().select('Choose ROMS default asset for Poster',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_poster', type_s)
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_poster', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_poster'])
+                        kodi_notify('ROMs Poster mapped to {0}'.format(asset_name))
                     elif type3 == 4:
-                        type_s = xbmcgui.Dialog().select('Choose default Asset for Clearlogo', DEFAULT_ROM_ASSET_LIST)
+                        p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_clearlogo')
+                        type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Clearlogo',
+                                                         ROM_asset_str_list, preselect = p_idx)
                         if type_s < 0: return
-                        assets_choose_category_ROM(launcher, 'roms_default_clearlogo', type_s)
-                    # >> User canceled select dialog
-                    elif type3 < 0: return
+                        assets_choose_ROM_mapped_artwork(launcher, 'roms_default_clearlogo', type_s)
+                        asset_name = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
+                        kodi_notify('ROMs Clearlogo mapped to {0}'.format(asset_name))
 
                 # --- Manage ROM Asset directories ---
                 elif type2 == 1:
@@ -1590,8 +1676,7 @@ class Main:
                     launcher    = self.launchers[launcherID]
                     romset      = self.romsetFactory.create(None, launcherID, self.launchers)
         
-                    scrapers    = self.scraperFactory.create(launcher)
-                    romScanner  = self.romscannerFactory.create(launcher, romset, scrapers)
+                    romScanner  = self.romscannerFactory.create(launcher, romset, None)
 
                     # --- Remove dead ROMs ---
                     #num_removed_roms = self._roms_delete_missing_ROMs(roms)
@@ -1610,6 +1695,7 @@ class Main:
                     pDialog.update(100)
                     pDialog.close()
                     self.launchers[launcherID]['num_roms'] = len(roms)
+                    #kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
                 # --- Import ROM metadata from NFO files ---
                 elif type2 == 4:
@@ -2056,10 +2142,35 @@ class Main:
                 non_blocking_str = 'ON' if self.launchers[launcherID]['non_blocking'] else 'OFF'
                 kodi_notify('Launcher Non-blocking is {0}'.format(non_blocking_str))
 
+        # --- Export Launcher XML configuration ---
+        type_nb = type_nb + 1
+        if type == type_nb:
+            launcher = self.launchers[launcherID]
+            launcher_fn_str = text_title_to_filename_str(launcher['m_name']) + '.xml'
+            log_debug('_command_edit_launcher() Exporting Launcher configuration')
+            log_debug('_command_edit_launcher() Name     "{0}"'.format(launcher['m_name']))
+            log_debug('_command_edit_launcher() ID       {0}'.format(launcher['id']))
+            log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
+
+            # >> Ask user for a path to export the launcher configuration
+            dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
+                                               '', False, False).decode('utf-8')
+            if not dir_path: return
+            export_FN = FileName(dir_path).pjoin(launcher_fn_str)
+            if export_FN.exists():
+                ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
+                if not ret:
+                    kodi_notify_warn('Export of Launcher XML cancelled')
+                    return
+            autoconfig_export_launcher(launcher, export_FN, self.categories)
+            kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
+            # >> No need to update categories.xml and timestamps so return now.
+            return
+
         # --- Remove Launcher menu option ---
         type_nb = type_nb + 1
         if type == type_nb:
-            rompath       = self.launchers[launcherID]['rompath']
+            rompath = self.launchers[launcherID]['rompath']
             launcher_name = self.launchers[launcherID]['m_name']
             # >> Standalone launcher
             if rompath == '':
@@ -2073,12 +2184,11 @@ class Main:
                                         'Are you sure you want to delete it?')
             if not ret: return
 
-            # --- Remove JSON/XML file if exist ---
+            # >> Remove JSON/XML file if exist
+            # >> Remove launcher from database. Categories.xml will be saved at the end of function
             fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
-
-            # --- Remove launcher from database. Categories.xml will be saved at the end of function ---
             self.launchers.pop(launcherID)
-            kodi_notify('Deleted launcher {0}'.format(launcher_name))
+            kodi_notify('Deleted Launcher {0}'.format(launcher_name))
 
         # User pressed cancel or close dialog
         if type < 0: return
@@ -2086,8 +2196,7 @@ class Main:
         # >> If this point is reached then changes to launcher metadata/assets were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
         # NOTE Update edited launcher timestamp only if launcher was not deleted!
-        if launcherID in self.launchers:
-            self.launchers[launcherID]['timestamp_launcher'] = time.time()
+        if launcherID in self.launchers: self.launchers[launcherID]['timestamp_launcher'] = time.time()
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
@@ -2153,8 +2262,9 @@ class Main:
                 log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
 
             # >> Metadata edit dialog
-            dialog = xbmcgui.Dialog()
-            desc_str = text_limit_string(roms[romID]['m_plot'], DESCRIPTION_MAXSIZE)
+            NFO_FileName = fs_get_ROM_NFO_name(roms[romID])
+            NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+            plot_str = text_limit_string(roms[romID]['m_plot'], PLOT_STR_MAXSIZE)
             menu_list = ["Edit Title: '{0}'".format(roms[romID]['m_name']),
                          "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
                          "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
@@ -2162,10 +2272,11 @@ class Main:
                          "Edit NPlayers: '{0}'".format(roms[romID]['m_nplayers']),
                          "Edit ESRB rating: '{0}'".format(roms[romID]['m_esrb']),
                          "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
-                         "Edit Plot: '{0}'".format(desc_str),
+                         "Edit Plot: '{0}'".format(plot_str),
                          'Load Plot from TXT file ...',
-                         'Import metadata from NFO file ...',
-                         'Save metadata to NFO file']
+                         'Import NFO file ({0})'.format(NFO_found_str),
+                         'Save NFO file']
+            dialog = xbmcgui.Dialog()
             type2 = dialog.select('Modify ROM metadata', menu_list + scraper_menu_list)
             if type2 < 0: return
 
@@ -2270,7 +2381,7 @@ class Main:
                     roms[romID]['m_plot'] = file_data
                     kodi_notify('Imported ROM Plot')
                 else:
-                    desc_str = text_limit_string(roms[romID]['m_plot'], DESCRIPTION_MAXSIZE)
+                    desc_str = text_limit_string(roms[romID]['m_plot'], PLOT_STR_MAXSIZE)
                     kodi_dialog_OK("Launcher plot '{0}' not changed".format(desc_str))
                     return
 
@@ -3484,27 +3595,27 @@ class Main:
         view_mode = selectedLauncher['launcher_display_mode']
 
         # --- Load ROMs for this launcher ---
-        roms_file_path = fs_get_ROMs_JSON_file_path(ROMS_DIR, selectedLauncher['roms_base_noext'])
-        if not roms_file_path.exists():
-            kodi_notify('Launcher XML/JSON not found. Add ROMs to launcher.')
+        roms_json_FN = ROMS_DIR.pjoin(selectedLauncher['roms_base_noext'] + '.json')
+        if not roms_json_FN.exists():
+            kodi_notify('Launcher JSON database not found. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
         all_roms = fs_load_ROMs_JSON(ROMS_DIR, selectedLauncher)
         if not all_roms:
-            kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
+            kodi_notify('Launcher JSON database empty. Add ROMs to launcher.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
         # --- Load parent/clone index ---
         index_base_noext = selectedLauncher['roms_base_noext'] + '_index_PClone'
-        index_file_path = ROMS_DIR.pjoin(index_base_noext + '.json')
-        if not index_file_path.exists():
-            kodi_notify('Parent list JSON not found.')
+        index_json_FN = ROMS_DIR.pjoin(index_base_noext + '.json')
+        if not index_json_FN.exists():
+            kodi_notify('Parent list JSON database not found.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
         pclone_index = fs_load_JSON_file(ROMS_DIR, index_base_noext)
         if not pclone_index:
-            kodi_notify('Parent list is empty.')
+            kodi_notify('Parent list JSON database is empty.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
@@ -4858,7 +4969,7 @@ class Main:
         if type == 0:
             NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)            
             NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-            plot_str = text_limit_string(collection['m_plot'], DESCRIPTION_MAXSIZE)
+            plot_str = text_limit_string(collection['m_plot'], PLOT_STR_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
                                   ["Edit Title: '{0}'".format(collection['m_name']),
@@ -4977,7 +5088,7 @@ class Main:
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_COLLECTION, asset_kind, collection): return
 
-        # --- Change default artwork ---
+        # --- Choose default Collection assets/artwork ---
         elif type == 2:
             # >> Label1 an label2
             asset_icon_str      = assets_get_asset_name_str(collection['default_icon'])
@@ -5018,39 +5129,61 @@ class Main:
             type2 = dialog.select('Edit Collection default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
-            Category_asset_ListItem_list = [
+            # >> Build ListItem of assets that can be mapped.
+            Category_ListItem_list = [
                 xbmcgui.ListItem(label = 'Icon',      label2 = collection['s_icon'] if collection['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',    label2 = collection['s_fanart'] if collection['s_fanart'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Banner',    label2 = collection['s_banner'] if collection['s_banner'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Poster',    label2 = collection['s_poster'] if collection['s_poster'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Clearlogo', label2 = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'),
             ]
-            Category_asset_ListItem_list[0].setArt({'icon' : collection['s_icon'] if collection['s_icon'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[1].setArt({'icon' : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[2].setArt({'icon' : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[3].setArt({'icon' : collection['s_poster'] if collection['s_poster'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[4].setArt({'icon' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'})
+            Category_ListItem_list[0].setArt({'icon' : collection['s_icon'] if collection['s_icon'] else 'DefaultAddonNone.png'})
+            Category_ListItem_list[1].setArt({'icon' : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'})
+            Category_ListItem_list[2].setArt({'icon' : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'})
+            Category_ListItem_list[3].setArt({'icon' : collection['s_poster'] if collection['s_poster'] else 'DefaultAddonNone.png'})
+            Category_ListItem_list[4].setArt({'icon' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'})
 
+            # >> Krypton feature: User preselected item in select() dialog.
             if type2 == 0:
-                type_s = dialog.select('Choose default Asset for Icon', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_icon')
+                type_s = dialog.select('Choose Collection default asset for Icon',
+                                       list = Category_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(collection, 'default_icon', type_s)
+                assets_choose_Category_mapped_artwork(collection, 'default_icon', type_s)
+                asset_name = assets_get_asset_name_str(collection['default_icon'])
+                kodi_notify('ROM Collection Icon mapped to {0}'.format(asset_name))
             elif type2 == 1:
-                type_s = dialog.select('Choose default Asset for Fanart', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_fanart')
+                type_s = dialog.select('Choose Collection default asset for Fanart',
+                                       list = Category_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(collection, 'default_fanart', type_s)
+                assets_choose_Category_mapped_artwork(collection, 'default_fanart', type_s)
+                asset_name = assets_get_asset_name_str(collection['default_fanart'])
+                kodi_notify('ROM Collection Fanart mapped to {0}'.format(asset_name))
             elif type2 == 2:
-                type_s = dialog.select('Choose default Asset for Banner', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_banner')
+                type_s = dialog.select('Choose Collection default asset for Banner',
+                                       list = Category_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(collection, 'default_banner', type_s)
+                assets_choose_Category_mapped_artwork(collection, 'default_banner', type_s)
+                asset_name = assets_get_asset_name_str(collection['default_banner'])
+                kodi_notify('ROM Collection Banner mapped to {0}'.format(asset_name))
             elif type2 == 3:
-                type_s = dialog.select('Choose default Asset for Poster', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_poster')
+                type_s = dialog.select('Choose Collection default asset for Poster',
+                                       list = Category_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(collection, 'default_poster', type_s)
+                assets_choose_Category_mapped_artwork(collection, 'default_poster', type_s)
+                asset_name = assets_get_asset_name_str(collection['default_poster'])
+                kodi_notify('ROM Collection Poster mapped to {0}'.format(asset_name))
             elif type2 == 4:
-                type_s = dialog.select('Choose default Asset for Clearlogo', list = Category_asset_ListItem_list, useDetails = True)
+                p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_clearlogo')
+                type_s = dialog.select('Choose Collection default asset for Clearlogo',
+                                       list = Category_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
-                assets_choose_category_artwork(collection, 'default_clearlogo', type_s)
+                assets_choose_Category_mapped_artwork(collection, 'default_clearlogo', type_s)
+                asset_name = assets_get_asset_name_str(collection['default_clearlogo'])
+                kodi_notify('ROM Collection Clearlogo mapped to {0}'.format(asset_name))
 
         # --- Save collection index and refresh view ---
         fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
@@ -5174,6 +5307,7 @@ class Main:
                 else:
                     log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
                 # >> Update imported asset filename in database.
+                log_debug('{0:<9s} collection[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
                 collection_dic[AInfo.key] = new_asset_FN.getOriginalPath()
 
             # --- Import ROM assets ---
@@ -5214,6 +5348,7 @@ class Main:
                     else:
                         log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
                     # >> Update asset info in database
+                    log_debug('{0:<9s} rom_item[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
                     rom_item[AInfo.key] = new_asset_FN.getOriginalPath()
             log_debug('_command_import_collection() Finished importing assets')
 
@@ -5630,7 +5765,7 @@ class Main:
         ACTION_VIEW_MAP               = 1000
         ACTION_VIEW_EXEC_OUTPUT       = 1100
 
-        # >> Determine if we are in a cateogory, launcher or ROM
+        # --- Determine if we are in a category, launcher or ROM ---
         log_debug('_command_view_menu() categoryID = {0}'.format(categoryID))
         log_debug('_command_view_menu() launcherID = {0}'.format(launcherID))
         log_debug('_command_view_menu() romID      = {0}'.format(romID))
@@ -6348,6 +6483,7 @@ class Main:
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
         if scraper == 'AEL':
+            xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
             xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
             # log_debug('xml_file = {0}'.format(xml_file))
             log_debug('Loading AEL XML {0}'.format(xml_path.getOriginalPath()))
@@ -7322,10 +7458,10 @@ class Main:
         kodi_busydialog_OFF()
         log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
-            kodi_notify_warn('Scraper found no matches')
+            kodi_notify('Scraper found no matches')
             return False
 
-        # Display corresponding game list found so user choses
+        # --- Display corresponding game list found so user choses ---
         rom_name_list = []
         for game in results: rom_name_list.append(game['display_name'])
         if len(rom_name_list) == 1:
@@ -7335,7 +7471,6 @@ class Main:
             if selectgame < 0: return False
 
         # --- Grab metadata for selected game ---
-        # >> Prevent race conditions
         kodi_busydialog_ON()
         gamedata = scraper_obj.get_metadata(results[selectgame])
         kodi_busydialog_OFF()
@@ -7345,10 +7480,11 @@ class Main:
 
         # --- Put metadata into launcher dictionary ---
         # >> Scraper should not change launcher title
-        self.launchers[launcherID]['m_year']   = gamedata['year']
-        self.launchers[launcherID]['m_genre']  = gamedata['genre']
-        self.launchers[launcherID]['m_studio'] = gamedata['studio']
-        self.launchers[launcherID]['m_plot']   = gamedata['plot']
+        # >> 'nplayers' and 'esrb' ignored for launchers
+        launcher['m_year']      = gamedata['year']
+        launcher['m_genre']     = gamedata['genre']
+        launcher['m_developer'] = gamedata['developer']
+        launcher['m_plot']      = gamedata['plot']
 
         # >> Changes were made
         return True
