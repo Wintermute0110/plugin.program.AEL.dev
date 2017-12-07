@@ -1455,7 +1455,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
                             'studio'      : '',
                             'plot'        : '',
                             'finished'    : 'false',
-                            'minimize'    : 'false',
+                            'toggle_window' : 'false',
                             'lnk'         : 'false',
                             'roms'        : {} }
                 for launcher_child in launcher_element:

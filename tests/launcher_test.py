@@ -38,7 +38,7 @@ class Test_Launcher(unittest.TestCase):
         launchers = {}
         launchers['ABC'] = {}
         launchers['ABC']['application'] = 'path'
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['romext'] = ''
         launchers['ABC']['application'] = ''
         launchers['ABC']['args'] = ''
@@ -66,7 +66,7 @@ class Test_Launcher(unittest.TestCase):
         launchers = {}
         launchers['ABC'] = {}
         launchers['ABC']['application'] = expectedApp
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['args'] = expectedArgs
         launchers['ABC']['m_name'] = 'MyApp'
 
@@ -104,7 +104,7 @@ class Test_Launcher(unittest.TestCase):
         launchers = {}
         launchers['ABC'] = {}
         launchers['ABC']['application'] = expectedApp
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['args'] = 'this is $apppath%'
         launchers['ABC']['m_name'] = 'MyApp'
         
@@ -140,7 +140,7 @@ class Test_Launcher(unittest.TestCase):
         launchers = {}
         launchers['ABC'] = {}
         launchers['ABC']['application'] = 'path'
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['romext'] = ''
         launchers['ABC']['application'] = ''
         launchers['ABC']['args'] = ''
@@ -175,7 +175,7 @@ class Test_Launcher(unittest.TestCase):
         launchers['ABC'] = {}
         launchers['ABC']['id'] = 'ABC'
         launchers['ABC']['application'] = 'path'
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['romext'] = ''
         launchers['ABC']['application'] = ''
         launchers['ABC']['args'] = '-a -b -c -d -e $rom$ -yes'
@@ -225,7 +225,7 @@ class Test_Launcher(unittest.TestCase):
         launchers = {}
         launchers['ABC'] = {}
         launchers['ABC']['application'] = 'path'
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['romext'] = ''
         launchers['ABC']['application'] = ''
         launchers['ABC']['args'] = ''
@@ -266,7 +266,7 @@ class Test_Launcher(unittest.TestCase):
         launchers['ABC'] = {}
         launchers['ABC']['id'] = 'ABC'
         launchers['ABC']['application'] = 'path'
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['romext'] = ''
         launchers['ABC']['application'] = ''
         launchers['ABC']['args'] = '-a -b -c -d -e $rom$ -yes'
@@ -320,7 +320,7 @@ class Test_Launcher(unittest.TestCase):
         launchers['ABC'] = {}
         launchers['ABC']['type'] = LAUNCHER_RETROARCH
         launchers['ABC']['id'] = 'ABC'
-        launchers['ABC']['minimize'] = True
+        launchers['ABC']['toggle_window'] = True
         launchers['ABC']['romext'] = None
         launchers['ABC']['args_extra'] = None
         launchers['ABC']['roms_base_noext'] = 'snes'

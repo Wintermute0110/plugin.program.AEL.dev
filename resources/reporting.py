@@ -56,15 +56,15 @@ class FileReporter(Reporter):
 
         # --- Get information from launcher ---
         launcher_path = FileName(self.launcher['rompath'])
-        launcher_exts = self.launcher['romext']
         
         self.write('******************** Report: {} ...  ********************'.format(report_title))
         self.write('  Launcher name "{0}"'.format(self.launcher['m_name']))
         self.write('  Launcher type "{0}"'.format(self.launcher['type'] if 'type' in self.launcher else 'Unknown'))
         self.write('  launcher ID   "{0}"'.format(self.launcher['id']))
         self.write('  ROM path      "{0}"'.format(launcher_path.getPath()))
-        self.write('  ROM ext       "{0}"'.format(launcher_exts))
+        self.write('  ROM ext       "{0}"'.format(self.launcher['romext']))
         self.write('  Platform      "{0}"'.format(self.launcher['platform']))
+        self.write(  'Multidisc     "{0}"'.format(self.launcher['multidisc']))
     
     def close(self):
         self.report_file.close()

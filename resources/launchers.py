@@ -69,13 +69,13 @@ class LauncherFactory():
 class Launcher():
     __metaclass__ = ABCMeta
     
-    def __init__(self, launcher, settings, executorFactory, minimize_flag, non_blocking = False):
+    def __init__(self, launcher, settings, executorFactory, toggle_window, non_blocking = False):
         
         self.launcher        = launcher
         self.settings        = settings
         self.executorFactory = executorFactory
 
-        self.minimize_flag  = minimize_flag
+        self.toggle_window  = toggle_window
         self.non_blocking   = non_blocking
 
         self.application    = None
@@ -101,9 +101,9 @@ class Launcher():
         log_debug('Launcher arguments = "{0}"'.format(self.arguments))
         log_debug('Launcher executor = "{0}"'.format(executor.__class__.__name__))
 
-        self.preExecution(self.title, self.minimize_flag)
+        self.preExecution(self.title, self.toggle_window)
         executor.execute(self.application, self.arguments, self.non_blocking)
-        self.postExecution(self.minimize_flag)
+        self.postExecution(self.toggle_window)
 
         pass
     
@@ -243,7 +243,7 @@ class ApplicationLauncher(Launcher):
     
     def __init__(self, settings, executorFactory, launcher):
         
-        super(ApplicationLauncher, self).__init__(launcher, settings, executorFactory, launcher['minimize'])
+        super(ApplicationLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'])
         
     def launch(self):
 
@@ -277,7 +277,7 @@ class StandardRomLauncher(Launcher):
         self.statsStrategy = statsStrategy
 
         non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
-        super(StandardRomLauncher, self).__init__(launcher, settings, executorFactory, launcher['minimize'], non_blocking_flag)
+        super(StandardRomLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'], non_blocking_flag)
 
     def _selectApplicationToUse(self):
 
@@ -480,7 +480,7 @@ class SteamLauncher(Launcher):
         self.statsStrategy = statsStrategy
 
         non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
-        super(SteamLauncher, self).__init__(launcher, settings, executorFactory, launcher['minimize'], non_blocking_flag)
+        super(SteamLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'], non_blocking_flag)
         
     def launch(self):
         
