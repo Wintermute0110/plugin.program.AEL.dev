@@ -68,6 +68,10 @@ WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe,
 
 [B]Advanced Emulator Launcher | version 0.9.8 | XX January 2018[/B]
 
+FEATURE  Per-launcher setting to disable multi-disc ROM support.
+
+WIP      Option to rescrape all assets from launcher in a similar fashion to "Scan ROMs local artwork".
+
 FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
 
 
