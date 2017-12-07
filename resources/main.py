@@ -7384,7 +7384,7 @@ class Main:
         kodi_busydialog_OFF()
         log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
         if not results:
-            kodi_notify_warn('Scraper found no game matches')
+            kodi_notify('Scraper found no game matches')
             return False
 
         # --- Display corresponding game list found so user choses ---

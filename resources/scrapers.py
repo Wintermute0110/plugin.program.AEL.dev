@@ -77,7 +77,7 @@ class ScraperFactory(ProgressDialogStrategy):
         log_info('No duplicated asset dirs found')
         return False        
 
-    # >> Determine metadata action based on policy
+    # >> Determine metadata action based on configured metadata policy
     # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"    
     def _get_metadata_scraper(self, scan_metadata_policy, launcher):
 
@@ -282,20 +282,21 @@ class NfoScraper(Scraper):
         return 'NFO scraper'
 
     def _getCandidates(self, searchTerm, romPath, rom):
-        NFO_file = romPath.switchExtension('nfo')
-        log_debug('Testing NFO file "{0}"'.format(NFO_file.getOriginalPath()))
 
+        NFO_file = romPath.switchExtension('nfo')
         games = []
+
         if NFO_file.exists():
             games.append(NFO_file)
+            log_debug('NFO file found "{0}"'.format(NFO_file.getOriginalPath()))
         else:
-            log_debug('NFO file not found.')
+            log_debug('NFO file NOT found "{0}"'.format(NFO_file.getOriginalPath()))
 
         return games
 
     def _loadCandidate(self, candidate, romPath):
         
-        log_debug('NFO file found. Loading it.')
+        log_debug('Reading NFO file')
         self.nfo_dic = fs_import_ROM_NFO_file_scanner(candidate)
 
     def _applyCandidate(self, romPath, rom):
