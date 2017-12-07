@@ -256,7 +256,8 @@ class Test_romscannerstests(unittest.TestCase):
         scrapers = [FakeScraper(None)]
         
         launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
-        launcher['nointro_xml_file'] = None
+        launcher['nointro_xml_file'] = None        
+        launcher['multidisc'] = True
 
         roms = {}
         roms['1']= {}
