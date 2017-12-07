@@ -296,20 +296,20 @@ class NfoScraper(Scraper):
     def _loadCandidate(self, candidate, romPath):
         
         log_debug('NFO file found. Loading it.')
-        self.nfo_dic = fs_import_NFO_file_scanner(candidate)
+        self.nfo_dic = fs_import_ROM_NFO_file_scanner(candidate)
 
     def _applyCandidate(self, romPath, rom):
-        
-        # NOTE <platform> is chosen by AEL, never read from NFO files
+        # NOTE <platform> is chosen by AEL, never read from NFO files. Indeed, platform
+        #      is a Launcher property, not a ROM property.
         rom['m_name']      = self.nfo_dic['title']     # <title>
         rom['m_year']      = self.nfo_dic['year']      # <year>
         rom['m_genre']     = self.nfo_dic['genre']     # <genre>
-        rom['m_developer'] = self.nfo_dic['publisher'] if 'publisher' in self.nfo_dic else self.nfo_dic['developer'] # <publisher> rename to <developer>
+        rom['m_developer'] = self.nfo_dic['developer'] # <developer>
+        rom['m_nplayers']  = self.nfo_dic['nplayers']  # <nplayers>
+        rom['m_esrb']      = self.nfo_dic['esrb']      # <esrb>
+        rom['m_rating']    = self.nfo_dic['rating']    # <rating>
         rom['m_plot']      = self.nfo_dic['plot']      # <plot>
 
-        # romdata['m_nplayers']  = nfo_dic['nplayers']  # <nplayers>
-        # romdata['m_esrb']      = nfo_dic['esrb']      # <esrb>
-        # romdata['m_rating']    = nfo_dic['rating']    # <rating>
         return True
 
 

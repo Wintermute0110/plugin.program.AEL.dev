@@ -1599,7 +1599,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 # This file is called by the ROM scanner to read a ROM info file automatically.
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 #
-def fs_import_ROM_NFO_file_scanner(NFO_FN):
+def fs_import_ROM_NFO_file_scanner(nfo_file_path):
     nfo_dic = {
         'title' : '', 'year' : '', 'genre' : '', 'developer' : '',
         'nplayers' : '', 'esrb' : '', 'rating' : '', 'plot' : ''
