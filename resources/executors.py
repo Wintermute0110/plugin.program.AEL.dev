@@ -152,19 +152,32 @@ class WindowsBatchFileExecutor(Executor):
     def execute(self, application, arguments, non_blocking):
         import subprocess
         import shlex
-        
+                
         arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
         apppath = application.getDir()
-
+        
+        # --- Workaround to run UNC paths in Windows ---
+        # >> Retroarch now support ROMs in UNC paths (Samba remotes)
+        new_command = list(command)
+        for i, _ in enumerate(command):
+            if command[i][0] == '\\':
+                new_command[i] = '\\' + command[i]
+                log_debug('Executor (Windows BatchFile): Before arg #{0} = "{1}"'.format(i, command[i]))
+                log_debug('Executor (Windows BatchFile): Now    arg #{0} = "{1}"'.format(i, new_command[i]))
+        command = list(new_command)
+        log_debug('Executor (Windows BatchFile): command = {0}'.format(command))
+        
         log_debug('Executor (Windows BatchFile) Launching BAT application')
+        log_debug('Executor (Windows BatchFile) Ignoring setting windows_cd_apppath')
+        log_debug('Executor (Windows BatchFile) Ignoring setting windows_close_fds')
         log_debug('Executor (Windows BatchFile) show_batch_window = {0}'.format(self.show_batch_window))
         info = subprocess.STARTUPINFO()
         info.dwFlags = 1
         info.wShowWindow = 5 if self.show_batch_window else 0
         retcode = subprocess.call(command, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
         log_info('Executor (Windows BatchFile) Process BAR retcode = {0}'.format(retcode))
-
+        
         pass
 
 
