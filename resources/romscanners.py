@@ -122,7 +122,7 @@ class RomScannerStrategy(ScannerStrategy):
         for new_rom in new_roms:
             roms[new_rom['id']] = new_rom
 
-        launcher_report.write('********** ROM scanner finished **********')
+        launcher_report.write('******************** ROM scanner finished. Report ********************')
         launcher_report.write('Removed dead ROMs {0:6d}'.format(num_removed_roms))
         launcher_report.write('Files checked     {0:6d}'.format(num_candidates))
         launcher_report.write('New added ROMs    {0:6d}'.format(num_new_roms))

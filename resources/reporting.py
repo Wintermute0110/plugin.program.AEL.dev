@@ -58,13 +58,13 @@ class FileReporter(Reporter):
         launcher_path = FileName(self.launcher['rompath'])
         launcher_exts = self.launcher['romext']
         
-        self.write('*** Report: {} ... ***\n'.format(report_title))
-        self.write('  Launcher name "{0}"\n'.format(self.launcher['m_name']))
-        self.write('  Launcher type "{0}"\n'.format(self.launcher['type'] if 'type' in self.launcher else 'Unknown'))
-        self.write('  launcher ID   "{0}"\n'.format(self.launcher['id']))
-        self.write('  ROM path      "{0}"\n'.format(launcher_path.getPath()))
-        self.write('  ROM ext       "{0}"\n'.format(launcher_exts))
-        self.write('  Platform      "{0}"\n'.format(self.launcher['platform']))
+        self.write('******************** Report: {} ...  ********************'.format(report_title))
+        self.write('  Launcher name "{0}"'.format(self.launcher['m_name']))
+        self.write('  Launcher type "{0}"'.format(self.launcher['type'] if 'type' in self.launcher else 'Unknown'))
+        self.write('  launcher ID   "{0}"'.format(self.launcher['id']))
+        self.write('  ROM path      "{0}"'.format(launcher_path.getPath()))
+        self.write('  ROM ext       "{0}"'.format(launcher_exts))
+        self.write('  Platform      "{0}"'.format(self.launcher['platform']))
     
     def close(self):
         self.report_file.close()
