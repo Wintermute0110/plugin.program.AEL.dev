@@ -1,3 +1,6 @@
+# --- Python standard library ---
+from __future__ import unicode_literals
+
 from abc import ABCMeta, abstractmethod
 import re, urllib, urllib2, json
 

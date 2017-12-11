@@ -1,3 +1,5 @@
+# --- Python standard library ---
+from __future__ import unicode_literals
 from abc import ABCMeta, abstractmethod
 
 from utils import *
@@ -70,4 +72,5 @@ class FileReporter(Reporter):
         self.report_file.close()
 
     def _write_message(self, message):
-        self.report_file.write(message + '\n')
+        self.report_file.write(message.encode('utf-8'))
+        self.report_file.write('\n'.encode('utf-8'))
