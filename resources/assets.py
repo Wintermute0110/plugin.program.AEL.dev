@@ -38,6 +38,41 @@ ASSET_FLYER      = 1300  # ROMs have FLYER, Categories/Launchers/Collections hav
 ASSET_MAP        = 1400
 ASSET_MANUAL     = 1500
 
+ASSET_SETTING_KEYS = {}
+ASSET_SETTING_KEYS[ASSET_ICON] = ''
+ASSET_SETTING_KEYS[ASSET_FANART] = 'scraper_fanart'
+ASSET_SETTING_KEYS[ASSET_BANNER] = 'scraper_banner'
+ASSET_SETTING_KEYS[ASSET_POSTER] = ''
+ASSET_SETTING_KEYS[ASSET_CLEARLOGO] = 'scraper_clearlogo'
+ASSET_SETTING_KEYS[ASSET_CONTROLLER] = ''
+ASSET_SETTING_KEYS[ASSET_TRAILER] = ''
+ASSET_SETTING_KEYS[ASSET_TITLE] = 'scraper_title'
+ASSET_SETTING_KEYS[ASSET_SNAP] = 'scraper_snap'      
+ASSET_SETTING_KEYS[ASSET_BOXFRONT] = 'scraper_boxfront'
+ASSET_SETTING_KEYS[ASSET_BOXBACK] = 'scraper_boxback'
+ASSET_SETTING_KEYS[ASSET_CARTRIDGE] = 'scraper_cart'
+ASSET_SETTING_KEYS[ASSET_FLYER] = ''
+ASSET_SETTING_KEYS[ASSET_MAP] = ''
+ASSET_SETTING_KEYS[ASSET_MANUAL] = ''
+    
+
+MAME_ASSET_SETTING_KEYS = {}
+MAME_ASSET_SETTING_KEYS[ASSET_ICON] = ''
+MAME_ASSET_SETTING_KEYS[ASSET_FANART] = 'scraper_fanart_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_BANNER] = 'scraper_marquee_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_POSTER] = ''
+MAME_ASSET_SETTING_KEYS[ASSET_CLEARLOGO] = 'scraper_clearlogo_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_CONTROLLER] = ''
+MAME_ASSET_SETTING_KEYS[ASSET_TRAILER] = ''
+MAME_ASSET_SETTING_KEYS[ASSET_TITLE] = 'scraper_title_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_SNAP] = 'scraper_snap_MAME'      
+MAME_ASSET_SETTING_KEYS[ASSET_BOXFRONT] = 'scraper_cabinet_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_BOXBACK] = 'scraper_cpanel_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_CARTRIDGE] = 'scraper_pcb_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_FLYER] = 'scraper_flyer_MAME'
+MAME_ASSET_SETTING_KEYS[ASSET_MAP] = ''
+MAME_ASSET_SETTING_KEYS[ASSET_MANUAL] = ''
+
 #
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
 #
@@ -152,7 +187,7 @@ def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
 #
 def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]
-    asset_path     = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
+    asset_path     = object_dic[conf_asset_key] if conf_asset_key in object_dic and object_dic[conf_asset_key] else default_asset
 
     return asset_path
 
@@ -160,6 +195,10 @@ def asset_get_default_asset_Category(object_dic, object_key, default_asset = '')
 # Same for ROMs
 #
 def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
+
+    if object_key not in launcher:
+        return default_asset
+
     conf_asset_key = launcher[object_key]
     asset_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
 
@@ -567,6 +606,7 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
             log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
 
     return local_asset_list
+
 
 #
 # Search for local assets and put found files into a list.

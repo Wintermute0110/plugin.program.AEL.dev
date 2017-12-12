@@ -20,7 +20,10 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch
+from stat import *
+import xml.etree.ElementTree as ET
+import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch, json
+import xbmcvfs
 
 # --- Kodi modules ---
 # >> FileName class uses xbmc.translatePath()
@@ -89,6 +92,10 @@ def text_str_2_Uni(string):
 # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
 #
 def text_escape_XML(data_str):
+
+    if not isinstance(data_str, basestring):
+        data_str = str(data_str)
+
     # Ampersand MUST BE replaced FIRST
     data_str = data_str.replace('&', '&amp;')
     data_str = data_str.replace('>', '&gt;')
@@ -354,17 +361,15 @@ def text_get_multidisc_info(ROM_FN):
 # Get extension of URL. Returns '' if not found.
 #
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
     
-    return ext
+    urlPath = FileName(url)
+    return urlPath.getExt()
 
 #
 # Defaults to .jpg if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
+    ext = text_get_URL_extension(url)
     ret = '.jpg' if ext == '' else ext
 
     return ret
@@ -382,10 +387,11 @@ def misc_add_file_cache(dir_str):
         return
     dir_FN = FileName(dir_str)
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
-    log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
-    file_list = os.listdir(dir_FN.getPath())
-    file_set = set(file_list)
-    # for file in file_set: log_debug('File "{0}"'.format(file))
+
+    file_list = dir_FN.scanFilesInPathAsFileNameObjects()
+    # lower all filenames for easier matching
+    file_set = [file.getBase().lower() for file in file_list]
+
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
     file_cache[dir_str] = file_set
 
@@ -394,10 +400,15 @@ def misc_add_file_cache(dir_str):
 #
 def misc_search_file_cache(dir_str, filename_noext, file_exts):
     # log_debug('misc_search_file_cache() Searching in  "{0}"'.format(dir_str))
+    if dir_str not in file_cache:
+        log_warning('Directory {0} not in file_cache'.format(dir_str))
+        return None
+
     current_cache_set = file_cache[dir_str]
     for ext in file_exts:
         file_base = filename_noext + '.' + ext
-        # log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
+        file_base = file_base.lower()
+        #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
         if file_base in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
             return FileName(dir_str).pjoin(file_base)
@@ -443,6 +454,7 @@ def misc_generate_random_SID():
 # caller code.
 # A) Transform paths like smb://server/directory/ into \\server\directory\
 # B) Use xbmc.translatePath() for paths starting with special://
+# C) Uses xbmcvfs wherever possible
 # -------------------------------------------------------------------------------------------------
 class FileName:
     # pathString must be a Unicode string object
@@ -525,6 +537,9 @@ class FileName:
     def getDir(self):
         return os.path.dirname(self.path)
 
+    def getDirAsFileName(self):
+        return FileName(self.getDir())
+
     def getBase(self):
         return os.path.basename(self.path)
 
@@ -536,61 +551,186 @@ class FileName:
 
     def getExt(self):
         root, ext = os.path.splitext(self.path)
-        
         return ext
+
+    def switchExtension(self, targetExt):
+        
+        ext = self.getExt()
+        copiedPath = self.originalPath
+        
+        if not targetExt.startswith('.'):
+            targetExt = '.{0}'.format(targetExt)
+
+        new_path = FileName(copiedPath.replace(ext, targetExt))
+        return new_path
 
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
-    def scanFilesInPath(self, mask):
+    def scanFilesInPath(self, mask = '*.*'):
         files = []
-        filenames = os.listdir(self.path)
+
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(os.path.join(self.path, filename))
+            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
 
         return files
 
-    def scanFilesInPathAsPaths(self, mask):
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
-        filenames = os.listdir(self.path)
+        
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
-            files.append(FileName(os.path.join(self.path, filename)))
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(FileName(filePath.getOriginalPath()))
 
         return files
 
-    def recursiveScanFilesInPath(self, mask):
+    def recursiveScanFilesInPath(self, mask = '*.*'):
         files = []
-        for root, dirs, foundfiles in os.walk(self.path):
-            for filename in fnmatch.filter(foundfiles, mask):
-                files.append(os.path.join(root, filename))
+        
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(filePath.getOriginalPath())
+
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPath(mask)
+            files.extend(subPathFiles)
 
         return files
 
+    def _decodeName(self, name):
+        if type(name) == str:
+            try:
+                name = name.decode('utf8')
+            except:
+                name = name.decode('windows-1252')
+        
+        return name
+    
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
     # ---------------------------------------------------------------------------------------------
     def stat(self):
-        return os.stat(self.path)
+        return xbmcvfs.Stat(self.originalPath)
 
     def exists(self):
-        return os.path.exists(self.path)
+        return xbmcvfs.exists(self.originalPath)
 
+    # Warning: not suitable for xbmcvfs paths yet
     def isdir(self):
-        return os.path.isdir(self.path)
         
+        if not self.exists():
+            return False
+
+        try:
+            self.open('r')
+            self.close()
+        except:
+            return True
+        
+        return False
+        #return os.path.isdir(self.path)
+        
+    # Warning: not suitable for xbmcvfs paths yet
     def isfile(self):
-        return os.path.isfile(self.path)
+
+        if not self.exists():
+            return False
+
+        return not self.isdir()
+        #return os.path.isfile(self.path)
 
     def makedirs(self):
-        if not os.path.exists(self.path): 
-            os.makedirs(self.path)
+        
+        if not self.exists():
+            xbmcvfs.mkdirs(self.originalPath)
 
-    # os.remove() and os.unlink() are exactly the same.
     def unlink(self):
-        os.unlink(self.path)
+
+        if self.isfile():
+            xbmcvfs.delete(self.originalPath)
+
+            # hard delete if it doesnt succeed
+            log_debug('xbmcvfs.delete() failed, applying hard delete')
+            if self.exists():
+                os.remove(self.path)
+        else:
+            xbmcvfs.rmdir(self.originalPath)
 
     def rename(self, to):
-        os.rename(self.path, to.getPath())
+
+        if self.isfile():
+            xbmcvfs.rename(self.originalPath, to.getOriginalPath())
+        else:
+            os.rename(self.path, to.getPath())
+
+    def copy(self, to):        
+        xbmcvfs.copy(self.originalPath(), to.getOriginalPath())
+                    
+    # ---------------------------------------------------------------------------------------------
+    # File IO functions
+    # ---------------------------------------------------------------------------------------------
+    
+    def readAll(self):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        contents = file.read()
+        file.close()
+
+        return contents
+    
+    def readAllUnicode(self, encoding='utf-8'):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        contents = file.read()
+        file.close()
+
+        return unicode(contents, encoding)
+    
+    def writeAll(self, bytes, flags='w'):
+        file = xbmcvfs.File(self.originalPath, flags)
+        file.write(bytes)
+        file.close()
+
+    def write(self, bytes):
+       if self.fileHandle is None:
+           raise OSError('file not opened')
+
+       self.fileHandle.write(bytes)
+
+    def open(self, flags):
+        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
+        
+    def close(self):
+        if self.fileHandle is None:
+           raise OSError('file not opened')
+
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    # opens file and reads xml. Returns the root of the xml!
+    def readXml(self):
+        file = xbmcvfs.File(self.originalPath, 'r')
+        data = file.read()
+        file.close()
+
+        root = ET.fromstring(data)
+        return root
+    
+    # opens file and reads to JSON
+    def readJson(self):
+        contents = self.readAllUnicode()
+        return json.loads(contents)
+    
+    # --- Configure JSON writer ---
+    # NOTE More compact JSON files (less blanks) load faster because size is smaller.
+    def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        self.writeAll(unicode(json_data).encode("utf-8"))
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers

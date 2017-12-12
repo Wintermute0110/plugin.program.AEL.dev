@@ -70,8 +70,12 @@ class Scraper_TheGamesDB():
         # >> If cache miss, then update cache.
         # >> quote_plus() will convert the spaces into '+'.
         scraper_platform = scraper_platform.replace('-', ' ')
+        
+        # added encoding 
+        # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
+
         url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
-              'name=' + urllib.quote_plus(search_string) + '&platform=' + urllib.quote_plus(scraper_platform)
+              'name=' + urllib.quote_plus(search_string.encode('utf-8'), safe=u':/'.encode('utf-8')) + '&platform=' + urllib.quote_plus(scraper_platform)
         if self.check_cache(search_string, rom_base_noext, platform):
             page_data = self.get_cached_pagedata()
         else:

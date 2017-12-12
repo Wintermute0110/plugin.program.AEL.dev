@@ -21,6 +21,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from abc import ABCMeta, abstractmethod
 import sys, os, shutil, time, random, hashlib, urlparse
 
 # --- Kodi modules ---
@@ -41,14 +42,18 @@ LOG_DEBUG   = 4
 
 # --- Internal globals --------------------------------------------------------
 current_log_level = LOG_INFO
+use_print_instead = False
 
 # -------------------------------------------------------------------------------------------------
 # Logging functions
 # -------------------------------------------------------------------------------------------------
 def set_log_level(level):
     global current_log_level
-
     current_log_level = level
+
+def set_use_print(use_print):
+    global use_print_instead   
+    use_print_instead = use_print
 
 # For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
 #
@@ -59,33 +64,40 @@ def log_debug(str_text):
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
 
         # At this point we are sure str_text is a unicode string.
-        log_text = 'AEL DEBUG: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log_text = u'AEL DEBUG: ' + str_text
+        log(log_text, LOG_VERB)
 
 def log_verb(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL VERB : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log_text = u'AEL VERB : ' + str_text
+        log(log_text, LOG_VERB)
 
 def log_info(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL INFO : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log_text = u'AEL INFO : ' + str_text
+        log(log_text, LOG_INFO)
 
 def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL WARN : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log_text = u'AEL WARN : ' + str_text
+        log(log_text, LOG_WARNING)
 
 def log_error(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL ERROR: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log_text = u'AEL ERROR: ' + str_text
+        log(log_text, LOG_ERROR)
 
+def log(log_text, level):
+    
+    if use_print_instead:
+        print(log_text.encode('utf-8'))
+    else:
+        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+ 
 # -----------------------------------------------------------------------------
 # Kodi notifications and dialogs
 # -----------------------------------------------------------------------------
@@ -140,76 +152,6 @@ def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
-# -----------------------------------------------------------------------------
-# Kodi specific stuff
-# -----------------------------------------------------------------------------
-# About Kodi image cache
-#
-# See http://kodi.wiki/view/Caches_explained
-# See http://kodi.wiki/view/Artwork
-# See http://kodi.wiki/view/HOW-TO:Reduce_disk_space_usage
-# See http://forum.kodi.tv/showthread.php?tid=139568 (What are .tbn files for?)
-#
-# Whenever Kodi downloads images from the internet, or even loads local images saved along
-# side your media, it caches these images inside of ~/.kodi/userdata/Thumbnails/. By default,
-# large images are scaled down to the default values shown below, but they can be sized
-# even smaller to save additional space.
-
-#
-# Gets where in Kodi image cache an image is located.
-#
-def kodi_get_cached_image(image_path):
-    THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
-
-    # --- Get the Kodi cached image ---
-    # This function return the cache file base name
-    base_name = xbmc.getCacheThumbName(image_path)
-    cache_file_path = os.path.join(THUMBS_CACHE_PATH, base_name[0], base_name)
-
-    return cache_file_path
-
-#
-# Updates Kodi image cache for the image provided with the image itself.
-# In other words, copies the image into Kodi cache entry for the image itself.
-#
-# Needles to say, only update image cache if image already was on the cache.
-def kodi_update_image_cache(img_path):
-    # What if image is not cached?
-    cached_thumb = kodi_get_cached_image(img_path)
-    log_debug('kodi_update_image_cache()     img_path {0}'.format(img_path))
-    log_debug('kodi_update_image_cache() cached_thumb {0}'.format(cached_thumb))
-
-    # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
-    # However, images in the cache have the original extension. Replace TBN extension
-    # with that of the original image.
-    cached_thumb_root, cached_thumb_ext = os.path.splitext(cached_thumb)
-    if cached_thumb_ext == '.tbn':
-        img_path_root, img_path_ext = os.path.splitext(img_path)
-        cached_thumb = cached_thumb.replace('.tbn', img_path_ext)
-        log_debug('kodi_update_image_cache() New cached_thumb {0}'.format(cached_thumb))
-
-    # Check if file exists in the cache
-    # xbmc.getCacheThumbName() seems to return a cache filename even if the local file does not exist!
-    if not os.path.isfile(cached_thumb):
-        log_debug('kodi_update_image_cache() Cached image not found. Doing nothing')
-        return
-
-    # --- Copy local image into Kodi image cache ---
-    # >> See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
-    log_debug('kodi_update_image_cache() copying {0}'.format(img_path))
-    log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb))
-    fs_encoding = sys.getfilesystemencoding()
-    decoded_img_path = img_path.decode(fs_encoding, 'ignore')
-    decoded_cached_thumb = cached_thumb.decode(fs_encoding, 'ignore')
-    try:
-        shutil.copy2(decoded_img_path, decoded_cached_thumb)
-    except OSError:
-        log_kodi_notify_warn('AEL warning', 'Cannot update cached image (OSError)')
-        lod_debug()
-
-    # Is this really needed?
-    # xbmc.executebuiltin('XBMC.ReloadSkin()')
-
 def kodi_toogle_fullscreen():
     # >> Frodo and up compatible
     xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
@@ -231,3 +173,243 @@ def kodi_kodi_read_favourites():
             fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
 
     return favourites, fav_names
+
+
+#
+# The wizarddialog implementations can be used to chain a collection of
+# different kodi dialogs and use them to fill a dictionary with user input.
+#
+# Each wizarddialog accepts a key which will correspond with the key/value combination
+# in the dictionary. It will also accept a customFunction (delegate or lambda) which
+# will be called after the dialog has been shown. Depending on the type of dialog some
+# other arguments might be needed.
+# 
+# The chaining is implemented by applying the decorator pattern and injecting
+# the previous wizarddialog in each new one.
+# You can then call the method 'runWizard()' on the last created instance.
+# 
+class WizardDialog():
+    __metaclass__ = ABCMeta
+    
+    def __init__(self, property_key, title, decoratorDialog,  customFunction = None):
+        self.title = title
+        self.property_key = property_key
+        self.decoratorDialog = decoratorDialog
+        self.customFunction = customFunction
+
+    def runWizard(self, properties):
+
+        if not self.show(properties):
+            log_warning('User stopped wizard')
+            return None
+        
+        return properties
+        
+    @abstractmethod
+    def show(self, properties):
+        return True
+
+#
+# Wizard dialog which accepts a keyboard user input.
+# 
+class KeyboardWizardDialog(WizardDialog):
+    
+    def show(self, properties):
+
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.show(properties):
+                return False
+
+        log_debug('Executing keyboard wizard dialog for key: {0}'.format(self.property_key))
+        originalText = properties[self.property_key] if self.property_key in properties else ''
+
+        textInput = xbmc.Keyboard(originalText, self.title)
+        textInput.doModal()
+        if not textInput.isConfirmed(): 
+            return False
+
+        output = textInput.getText().decode('utf-8')
+
+        if self.customFunction is not None:
+            output = self.customFunction(output, properties)
+
+        properties[self.property_key] = output
+        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+
+        return True
+  
+#
+# Wizard dialog which shows a list of options to select from.
+# 
+class SelectionWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None):
+        
+        self.options = options
+        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
+       
+    def show(self, properties):
+        
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.show(properties):
+                return False
+            
+        log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
+        dialog = xbmcgui.Dialog()
+        selection = dialog.select(self.title, self.options)
+
+        if selection < 0:
+           return False
+       
+        output = self.options[selection]
+        if self.customFunction is not None:
+            output = self.customFunction(selection, properties)
+
+        properties[self.property_key] = output
+        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+        return True
+
+  
+#
+# Wizard dialog which shows a list of options to select from.
+# In comparison with the normal SelectionWizardDialog, this version allows a dictionary or key/value
+# list as the selectable options. The selected key will be used.
+# 
+class DictionarySelectionWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None):
+        
+        self.options = options
+        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
+       
+    def show(self, properties):
+        
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.show(properties):
+                return False
+            
+        log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
+        dialog = xbmcgui.DictionaryDialog()
+        output = dialog.select(self.title, self.options)
+
+        if output is None:
+           return False
+       
+        if self.customFunction is not None:
+            output = self.customFunction(output, properties)
+
+        properties[self.property_key] = output
+        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+        return True
+    
+#
+# Wizard dialog which shows a filebrowser.
+# 
+class FileBrowseWizardDialog(WizardDialog):
+    
+    def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None):
+        
+        self.browseType = browseType
+        self.filter = filter
+        super(FileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
+       
+    def show(self, properties):
+        
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.show(properties):
+                return False
+            
+        log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
+        originalPath = properties[self.property_key] if self.property_key in properties else ''
+       
+        output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath).decode('utf-8')
+
+        if not output:
+           return False
+       
+        if self.customFunction is not None:
+            output = self.customFunction(output, properties)
+
+        properties[self.property_key] = output
+        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+        return True
+    
+#
+# Wizard dialog which does nothing or shows anything.
+# It only sets a certain property with the predefined value.
+# 
+class DummyWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None):
+        
+        self.predefinedValue = predefinedValue
+        super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction)
+
+    def show(self, properties):
+        
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.show(properties):
+                return False
+            
+        log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
+        output = self.predefinedValue
+        if self.customFunction is not None:
+            output = self.customFunction(output, properties)
+
+        properties[self.property_key] = output
+        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+        return True
+
+# 
+# Kodi dialog with select box based on a dictionary
+# 
+class DictionaryDialog(object):
+    
+    def __init__(self):
+        self.dialog = xbmcgui.Dialog()
+
+    def select(self, title, dictOptions):
+        
+        selection = self.dialog.select(title, dictOptions.values())
+
+        if selection < 0:
+            return None
+
+        return dictOptions.keys()[selection]
+
+class ProgressDialogStrategy(object):
+    
+    def __init__(self):
+
+        self.progress = 0
+        self.progressDialog = xbmcgui.DialogProgress()
+        self.verbose = True
+
+    def _startProgressPhase(self, title, message):        
+        self.progressDialog.create(title, message)
+
+    def _updateProgress(self, progress, message1 = None, message2 = None):
+        
+        self.progress = progress
+
+        if not self.verbose:
+            self.progressDialog.update(progress)
+        else:
+            self.progressDialog.update(progress, message1, message2)
+
+    def _updateProgressMessage(self, message1, message2 = None):
+
+        if not self.verbose:
+            return
+
+        self.progressDialog.update(self.progress, message1, message2)
+
+    def _isProgressCanceled(self):
+        return self.progressDialog.iscanceled()
+
+    def _endProgressPhase(self, canceled=False):
+        
+        if not canceled:
+            self.progressDialog.update(100)
+
+        self.progressDialog.close()
