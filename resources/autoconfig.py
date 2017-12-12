@@ -72,6 +72,7 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     str_list.append('<launcher>\n')
     str_list.append(XML_text('name', launcher['m_name']))
     str_list.append(XML_text('category', category_name))
+    str_list.append(XML_text('type', launcher['type']))
     str_list.append(XML_text('year', launcher['m_year']))
     str_list.append(XML_text('genre', launcher['m_genre']))
     str_list.append(XML_text('developer', launcher['m_developer']))
@@ -79,6 +80,10 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     str_list.append(XML_text('plot', launcher['m_plot']))
     str_list.append(XML_text('platform', launcher['platform']))
     str_list.append(XML_text('application', launcher['application']))
+
+    if 'steamid' in launcher:
+        str_list.append(XML_text('steamid', launcher['steamid']))
+
     str_list.append(XML_text('args', launcher['args']))
     if launcher['args_extra']:
         for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))

@@ -1534,6 +1534,9 @@ def fs_export_ROM_NFO(rom, verbose = True):
     nfo_content.append('</game>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
+        nfo_folder = nfo_file_path.getDirAsFileName()
+        nfo_folder.makedirs()
+
         nfo_file_path.writeAll(full_string)
     except:
         if verbose:

@@ -92,6 +92,10 @@ def text_str_2_Uni(string):
 # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
 #
 def text_escape_XML(data_str):
+
+    if not isinstance(data_str, basestring):
+        data_str = str(data_str)
+
     # Ampersand MUST BE replaced FIRST
     data_str = data_str.replace('&', '&amp;')
     data_str = data_str.replace('>', '&gt;')
@@ -532,6 +536,9 @@ class FileName:
 
     def getDir(self):
         return os.path.dirname(self.path)
+
+    def getDirAsFileName(self):
+        return FileName(self.getDir())
 
     def getBase(self):
         return os.path.basename(self.path)
