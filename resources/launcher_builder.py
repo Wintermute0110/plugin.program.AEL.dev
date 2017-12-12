@@ -38,7 +38,7 @@ class launcherBuilder():
         typeOptions[LAUNCHER_STANDALONE]  = 'Standalone launcher (Game/Application)'
         typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
         typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
-        typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)'
+        #typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)' todo: not finished yet
         typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
         if sys.platform == 'win32':
             typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
