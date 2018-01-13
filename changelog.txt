@@ -80,6 +80,9 @@ FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher meta
 FIX      Fix metadata and artwork scrapers when ROM name has Unicode characters.
          See Github issue #52
 
+FIX      Fixed display_fav_status label in settings.xml
+         See Github issue #56
+
 [B]Advanced Emulator Launcher | version 0.9.7 | 23 November 2017[/B]
 
 FEATURE  Export individual Launcher XML configuration.
