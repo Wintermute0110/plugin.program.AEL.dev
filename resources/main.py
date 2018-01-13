@@ -5181,7 +5181,7 @@ class Main:
 
         # --- Add new collection to database ---
         collection           = fs_new_collection()
-        collection_name      = keyboard.getText()
+        collection_name      = keyboard.getText().decode('utf-8')
         collection_id_md5    = hashlib.md5(collection_name.encode('utf-8'))
         collection_UUID      = collection_id_md5.hexdigest()
         collection_base_name = fs_get_collection_ROMs_basename(collection_name, collection_UUID)
@@ -5909,7 +5909,7 @@ class Main:
             keyboard = xbmc.Keyboard('', 'Enter the ROM Title search string ...')
             keyboard.doModal()
             if not keyboard.isConfirmed(): return
-            search_string = keyboard.getText()
+            search_string = keyboard.getText().decode('utf-8')
             url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_TITLE', search_string)
 
         # --- Search by Release Date ---
@@ -9337,7 +9337,7 @@ class Main:
         keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText()
+        search_string = keyboard.getText().decode('utf-8')
 
         # --- Do a search and get a list of games ---
         # >> Prevent race conditions
@@ -9410,7 +9410,7 @@ class Main:
         keyboard = xbmc.Keyboard(launcher_name, 'Enter the launcher search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText()
+        search_string = keyboard.getText().decode('utf-8')
 
         # Scrap and get a list of matches
         kodi_busydialog_ON()

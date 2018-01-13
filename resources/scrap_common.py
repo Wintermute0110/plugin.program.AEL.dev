@@ -60,18 +60,19 @@ class Scraper_TheGamesDB():
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
-        if DEBUG_SCRAPERS:
-            log_debug('Scraper_TheGamesDB::get_search() search_string       "{0}"'.format(search_string))
-            log_debug('Scraper_TheGamesDB::get_search() rom_base_noext      "{0}"'.format(rom_base_noext))
-            log_debug('Scraper_TheGamesDB::get_search() AEL platform        "{0}"'.format(platform))
-            log_debug('Scraper_TheGamesDB::get_search() TheGamesDB platform "{0}"'.format(scraper_platform))
+        log_debug('Scraper_TheGamesDB::get_search() search_string       "{0}"'.format(search_string))
+        log_debug('Scraper_TheGamesDB::get_search() rom_base_noext      "{0}"'.format(rom_base_noext))
+        log_debug('Scraper_TheGamesDB::get_search() AEL platform        "{0}"'.format(platform))
+        log_debug('Scraper_TheGamesDB::get_search() TheGamesDB platform "{0}"'.format(scraper_platform))
 
         # >> Check if URL page data is in cache. If so it's a cache hit.
         # >> If cache miss, then update cache.
-        # >> quote_plus() will convert the spaces into '+'.
+        # >> quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
+        # >> UTF-8 encoded string and does not work with Unicode strings.
         scraper_platform = scraper_platform.replace('-', ' ')
         url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
-              'name=' + urllib.quote_plus(search_string) + '&platform=' + urllib.quote_plus(scraper_platform)
+              'name={0}'.format(urllib.quote_plus(search_string.encode('utf8'))) + \
+              '&platform={0}'.format(urllib.quote_plus(scraper_platform.encode('utf8')))
         if self.check_cache(search_string, rom_base_noext, platform):
             page_data = self.get_cached_pagedata()
         else:
@@ -141,18 +142,17 @@ class Scraper_GameFAQs():
     # Executes a search and returns a list of games found.
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_GameFAQs(platform)
-        if DEBUG_SCRAPERS:
-            log_debug('Scraper_GameFAQs::get_search search_string      "{0}"'.format(search_string))
-            log_debug('Scraper_GameFAQs::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
-            log_debug('Scraper_GameFAQs::get_search AEL platform       "{0}"'.format(platform))
-            log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{0}"'.format(scraper_platform))
+        log_debug('Scraper_GameFAQs::get_search search_string      "{0}"'.format(search_string))
+        log_debug('Scraper_GameFAQs::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
+        log_debug('Scraper_GameFAQs::get_search AEL platform       "{0}"'.format(platform))
+        log_debug('Scraper_GameFAQs::get_search GameFAQs platform  "{0}"'.format(scraper_platform))
 
         # Example: 'street fighter', 'Nintendo SNES'
         # http://www.gamefaqs.com/search?platform=63&game=street+fighter
         search_string = search_string.replace(' ', '+')
         url = 'http://www.gamefaqs.com/search/index.html?' + \
               'platform={0}'.format(scraper_platform) + \
-              '&game=' + search_string + ''
+              '&game={0}'.format(urllib.quote_plus(search_string.encode('utf8')))
         if self.check_cache(search_string, rom_base_noext, platform):
             page_data = self.get_cached_pagedata()
         else:
@@ -273,24 +273,24 @@ class Scraper_MobyGames():
     # ...
     def get_search(self, search_string, rom_base_noext, platform):
         scraper_platform = AEL_platform_to_MobyGames(platform)
-        if DEBUG_SCRAPERS:
-            log_debug('Scraper_MobyGames::get_search search_string      "{0}"'.format(search_string))
-            log_debug('Scraper_MobyGames::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
-            log_debug('Scraper_MobyGames::get_search AEL platform       "{0}"'.format(platform))
-            log_debug('Scraper_MobyGames::get_search MobyGames platform "{0}"'.format(scraper_platform))
+        log_debug('Scraper_MobyGames::get_search() search_string      "{0}"'.format(search_string))
+        log_debug('Scraper_MobyGames::get_search() rom_base_noext     "{0}"'.format(rom_base_noext))
+        log_debug('Scraper_MobyGames::get_search() AEL platform       "{0}"'.format(platform))
+        log_debug('Scraper_MobyGames::get_search() MobyGames platform "{0}"'.format(scraper_platform))
 
         # --- Search for games and get search page data ---
-        # >> NOTE Search result page is a little bit different if platform used or not!!!
+        # >> NOTE Search result page is a little bit different if platform is used or not!!!
         # >> Findall returns a list of tuples. Tuples elements are the groups
-        str_tokens = search_string.split(' ')
-        str_mobygames = '+'.join(str_tokens)
-        log_debug('Scraper_MobyGames::get_search str_mobygames = "{0}"'.format(str_mobygames))
+        quoted_search_string = urllib.quote_plus(search_string.encode('utf8'))
+        # str_tokens = search_string.split(' ')
+        # str_mobygames = '+'.join(str_tokens)
+        log_debug('Scraper_MobyGames::get_search() quoted_search_string = "{0}"'.format(quoted_search_string))
         if scraper_platform == '':
-            log_debug('Scraper_MobyGames::get_search NO plaform search')
-            url = 'http://www.mobygames.com/search/quick?q={0}'.format(str_mobygames)
+            log_debug('Scraper_MobyGames::get_search() NO plaform search')
+            url = 'http://www.mobygames.com/search/quick?q={0}'.format(quoted_search_string)
         else:
-            log_debug('Scraper_MobyGames::get_search Search using platform')
-            url = 'http://www.mobygames.com/search/quick?q={0}&p={1}'.format(str_mobygames, scraper_platform)
+            log_debug('Scraper_MobyGames::get_search() Search using platform')
+            url = 'http://www.mobygames.com/search/quick?q={0}&p={1}'.format(quoted_search_string, scraper_platform)
         if self.check_cache(search_string, rom_base_noext, platform):
             page_data = self.get_cached_pagedata()
         else:
@@ -347,10 +347,9 @@ class Scraper_ArcadeDB():
         self.get_search_cached_page_data      = ''
 
     def get_search(self, search_string, rom_base_noext, platform):
-        if DEBUG_SCRAPERS:
-            log_debug('Scraper_ArcadeDB::get_search search_string      "{0}"'.format(search_string))
-            log_debug('Scraper_ArcadeDB::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
-            log_debug('Scraper_ArcadeDB::get_search AEL platform       "{0}"'.format(platform))
+        log_debug('Scraper_ArcadeDB::get_search search_string      "{0}"'.format(search_string))
+        log_debug('Scraper_ArcadeDB::get_search rom_base_noext     "{0}"'.format(rom_base_noext))
+        log_debug('Scraper_ArcadeDB::get_search AEL platform       "{0}"'.format(platform))
 
         # >> MAME always uses rom_base_noext and ignores search_string.
         # >> Example game search: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino

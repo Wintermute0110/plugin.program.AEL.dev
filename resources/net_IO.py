@@ -100,7 +100,7 @@ def net_get_URL_oneline(url):
         encoding = f.headers['content-type'].split('charset=')[-1]
         # >> Fix for wrong encodings...
         if encoding == 'text/html': encoding = 'utf-8'
-        log_debug('net_get_URL_oneline() encoding = "{0}"'.format(encoding))
+        log_debug('net_get_URL_oneline() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
     except IOError as e:    
@@ -134,10 +134,10 @@ def net_get_URL_original(url):
         f = urllib2.urlopen(req)
         encoding = f.headers['content-type'].split('charset=')[-1]
         if encoding == 'text/html': encoding = 'utf-8'
-        log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
+        log_debug('net_get_URL_original() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
-    except IOError as e:    
+    except IOError as e:
         log_error('(IOError) Exception in net_get_URL_original()')
         log_error('(IOError) {0}'.format(str(e)))
         return page_data
