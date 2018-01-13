@@ -605,7 +605,9 @@ class Main:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
                                   ["Edit Title: '{0}'".format(self.categories[categoryID]['m_name']),
+                                   "Edit Release Year: '{0}'".format(self.categories[categoryID]['m_year']),
                                    "Edit Genre: '{0}'".format(self.categories[categoryID]['m_genre']),
+                                   "Edit Developer: '{0}'".format(self.categories[categoryID]['m_developer']),
                                    "Edit Rating: '{0}'".format(self.categories[categoryID]['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
                                    'Import NFO file (default, {0})'.format(NFO_str),
@@ -620,49 +622,83 @@ class Main:
                 if not keyboard.isConfirmed(): return
                 title = keyboard.getText().decode('utf-8')
                 if title == '': title = self.categories[categoryID]['m_name']
-                self.categories[categoryID]['m_name'] = title.rstrip()
-                kodi_notify('Changed Category Title')
+                new_title_str = title.strip()
+                self.categories[categoryID]['m_name'] = new_title_str
+                kodi_notify('Category Title is now {0}'.format(new_title_str))
+
+            # --- Edition of the category release date (year) ---
+            elif type2 == 1:
+                old_year_str = self.categories[categoryID]['m_year']
+                keyboard = xbmc.Keyboard(old_year_str, 'Edit Category release year')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                new_year_str = keyboard.getText().decode('utf-8')
+                if old_year_str == new_year_str:
+                    kodi_notify('Category Year not changed')
+                    return
+                self.categories[categoryID]['m_year'] = new_year_str
+                kodi_notify('Category Year is now {0}'.format(new_year_str))
 
             # --- Edition of the category genre ---
-            elif type2 == 1:
+            elif type2 == 2:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_genre'], 'Edit Genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.categories[categoryID]['m_genre'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Category Genre')
+                new_genre_str = keyboard.getText().decode('utf-8')
+                self.categories[categoryID]['m_genre'] = new_genre_str
+                kodi_notify('Category Genre is now {0}'.format(new_genre_str))
+
+            # --- Edition of the category developer ---
+            elif type2 == 3:
+                old_developer_str = self.categories[categoryID]['m_developer']
+                keyboard = xbmc.Keyboard(old_developer_str, 'Edit developer')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                new_developer_str = keyboard.getText().decode('utf-8')
+                if old_developer_str == new_developer_str:
+                    kodi_notify('Category Developer not changed')
+                    return
+                self.categories[categoryID]['m_developer'] = new_developer_str
+                kodi_notify('Category Developer is now {0}'.format(new_developer_str))
 
             # --- Edition of the category rating ---
-            elif type2 == 2:
+            elif type2 == 4:
                 rating = dialog.select('Edit Category Rating',
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
                 # >> Rating not set, empty string
                 if rating == 0:
                     self.categories[categoryID]['m_rating'] = ''
+                    kodi_notify('Category Rating changed to Not Set')
                 elif rating >= 1 and rating <= 11:
                     self.categories[categoryID]['m_rating'] = '{0}'.format(rating - 1)
+                    kodi_notify('Category Rating is now {0}'.format(self.categories[categoryID]['m_rating']))
                 elif rating < 0:
                     kodi_notify('Category rating not changed')
                     return
-                kodi_notify('Set Category Rating to {0}'.format(self.categories[categoryID]['m_rating']))
 
             # --- Edition of the plot (description) ---
-            elif type2 == 3:
+            elif type2 == 5:
+                old_plot_str = self.categories[categoryID]['m_plot']
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_plot'], 'Edit Plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.categories[categoryID]['m_plot'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Category Plot')
+                new_plot_str = keyboard.getText().decode('utf-8')
+                if old_plot_str == new_plot_str:
+                    kodi_notify('Category Plot not changed')
+                    return
+                self.categories[categoryID]['m_plot'] = new_plot_str
+                kodi_notify('Launcher Plot is now "{0}"'.format(new_plot_str))
 
             # --- Import category metadata from NFO file (automatic) ---
-            elif type2 == 4:
+            elif type2 == 6:
                 # >> Returns True if changes were made
                 NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
                 if not fs_import_category_NFO(NFO_file, self.categories, categoryID): return
                 kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Browse for category NFO file ---
-            elif type2 == 5:
+            elif type2 == 7:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
                 log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
                 if not NFO_file: return
@@ -673,7 +709,7 @@ class Main:
                 kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Export category metadata to NFO file ---
-            elif type2 == 6:
+            elif type2 == 8:
                 NFO_FileName = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
                 # >> Returns False if exception happened. If an Exception happened function notifies
                 # >> user, so display nothing to not overwrite error notification.
@@ -1208,7 +1244,6 @@ class Main:
                 rating = dialog.select('Edit Launcher Rating',
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
-                # >> Rating not set, empty string
                 if rating == 0:
                     self.launchers[launcherID]['m_rating'] = ''
                     kodi_notify('Launcher Rating changed to Not Set')
@@ -1230,7 +1265,7 @@ class Main:
                     kodi_notify('Launcher Plot not changed')
                     return
                 self.launchers[launcherID]['m_plot'] = new_plot_str
-                kodi_notify('Launcher Plot is now "{0}"'.format())
+                kodi_notify('Launcher Plot is now "{0}"'.format(new_plot_str))
 
             # --- Import launcher metadata from NFO file (default location) ---
             elif type2 == 7:
@@ -3229,8 +3264,9 @@ class Main:
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if category_dic['finished'] else 4
         listitem = xbmcgui.ListItem(category_dic['m_name'])
-        listitem.setInfo('video', {'title'   : category_dic['m_name'],    'genre'   : category_dic['m_genre'],
-                                   'plot'    : category_dic['m_plot'],    'rating'  : category_dic['m_rating'],
+        listitem.setInfo('video', {'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
+                                   'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
+                                   'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
                                    'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
 
         # --- Set Category artwork ---
@@ -6710,7 +6746,9 @@ class Main:
         info_text  = ''
         info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
         info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(category['m_name'])
+        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(category['m_year'])
         info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(category['m_genre'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(category['m_developer'])
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(category['m_rating'])
         info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(category['m_plot'])
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])

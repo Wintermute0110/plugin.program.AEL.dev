@@ -62,7 +62,9 @@ JSON_separators = (',', ':')
 def fs_new_category():
     c = {'id' : '',
          'm_name' : '',
+         'm_year' : '',
          'm_genre' : '',
+         'm_developer' : '',
          'm_rating' : '',
          'm_plot' : '',
          'finished' : False,
@@ -413,7 +415,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append('<category>\n')
             str_list.append(XML_text('id', categoryID))
             str_list.append(XML_text('m_name', category['m_name']))
+            str_list.append(XML_text('m_year', category['m_year']))
             str_list.append(XML_text('m_genre', category['m_genre']))
+            str_list.append(XML_text('m_developer', category['m_developer']))
             str_list.append(XML_text('m_rating', category['m_rating']))
             str_list.append(XML_text('m_plot', category['m_plot']))
             str_list.append(XML_text('finished', unicode(category['finished'])))
@@ -1816,8 +1820,7 @@ def fs_get_launcher_NFO_name(settings, launcher):
     return nfo_file_path
 
 #
-# Look at the launcher NFO files for a reference implementation.
-# Categories NFO files only have genre and plot.
+# Look at the Launcher NFO files for a reference implementation.
 #
 def fs_export_category_NFO(nfo_FileName, category):
     # --- Get NFO file name ---
@@ -1828,9 +1831,11 @@ def fs_export_category_NFO(nfo_FileName, category):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<category>\n')
-    nfo_content.append(XML_text('genre',  category['m_genre']))
-    nfo_content.append(XML_text('rating', category['m_rating']))
-    nfo_content.append(XML_text('plot',   category['m_plot']))
+    nfo_content.append(XML_text('year',      category['m_year']))
+    nfo_content.append(XML_text('genre',     category['m_genre'])) 
+    nfo_content.append(XML_text('developer', category['m_developer']))
+    nfo_content.append(XML_text('rating',    category['m_rating']))
+    nfo_content.append(XML_text('plot',      category['m_plot']))
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
@@ -1864,13 +1869,17 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
         log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
         return False
 
-    item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
-    item_rating = re.findall('<rating>(.*?)</rating>', item_nfo)
-    item_plot   = re.findall('<plot>(.*?)</plot>',   item_nfo)
+    item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+    item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
+    item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
+    item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
 
-    if item_genre:  categories[categoryID]['m_genre']  = text_unescape_XML(item_genre[0])
-    if item_rating: categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
-    if item_plot:   categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
+    if item_year:      categories[categoryID]['m_year']      = text_unescape_XML(item_year[0])
+    if item_genre:     categories[categoryID]['m_genre']  = text_unescape_XML(item_genre[0])
+    if item_developer: categories[categoryID]['m_developer'] = text_unescape_XML(item_developer[0])
+    if item_rating:    categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
+    if item_plot:      categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
 
     log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getPath()))
 
