@@ -533,7 +533,15 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         # >> Get a list of all files in the directory pointed by Asset_Prefix and use this list as
         # >> a file cache. This list has filenames withouth path.
         log_debug('Scanning files in dir "{0}"'.format(norm_asset_dir_FN.getPath()))
-        file_list = sorted(os.listdir(norm_asset_dir_FN.getPath()))
+        try:
+            file_list = sorted(os.listdir(norm_asset_dir_FN.getPath()))
+        except WindowsError as E:
+            log_error('autoconfig_import_category() (exceptions.WindowsError) exception')
+            log_error('Exception message: "{0}"'.format(E))
+            kodi_dialog_OK('WindowsError exception. {0}'.format(E))
+            kodi_dialog_OK('Scanning assets using the Asset_Prefix tag in '
+                           'Category "{0}" will be disabled.'.format(i_category['name']))
+            file_list = []
         log_debug('Found {0} files'.format(len(file_list)))
         # log_debug('--- File list ---')
         # for file in file_list: log_debug('--- "{0}"'.format(file))
