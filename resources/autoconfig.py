@@ -121,6 +121,14 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
 # Export all Categories and Launchers.
 #
 def autoconfig_export_all(categories, launchers, export_FN):
+    # --- If XML file already exists warn user ---
+    # >> Maybe it will be a good idea to do this in the function caller.
+    if export_FN.exists():
+        ret = kodi_dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
+        if ret == False:
+            kodi_notify('Category/Launcher XML exporting cancelled')
+            return
+
     # --- XML header ---
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
@@ -172,6 +180,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
 
 #
 # Export a single Launcher XML configuration.
+# Check if the output XML file exists (and show a warning dialog if so) is done in caller.
 #
 def autoconfig_export_launcher(launcher, export_FN, categories):
     # --- Export single Launcher ---
