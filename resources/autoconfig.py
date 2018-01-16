@@ -40,11 +40,15 @@ from platforms import *
 # Exports launchers to an XML file.
 # Currently categories are not supported.
 # -------------------------------------------------------------------------------------------------
-# Export Category
+#
+# Helper function to export a single Category.
+#
 def autoconfig_export_category_str_list(category, str_list):
     str_list.append('<category>\n')
     str_list.append(XML_text('name', category['m_name']))
+    str_list.append(XML_text('year', category['m_year']))
     str_list.append(XML_text('genre', category['m_genre']))
+    str_list.append(XML_text('developer', category['m_developer']))
     str_list.append(XML_text('rating', category['m_rating']))
     str_list.append(XML_text('plot', category['m_plot']))
     str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
@@ -56,7 +60,9 @@ def autoconfig_export_category_str_list(category, str_list):
     str_list.append(XML_text('s_trailer', category['s_trailer']))
     str_list.append('</category>\n')
 
-# Export Launcher
+#
+# Helper function to export a single Launcher.
+#
 def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     # >> Check if all artwork paths share the same ROM_asset_path. Unless the user has
     # >> customised the ROM artwork paths this should be the case.
@@ -111,6 +117,9 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     str_list.append(XML_text('s_trailer', launcher['s_trailer']))
     str_list.append('</launcher>\n')
 
+#
+# Export all Categories and Launchers.
+#
 def autoconfig_export_all(categories, launchers, export_FN):
     # --- XML header ---
     str_list = []
@@ -475,9 +484,17 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         categories[categoryID]['m_name'] = i_category['name']
         log_debug('Imported m_name       "{0}"'.format(i_category['name']))
 
+    if i_category['year']:
+        categories[categoryID]['m_year'] = i_category['year']
+        log_debug('Imported m_year       "{0}"'.format(i_category['year']))
+
     if i_category['genre']:
         categories[categoryID]['m_genre'] = i_category['genre']
         log_debug('Imported m_genre      "{0}"'.format(i_category['genre']))
+
+    if i_category['developer']:
+        categories[categoryID]['m_developer'] = i_category['developer']
+        log_debug('Imported m_developer  "{0}"'.format(i_category['developer']))
 
     if i_category['rating']:
         categories[categoryID]['m_rating'] = i_category['rating']
