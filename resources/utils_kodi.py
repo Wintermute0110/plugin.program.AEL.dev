@@ -157,8 +157,10 @@ def kodi_refresh_container():
 
 #
 # Gets where in Kodi image cache an image is located.
+# image_path is a Unicode string.
+# cache_file_path is a Unicode string.
 #
-def kodi_get_cached_image(image_path):
+def kodi_get_cached_image_FN(image_path):
     THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
 
     # --- Get the Kodi cached image ---
@@ -169,15 +171,16 @@ def kodi_get_cached_image(image_path):
     return cache_file_path
 
 #
-# Updates Kodi image cache for the image provided with the image itself.
-# In other words, copies the image into Kodi cache entry for the image itself.
-#
+# Updates Kodi image cache for the image provided in img_path.
+# In other words, copies the image img_path into Kodi cache entry.
 # Needles to say, only update image cache if image already was on the cache.
+# img_path is a Unicode string
+#
 def kodi_update_image_cache(img_path):
     # What if image is not cached?
-    cached_thumb = kodi_get_cached_image(img_path)
-    log_debug('kodi_update_image_cache()     img_path {0}'.format(img_path))
-    log_debug('kodi_update_image_cache() cached_thumb {0}'.format(cached_thumb))
+    cached_thumb = kodi_get_cached_image_FN(img_path)
+    log_debug('kodi_update_image_cache()       img_path {0}'.format(img_path))
+    log_debug('kodi_update_image_cache()   cached_thumb {0}'.format(cached_thumb))
 
     # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
     # However, images in the cache have the original extension. Replace TBN extension
@@ -186,28 +189,31 @@ def kodi_update_image_cache(img_path):
     if cached_thumb_ext == '.tbn':
         img_path_root, img_path_ext = os.path.splitext(img_path)
         cached_thumb = cached_thumb.replace('.tbn', img_path_ext)
-        log_debug('kodi_update_image_cache() New cached_thumb {0}'.format(cached_thumb))
+        log_debug('kodi_update_image_cache() U cached_thumb {0}'.format(cached_thumb))
 
-    # Check if file exists in the cache
-    # xbmc.getCacheThumbName() seems to return a cache filename even if the local file does not exist!
+    # --- Check if file exists in the cache ---
+    # xbmc.getCacheThumbName() seems to return a filename even if the local file does not exist!
     if not os.path.isfile(cached_thumb):
         log_debug('kodi_update_image_cache() Cached image not found. Doing nothing')
         return
 
     # --- Copy local image into Kodi image cache ---
     # >> See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
+    log_debug('kodi_update_image_cache() Image found in cache. Updating Kodi image cache')
     log_debug('kodi_update_image_cache() copying {0}'.format(img_path))
     log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb))
     fs_encoding = sys.getfilesystemencoding()
-    decoded_img_path = img_path.decode(fs_encoding, 'ignore')
-    decoded_cached_thumb = cached_thumb.decode(fs_encoding, 'ignore')
+    log_debug('kodi_update_image_cache() fs_encoding = "{0}"'.format(fs_encoding))
+    encoded_img_path = img_path.encode(fs_encoding, 'ignore')
+    encoded_cached_thumb = cached_thumb.encode(fs_encoding, 'ignore')
     try:
-        shutil.copy2(decoded_img_path, decoded_cached_thumb)
+        shutil.copy2(encoded_img_path, encoded_cached_thumb)
     except OSError:
         log_kodi_notify_warn('AEL warning', 'Cannot update cached image (OSError)')
-        lod_debug()
+        lod_error('Exception in kodi_update_image_cache()')
+        lod_error('(OSError) Cannot update cached image')
 
-    # Is this really needed?
+    # >> Is this really needed?
     # xbmc.executebuiltin('XBMC.ReloadSkin()')
 
 def kodi_toogle_fullscreen():
