@@ -878,7 +878,7 @@ class Main:
         # --- Export Launcher XML configuration ---
         elif type == 4:
             category = self.categories[categoryID]
-            category_fn_str = text_title_to_filename_str(category['m_name']) + '.xml'
+            category_fn_str = 'Category_' + text_title_to_filename_str(category['m_name']) + '.xml'
             log_debug('_command_edit_category() Exporting Category configuration')
             log_debug('_command_edit_category() Name     "{0}"'.format(category['m_name']))
             log_debug('_command_edit_category() ID       {0}'.format(category['id']))
@@ -2411,7 +2411,7 @@ class Main:
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
-            launcher_fn_str = text_title_to_filename_str(launcher['m_name']) + '.xml'
+            launcher_fn_str = 'Launcher_' + text_title_to_filename_str(launcher['m_name']) + '.xml'
             log_debug('_command_edit_launcher() Exporting Launcher configuration')
             log_debug('_command_edit_launcher() Name     "{0}"'.format(launcher['m_name']))
             log_debug('_command_edit_launcher() ID       {0}'.format(launcher['id']))
