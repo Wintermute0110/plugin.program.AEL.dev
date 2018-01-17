@@ -155,7 +155,7 @@ def text_decode_HTML(s):
 # See https://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
 #
 def text_unescape_HTML(s):
-    __debug_text_unescape_HTML = True
+    __debug_text_unescape_HTML = False
     if __debug_text_unescape_HTML:
         log_debug('text_unescape_HTML() input  "{0}"'.format(s))
 
