@@ -591,10 +591,14 @@ class Main:
     def _command_edit_category(self, categoryID):
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
-        finished_display = 'Status: Finished' if self.categories[categoryID]['finished'] == True else 'Status: Unfinished'
-        type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['m_name']),
-                             ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
-                              finished_display, 'Delete Category'])
+        finished_str = 'Finished' if self.categories[categoryID]['finished'] == True else 'Unfinished'
+        type = dialog.select('Select action for Category {0}'.format(self.categories[categoryID]['m_name']),
+                             ['Edit Metadata ...',
+                              'Edit Assets/Artwork ...',
+                              'Choose default Assets/Artwork ...',
+                              'Category status: {0}'.format(finished_str),
+                              'Export Category XML configuration ...',
+                              'Delete Category'])
         if type < 0: return
 
         # --- Edit category metadata ---
@@ -863,7 +867,7 @@ class Main:
                 asset_name = assets_get_asset_name_str(category['default_clearlogo'])
                 kodi_notify('Category Clearlogo mapped to {0}'.format(asset_name))
 
-        # --- Category status ---
+        # --- Category Status (Finished or unfinished) ---
         elif type == 3:
             finished = self.categories[categoryID]['finished']
             finished = False if finished else True
@@ -871,8 +875,43 @@ class Main:
             self.categories[categoryID]['finished'] = finished
             kodi_dialog_OK('Category "{0}" status is now {1}'.format(self.categories[categoryID]['m_name'], finished_display))
 
-        # --- Remove category. Also removes launchers in that category ---
+        # --- Export Launcher XML configuration ---
         elif type == 4:
+            category = self.categories[categoryID]
+            category_fn_str = text_title_to_filename_str(category['m_name']) + '.xml'
+            log_debug('_command_edit_category() Exporting Category configuration')
+            log_debug('_command_edit_category() Name     "{0}"'.format(category['m_name']))
+            log_debug('_command_edit_category() ID       {0}'.format(category['id']))
+            log_debug('_command_edit_category() l_fn_str "{0}"'.format(category_fn_str))
+
+            # --- Ask user for a path to export the launcher configuration ---
+            dir_path = xbmcgui.Dialog().browse(0, 'Select directory to export XML', 'files', 
+                                               '', False, False).decode('utf-8')
+            if not dir_path: return
+
+            # --- If XML exists then warn user about overwriting it ---
+            export_FN = FileName(dir_path).pjoin(category_fn_str)
+            if export_FN.exists():
+                ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
+                if not ret:
+                    kodi_notify_warn('Export of Category XML cancelled')
+                    return
+
+            # >> If everything goes all right when exporting then the else clause is executed.
+            # >> If there is an error/exception then the exception handler prints a warning message
+            # >> inside the function autoconfig_export_category() and the sucess message is never
+            # >> printed. This is the standard way of handling error messages in AEL code.
+            try:
+                autoconfig_export_category(category, export_FN)
+            except AEL_Error as E:
+                kodi_notify_warn('{0}'.format(E))
+            else:
+                kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
+            # >> No need to update categories.xml and timestamps so return now.
+            return
+
+        # --- Remove category. Also removes launchers in that category ---
+        elif type == 5:
             launcherID_list = []
             category_name = self.categories[categoryID]['m_name']
             for launcherID in sorted(self.launchers.iterkeys()):
@@ -1111,7 +1150,7 @@ class Main:
         else:
             category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
         if self.launchers[launcherID]['rompath'] == '':
-            type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
+            type = dialog.select('Select action for Launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata ...',
                                   'Edit Assets/Artwork ...',
                                   'Choose default Assets/Artwork ...',
@@ -2388,8 +2427,14 @@ class Main:
                 if not ret:
                     kodi_notify_warn('Export of Launcher XML cancelled')
                     return
-            autoconfig_export_launcher(launcher, export_FN, self.categories)
-            kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
+
+            # --- Print error message is something goes wrong writing file ---
+            try:
+                autoconfig_export_launcher(launcher, export_FN, self.categories)
+            except AEL_Error as E:
+                kodi_notify_warn('{0}'.format(E))
+            else:
+                kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
             # >> No need to update categories.xml and timestamps so return now.
             return
 
@@ -9865,16 +9910,28 @@ class Main:
     # Export AEL launcher configuration
     #
     def _command_export_launchers(self):
-        # >> Ask path to export launcher configuration
-        dialog = xbmcgui.Dialog()
-        dir_path = dialog.browse(0, 'Select XML export directory', 'files', '', False, False).decode('utf-8')
-        if not dir_path: return
-        export_FN = FileName(dir_path)
-        export_FN = export_FN.pjoin('AEL_configuration.xml')
+        log_debug('_command_export_launchers() Exporting Category/Launcher XML configuration')
 
-        # --- Export stuff ---        
-        # >> This function notifies the user if exporting is succesful.
-        autoconfig_export_all(self.categories, self.launchers, export_FN)
+        # --- Ask path to export XML configuration ---
+        dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files',
+                                           '', False, False).decode('utf-8')
+        if not dir_path: return
+
+        # --- If XML exists then warn user about overwriting it ---
+        export_FN = FileName(dir_path).pjoin('AEL_configuration.xml')
+        if export_FN.exists():
+            ret = kodi_dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
+            if not ret:
+                kodi_notify_warn('Category/Launcher XML exporting cancelled')
+                return
+
+        # --- Export stuff ---
+        try:
+            autoconfig_export_all(self.categories, self.launchers, export_FN)
+        except AEL_Error as E:
+            kodi_notify_warn('{0}'.format(E))
+        else:
+            kodi_notify('Exported AEL Categories and Launchers XML configuration')
 
     #
     # Checks all databases and tries to update to newer version if possible

@@ -119,16 +119,9 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
 
 #
 # Export all Categories and Launchers.
+# Check if the output XML file exists (and show a warning dialog if so) is done in caller.
 #
 def autoconfig_export_all(categories, launchers, export_FN):
-    # --- If XML file already exists warn user ---
-    # >> Maybe it will be a good idea to do this in the function caller.
-    if export_FN.exists():
-        ret = kodi_dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
-        if ret == False:
-            kodi_notify('Category/Launcher XML exporting cancelled')
-            return
-
     # --- XML header ---
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
@@ -142,7 +135,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
         log_verb('autoconfig_export_all() Category "{0}" (ID "{1}")'.format(category['m_name'], categoryID))
         autoconfig_export_category_str_list(category, str_list)
 
-    # --- Export Launchers ---
+    # --- Export Launchers and add XML tail ---
     # >> Data which is not string must be converted to string
     for launcherID in sorted(launchers, key = lambda x : launchers[x]['m_name']):
         launcher = launchers[launcherID]
@@ -155,28 +148,10 @@ def autoconfig_export_all(categories, launchers, export_FN):
             return
         log_verb('autoconfig_export_all() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
         autoconfig_export_launcher_str_list(launcher, category_name, str_list)
-
-    # --- XML tail ---
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
-    # >> Export file
-    # >> Strings in the list are Unicode. Encode to UTF-8. Join string, and save categories.xml file
-    try:
-        full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(export_FN.getPath(), 'w')
-        file_obj.write(full_string)
-        file_obj.close()
-    except OSError:
-        log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
-        return
-    except IOError:
-        log_error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
-        return
-    log_verb('autoconfig_export_all() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
-    log_verb('autoconfig_export_all() Exported  P "{0}"'.format(export_FN.getPath()))
-    kodi_notify('Exported AEL Categories and Launchers XML configuration')
+    # >> Export file. Strings in the list are Unicode. Encode to UTF-8 when writing to file.
+    fs_write_str_list_to_file(str_list, export_FN)
 
 #
 # Export a single Launcher XML configuration.
@@ -202,23 +177,35 @@ def autoconfig_export_launcher(launcher, export_FN, categories):
     autoconfig_export_launcher_str_list(launcher, category_name, str_list)
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
-    # >> Export file. Strings in the list are Unicode. Encode to UTF-8.
-    # >> Join string, and save categories.xml file
-    try:
-        full_string = ''.join(str_list).encode('utf-8')
-        file_obj = open(export_FN.getPath(), 'w')
-        file_obj.write(full_string)
-        file_obj.close()
-    except OSError:
-        log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+    # >> Export file. Strings in the list are Unicode. Encode to UTF-8 when writing to file.
+    fs_write_str_list_to_file(str_list, export_FN)
+
+#
+# Export a single Category XML configuration.
+# Check if the output XML file exists (and show a warning dialog if so) is done in caller.
+#
+def autoconfig_export_category(category, export_FN):
+    # --- Export single Category ---
+    launcherID = launcher['id']
+    if launcher['categoryID'] in categories:
+        category_name = categories[launcher['categoryID']]['m_name']
+    elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        category_name = VCATEGORY_ADDONROOT_ID
+    else:
+        kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
         return
-    except IOError:
-        log_error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
-        return
-    log_verb('autoconfig_export_launcher() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
-    log_verb('autoconfig_export_launcher() Exported  P "{0}"'.format(export_FN.getPath()))
+    log_verb('autoconfig_export_launcher() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
+
+    # --- Create list of strings ---
+    str_list = []
+    str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+    str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+    str_list.append('<advanced_emulator_launcher_configuration>\n')
+    autoconfig_export_category_str_list(launcher, category_name, str_list)
+    str_list.append('</advanced_emulator_launcher_configuration>\n')
+
+    # >> Export file. Strings in the list are Unicode. Encode to UTF-8 when writing to file.
+    fs_write_str_list_to_file(str_list, export_FN)
 
 # -------------------------------------------------------------------------------------------------
 # Import AEL launcher configuration

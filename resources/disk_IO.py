@@ -620,6 +620,27 @@ def fs_load_catfile(categories_file, categories, launchers):
     return update_timestamp
 
 # -------------------------------------------------------------------------------------------------
+# Generic file writer
+# str_list is a list of Unicode strings that will be joined and written to a file encoded in UTF-8.
+# -------------------------------------------------------------------------------------------------
+def fs_write_str_list_to_file(str_list, export_FN):
+    log_verb('fs_write_str_list_to_file() Exporting OP "{0}"'.format(export_FN.getOriginalPath()))
+    log_verb('fs_write_str_list_to_file() Exporting  P "{0}"'.format(export_FN.getPath()))
+    try:
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(export_FN.getPath(), 'w')
+        file_obj.write(full_string)
+        file_obj.close()
+    except OSError:
+        log_error('(OSError) exception in fs_write_str_list_to_file()')
+        log_error('Cannot write {0} file'.format(export_FN.getBase()))
+        raise AEL_Error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+    except IOError:
+        log_error('(IOError) exception in fs_write_str_list_to_file()')
+        log_error('Cannot write {0} file'.format(export_FN.getBase()))
+        raise AEL_Error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
+
+# -------------------------------------------------------------------------------------------------
 # Generic JSON loader/writer
 # -------------------------------------------------------------------------------------------------
 # Look at the ROMs JSON code for reference/comments to these functions.
