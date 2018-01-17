@@ -95,8 +95,10 @@ class metadata_Offline(Scraper_Metadata):
 
     # --- Search games and return list of matches ---
     def get_search(self, search_string, rom_base_noext, platform):
-        log_verb("metadata_Offline::get_search Searching '{0}' | '{1}' | '{2}'".format(search_string, rom_base_noext, platform))
         results_ret = []
+        log_verb('metadata_Offline::get_search() search_string  "{0}"'.format(search_string))
+        log_verb('metadata_Offline::get_search() rom_base_noext "{0}"'.format(rom_base_noext))
+        log_verb('metadata_Offline::get_search() platform       "{0}"'.format(platform))
 
         # If not cached XML data found (maybe offline scraper does not exist for this platform or 
         # cannot be loaded) return.

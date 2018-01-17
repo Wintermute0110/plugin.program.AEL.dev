@@ -611,10 +611,14 @@ class Main:
     def _command_edit_category(self, categoryID):
         # --- Shows a select box with the options to edit ---
         dialog = xbmcgui.Dialog()
-        finished_display = 'Status: Finished' if self.categories[categoryID]['finished'] == True else 'Status: Unfinished'
-        type = dialog.select('Select action for category {0}'.format(self.categories[categoryID]['m_name']),
-                             ['Edit Metadata ...', 'Edit Assets/Artwork ...', 'Choose default Assets/Artwork ...',
-                              finished_display, 'Delete Category'])
+        finished_str = 'Finished' if self.categories[categoryID]['finished'] == True else 'Unfinished'
+        type = dialog.select('Select action for Category {0}'.format(self.categories[categoryID]['m_name']),
+                             ['Edit Metadata ...',
+                              'Edit Assets/Artwork ...',
+                              'Choose default Assets/Artwork ...',
+                              'Category status: {0}'.format(finished_str),
+                              'Export Category XML configuration ...',
+                              'Delete Category'])
         if type < 0: return
 
         # --- Edit category metadata ---
@@ -625,7 +629,9 @@ class Main:
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
                                   ["Edit Title: '{0}'".format(self.categories[categoryID]['m_name']),
+                                   "Edit Release Year: '{0}'".format(self.categories[categoryID]['m_year']),
                                    "Edit Genre: '{0}'".format(self.categories[categoryID]['m_genre']),
+                                   "Edit Developer: '{0}'".format(self.categories[categoryID]['m_developer']),
                                    "Edit Rating: '{0}'".format(self.categories[categoryID]['m_rating']),
                                    "Edit Plot: '{0}'".format(plot_str),
                                    'Import NFO file (default, {0})'.format(NFO_str),
@@ -640,49 +646,83 @@ class Main:
                 if not keyboard.isConfirmed(): return
                 title = keyboard.getText().decode('utf-8')
                 if title == '': title = self.categories[categoryID]['m_name']
-                self.categories[categoryID]['m_name'] = title.rstrip()
-                kodi_notify('Changed Category Title')
+                new_title_str = title.strip()
+                self.categories[categoryID]['m_name'] = new_title_str
+                kodi_notify('Category Title is now {0}'.format(new_title_str))
+
+            # --- Edition of the category release date (year) ---
+            elif type2 == 1:
+                old_year_str = self.categories[categoryID]['m_year']
+                keyboard = xbmc.Keyboard(old_year_str, 'Edit Category release year')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                new_year_str = keyboard.getText().decode('utf-8')
+                if old_year_str == new_year_str:
+                    kodi_notify('Category Year not changed')
+                    return
+                self.categories[categoryID]['m_year'] = new_year_str
+                kodi_notify('Category Year is now {0}'.format(new_year_str))
 
             # --- Edition of the category genre ---
-            elif type2 == 1:
+            elif type2 == 2:
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_genre'], 'Edit Genre')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.categories[categoryID]['m_genre'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Category Genre')
+                new_genre_str = keyboard.getText().decode('utf-8')
+                self.categories[categoryID]['m_genre'] = new_genre_str
+                kodi_notify('Category Genre is now {0}'.format(new_genre_str))
+
+            # --- Edition of the category developer ---
+            elif type2 == 3:
+                old_developer_str = self.categories[categoryID]['m_developer']
+                keyboard = xbmc.Keyboard(old_developer_str, 'Edit developer')
+                keyboard.doModal()
+                if not keyboard.isConfirmed(): return
+                new_developer_str = keyboard.getText().decode('utf-8')
+                if old_developer_str == new_developer_str:
+                    kodi_notify('Category Developer not changed')
+                    return
+                self.categories[categoryID]['m_developer'] = new_developer_str
+                kodi_notify('Category Developer is now {0}'.format(new_developer_str))
 
             # --- Edition of the category rating ---
-            elif type2 == 2:
+            elif type2 == 4:
                 rating = dialog.select('Edit Category Rating',
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
                 # >> Rating not set, empty string
                 if rating == 0:
                     self.categories[categoryID]['m_rating'] = ''
+                    kodi_notify('Category Rating changed to Not Set')
                 elif rating >= 1 and rating <= 11:
                     self.categories[categoryID]['m_rating'] = '{0}'.format(rating - 1)
+                    kodi_notify('Category Rating is now {0}'.format(self.categories[categoryID]['m_rating']))
                 elif rating < 0:
                     kodi_notify('Category rating not changed')
                     return
-                kodi_notify('Set Category Rating to {0}'.format(self.categories[categoryID]['m_rating']))
 
             # --- Edition of the plot (description) ---
-            elif type2 == 3:
+            elif type2 == 5:
+                old_plot_str = self.categories[categoryID]['m_plot']
                 keyboard = xbmc.Keyboard(self.categories[categoryID]['m_plot'], 'Edit Plot')
                 keyboard.doModal()
                 if not keyboard.isConfirmed(): return
-                self.categories[categoryID]['m_plot'] = keyboard.getText().decode('utf-8')
-                kodi_notify('Changed Category Plot')
+                new_plot_str = keyboard.getText().decode('utf-8')
+                if old_plot_str == new_plot_str:
+                    kodi_notify('Category Plot not changed')
+                    return
+                self.categories[categoryID]['m_plot'] = new_plot_str
+                kodi_notify('Launcher Plot is now "{0}"'.format(new_plot_str))
 
             # --- Import category metadata from NFO file (automatic) ---
-            elif type2 == 4:
+            elif type2 == 6:
                 # >> Returns True if changes were made
                 NFO_file = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
                 if not fs_import_category_NFO(NFO_file, self.categories, categoryID): return
                 kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Browse for category NFO file ---
-            elif type2 == 5:
+            elif type2 == 7:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
                 log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
                 if not NFO_file: return
@@ -693,7 +733,7 @@ class Main:
                 kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
 
             # --- Export category metadata to NFO file ---
-            elif type2 == 6:
+            elif type2 == 8:
                 NFO_FileName = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
                 # >> Returns False if exception happened. If an Exception happened function notifies
                 # >> user, so display nothing to not overwrite error notification.
@@ -847,7 +887,7 @@ class Main:
                 asset_name = assets_get_asset_name_str(category['default_clearlogo'])
                 kodi_notify('Category Clearlogo mapped to {0}'.format(asset_name))
 
-        # --- Category status ---
+        # --- Category Status (Finished or unfinished) ---
         elif type == 3:
             finished = self.categories[categoryID]['finished']
             finished = False if finished else True
@@ -855,8 +895,43 @@ class Main:
             self.categories[categoryID]['finished'] = finished
             kodi_dialog_OK('Category "{0}" status is now {1}'.format(self.categories[categoryID]['m_name'], finished_display))
 
-        # --- Remove category. Also removes launchers in that category ---
+        # --- Export Launcher XML configuration ---
         elif type == 4:
+            category = self.categories[categoryID]
+            category_fn_str = 'Category_' + text_title_to_filename_str(category['m_name']) + '.xml'
+            log_debug('_command_edit_category() Exporting Category configuration')
+            log_debug('_command_edit_category() Name     "{0}"'.format(category['m_name']))
+            log_debug('_command_edit_category() ID       {0}'.format(category['id']))
+            log_debug('_command_edit_category() l_fn_str "{0}"'.format(category_fn_str))
+
+            # --- Ask user for a path to export the launcher configuration ---
+            dir_path = xbmcgui.Dialog().browse(0, 'Select directory to export XML', 'files', 
+                                               '', False, False).decode('utf-8')
+            if not dir_path: return
+
+            # --- If XML exists then warn user about overwriting it ---
+            export_FN = FileName(dir_path).pjoin(category_fn_str)
+            if export_FN.exists():
+                ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
+                if not ret:
+                    kodi_notify_warn('Export of Category XML cancelled')
+                    return
+
+            # >> If everything goes all right when exporting then the else clause is executed.
+            # >> If there is an error/exception then the exception handler prints a warning message
+            # >> inside the function autoconfig_export_category() and the sucess message is never
+            # >> printed. This is the standard way of handling error messages in AEL code.
+            try:
+                autoconfig_export_category(category, export_FN)
+            except AEL_Error as E:
+                kodi_notify_warn('{0}'.format(E))
+            else:
+                kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
+            # >> No need to update categories.xml and timestamps so return now.
+            return
+
+        # --- Remove category. Also removes launchers in that category ---
+        elif type == 5:
             launcherID_list = []
             category_name = self.categories[categoryID]['m_name']
             for launcherID in sorted(self.launchers.iterkeys()):
@@ -906,7 +981,7 @@ class Main:
         else:
             category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
         if self.launchers[launcherID]['rompath'] == '':
-            type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
+            type = dialog.select('Select action for Launcher {0}'.format(self.launchers[launcherID]['m_name']),
                                  ['Edit Metadata ...',
                                   'Edit Assets/Artwork ...',
                                   'Choose default Assets/Artwork ...',
@@ -1039,7 +1114,6 @@ class Main:
                 rating = dialog.select('Edit Launcher Rating',
                                       ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
                                        'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
-                # >> Rating not set, empty string
                 if rating == 0:
                     self.launchers[launcherID]['m_rating'] = ''
                     kodi_notify('Launcher Rating changed to Not Set')
@@ -1061,7 +1135,7 @@ class Main:
                     kodi_notify('Launcher Plot not changed')
                     return
                 self.launchers[launcherID]['m_plot'] = new_plot_str
-                kodi_notify('Launcher Plot is now "{0}"'.format())
+                kodi_notify('Launcher Plot is now "{0}"'.format(new_plot_str))
 
             # --- Import launcher metadata from NFO file (default location) ---
             elif type2 == 7:
@@ -2175,7 +2249,7 @@ class Main:
         type_nb = type_nb + 1
         if type == type_nb:
             launcher = self.launchers[launcherID]
-            launcher_fn_str = text_title_to_filename_str(launcher['m_name']) + '.xml'
+            launcher_fn_str = 'Launcher_' + text_title_to_filename_str(launcher['m_name']) + '.xml'
             log_debug('_command_edit_launcher() Exporting Launcher configuration')
             log_debug('_command_edit_launcher() Name     "{0}"'.format(launcher['m_name']))
             log_debug('_command_edit_launcher() ID       {0}'.format(launcher['id']))
@@ -2191,8 +2265,14 @@ class Main:
                 if not ret:
                     kodi_notify_warn('Export of Launcher XML cancelled')
                     return
-            autoconfig_export_launcher(launcher, export_FN, self.categories)
-            kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
+
+            # --- Print error message is something goes wrong writing file ---
+            try:
+                autoconfig_export_launcher(launcher, export_FN, self.categories)
+            except AEL_Error as E:
+                kodi_notify_warn('{0}'.format(E))
+            else:
+                kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
             # >> No need to update categories.xml and timestamps so return now.
             return
 
@@ -3046,8 +3126,9 @@ class Main:
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if category_dic['finished'] else 4
         listitem = xbmcgui.ListItem(category_dic['m_name'])
-        listitem.setInfo('video', {'title'   : category_dic['m_name'],    'genre'   : category_dic['m_genre'],
-                                   'plot'    : category_dic['m_plot'],    'rating'  : category_dic['m_rating'],
+        listitem.setInfo('video', {'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
+                                   'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
+                                   'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
                                    'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
 
         # --- Set Category artwork ---
@@ -4960,7 +5041,7 @@ class Main:
 
         # --- Add new collection to database ---
         collection           = fs_new_collection()
-        collection_name      = keyboard.getText()
+        collection_name      = keyboard.getText().decode('utf-8')
         collection_id_md5    = hashlib.md5(collection_name.encode('utf-8'))
         collection_UUID      = collection_id_md5.hexdigest()
         collection_base_name = fs_get_collection_ROMs_basename(collection_name, collection_UUID)
@@ -5648,7 +5729,7 @@ class Main:
             keyboard = xbmc.Keyboard('', 'Enter the ROM Title search string ...')
             keyboard.doModal()
             if not keyboard.isConfirmed(): return
-            search_string = keyboard.getText()
+            search_string = keyboard.getText().decode('utf-8')
             url = self._misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_TITLE', search_string)
 
         # --- Search by Release Date ---
@@ -6463,7 +6544,9 @@ class Main:
         info_text  = ''
         info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
         info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(category['m_name'])
+        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(category['m_year'])
         info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(category['m_genre'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(category['m_developer'])
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(category['m_rating'])
         info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(category['m_plot'])
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])
@@ -7407,7 +7490,7 @@ class Main:
         keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText()
+        search_string = keyboard.getText().decode('utf-8')
 
         # --- Do a search and get a list of games ---
         # >> Prevent race conditions
@@ -7480,7 +7563,7 @@ class Main:
         keyboard = xbmc.Keyboard(launcher_name, 'Enter the launcher search string ...')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText()
+        search_string = keyboard.getText().decode('utf-8')
 
         # Scrap and get a list of matches
         kodi_busydialog_ON()
@@ -7936,16 +8019,28 @@ class Main:
     # Export AEL launcher configuration
     #
     def _command_export_launchers(self):
-        # >> Ask path to export launcher configuration
-        dialog = xbmcgui.Dialog()
-        dir_path = dialog.browse(0, 'Select XML export directory', 'files', '', False, False).decode('utf-8')
-        if not dir_path: return
-        export_FN = FileName(dir_path)
-        export_FN = export_FN.pjoin('AEL_configuration.xml')
+        log_debug('_command_export_launchers() Exporting Category/Launcher XML configuration')
 
-        # --- Export stuff ---        
-        # >> This function notifies the user if exporting is succesful.
-        autoconfig_export_all(self.categories, self.launchers, export_FN)
+        # --- Ask path to export XML configuration ---
+        dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files',
+                                           '', False, False).decode('utf-8')
+        if not dir_path: return
+
+        # --- If XML exists then warn user about overwriting it ---
+        export_FN = FileName(dir_path).pjoin('AEL_configuration.xml')
+        if export_FN.exists():
+            ret = kodi_dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
+            if not ret:
+                kodi_notify_warn('Category/Launcher XML exporting cancelled')
+                return
+
+        # --- Export stuff ---
+        try:
+            autoconfig_export_all(self.categories, self.launchers, export_FN)
+        except AEL_Error as E:
+            kodi_notify_warn('{0}'.format(E))
+        else:
+            kodi_notify('Exported AEL Categories and Launchers XML configuration')
 
     #
     # Checks all databases and tries to update to newer version if possible

@@ -475,38 +475,19 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
     #
     def get_shot_image_URL(self, art_page_URL):
         log_debug('asset_MobyGames::get_shot_image_URL() art_page_URL "{0}"'.format(art_page_URL))
+        sub_URL = ''
         page_data = net_get_URL_oneline(art_page_URL)
         # text_dump_str_to_file(os.path.join('E:/', 'MobyGames-get_shot_image_URL.txt'), page_data)
 
-        # --- OLD Mobygames screenshot webpage ---
-        # <div class="screenshot">
-        # <img 
-        #  title="" 
-        #  alt="Super Mario World SNES Title screen" 
-        #  border="0" 
-        #  src="/images/shots/l/218703-super-mario-world-snes-screenshot-title-screen.png" 
-        #  height="448" width="512" >
-        # <h3>
-        #
-        # --- New (Aug 2017) Mobygames screenshot webpage ---
-        # <div class="screenshot doubled">
-        # <img
-        #  title=""
-        #  alt="Knuckles&amp;#x27; Chaotix SEGA 32X Title Screen"
-        #  src="/images/shots/l/32523-knuckles-chaotix-sega-32x-screenshot-title-screen.gif"
-        #  width="640"
-        #  border="0"
-        #  height="448" >
-        #  <h3>Title Screen</h3></div>
-        #
-        # >> findall() returns a list of strings. If pattern has groups then returns a list of groups.
-        sub_URL = ''
         # >> Approach A
+        # >> findall() returns a list of strings. If pattern has groups () then it returns a list 
+        # >> of touples.
         rlist = re.findall('<div class="screenshot">'
                            '<img title="(.*?)" alt="(.*?)" border="(.*?)" src="(.*?)" height="(.*?)" width="(.*?)" >'
                            '<h3>', page_data)
         if rlist: sub_URL = rlist[0][3]
         else: log_debug('asset_MobyGames::get_shot_image_URL() Approach A failed')
+
         # >> Approach B
         if not sub_URL:
             rlist = re.findall('<div class="screenshot doubled">'
@@ -514,6 +495,7 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
                                '<h3>(.*?)</h3></div>', page_data)
             if rlist: sub_URL = rlist[0][2]
             else: log_debug('asset_MobyGames::get_shot_image_URL() Approach B failed')
+
         # >> Approach C
         if not sub_URL:
             rlist = re.findall('<div class="screenshot doubled">'
@@ -522,7 +504,26 @@ class asset_MobyGames(Scraper_Asset, Scraper_MobyGames):
             if rlist: sub_URL = rlist[0][3]
             else: log_debug('asset_MobyGames::get_shot_image_URL() Approach C failed')
 
-        # log_debug('Screenshots rlist = ' + unicode(rlist))
+        # >> Approach D
+        # >> http://www.mobygames.com/game/wii/dawn-of-discovery/screenshots/gameShotId,540966/
+        # <div class="screenshot">
+        # <a target="_blank" href="/images/shots/l/540966-dawn-of-discovery-wii-screenshot-title-screen.png">
+        # <img title=""
+        #      alt="Dawn of Discovery Wii Title Screen"
+        #      border="0"
+        #      src="/images/shots/l/540966-dawn-of-discovery-wii-screenshot-title-screen.png" 
+        #      height="450" 
+        #      width="800" >
+        # </a><h3>Title Screen</h3></div>
+        if not sub_URL:
+            rlist = re.findall('<div class="screenshot">'
+                               '<a target="_blank" href="(.*?)">'
+                               '<img title="(.*?)" alt="(.*?)" border="(.*?)" src="(.*?)" height="(.*?)" width="(.*?)" >'
+                               '</a><h3>(.*?)</h3></div>', page_data)
+            if rlist: sub_URL = rlist[0][0]
+            else: log_debug('asset_MobyGames::get_shot_image_URL() Approach D failed')
+
+        # log_debug('rlist = ' + unicode(rlist))
         art_URL = 'http://www.mobygames.com' + sub_URL if sub_URL else ''
         log_debug('asset_MobyGames::get_shot_image_URL() art_URL "{0}"'.format(art_URL))
 

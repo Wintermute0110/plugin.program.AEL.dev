@@ -1,5 +1,7 @@
 [B]Advanced Emulator Launcher | version 0.9.9 | XX February 2018[/B]
 
+WIP      Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
+
 WIP      Complete Extranafart support for Categories/Launchers.
 
 WIP      Complete Extranafart support for ROMs.
@@ -68,11 +70,27 @@ WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe,
 
 [B]Advanced Emulator Launcher | version 0.9.8 | XX January 2018[/B]
 
+FEATURE  Add Year and Developer for Categories.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653
+
 FEATURE  Per-launcher setting to disable multi-disc ROM support.
+
+FEATURE  Added "Edit Category" context menu, "Export Category XML configuration".
 
 WIP      Option to rescrape all assets from launcher in a similar fashion to "Scan ROMs local artwork".
 
 FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
+
+FIX      Fix metadata and artwork scrapers when ROM name has Unicode characters.
+         See Github issue #52
+
+FIX      Fixed display_fav_status label in settings.xml
+         See Github issue #56
+
+FIX      Unicode fixes in kodi_update_image_cache()
+
+FIX      Fixed MobyGames scraper.
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/60
 
 
 [B]Advanced Emulator Launcher | version 0.9.7 | 23 November 2017[/B]
