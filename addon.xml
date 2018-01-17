@@ -1,13 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.program.advanced.emulator.launcher"
-       name="Advanced Emulator Launcher"
-       version="__VERSION__"
-       provider-name="Wintermute0110">
+       name="Advanced Emulator Launcher" version="0.9.9-alpha" provider-name="Wintermute0110">
   <requires>
     <!-- See https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/addon.xml
-         2.25.0  Krypton 17.x
-         x.yy.z  Leia 18.x
-         x.yy.z  M**** 19.x
+         2.25.0 Krypton 17 / x.yy.z Leia 18 / x.yy.z  M**** 19
     -->
     <import addon="xbmc.python" version="2.25.0" />
   </requires>

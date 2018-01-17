@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-# Advanced Emulator Launcher miscellaneous functions
 #
-
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Advanced Emulator Launcher
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,18 +13,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-#
+# -------------------------------------------------------------------------------------------------
 # Utility functions which does not depend on Kodi modules (except log_* functions)
-#
+# -------------------------------------------------------------------------------------------------
+# --- Python compiler flags ---
+from __future__ import unicode_literals
 
 # --- Python standard library ---
-from __future__ import unicode_literals
-<<<<<<< HEAD
-from stat import *
-import xml.etree.ElementTree as ET
-import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch, json
-import xbmcvfs
-=======
 import sys
 import os
 import shutil
@@ -37,7 +31,8 @@ import re
 import string
 import fnmatch
 import HTMLParser
->>>>>>> release-0.9.8
+import xbmcvfs
+import xml.etree.ElementTree as ET
 
 # --- Kodi modules ---
 # >> FileName class uses xbmc.translatePath()
@@ -740,7 +735,7 @@ class FileName:
         self.fileHandle.close()
         self.fileHandle = None
 
-    # opens file and reads xml. Returns the root of the xml!
+    # Opens file and reads xml. Returns the root of the XML!
     def readXml(self):
         file = xbmcvfs.File(self.originalPath, 'r')
         data = file.read()
@@ -748,12 +743,12 @@ class FileName:
 
         root = ET.fromstring(data)
         return root
-    
-    # opens file and reads to JSON
+
+    # Opens JSON file and reads it
     def readJson(self):
         contents = self.readAllUnicode()
         return json.loads(contents)
-    
+
     # --- Configure JSON writer ---
     # NOTE More compact JSON files (less blanks) load faster because size is smaller.
     def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):

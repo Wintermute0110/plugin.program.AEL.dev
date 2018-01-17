@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Advanced Emulator Launcher XML autoconfiguration stuff.
 #
-
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Advanced Emulator Launcher
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,8 +13,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# --- Python standard library ---
+# --- Python compiler flags ---
 from __future__ import unicode_literals
+
+# --- Python standard library ---
 import os
 import time
 
@@ -155,27 +157,8 @@ def autoconfig_export_all(categories, launchers, export_FN):
         autoconfig_export_launcher_str_list(launcher, category_name, str_list)
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
-<<<<<<< HEAD
-    # >> Export file
-    # >> Strings in the list are Unicode. Encode to UTF-8. Join string, and save categories.xml file
-    try:
-        full_string = ''.join(str_list).encode('utf-8')
-        export_FN.writeAll(full_string)
-    except OSError:
-        log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
-        return
-    except IOError:
-        log_error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
-        return
-    log_verb('autoconfig_export_all() Exported OP "{0}"'.format(export_FN.getOriginalPath()))
-    log_verb('autoconfig_export_all() Exported  P "{0}"'.format(export_FN.getPath()))
-    kodi_notify('Exported AEL Categories and Launchers XML configuration')
-=======
     # >> Export file. Strings in the list are Unicode. Encode to UTF-8 when writing to file.
     fs_write_str_list_to_file(str_list, export_FN)
->>>>>>> release-0.9.8
 
 #
 # Export a single Launcher XML configuration.
