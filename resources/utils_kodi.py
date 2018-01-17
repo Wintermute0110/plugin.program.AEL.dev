@@ -21,25 +21,26 @@ from __future__ import unicode_literals
 
 # --- Python standard library ---
 from abc import ABCMeta, abstractmethod
-import sys, os, shutil, time, random, hashlib, urlparse
+import sys, os, shutil, time, random, hashlib, urlparse, json
+import xml.etree.ElementTree as ET
 
 # --- Kodi modules ---
 try:
-    import xbmc, xbmcgui
+    import xbmc, xbmcgui, xbmcvfs
 except:
     from utils_kodi_standalone import *
 
 # --- AEL modules ---
-# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
+# >> utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
 
-# --- Constants ---------------------------------------------------------------
+# --- Constants -----------------------------------------------------------------------------------
 LOG_ERROR   = 0
 LOG_WARNING = 1
 LOG_INFO    = 2
 LOG_VERB    = 3
 LOG_DEBUG   = 4
 
-# --- Internal globals --------------------------------------------------------
+# --- Internal globals ----------------------------------------------------------------------------
 current_log_level = LOG_INFO
 use_print_instead = False
 
@@ -48,58 +49,348 @@ use_print_instead = False
 # -------------------------------------------------------------------------------------------------
 def set_log_level(level):
     global current_log_level
+
     current_log_level = level
 
 def set_use_print(use_print):
-    global use_print_instead   
+    global use_print_instead
+
     use_print_instead = use_print
 
+#
 # For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
 #
 def log_debug(str_text):
     if current_log_level >= LOG_DEBUG:
-        # if it is str we assume it's "utf-8" encoded.
-        # will fail if called with other encodings (latin, etc).
+        # If str_text has str type then convert to unicode type using decode().
+        # We assume that str_text is encoded in UTF-8.
+        # This may fail if str_text is encoded in latin, etc.
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
 
         # At this point we are sure str_text is a unicode string.
-        log_text = u'AEL DEBUG: ' + str_text
+        log_text = 'AEL DEBUG: ' + str_text
         log(log_text, LOG_VERB)
 
 def log_verb(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL VERB : ' + str_text
+        log_text = 'AEL VERB : ' + str_text
         log(log_text, LOG_VERB)
 
 def log_info(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL INFO : ' + str_text
+        log_text = 'AEL INFO : ' + str_text
         log(log_text, LOG_INFO)
 
 def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL WARN : ' + str_text
+        log_text = 'AEL WARN : ' + str_text
         log(log_text, LOG_WARNING)
 
 def log_error(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AEL ERROR: ' + str_text
+        log_text = 'AEL ERROR: ' + str_text
         log(log_text, LOG_ERROR)
 
 def log(log_text, level):
-    
     if use_print_instead:
         print(log_text.encode('utf-8'))
     else:
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
- 
-# -----------------------------------------------------------------------------
+        xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
+
+# -------------------------------------------------------------------------------------------------
+# Filesystem helper class
+# This class always takes and returns Unicode string paths.
+# Decoding Unicode to UTF-8 or whatever must be done in the caller code.
+#
+# IMPROVE THE DOCUMENTATION OF THIS CLASS AND HOW IT HANDLES EXCEPTIONS AND ERROR REPORTING!!!
+#
+# A) Transform paths like smb://server/directory/ into \\server\directory\
+# B) Use xbmc.translatePath() for paths starting with special://
+# C) Uses xbmcvfs wherever possible
+# -------------------------------------------------------------------------------------------------
+class FileName:
+    # pathString must be a Unicode string object
+    def __init__(self, pathString):
+        self.originalPath = pathString
+        self.path         = pathString
+        
+        # --- Path transformation ---
+        if self.originalPath.lower().startswith('smb:'):
+            self.path = self.path.replace('smb:', '')
+            self.path = self.path.replace('SMB:', '')
+            self.path = self.path.replace('//', '\\\\')
+            self.path = self.path.replace('/', '\\')
+
+        elif self.originalPath.lower().startswith('special:'):
+            self.path = xbmc.translatePath(self.path)
+
+    def _join_raw(self, arg):
+        self.path         = os.path.join(self.path, arg)
+        self.originalPath = os.path.join(self.originalPath, arg)
+
+        return self
+
+    # Appends a string to path. Returns self FileName object
+    def append(self, arg):
+        self.path         = self.path + arg
+        self.originalPath = self.originalPath + arg
+
+        return self
+
+    # >> Joins paths. Returns a new FileName object
+    def pjoin(self, *args):
+        child = FileName(self.originalPath)
+        for arg in args:
+            child._join_raw(arg)
+
+        return child
+
+    # Behaves like os.path.join()
+    #
+    # See http://blog.teamtreehouse.com/operator-overloading-python
+    # other is a FileName object. other originalPath is expected to be a subdirectory (path
+    # transformation not required)
+    def __add__(self, other):
+        current_path = self.originalPath
+        if type(other) is FileName:  other_path = other.originalPath
+        elif type(other) is unicode: other_path = other
+        elif type(other) is str:     other_path = other.decode('utf-8')
+        else: raise NameError('Unknown type for overloaded + in FileName object')
+        new_path = os.path.join(current_path, other_path)
+        child    = FileName(new_path)
+
+        return child
+
+    def escapeQuotes(self):
+        self.path = self.path.replace("'", "\\'")
+        self.path = self.path.replace('"', '\\"')
+
+    # ---------------------------------------------------------------------------------------------
+    # Decomposes a file name path or directory into its constituents
+    #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
+    #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
+    #   FileName.getBase()          File name with no path                        Sonic.zip
+    #   FileName.getBase_noext()    File name with no path and no extension       Sonic
+    #   FileName.getExt()           File extension                                .zip
+    # ---------------------------------------------------------------------------------------------
+    def getOriginalPath(self):
+        return self.originalPath
+
+    def getPath(self):
+        return self.path
+
+    def getPath_noext(self):
+        root, ext = os.path.splitext(self.path)
+
+        return root
+
+    def getDir(self):
+        return os.path.dirname(self.path)
+
+    def getDirAsFileName(self):
+        return FileName(self.getDir())
+
+    def getBase(self):
+        return os.path.basename(self.path)
+
+    def getBase_noext(self):
+        basename  = os.path.basename(self.path)
+        root, ext = os.path.splitext(basename)
+        
+        return root
+
+    def getExt(self):
+        root, ext = os.path.splitext(self.path)
+        return ext
+
+    def switchExtension(self, targetExt):
+        
+        ext = self.getExt()
+        copiedPath = self.originalPath
+        
+        if not targetExt.startswith('.'):
+            targetExt = '.{0}'.format(targetExt)
+
+        new_path = FileName(copiedPath.replace(ext, targetExt))
+        return new_path
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask = '*.*'):
+        files = []
+
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
+
+        return files
+
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(FileName(filePath.getOriginalPath()))
+
+        return files
+
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        files = []
+        
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(filePath.getOriginalPath())
+
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPath(mask)
+            files.extend(subPathFiles)
+
+        return files
+
+    def _decodeName(self, name):
+        if type(name) == str:
+            try:
+                name = name.decode('utf8')
+            except:
+                name = name.decode('windows-1252')
+        
+        return name
+    
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions
+    # ---------------------------------------------------------------------------------------------
+    def stat(self):
+        return xbmcvfs.Stat(self.originalPath)
+
+    def exists(self):
+        return xbmcvfs.exists(self.originalPath)
+
+    # Warning: not suitable for xbmcvfs paths yet
+    def isdir(self):
+        
+        if not self.exists():
+            return False
+
+        try:
+            self.open('r')
+            self.close()
+        except:
+            return True
+        
+        return False
+        #return os.path.isdir(self.path)
+        
+    # Warning: not suitable for xbmcvfs paths yet
+    def isfile(self):
+
+        if not self.exists():
+            return False
+
+        return not self.isdir()
+        #return os.path.isfile(self.path)
+
+    def makedirs(self):
+        
+        if not self.exists():
+            xbmcvfs.mkdirs(self.originalPath)
+
+    def unlink(self):
+
+        if self.isfile():
+            xbmcvfs.delete(self.originalPath)
+
+            # hard delete if it doesnt succeed
+            log_debug('xbmcvfs.delete() failed, applying hard delete')
+            if self.exists():
+                os.remove(self.path)
+        else:
+            xbmcvfs.rmdir(self.originalPath)
+
+    def rename(self, to):
+
+        if self.isfile():
+            xbmcvfs.rename(self.originalPath, to.getOriginalPath())
+        else:
+            os.rename(self.path, to.getPath())
+
+    def copy(self, to):        
+        xbmcvfs.copy(self.originalPath(), to.getOriginalPath())
+                    
+    # ---------------------------------------------------------------------------------------------
+    # File IO functions
+    # ---------------------------------------------------------------------------------------------
+    
+    def readAll(self):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        contents = file.read()
+        file.close()
+
+        return contents
+    
+    def readAllUnicode(self, encoding='utf-8'):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        contents = file.read()
+        file.close()
+
+        return unicode(contents, encoding)
+    
+    def writeAll(self, bytes, flags='w'):
+        file = xbmcvfs.File(self.originalPath, flags)
+        file.write(bytes)
+        file.close()
+
+    def write(self, bytes):
+       if self.fileHandle is None:
+           raise OSError('file not opened')
+
+       self.fileHandle.write(bytes)
+
+    def open(self, flags):
+        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
+        
+    def close(self):
+        if self.fileHandle is None:
+           raise OSError('file not opened')
+
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    # Opens file and reads xml. Returns the root of the XML!
+    def readXml(self):
+        file = xbmcvfs.File(self.originalPath, 'r')
+        data = file.read()
+        file.close()
+
+        root = ET.fromstring(data)
+        return root
+
+    # Opens JSON file and reads it
+    def readJson(self):
+        contents = self.readAllUnicode()
+        return json.loads(contents)
+
+    # --- Configure JSON writer ---
+    # NOTE More compact JSON files (less blanks) load faster because size is smaller.
+    def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        self.writeAll(unicode(json_data).encode('utf-8'))
+
+# -------------------------------------------------------------------------------------------------
 # Kodi notifications and dialogs
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 #
 # Displays a modal dialog with an OK button. Dialog can have up to 3 rows of text, however first
 # row is multiline.
@@ -173,7 +464,78 @@ def kodi_kodi_read_favourites():
 
     return favourites, fav_names
 
+# -------------------------------------------------------------------------------------------------
+# Kodi image cache
+# -------------------------------------------------------------------------------------------------
+# See http://kodi.wiki/view/Caches_explained
+# See http://kodi.wiki/view/Artwork
+# See http://kodi.wiki/view/HOW-TO:Reduce_disk_space_usage
+# See http://forum.kodi.tv/showthread.php?tid=139568 (What are .tbn files for?)
+#
+# Whenever Kodi downloads images from the internet, or even loads local images saved along
+# side your media, it caches these images inside of ~/.kodi/userdata/Thumbnails/. By default,
+# large images are scaled down to the default values shown below, but they can be sized
+# even smaller to save additional space.
 
+#
+# Gets where an image is located in Kodi image cache.
+# image_path is a Unicode string.
+# cache_file_path is a Unicode string.
+#
+def kodi_get_cached_image_FN(image_FN):
+    THUMBS_CACHE_PATH_FN = FileName('special://profile/Thumbnails')
+    # >> This function return the cache file base name
+    base_name = xbmc.getCacheThumbName(image_FN.getOriginalPath())
+    cache_file_path = THUMBS_CACHE_PATH_FN.pjoin(base_name[0]).pjoin(base_name)
+
+    return cache_file_path
+
+#
+# Updates Kodi image cache for the image provided in img_path.
+# In other words, copies the image img_path into Kodi cache entry.
+# Needles to say, only update image cache if image already was on the cache.
+# img_path is a Unicode string
+#
+def kodi_update_image_cache(img_path_FN):
+    # What if image is not cached?
+    cached_thumb_FN = kodi_get_cached_image_FN(img_path)
+    log_debug('kodi_update_image_cache()       img_path_FN OP {0}'.format(img_path_FN.getOriginalPath()))
+    log_debug('kodi_update_image_cache()   cached_thumb_FN OP {0}'.format(cached_thumb_FN.getOriginalPath()))
+
+    # For some reason xbmc.getCacheThumbName() returns a filename ending in TBN.
+    # However, images in the cache have the original extension. Replace the TBN extension
+    # with that of the original image.
+    cached_thumb_ext = cached_thumb_FN.getExt()
+    if cached_thumb_ext == '.tbn':
+        img_path_ext = img_path_FN.getExt()
+        cached_thumb_FN = FileName(cached_thumb_FN.getOriginalPath().replace('.tbn', img_path_ext))
+        log_debug('kodi_update_image_cache() U cached_thumb_FN OP {0}'.format(cached_thumb.getOriginalPath()))
+
+    # --- Check if file exists in the cache ---
+    # xbmc.getCacheThumbName() seems to return a filename even if the local file does not exist!
+    if not cached_thumb_FN.isfile():
+        log_debug('kodi_update_image_cache() Cached image not found. Doing nothing')
+        return
+
+    # --- Copy local image into Kodi image cache ---
+    # >> See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
+    log_debug('kodi_update_image_cache() Image found in cache. Updating Kodi image cache')
+    log_debug('kodi_update_image_cache() copying {0}'.format(img_path_FN.getOriginalPath()))
+    log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb_FN.getOriginalPath()))
+    # fs_encoding = sys.getfilesystemencoding()
+    # log_debug('kodi_update_image_cache() fs_encoding = "{0}"'.format(fs_encoding))
+    # encoded_img_path = img_path.encode(fs_encoding, 'ignore')
+    # encoded_cached_thumb = cached_thumb.encode(fs_encoding, 'ignore')
+    try:
+        # shutil.copy2(encoded_img_path, encoded_cached_thumb)
+        img_path_FN.copy(cached_thumb_FN)
+    except OSError:
+        log_kodi_notify_warn('AEL warning', 'Cannot update cached image (OSError)')
+        lod_debug('Cannot update cached image (OSError)')
+
+# -------------------------------------------------------------------------------------------------
+# Kodi Wizards (by Chrisism)
+# -------------------------------------------------------------------------------------------------
 #
 # The wizarddialog implementations can be used to chain a collection of
 # different kodi dialogs and use them to fill a dictionary with user input.
