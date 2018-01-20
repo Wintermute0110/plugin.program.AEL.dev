@@ -448,6 +448,26 @@ def misc_generate_random_SID():
 
     return sid
 
+#
+# Version helper class
+#
+class VersionNumber(object):
+
+    def __init__(self, versionString):
+        self.versionNumber = versionString.split('.')
+
+    def getFullString(self):
+        return '.'.join(self.versionNumber)
+
+    def getMajor(self):
+        return int(self.versionNumber[0])
+
+    def getMinor(self):
+        return int(self.versionNumber[1])
+
+    def getBuild(self):
+        return int(self.versionNumber[2])
+
 # -------------------------------------------------------------------------------------------------
 # Filesystem helper class
 # This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in

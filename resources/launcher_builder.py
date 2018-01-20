@@ -10,6 +10,7 @@ from utils import *
 from utils_kodi import *
 from disk_IO import *
 from platforms import *
+from gamestream import *
 
 class launcherBuilder():
 
@@ -40,6 +41,8 @@ class launcherBuilder():
         typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
         #typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)' todo: not finished yet
         typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
+        typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
+
         if sys.platform == 'win32':
             typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
 
@@ -143,6 +146,19 @@ class launcherBuilder():
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
             wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)         
+            
+        # --- Steam launcher ---
+        elif launcher_type == LAUNCHER_NVGAMESTREAM:
+            wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
+            wizard = DummyWizardDialog('type', launcher_type, wizard)
+            wizard = DummyWizardDialog('application', 'NVSTREAM', wizard)
+            wuzard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, get_gamestream_server_info)
+            wizard = DummyWizardDialog('pincode', None, wizard, generatePairPinCode)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+            wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
+            wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)   
+
 
         # --- Create new launcher. categories.xml is save at the end of this function ---
         # NOTE than in the database original paths are always stored.
@@ -195,7 +211,7 @@ def getLauncherTypeName(launcher_type):
     if launcher_type == LAUNCHER_STEAM:
         return "Steam launcher"
 
-def getTitleFromAppPath(input, launcher):
+def getTitleFromAppPath(input, item_key, launcher):
 
     if input:
         return input
@@ -207,7 +223,7 @@ def getTitleFromAppPath(input, launcher):
     title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
     return title_formatted
 
-def getExtensionsFromAppPath(input ,launcher):
+def getExtensionsFromAppPath(input, item_key ,launcher):
     
     if input:
         return input
@@ -218,7 +234,7 @@ def getExtensionsFromAppPath(input ,launcher):
     extensions = emudata_get_program_extensions(appPath.getBase())
     return extensions
 
-def getArgumentsFromAppPath(input, launcher):
+def getArgumentsFromAppPath(input, item_key, launcher):
     
     if input:
         return input
@@ -229,7 +245,7 @@ def getArgumentsFromAppPath(input, launcher):
     default_arguments = emudata_get_program_arguments(appPath.getBase())
     return default_arguments
 
-def getValueFromRomPath(input, launcher):
+def getValueFromRomPath(input, item_key, launcher):
 
     if input:
         return input
@@ -237,7 +253,7 @@ def getValueFromRomPath(input, launcher):
     romPath = launcher['rompath']
     return romPath
 
-def getValueFromAssetsPath(input, launcher):
+def getValueFromAssetsPath(input, item_key, launcher):
 
     if input:
         return input
@@ -246,6 +262,10 @@ def getValueFromAssetsPath(input, launcher):
     romPath = romPath.pjoin('games')
 
     return romPath.getOriginalPath()
+
+def generatePairPinCode(input, item_key, launcher):
+    
+    return gamestreamServer(None).generatePincode()
 
 def get_available_retroarch_cores(settings):
 

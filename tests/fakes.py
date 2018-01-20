@@ -47,7 +47,7 @@ class FakeExecutor(Executor):
 
 class FakeClass():
 
-    def FakeMethod(self, value, launcher):
+    def FakeMethod(self, value, key, launcher):
         self.value = value
 
 class FakeFile(FileName):
@@ -65,7 +65,10 @@ class FakeFile(FileName):
 
     def write(self, bytes):
        self.fakeContent = self.fakeContent + bytes
-       
+      
+    def writeAll(self, bytes, flags='w'):
+       self.fakeContent = self.fakeContent + bytes
+
     def pjoin(self, *args):
         return self
 
