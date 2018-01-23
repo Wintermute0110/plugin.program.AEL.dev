@@ -39,7 +39,7 @@ class GameStreamServer(object):
             return None
 
         root = ET.fromstring(page_data)
-        log_debug(ET.tostring(root,encoding='utf8',method='xml'))
+        #log_debug(ET.tostring(root,encoding='utf8',method='xml'))
         return root
 
     def connect(self):
@@ -254,10 +254,26 @@ class GameStreamServer(object):
 
     def getApps(self):
         
-        apps_response = self._perform_server_request('applist', True, {
-            'devicename': 'ael', 
-            'updateState': 1, 
-            'phrase':  'pairchallenge'})
+        apps_response = self._perform_server_request('applist', True)
+        appnodes = apps_response.findall('App')
+        
+        apps = []
+        for appnode in appnodes:
+            
+            app = {}
+            for appnode_attr in appnode:
+                if len(list(appnode_attr)) > 1:
+                    continue
+                
+                xml_text = appnode_attr.text if appnode_attr.text is not None else ''
+                xml_text = text_unescape_XML(xml_text)
+                xml_tag  = appnode_attr.tag
+           
+                app[xml_tag] = xml_text
+
+            apps.append(app)
+
+        return apps
 
 
     def getCertificateBytes(self):

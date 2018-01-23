@@ -37,6 +37,9 @@ class RomScannersFactory():
         
         if launcherType == LAUNCHER_STEAM:
             return SteamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
+
+        if launcherType == LAUNCHER_NVGAMESTREAM:
+            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
                 
         return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
 
@@ -534,3 +537,137 @@ class SteamScanner(RomScannerStrategy):
 
         self._endProgressPhase()    
         return new_roms
+
+class NvidiaStreamScanner(RomScannerStrategy):
+
+    from gamestream import *
+
+    # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _getCandidates(self, launcher_report):
+               
+        log_debug('Reading Nvidia GameStream server')
+        self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
+
+        server_host = self.launcher['server']
+        
+        streamServer = GameStreamServer(server_host, self.addon_dir)
+        connected = streamServer.connect()
+
+        if not connected:
+            kodi_notify_error('Unable to connect to gamestream server')
+            return None
+
+        self._updateProgress(50)
+        games = streamServer.getApps()
+                
+        self._endProgressPhase()
+        return games
+
+    # --- Remove dead entries -----------------------------------------------------------------
+    def _removeDeadRoms(self, candidates, roms):
+    
+        if roms is None or len(roms) == 0:
+            log_info('Launcher is empty. No dead ROM check.')
+            return 0
+
+        log_debug('Starting dead items scan')
+        num_roms = len(roms)
+        num_removed_roms = 0
+        i = 0
+            
+        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
+        
+        streamIds = set(streamableGame['ID'] for streamableGame in candidates)
+
+        for key in sorted(roms.iterkeys()):
+            rom = roms[key]
+            romStreamId = rom['streamid']
+            
+            log_debug('Searching {0}'.format(romStreamId))
+            self._updateProgress(i * 100 / num_roms)
+            i += 1
+
+            if romStreamId not in streamIds:
+                log_debug('Not found. Deleting from DB {0}'.format(rom['m_name']))
+                del roms[key]
+                num_removed_roms += 1
+            
+        self._endProgressPhase()
+
+        return num_removed_roms
+
+    def _processFoundItems(self, items, roms, launcher_report):
+        
+        if items is None or len(items) == 0:
+            log_info('No Nvidia Gamestream games available.')
+            return []
+
+        new_roms = []
+
+        num_games = len(items)
+        num_items_checked = 0
+            
+        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for new ROMs ...')
+        streamIdsAlreadyInCollection = set(roms[key]['streamid'] for key in roms)
+        
+        for streamableGame in items:
+            
+            streamId = streamableGame['ID']
+            log_debug('Searching {} with #{}'.format(streamableGame['AppTitle'], streamId))
+
+            self._updateProgress(num_items_checked * 100 / num_games, streamableGame['AppTitle'])
+            
+            if streamId not in streamIdsAlreadyInCollection:
+                
+                log_debug('========== Processing Nvidia Gamestream game ==========')
+                launcher_report.write('>>> title: {0}'.format(streamableGame['AppTitle']))
+                launcher_report.write('>>> ID: {0}'.format(streamableGame['ID']))
+        
+                log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
+
+                launcher_path = FileName(self.launcher['rompath'])
+                romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
+
+                # ~~~~~ Process new ROM and add to the list ~~~~~
+                # --- Create new rom dictionary ---
+                # >> Database always stores the original (non transformed/manipulated) path
+                romdata  = fs_new_rom()
+                romdata['id']               = misc_generate_random_SID()
+                romdata['filename']         = romPath.getOriginalPath()
+                romdata['streamid']         = streamableGame['ID']
+                romdata['gamestream_name']  = streamableGame['AppTitle'] # so that we always have the original name
+                romdata['m_name']           = streamableGame['AppTitle']
+
+                searchTerm = streamableGame['AppTitle']
+                
+                if self.scrapers:
+                    for scraper in self.scrapers:
+                        self._updateProgressMessage(streamableGame['name'], 'Scraping {0}...'.format(scraper.getName()))
+                        scraper.scrape(searchTerm, romPath, romdata)
+            
+                log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+                log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+                log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+                log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+                log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+                log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+                log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+                log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+                log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+                log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+                log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+                log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+            
+                new_roms.append(romdata)
+                            
+                # ~~~ Check if user pressed the cancel button ~~~
+                if self._isProgressCanceled():
+                    self._endProgressPhase()
+                    kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
+                    log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+                    return None
+            
+                num_items_checked += 1
+
+        self._endProgressPhase()    
+        return new_roms  

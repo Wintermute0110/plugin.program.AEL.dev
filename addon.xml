@@ -10,7 +10,8 @@
          x.yy.z  M**** 19.x
         -->
         <import addon="xbmc.python" version="2.25.0" />
-        <import addon="script.module.pycryptodome" version="3.4.3"/>
+        <!--<import addon="script.module.pycryptodome" version="3.4.3"/>-->
+        <import addon="script.module.pyopenssl" version="1.0.13" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>executable</provides>

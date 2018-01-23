@@ -53,7 +53,7 @@ class Test_gamestream(unittest.TestCase):
         self.assertEquals(expected, actual.getFullString())
         self.assertEquals(expectedMajor, actual.getMajor()) 
       
-    @patch('resources.net_IO.net_get_URL_using_handler')
+    @patch('resources.gamestream.net_get_URL_using_handler')
     def test_getting_apps_from_gamestream_server_gives_correct_amount(self, http_mock):
 
         # arrange
@@ -62,9 +62,20 @@ class Test_gamestream(unittest.TestCase):
         http_mock.return_value = self.read_file(test_dir + "\\gamestreamserver_apps.xml")
         server = GameStreamServer('192.168.0.555', FileName(test_dir))
 
+        expected = 18
 
+        # act
+        actual = server.getApps()
+
+        for app in actual:
+            print '----------'
+            for key in app:
+                print '{} = {}'.format(key, app[key])
+
+        # arranges
+        self.assertEquals(expected, len(actual))
         
-    #@ignore('only testable with actual server')
+    @ignore('only testable with actual server for now')
     @patch('resources.gamestream.GameStreamServer.getCertificateBytes')
     @patch('resources.gamestream.GameStreamServer.getCertificateKeyBytes')
     @patch('resources.gamestream.randomBytes')
