@@ -1,12 +1,12 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from abc import ABCMeta, abstractmethod
+from os.path import expanduser
 
 import sys, uuid, random, binascii, urllib2
 
 from net_IO import *
 from utils import *
-from utils_cryptography import *
 
 class GameStreamServer(object):
     
@@ -83,7 +83,8 @@ class GameStreamServer(object):
         return pairStatus.text == '1'
 
     def pairServer(self, pincode):
-        
+        from utils_cryptography import *
+
         if not self.isConnected():
             log_warning('Connect first')
             return False
@@ -277,6 +278,7 @@ class GameStreamServer(object):
 
 
     def getCertificateBytes(self):
+        from utils_cryptography import *
         
         if self.pem_cert_data:
             return self.pem_cert_data
@@ -291,6 +293,7 @@ class GameStreamServer(object):
         return self.pem_cert_data
     
     def getCertificateKeyBytes(self):
+        from utils_cryptography import *
         
         if self.key_cert_data:
             return self.key_cert_data
@@ -303,3 +306,19 @@ class GameStreamServer(object):
         self.key_cert_data = self.certificate_key_file_path.readAll()
         
         return self.key_cert_data
+
+    @staticmethod
+    def try_to_resolve_path_to_nvidia_certificates():
+
+        home = expanduser("~")
+        homePath = FileName(home)
+
+        possiblePath = homePath.pjoin('Limelight')          
+        if possiblePath.exists():
+            return possiblePath.getOriginalPath()
+
+        possiblePath = homePath.pjoin('Moonlight')         
+        if possiblePath.exists():
+            return possiblePath.getOriginalPath()
+         
+        return ''

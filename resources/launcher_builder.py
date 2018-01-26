@@ -153,7 +153,10 @@ class launcherBuilder():
             wizard = DummyWizardDialog('type', launcher_type, wizard)
             wizard = DummyWizardDialog('application', 'NVSTREAM', wizard)
             wuzard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, get_gamestream_server_info)
-            wizard = DummyWizardDialog('pincode', None, wizard, generatePairPinCode)
+            # Pairing with pin code will be postponed untill crypto and certificate support in kodi
+            # wizard = DummyWizardDialog('pincode', None, wizard, generatePairPinCode)
+            wizard = DummyWizardDialog('certpath', None, wizard, try_to_resolve_path_to_nvidia_certificates)
+            wizard = FileBrowseWizardDialog('certpath', 'Select the path with valid certificates', 0, wizard) 
             wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
@@ -266,6 +269,11 @@ def getValueFromAssetsPath(input, item_key, launcher):
 def generatePairPinCode(input, item_key, launcher):
     
     return gamestreamServer(None).generatePincode()
+
+def try_to_resolve_path_to_nvidia_certificates(input, item_key, launcher):
+    
+    path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
+    return path
 
 def get_available_retroarch_cores(settings):
 
