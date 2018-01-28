@@ -68,6 +68,14 @@ WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advance
 WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
          This resembles what NARS No-Intro filtering does.
 
+WIP      Asset scrapers are disabled/not working for standalone launchers. Fix this.
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
+
+WIP      Filtering of BIOSes not working properly for MAME ROMs.
+         Use the offline scraper DB to determine what is a BIOS/Device in MAME.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2697000#pid2697000
+
+
 [B]Advanced Emulator Launcher | version 0.9.8 | XX January 2018[/B]
 
 FEATURE  Add Year and Developer for Categories.
@@ -77,7 +85,9 @@ FEATURE  Per-launcher setting to disable multi-disc ROM support.
 
 FEATURE  Added "Edit Category" context menu, "Export Category XML configuration".
 
-WIP      Option to rescrape all assets from launcher in a similar fashion to "Scan ROMs local artwork".
+WIP      Option to rescrape all ROM assets in a similar fashion to "Scan ROMs local artwork".
+         Create a menu entry in "Edit Launcher", "Manage ROMs", "Scrape ROMs artwork".
+         "Scrape ROMs artwork" will use the same scraper settings in options as the ROM Scanner.
 
 FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
 
