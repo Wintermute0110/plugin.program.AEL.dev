@@ -14,7 +14,11 @@ from gamestream import *
 
 class launcherBuilder():
 
-    def createLauncher(self, categoryID, launchers, categories, settings, categories_file_path):
+    def __init__(self, settings, categories_file_path):
+        self.settings = settings
+        self.categories_file_path = categories_file_path
+
+    def createLauncher(self, categoryID, launchers, categories):
     
         # >> If categoryID not found user is creating a new launcher using the context menu
         # >> of a launcher in addon root.
@@ -119,15 +123,15 @@ class launcherBuilder():
         elif launcher_type == LAUNCHER_RETROARCH:
             
             # >> If Retroarch System dir not configured or found abort.
-            sys_dir_FN = FileName(settings['io_retroarch_sys_dir'])
+            sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
             if not sys_dir_FN.exists():
                 kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
                 return
 
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = DummyWizardDialog('application', settings['io_retroarch_sys_dir'], wizard)
-            wizard = SelectionWizardDialog('core', 'Select the core', get_available_retroarch_cores(settings), wizard)
+            wizard = DummyWizardDialog('application', self.settings['io_retroarch_sys_dir'], wizard)
+            wizard = SelectionWizardDialog('core', 'Select the core', get_available_retroarch_cores(self.settings), wizard)
             wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, wizard) 
             wizard = DummyWizardDialog('romext', '', wizard, getExtensionsFromAppPath)
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
@@ -147,20 +151,20 @@ class launcherBuilder():
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
             wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)         
             
-        # --- Steam launcher ---
+        # --- NVidia Gamestream launcher ---
         elif launcher_type == LAUNCHER_NVGAMESTREAM:
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
             wizard = DummyWizardDialog('application', 'NVSTREAM', wizard)
-            wuzard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, get_gamestream_server_info)
+            wizard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, validate_gamestream_server_connection)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
+            wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)   
             # Pairing with pin code will be postponed untill crypto and certificate support in kodi
             # wizard = DummyWizardDialog('pincode', None, wizard, generatePairPinCode)
             wizard = DummyWizardDialog('certpath', None, wizard, try_to_resolve_path_to_nvidia_certificates)
-            wizard = FileBrowseWizardDialog('certpath', 'Select the path with valid certificates', 0, wizard) 
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = FileBrowseWizardDialog('certpath', 'Select the path with valid certificates', 0, '', wizard, copy_nvidia_certificates) 
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
-            wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)   
 
 
         # --- Create new launcher. categories.xml is save at the end of this function ---
@@ -192,7 +196,7 @@ class launcherBuilder():
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
-        fs_write_catfile(categories_file_path, categories, launchers)
+        fs_write_catfile(self.categories_file_path, categories, launchers)
 
 def getLauncherTypeName(launcher_type):
     
@@ -268,12 +272,32 @@ def getValueFromAssetsPath(input, item_key, launcher):
 
 def generatePairPinCode(input, item_key, launcher):
     
-    return gamestreamServer(None).generatePincode()
+    return gamestreamServer(None, None).generatePincode()
 
 def try_to_resolve_path_to_nvidia_certificates(input, item_key, launcher):
     
     path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
     return path
+
+def copy_nvidia_certificates(input, item_key, launcher):
+
+    certificates_path = FileName(input)
+    assets_path = FileName(launcher['assets_path'])
+
+    gs = GameStreamServer(input, assets_path)
+    if not gs.copy_certificates(certificates_path):
+        kodi_notify_warn('Could not find certificates to copy. Make sure you already paired with the server with the Shield or Moonlight applications.')
+
+    return certificates_path
+
+
+def validate_gamestream_server_connection(input, item_key, launcher):
+
+    gs = GameStreamServer(input, None)
+    if not gs.connect():
+        kodi_notify_warn('Could not connect to gamestream server')
+
+    return input
 
 def get_available_retroarch_cores(settings):
 

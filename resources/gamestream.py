@@ -10,13 +10,19 @@ from utils import *
 
 class GameStreamServer(object):
     
-    def __init__(self, host, addon_dir):
+    def __init__(self, host, assets_path):
 
         self.host = host
         self.unique_id = random.getrandbits(16)
 
-        self.certificate_file_path = addon_dir.pjoin('nvidia.crt')
-        self.certificate_key_file_path = addon_dir.pjoin('nvidia.key')
+        if assets_path:
+            self.certificates_path = assets_path.pjoin('certs/')
+            self.certificate_file_path = self.certificates_path.pjoin('nvidia.crt')
+            self.certificate_key_file_path = self.certificates_path.pjoin('nvidia.key')
+        else:
+            self.certificates_path = FileName('')
+            self.certificate_file_path = FileName('')
+            self.certificate_key_file_path = FileName('')
 
         self.pem_cert_data = None
         self.key_cert_data = None
@@ -306,6 +312,22 @@ class GameStreamServer(object):
         self.key_cert_data = self.certificate_key_file_path.readAll()
         
         return self.key_cert_data
+    
+    def copy_certificates(self, certificates_source_path):
+
+        certificate_source_files = certificates_source_path.scanFilesInPathAsFileNameObjects('*.crt')
+        key_source_files = certificates_source_path.scanFilesInPathAsFileNameObjects('*.key')
+
+        if len(certificate_source_files) < 1:
+            return False
+
+        if not self.certificates_path.exists():
+            self.certificates_path.makedirs()
+        
+        certificate_source_files[0].copy(self.certificate_file_path)
+        key_source_files[0].copy(self.certificate_key_file_path)
+
+        return True
 
     @staticmethod
     def try_to_resolve_path_to_nvidia_certificates():
@@ -313,12 +335,12 @@ class GameStreamServer(object):
         home = expanduser("~")
         homePath = FileName(home)
 
-        possiblePath = homePath.pjoin('Limelight')          
+        possiblePath = homePath.pjoin('Limelight/')        
         if possiblePath.exists():
             return possiblePath.getOriginalPath()
 
-        possiblePath = homePath.pjoin('Moonlight')         
+        possiblePath = homePath.pjoin('Moonlight/')         
         if possiblePath.exists():
             return possiblePath.getOriginalPath()
          
-        return ''
+        return homePath

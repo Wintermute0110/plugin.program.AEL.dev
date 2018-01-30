@@ -892,8 +892,8 @@ class Main:
 
     def _command_add_new_launcher(self, categoryID):
 
-        builder = launcherBuilder()
-        builder.createLauncher(categoryID, self.launchers, self.categories, self.settings, CATEGORIES_FILE_PATH)
+        builder = launcherBuilder(self.settings, CATEGORIES_FILE_PATH)
+        builder.createLauncher(categoryID, self.launchers, self.categories)
 
         kodi_refresh_container()
 

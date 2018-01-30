@@ -540,17 +540,17 @@ class SteamScanner(RomScannerStrategy):
 
 class NvidiaStreamScanner(RomScannerStrategy):
 
-    from gamestream import *
-
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report):
-               
+        from gamestream import *
+
         log_debug('Reading Nvidia GameStream server')
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
 
         server_host = self.launcher['server']
-        
-        streamServer = GameStreamServer(server_host, self.addon_dir)
+        assets_path = FileName(self.launcher['assets_path'])
+
+        streamServer = GameStreamServer(server_host, assets_path)
         connected = streamServer.connect()
 
         if not connected:

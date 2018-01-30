@@ -75,7 +75,7 @@ class Test_gamestream(unittest.TestCase):
         # arranges
         self.assertEquals(expected, len(actual))
         
-    @ignore('only testable with actual server for now')
+    @unittest.skip('only testable with actual server for now')
     @patch('resources.gamestream.GameStreamServer.getCertificateBytes')
     @patch('resources.gamestream.GameStreamServer.getCertificateKeyBytes')
     @patch('resources.gamestream.randomBytes')
@@ -88,7 +88,7 @@ class Test_gamestream(unittest.TestCase):
         certificateKeyBytesMock.return_value = self.read_file(test_dir + "/nvidia.key")
         random_mock.return_value = binascii.unhexlify("50ca25d03b4ac53368875b9a1bfb50cc")
 
-        server = GameStreamServer('192.168.0.5', addon_dir)
+        server = GameStreamServer('mediaserver', addon_dir)
         
         # act
         server.connect()
@@ -97,6 +97,28 @@ class Test_gamestream(unittest.TestCase):
 
         # assert
         self.assertTrue(paired)
+        
+    def test_getting_apps_from_gamestream_server(self):
+
+        # arrange
+        test_dir = "C:\\Temp\\ael_tests\\_ScanTest\\" # os.path.dirname(os.path.abspath(__file__))
+        
+        #http_mock.return_value = self.read_file(test_dir + "\\gamestreamserver_apps.xml")
+        server = GameStreamServer('192.168.0.5', FileName(test_dir))
+
+        expected = 18
+
+        # act
+        actual = server.getApps()
+
+        for app in actual:
+            print '----------'
+            for key in app:
+                print '{} = {}'.format(key, app[key])
+
+        # arranges
+        self.assertEquals(expected, len(actual))
+        
 
 if __name__ == '__main__':
     unittest.main()

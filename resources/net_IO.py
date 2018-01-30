@@ -211,4 +211,5 @@ class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
         return self.do_open(self.getConnection, req)
 
     def getConnection(self, host, timeout=300):
-        return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert, context = self.context)
+        #return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert, context = self.context)
+        return httplib.HTTPSConnection(host, cert_file=self.cert, context = self.context)

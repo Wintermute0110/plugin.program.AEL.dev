@@ -97,5 +97,25 @@ class Test_cryptography_test(unittest.TestCase):
         self.assertEquals(expected, actual2)
         
 
+    def test_converting_pkcs8_to_pem(self):
+         # arrange
+        test_file = "C:\\Projects\\Kodi\\AEL\\plugin.program.advanced.emulator.launcher\\tests\\nvidia_p.key" 
+          
+        file_contents = ''
+        with open(test_file, 'r') as f:
+            file_contents = f.read()
+
+        #print file_contents
+        print '----------------------------'
+        print binascii.hexlify(file_contents)
+        print '----------------------------'
+        print binascii.hexlify(ssl.DER_cert_to_PEM_cert(file_contents))
+        print '----------------------------'
+        hex = base64.b64encode(binascii.hexlify(file_contents))
+        print hex
+        print '----------------------------'
+        encoded = base64.b64encode(file_contents)
+        print encoded
+
 if __name__ == '__main__':
     unittest.main()
