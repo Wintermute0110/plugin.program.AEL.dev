@@ -75,6 +75,11 @@ WIP      Filtering of BIOSes not working properly for MAME ROMs.
          Use the offline scraper DB to determine what is a BIOS/Device in MAME.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2697000#pid2697000
 
+WIP      Create a couple of new ROM context menus, "Manage Recently played ROM" and 
+         "Manage Most played ROM". Both will have the following options: "Delete this ROM",
+         "Delete all Unlinked ROMs".
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
+
 
 [B]Advanced Emulator Launcher | version 0.9.8 | XX January 2018[/B]
 
