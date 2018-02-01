@@ -498,7 +498,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     names_to_ids_dic = {}
     for rom_id in roms:
         rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
+        ROMFileName = FileNameFactory.create(rom['filename'])
         rom_name = ROMFileName.getBase_noext()
         # log_debug('{0} --> {1}'.format(rom_name, rom_id))
         # log_debug('{0}'.format(rom))
@@ -507,7 +507,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     # --- Build PClone dictionary using ROM base_noext names ---
     for rom_id in roms:
         rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
+        ROMFileName = FileNameFactory.create(rom['filename'])
         rom_nointro_name = ROMFileName.getBase_noext()
         # log_debug('rom_id {0}'.format(rom_id))
         # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))

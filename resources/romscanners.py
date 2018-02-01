@@ -18,6 +18,7 @@ from reporting import *
 from disk_IO import *
 from utils import *
 from utils_kodi import *
+from filename import *
 
 class RomScannersFactory():
 
@@ -200,7 +201,7 @@ class RomFolderScanner(RomScannerStrategy):
         kodi_busydialog_ON()
         
         files = []
-        launcher_path = FileName(self.launcher['rompath'])
+        launcher_path = FileNameFactory.create(self.launcher['rompath'])
         launcher_report.write('Scanning files in {0}'.format(launcher_path.getOriginalPath()))
 
         if self.settings['scan_recursive']:
@@ -235,7 +236,7 @@ class RomFolderScanner(RomScannerStrategy):
             log_debug('Searching {0}'.format(roms[key]['filename']))
             self._updateProgress(i * 100 / num_roms)
             i += 1
-            fileName = FileName(roms[key]['filename'])
+            fileName = FileNameFactory.create(roms[key]['filename'])
             if not fileName.exists():
                 log_debug('Not found')
                 log_debug('Deleting from DB {0}'.format(roms[key]['filename']))
@@ -264,7 +265,7 @@ class RomFolderScanner(RomScannerStrategy):
             self._updateProgress(num_items_checked * 100 / num_items)
             
             # --- Get all file name combinations ---
-            ROM = FileName(item)
+            ROM = FileNameFactory.create(item)
             launcher_report.write('>>> {0}'.format(ROM.getOriginalPath()).encode('utf-8'))
 
             # ~~~ Update progress dialog ~~~
@@ -303,7 +304,7 @@ class RomFolderScanner(RomScannerStrategy):
                 # >> Check if the set is already in launcher ROMs.
                 MultiDisc_rom_id = None
                 for new_rom in new_roms:
-                    temp_FN = FileName(new_rom['filename'])
+                    temp_FN = FileNameFactory.create(new_rom['filename'])
                     if temp_FN.getBase() == MDSet.setName:
                         MultiDiscInROMs  = True
                         MultiDisc_rom    = new_rom
@@ -316,7 +317,7 @@ class RomFolderScanner(RomScannerStrategy):
                 if not MultiDiscInROMs:
                     log_info('First ROM in the set. Adding to ROMs ...')
                     # >> Manipulate ROM so filename is the name of the set
-                    ROM_dir = FileName(ROM.getDir())
+                    ROM_dir = FileNameFactory.create(ROM.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
                     log_info('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
                     log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
@@ -488,7 +489,7 @@ class SteamScanner(RomScannerStrategy):
         
                 log_debug('Not found. Item {0} is new'.format(steamGame['name']))
 
-                launcher_path = FileName(self.launcher['rompath'])
+                launcher_path = FileNameFactory.create(self.launcher['rompath'])
                 romPath = launcher_path.pjoin('{0}.rom'.format(steamGame['appid']))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~

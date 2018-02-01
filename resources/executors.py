@@ -20,7 +20,7 @@ class ExecutorFactory():
         self.logFile = logFile
 
     def create_from_pathstring(self, application_string):
-        app = FileName(application_string)
+        app = FileNameFactory.create(application_string)
         return self.create(app)
 
     def create(self, application):

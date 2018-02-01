@@ -17,7 +17,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_a_normal_rom_list_it_succeeds(self):
         
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
 
         launcherID = 'ut1'
@@ -34,7 +34,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_a_normal_rom_list_it_returns_the_correct_romset_type(self):
         
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
         launcherID = '1234'
         launchers = {}
@@ -52,7 +52,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_roms_from_favourites_it_returns_the_correct_romset_type(self):
         
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
         categoryID = VCATEGORY_FAVOURITES_ID
         launcherID = VLAUNCHER_FAVOURITES_ID
@@ -71,7 +71,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_roms_from_most_played_category_it_returns_the_correct_romset_type(self):
 
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
         categoryID = VCATEGORY_MOST_PLAYED_ID
         launcherID = VLAUNCHER_MOST_PLAYED_ID
@@ -91,7 +91,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_roms_from_most_played_category_it_returns_the_correct_romset_type(self):
 
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
        
         categoryID = VCATEGORY_RECENT_ID
@@ -110,7 +110,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_roms_from_a_collection_it_returns_the_correct_romset_type(self):
 
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
         
         categoryID = VCATEGORY_COLLECTIONS_ID
@@ -129,7 +129,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_roms_from_a_category_it_returns_the_correct_romset_type(self):
 
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
         
         categoryIDs = [VCATEGORY_TITLE_ID, VCATEGORY_YEARS_ID, VCATEGORY_GENRE_ID, VCATEGORY_DEVELOPER_ID, VCATEGORY_CATEGORY_ID]
@@ -150,7 +150,7 @@ class Test_romsettest(unittest.TestCase):
     def test_when_loading_pclone_collection_it_will_return_the_correct_romset_type(self):
         
         # arrange
-        mockPath = FileName('mock')
+        mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
 
         categoryID = VCATEGORY_PCLONES_ID
