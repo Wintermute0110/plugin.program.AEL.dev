@@ -437,7 +437,7 @@ class OnlineAssetScraper(Scraper):
         self.asset_kind = asset_kind
         self.asset_info = asset_info
 
-        self.asset_directory = FileName(launcher[asset_info.path_key])
+        self.asset_directory = FileNameFactory.create(launcher[asset_info.path_key])
         scraping_mode = settings['asset_scraper_mode']
         
         # --- Initialise cache used in OnlineAssetScraper() as a static variable ---

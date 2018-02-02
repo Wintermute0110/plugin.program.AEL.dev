@@ -1113,7 +1113,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
     log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
     for asset_kind in CATEGORY_ASSET_LIST:
         AInfo    = assets_get_info_scheme(asset_kind)
-        asset_FN = FileName(collection[AInfo.key])
+        asset_FN = FileNameFactory.create(collection[AInfo.key])
         if not collection[AInfo.key]:
             log_debug('{0:<9s} not set'.format(AInfo.name))
             continue
@@ -1141,7 +1141,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
         log_debug('fs_export_ROM_collection_assets() ROM "{0}"'.format(rom_item['m_name']))
         for asset_kind in ROM_ASSET_LIST:
             AInfo    = assets_get_info_scheme(asset_kind)
-            asset_FN = FileName(rom_item[AInfo.key])
+            asset_FN = FileNameFactory.create(rom_item[AInfo.key])
             if not rom_item[AInfo.key]:
                 log_debug('{0:<9s} not set'.format(AInfo.name))
                 continue
@@ -1539,7 +1539,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
 def fs_export_ROM_NFO(rom, verbose = True):
     # >> Skip No-Intro Added ROMs. rom['filename'] will be empty.
     if not rom['filename']: return
-    ROMFileName = FileName(rom['filename'])
+    ROMFileName = FileNameFactory.create(rom['filename'])
     nfo_file_path = ROMFileName.switchExtension('.nfo')
     log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path.getOriginalPath()))
 
@@ -1580,7 +1580,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
 # About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
 #
 def fs_import_ROM_NFO(roms, romID, verbose = True):
-    ROMFileName = FileName(roms[romID]['filename'])
+    ROMFileName = FileNameFactory.create(roms[romID]['filename'])
     nfo_file_path = ROMFileName.switchExtension('.nfo')
     log_debug('fs_import_ROM_NFO() Loading "{0}"'.format(nfo_file_path.getPath()))
 
@@ -1665,8 +1665,8 @@ def fs_import_ROM_NFO_file_scanner(nfo_file_path):
 # Returns a FileName object
 #
 def fs_get_ROM_NFO_name(rom):
-    ROMFileName = FileName(rom['filename'])
-    nfo_file_path = FileName(ROMFileName.getPath_noext() + '.nfo')
+    ROMFileName = FileNameFactory.create(rom['filename'])
+    nfo_file_path = FileNameFactory.create(ROMFileName.getPath_noext() + '.nfo')
     log_debug("fs_get_ROM_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
@@ -1801,7 +1801,7 @@ def fs_read_launcher_NFO(nfo_FileName):
 #
 def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
-    nfo_dir = FileName(settings['launchers_asset_dir'])
+    nfo_dir = FileNameFactory.create(settings['launchers_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(launcher_name + '.nfo')
     log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
@@ -1876,7 +1876,7 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
 #
 def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
-    nfo_dir = FileName(settings['categories_asset_dir'])
+    nfo_dir = FileNameFactory.create(settings['categories_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(category_name + '.nfo')
     log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
@@ -1941,7 +1941,7 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
 
 def fs_get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
-    nfo_dir = FileName(settings['collections_asset_dir'])
+    nfo_dir = FileNameFactory.create(settings['collections_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(collection_name + '.nfo')
     log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 

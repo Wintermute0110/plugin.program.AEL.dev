@@ -26,6 +26,7 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- Modules/packages in this plugin ---
 from constants import *
+from filename import *
 from utils import *
 from utils_kodi import *
 from utils_kodi_cache import *
@@ -59,11 +60,11 @@ __addon_type__    = __addon_obj__.getAddonInfo('type').decode('utf-8')
 # --- Addon paths and constant definition ---
 # _FILE_PATH is a filename
 # _DIR is a directory (with trailing /)
-ADDONS_DATA_DIR           = FileName('special://profile/addon_data')
+ADDONS_DATA_DIR           = FileNameFactory.create('special://profile/addon_data')
 PLUGIN_DATA_DIR           = ADDONS_DATA_DIR.pjoin(__addon_id__)
-BASE_DIR                  = FileName('special://profile')
-HOME_DIR                  = FileName('special://home')
-KODI_FAV_FILE_PATH        = FileName('special://profile/favourites.xml')
+BASE_DIR                  = FileNameFactory.create('special://profile')
+HOME_DIR                  = FileNameFactory.create('special://home')
+KODI_FAV_FILE_PATH        = FileNameFactory.create('special://profile/favourites.xml')
 ADDONS_DIR                = HOME_DIR.pjoin('addons')
 CURRENT_ADDON_DIR         = ADDONS_DIR.pjoin(__addon_id__)
 ICON_IMG_FILE_PATH        = CURRENT_ADDON_DIR.pjoin('icon.png')
@@ -726,7 +727,7 @@ class Main:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
                 log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
                 if not NFO_file: return
-                NFO_FileName = FileName(NFO_file)
+                NFO_FileName = FileNameFactory.create(NFO_file)
                 if not NFO_FileName.exists(): return
                 # >> Returns True if changes were made
                 if not fs_import_category_NFO(NFO_FileName, self.categories, categoryID): return
@@ -910,7 +911,7 @@ class Main:
             if not dir_path: return
 
             # --- If XML exists then warn user about overwriting it ---
-            export_FN = FileName(dir_path).pjoin(category_fn_str)
+            export_FN = FileNameFactory.create(dir_path).pjoin(category_fn_str)
             if export_FN.exists():
                 ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
                 if not ret:
@@ -1150,7 +1151,7 @@ class Main:
             elif type2 == 8:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
                 if not NFO_file: return
-                NFO_FileName = FileName(NFO_file)
+                NFO_FileName = FileNameFactory.create(NFO_file)
                 if not NFO_FileName.exists(): return
                 # >> Launcher is edited using Python passing by assigment
                 # >> Returns True if changes were made
@@ -1604,7 +1605,7 @@ class Main:
                     for rom_id in roms:
                         # --- Search assets for current ROM ---
                         rom = roms[rom_id]
-                        ROMFile = FileName(rom['filename'])
+                        ROMFile = FileNameFactory.create(rom['filename'])
                         rom_basename_noext = ROMFile.getBase_noext()
                         log_verb('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
 
@@ -1627,16 +1628,16 @@ class Main:
                                 # >> If directory is different it is definitely customised.
                                 # >> If directory is the same and the basename is from a ROM in the
                                 # >> PClone group it is very likely it is substituted.
-                                current_asset_FN = FileName(rom[AInfo.key])
+                                current_asset_FN = FileNameFactory.create(rom[AInfo.key])
                                 if current_asset_FN.exists():
                                     log_debug('Local {0:<9} "{1}"'.format(AInfo.name, current_asset_FN.getPath()))
                                     continue
-                            # >> Old implementation (slow). Using FileName().exists() to check many
+                            # >> Old implementation (slow). Using FileNameFactory.create().exists() to check many
                             # >> files becames really slow.
-                            # asset_dir = FileName(launcher[AInfo.path_key])
+                            # asset_dir = FileNameFactory.create(launcher[AInfo.path_key])
                             # local_asset = misc_look_for_file(asset_dir, rom_basename_noext, AInfo.exts)
                             # >> New implementation using a cache.
-                            asset_path = FileName(launcher[AInfo.path_key])
+                            asset_path = FileNameFactory.create(launcher[AInfo.path_key])
                             local_asset = misc_search_file_cache(asset_path, rom_basename_noext, AInfo.exts)
                             if local_asset:
                                 rom[AInfo.key] = local_asset.getOriginalPath()
@@ -1667,7 +1668,7 @@ class Main:
                         for rom_id in roms:
                             # --- Search assets for current ROM ---
                             rom = roms[rom_id]
-                            ROMFile = FileName(rom['filename'])
+                            ROMFile = FileNameFactory.create(rom['filename'])
                             rom_basename_noext = ROMFile.getBase_noext()
                             log_verb('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
 
@@ -1699,7 +1700,7 @@ class Main:
                                 if not asset_DB_file:
                                     # log_debug('Search  {0} in PClone set'.format(AInfo.name))
                                     for set_rom_id in pclone_set_id_list:
-                                        # ROMFile_t = FileName(roms[set_rom_id]['filename'])
+                                        # ROMFile_t = FileNameFactory.create(roms[set_rom_id]['filename'])
                                         # log_debug('PClone group ROM "{0}" (ID) {1})'.format(ROMFile_t.getBase(), set_rom_id))
                                         asset_DB_file_t = roms[set_rom_id][AInfo.key]
                                         if asset_DB_file_t:
@@ -1822,7 +1823,7 @@ class Main:
                 # --- Delete ROMs metadata NFO files ---
                 elif type2 == 7:
                     # --- Get list of NFO files ---
-                    ROMPath_FileName = FileName(self.launchers[launcherID]['rompath'])
+                    ROMPath_FileName = FileNameFactory.create(self.launchers[launcherID]['rompath'])
                     log_verb('_command_edit_launcher() NFO dirname "{0}"'.format(ROMPath_FileName.getPath()))
 
                     nfo_scanned_files = ROMPath_FileName.recursiveScanFilesInPath('*.nfo')
@@ -1839,7 +1840,7 @@ class Main:
                     # --- Delete NFO files ---
                     for file in nfo_scanned_files:
                         log_verb('_command_edit_launcher() RM "{0}"'.format(file))
-                        FileName(file).unlink()
+                        FileNameFactory.create(file).unlink()
 
                     # >> No need to save launchers XML / Update container
                     kodi_notify('Deleted {0} NFO files'.format(len(nfo_scanned_files)))
@@ -1940,7 +1941,7 @@ class Main:
                         # >> Check if user configured a No-Intro DAT. If not configured  or file does
                         # >> not exists refuse to switch to PClone view and force normal mode.
                         nointro_xml_file = launcher['nointro_xml_file']
-                        nointro_xml_file_FName = FileName(nointro_xml_file)
+                        nointro_xml_file_FName = FileNameFactory.create(nointro_xml_file)
                         if not nointro_xml_file:
                             log_info('_command_edit_launcher() No-Intro DAT not configured.')
                             log_info('_command_edit_launcher() Forcing Flat view mode.')
@@ -1994,7 +1995,7 @@ class Main:
                         # Fixed in Krypton Beta 6 http://forum.kodi.tv/showthread.php?tid=298161
                         dialog = xbmcgui.Dialog()
                         dat_file = dialog.browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
-                        if not FileName(dat_file).exists(): return
+                        if not FileNameFactory.create(dat_file).exists(): return
                         self.launchers[launcherID]['nointro_xml_file'] = dat_file
                         kodi_dialog_OK('DAT file successfully added. Launcher ROMs will be audited now.')
 
@@ -2003,7 +2004,7 @@ class Main:
                         # _roms_update_NoIntro_status() does not save ROMs JSON/XML.
                         launcher = self.launchers[launcherID]
                         roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
-                        nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+                        nointro_xml_FN = FileNameFactory.create(launcher['nointro_xml_file'])
                         if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                             fs_write_ROMs_JSON(ROMS_DIR, launcher, roms)
                             kodi_notify('Added No-Intro/Redump XML DAT. '
@@ -2065,7 +2066,7 @@ class Main:
                     # _roms_update_NoIntro_status() does not save ROMs JSON/XML.
                     launcher = self.launchers[launcherID]
                     roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
-                    nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+                    nointro_xml_FN = FileNameFactory.create(launcher['nointro_xml_file'])
                     if self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                         pDialog = xbmcgui.DialogProgress()
                         pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
@@ -2259,7 +2260,7 @@ class Main:
             dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
                                                '', False, False).decode('utf-8')
             if not dir_path: return
-            export_FN = FileName(dir_path).pjoin(launcher_fn_str)
+            export_FN = FileNameFactory.create(dir_path).pjoin(launcher_fn_str)
             if export_FN.exists():
                 ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
                 if not ret:
@@ -2484,7 +2485,7 @@ class Main:
                 dialog = xbmcgui.Dialog()
                 text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
                                           'files', '.txt|.dat', False, False).decode('utf-8')
-                text_file_path = FileName(text_file)
+                text_file_path = FileNameFactory.create(text_file)
                 if text_file_path.exists():
                     file_data = self._gui_import_TXT_file(text_file_path)
                     roms[romID]['m_plot'] = file_data
@@ -2673,7 +2674,7 @@ class Main:
             # --- If there is a No-Intro XML configured audit ROMs ---
             if is_Normal_Launcher and launcher['nointro_xml_file']:
                 log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
-                nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+                nointro_xml_FN = FileNameFactory.create(launcher['nointro_xml_file'])
                 if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                     self.launchers[launcherID]['nointro_xml_file'] = ''
                     kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
@@ -4657,13 +4658,13 @@ class Main:
                 log_info('_command_manage_favourites() Fav ROM status "{0}"'.format(roms_fav[rom_fav_ID]['fav_status']))
 
                 # >> Traverse all launchers and find rom by filename or base name
-                ROM_FN_FAV = FileName(roms_fav[rom_fav_ID]['filename'])
+                ROM_FN_FAV = FileNameFactory.create(roms_fav[rom_fav_ID]['filename'])
                 filename_found = False
                 for launcher_id in self.launchers:
                     # >> Load launcher ROMs
                     roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcher_id])
                     for rom_id in roms:
-                        ROM_FN = FileName(roms[rom_id]['filename'])
+                        ROM_FN = FileNameFactory.create(roms[rom_id]['filename'])
                         fav_name = roms_fav[rom_fav_ID]['m_name']
                         if type == 1 and roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
                             log_info('_command_manage_favourites() Favourite {0} matched by filename!'.format(fav_name))
@@ -4777,9 +4778,9 @@ class Main:
 
                 # >> Is there a ROM with same basename (including extension) as the Favourite ROM?
                 filename_found = False
-                ROM_FAV_FN = FileName(rom_fav['filename'])
+                ROM_FAV_FN = FileNameFactory.create(rom_fav['filename'])
                 for rom_id in launcher_roms:
-                    ROM_FN = FileName(launcher_roms[rom_id]['filename'])
+                    ROM_FN = FileNameFactory.create(launcher_roms[rom_id]['filename'])
                     if ROM_FAV_FN.getBase() == ROM_FN.getBase():
                         filename_found = True
                         new_fav_rom_ID = rom_id
@@ -4921,7 +4922,7 @@ class Main:
         for rom_fav_ID in roms_fav:
             pDialog.update(i * 100 / num_progress_items)
             i += 1
-            romFile = FileName(roms_fav[rom_fav_ID]['filename'])
+            romFile = FileNameFactory.create(roms_fav[rom_fav_ID]['filename'])
             if not romFile.exists():
                 log_verb('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['m_name']))
                 roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
@@ -4965,7 +4966,7 @@ class Main:
                              'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
             # --- Extrafanart ---
-            collections_asset_dir = FileName(self.settings['collections_asset_dir'])
+            collections_asset_dir = FileNameFactory.create(self.settings['collections_asset_dir'])
             extrafanart_dir = collections_asset_dir + collection['m_name']
             log_debug('_command_render_collections() EF dir {0}'.format(extrafanart_dir.getPath()))
             extrafanart_dic = {}
@@ -5142,7 +5143,7 @@ class Main:
                 NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
                 log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
                 if not NFO_file: return
-                NFO_FileName = FileName(NFO_file)
+                NFO_FileName = FileNameFactory.create(NFO_file)
                 if not NFO_FileName.exists(): return
                 # >> Returns True if changes were made
                 if not fs_import_collection_NFO(NFO_FileName, collections, launcherID): return
@@ -5338,7 +5339,7 @@ class Main:
         if not collection_file_str: return
 
         # --- Load ROM Collection file ---
-        collection_FN = FileName(collection_file_str)
+        collection_FN = FileNameFactory.create(collection_file_str)
         control_dic, collection_dic, collection_rom_list = fs_import_ROM_collection(collection_FN)
         if not collection_dic:
             kodi_dialog_OK('Error reading Collection JSON file. JSON file corrupted or wrong.')
@@ -5351,7 +5352,7 @@ class Main:
             return
 
         # --- Check if asset JSON exist. If so, ask the user about importing it. ---
-        collection_asset_FN = FileName(collection_FN.getPath_noext() + '_assets.json')
+        collection_asset_FN = FileNameFactory.create(collection_FN.getPath_noext() + '_assets.json')
         log_debug('_command_import_collection() collection_asset_FN "{0}"'.format(collection_asset_FN.getPath()))
         import_collection_assets = False
         if collection_asset_FN.exists():
@@ -5379,7 +5380,7 @@ class Main:
 
         # --- Also import assets if loaded ---
         if import_collection_assets:
-            collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
+            collections_asset_dir_FN = FileNameFactory.create(self.settings['collections_asset_dir'])
 
             # --- Import Collection assets ---
             log_info('_command_import_collection() Importing ROM Collection assets ...')
@@ -5426,7 +5427,7 @@ class Main:
                 for asset_kind in ROM_ASSET_LIST:
                     # >> Get assets filename with no extension
                     AInfo = assets_get_info_scheme(asset_kind)
-                    ROM_FN = FileName(rom_item['filename'])                    
+                    ROM_FN = FileNameFactory.create(rom_item['filename'])                    
                     ROM_asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
                                                                      ROM_FN.getBase_noext(), rom_item['id'])
                     ROM_asset_FN = ROM_asset_noext_FN.append(ROM_asset_noext_FN.getExt())
@@ -5487,7 +5488,7 @@ class Main:
         dialog = xbmcgui.Dialog()
         output_dir = dialog.browse(3, 'Select Collection output directory', 'files').decode('utf-8')
         if not output_dir: return
-        output_dir_FileName = FileName(output_dir)
+        output_dir_FileName = FileNameFactory.create(output_dir)
 
         # --- Load collection ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -5514,11 +5515,11 @@ class Main:
 
             # --- Copy Collection assets to Collection asset directory ---
             log_info('_command_export_collection() Copying ROM Collection assets ...')
-            collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
+            collections_asset_dir_FN = FileNameFactory.create(self.settings['collections_asset_dir'])
             collection_assets_were_copied = False
             for asset_kind in CATEGORY_ASSET_LIST:
                 AInfo = assets_get_info_scheme(asset_kind)
-                asset_FileName = FileName(collection[AInfo.key])
+                asset_FileName = FileNameFactory.create(collection[AInfo.key])
                 new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
                                                                        collection['m_name'], collection['id'])
                 new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
@@ -5565,8 +5566,8 @@ class Main:
                 log_debug('_command_export_collection() ROM "{0}"'.format(rom_item['m_name']))
                 for asset_kind in ROM_ASSET_LIST:
                     AInfo = assets_get_info_scheme(asset_kind)
-                    asset_FileName = FileName(rom_item[AInfo.key])
-                    ROM_FileName = FileName(rom_item['filename'])
+                    asset_FileName = FileNameFactory.create(rom_item[AInfo.key])
+                    ROM_FileName = FileNameFactory.create(rom_item['filename'])
                     new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
                                                                            ROM_FileName.getBase_noext(), rom_item['id'])
                     new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
@@ -6374,7 +6375,7 @@ class Main:
             if not s_map:
                 kodi_dialog_OK('Map image file not set for ROM "{0}"'.format(rom['m_name']))
                 return
-            map_FN = FileName(s_map)
+            map_FN = FileNameFactory.create(s_map)
             if not map_FN.exists():
                 kodi_dialog_OK('Map image file not found.')
                 return
@@ -7026,11 +7027,11 @@ class Main:
         audit_none = audit_have = audit_miss = audit_unknown = 0
         audit_num_parents = audit_num_clones = 0
         check_list = []
-        path_title_P = FileName(launcher['path_title']).getPath()
-        path_snap_P = FileName(launcher['path_snap']).getPath()
-        path_boxfront_P = FileName(launcher['path_boxfront']).getPath()
-        path_boxback_P = FileName(launcher['path_boxback']).getPath()
-        path_cartridge_P = FileName(launcher['path_cartridge']).getPath()
+        path_title_P = FileNameFactory.create(launcher['path_title']).getPath()
+        path_snap_P = FileNameFactory.create(launcher['path_snap']).getPath()
+        path_boxfront_P = FileNameFactory.create(launcher['path_boxfront']).getPath()
+        path_boxback_P = FileNameFactory.create(launcher['path_boxback']).getPath()
+        path_cartridge_P = FileNameFactory.create(launcher['path_cartridge']).getPath()
         for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             rom = roms[rom_id]
             rom_info = {}
@@ -7062,30 +7063,30 @@ class Main:
             # path_* and art getDir() equal and Base_noext() different ==> Maybe S or maybe C => O
             # To differentiate between S and C a test in the PClone group must be done.
             #
-            romfile_FN = FileName(rom['filename'])
+            romfile_FN = FileNameFactory.create(rom['filename'])
             romfile_getBase_noext = romfile_FN.getBase_noext()
             if rom['s_title']:
-                rom_info['s_title'] = self._aux_get_info(FileName(rom['s_title']), path_title_P, romfile_getBase_noext)
+                rom_info['s_title'] = self._aux_get_info(FileNameFactory.create(rom['s_title']), path_title_P, romfile_getBase_noext)
             else:
                 rom_info['s_title'] = '-'
                 missing_s_title += 1
             if rom['s_snap']:
-                rom_info['s_snap'] = self._aux_get_info(FileName(rom['s_snap']), path_snap_P, romfile_getBase_noext)
+                rom_info['s_snap'] = self._aux_get_info(FileNameFactory.create(rom['s_snap']), path_snap_P, romfile_getBase_noext)
             else:
                 rom_info['s_snap'] = '-'
                 missing_s_snap += 1
             if rom['s_boxfront']:
-                rom_info['s_boxfront'] = self._aux_get_info(FileName(rom['s_boxfront']), path_boxfront_P, romfile_getBase_noext)
+                rom_info['s_boxfront'] = self._aux_get_info(FileNameFactory.create(rom['s_boxfront']), path_boxfront_P, romfile_getBase_noext)
             else:
                 rom_info['s_boxfront'] = '-'
                 missing_s_boxfront += 1
             if rom['s_boxback']:
-                rom_info['s_boxback'] = self._aux_get_info(FileName(rom['s_boxback']), path_boxback_P, romfile_getBase_noext)
+                rom_info['s_boxback'] = self._aux_get_info(FileNameFactory.create(rom['s_boxback']), path_boxback_P, romfile_getBase_noext)
             else:
                 rom_info['s_boxback'] = '-'
                 missing_s_boxback += 1
             if rom['s_cartridge']:
-                rom_info['s_cartridge'] = self._aux_get_info(FileName(rom['s_cartridge']), path_cartridge_P, romfile_getBase_noext)
+                rom_info['s_cartridge'] = self._aux_get_info(FileNameFactory.create(rom['s_cartridge']), path_cartridge_P, romfile_getBase_noext)
             else:                  
                 rom_info['s_cartridge'] = '-'
                 missing_s_cartridge += 1
@@ -7333,7 +7334,7 @@ class Main:
 
         # --- Format title ---
         scan_clean_tags = self.settings['scan_clean_tags']
-        ROMFile = FileName(romfile)
+        ROMFile = FileNameFactory.create(romfile)
         rom_name = text_format_ROM_title(ROMFile.getBase_noext(), scan_clean_tags)
 
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
@@ -7383,7 +7384,7 @@ class Main:
         # --- If there is a No-Intro XML configured audit ROMs ---
         if launcher['nointro_xml_file']:
             log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
-            nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+            nointro_xml_FN = FileNameFactory.create(launcher['nointro_xml_file'])
             if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                 self.launchers[launcherID]['nointro_xml_file'] = ''
                 kodi_dialog_OK('Error auditing ROMs. XML DAT file unset.')
@@ -7442,7 +7443,7 @@ class Main:
         
         log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
         roms_base_noext = launcher['roms_base_noext']
-        nointro_xml_FN = FileName(launcher['nointro_xml_file'])
+        nointro_xml_FN = FileNameFactory.create(launcher['nointro_xml_file'])
                 
         nointro_scanner = RomDatFileScanner(self.settings, self.romsetFactory)
 
@@ -7480,7 +7481,7 @@ class Main:
         else:
             launcher = self.launchers[launcherID]
             platform = launcher['platform']
-        ROM      = FileName(roms[romID]['filename'])
+        ROM      = FileNameFactory.create(roms[romID]['filename'])
         rom_name = roms[romID]['m_name']
         scan_clean_tags            = self.settings['scan_clean_tags']
         scan_ignore_scrapped_title = self.settings['scan_ignore_scrap_title']
@@ -7627,7 +7628,7 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Category'
             AInfo = assets_get_info_scheme(asset_kind)
-            asset_directory = FileName(self.settings['categories_asset_dir'])
+            asset_directory = FileNameFactory.create(self.settings['categories_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Category "{0}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
@@ -7643,7 +7644,7 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Collection'
             AInfo = assets_get_info_scheme(asset_kind)
-            asset_directory = FileName(self.settings['collections_asset_dir'])
+            asset_directory = FileNameFactory.create(self.settings['collections_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Collection "{0}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
@@ -7658,7 +7659,7 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Launcher'
             AInfo = assets_get_info_scheme(asset_kind)
-            asset_directory = FileName(self.settings['launchers_asset_dir'])
+            asset_directory = FileNameFactory.create(self.settings['launchers_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Launcher "{0}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
@@ -7672,25 +7673,25 @@ class Main:
         elif object_kind == KIND_ROM:
             # --- Grab asset information for editing ---
             object_name = 'ROM'
-            ROMfile = FileName(object_dic['filename'])
+            ROMfile = FileNameFactory.create(object_dic['filename'])
             AInfo   = assets_get_info_scheme(asset_kind)
             if categoryID == VCATEGORY_FAVOURITES_ID:
                 log_info('_gui_edit_asset() ROM is in Favourites')
-                asset_directory  = FileName(self.settings['favourites_asset_dir'])
+                asset_directory  = FileNameFactory.create(self.settings['favourites_asset_dir'])
                 platform         = object_dic['platform']
                 asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
-                asset_directory  = FileName(self.settings['collections_asset_dir'])
+                asset_directory  = FileNameFactory.create(self.settings['collections_asset_dir'])
                 platform         = object_dic['platform']
                 asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
                 launcher         = self.launchers[launcherID]
-                asset_directory  = FileName(launcher[AInfo.path_key])
+                asset_directory  = FileNameFactory.create(launcher[AInfo.path_key])
                 platform         = launcher['platform']
                 asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile)
-            current_asset_path = FileName(object_dic[AInfo.key])
+            current_asset_path = FileNameFactory.create(object_dic[AInfo.key])
             log_info('_gui_edit_asset() Editing ROM {0}'.format(AInfo.name))
             log_info('_gui_edit_asset() ROM ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory.getOriginalPath()))
@@ -7739,7 +7740,7 @@ class Main:
 
         # --- Link to a local image ---
         if type2 == 0:
-            image_dir = FileName(object_dic[AInfo.key]).getDir() if object_dic[AInfo.key] else ''
+            image_dir = FileNameFactory.create(object_dic[AInfo.key]).getDir() if object_dic[AInfo.key] else ''
 
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             # >> ShowAndGetFile dialog
@@ -7752,7 +7753,7 @@ class Main:
                 image_file = dialog.browse(2, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
                                            AInfo.exts_dialog, True, False, image_dir)
             if not image_file: return False
-            image_file_path = FileName(image_file)
+            image_file_path = FileNameFactory.create(image_file)
             if not image_file or not image_file_path.exists(): return False
 
             # --- Update object by assigment. XML/JSON will be save by parent ---
@@ -7769,11 +7770,11 @@ class Main:
         elif type2 == 1:
             # >> If assets exists start file dialog from current asset directory
             image_dir = ''
-            if object_dic[AInfo.key]: image_dir = FileName(object_dic[AInfo.key]).getDir()
+            if object_dic[AInfo.key]: image_dir = FileNameFactory.create(object_dic[AInfo.key]).getDir()
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(AInfo.name), 'files',
                                                  AInfo.exts_dialog, True, False, image_dir)
-            image_FileName = FileName(image_file)
+            image_FileName = FileNameFactory.create(image_file)
             if not image_FileName.exists(): return False
 
             # >> Determine image extension and dest filename. Check for errors.
@@ -8005,7 +8006,7 @@ class Main:
         for xml_file in file_list:
             xml_file_unicode = xml_file.decode('utf-8')
             log_debug('_command_import_launchers() Importing "{0}"'.format(xml_file_unicode))
-            import_FN = FileName(xml_file_unicode)
+            import_FN = FileNameFactory.create(xml_file_unicode)
             if not import_FN.exists(): continue
             # >> This function edits self.categories, self.launchers dictionaries
             autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, self.categories, self.launchers, import_FN)
@@ -8027,7 +8028,7 @@ class Main:
         if not dir_path: return
 
         # --- If XML exists then warn user about overwriting it ---
-        export_FN = FileName(dir_path).pjoin('AEL_configuration.xml')
+        export_FN = FileNameFactory.create(dir_path).pjoin('AEL_configuration.xml')
         if export_FN.exists():
             ret = kodi_dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
             if not ret:
@@ -8268,20 +8269,20 @@ class Main:
                 l_str.append('Category not found (unlinked launcher)\n')
 
             # >> Check that application exists
-            app_FN = FileName(launcher['application'])
+            app_FN = FileNameFactory.create(launcher['application'])
             if not app_FN.exists():
                 l_str.append('Application "{0}" not found\n'.format(app_FN.getPath()))
 
             # >> Check that rompath exists if rompath is not empty
             # >> Empty rompath means standalone launcher
             rompath = launcher['rompath']
-            rompath_FN = FileName(rompath)
+            rompath_FN = FileNameFactory.create(rompath)
             if rompath and not rompath_FN.exists():
                 l_str.append('ROM path "{0}" not found\n'.format(rompath_FN.getPath()))
 
             # >> Check that DAT file exists if not empty
             nointro_xml_file = launcher['nointro_xml_file']
-            nointro_xml_file_FN = FileName(nointro_xml_file)
+            nointro_xml_file_FN = FileNameFactory.create(nointro_xml_file)
             if nointro_xml_file and not nointro_xml_file_FN.exists():
                 l_str.append('DAT file "{0}" not found\n'.format(nointro_xml_file_FN.getPath()))
 
@@ -8296,7 +8297,7 @@ class Main:
 
             # >> Test that ROM_asset_path exists if not empty
             ROM_asset_path = launcher['ROM_asset_path']
-            ROM_asset_path_FN = FileName(ROM_asset_path)
+            ROM_asset_path_FN = FileNameFactory.create(ROM_asset_path)
             if ROM_asset_path and not ROM_asset_path_FN.exists():
                 l_str.append('ROM_asset_path "{0}" not found\n'.format(ROM_asset_path_FN.getPath()))
 
@@ -8340,7 +8341,7 @@ class Main:
 
     def _aux_check_for_file(self, str_list, dic_key_name, launcher):
         path = launcher[dic_key_name]
-        path_FN = FileName(path)
+        path_FN = FileNameFactory.create(path)
         if path and not path_FN.exists():
             problems_found = True
             str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
@@ -8351,7 +8352,7 @@ class Main:
         log_info('_command_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
 
         # >> If Retroarch System dir not configured or found abort.
-        sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
+        sys_dir_FN = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
         if not sys_dir_FN.exists():
             kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
             return
@@ -8502,7 +8503,7 @@ class Main:
         if not ret: return
 
         kodi_notify('Importing AL launchers.xml ...')
-        AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
+        AL_DATA_DIR = FileNameFactory.create('special://profile/addon_data/plugin.program.advanced.launcher')
         LAUNCHERS_FILE_PATH = AL_DATA_DIR.pjoin('launchers.xml')
         FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.pjoin('fixed_launchers.xml')
 
@@ -8656,13 +8657,13 @@ class Main:
         path = ""
         try:
             skinshortcutsAddon = xbmcaddon.Addon('script.skinshortcuts')
-            path = FileName(skinshortcutsAddon.getAddonInfo('path'))
+            path = FileNameFactory.create(skinshortcutsAddon.getAddonInfo('path'))
 
             libPath = path.pjoin('resources', 'lib')
             sys.path.append(libPath.getPath())
 
             unidecodeModule = xbmcaddon.Addon('script.module.unidecode')
-            libPath = FileName(unidecodeModule.getAddonInfo('path'))
+            libPath = FileNameFactory.create(unidecodeModule.getAddonInfo('path'))
             libPath = libPath.pjoin('lib')
             sys.path.append(libPath.getPath())
 

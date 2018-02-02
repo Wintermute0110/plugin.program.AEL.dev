@@ -32,6 +32,9 @@ import string
 import fnmatch
 import HTMLParser
 
+from filename import *
+from utils_kodi import *
+
 # --- AEL modules ---
 # >> utils.py must not depend on any other AEL module to avoid circular dependencies.
 
@@ -380,7 +383,7 @@ def text_get_multidisc_info(ROM_FN):
 #
 def text_get_URL_extension(url):
     
-    urlPath = FileName(url)
+    urlPath = FileNameFactory.create(url)
     return urlPath.getExt()
 
 #
@@ -403,7 +406,7 @@ def misc_add_file_cache(dir_str):
     if not dir_str:
         log_debug('misc_add_file_cache() Empty dir_str. Exiting')
         return
-    dir_FN = FileName(dir_str)
+    dir_FN = FileNameFactory.create(dir_str)
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
 
     file_list = dir_FN.scanFilesInPathAsFileNameObjects()
@@ -429,7 +432,7 @@ def misc_search_file_cache(dir_str, filename_noext, file_exts):
         #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
         if file_base in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
-            return FileName(dir_str).pjoin(file_base)
+            return FileNameFactory.create(dir_str).pjoin(file_base)
 
     return None
 

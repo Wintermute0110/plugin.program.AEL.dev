@@ -10,6 +10,7 @@ from resources.utils_kodi import *
 from resources.scrapers import *
 from resources.scrap import *
 from resources.assets import *
+from resources.filename import *
 
 class Test_scrapertests(unittest.TestCase):
       
@@ -50,7 +51,7 @@ class Test_scrapertests(unittest.TestCase):
         
         # arrange
         set_use_print(True)
-        addon_dir = FileName('')
+        addon_dir = FileNameFactory.create('')
 
         settings = {}
         settings['scan_metadata_policy'] = 0
@@ -76,7 +77,7 @@ class Test_scrapertests(unittest.TestCase):
         
         # arrange
         set_use_print(True)
-        addon_dir = FileName('')
+        addon_dir = FileNameFactory.create('')
 
         settings = {}
         settings['scan_metadata_policy'] = 0
@@ -108,7 +109,7 @@ class Test_scrapertests(unittest.TestCase):
         
         # arrange
         set_use_print(True)
-        addon_dir = FileName('')
+        addon_dir = FileNameFactory.create('')
 
         settings = {}
         settings['scan_metadata_policy'] = 3 # OnlineScraper only
@@ -138,7 +139,7 @@ class Test_scrapertests(unittest.TestCase):
         
         # arrange
         set_use_print(True)
-        addon_dir = FileName('')
+        addon_dir = FileNameFactory.create('')
 
         settings = {}
         settings['scan_metadata_policy'] = 2 # NFO with Online as decorator
@@ -176,7 +177,7 @@ class Test_scrapertests(unittest.TestCase):
         rom = {}
         rom['m_name'] = ''
 
-        romPath = FileName('/don/el_juan [DUMMY].zip')
+        romPath = FileNameFactory.create('/don/el_juan [DUMMY].zip')
 
         target = CleanTitleScraper(settings, launcher)
 
@@ -191,7 +192,7 @@ class Test_scrapertests(unittest.TestCase):
 
         self.assertEqual(expected, rom['m_name'])
         
-    @patch('resources.utils.FileName.readAllUnicode')
+    @patch('resources.filename.KodiFileName.readAllUnicode')
     def test_when_scraping_with_nfoscraper_it_will_give_the_correct_result(self, mock_filename):
 
          # arrange
@@ -208,7 +209,7 @@ class Test_scrapertests(unittest.TestCase):
         rom = {}
         rom['m_name'] = ''
 
-        romPath = FileName('/don/el_juan [DUMMY].zip')
+        romPath = FileNameFactory.create('/don/el_juan [DUMMY].zip')
 
         target = NfoScraper(settings, launcher)
 
@@ -224,7 +225,7 @@ class Test_scrapertests(unittest.TestCase):
         actual = rom['m_name']
         self.assertEqual(actual, expected)
      
-    @patch('resources.utils.FileName.readXml')
+    @patch('resources.filename.KodiFileName.readXml')
     def test_when_scraping_online_metadata_it_will_give_the_correct_result(self, mock_xmlreader):
         
         # arrange
@@ -246,7 +247,7 @@ class Test_scrapertests(unittest.TestCase):
         rom = {}
         rom['m_name'] = ''
 
-        romPath = FileName('/roms/Pitfall.zip')
+        romPath = FileNameFactory.create('/roms/Pitfall.zip')
 
         target = OnlineMetadataScraper(scraper_obj, settings, launcher)
 
@@ -288,7 +289,7 @@ class Test_scrapertests(unittest.TestCase):
         rom = {}
         rom['m_name'] = ''
 
-        romPath = FileName('/roms/Pitfall.zip')
+        romPath = FileNameFactory.create('/roms/Pitfall.zip')
         asset_kind = ASSET_TITLE
         asset_info = assets_get_info_scheme(asset_kind)
         
@@ -330,7 +331,7 @@ class Test_scrapertests(unittest.TestCase):
         rom = {}
         rom['m_name'] = ''
 
-        romPath = FileName('/roms/Pitfall.zip')
+        romPath = FileNameFactory.create('/roms/Pitfall.zip')
         asset_kind = ASSET_TITLE
         asset_info = assets_get_info_scheme(asset_kind)
         
@@ -356,12 +357,12 @@ class Test_scrapertests(unittest.TestCase):
         self.assertTrue(actualResult)
         mock_imgdownload.assert_called_with(expectedUrl, ANY)
     
-    @patch('resources.utils.FileName.scanFilesInPathAsFileNameObjects')
+    @patch('resources.filename.KodiFileName.scanFilesInPathAsFileNameObjects')
     @patch('resources.scrapers.kodi_update_image_cache')
     def test_when_scraping_local_assets_it_will_give_the_correct_result(self, mock_cache, mock_filescan):
         
         # arrange
-        mock_filescan.return_value = [FileName('x.jpg'),FileName('y.jpg'), FileName('pitfall.jpg'), FileName('donkeykong.jpg')]
+        mock_filescan.return_value = [FileNameFactory.create('x.jpg'),FileNameFactory.create('y.jpg'), FileNameFactory.create('pitfall.jpg'), FileNameFactory.create('donkeykong.jpg')]
 
         settings = {}
         settings['scan_asset_policy'] = 1
@@ -375,7 +376,7 @@ class Test_scrapertests(unittest.TestCase):
         rom = {}
         rom['m_name'] = ''
 
-        romPath = FileName('/roms/Pitfall.zip')
+        romPath = FileNameFactory.create('/roms/Pitfall.zip')
         asset_kind = ASSET_TITLE
         asset_info = assets_get_info_scheme(asset_kind)
 

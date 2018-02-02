@@ -248,7 +248,7 @@ class ApplicationLauncher(Launcher):
     def launch(self):
 
         self.title              = self.launcher['m_name']
-        self.application        = FileName(self.launcher['application'])
+        self.application        = FileNameFactory.create(self.launcher['application'])
         self.arguments          = self.launcher['args']       
         
         # --- Check for errors and abort if errors found ---
@@ -283,9 +283,9 @@ class StandardRomLauncher(Launcher):
 
         if self.rom['altapp']:
             log_info('StandardRomLauncher() Using ROM altapp')
-            self.application = FileName(self.rom['altapp'])
+            self.application = FileNameFactory.create(self.rom['altapp'])
         else:
-            self.application = FileName(self.launcher['application'])
+            self.application = FileNameFactory.create(self.launcher['application'])
 
     def _selectArgumentsToUse(self):
 
@@ -311,7 +311,7 @@ class StandardRomLauncher(Launcher):
     def _selectRomFileToUse(self):
         
         if not 'disks' in self.rom or not self.rom['disks']:
-            return FileName(self.rom['filename'])
+            return FileNameFactory.create(self.rom['filename'])
                 
         log_info('StandardRomLauncher() Multidisc ROM set detected')
         dialog = xbmcgui.Dialog()
@@ -322,8 +322,8 @@ class StandardRomLauncher(Launcher):
         selected_rom_base = self.rom['disks'][dselect_ret]
         log_info('StandardRomLauncher() Selected ROM "{0}"'.format(selected_rom_base))
 
-        ROM_temp = FileName(self.rom['filename'])
-        ROM_dir = FileName(ROM_temp.getDir())
+        ROM_temp = FileNameFactory.create(self.rom['filename'])
+        ROM_dir = FileNameFactory.create(ROM_temp.getDir())
         ROMFileName = ROM_dir.pjoin(selected_rom_base)
 
         return ROMFileName
@@ -435,12 +435,12 @@ class RetroarchLauncher(StandardRomLauncher):
     def _selectApplicationToUse(self):
         
         if sys.platform == 'win32':
-            self.application = FileName(self.settings['io_retroarch_sys_dir'])
+            self.application = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
             self.application = self.application.append('retroarch.exe')  
             return
 
         if sys.platform.startswith('linux'):
-            self.application = FileName('/system/bin/am')
+            self.application = FileNameFactory.create('/system/bin/am')
             return
 
         #todo other os
@@ -452,8 +452,8 @@ class RetroarchLauncher(StandardRomLauncher):
         retroCore = self.launcher['core']
             
         if sys.platform == 'win32':
-            appPath = FileName(self.settings['io_retroarch_sys_dir'])
-            corePath = appPath.pjoin(FileName('core', retroCore))
+            appPath = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
+            corePath = appPath.pjoin(FileNameFactory.create('core'), retroCore)
             
             self.arguments = "-L  {0} ".format(corePath.getOriginalPath())
             self.arguments += "'$rom$'"
@@ -488,7 +488,7 @@ class SteamLauncher(Launcher):
         
         url = 'steam://rungameid/'
 
-        self.application = FileName('steam://rungameid/')
+        self.application = FileNameFactory.create('steam://rungameid/')
         self.arguments = str(self.rom['steamid'])
 
         log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
