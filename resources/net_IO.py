@@ -99,7 +99,7 @@ def net_get_URL_oneline(url):
         encoding = f.headers['content-type'].split('charset=')[-1]
         # >> Fix for wrong encodings...
         if encoding == 'text/html': encoding = 'utf-8'
-        log_debug('net_get_URL_oneline() encoding = "{0}"'.format(encoding))
+        log_debug('net_get_URL_oneline() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
     except IOError as e:    

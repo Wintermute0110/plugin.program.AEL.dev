@@ -7,6 +7,7 @@ from resources.scrapers import *
 
 from resources.utils import *
 from resources.utils_kodi import *
+from resources.filename import *
 
 class FakeRomSet(RomSet):
 
@@ -50,7 +51,7 @@ class FakeClass():
     def FakeMethod(self, value, key, launcher):
         self.value = value
 
-class FakeFile(FileName):
+class FakeFile(KodiFileName):
     
     def __init__(self, pathString):
         self.fakeContent  = ''

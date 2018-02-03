@@ -57,7 +57,7 @@ class FileReporter(Reporter):
         self.report_file.open('w')
 
         # --- Get information from launcher ---
-        launcher_path = FileName(self.launcher['rompath'])
+        launcher_path = FileNameFactory.create(self.launcher['rompath'])
         
         self.write('******************** Report: {} ...  ********************'.format(report_title))
         self.write('  Launcher name "{0}"'.format(self.launcher['m_name']))

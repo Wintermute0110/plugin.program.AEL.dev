@@ -62,7 +62,9 @@ JSON_separators = (',', ':')
 def fs_new_category():
     c = {'id' : '',
          'm_name' : '',
+         'm_year' : '',
          'm_genre' : '',
+         'm_developer' : '',
          'm_rating' : '',
          'm_plot' : '',
          'finished' : False,
@@ -413,7 +415,9 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append('<category>\n')
             str_list.append(XML_text('id', categoryID))
             str_list.append(XML_text('m_name', category['m_name']))
+            str_list.append(XML_text('m_year', category['m_year']))
             str_list.append(XML_text('m_genre', category['m_genre']))
+            str_list.append(XML_text('m_developer', category['m_developer']))
             str_list.append(XML_text('m_rating', category['m_rating']))
             str_list.append(XML_text('m_plot', category['m_plot']))
             str_list.append(XML_text('finished', unicode(category['finished'])))
@@ -621,6 +625,27 @@ def fs_load_catfile(categories_file, categories, launchers):
     # log_verb('fs_load_catfile() Loaded {0} launchers'.format(len(launchers)))
 
     return update_timestamp
+
+# -------------------------------------------------------------------------------------------------
+# Generic file writer
+# str_list is a list of Unicode strings that will be joined and written to a file encoded in UTF-8.
+# -------------------------------------------------------------------------------------------------
+def fs_write_str_list_to_file(str_list, export_FN):
+    log_verb('fs_write_str_list_to_file() Exporting OP "{0}"'.format(export_FN.getOriginalPath()))
+    log_verb('fs_write_str_list_to_file() Exporting  P "{0}"'.format(export_FN.getPath()))
+    try:
+        full_string = ''.join(str_list).encode('utf-8')
+        file_obj = open(export_FN.getPath(), 'w')
+        file_obj.write(full_string)
+        file_obj.close()
+    except OSError:
+        log_error('(OSError) exception in fs_write_str_list_to_file()')
+        log_error('Cannot write {0} file'.format(export_FN.getBase()))
+        raise AEL_Error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+    except IOError:
+        log_error('(IOError) exception in fs_write_str_list_to_file()')
+        log_error('Cannot write {0} file'.format(export_FN.getBase()))
+        raise AEL_Error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
 
 # -------------------------------------------------------------------------------------------------
 # Generic JSON loader/writer
@@ -1088,7 +1113,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
     log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
     for asset_kind in CATEGORY_ASSET_LIST:
         AInfo    = assets_get_info_scheme(asset_kind)
-        asset_FN = FileName(collection[AInfo.key])
+        asset_FN = FileNameFactory.create(collection[AInfo.key])
         if not collection[AInfo.key]:
             log_debug('{0:<9s} not set'.format(AInfo.name))
             continue
@@ -1116,7 +1141,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
         log_debug('fs_export_ROM_collection_assets() ROM "{0}"'.format(rom_item['m_name']))
         for asset_kind in ROM_ASSET_LIST:
             AInfo    = assets_get_info_scheme(asset_kind)
-            asset_FN = FileName(rom_item[AInfo.key])
+            asset_FN = FileNameFactory.create(rom_item[AInfo.key])
             if not rom_item[AInfo.key]:
                 log_debug('{0:<9s} not set'.format(AInfo.name))
                 continue
@@ -1514,7 +1539,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
 def fs_export_ROM_NFO(rom, verbose = True):
     # >> Skip No-Intro Added ROMs. rom['filename'] will be empty.
     if not rom['filename']: return
-    ROMFileName = FileName(rom['filename'])
+    ROMFileName = FileNameFactory.create(rom['filename'])
     nfo_file_path = ROMFileName.switchExtension('.nfo')
     log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path.getOriginalPath()))
 
@@ -1555,7 +1580,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
 # About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
 #
 def fs_import_ROM_NFO(roms, romID, verbose = True):
-    ROMFileName = FileName(roms[romID]['filename'])
+    ROMFileName = FileNameFactory.create(roms[romID]['filename'])
     nfo_file_path = ROMFileName.switchExtension('.nfo')
     log_debug('fs_import_ROM_NFO() Loading "{0}"'.format(nfo_file_path.getPath()))
 
@@ -1640,8 +1665,8 @@ def fs_import_ROM_NFO_file_scanner(nfo_file_path):
 # Returns a FileName object
 #
 def fs_get_ROM_NFO_name(rom):
-    ROMFileName = FileName(rom['filename'])
-    nfo_file_path = FileName(ROMFileName.getPath_noext() + '.nfo')
+    ROMFileName = FileNameFactory.create(rom['filename'])
+    nfo_file_path = FileNameFactory.create(ROMFileName.getPath_noext() + '.nfo')
     log_debug("fs_get_ROM_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
@@ -1776,15 +1801,14 @@ def fs_read_launcher_NFO(nfo_FileName):
 #
 def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
-    nfo_dir = FileName(settings['launchers_asset_dir'])
+    nfo_dir = FileNameFactory.create(settings['launchers_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(launcher_name + '.nfo')
     log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
     return nfo_file_path
 
 #
-# Look at the launcher NFO files for a reference implementation.
-# Categories NFO files only have genre and plot.
+# Look at the Launcher NFO files for a reference implementation.
 #
 def fs_export_category_NFO(nfo_FileName, category):
     # --- Get NFO file name ---
@@ -1795,9 +1819,11 @@ def fs_export_category_NFO(nfo_FileName, category):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<category>\n')
-    nfo_content.append(XML_text('genre',  category['m_genre']))
-    nfo_content.append(XML_text('rating', category['m_rating']))
-    nfo_content.append(XML_text('plot',   category['m_plot']))
+    nfo_content.append(XML_text('year',      category['m_year']))
+    nfo_content.append(XML_text('genre',     category['m_genre'])) 
+    nfo_content.append(XML_text('developer', category['m_developer']))
+    nfo_content.append(XML_text('rating',    category['m_rating']))
+    nfo_content.append(XML_text('plot',      category['m_plot']))
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
@@ -1829,13 +1855,17 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
         log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
         return False
 
-    item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
-    item_rating = re.findall('<rating>(.*?)</rating>', item_nfo)
-    item_plot   = re.findall('<plot>(.*?)</plot>',   item_nfo)
+    item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+    item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
+    item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
+    item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
 
-    if item_genre:  categories[categoryID]['m_genre']  = text_unescape_XML(item_genre[0])
-    if item_rating: categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
-    if item_plot:   categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
+    if item_year:      categories[categoryID]['m_year']      = text_unescape_XML(item_year[0])
+    if item_genre:     categories[categoryID]['m_genre']  = text_unescape_XML(item_genre[0])
+    if item_developer: categories[categoryID]['m_developer'] = text_unescape_XML(item_developer[0])
+    if item_rating:    categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
+    if item_plot:      categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
 
     log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
 
@@ -1846,7 +1876,7 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
 #
 def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
-    nfo_dir = FileName(settings['categories_asset_dir'])
+    nfo_dir = FileNameFactory.create(settings['categories_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(category_name + '.nfo')
     log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 
@@ -1911,7 +1941,7 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
 
 def fs_get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
-    nfo_dir = FileName(settings['collections_asset_dir'])
+    nfo_dir = FileNameFactory.create(settings['collections_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(collection_name + '.nfo')
     log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 

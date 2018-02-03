@@ -510,7 +510,7 @@ def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
 #
 def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '000'):
     # >> Returns asset/artwork path_noext
-    asset_path_noext_FileName = FileName('')
+    asset_path_noext_FileName = FileNameFactory.create('')
     objectID_str = '_' + objectID[0:3]
 
     if   Asset.kind == ASSET_ICON:       asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
@@ -620,7 +620,7 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
-        asset_path = FileName(launcher[AInfo.path_key])
+        asset_path = FileNameFactory.create(launcher[AInfo.path_key])
         local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
 
         if local_asset:
@@ -641,12 +641,12 @@ def assets_get_ROM_asset_path(launcher):
     ROM_asset_path = ''
     duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
     AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
-    path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
+    path_first_asset_FN = FileNameFactory.create(launcher[AInfo_first.path_key])
     log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
     log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
-        current_path_FN = FileName(launcher[AInfo.path_key])
+        current_path_FN = FileNameFactory.create(launcher[AInfo.path_key])
         if current_path_FN.getDir() == path_first_asset_FN.getDir():
             duplicated_bool_list[i] = True
 

@@ -22,7 +22,7 @@ class Test_executortests(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
 
-        launcherPath = FileName('path')
+        launcherPath = FileNameFactory.create('path')
 
         settings = {}
         settings['lirc_state'] = True
@@ -44,7 +44,7 @@ class Test_executortests(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
         
-        launcherPath = FileName('path')
+        launcherPath = FileNameFactory.create('path')
 
         settings = {}
         settings['windows_cd_apppath'] = ''
@@ -67,7 +67,7 @@ class Test_executortests(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
         
-        launcherPath = FileName('c:\\app\\testcase.bat')
+        launcherPath = FileNameFactory.create('c:\\app\\testcase.bat')
 
         settings = {}
         settings['show_batch_window'] = False
@@ -89,7 +89,7 @@ class Test_executortests(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
         
-        launcherPath = FileName('c:\\app\\testcase.lnk')
+        launcherPath = FileNameFactory.create('c:\\app\\testcase.lnk')
 
         settings = {}
 
@@ -108,7 +108,7 @@ class Test_executortests(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
         
-        launcherPath = FileName('c:\\boop\\xbmc.exe')
+        launcherPath = FileNameFactory.create('c:\\boop\\xbmc.exe')
 
         settings = {}
 
@@ -129,7 +129,7 @@ class Test_executortests(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
 
-        launcherPath = FileName('durp\\apple\\durp')
+        launcherPath = FileNameFactory.create('durp\\apple\\durp')
 
         settings = {}
 
@@ -145,13 +145,13 @@ class Test_executortests(unittest.TestCase):
     def test_when_using_urls_the_correct_web_executor_loads(self):
         
         # arrange
-        launcherPath = FileName('durp\\apple\\durp')
+        launcherPath = FileNameFactory.create('durp\\apple\\durp')
 
         settings = {}
 
         # act
         factory = ExecutorFactory(settings, None)
-        executor = factory.create(FileName('steam://rungameid/'))
+        executor = factory.create(FileNameFactory.create('steam://rungameid/'))
 
         # assert
         actual = executor.__class__.__name__

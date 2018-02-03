@@ -90,7 +90,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
         roms_set = set()
         for rom_id in roms:
             # >> Use the ROM basename.
-            ROMFileName = FileName(roms[rom_id]['filename'])
+            ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
             roms_set.add(ROMFileName.getBase_noext())
         self._updateProgress(100)
         if __debug_progress_dialogs: time.sleep(0.5)
@@ -100,7 +100,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
         num_items = len(roms)
         item_counter = 0
         for rom_id in roms:
-            ROMFileName = FileName(roms[rom_id]['filename'])
+            ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
             if ROMFileName.getBase_noext() in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = NOINTRO_STATUS_HAVE
                 audit_have += 1
@@ -119,7 +119,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
         num_items = len(roms)
         item_counter = 0
         for rom_id in roms:
-            ROMFileName = FileName(roms[rom_id]['filename'])
+            ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
             if not ROMFileName.exists():
                 roms[rom_id]['nointro_status'] = NOINTRO_STATUS_MISS
                 audit_miss += 1
@@ -135,7 +135,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
         self._updateProgress(0, 'Audit Step 3/4: Adding Missing ROMs ...')
         num_items = len(roms_nointro_set)
         item_counter = 0
-        ROMPath = FileName(launcher['rompath'])
+        ROMPath = FileNameFactory.create(launcher['rompath'])
         for nointro_rom in sorted(roms_nointro_set):
             # log_debug('_roms_update_NoIntro_status() Checking "{0}"'.format(nointro_rom))
             if nointro_rom not in roms_set:
@@ -318,7 +318,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
                 if not roms[rom_id]['filename']:
                     log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(roms[rom_id]['m_name']))
                     continue
-                ROMFileName = FileName(roms[rom_id]['filename'])
+                ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
                 log_debug('_roms_delete_missing_ROMs() Test "{0}"'.format(ROMFileName.getBase()))
                 # --- Remove missing ROMs ---
                 if not ROMFileName.exists():

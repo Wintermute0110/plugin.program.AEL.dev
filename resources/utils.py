@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-# Advanced Emulator Launcher miscellaneous functions
 #
-
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Advanced Emulator Launcher
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,23 +13,30 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-#
+# -------------------------------------------------------------------------------------------------
 # Utility functions which does not depend on Kodi modules (except log_* functions)
-#
+# -------------------------------------------------------------------------------------------------
+# --- Python compiler flags ---
+from __future__ import unicode_literals
 
 # --- Python standard library ---
-from __future__ import unicode_literals
-from stat import *
-import xml.etree.ElementTree as ET
-import sys, os, shutil, time, random, hashlib, urlparse, re, string, fnmatch, json
-import xbmcvfs
+import sys
+import os
+import shutil
+import time
+import random
+import hashlib
+import urlparse
+import re
+import string
+import fnmatch
+import HTMLParser
 
-# --- Kodi modules ---
-# >> FileName class uses xbmc.translatePath()
+from filename import *
 from utils_kodi import *
 
 # --- AEL modules ---
-# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
+# >> utils.py must not depend on any other AEL module to avoid circular dependencies.
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text
@@ -65,7 +71,7 @@ def XML_text(tag_name, tag_text, num_spaces = 2):
         tag_text = text_escape_XML(tag_text)
         line = '{0}<{1}>{2}</{3}>\n'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
     else:
-        # >> Empty tag    
+        # >> Empty tag
         line = '{0}<{1} />\n'.format(' ' * num_spaces, tag_name)
 
     return line
@@ -128,12 +134,11 @@ def text_unescape_XML(data_str):
     return data_str
 
 #
+# Unquote an HTML string. Replaces %xx with Unicode characters.
 # http://www.w3schools.com/tags/ref_urlencode.asp
 #
 def text_decode_HTML(s):
-    # >> Must be done first
-    s = s.replace('%25', '%')
-    
+    s = s.replace('%25', '%') # >> Must be done first
     s = s.replace('%20', ' ')
     s = s.replace('%23', '#')
     s = s.replace('%26', '&')
@@ -148,37 +153,53 @@ def text_decode_HTML(s):
 
     return s
 
+#
+# Decodes HTML <br> tags and HTML entities (&xxx;) into Unicode characters.
+# See https://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
+#
 def text_unescape_HTML(s):
-    # >> Replace single HTML characters by their Unicode equivalent
+    __debug_text_unescape_HTML = False
+    if __debug_text_unescape_HTML:
+        log_debug('text_unescape_HTML() input  "{0}"'.format(s))
+
+    # --- Replace HTML tag characters by their Unicode equivalent ---
     s = s.replace('<br>',   '\n')
     s = s.replace('<br/>',  '\n')
     s = s.replace('<br />', '\n')
-    s = s.replace('&lt;',   '<')
-    s = s.replace('&gt;',   '>')
-    s = s.replace('&quot;', '"')
-    s = s.replace('&nbsp;', ' ')
-    s = s.replace('&copy;', '©')
-    s = s.replace('&amp;',  '&') # >> Must be done last
 
-    # >> Complex HTML entities. Single HTML chars must be already replaced.
-    s = s.replace('&#039;', "'")
-    s = s.replace('&#149;', "•")
-    s = s.replace('&#x22;', '"')
-    s = s.replace('&#x26;', '&')
-    s = s.replace('&#x27;', "'")
+    # --- HTML entities ---
+    # s = s.replace('&lt;',   '<')
+    # s = s.replace('&gt;',   '>')
+    # s = s.replace('&quot;', '"')
+    # s = s.replace('&nbsp;', ' ')
+    # s = s.replace('&copy;', '©')
+    # s = s.replace('&amp;',  '&') # >> Must be done last
 
-    s = s.replace('&#x101;', "ā")
-    s = s.replace('&#x113;', "ē")
-    s = s.replace('&#x12b;', "ī")
-    s = s.replace('&#x12B;', "ī")
-    s = s.replace('&#x14d;', "ō")
-    s = s.replace('&#x14D;', "ō")
-    s = s.replace('&#x16b;', "ū")
-    s = s.replace('&#x16B;', "ū")
-    
+    # --- HTML Unicode entities ---
+    # s = s.replace('&#039;', "'")
+    # s = s.replace('&#149;', "•")
+    # s = s.replace('&#x22;', '"')
+    # s = s.replace('&#x26;', '&')
+    # s = s.replace('&#x27;', "'")
+
+    # s = s.replace('&#x101;', "ā")
+    # s = s.replace('&#x113;', "ē")
+    # s = s.replace('&#x12b;', "ī")
+    # s = s.replace('&#x12B;', "ī")
+    # s = s.replace('&#x14d;', "ō")
+    # s = s.replace('&#x14D;', "ō")
+    # s = s.replace('&#x16b;', "ū")
+    # s = s.replace('&#x16B;', "ū")
+
+    # >> Use HTMLParser module to decode HTML entities.
+    s = HTMLParser.HTMLParser().unescape(s)
+
+    if __debug_text_unescape_HTML:
+        log_debug('text_unescape_HTML() output "{0}"'.format(s))
+
     return s
 
-#    
+#
 # Remove HTML tags
 #
 def text_remove_HTML_tags(s):
@@ -362,7 +383,7 @@ def text_get_multidisc_info(ROM_FN):
 #
 def text_get_URL_extension(url):
     
-    urlPath = FileName(url)
+    urlPath = FileNameFactory.create(url)
     return urlPath.getExt()
 
 #
@@ -385,7 +406,7 @@ def misc_add_file_cache(dir_str):
     if not dir_str:
         log_debug('misc_add_file_cache() Empty dir_str. Exiting')
         return
-    dir_FN = FileName(dir_str)
+    dir_FN = FileNameFactory.create(dir_str)
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
 
     file_list = dir_FN.scanFilesInPathAsFileNameObjects()
@@ -411,7 +432,7 @@ def misc_search_file_cache(dir_str, filename_noext, file_exts):
         #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
         if file_base in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
-            return FileName(dir_str).pjoin(file_base)
+            return FileNameFactory.create(dir_str).pjoin(file_base)
 
     return None
 
@@ -467,290 +488,6 @@ class VersionNumber(object):
 
     def getBuild(self):
         return int(self.versionNumber[2])
-
-# -------------------------------------------------------------------------------------------------
-# Filesystem helper class
-# This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in
-# caller code.
-# A) Transform paths like smb://server/directory/ into \\server\directory\
-# B) Use xbmc.translatePath() for paths starting with special://
-# C) Uses xbmcvfs wherever possible
-# -------------------------------------------------------------------------------------------------
-class FileName:
-    # pathString must be a Unicode string object
-    def __init__(self, pathString):
-        self.originalPath = pathString
-        self.path         = pathString
-        
-        # --- Path transformation ---
-        if self.originalPath.lower().startswith('smb:'):
-            self.path = self.path.replace('smb:', '')
-            self.path = self.path.replace('SMB:', '')
-            self.path = self.path.replace('//', '\\\\')
-            self.path = self.path.replace('/', '\\')
-
-        elif self.originalPath.lower().startswith('special:'):
-            self.path = xbmc.translatePath(self.path)
-
-    def _join_raw(self, arg):
-        self.path         = os.path.join(self.path, arg)
-        self.originalPath = os.path.join(self.originalPath, arg)
-
-        return self
-
-    # Appends a string to path. Returns self FileName object
-    def append(self, arg):
-        self.path         = self.path + arg
-        self.originalPath = self.originalPath + arg
-
-        return self
-
-    # >> Joins paths. Returns a new FileName object
-    def pjoin(self, *args):
-        child = FileName(self.originalPath)
-        for arg in args:
-            child._join_raw(arg)
-
-        return child
-
-    # Behaves like os.path.join()
-    #
-    # See http://blog.teamtreehouse.com/operator-overloading-python
-    # other is a FileName object. other originalPath is expected to be a subdirectory (path
-    # transformation not required)
-    def __add__(self, other):
-        current_path = self.originalPath
-        if type(other) is FileName:  other_path = other.originalPath
-        elif type(other) is unicode: other_path = other
-        elif type(other) is str:     other_path = other.decode('utf-8')
-        else: raise NameError('Unknown type for overloaded + in FileName object')
-        new_path = os.path.join(current_path, other_path)
-        child    = FileName(new_path)
-
-        return child
-
-    def escapeQuotes(self):
-        self.path = self.path.replace("'", "\\'")
-        self.path = self.path.replace('"', '\\"')
-
-    # ---------------------------------------------------------------------------------------------
-    # Decomposes a file name path or directory into its constituents
-    #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
-    #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
-    #   FileName.getBase()          File name with no path                        Sonic.zip
-    #   FileName.getBase_noext()    File name with no path and no extension       Sonic
-    #   FileName.getExt()           File extension                                .zip
-    # ---------------------------------------------------------------------------------------------
-    def getOriginalPath(self):
-        return self.originalPath
-
-    def getPath(self):
-        return self.path
-
-    def getPath_noext(self):
-        root, ext = os.path.splitext(self.path)
-
-        return root
-
-    def getDir(self):
-        return os.path.dirname(self.path)
-
-    def getDirAsFileName(self):
-        return FileName(self.getDir())
-
-    def getBase(self):
-        return os.path.basename(self.path)
-
-    def getBase_noext(self):
-        basename  = os.path.basename(self.path)
-        root, ext = os.path.splitext(basename)
-        
-        return root
-
-    def getExt(self):
-        root, ext = os.path.splitext(self.path)
-        return ext
-
-    def switchExtension(self, targetExt):
-        
-        ext = self.getExt()
-        copiedPath = self.originalPath
-        
-        if not targetExt.startswith('.'):
-            targetExt = '.{0}'.format(targetExt)
-
-        new_path = FileName(copiedPath.replace(ext, targetExt))
-        return new_path
-
-    # ---------------------------------------------------------------------------------------------
-    # Scanner functions
-    # ---------------------------------------------------------------------------------------------
-    def scanFilesInPath(self, mask = '*.*'):
-        files = []
-
-        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
-        for filename in fnmatch.filter(filenames, mask):
-            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
-
-        return files
-
-    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        files = []
-        
-        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(FileName(filePath.getOriginalPath()))
-
-        return files
-
-    def recursiveScanFilesInPath(self, mask = '*.*'):
-        files = []
-        
-        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(filePath.getOriginalPath())
-
-        for subdir in subdirectories:
-            subPath = self.pjoin(self._decodeName(subdir))
-            subPathFiles = subPath.recursiveScanFilesInPath(mask)
-            files.extend(subPathFiles)
-
-        return files
-
-    def _decodeName(self, name):
-        if type(name) == str:
-            try:
-                name = name.decode('utf8')
-            except:
-                name = name.decode('windows-1252')
-        
-        return name
-    
-    # ---------------------------------------------------------------------------------------------
-    # Filesystem functions
-    # ---------------------------------------------------------------------------------------------
-    def stat(self):
-        return xbmcvfs.Stat(self.originalPath)
-
-    def exists(self):
-        return xbmcvfs.exists(self.originalPath)
-
-    # Warning: not suitable for xbmcvfs paths yet
-    def isdir(self):
-        
-        if not self.exists():
-            return False
-
-        try:
-            self.open('r')
-            self.close()
-        except:
-            return True
-        
-        return False
-        #return os.path.isdir(self.path)
-        
-    # Warning: not suitable for xbmcvfs paths yet
-    def isfile(self):
-
-        if not self.exists():
-            return False
-
-        return not self.isdir()
-        #return os.path.isfile(self.path)
-
-    def makedirs(self):
-        
-        if not self.exists():
-            xbmcvfs.mkdirs(self.originalPath)
-
-    def unlink(self):
-
-        if self.isfile():
-            xbmcvfs.delete(self.originalPath)
-
-            # hard delete if it doesnt succeed
-            log_debug('xbmcvfs.delete() failed, applying hard delete')
-            if self.exists():
-                os.remove(self.path)
-        else:
-            xbmcvfs.rmdir(self.originalPath)
-
-    def rename(self, to):
-
-        if self.isfile():
-            xbmcvfs.rename(self.originalPath, to.getOriginalPath())
-        else:
-            os.rename(self.path, to.getPath())
-
-    def copy(self, to):        
-        xbmcvfs.copy(self.getOriginalPath(), to.getOriginalPath())
-                    
-    # ---------------------------------------------------------------------------------------------
-    # File IO functions
-    # ---------------------------------------------------------------------------------------------
-    
-    def readAll(self):
-        contents = None
-        file = xbmcvfs.File(self.originalPath)
-        contents = file.read()
-        file.close()
-
-        return contents
-    
-    def readAllUnicode(self, encoding='utf-8'):
-        contents = None
-        file = xbmcvfs.File(self.originalPath)
-        contents = file.read()
-        file.close()
-
-        return unicode(contents, encoding)
-    
-    def writeAll(self, bytes, flags='w'):
-        file = xbmcvfs.File(self.originalPath, flags)
-        file.write(bytes)
-        file.close()
-
-    def write(self, bytes):
-       if self.fileHandle is None:
-           raise OSError('file not opened')
-
-       self.fileHandle.write(bytes)
-
-    def open(self, flags):
-        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
-        
-    def close(self):
-        if self.fileHandle is None:
-           raise OSError('file not opened')
-
-        self.fileHandle.close()
-        self.fileHandle = None
-
-    # opens file and reads xml. Returns the root of the xml!
-    def readXml(self):
-        file = xbmcvfs.File(self.originalPath, 'r')
-        data = file.read()
-        file.close()
-
-        root = ET.fromstring(data)
-        return root
-    
-    # opens file and reads to JSON
-    def readJson(self):
-        contents = self.readAllUnicode()
-        return json.loads(contents)
-    
-    # --- Configure JSON writer ---
-    # NOTE More compact JSON files (less blanks) load faster because size is smaller.
-    def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
-        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
-                                indent = JSON_indent, separators = JSON_separators)
-        self.writeAll(unicode(json_data).encode("utf-8"))
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers

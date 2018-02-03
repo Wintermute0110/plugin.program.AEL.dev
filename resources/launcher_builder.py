@@ -123,7 +123,7 @@ class launcherBuilder():
         elif launcher_type == LAUNCHER_RETROARCH:
             
             # >> If Retroarch System dir not configured or found abort.
-            sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
+            sys_dir_FN = FileNameFactory.create(settings['io_retroarch_sys_dir'])
             if not sys_dir_FN.exists():
                 kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
                 return
@@ -188,7 +188,7 @@ class launcherBuilder():
         # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
         # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
         # >> launcher is edited using Python passing by assignment.
-        assets_init_asset_dir(FileName(launcher['assets_path']), launcher)
+        assets_init_asset_dir(FileNameFactory.create(launcher['assets_path']), launcher)
 
         launchers[launcherID] = launcher
         # >> Notify user
@@ -224,7 +224,7 @@ def getTitleFromAppPath(input, item_key, launcher):
         return input
 
     app = launcher['application']
-    appPath = FileName(app)
+    appPath = FileNameFactory.create(app)
 
     title = appPath.getBase_noext()
     title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
@@ -236,7 +236,7 @@ def getExtensionsFromAppPath(input, item_key ,launcher):
         return input
 
     app = launcher['application']
-    appPath = FileName(app)
+    appPath = FileNameFactory.create(app)
     
     extensions = emudata_get_program_extensions(appPath.getBase())
     return extensions
@@ -247,7 +247,7 @@ def getArgumentsFromAppPath(input, item_key, launcher):
         return input
 
     app = launcher['application']
-    appPath = FileName(app)
+    appPath = FileNameFactory.create(app)
     
     default_arguments = emudata_get_program_arguments(appPath.getBase())
     return default_arguments
@@ -265,7 +265,7 @@ def getValueFromAssetsPath(input, item_key, launcher):
     if input:
         return input
 
-    romPath = FileName(launcher['assets_path'])
+    romPath = FileNameFactory.create(launcher['assets_path'])
     romPath = romPath.pjoin('games')
 
     return romPath.getOriginalPath()
@@ -304,7 +304,7 @@ def get_available_retroarch_cores(settings):
     cores = []
     
     if sys.platform == 'win32':
-        retroarchFolder = FileName(settings['io_retroarch_sys_dir'])
+        retroarchFolder = FileNameFactory.create(settings['io_retroarch_sys_dir'])
         retroarchFolder.append('cores\\')
         log_debug("get_available_retroarch_cores() scanning path '{0}'".format(retroarchFolder.getOriginalPath()))
 
@@ -317,7 +317,7 @@ def get_available_retroarch_cores(settings):
             return cores
 
     if sys.platform.startswith('linux'):
-        androidFolder = FileName('/data/com.retroarch/cores/')
+        androidFolder = FileNameFactory.create('/data/com.retroarch/cores/')
         log_debug("get_available_retroarch_cores() scanning path '{0}'".format(androidFolder.getOriginalPath()))
 
         if androidFolder.exists():

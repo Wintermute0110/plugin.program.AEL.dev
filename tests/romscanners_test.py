@@ -144,7 +144,7 @@ class Test_romscannerstests(unittest.TestCase):
         return launcher
 
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.utils.FileName.recursiveScanFilesInPath')
+    @patch('resources.filename.FileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_it_will_go_without_exceptions(self, recursive_scan_mock, progress_canceled_mock):
         
         # arrange
@@ -170,7 +170,7 @@ class Test_romscannerstests(unittest.TestCase):
         romset = FakeRomSet(None, roms)
 
         report_dir = FakeFile('//fake_reports/')
-        addon_dir = FileName('//fake_addon/')
+        addon_dir = FileNameFactory.create('//fake_addon/')
         
         target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
         
@@ -181,9 +181,9 @@ class Test_romscannerstests(unittest.TestCase):
         print report_dir.getFakeContent()
         pass
     
-    @patch('resources.utils.FileName.exists', autospec=True)
+    @patch('resources.filename.KodiFileName.exists', autospec=True)
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.utils.FileName.recursiveScanFilesInPath')
+    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_dead_roms_will_be_removed(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -220,7 +220,7 @@ class Test_romscannerstests(unittest.TestCase):
         romset = FakeRomSet(None, roms)
 
         report_dir = FakeFile('//fake_reports/')
-        addon_dir = FileName('//fake_addon/')
+        addon_dir = FileNameFactory.create('//fake_addon/')
         
         target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
         
@@ -236,9 +236,9 @@ class Test_romscannerstests(unittest.TestCase):
         self.assertEqual(expectedRomCount, actualRomCount)
         print report_dir.getFakeContent()
            
-    @patch('resources.utils.FileName.exists', autospec=True)
+    @patch('resources.filename.KodiFileName.exists', autospec=True)
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.utils.FileName.recursiveScanFilesInPath')
+    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_multidiscs_will_be_put_together(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -266,7 +266,7 @@ class Test_romscannerstests(unittest.TestCase):
         romset = FakeRomSet(None, roms)
 
         report_dir = FakeFile('//fake_reports/')
-        addon_dir = FileName('//fake_addon/')
+        addon_dir = FileNameFactory.create('//fake_addon/')
         
         target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
         
@@ -288,9 +288,9 @@ class Test_romscannerstests(unittest.TestCase):
 
         self.assertEqual(expectedRomCount, actualRomCount)
     
-    @patch('resources.utils.FileName.exists', autospec=True)
+    @patch('resources.filename.KodiFileName.exists', autospec=True)
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.utils.FileName.recursiveScanFilesInPath')
+    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_existing_items_wont_end_up_double(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -322,7 +322,7 @@ class Test_romscannerstests(unittest.TestCase):
         romset = FakeRomSet(None, roms)
 
         report_dir = FakeFile('//fake_reports/')
-        addon_dir = FileName('//fake_addon/')
+        addon_dir = FileNameFactory.create('//fake_addon/')
         
         target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
         
@@ -344,9 +344,9 @@ class Test_romscannerstests(unittest.TestCase):
 
         self.assertEqual(expectedRomCount, actualRomCount)
         
-    @patch('resources.utils.FileName.exists', autospec=True)
+    @patch('resources.filename.KodiFileName.exists', autospec=True)
     @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.utils.FileName.recursiveScanFilesInPath')
+    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_and_bios_roms_must_be_skipped_they_wont_be_added(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -370,7 +370,7 @@ class Test_romscannerstests(unittest.TestCase):
         romset = FakeRomSet(None, roms)
 
         report_dir = FakeFile('//fake_reports/')
-        addon_dir = FileName('//fake_addon/')
+        addon_dir = FileNameFactory.create('//fake_addon/')
         
         target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
         
@@ -410,7 +410,7 @@ class Test_romscannerstests(unittest.TestCase):
         scrapers = [FakeScraper(scraped_rom)]
 
         report_dir = FakeFile('//fake_reports/')
-        addon_dir = FileName('//fake_addon/')
+        addon_dir = FileNameFactory.create('//fake_addon/')
         
         launcher = self._getFakeLauncherMetaData(LAUNCHER_STEAM, 'Microsoft Windows', '')
         launcher['nointro_xml_file'] = None
