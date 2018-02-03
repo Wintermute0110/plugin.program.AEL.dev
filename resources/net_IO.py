@@ -187,7 +187,6 @@ def net_get_URL_using_handler(url, handler = None):
 
     if encoding == 'utf-16':
         page_data = page_bytes.encode('utf-16')
-
     return page_data
     
 def net_get_URL_as_json(url):
@@ -211,5 +210,4 @@ class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
         return self.do_open(self.getConnection, req)
 
     def getConnection(self, host, timeout=300):
-        #return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert, context = self.context)
-        return httplib.HTTPSConnection(host, cert_file=self.cert, context = self.context)
+        return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert, context = self.context)

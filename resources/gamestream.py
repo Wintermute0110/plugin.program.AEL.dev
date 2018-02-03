@@ -52,24 +52,28 @@ class GameStreamServer(object):
         log_debug('Connecting to gamestream server {}'.format(self.host))
         self.server_info = self._perform_server_request("serverinfo")
         
-        if self.server_info is None:
+        if not self.isConnected():
             self.server_info = self._perform_server_request("serverinfo", False)
         
         return self.isConnected()
 
     def isConnected(self):
-        if not self.server_info:
+        if self.server_info is None:
             log_debug('No succesfull connection to the server has been made')
             return False
 
-        log_debug('Server state {0}'.format(self.server_info.find('state').text))
+        if self.server_info.find('state') is None:
+            log_debug('Server state {0}'.format(self.server_info.attrib['status_code']))
+        else:
+            log_debug('Server state {0}'.format(self.server_info.find('state').text))
+
         return self.server_info.attrib['status_code'] == '200'
 
     def getServerVersion(self):
 
         appVersion = self.server_info.find('appversion')
         return VersionNumber(appVersion.text)
-
+    
     def generatePincode(self):
 
         i1 = random.randint(1, 9)
@@ -79,7 +83,7 @@ class GameStreamServer(object):
     
         return '{0}{1}{2}{3}'.format(i1, i2, i3, i4)
 
-    def isPaired(self):
+    def is_paired(self):
 
         if not self.isConnected():
             log_warning('Connect first')
