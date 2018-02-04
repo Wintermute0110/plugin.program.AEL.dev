@@ -24,7 +24,7 @@ class ExecutorFactory():
         return self.create(app)
 
     def create(self, application):
-        
+                
         if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
             or 'xbmc-fav-' in application.getOriginalPath() or 'xbmc-sea-' in application.getOriginalPath():
             return XbmcExecutor(self.logFile)

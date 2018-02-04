@@ -53,6 +53,9 @@ class LauncherFactory():
         if launcherType == LAUNCHER_STEAM:
             return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher, rom)
 
+        if launcherType == LAUNCHER_NVGAMESTREAM:
+            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, launcher, rom)
+
         return None
 
     # for backwards compatibility
@@ -348,7 +351,6 @@ class StandardRomLauncher(Launcher):
         log_info('StandardRomLauncher() application  "{0}"'.format(self.application.getPath()))
         log_info('StandardRomLauncher() apppath      "{0}"'.format(apppath))
 
-        
         # ~~~~ Argument substitution ~~~~~
         log_info('StandardRomLauncher() raw arguments   "{0}"'.format(self.arguments))
         self.arguments = self.arguments.replace('$categoryID$', self.categoryID)
@@ -364,6 +366,12 @@ class StandardRomLauncher(Launcher):
         # >> Legacy names for argument substitution
         self.arguments = self.arguments.replace('%rom%', romFile.getPath())
         self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
+
+        # automatic substitution
+        for rom_key, rom_value in self.rom:
+            if isinstance(rom_value, basestring):
+                self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)
+            
         log_info('StandardRomLauncher() final arguments "{0}"'.format(self.arguments))
         
     def launch(self):
@@ -496,3 +504,41 @@ class SteamLauncher(Launcher):
         
         super(SteamLauncher, self).launch()
         pass
+
+class NvidiaGameStreamLauncher(StandardRomLauncher):
+        
+    def _selectApplicationToUse(self):
+        
+        streamClient = self.launcher['application']
+            
+        if sys.platform == 'win32':
+           # self.application = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
+            #self.application = self.application.append('retroarch.exe')  
+            return
+
+        if sys.platform.startswith('linux'):
+            self.application = FileNameFactory.create('/system/bin/am')
+            return
+
+        #todo other os
+        self.application = ''
+        pass
+
+    def _selectArgumentsToUse(self):
+        
+        streamClient = self.launcher['application']
+            
+        if sys.platform == 'win32':
+            #self.arguments = "-L  {0} ".format(corePath.getOriginalPath())
+            self.arguments += "'$rom$'"
+            return
+
+        if sys.platform.startswith('linux'):
+
+            self.arguments = 'start --user 0 -a android.intent.action.VIEW '
+            self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
+            self.arguments += '-d nvidia://stream/target/2/$streamid$'
+            return
+
+        #todo other os
+        pass 

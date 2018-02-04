@@ -217,6 +217,9 @@ def getLauncherTypeName(launcher_type):
 
     if launcher_type == LAUNCHER_STEAM:
         return "Steam launcher"
+    
+    if launcher_type == LAUNCHER_NVGAMESTREAM:
+        return "Nvidia GameStream launcher"
 
 def getTitleFromAppPath(input, item_key, launcher):
 
