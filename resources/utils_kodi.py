@@ -214,7 +214,7 @@ def kodi_get_cached_image_FN(image_FN):
 #
 def kodi_update_image_cache(img_path_FN):
     # What if image is not cached?
-    cached_thumb_FN = kodi_get_cached_image_FN(img_path)
+    cached_thumb_FN = kodi_get_cached_image_FN(img_path_FN)
     log_debug('kodi_update_image_cache()       img_path_FN OP {0}'.format(img_path_FN.getOriginalPath()))
     log_debug('kodi_update_image_cache()   cached_thumb_FN OP {0}'.format(cached_thumb_FN.getOriginalPath()))
 

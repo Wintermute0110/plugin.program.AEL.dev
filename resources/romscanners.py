@@ -549,7 +549,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
 
         server_host = self.launcher['server']
-        assets_path = FileName(self.launcher['assets_path'])
+        assets_path = FileNameFactory.create(self.launcher['assets_path'])
 
         streamServer = GameStreamServer(server_host, assets_path)
         connected = streamServer.connect()
@@ -626,7 +626,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
         
                 log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
-                launcher_path = FileName(self.launcher['rompath'])
+                launcher_path = FileNameFactory.create(self.launcher['rompath'])
                 romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~
@@ -643,7 +643,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
                 
                 if self.scrapers:
                     for scraper in self.scrapers:
-                        self._updateProgressMessage(streamableGame['name'], 'Scraping {0}...'.format(scraper.getName()))
+                        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
                         scraper.scrape(searchTerm, romPath, romdata)
             
                 log_verb('Set Title     file "{0}"'.format(romdata['s_title']))

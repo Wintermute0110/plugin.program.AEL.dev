@@ -7,7 +7,6 @@ import urllib, urllib2, urlparse, socket, exceptions
 from disk_IO import *
 from utils import *
 from utils_kodi import *
-from utils_kodi_cache import *
 
 from scrap import *
 from assets import *
