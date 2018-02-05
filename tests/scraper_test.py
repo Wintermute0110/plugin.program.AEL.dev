@@ -1,5 +1,5 @@
-import unittest
-import mock
+import unittest, mock, os, sys
+
 from mock import *
 from mock import ANY
 from fakes import *
@@ -13,11 +13,24 @@ from resources.assets import *
 from resources.filename import *
 
 class Test_scrapertests(unittest.TestCase):
-      
+    
+    ROOT_DIR = ''
+    TEST_DIR = ''
+    TEST_ASSETS_DIR = ''
+
     @classmethod
     def setUpClass(cls):
         set_use_print(True)
         set_log_level(LOG_DEBUG)
+        
+        cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+        cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
+        cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
+                
+        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
+        print 'TEST DIR: {}'.format(cls.TEST_DIR)
+        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
+        print '---------------------------------------------------------------------------'
     
     def read_file(self, path):
         with open(path, 'r') as f:
@@ -50,7 +63,6 @@ class Test_scrapertests(unittest.TestCase):
     def test_with_no_actual_scraperpaths_set_only_the_cleantitlescraper_will_be_loaded(self):
         
         # arrange
-        set_use_print(True)
         addon_dir = FileNameFactory.create('')
 
         settings = {}
@@ -76,7 +88,6 @@ class Test_scrapertests(unittest.TestCase):
     def test_with_one_scraperpaths_set_two_scrapers_will_be_loaded_and_one_is_a_localfiles_scraper(self):
         
         # arrange
-        set_use_print(True)
         addon_dir = FileNameFactory.create('')
 
         settings = {}
@@ -138,7 +149,6 @@ class Test_scrapertests(unittest.TestCase):
     def test_when_using_local_nfo_metadata_the_correct_scraper_will_be_loaded(self):
         
         # arrange
-        set_use_print(True)
         addon_dir = FileNameFactory.create('')
 
         settings = {}
@@ -196,8 +206,7 @@ class Test_scrapertests(unittest.TestCase):
     def test_when_scraping_with_nfoscraper_it_will_give_the_correct_result(self, mock_filename):
 
          # arrange
-        test_file_dir = os.path.dirname(os.path.abspath(__file__))
-        mock_filename.return_value = unicode(self.read_file(test_file_dir + "\\test-nfo.xml"), "utf-8")
+        mock_filename.return_value = unicode(self.read_file(self.TEST_ASSETS_DIR + "\\test-nfo.xml"), "utf-8")
 
         settings = {}
         settings['scan_clean_tags'] = True
@@ -229,12 +238,10 @@ class Test_scrapertests(unittest.TestCase):
     def test_when_scraping_online_metadata_it_will_give_the_correct_result(self, mock_xmlreader):
         
         # arrange
-        test_dir = os.path.dirname(os.path.abspath(__file__))
-        root_dir = os.path.abspath(os.path.join(test_dir, os.pardir))
-        mock_xmlreader.return_value = self.read_file_xml(root_dir + "\\GameDBInfo\\Sega 32x.xml")
+        mock_xmlreader.return_value = self.read_file_xml(self.ROOT_DIR + "\\GameDBInfo\\Sega 32x.xml")
 
         scraper_obj = metadata_Offline()
-        scraper_obj.set_addon_dir(root_dir)
+        scraper_obj.set_addon_dir(self.ROOT_DIR)
 
         settings = {}
         settings['scan_clean_tags'] = True
@@ -270,10 +277,8 @@ class Test_scrapertests(unittest.TestCase):
     def test_when_scraping_online_assets_it_will_give_the_correct_result(self, mock_search, mock_singlehit, mock_imgdownload, mock_cache):
         
         # arrange
-        test_dir = os.path.dirname(os.path.abspath(__file__))
-        root_dir = os.path.abspath(os.path.join(test_dir, os.pardir))
-        mock_search.return_value = self.read_file(test_dir + "\\gamesdb_search.xml").replace('\r\n', '').replace('\n', '')
-        mock_singlehit.return_value = self.read_file(test_dir + "\\gamesdb_singlehit.xml").replace('\r\n', '').replace('\n', '')
+        mock_search.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamesdb_search.xml").replace('\r\n', '').replace('\n', '')
+        mock_singlehit.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamesdb_singlehit.xml").replace('\r\n', '').replace('\n', '')
 
         scraper_obj = asset_TheGamesDB()
 
@@ -314,9 +319,7 @@ class Test_scrapertests(unittest.TestCase):
     def test_when_scraping_online_assets_for_a_cached_result_it_will_load_that_one(self, mock_imgdownload, mock_cache):
         
         # arrange
-        test_dir = os.path.dirname(os.path.abspath(__file__))
-        root_dir = os.path.abspath(os.path.join(test_dir, os.pardir))
-        
+      
         scraper_obj = asset_TheGamesDB()
 
         settings = {}

@@ -17,9 +17,11 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, os, shutil, fnmatch, string, time, traceback
+import sys, os, shutil, fnmatch, string, time, traceback, importlib
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 from collections import OrderedDict
+from distutils.version import StrictVersion
+from abc import ABCMeta, abstractmethod
 
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
@@ -29,7 +31,6 @@ from constants import *
 from filename import *
 from utils import *
 from utils_kodi import *
-from utils_kodi_cache import *
 from scrap import *
 from assets import *
 from rom_audit import *
@@ -229,6 +230,16 @@ class Main:
         if not ROMS_DIR.exists():                  ROMS_DIR.makedirs()
         if not COLLECTIONS_DIR.exists():           COLLECTIONS_DIR.makedirs()
         if not REPORTS_DIR.exists():               REPORTS_DIR.makedirs()
+
+        current_version = StrictVersion(__addon_version__)
+        try:
+            last_migrated_to_version = StrictVersion(self.settings["migrated_version"])
+        except:
+            last_migrated_to_version = StrictVersion('0.0.0')
+
+        if current_version > last_migrated_to_version:
+            log_info('Execute migrations')
+            self.execute_migrations(last_migrated_to_version)
 
         # -- Bootstrap instances -- 
         self.romsetFactory     = RomSetFactory(PLUGIN_DATA_DIR)
@@ -544,6 +555,7 @@ class Main:
         self.settings['windows_close_fds']        = True if o.getSetting('windows_close_fds') == 'true' else False
         self.settings['windows_cd_apppath']       = True if o.getSetting('windows_cd_apppath') == 'true' else False
         self.settings['log_level']                = int(o.getSetting('log_level'))
+        self.settings['migrated_version']         = o.getSetting('migrated_version')
 
         # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir']  == '': self.settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR.getOriginalPath()
@@ -8778,3 +8790,46 @@ class Main:
         ui._add_additionalproperty( listitem, "backgroundName", fanart )
 
         return listitem
+            
+    # Executes the migrations which are newer than the last
+    # migration version that has run
+    def execute_migrations(self, last_migrated_to_version, to_version = None):
+        import migrations.main
+            
+        migrations_folder     = CURRENT_ADDON_DIR.pjoin('resources/migrations')
+        migration_files       = migrations_folder.scanFilesInPathAsFileNameObjects('*.py')
+        applicable_migrations = self.select_applicable_migration_files(migration_files, last_migrated_to_version, to_version)
+
+        for version, migration_file in applicable_migrations.iteritems():
+            log_info('Migration to version {} using file {}'.format(version, migration_file.getBase()))
+        
+            module_namespace = 'migrations.{}'.format(migration_file.getBase_noext())
+            module = importlib.import_module(module_namespace)
+            migration_class_name = module.MIGRATION_CLASS_NAME
+            migration_class = getattr(module, migration_class_name)
+            migration = migration_class()
+            migration.execute(CURRENT_ADDON_DIR, PLUGIN_DATA_DIR)
+
+            __addon_obj__.setSetting('migrated_version', version)
+
+    # Iterates through the migration files and selects those which
+    # version number is higher/newer than the last run migration version.
+    def select_applicable_migration_files(self, migration_files, last_migrated_to_version, to_version):
+        applicable_migrations = {}
+        for migration_file in migration_files:
+
+            if migration_file.getBase_noext() == '__init__' or migration_file.getBase_noext() == 'main':
+                continue
+
+            file_name = migration_file.getBase_noext()
+            log_debug('Reading migration file {}'.format(file_name))
+            version_part = file_name.replace('migration_', '').replace('_', '.')
+            migration_version = StrictVersion(version_part)
+        
+            if migration_version > last_migrated_to_version and (to_version is None or migration_version <= to_version):
+                applicable_migrations[version_part] = migration_file
+            
+        applicable_migrations = OrderedDict(sorted(applicable_migrations.iteritems(), key=lambda (k,v): StrictVersion(k)))
+    
+        return applicable_migrations
+

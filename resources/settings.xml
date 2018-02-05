@@ -70,7 +70,7 @@
     <setting label="Display Favourite Status tag" type="bool" id="display_fav_status" default="true" />
 
     <setting id="separator" type="lsep" label="Special Categories/Launchers"/>
-    <setting label="Hide <Favourites>" type="bool" id="display_hide_favs" default="false" />
+    <setting label="Hide &lt;Favourites&gt;" type="bool" id="display_hide_favs" default="false" />
     <setting label="Hide {ROM Collections}" type="bool" id="display_hide_collections" default="false" />
     <setting label="Hide [Browse by ...]" type="bool" id="display_hide_vlaunchers" default="false" />
     <setting label="Hide [Browse AEL Offline Scraper]" type="bool" id="display_hide_AEL_scraper" default="false" />
@@ -110,5 +110,6 @@
     <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true"/>
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
+    <setting label="Migrated version" type="text" id="migrated_version" default="0.0.0"  visible="false"/>
 </category>
 </settings>
