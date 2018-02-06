@@ -232,8 +232,12 @@ class Main:
         if not REPORTS_DIR.exists():               REPORTS_DIR.makedirs()
 
         current_version = LooseVersion(__addon_version__)
+        str_version = self.settings["migrated_version"]
+        if not str_version or str_version == '':
+            str_version = '0.0.0'
+
         try:
-            last_migrated_to_version = LooseVersion(self.settings["migrated_version"])
+            last_migrated_to_version = LooseVersion(str_version)
         except:
             last_migrated_to_version = LooseVersion('0.0.0')
 

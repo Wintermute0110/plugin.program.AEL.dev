@@ -34,10 +34,14 @@ class Migration_0_9_9(Migration):
         fs_load_catfile(categories_file, categories, launchers)
 
         for key, launcher in launchers.iteritems():
+            log_info('[Migration][0.9.9] Validating launcher [{}] {}'.format(key, launcher['m_name']))
+
             # does not yet contain launcher type?
             if not 'type' in launcher:
+                log_debug('[Migration][0.9.9] Launcher "{}" does not have a "type" field yet.')
                 self._set_launchertype(launcher)
-
+                
+        fs_write_catfile(categories_file, categories, launchers)
         log_info('[Migration][0.9.9] Finished migration')
 
     def _set_launchertype(self, launcher):
@@ -46,19 +50,19 @@ class Migration_0_9_9(Migration):
         name = launcher['m_name']
 
         if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
-            log_debug('Setting launcher "{}" with type RETROPLAYER'.format(name))
+            log_debug('[Migration][0.9.9] Setting launcher "{}" with type RETROPLAYER'.format(name))
             launcher['type'] = LAUNCHER_RETROPLAYER
             return
 
         if application.getOriginalPath() == LNK_LAUNCHER_APP_NAME:
-            log_debug('Setting launcher "{}" with type LNK'.format(name))
+            log_debug('[Migration][0.9.9] Setting launcher "{}" with type LNK'.format(name))
             launcher['type'] = LAUNCHER_LNK
             return
 
         if 'rompath' in launcher and launcher['rompath'] != '':
-            log_debug('Setting launcher "{}" with type ROM LAUNCHER'.format(name))
+            log_debug('[Migration][0.9.9] Setting launcher "{}" with type ROM LAUNCHER'.format(name))
             launcher['type'] = LAUNCHER_ROM
             return
         
         launcher['type'] = LAUNCHER_STANDALONE
-        log_debug('Setting launcher "{}" with type STANDALONE'.format(name))
+        log_debug('[Migration][0.9.9] Setting launcher "{}" with type STANDALONE'.format(name))
