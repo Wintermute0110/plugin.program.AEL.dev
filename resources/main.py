@@ -8793,6 +8793,11 @@ class Main:
             
     # Executes the migrations which are newer than the last migration version that has run.
     # Each migration will be executed in order of version numbering.
+    #
+    # The addon setting 'migrated_version' will contain the last version that this environment/machine
+    # has been migrated to. If not available it will fallback to version 0.0.0
+    # Once all migrations are executed this field will be updated with the current version number of this
+    # addon (__addon_version__)
     def execute_migrations(self, last_migrated_to_version, to_version = None):
         import migrations
         import migrations.main
