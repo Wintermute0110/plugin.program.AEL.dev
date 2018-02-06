@@ -1,5 +1,4 @@
-import unittest
-import mock
+import unittest, mock, os, sys
 from mock import *
 from fakes import *
 
@@ -11,9 +10,23 @@ from resources.constants import *
 
 class Test_utils_kodi_tests(unittest.TestCase):
     
+    ROOT_DIR = ''
+    TEST_DIR = ''
+    TEST_ASSETS_DIR = ''
+
     @classmethod
     def setUpClass(cls):
         set_use_print(True)
+        set_log_level(LOG_DEBUG)
+        
+        cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+        cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
+        cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
+                
+        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
+        print 'TEST DIR: {}'.format(cls.TEST_DIR)
+        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
+        print '---------------------------------------------------------------------------'
 
     def test_building_a_wizards_works(self):
         

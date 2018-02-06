@@ -1,7 +1,7 @@
-import unittest
-import mock
+import unittest, mock, os, sys
 from mock import *
 from fakes import *
+from distutils.version import LooseVersion
 
 import xbmcaddon
 
@@ -11,9 +11,23 @@ from resources.utils_kodi import *
 
 class Test_maintests(unittest.TestCase):
     
+    ROOT_DIR = ''
+    TEST_DIR = ''
+    TEST_ASSETS_DIR = ''
+
     @classmethod
     def setUpClass(cls):
         set_use_print(True)
+        set_log_level(LOG_DEBUG)
+        
+        cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+        cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
+        cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
+                
+        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
+        print 'TEST DIR: {}'.format(cls.TEST_DIR)
+        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
+        print '---------------------------------------------------------------------------'
 
     # todo: replace by moving settings to external class and mock a simple dictionary
     def mocked_settings(arg):
@@ -46,6 +60,7 @@ class Test_maintests(unittest.TestCase):
         
         # arrange
         mock_sys.args.return_value = ['contenttype', 'noarg']
+        main.__addon_version__ = '0.0.0'
         target = main.Main()
         
         # act
@@ -99,6 +114,22 @@ class Test_maintests(unittest.TestCase):
         target._command_render_roms(None, launcherID)
                 
         # assert
+
+    def test_migrations(self):
+        
+        # arrange
+        shutil.copy2(self.TEST_ASSETS_DIR + "\\categories_example.xml", self.TEST_ASSETS_DIR + "\\categories.xml")
+        main.__addon_version__ = '0.9.9-alpha'
+
+        target = main.Main()
+        main.CURRENT_ADDON_DIR = StandardFileName(self.ROOT_DIR)
+        main.PLUGIN_DATA_DIR = StandardFileName(self.TEST_ASSETS_DIR)
+
+        v_from = LooseVersion('0.0.0')
+
+        # act
+        target.execute_migrations(v_from)
+
 
 if __name__ == '__main__':
     unittest.main()

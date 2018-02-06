@@ -1,6 +1,4 @@
-import unittest
-
-import mock
+import unittest, mock, os, sys
 from mock import *
 from fakes import *
 
@@ -11,10 +9,23 @@ from resources.utils_kodi import *
 
 class Test_romscannerstests(unittest.TestCase):
     
+    ROOT_DIR = ''
+    TEST_DIR = ''
+    TEST_ASSETS_DIR = ''
+
     @classmethod
     def setUpClass(cls):
         set_use_print(True)
         set_log_level(LOG_DEBUG)
+        
+        cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+        cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
+        cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
+                
+        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
+        print 'TEST DIR: {}'.format(cls.TEST_DIR)
+        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
+        print '---------------------------------------------------------------------------'
 
     def read_file(self, path):
         with open(path, 'r') as f:
@@ -397,8 +408,7 @@ class Test_romscannerstests(unittest.TestCase):
     def test_when_scanning_your_steam_account_not_existing_dead_roms_will_be_correctly_removed(self, mock_urlopen, progress_canceled_mock):
 
         # arrange
-        test_file_dir = os.path.dirname(os.path.abspath(__file__))
-        mock_urlopen.return_value = self.read_file(test_file_dir + "\\steamresponse.json")
+        mock_urlopen.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\steamresponse.json")
         
         progress_canceled_mock.return_value = False
 

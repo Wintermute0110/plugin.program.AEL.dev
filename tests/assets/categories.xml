@@ -1,0 +1,2866 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<advanced_emulator_launcher version="1">
+<control>
+  <update_timestamp>1517737626.44</update_timestamp>
+</control>
+<category>
+  <id>49ddd61e92dea3700dd83a77e5143214</id>
+  <m_name>Nintendo</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_trailer />
+</category>
+<category>
+  <id>6feeb4f0d83cc0bfc74e57e68f901f2c</id>
+  <m_name>SNk</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_trailer />
+</category>
+<category>
+  <id>39bb1f7e008e8c7d6d82f8ce04764c7a</id>
+  <m_name>Sega</m_name>
+  <m_year />
+  <m_genre>Company</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>Sega Games Co., Ltd. (Japanese: 株式会社セガゲームス Hepburn: Kabushiki gaisha Sega gēmusu), originally short for Service Games and officially styled as SEGA, is a Japanese multinational video game developer and publisher headquartered in Tokyo, Japan, with multiple offices around the world. Sega developed and manufactured numerous home video game consoles from 1983 to 2001, but the financial losses incurred from their Dreamcast console caused the company to restructure itself in 2001, and focus on providing software as a third-party developer from then on. Nonetheless, Sega remains the world&apos;s most prolific arcade producer, with over 500 games in over 70 franchises on more than 20 different arcade system boards since 1981.Sega, along with their sub-studios, are known for their multi-million selling game franchises including Sonic the Hedgehog, Virtua Fighter, Phantasy Star, Yakuza, and Total War, amongst others. Sega&apos;s head offices are located in Ōta, Tokyo. Sega&apos;s North American division, Sega of America, is headquartered in Irvine, California, having moved there from San Francisco in 2015. Sega&apos;s European division, Sega Europe, is headquartered in the Brentford, London.</m_plot>
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>C:\Temp\Roms\Assets\category-sega\SEGA_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_trailer />
+</category>
+<category>
+  <id>75347582b5b0775baa6d859ba0f10de1</id>
+  <m_name>Tests</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_trailer />
+</category>
+<category>
+  <id>df537f647f91822ff0b4d410e2139fe1</id>
+  <m_name>Tests2</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_trailer />
+</category>
+<launcher>
+  <id>76fee2480683ae2be821b7af099f6964</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>retroplayer_launcher_app</application>
+  <args>%rom%</args>
+  <args_extra>[]</args_extra>
+  <categoryID>39bb1f7e008e8c7d6d82f8ce04764c7a</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>32Retro</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>32</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\trailers</path_trailer>
+  <platform>Sega 32X</platform>
+  <romext>32x</romext>
+  <rompath>C:\Temp\ael_tests\Games\</rompath>
+  <roms_base_noext>roms_Sega_32Retro_76fee2</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1511565403.79</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>a294a0a4e3ee080653b3f0c82e7706eb</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>75347582b5b0775baa6d859ba0f10de1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>32X</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>32</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\trailers</path_trailer>
+  <platform>Sega 32X</platform>
+  <romext>32x</romext>
+  <rompath>C:\Temp\ael_tests\Games\</rompath>
+  <roms_base_noext>roms_Tests_32X_a294a0</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734538.9</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>518519608daf1bd6e57c0ffa26575cd3</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>39bb1f7e008e8c7d6d82f8ce04764c7a</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>32X</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>35</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sega/32X/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sega/32X/boxback</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sega/32X/boxfront</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sega/32X/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/32X/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sega/32X/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sega/32X/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sega/32X/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sega/32X/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sega/32X/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/Sega/32X/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sega/32X/trailers</path_trailer>
+  <platform>Sega 32X</platform>
+  <romext>32x|bin|32X</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Sega/32X/Games/</rompath>
+  <roms_base_noext>roms_Sega_32X_518519</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734539.16</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>7498b0ba4ccfff05d303dbc11b3d69c2</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Arh</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>35</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\__STM\games</rompath>
+  <roms_base_noext>roms_Tests2_Arh_7498b0</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198405030123</steamid>
+  <timestamp_launcher>1512576669.21</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>3bd4e0d2bef53cebef03764b9950b58a</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Bob</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>35</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\__STM\games</rompath>
+  <roms_base_noext>roms_Tests2_Bob_3bd4e0</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198405030123</steamid>
+  <timestamp_launcher>1512601974.29</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>b6000ff1ae6cc4d11e7b5cb3e58ae6b3</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Gigigi</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>104</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\__STM\games</rompath>
+  <roms_base_noext>roms_Tests2_Gigigi_b6000f</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198060516447</steamid>
+  <timestamp_launcher>1513087149.95</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>9a666dba1be74ec975ed663a64eb3138</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Hashah</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\__STM\games</rompath>
+  <roms_base_noext>roms_Tests2_Hashah_9a666d</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198405030123</steamid>
+  <timestamp_launcher>1512601120.8</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>0e3d74e2506d3fb3c4ba986edc79aaf2</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\winhlp32.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Hilp</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Atari 7800</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508138008.91</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>f6d8851da6d41e1472eaa0c58fd08a04</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;%rom%&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>49ddd61e92dea3700dd83a77e5143214</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Jag</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/boxback</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/boxfront</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/trailers</path_trailer>
+  <platform>Atari Jaguar</platform>
+  <romext>j64</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Atari - Jaguar/</rompath>
+  <roms_base_noext>roms_Nintendo_Jag_f6d885</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734539.15</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>faf5b034f0c9b55cf73277b5393dbed0</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;%rom%&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>49ddd61e92dea3700dd83a77e5143214</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Jagua</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/boxback</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/boxfront</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Assets/Atari_Jaguar/trailers</path_trailer>
+  <platform>Atari Jaguar</platform>
+  <romext>j64</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Atari - Jaguar/</rompath>
+  <roms_base_noext>roms_Nintendo_Jagua_faf5b0</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734538.82</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>da0cd5e060a7ca860480a858276fed57</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\install.log</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>root_category</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Loggy</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Sony PlayStation Portable</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508138593.74</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>d0c4e6656661727f1dfcbc9f5240cbbb</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;%rom%&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>39bb1f7e008e8c7d6d82f8ce04764c7a</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre>Third generation console</m_genre>
+  <m_name>Master System</m_name>
+  <m_plot>The Sega Master System (Japanese: セガマスターシステム Hepburn: Sega Masutā Shisutemu) is a third-generation home video game console that was manufactured by Sega. It was originally released in 1985 as the Sega Mark III in Japan. After being redesigned prior to its North American launch, the console was renamed Master System and released in 1986 in North America, 1987 in Europe, and 1989 in Brazil. The redesigned Master System was also released in Japan in 1987. Both the Mark III and the original Master System models could play with both cartridges (or &quot;Mega Cartridges&quot;, as they were officially called) and the credit card-sized Sega Cards, which retailed at lower prices than cartridges but had lower storage capacity; the Master System II and later models did not have the card slot. The Master System also featured accessories such as a light gun and 3D glasses which were designed to work with a range of specially coded games.</m_plot>
+  <m_rating />
+  <m_year>1986</m_year>
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\banners</path_banner>
+  <path_boxback>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\boxback</path_boxback>
+  <path_boxfront>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\boxfront</path_boxfront>
+  <path_cartridge>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\fanarts</path_fanart>
+  <path_flyer>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\flyers</path_flyer>
+  <path_manual>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\manuals</path_manual>
+  <path_map>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\maps</path_map>
+  <path_snap>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\snaps</path_snap>
+  <path_title>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\titles</path_title>
+  <path_trailer>C:\Temp\Roms\Assets\launcher-sega\Mastersystem\Sega_Master_System\trailers</path_trailer>
+  <platform>Sega Master System/Mark III</platform>
+  <romext>sms</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Sega - Master System - Mark III/</rompath>
+  <roms_base_noext>roms_Sega_Master_System_d0c4e6</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart>C:\Temp\Roms\Assets\launcher-sega\Master System_fanart_1.jpg</s_fanart>
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508018350.31</timestamp_launcher>
+  <timestamp_report>1478263644.55</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>943f1bcf4bf4f2524052abe5bce7192a</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;%rom%&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>39bb1f7e008e8c7d6d82f8ce04764c7a</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre>Fourth generation console</m_genre>
+  <m_name>Megadrive</m_name>
+  <m_plot>The Sega Genesis, known as the Mega Drive (Japanese: メガドライブ Hepburn: Mega Doraibu) in most regions outside North America, is a 16-bit home video game console which was developed and sold by Sega Enterprises, Ltd. The Genesis was Sega&apos;s third console and the successor to the Master System. Sega first released the console as the Mega Drive in Japan in 1988, followed by a North American debut under the Genesis moniker in 1989. In 1990, the console was distributed as the Mega Drive by Virgin Mastertronic in Europe.Designed by an R&amp;D team supervised by Hideki Sato and Masami Ishikawa, the hardware was adapted from Sega&apos;s System 16 arcade board, centered on a Motorola 68000 processor as a primary CPU and a Zilog Z80 as a secondary processor. The system supports a library of more than 900 games created both by Sega and a wide array of third-party publishers and delivered on ROM-based cartridges. It can play Master System games when the separately sold Power Base Converter is inserted.</m_plot>
+  <m_rating />
+  <m_year>1988</m_year>
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/boxback</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/boxfront</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Assets/Sega_Genesis/trailers</path_trailer>
+  <platform>Sega MegaDrive/Genesis</platform>
+  <romext>md</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Sega - Mega Drive - Genesis/</rompath>
+  <roms_base_noext>roms_Sega_Megadrive_943f1b</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734539.13</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>fe1e1102f6971f04c0e02f79332aaea3</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows10Upgrade\WinREBootApp64.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>6feeb4f0d83cc0bfc74e57e68f901f2c</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>NeoGeo</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>274</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/boxback</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/boxfront</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/trailers</path_trailer>
+  <platform>SNK Neo-Geo CD</platform>
+  <romext>zip</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/Games/</rompath>
+  <roms_base_noext>roms_SNk_NeoGeo_fe1e11</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734538.98</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>e62a30c5400a60eefe9679c50e70e70a</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>39bb1f7e008e8c7d6d82f8ce04764c7a</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>PS1</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sony/Playstation/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sony/Playstation/boxback</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sony/Playstation/boxfront</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sony/Playstation/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sony/Playstation/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sony/Playstation/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sony/Playstation/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sony/Playstation/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sony/Playstation/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sony/Playstation/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/Sony/Playstation/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sony/Playstation/trailers</path_trailer>
+  <platform>Sony PlayStation</platform>
+  <romext>bin</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Sony/Playstation/Games/</rompath>
+  <roms_base_noext>roms_Sega_PS1_e62a30</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734538.8</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>9574ce02ac166c9c1e4b20d18c107910</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Recovery.txt</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Recovery</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Atari 7800</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508138481.03</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>04143c8b2ee03dc903ecf06b6407f335</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Projects\RetroArch\</application>
+  <args />
+  <args_extra>[]</args_extra>
+  <categoryID>root_category</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Retroarh Test</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\DOOP\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\DOOP\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\DOOP\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\DOOP\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\DOOP\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\DOOP\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\DOOP\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\DOOP\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\DOOP\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\DOOP\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\DOOP\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\DOOP\trailers</path_trailer>
+  <platform>Atari 2600</platform>
+  <romext>txt</romext>
+  <rompath>C:\Temp\ael_tests\DOOP\games\</rompath>
+  <roms_base_noext>roms_Sega_Retroarh_Test_04143c</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508148758.95</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>68a456b39b6eecd786366602106efb9a</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Saus</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>35</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\__STM\games</rompath>
+  <roms_base_noext>roms_Tests2_Saus_68a456</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198405030123</steamid>
+  <timestamp_launcher>1513029161.95</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>5adda72becc63f95aacbcd5573d7e8d2</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>75347582b5b0775baa6d859ba0f10de1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>SegaMS</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sega/Master System/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sega/Master System/boxbacks</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sega/Master System/boxfronts</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sega/Master System/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Master System/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sega/Master System/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sega/Master System/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sega/Master System/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sega/Master System/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sega/Master System/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/Sega/Master System/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sega/Master System/trailers</path_trailer>
+  <platform>Sega Master System</platform>
+  <romext>smd</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Sega/Master System/Games/</rompath>
+  <roms_base_noext>roms_Tests_SegaMS_5adda7</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734539.15</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>b67c2d0e149b7fcfa3ea745540525f87</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>49ddd61e92dea3700dd83a77e5143214</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Snes</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>8</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\_ScanTest\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\_ScanTest\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\_ScanTest\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\_ScanTest\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\_ScanTest\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\_ScanTest\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\_ScanTest\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\_ScanTest\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\_ScanTest\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\_ScanTest\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\_ScanTest\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\_ScanTest\trailers</path_trailer>
+  <platform>Nintendo SNES</platform>
+  <romext>sfc</romext>
+  <rompath>C:\Temp\ael_tests\_ScanTest\games\</rompath>
+  <roms_base_noext>roms_Nintendo_Snes_b67c2d</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1512399879.43</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>8714041172ef4a910a8220b80e42bb96</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>Stando</args>
+  <args_extra>[]</args_extra>
+  <categoryID>75347582b5b0775baa6d859ba0f10de1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Stamdp</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Atari 2600</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734538.9</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>5a5a39dfd7688b104e3480b8df7110e6</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <args_extra>[]</args_extra>
+  <categoryID>6feeb4f0d83cc0bfc74e57e68f901f2c</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Steam</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext>roms_SNk_Steam_5a5a39</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508681866.5</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>8f9238740e0f5bf60583bb76c197fe54</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <args_extra>[]</args_extra>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>SteamBox</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext>roms_Tests2_SteamBox_8f9238</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1512509004.94</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>ce27f15a1d2c37ee99fe1f5f50e3fb24</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <args_extra>[]</args_extra>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>SteamLauncher</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext>roms_Tests2_SteamLauncher_ce27f1</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1512490645.81</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>59c8a519a28749f3c6a25b6cd74b1185</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Stoem</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext>roms_Tests2_Stoem_59c8a5</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198060516447</steamid>
+  <timestamp_launcher>1512510028.47</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>40b5f746addab86b7c86a815161e7db0</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <args_extra>[]</args_extra>
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Stoompje</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext>roms_Tests2_Stoompje_40b5f7</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198060516447</steamid>
+  <timestamp_launcher>1512509691.54</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>2d9563e4a8934c2f321d6a29e5b7d7fe</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>75347582b5b0775baa6d859ba0f10de1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>TextReader</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>2</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\DOOP\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\DOOP\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\DOOP\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\DOOP\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\DOOP\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\DOOP\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\DOOP\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\DOOP\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\DOOP\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\DOOP\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\DOOP\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\DOOP\trailers</path_trailer>
+  <platform>Nintendo NES</platform>
+  <romext>txt</romext>
+  <rompath>C:\Temp\ael_tests\DOOP\games\</rompath>
+  <roms_base_noext>roms_Tests_TextReader_2d9563</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508140366.53</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>215717ed2d47baa7311a829e66a3aa05</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>qq</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Titol</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>3DO Interactive Multiplayer</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508103145.0</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>b6a580c7997f45c9e2a9d11a1fa86855</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\windows-version.txt</application>
+  <args>-x</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>TxTest</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Sony PlayStation 4</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508101217.51</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>6427e533c597e6e764c8370e81d2bd64</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\__STM\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>Uuu</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>35</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\__STM\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\__STM\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\__STM\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\__STM\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\__STM\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\__STM\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\__STM\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\__STM\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\__STM\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\__STM\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\__STM\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\__STM\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\__STM\games</rompath>
+  <roms_base_noext>roms_Tests2_Uuu_6427e5</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <steamid>76561198405030123</steamid>
+  <timestamp_launcher>1512576206.24</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>STEAM</type>
+</launcher>
+<launcher>
+  <id>32726eb53e6af879cc1f4f8aba1f18e5</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows10Upgrade\WinREBootApp64.exe</application>
+  <args>asdfd</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>WinREBootApp64</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Atari 2600</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508103382.26</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>f984b880aa525632c0a5bdda8b0f2933</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>Steam</application>
+  <args />
+  <args_extra>[]</args_extra>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>hy</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\_ScanTest\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\_ScanTest\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\_ScanTest\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\_ScanTest\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\_ScanTest\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\_ScanTest\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\_ScanTest\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\_ScanTest\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\_ScanTest\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\_ScanTest\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\_ScanTest\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\_ScanTest\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext>roms_Tests2_hy_f984b8</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1513029172.29</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>ac7772bf734a7c6b03da0a67cb796a58</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>lnk_launcher_app</application>
+  <args>%rom%</args>
+  <args_extra>[]</args_extra>
+  <categoryID>75347582b5b0775baa6d859ba0f10de1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>lnk_launcher_app</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\DOOP\games\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\DOOP\games\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\DOOP\games\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\DOOP\games\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\DOOP\games\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\DOOP\games\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\DOOP\games\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\DOOP\games\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\DOOP\games\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\DOOP\games\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\DOOP\games\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\DOOP\games\trailers</path_trailer>
+  <platform>Sony PlayStation Portable</platform>
+  <romext>lnk</romext>
+  <rompath>C:\Temp\ael_tests\DOOP\games\</rompath>
+  <roms_base_noext>roms_Tests_lnk_launcher_app_ac7772</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508139842.07</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>22f2c9401b7e94b3f34b94adf8bfd703</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>NVSTREAM</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\_ScanTest\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <certpath>None</certpath>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>lpoo</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\_ScanTest\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\_ScanTest\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\_ScanTest\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\_ScanTest\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\_ScanTest\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\_ScanTest\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\_ScanTest\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\_ScanTest\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\_ScanTest\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\_ScanTest\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\_ScanTest\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\_ScanTest\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\_ScanTest\games</rompath>
+  <roms_base_noext>roms_Tests2_lpoo_22f2c9</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <server>None</server>
+  <timestamp_launcher>1517058418.14</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>NVIDIASTREAM</type>
+</launcher>
+<launcher>
+  <id>59f5489c487043c80958e74538731980</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>NVSTREAM</application>
+  <args />
+  <assets_path>C:\Temp\ael_tests\_ScanTest\</assets_path>
+  <categoryID>df537f647f91822ff0b4d410e2139fe1</categoryID>
+  <certpath>&lt;resources.utils.FileName instance at 0x1E678D78&gt;</certpath>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>nv7</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>18</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\_ScanTest\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\_ScanTest\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\_ScanTest\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\_ScanTest\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\_ScanTest\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\_ScanTest\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\_ScanTest\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\_ScanTest\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\_ScanTest\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\_ScanTest\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\_ScanTest\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\_ScanTest\trailers</path_trailer>
+  <platform>Microsoft Windows</platform>
+  <romext />
+  <rompath>C:\Temp\ael_tests\_ScanTest\games</rompath>
+  <roms_base_noext>roms_Tests2_nv7_59f548</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <server>192.168.0.5</server>
+  <timestamp_launcher>1517737626.44</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+  <type>NVIDIASTREAM</type>
+</launcher>
+<launcher>
+  <id>03c0be3058155b8ac61d312ab1589663</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\regedit.exe</application>
+  <args>Standi</args>
+  <args_extra>[]</args_extra>
+  <categoryID>root_category</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>regedit</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Amstrad CPC</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508099424.45</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>995c3ca1f5f6ec7fc30c2cdd56308659</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>retroplayer_launcher_app</application>
+  <args>%rom%</args>
+  <args_extra>[]</args_extra>
+  <categoryID>75347582b5b0775baa6d859ba0f10de1</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>retroplayer_launcher_app</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>C:\Temp\ael_tests\DOOP\games\banners</path_banner>
+  <path_boxback>C:\Temp\ael_tests\DOOP\games\boxbacks</path_boxback>
+  <path_boxfront>C:\Temp\ael_tests\DOOP\games\boxfronts</path_boxfront>
+  <path_cartridge>C:\Temp\ael_tests\DOOP\games\cartridges</path_cartridge>
+  <path_clearlogo>C:\Temp\ael_tests\DOOP\games\clearlogos</path_clearlogo>
+  <path_fanart>C:\Temp\ael_tests\DOOP\games\fanarts</path_fanart>
+  <path_flyer>C:\Temp\ael_tests\DOOP\games\flyers</path_flyer>
+  <path_manual>C:\Temp\ael_tests\DOOP\games\manuals</path_manual>
+  <path_map>C:\Temp\ael_tests\DOOP\games\maps</path_map>
+  <path_snap>C:\Temp\ael_tests\DOOP\games\snaps</path_snap>
+  <path_title>C:\Temp\ael_tests\DOOP\games\titles</path_title>
+  <path_trailer>C:\Temp\ael_tests\DOOP\games\trailers</path_trailer>
+  <platform>Sony PlayStation 4</platform>
+  <romext>tx</romext>
+  <rompath>C:\Temp\ael_tests\DOOP\games\</rompath>
+  <roms_base_noext>roms_Tests_retroplayer_launcher_app_995c3c</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508140007.42</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>e73ad24acab8702d79f87e202f720822</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\win.ini</application>
+  <args>wew</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>wet23</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Atari 2600</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508103234.21</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>8bea54d55c2e76a05a045e0fbb1bece1</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>write</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>3DO Interactive Multiplayer</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508135997.31</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>1c544ff7a6541e2b7018c3a059884ecf</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>&quot;$rom$&quot;</args>
+  <args_extra>[]</args_extra>
+  <categoryID>6feeb4f0d83cc0bfc74e57e68f901f2c</categoryID>
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>write</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>37</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/banners</path_banner>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/boxback</path_boxback>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/boxfront</path_boxfront>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/cartridges</path_cartridge>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/clearlogos</path_clearlogo>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/fanarts</path_fanart>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/flyers</path_flyer>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/manuals</path_manual>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/maps</path_map>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/snaps</path_snap>
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/titles</path_title>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/trailers</path_trailer>
+  <platform>MAME</platform>
+  <romext>zip</romext>
+  <rompath>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/Games/</rompath>
+  <roms_base_noext>roms_SNk_write_1c544f</roms_base_noext>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1507734538.8</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>d997019d43ae09eb88fb9fe86fd7dc5c</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args />
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>writez</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Unknown</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508135417.28</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+<launcher>
+  <id>8258b4d831cddfbf5258dd1b19e9bce0</id>
+  <Asset_Prefix />
+  <ROM_asset_path />
+  <application>C:\Windows\write.exe</application>
+  <args>uuu</args>
+  <args_extra>[]</args_extra>
+  <categoryID />
+  <default_banner>s_banner</default_banner>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <default_fanart>s_fanart</default_fanart>
+  <default_icon>s_icon</default_icon>
+  <default_poster>s_poster</default_poster>
+  <finished>False</finished>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <m_developer />
+  <m_genre />
+  <m_name>wrrr</m_name>
+  <m_plot />
+  <m_rating />
+  <m_year />
+  <minimize>False</minimize>
+  <multidisc>True</multidisc>
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <nointro_xml_file />
+  <non_blocking>False</non_blocking>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_parents>0</num_parents>
+  <num_roms>0</num_roms>
+  <num_unknown>0</num_unknown>
+  <path_banner />
+  <path_boxback />
+  <path_boxfront />
+  <path_cartridge />
+  <path_clearlogo />
+  <path_fanart />
+  <path_flyer />
+  <path_manual />
+  <path_map />
+  <path_snap />
+  <path_title />
+  <path_trailer />
+  <platform>Sony PlayStation Vita</platform>
+  <romext />
+  <rompath />
+  <roms_base_noext />
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <s_banner />
+  <s_clearlogo />
+  <s_controller />
+  <s_fanart />
+  <s_icon />
+  <s_poster />
+  <s_trailer />
+  <timestamp_launcher>1508101761.33</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <toggle_window>False</toggle_window>
+</launcher>
+</advanced_emulator_launcher>
