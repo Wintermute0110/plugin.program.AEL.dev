@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 import sys, os, shutil, fnmatch, string, time, traceback, importlib
 import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
 from collections import OrderedDict
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 from abc import ABCMeta, abstractmethod
 
 # --- Kodi stuff ---
@@ -231,11 +231,11 @@ class Main:
         if not COLLECTIONS_DIR.exists():           COLLECTIONS_DIR.makedirs()
         if not REPORTS_DIR.exists():               REPORTS_DIR.makedirs()
 
-        current_version = StrictVersion(__addon_version__)
+        current_version = LooseVersion(__addon_version__)
         try:
-            last_migrated_to_version = StrictVersion(self.settings["migrated_version"])
+            last_migrated_to_version = LooseVersion(self.settings["migrated_version"])
         except:
-            last_migrated_to_version = StrictVersion('0.0.0')
+            last_migrated_to_version = LooseVersion('0.0.0')
 
         if current_version > last_migrated_to_version:
             log_info('Execute migrations')
@@ -8794,23 +8794,42 @@ class Main:
     # Executes the migrations which are newer than the last
     # migration version that has run
     def execute_migrations(self, last_migrated_to_version, to_version = None):
+        import migrations
         import migrations.main
-            
+        
+        pDialog = xbmcgui.DialogProgress()
+        pDialog.create('Advanced Emulator Launcher', 'Performing version upgrade migrations ...')
+        pDialog.update(5)
+
         migrations_folder     = CURRENT_ADDON_DIR.pjoin('resources/migrations')
         migration_files       = migrations_folder.scanFilesInPathAsFileNameObjects('*.py')
         applicable_migrations = self.select_applicable_migration_files(migration_files, last_migrated_to_version, to_version)
 
+        num_migrations = len(applicable_migrations)
+        i = 1
         for version, migration_file in applicable_migrations.iteritems():
-            log_info('Migration to version {} using file {}'.format(version, migration_file.getBase()))
+
+            log_info('Migrating to version {} using file {}'.format(version, migration_file.getBase()))
+            pDialog.update( (i * 95 / num_migrations)+5, 'Migrating to version {} ...'.format(version))
         
             module_namespace = 'migrations.{}'.format(migration_file.getBase_noext())
-            module = importlib.import_module(module_namespace)
+            module =__import__(module_namespace, globals(), locals(), ['migrations'])
             migration_class_name = module.MIGRATION_CLASS_NAME
             migration_class = getattr(module, migration_class_name)
             migration = migration_class()
             migration.execute(CURRENT_ADDON_DIR, PLUGIN_DATA_DIR)
 
             __addon_obj__.setSetting('migrated_version', version)
+            i += 1
+
+        if to_version is None:
+            to_version = LooseVersion(__addon_version__)
+         
+        __addon_obj__.setSetting('migrated_version', to_version)
+        log_info("Finished migrating. Now set to version {}".format(to_version))
+
+        pDialog.update(100)
+        pDialog.close()
 
     # Iterates through the migration files and selects those which
     # version number is higher/newer than the last run migration version.
@@ -8824,12 +8843,12 @@ class Main:
             file_name = migration_file.getBase_noext()
             log_debug('Reading migration file {}'.format(file_name))
             version_part = file_name.replace('migration_', '').replace('_', '.')
-            migration_version = StrictVersion(version_part)
+            migration_version = LooseVersion(version_part)
         
             if migration_version > last_migrated_to_version and (to_version is None or migration_version <= to_version):
                 applicable_migrations[version_part] = migration_file
             
-        applicable_migrations = OrderedDict(sorted(applicable_migrations.iteritems(), key=lambda (k,v): StrictVersion(k)))
+        applicable_migrations = OrderedDict(sorted(applicable_migrations.iteritems(), key=lambda (k,v): LooseVersion(k)))
     
         return applicable_migrations
 

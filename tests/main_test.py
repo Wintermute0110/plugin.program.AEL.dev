@@ -1,7 +1,7 @@
 import unittest, mock, os, sys
 from mock import *
 from fakes import *
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 
 import xbmcaddon
 
@@ -119,12 +119,13 @@ class Test_maintests(unittest.TestCase):
         
         # arrange
         shutil.copy2(self.TEST_ASSETS_DIR + "\\categories_example.xml", self.TEST_ASSETS_DIR + "\\categories.xml")
+        main.__addon_version__ = '0.9.9-alpha'
 
         target = main.Main()
         main.CURRENT_ADDON_DIR = StandardFileName(self.ROOT_DIR)
         main.PLUGIN_DATA_DIR = StandardFileName(self.TEST_ASSETS_DIR)
 
-        v_from = StrictVersion('0.0.0')
+        v_from = LooseVersion('0.0.0')
 
         # act
         target.execute_migrations(v_from)
