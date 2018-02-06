@@ -16,6 +16,12 @@ from disk_IO import *
 
 MIGRATION_CLASS_NAME = 'Migration_0_9_9'
 
+#
+# Release 0.9.9
+# This migration will do the following upgrade actions:
+#   - Add a 'type' field to each launcher, guessing the correct launcher type.
+#   - todo
+#
 class Migration_0_9_9(Migration):
         
     def execute(self, addon_path, addon_data_path):
@@ -54,4 +60,5 @@ class Migration_0_9_9(Migration):
             launcher['type'] = LAUNCHER_ROM
             return
         
-        log_debug('Cannot set type for launcher "{}"'.format(name))
+        launcher['type'] = LAUNCHER_STANDALONE
+        log_debug('Setting launcher "{}" with type STANDALONE'.format(name))

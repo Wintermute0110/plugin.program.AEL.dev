@@ -8791,8 +8791,8 @@ class Main:
 
         return listitem
             
-    # Executes the migrations which are newer than the last
-    # migration version that has run
+    # Executes the migrations which are newer than the last migration version that has run.
+    # Each migration will be executed in order of version numbering.
     def execute_migrations(self, last_migrated_to_version, to_version = None):
         import migrations
         import migrations.main
