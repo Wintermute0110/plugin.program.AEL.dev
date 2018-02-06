@@ -8825,7 +8825,7 @@ class Main:
         if to_version is None:
             to_version = LooseVersion(__addon_version__)
          
-        __addon_obj__.setSetting('migrated_version', to_version)
+        __addon_obj__.setSetting('migrated_version', str(to_version))
         log_info("Finished migrating. Now set to version {}".format(to_version))
 
         pDialog.update(100)

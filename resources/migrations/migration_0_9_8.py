@@ -3,7 +3,11 @@ import sys, os
 
 from main import *
 
-sys.path.append('..')
+current_dir = os.path.dirname(os.path.abspath(__file__))
+resources_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+sys.path.append(resources_dir)
+from .. import *
+
 from utils import *
 from utils_kodi import *
 

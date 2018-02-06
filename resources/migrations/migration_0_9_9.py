@@ -3,7 +3,11 @@ import sys, os
 
 from main import *
 
-sys.path.append('..')
+current_dir = os.path.dirname(os.path.abspath(__file__))
+resources_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+sys.path.append(resources_dir)
+from .. import *
+
 from utils import *
 from utils_kodi import *
 from filename import *
@@ -15,7 +19,7 @@ MIGRATION_CLASS_NAME = 'Migration_0_9_9'
 class Migration_0_9_9(Migration):
         
     def execute(self, addon_path, addon_data_path):
-        log_info('[Migration][0.9.9] Starting migration to version 0.9.9')
+        log_info('[Migration][0.9.9] Starting migration')
         
         categories_file = addon_data_path.pjoin('categories.xml')
 
@@ -27,6 +31,8 @@ class Migration_0_9_9(Migration):
             # does not yet contain launcher type?
             if not 'type' in launcher:
                 self._set_launchertype(launcher)
+
+        log_info('[Migration][0.9.9] Finished migration')
 
     def _set_launchertype(self, launcher):
 
