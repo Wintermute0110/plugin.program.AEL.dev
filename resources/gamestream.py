@@ -24,6 +24,9 @@ class GameStreamServer(object):
             self.certificate_file_path = FileNameFactory.create('')
             self.certificate_key_file_path = FileNameFactory.create('')
 
+        log_debug('GameStreamServer() Using certificate key file {}'.format(self.certificate_key_file_path.getOriginalPath()))
+        log_debug('GameStreamServer() Using certificate file {}'.format(self.certificate_file_path.getOriginalPath()))
+
         self.pem_cert_data = None
         self.key_cert_data = None
 

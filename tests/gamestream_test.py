@@ -104,11 +104,11 @@ class Test_gamestream(unittest.TestCase):
         # assert
         self.assertTrue(paired)
         
-    @patch('resources.gamestream.net_get_URL_using_handler')
-    def test_getting_apps_from_gamestream_server(self, http_mock):
+   # @patch('resources.gamestream.net_get_URL_using_handler')
+    def test_getting_apps_from_gamestream_server(self):#, http_mock):
 
         # arrange        
-        http_mock.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamestreamserver_apps.xml")
+       # http_mock.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamestreamserver_apps.xml")
         server = GameStreamServer('192.168.0.5', StandardFileName(self.TEST_ASSETS_DIR))
 
         expected = 18

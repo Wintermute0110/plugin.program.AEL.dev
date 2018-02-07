@@ -1,5 +1,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
+from gamestream import GameStreamServer
+from gamestream import GameStreamServer
 
 from abc import ABCMeta, abstractmethod
 import re, urllib, urllib2, json
@@ -543,7 +545,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
 
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report):
-        import gamestream.GameStreamServer
+        from gamestream import GameStreamServer
 
         log_debug('Reading Nvidia GameStream server')
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
