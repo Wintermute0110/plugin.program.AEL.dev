@@ -20,9 +20,9 @@ class GameStreamServer(object):
             self.certificate_file_path = self.certificates_path.pjoin('nvidia.crt')
             self.certificate_key_file_path = self.certificates_path.pjoin('nvidia.key')
         else:
-            self.certificates_path = FileName('')
-            self.certificate_file_path = FileName('')
-            self.certificate_key_file_path = FileName('')
+            self.certificates_path = FileNameFactory.create('')
+            self.certificate_file_path = FileNameFactory.create('')
+            self.certificate_key_file_path = FileNameFactory.create('')
 
         self.pem_cert_data = None
         self.key_cert_data = None
@@ -337,13 +337,13 @@ class GameStreamServer(object):
     def try_to_resolve_path_to_nvidia_certificates():
 
         home = expanduser("~")
-        homePath = FileName(home)
+        homePath = FileNameFactory.create(home)
 
-        possiblePath = homePath.pjoin('Limelight/')        
+        possiblePath = homePath.pjoin('Moonlight/')         
         if possiblePath.exists():
             return possiblePath.getOriginalPath()
 
-        possiblePath = homePath.pjoin('Moonlight/')         
+        possiblePath = homePath.pjoin('Limelight/')        
         if possiblePath.exists():
             return possiblePath.getOriginalPath()
          
