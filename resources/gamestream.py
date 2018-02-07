@@ -52,12 +52,12 @@ class GameStreamServer(object):
         log_debug('Connecting to gamestream server {}'.format(self.host))
         self.server_info = self._perform_server_request("serverinfo")
         
-        if not self.isConnected():
+        if not self.is_connected():
             self.server_info = self._perform_server_request("serverinfo", False)
         
-        return self.isConnected()
+        return self.is_connected()
 
-    def isConnected(self):
+    def is_connected(self):
         if self.server_info is None:
             log_debug('No succesfull connection to the server has been made')
             return False
@@ -69,7 +69,7 @@ class GameStreamServer(object):
 
         return self.server_info.attrib['status_code'] == '200'
 
-    def getServerVersion(self):
+    def get_server_version(self):
 
         appVersion = self.server_info.find('appversion')
         return VersionNumber(appVersion.text)
@@ -85,7 +85,7 @@ class GameStreamServer(object):
 
     def is_paired(self):
 
-        if not self.isConnected():
+        if not self.is_connected():
             log_warning('Connect first')
             return False
 
@@ -95,11 +95,11 @@ class GameStreamServer(object):
     def pairServer(self, pincode):
         from utils_cryptography import *
 
-        if not self.isConnected():
+        if not self.is_connected():
             log_warning('Connect first')
             return False
 
-        version = self.getServerVersion()
+        version = self.get_server_version()
         log_info("Pairing with server generation: {0}".format(version.getFullString()))
 
         majorVersion = version.getMajor()

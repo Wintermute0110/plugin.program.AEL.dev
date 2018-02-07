@@ -543,7 +543,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
 
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report):
-        from gamestream import *
+        import gamestream.GameStreamServer
 
         log_debug('Reading Nvidia GameStream server')
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')

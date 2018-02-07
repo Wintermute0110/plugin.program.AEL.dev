@@ -368,7 +368,7 @@ class StandardRomLauncher(Launcher):
         self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
 
         # automatic substitution
-        for rom_key, rom_value in self.rom:
+        for rom_key, rom_value in self.rom.iteritems():
             if isinstance(rom_value, basestring):
                 self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)
             
