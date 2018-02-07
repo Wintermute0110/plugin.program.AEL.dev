@@ -284,8 +284,8 @@ def try_to_resolve_path_to_nvidia_certificates(input, item_key, launcher):
 
 def copy_nvidia_certificates(input, item_key, launcher):
 
-    certificates_path = FileName(input)
-    assets_path = FileName(launcher['assets_path'])
+    certificates_path = FileNameFactory.create(input)
+    assets_path = FileNameFactory.create(launcher['assets_path'])
 
     gs = GameStreamServer(input, assets_path)
     if not gs.copy_certificates(certificates_path):

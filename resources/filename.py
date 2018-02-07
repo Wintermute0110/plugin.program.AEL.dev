@@ -383,7 +383,7 @@ class KodiFileName(FileName):
             os.rename(self.path, to.getPath())
 
     def copy(self, to):        
-        xbmcvfs.copy(self.originalPath(), to.getOriginalPath())
+        xbmcvfs.copy(self.getOriginalPath(), to.getOriginalPath())
                     
     # ---------------------------------------------------------------------------------------------
     # File IO functions

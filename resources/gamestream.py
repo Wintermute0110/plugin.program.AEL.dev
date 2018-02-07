@@ -347,4 +347,4 @@ class GameStreamServer(object):
         if possiblePath.exists():
             return possiblePath.getOriginalPath()
          
-        return homePath
+        return homePath.getOriginalPath()
