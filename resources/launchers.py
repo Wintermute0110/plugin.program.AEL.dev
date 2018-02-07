@@ -54,7 +54,8 @@ class LauncherFactory():
             return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher, rom)
 
         if launcherType == LAUNCHER_NVGAMESTREAM:
-            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, launcher, rom)
+            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, False, launcher, rom)
+
 
         return None
 
@@ -270,8 +271,11 @@ class ApplicationLauncher(Launcher):
 
 
 class StandardRomLauncher(Launcher):
-
+    
     def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
+
+        self.validate_if_app_exists = True
+        self.validate_if_rom_exists = True
 
         self.rom = rom
         self.categoryID = ''
@@ -373,7 +377,7 @@ class StandardRomLauncher(Launcher):
                 self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)
             
         log_info('StandardRomLauncher() final arguments "{0}"'.format(self.arguments))
-        
+    
     def launch(self):
         
         self.title  = self.rom['m_name']
@@ -387,12 +391,12 @@ class StandardRomLauncher(Launcher):
         log_info('StandardRomLauncher() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
 
         # --- Check for errors and abort if found --- todo: CHECK
-        if not self.application.exists():
+        if self.validate_if_app_exists and not self.application.exists():
             log_error('Launching app not found "{0}"'.format(self.application.getPath()))
             kodi_notify_warn('Launching app not found {0}'.format(self.application.getOriginalPath()))
             return
 
-        if not ROMFileName.exists():
+        if self.validate_if_rom_exists and not ROMFileName.exists():
             log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
             kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
             return
@@ -507,6 +511,11 @@ class SteamLauncher(Launcher):
 
 class NvidiaGameStreamLauncher(StandardRomLauncher):
         
+    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
+
+        super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, escape_romfile, launcher, rom)
+        self.validate_if_rom_exists = False
+
     def _selectApplicationToUse(self):
         
         streamClient = self.launcher['application']

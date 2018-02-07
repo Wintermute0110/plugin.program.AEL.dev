@@ -291,7 +291,7 @@ def copy_nvidia_certificates(input, item_key, launcher):
     if not gs.copy_certificates(certificates_path):
         kodi_notify_warn('Could not find certificates to copy. Make sure you already paired with the server with the Shield or Moonlight applications.')
 
-    return certificates_path
+    return certificates_path.getOriginalPath()
 
 
 def validate_gamestream_server_connection(input, item_key, launcher):
