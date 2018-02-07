@@ -442,8 +442,8 @@ class StandardFileName(FileName):
     def scanFilesInPath(self, mask = '*.*'):
         files = []
 
-        subdirectories, filenames = os.listdir(self.path)
-        for filename in fnmatch.filter(filenames, mask):
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
             files.append(os.path.join(self.path, self._decodeName(filename)))
 
         return files
@@ -451,8 +451,8 @@ class StandardFileName(FileName):
     def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
         
-        subdirectories, filenames = os.listdir(self.path)
-        for filename in fnmatch.filter(filenames, mask):
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
             filePath = self.pjoin(self._decodeName(filename))
             files.append(self.__create__(filePath.getPath()))
 
