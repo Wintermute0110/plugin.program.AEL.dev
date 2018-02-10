@@ -7651,7 +7651,7 @@ class Main:
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
             log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
            
-            if not asset_directory.isdir():
+            if not asset_directory.exists():
                 kodi_dialog_OK('Directory to store Category artwork not configured or not found. '
                                'Configure it before you can edit artwork.')
                 return False
@@ -7666,7 +7666,7 @@ class Main:
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
             log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
-            if not asset_directory.isdir():
+            if not asset_directory.exists():
                 kodi_dialog_OK('Directory to store Collection artwork not configured or not found. '
                                'Configure it before you can edit artwork.')
                 return False
@@ -7681,7 +7681,7 @@ class Main:
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
             log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
-            if not asset_directory.isdir():
+            if not asset_directory.exists():
                 kodi_dialog_OK('Directory to store Launcher artwork not configured or not found. '
                                'Configure it before you can edit artwork.')
                 return False
@@ -7716,7 +7716,7 @@ class Main:
             log_debug('_gui_edit_asset() platform           "{0}"'.format(platform))
 
             # --- Do not edit asset if asset directory not configured ---
-            if not asset_directory.isdir():
+            if not asset_directory.exists():
                 kodi_dialog_OK('Directory to store {0} not configured or not found. '.format(AInfo.name) + \
                                'Configure it before you can edit artwork.')
                 return False
