@@ -520,12 +520,11 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
         
         streamClient = self.launcher['application']
             
-        if sys.platform == 'win32':
-           # self.application = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
-            #self.application = self.application.append('retroarch.exe')  
+        if is_windows():
+            self.application = FileNameFactory.create(self.launcher['application'])
             return
 
-        if sys.platform.startswith('linux'):
+        if is_android():
             self.application = FileNameFactory.create('/system/bin/am')
             return
 
@@ -537,17 +536,24 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
         
         streamClient = self.launcher['application']
             
-        if sys.platform == 'win32':
-            #self.arguments = "-L  {0} ".format(corePath.getOriginalPath())
+        if is_windows():
             self.arguments += "'$rom$'"
             return
 
-        if sys.platform.startswith('linux'):
+        if is_android():
 
-            self.arguments = 'start --user 0 -a android.intent.action.VIEW '
-            self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
-            self.arguments += '-d nvidia://stream/target/2/$streamid$'
-            return
+            if streamClient == 'NVIDIA':
+                self.arguments = 'start --user 0 -a android.intent.action.VIEW '
+                self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
+                self.arguments += '-d nvidia://stream/target/2/$streamid$'
+                return
+
+            if streamClient == 'MOONLIGHT':
+                self.arguments = 'start --user 0 -a android.intent.action.MAIN '
+                self.arguments += '-c android.intent.category.LAUNCHER ' 
+                self.arguments += '-e AppId $streamid$ '
+                self.arguments += '-n com.limelight/.Game '
+                return
 
         #todo other os
         pass 

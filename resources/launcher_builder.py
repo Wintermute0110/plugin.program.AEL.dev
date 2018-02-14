@@ -44,11 +44,13 @@ class launcherBuilder():
         typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
         typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
         #typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)' todo: not finished yet
-        typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
         typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
 
-        if sys.platform == 'win32':
+        if is_windows():
             typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
+
+        if not is_android():
+            typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
 
         dialog = DictionaryDialog()
         launcher_type = dialog.select('Create New Launcher', typeOptions)
