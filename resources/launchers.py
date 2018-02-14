@@ -463,7 +463,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
         retroCore = self.launcher['core']
             
-        if sys.platform == 'win32':
+        if is_windows():
             appPath = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
             corePath = appPath.pjoin(FileNameFactory.create('core'), retroCore)
             
@@ -471,7 +471,7 @@ class RetroarchLauncher(StandardRomLauncher):
             self.arguments += "'$rom$'"
             return
 
-        if sys.platform.startswith('linux'):
+        if is_android():
 
             self.arguments = 'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
             self.arguments += '-e ROM \'$rom$\' '

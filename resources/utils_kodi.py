@@ -376,7 +376,7 @@ class DictionarySelectionWizardDialog(WizardDialog):
     def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
         
         self.options = options
-        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
        
     def show(self, properties):
         

@@ -35,6 +35,24 @@ import HTMLParser
 from filename import *
 from utils_kodi import *
 
+# OS utils
+# >> Determine platform
+# >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+def is_windows():    
+    return sys.platform == 'win32' or sys.platform == 'win64' or sys.platform == 'cygwin'
+
+def is_osx():
+    return sys.platform.startswith('darwin')
+
+def is_linux():
+     return sys.platform.startswith('linux') and not is_android()
+
+def is_android():
+    if not sys.platform.startswith('linux'):
+        return False
+
+    return 'ANDROID_ARGUMENT' in os.environ or 'ANDROID_PRIVATE' in os.environ
+
 # --- AEL modules ---
 # >> utils.py must not depend on any other AEL module to avoid circular dependencies.
 

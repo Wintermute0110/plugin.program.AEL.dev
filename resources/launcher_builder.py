@@ -61,7 +61,7 @@ class launcherBuilder():
         launcher['id']   = launcherID
         launcher['type'] = launcher_type
 
-        filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
+        filter = '.bat|.exe|.cmd|.lnk' if is_windows() else ''
             
         # --- Standalone launcher ---
         if launcher_type == LAUNCHER_STANDALONE:
@@ -153,9 +153,15 @@ class launcherBuilder():
             
         # --- NVidia Gamestream launcher ---
         elif launcher_type == LAUNCHER_NVGAMESTREAM:
+            info_txt = 'To pair with your Geforce Experience Computer we need to make use of valid certificates. '
+            info_txt += 'Unfortunately at this moment we cannot create these certificates directly from within Kodi.\n'
+            info_txt += 'Please read the wiki for details how to create them before you go further.'
+
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = DummyWizardDialog('application', 'NVSTREAM', wizard)
+            wizard = FormattedMessageWizardDialog('certpath', 'Pairing with Gamestream PC', info_txt, wizard)
+            wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}, wizard, check_if_selected_gamestream_client_exists, lambda p: is_android())
+            wizard = FileBrowseWizardDialog('application', 'Select the Gamestream client application', 1, filter, wizard, None, lambda p: not is_android())
             wizard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, validate_gamestream_server_connection)
             wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
@@ -277,6 +283,23 @@ def generatePairPinCode(input, item_key, launcher):
     
     return gamestreamServer(None, None).generatePincode()
 
+def check_if_selected_gamestream_client_exists(input, item_key, launcher):
+
+    if input == 'NVIDIA':
+        nvidiaDataFolder = FileNameFactory.create('/data/data/com.nvidia.tegrazone3/')
+        nvidiaAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
+        if not nvidiaAppFolder.exists() and not nvidiaDataFolder.exists():
+            kodi_notify_warn('Could not find Nvidia Gamestream client. Make sure it\'s installed.')
+
+    if input == 'MOONLIGHT':
+        moonlightDataFolder = FileNameFactory.create('/data/data/com.limelight/')
+        moonlightAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.limelight/')
+        if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
+            kodi_notify_warn('Could not find Moonlight Gamestream client. Make sure it\'s installed.')
+        
+    return input
+
+
 def try_to_resolve_path_to_nvidia_certificates(input, item_key, launcher):
     
     path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
@@ -304,22 +327,27 @@ def validate_gamestream_server_connection(input, item_key, launcher):
 
 def get_available_retroarch_cores(settings):
 
-    cores = []
+    cores = {}
     
-    if sys.platform == 'win32':
-        retroarchFolder = FileNameFactory.create(settings['io_retroarch_sys_dir'])
-        retroarchFolder.append('cores\\')
-        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(retroarchFolder.getOriginalPath()))
+    if is_windows():
+        retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])
+        cores_folder = retroarch_folder.pjoin('cores\\')
+        info_folder = retroarch_folder.pjoin('info\\')
+
+        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getOriginalPath()))
 
         if retroarchFolder.exists():
-            files = retroarchFolder.scanFilesInPathAsFileNameObjects('*.dll')
+            files = cores_folder.scanFilesInPathAsFileNameObjects('*.dll')
             for file in files:
                 log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
+                info_file = file.switchExtension('info')
+                info_file = info_folder.pjoin(info_file.getBase())
+                info_file.re
                 cores.append(file.getBase())
 
             return cores
 
-    if sys.platform.startswith('linux'):
+    if is_android():
         androidFolder = FileNameFactory.create('/data/com.retroarch/cores/')
         log_debug("get_available_retroarch_cores() scanning path '{0}'".format(androidFolder.getOriginalPath()))
 
