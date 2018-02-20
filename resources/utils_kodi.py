@@ -381,7 +381,7 @@ class DictionarySelectionWizardDialog(WizardDialog):
     def show(self, properties):
         
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
-        dialog = xbmcgui.DictionaryDialog()
+        dialog = DictionaryDialog()
         output = dialog.select(self.title, self.options)
 
         if output is None:
@@ -405,6 +405,9 @@ class FileBrowseWizardDialog(WizardDialog):
         
         log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
         originalPath = properties[self.property_key] if self.property_key in properties else ''
+
+        if callable(self.filter):
+            self.filter = self.filter(self.property_key, properties)
        
         output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath).decode('utf-8')
 

@@ -551,9 +551,9 @@ class NvidiaStreamScanner(RomScannerStrategy):
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
 
         server_host = self.launcher['server']
-        assets_path = FileNameFactory.create(self.launcher['assets_path'])
+        certificates_path = FileNameFactory.create(self.launcher['certificates_path'])
 
-        streamServer = GameStreamServer(server_host, assets_path)
+        streamServer = GameStreamServer(server_host, certificates_path)
         connected = streamServer.connect()
 
         if not connected:

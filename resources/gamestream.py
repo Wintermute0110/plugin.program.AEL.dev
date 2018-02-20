@@ -10,13 +10,13 @@ from utils import *
 
 class GameStreamServer(object):
     
-    def __init__(self, host, assets_path):
+    def __init__(self, host, certificates_path):
 
         self.host = host
         self.unique_id = random.getrandbits(16)
 
-        if assets_path:
-            self.certificates_path = assets_path.pjoin('certs/')
+        if certificates_path:
+            self.certificates_path = certificates_path
             self.certificate_file_path = self.certificates_path.pjoin('nvidia.crt')
             self.certificate_key_file_path = self.certificates_path.pjoin('nvidia.key')
         else:
@@ -320,19 +320,30 @@ class GameStreamServer(object):
         
         return self.key_cert_data
     
-    def copy_certificates(self, certificates_source_path):
+    def validate_certificates(self):
+        
+        if self.certificate_file_path.exists() and self.certificate_key_file_path.exists():
+            log_debug('validate_certificates(): Certificate files exist. Done')
+            return True
 
-        certificate_source_files = certificates_source_path.scanFilesInPathAsFileNameObjects('*.crt')
-        key_source_files = certificates_source_path.scanFilesInPathAsFileNameObjects('*.key')
+        certificate_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.crt')
+        key_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.key')
 
-        if len(certificate_source_files) < 1:
+        if len(certificate_files) < 1:
+            log_warning('validate_certificates(): No .crt files found at given location.')
             return False
 
-        if not self.certificates_path.exists():
-            self.certificates_path.makedirs()
-        
-        certificate_source_files[0].copy(self.certificate_file_path)
-        key_source_files[0].copy(self.certificate_key_file_path)
+        if not self.certificate_file_path.exists():
+            log_debug('validate_certificates(): Copying .crt file to nvidia.crt')
+            certificate_files[0].copy(self.certificate_file_path)
+
+        if len(key_files) < 1:
+            log_warning('validate_certificates(): No .key files found at given location.')
+            return False
+
+        if not self.certificate_key_file_path.exists():
+            log_debug('validate_certificates(): Copying .key file to nvidia.key')
+            key_files[0].copy(certificate_key_file_path)
 
         return True
 

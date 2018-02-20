@@ -353,6 +353,7 @@ class StandardRomLauncher(Launcher):
         log_info('StandardRomLauncher() rombase      "{0}"'.format(rombase))
         log_info('StandardRomLauncher() rombasenoext "{0}"'.format(rombase_noext))
         log_info('StandardRomLauncher() application  "{0}"'.format(self.application.getPath()))
+        log_info('StandardRomLauncher() appbase      "{0}"'.format(self.application.getBase()))
         log_info('StandardRomLauncher() apppath      "{0}"'.format(apppath))
 
         # ~~~~ Argument substitution ~~~~~
@@ -367,6 +368,8 @@ class StandardRomLauncher(Launcher):
         self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
         self.arguments = self.arguments.replace('$romtitle$', self.title)
         self.arguments = self.arguments.replace('$apppath$', apppath)
+        self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
+
         # >> Legacy names for argument substitution
         self.arguments = self.arguments.replace('%rom%', romFile.getPath())
         self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
@@ -519,41 +522,52 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
     def _selectApplicationToUse(self):
         
         streamClient = self.launcher['application']
-            
+        
+        # java application selected (moonlight-pc)
+        if '.jar' in streamClient:
+            self.application = 'java'
+            return
+
         if is_windows():
-            self.application = FileNameFactory.create(self.launcher['application'])
+            self.application = FileNameFactory.create(streamClient)
             return
 
         if is_android():
             self.application = FileNameFactory.create('/system/bin/am')
             return
 
-        #todo other os
-        self.application = ''
         pass
 
     def _selectArgumentsToUse(self):
         
         streamClient = self.launcher['application']
             
+        # java application selected (moonlight-pc)
+        if '.jar' in streamClient:
+            self.arguments =  '-jar $appbase$ '
+            self.arguments += '-host $server$ '
+            self.arguments += '-fs '
+            self.arguments += '-app $gamestream_name$ '
+            self.arguments += self.launcher['args']
+            return
+
         if is_windows():
-            self.arguments += "'$rom$'"
+            self.arguments = self.launcher['args']
             return
 
         if is_android():
 
             if streamClient == 'NVIDIA':
-                self.arguments = 'start --user 0 -a android.intent.action.VIEW '
+                self.arguments =  'start --user 0 -a android.intent.action.VIEW '
                 self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
                 self.arguments += '-d nvidia://stream/target/2/$streamid$'
                 return
 
             if streamClient == 'MOONLIGHT':
-                self.arguments = 'start --user 0 -a android.intent.action.MAIN '
+                self.arguments =  'start --user 0 -a android.intent.action.MAIN '
                 self.arguments += '-c android.intent.category.LAUNCHER ' 
                 self.arguments += '-e AppId $streamid$ '
                 self.arguments += '-n com.limelight/.Game '
                 return
 
-        #todo other os
         pass 
