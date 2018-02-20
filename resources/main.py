@@ -53,8 +53,9 @@ BASE_DIR                  = FileName('special://profile')
 HOME_DIR                  = FileName('special://home')
 KODI_FAV_FILE_PATH        = FileName('special://profile/favourites.xml')
 ADDONS_DIR                = HOME_DIR.pjoin('addons')
-CURRENT_ADDON_DIR         = ADDONS_DIR.pjoin(__addon_id__)
-ICON_IMG_FILE_PATH        = CURRENT_ADDON_DIR.pjoin('icon.png')
+AEL_ADDON_DIR             = ADDONS_DIR.pjoin(__addon_id__)
+AEL_ICON_FILE_PATH        = AEL_ADDON_DIR.pjoin('media/icon.png')
+AEL_FANART_FILE_PATH      = AEL_ADDON_DIR.pjoin('media/fanart.jpg')
 CATEGORIES_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('categories.xml')
 FAV_JSON_FILE_PATH        = PLUGIN_DATA_DIR.pjoin('favourites.json')
 COLLECTIONS_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('collections.xml')
@@ -69,9 +70,9 @@ VCAT_CATEGORY_FILE_PATH   = PLUGIN_DATA_DIR.pjoin('vcat_category.xml')
 LAUNCH_LOG_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('launcher.log')
 RECENT_PLAYED_FILE_PATH   = PLUGIN_DATA_DIR.pjoin('history.json')
 MOST_PLAYED_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('most_played.json')
-GAMEDB_INFO_DIR           = CURRENT_ADDON_DIR.pjoin('GameDBInfo')
+GAMEDB_INFO_DIR           = AEL_ADDON_DIR.pjoin('GameDBInfo')
 GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
-LAUNCHBOX_INFO_DIR        = CURRENT_ADDON_DIR.pjoin('LaunchBox')
+LAUNCHBOX_INFO_DIR        = AEL_ADDON_DIR.pjoin('LaunchBox')
 LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
 BIOS_REPORT_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('report_BIOS.txt')
 LAUNCHER_REPORT_FILE_PATH = PLUGIN_DATA_DIR.pjoin('report_Launchers.txt')
@@ -3269,21 +3270,28 @@ class Main:
             self._gui_render_launcher_row(catless_launchers[launcher_id])
 
         # --- AEL Favourites special category ---
-        if not self.settings['display_hide_favs']: self._gui_render_category_favourites_row()
+        if not self.settings['display_hide_favs']:
+            self._gui_render_category_favourites_row()
 
         # --- AEL Collections special category ---
-        if not self.settings['display_hide_collections']: self._gui_render_category_collections_row()
+        if not self.settings['display_hide_collections']:
+            self._gui_render_category_collections_row()
 
         # --- AEL Virtual Categories ---
-        if not self.settings['display_hide_vlaunchers']: self._gui_render_virtual_category_root_row()
+        if not self.settings['display_hide_vlaunchers']:
+            self._gui_render_virtual_category_root_row()
 
         # --- Browse Offline Scraper database ---
-        if not self.settings['display_hide_AEL_scraper']: self._gui_render_category_AEL_offline_scraper_row()
-        if not self.settings['display_hide_LB_scraper']: self._gui_render_category_LB_offline_scraper_row()
+        if not self.settings['display_hide_AEL_scraper']:
+            self._gui_render_category_AEL_offline_scraper_row()
+        if not self.settings['display_hide_LB_scraper']:
+            self._gui_render_category_LB_offline_scraper_row()
 
         # --- Recently played and most played ROMs ---
-        if not self.settings['display_hide_recent']:     self._gui_render_category_recently_played_row()
-        if not self.settings['display_hide_mostplayed']: self._gui_render_category_most_played_row()
+        if not self.settings['display_hide_recent']:
+            self._gui_render_category_recently_played_row()
+        if not self.settings['display_hide_mostplayed']:
+            self._gui_render_category_most_played_row()
 
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3328,10 +3336,10 @@ class Main:
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
         categoryID = category_dic['id']
-        commands.append(('View Category data',  self._misc_url_RunPlugin('VIEW', categoryID)))
-        commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
+        commands.append(('View Category data', self._misc_url_RunPlugin('VIEW', categoryID)))
+        commands.append(('Edit Category', self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
@@ -3342,21 +3350,22 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     def _gui_render_category_favourites_row(self):
+        # fav_icon   = 'DefaultFolder.png'
+
         # --- Create listitem row ---
-        fav_name = '<Favourites>'
-        fav_thumb = 'DefaultFolder.png'
-        fav_fanart = ''
-        fav_banner = ''
-        fav_flyer = ''
-        listitem = xbmcgui.ListItem(fav_name)
-        listitem.setInfo('video', {'title': fav_name, 'overlay' : 4,
-                                   'plot' : 'Shows AEL Favourite ROMs' })
-        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
+        vcategory_name   = '<Favourites>'
+        vcategory_plot   = 'Browse AEL Favourite ROMs'
+        vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
+        vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+        vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Favourites_poster.png').getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay' : 4 })
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         # --- Create context menu ---
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3366,22 +3375,20 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_category_collections_row(self):
-        collections_name   = '{ROM Collections}'
-        collections_thumb  = 'DefaultFolder.png'
-        collections_fanart = ''
-        collections_banner = ''
-        collections_flyer  = ''
-        listitem = xbmcgui.ListItem(collections_name)
-        listitem.setInfo('video', {'title': collections_name, 'overlay': 4,
-                                   'plot' : 'Shows user defined ROM collections'})
-        listitem.setArt({'thumb'  : collections_thumb,  'fanart' : collections_fanart, 
-                         'banner' : collections_banner, 'poster' : collections_flyer})
+        vcategory_name   = '{ROM Collections}'
+        vcategory_plot   = 'Browse the user defined ROM Collections'
+        vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/ROM_Collections_icon.png').getPath()
+        vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+        vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/ROM_Collections_poster.png').getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay' : 4 })
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         commands = []
         commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION')))
-        commands.append(('Import Collection',     self._misc_url_RunPlugin('IMPORT_COLLECTION')))
-        commands.append(('Create New Category',   self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',      self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Import Collection', self._misc_url_RunPlugin('IMPORT_COLLECTION')))
+        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3391,22 +3398,20 @@ class Main:
 
     def _gui_render_virtual_category_root_row(self):
         vcategory_name   = '[Browse by ... ]'
-        vcategory_thumb  = 'DefaultFolder.png'
-        vcategory_fanart = ''
-        vcategory_banner = ''
-        vcategory_flyer  = ''
         vcategory_label  = 'Browse by ...'
+        vcategory_plot   = 'Browse AEL Virtual Launchers'
+        vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_icon.png').getPath()
+        vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+        vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_poster.png').getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4,
-                                   'plot' : 'Shows AEL virtual launchers'})
-        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart, 
-                         'banner' : vcategory_banner, 'poster' : vcategory_flyer})
+        listitem.setInfo('video', {'title' : vcategory_name, 'plot' : vcategory_plot, 'overlay' : 4 })
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         commands = []
         update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
         commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL))
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3416,20 +3421,18 @@ class Main:
 
     def _gui_render_category_AEL_offline_scraper_row(self):
         vcategory_name   = '[Browse AEL Offline Scraper]'
-        vcategory_thumb  = 'DefaultFolder.png'
-        vcategory_fanart = ''
-        vcategory_banner = ''
-        vcategory_flyer  = ''
-        vcategory_label  = 'Browse Offline Scraper'
-        vcategory_plot   = 'Allows you to browse the ROMs in the AEL offline scraper database'
+        # vcategory_label  = 'Browse Offline Scraper'
+        vcategory_plot   = 'Allows you to browse the ROMs in the AEL Offline Scraper database'
+        vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_AEL_Offline_icon.png').getPath()
+        vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+        vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_AEL_Offline_poster.png').getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4, 'plot' : vcategory_plot})
-        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart,
-                         'banner' : vcategory_banner, 'poster' : vcategory_flyer})
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3439,20 +3442,18 @@ class Main:
 
     def _gui_render_category_LB_offline_scraper_row(self):
         vcategory_name   = '[Browse LaunchBox Offline Scraper]'
-        vcategory_thumb  = 'DefaultFolder.png'
-        vcategory_fanart = ''
-        vcategory_banner = ''
-        vcategory_flyer  = ''
         vcategory_label  = 'Browse Offline Scraper'
-        vcategory_plot   = 'Allows you to browse the ROMs in the LaunchBox offline scraper database'
+        vcategory_plot   = 'Allows you to browse the ROMs in the LaunchBox Offline Scraper database'
+        vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_icon.png').getPath()
+        vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+        vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_poster.png').getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4, 'plot' : vcategory_plot})
-        listitem.setArt({'thumb' : vcategory_thumb, 'fanart' : vcategory_fanart,
-                         'banner' : vcategory_banner, 'poster' : vcategory_flyer})
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3461,19 +3462,18 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_category_recently_played_row(self):
-        laun_name = '[Recently played ROMs]'
-        fav_thumb = 'DefaultFolder.png'
-        fav_fanart = ''
-        fav_banner = ''
-        fav_flyer = ''
-        listitem = xbmcgui.ListItem(laun_name)
-        listitem.setInfo('video', {'title': laun_name, 'overlay': 4,
-                                   'plot' : 'Shows the ROMs you have recently played'})
-        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
+        vcategory_name   = '[Recently played ROMs]'
+        vcategory_plot   = 'Browse the ROMs you played recently'
+        vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
+        vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+        vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3482,19 +3482,18 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_category_most_played_row(self):
-        laun_name = '[Most played ROMs]'
-        fav_thumb = 'DefaultFolder.png'
-        fav_fanart = ''
-        fav_banner = ''
-        fav_flyer = ''
-        listitem = xbmcgui.ListItem(laun_name)
-        listitem.setInfo('video', {'title': laun_name, 'overlay' : 4,
-                                   'plot' : 'Displays the ROMs you play most'})
-        listitem.setArt({'thumb' : fav_thumb, 'fanart' : fav_fanart, 'banner' : fav_banner, 'poster' : fav_flyer})
+        vcategory_name   = '[Most played ROMs]'
+        vcategory_plot   = 'Browse the ROMs you play most'
+        vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
+        vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+        vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
@@ -3521,72 +3520,70 @@ class Main:
     def _gui_render_virtual_category_row(self, virtual_category_kind):
         if virtual_category_kind == VCATEGORY_TITLE_ID:
             vcategory_name   = 'Browse ROMs by Title'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'Title'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Title_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Title_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_YEARS_ID:
             vcategory_name   = 'Browse by Year'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'Year'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Year_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Year_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_GENRE_ID:
             vcategory_name   = 'Browse by Genre'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'Genre'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Genre_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Genre_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_DEVELOPER_ID:
             vcategory_name   = 'Browse by Developer'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'Developer'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Developer_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Developer_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_NPLAYERS_ID:
             vcategory_name   = 'Browse by Number of Players'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'NPlayers'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_NPlayers_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_NPlayers_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_ESRB_ID:
             vcategory_name   = 'Browse by ESRB Rating'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'ESRB'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_ESRB_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_ESRB_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_RATING_ID:
             vcategory_name   = 'Browse by User Rating'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'Rating'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_User_Rating_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_User_Rating_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_CATEGORY_ID:
             vcategory_name   = 'Browse by Category'
-            vcategory_thumb  = 'DefaultFolder.png'
-            vcategory_fanart = ''
-            vcategory_banner = ''
-            vcategory_flyer  = ''
             vcategory_label  = 'Category'
+            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Category_icon.png').getPath()
+            vcategory_fanart = AEL_FANART_FILE_PATH.getPath()
+            vcategory_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_by_Category_poster.png').getPath()
         else:
             log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
             return
         listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', {'title': vcategory_name, 'overlay': 4,
-                                   'plot' : 'Shows virtual launchers in {0} virtual category'.format(vcategory_label)})
-        listitem.setArt({'icon'   : vcategory_thumb,  'fanart' : vcategory_fanart, 
-                         'banner' : vcategory_banner, 'poster' : vcategory_flyer})
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
 
         commands = []
-        update_vcat_URL     = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
+        update_vcat_URL = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
         update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
         commands.append(('Update {0} database'.format(vcategory_label), update_vcat_URL))
         commands.append(('Update all databases', update_vcat_all_URL))
@@ -3622,11 +3619,14 @@ class Main:
             title_str += ' [COLOR red][Not available][/COLOR]'
         else:
             title_str += ' [COLOR orange]({0} ROMs)[/COLOR]'.format(platform_info['numROMs'])
-        plot_text = 'Offline Scraper {0} database ROMs.'.format(platform)
+        plot_text = 'Browse [COLOR orange]{0}[/COLOR] ROMs in AEL Offline Scraper database'.format(platform)
+        vlauncher_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_AEL_Offline_icon.png').getPath()
+        vlauncher_fanart = AEL_FANART_FILE_PATH.getPath()
+        vlauncher_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_AEL_Offline_poster.png').getPath()
+
         listitem = xbmcgui.ListItem(title_str)
-        listitem.setInfo('video', {'title' : title_str,
-                                   'genre' : 'Offline Scraper database',
-                                   'plot'  : plot_text, 'overlay': 4 } )
+        listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
+        listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
         # >> Set platform property to render platform icon on skins.
         listitem.setProperty('platform', platform)
 
@@ -3661,11 +3661,14 @@ class Main:
             title_str += ' [COLOR red][Not available][/COLOR]'
         else:
             title_str += ' [COLOR orange]({0} ROMs)[/COLOR]'.format(platform_info['numROMs'])
-        plot_text = 'Offline Scraper {0} database ROMs.'.format(platform)
+        plot_text = 'Browse [COLOR orange]{0}[/COLOR] ROMs in LaunchBox Offline Scraper database'.format(platform)
+        vlauncher_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_icon.png').getPath()
+        vlauncher_fanart = AEL_FANART_FILE_PATH.getPath()
+        vlauncher_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_poster.png').getPath()
+
         listitem = xbmcgui.ListItem(title_str)
-        listitem.setInfo('video', {'title' : title_str,
-                                   'genre' : 'Offline Scraper database',
-                                   'plot'  : plot_text, 'overlay': 4 } )
+        listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
+        listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
         # >> Set platform property to render platform icon on skins.
         listitem.setProperty('platform', platform)
 

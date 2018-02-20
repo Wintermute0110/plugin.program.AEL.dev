@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.9 | XX February 2018[/B]
+[B]Advanced Emulator Launcher | version 0.9.9 | XX May/June 2018[/B]
 
 WIP      Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
 
@@ -80,8 +80,12 @@ WIP      Create a couple of new ROM context menus, "Manage Recently played ROM" 
          "Delete all Unlinked ROMs".
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
 
+WIP      Option to rescrape all ROM assets in a similar fashion to "Scan ROMs local artwork".
+         Create a menu entry in "Edit Launcher", "Manage ROMs", "Scrape ROMs artwork".
+         "Scrape ROMs artwork" will use the same scraper settings in options as the ROM Scanner.
 
-[B]Advanced Emulator Launcher | version 0.9.8 | XX January 2018[/B]
+
+[B]Advanced Emulator Launcher | version 0.9.8 | XX March 2018[/B]
 
 FEATURE  Add Year and Developer for Categories.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653
@@ -90,9 +94,8 @@ FEATURE  Per-launcher setting to disable multi-disc ROM support.
 
 FEATURE  Added "Edit Category" context menu, "Export Category XML configuration".
 
-WIP      Option to rescrape all ROM assets in a similar fashion to "Scan ROMs local artwork".
-         Create a menu entry in "Edit Launcher", "Manage ROMs", "Scrape ROMs artwork".
-         "Scrape ROMs artwork" will use the same scraper settings in options as the ROM Scanner.
+FEATURE  New AEL Theme of Icons/Fanarts for the Virtual Launchers. Kudos to Sagrath for this
+         contribution.
 
 FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
 
