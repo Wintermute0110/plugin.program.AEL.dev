@@ -374,11 +374,16 @@ class StandardRomLauncher(Launcher):
         self.arguments = self.arguments.replace('%rom%', romFile.getPath())
         self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
 
-        # automatic substitution
+        # automatic substitution of rom values
         for rom_key, rom_value in self.rom.iteritems():
             if isinstance(rom_value, basestring):
-                self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)
-            
+                self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)        
+                
+        # automatic substitution of launcher values
+        for launcher_key, launcher_value in self.launcher.iteritems():
+            if isinstance(launcher_value, basestring):
+                self.arguments = self.arguments.replace('${}$'.format(launcher_key), launcher_value)
+                
         log_info('StandardRomLauncher() final arguments "{0}"'.format(self.arguments))
     
     def launch(self):
@@ -525,7 +530,12 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
         
         # java application selected (moonlight-pc)
         if '.jar' in streamClient:
-            self.application = 'java'
+            self.application = FileNameFactory.create(os.getenv("JAVA_HOME"))
+            if is_windows():
+                self.application = self.application.pjoin('bin\\java.exe')
+            else:
+                self.application = self.application.pjoin('bin/java')
+
             return
 
         if is_windows():
@@ -544,10 +554,10 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
             
         # java application selected (moonlight-pc)
         if '.jar' in streamClient:
-            self.arguments =  '-jar $appbase$ '
+            self.arguments =  '-jar "$application$" '
             self.arguments += '-host $server$ '
             self.arguments += '-fs '
-            self.arguments += '-app $gamestream_name$ '
+            self.arguments += '-app "$gamestream_name$" '
             self.arguments += self.launcher['args']
             return
 
