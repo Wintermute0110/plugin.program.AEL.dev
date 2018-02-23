@@ -561,10 +561,6 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
             self.arguments += self.launcher['args']
             return
 
-        if is_windows():
-            self.arguments = self.launcher['args']
-            return
-
         if is_android():
 
             if streamClient == 'NVIDIA':
@@ -576,8 +572,15 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
             if streamClient == 'MOONLIGHT':
                 self.arguments =  'start --user 0 -a android.intent.action.MAIN '
                 self.arguments += '-c android.intent.category.LAUNCHER ' 
-                self.arguments += '-e AppId $streamid$ '
                 self.arguments += '-n com.limelight/.Game '
-                return
+                self.arguments += '-e Host $server$ '
+                self.arguments += '-e AppId $streamid$ '
+                self.arguments += '-e AppName "$gamestream_name$" '
+                self.arguments += '-e PcName "MediaServer" '
+                self.arguments += '-e UniqueId "aabb9383cc" '
 
+                return
+        
+        # else
+        self.arguments = self.launcher['args']
         pass 
