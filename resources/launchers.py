@@ -576,8 +576,9 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
                 self.arguments += '-e Host $server$ '
                 self.arguments += '-e AppId $streamid$ '
                 self.arguments += '-e AppName "$gamestream_name$" '
-                self.arguments += '-e PcName "MediaServer" '
-                self.arguments += '-e UniqueId "aabb9383cc" '
+                self.arguments += '-e PcName "$server_hostname$" '
+                self.arguments += '-e UUID $server_id$ '
+                self.arguments += '-e UniqueId {} '.format(misc_generate_random_SID())
 
                 return
         

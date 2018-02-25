@@ -77,6 +77,16 @@ class GameStreamServer(object):
         appVersion = self.server_info.find('appversion')
         return VersionNumber(appVersion.text)
     
+    def get_uniqueid(self):
+
+        uniqueid = self.server_info.find('uniqueid')
+        return uniqueid
+    
+    def get_hostname(self):
+
+        hostname = self.server_info.find('hostname')
+        return hostname
+
     def generatePincode(self):
 
         i1 = random.randint(1, 9)

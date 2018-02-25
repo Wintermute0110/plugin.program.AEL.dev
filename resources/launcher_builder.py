@@ -332,6 +332,11 @@ def validate_gamestream_server_connection(input, item_key, launcher):
     if not gs.connect():
         kodi_notify_warn('Could not connect to gamestream server')
 
+    launcher['server_id'] = gs.get_uniqueid()
+    launcher['server_hostname'] = gs.get_hostname()
+
+    log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_id'],launcher['server_hostname']))
+
     return input
 
 def get_available_retroarch_cores(settings):
