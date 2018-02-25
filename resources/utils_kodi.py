@@ -161,23 +161,28 @@ def kodi_toogle_fullscreen():
     # >> Frodo and up compatible
     xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
 
-def kodi_kodi_read_favourites():
-    favourites = []
-    fav_names = []
-    if os.path.isfile(FAVOURITES_PATH):
-        fav_xml = parse(FAVOURITES_PATH)
-        fav_doc = fav_xml.documentElement.getElementsByTagName( 'favourite' )
-        for count, favourite in enumerate(fav_doc):
-            try:
-                fav_icon = favourite.attributes[ 'thumb' ].nodeValue
-            except:
-                fav_icon = "DefaultProgram.png"
-            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'),
-                               fav_icon.encode('utf8','ignore'),
-                               favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
-            fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
+FAVOURITES_PATH = "special://userdata/favourites.xml"
 
-    return favourites, fav_names
+def kodi_read_favourites():
+    
+    favourites = {}
+    favouritesFile = KodiFileName(FAVOURITES_PATH)
+
+    if favouritesFile.exists():
+        fav_xml = favouritesFile.readXml()
+        fav_elements = fav_xml.findall( 'favourite' )
+        for fav in enumerate(fav_elements):
+            try:
+                fav_icon = fav.attrib[ 'thumb' ].encode('utf8','ignore')
+            except:
+                fav_icon = "DefaultProgram.png".encode('utf8','ignore')
+
+            fav_action = fav.text.encode('utf8','ignore')
+            fav_name = fav.attrib[ 'name' ].encode('utf8','ignore')
+
+            favourites[fav_name] = (fav_name, fav_icon, fav_action)
+
+    return favourites
 
 # -------------------------------------------------------------------------------------------------
 # Kodi image cache

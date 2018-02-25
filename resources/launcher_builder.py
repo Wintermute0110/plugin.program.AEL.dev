@@ -36,6 +36,7 @@ class launcherBuilder():
         # --- Show "Create New Launcher" dialog ---
         typeOptions = OrderedDict()
         typeOptions[LAUNCHER_STANDALONE]  = 'Standalone launcher (Game/Application)'
+        typeOptions[LAUNCHER_FAVOURITES]  = 'Kodi favourite launcher'
         typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
         typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
         #typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)' todo: not finished yet
@@ -65,6 +66,17 @@ class launcherBuilder():
             wizard = DummyWizardDialog('args', '', wizard)
             wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
             wizard = DummyWizardDialog('m_name', '', wizard, getTitleFromAppPath)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+            
+        # --- Standalone launcher ---
+        if launcher_type == LAUNCHER_FAVOURITES:
+
+            wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
+            wizard = DummyWizardDialog('type', launcher_type, wizard)
+            wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', get_kodi_favourites, wizard)
+            wizard = DummyWizardDialog('s_icon', '', wizard, get_icon_from_selected_favourite)
+            wizard = DummyWizardDialog('m_name', '', wizard, get_title_from_selected_favourite)
             wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             
@@ -246,6 +258,40 @@ def getValueFromAssetsPath(input, launcher):
     romPath = romPath.pjoin('games')
 
     return romPath.getOriginalPath()
+
+def get_kodi_favourites():
+
+    favourites = kodi_read_favourites()
+    fav_options = {}
+
+    for key in favourites:
+        fav_options[key] = favourites[key][2]
+
+    return fav_options
+
+def get_icon_from_selected_favourite(input, launcher):
+
+    fav_action = launcher['application']
+    favourites = kodi_read_favourites()
+
+    for key in favourites:
+        org_fav_action - favourites[key][2]
+        if fav_action == org_fav_action:
+            return favourites[key][1]
+
+    return 'DefaultProgram.png'
+
+def get_title_from_selected_favourite(input, launcher):
+    
+    fav_action = launcher['application']
+    favourites = kodi_read_favourites()
+
+    for key in favourites:
+        org_fav_action - favourites[key][2]
+        if fav_action == org_fav_action:
+            return key
+
+    return getTitleFromAppPath(input, launcher)
 
 def get_available_retroarch_cores(settings):
 
