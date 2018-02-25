@@ -74,10 +74,10 @@ class launcherBuilder():
 
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', get_kodi_favourites, wizard)
+            wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', get_kodi_favourites(), wizard)
             wizard = DummyWizardDialog('s_icon', '', wizard, get_icon_from_selected_favourite)
             wizard = DummyWizardDialog('m_name', '', wizard, get_title_from_selected_favourite)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             
         # --- ROM Launcher ---
@@ -161,25 +161,26 @@ class launcherBuilder():
         launcher = wizard.runWizard(launcher)
         if not launcher:
             return
-
-        launcher['timestamp_launcher'] = time.time()
-      
-        # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
-        # even launcher with the same name in the same category.
-        if launcher_type is not LAUNCHER_STANDALONE:        
+              
+        if launcher_supports_roms(launcher_type):   
+        
+            # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
+            # even launcher with the same name in the same category.
             category_name   = categories[launcher_categoryID]['m_name'] if launcher_categoryID in categories else VCATEGORY_ADDONROOT_ID
             roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
             launcher['roms_base_noext'] = roms_base_noext
             
-        # --- Selected asset path ---
-        # A) User chooses one and only one assets path
-        # B) If this path is different from the ROM path then asset naming scheme 1 is used.
-        # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
-        # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
-        # >> launcher is edited using Python passing by assignment.
-        assets_init_asset_dir(FileNameFactory.create(launcher['assets_path']), launcher)
+            # --- Selected asset path ---
+            # A) User chooses one and only one assets path
+            # B) If this path is different from the ROM path then asset naming scheme 1 is used.
+            # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
+            # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
+            # >> launcher is edited using Python passing by assignment.
+            assets_init_asset_dir(FileNameFactory.create(launcher['assets_path']), launcher)
 
+        launcher['timestamp_launcher'] = time.time()
         launchers[launcherID] = launcher
+
         # >> Notify user
         kodi_notify('Created {0} {1}'.format(getLauncherTypeName(launcher_type), launcher['m_name']))
 
@@ -191,6 +192,9 @@ def getLauncherTypeName(launcher_type):
     
     if launcher_type == LAUNCHER_STANDALONE:
         return "Standalone launcher"
+    
+    if launcher_type == LAUNCHER_FAVOURITES:
+        return 'Kodi favourite launcher'
 
     if launcher_type == LAUNCHER_ROM:
         return "ROM launcher"
@@ -265,7 +269,7 @@ def get_kodi_favourites():
     fav_options = {}
 
     for key in favourites:
-        fav_options[key] = favourites[key][2]
+        fav_options[key] = favourites[key][0]
 
     return fav_options
 
@@ -275,8 +279,7 @@ def get_icon_from_selected_favourite(input, launcher):
     favourites = kodi_read_favourites()
 
     for key in favourites:
-        org_fav_action - favourites[key][2]
-        if fav_action == org_fav_action:
+        if fav_action == key:
             return favourites[key][1]
 
     return 'DefaultProgram.png'
@@ -287,9 +290,8 @@ def get_title_from_selected_favourite(input, launcher):
     favourites = kodi_read_favourites()
 
     for key in favourites:
-        org_fav_action - favourites[key][2]
-        if fav_action == org_fav_action:
-            return key
+        if fav_action == key:
+            return favourites[key][0]
 
     return getTitleFromAppPath(input, launcher)
 

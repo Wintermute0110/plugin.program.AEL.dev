@@ -171,7 +171,7 @@ def kodi_read_favourites():
     if favouritesFile.exists():
         fav_xml = favouritesFile.readXml()
         fav_elements = fav_xml.findall( 'favourite' )
-        for fav in enumerate(fav_elements):
+        for fav in fav_elements:
             try:
                 fav_icon = fav.attrib[ 'thumb' ].encode('utf8','ignore')
             except:
@@ -180,7 +180,7 @@ def kodi_read_favourites():
             fav_action = fav.text.encode('utf8','ignore')
             fav_name = fav.attrib[ 'name' ].encode('utf8','ignore')
 
-            favourites[fav_name] = (fav_name, fav_icon, fav_action)
+            favourites[fav_action] = (fav_name, fav_icon, fav_action)
 
     return favourites
 
@@ -362,7 +362,7 @@ class DictionarySelectionWizardDialog(WizardDialog):
     def __init__(self, property_key, title, options, decoratorDialog, customFunction = None):
         
         self.options = options
-        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
+        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
        
     def show(self, properties):
         
@@ -371,7 +371,7 @@ class DictionarySelectionWizardDialog(WizardDialog):
                 return False
             
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
-        dialog = xbmcgui.DictionaryDialog()
+        dialog = DictionaryDialog()
         output = dialog.select(self.title, self.options)
 
         if output is None:

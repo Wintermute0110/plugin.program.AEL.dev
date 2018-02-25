@@ -36,6 +36,9 @@ class LauncherFactory():
         if launcherType == LAUNCHER_STANDALONE:
             return ApplicationLauncher(self.settings, self.executorFactory, launcher)
 
+        if launcherType == LAUNCHER_FAVOURITES:
+            return KodiLauncher(self.settings, self.executorFactory, launcher)
+
         if rom is None:
             return None
         
@@ -264,7 +267,21 @@ class ApplicationLauncher(Launcher):
 
         super(ApplicationLauncher, self).launch()
         pass
+    
+class KodiLauncher(Launcher):
+    
+    def __init__(self, settings, executorFactory, launcher):
+        
+        super(KodiLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'])
+        
+    def launch(self):
 
+        self.title              = self.launcher['m_name']
+        self.application        = FileNameFactory.create('xbmc.exe')
+        self.arguments          = self.launcher['application']       
+        
+        super(KodiLauncher, self).launch()
+        pass
 
 class StandardRomLauncher(Launcher):
 
