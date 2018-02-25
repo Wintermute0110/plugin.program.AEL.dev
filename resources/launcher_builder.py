@@ -200,13 +200,13 @@ class launcherBuilder():
 
         launchers[launcherID] = launcher
         # >> Notify user
-        kodi_notify('Created {0} {1}'.format(getLauncherTypeName(launcher_type), launcher['m_name']))
+        kodi_notify('Created {0} {1}'.format(get_launcher_type_name(launcher_type), launcher['m_name']))
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
         fs_write_catfile(self.categories_file_path, categories, launchers)
 
-def getLauncherTypeName(launcher_type):
+def get_launcher_type_name(launcher_type):
     
     if launcher_type == LAUNCHER_STANDALONE:
         return "Standalone launcher"

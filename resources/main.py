@@ -3604,6 +3604,8 @@ class Main:
             launcher_desc = 'Retro'
         elif launcher_type == LAUNCHER_STEAM:
             launcher_desc = 'Steam'
+        elif launcher_type == LAUNCHER_NVGAMESTREAM:
+            launcher_desc = 'Strm'
         elif launcher_type == LAUNCHER_LNK:
             launcher_desc = 'Lnks'
         
