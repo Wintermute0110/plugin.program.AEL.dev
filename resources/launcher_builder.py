@@ -199,8 +199,12 @@ class launcherBuilder():
         assets_init_asset_dir(FileNameFactory.create(launcher['assets_path']), launcher)
 
         launchers[launcherID] = launcher
+        msg = 'Created {0} {1}'.format(get_launcher_type_name(launcher_type), launcher['m_name'])
         # >> Notify user
-        kodi_notify('Created {0} {1}'.format(get_launcher_type_name(launcher_type), launcher['m_name']))
+        kodi_notify(msg)
+        
+        for key in sorted(launcher.iterkeys()):
+            log_debug('launcher[{}] = {}'.format(key, launcher[key]))
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.

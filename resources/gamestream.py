@@ -79,12 +79,12 @@ class GameStreamServer(object):
     
     def get_uniqueid(self):
 
-        uniqueid = self.server_info.find('uniqueid')
+        uniqueid = self.server_info.find('uniqueid').text
         return uniqueid
     
     def get_hostname(self):
 
-        hostname = self.server_info.find('hostname')
+        hostname = self.server_info.find('hostname').text
         return hostname
 
     def generatePincode(self):
