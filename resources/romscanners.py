@@ -33,7 +33,7 @@ class RomScannersFactory():
         launcherType = launcher['type'] if 'type' in launcher else LAUNCHER_ROM
         log_info('RomScannersFactory: Creating romscanner for {}'.format(launcherType))
 
-        if launcherType == LAUNCHER_STANDALONE:
+        if not launcher_supports_roms(launcherType):
             return NullScanner(launcher, self.settings)
         
         if launcherType == LAUNCHER_STEAM:

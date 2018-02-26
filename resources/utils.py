@@ -35,6 +35,9 @@ import HTMLParser
 from filename import *
 from utils_kodi import *
 
+def launcher_supports_roms(launcher_type):
+    return launcher_type is not LAUNCHER_STANDALONE and launcher_type is not LAUNCHER_FAVOURITES
+
 # --- AEL modules ---
 # >> utils.py must not depend on any other AEL module to avoid circular dependencies.
 
