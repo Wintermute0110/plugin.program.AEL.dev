@@ -1,5 +1,9 @@
 [B]Advanced Emulator Launcher | version 0.9.9 | XX February 2018[/B]
 
+WIP      Added NVIDIA Gamestream launcher. Supports scanning games from gamestream
+         server and launching games with Android client (Shield) or Moonlight-PC.
+         Extra steps needed to get correct certificates for connection.
+
 WIP      Moved FileName to its own file and made it abstract to be able to support
          xbmcvfs but also just normal os operations in cases you run python script 
          outside of kodi (like with tools etc.)
