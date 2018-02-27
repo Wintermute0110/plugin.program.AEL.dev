@@ -369,7 +369,7 @@ class KodiFileName(FileName):
             xbmcvfs.delete(self.originalPath)
 
             # hard delete if it doesnt succeed
-            log_debug('xbmcvfs.delete() failed, applying hard delete')
+            #log_debug('xbmcvfs.delete() failed, applying hard delete')
             if self.exists():
                 os.remove(self.path)
         else:
