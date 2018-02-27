@@ -3595,7 +3595,9 @@ class Main:
         launcher_desc = '?'
 
         if launcher_type == LAUNCHER_STANDALONE:
-            launcher_desc = 'Std'
+            launcher_desc = 'Std'            
+        if launcher_type == LAUNCHER_FAVOURITES:
+            launcher_desc = 'Fav'
         elif launcher_type == LAUNCHER_RETROPLAYER:
             launcher_desc = 'Rplay'
         elif launcher_type == LAUNCHER_ROM:
@@ -3610,7 +3612,7 @@ class Main:
             launcher_desc = 'Lnks'
         
             
-        if launcher_type is not LAUNCHER_STANDALONE and self.settings['display_launcher_roms']:
+        if launcher_supports_roms(launcher_type) and self.settings['display_launcher_roms']:
             if launcher_dic['nointro_xml_file']:
                 if launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
                     num_have    = launcher_dic['num_have']
@@ -3683,13 +3685,15 @@ class Main:
         commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
         # >> ONLY for ROM launchers
         #if launcher_dic['rompath']:
-        if launcher_type is not LAUNCHER_STANDALONE:
+        if launcher_supports_roms(launcher_type):
             commands.append(('Add ROMs', self._misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID) ))
-        commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID) ))
+            commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID) ))
+        
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID) ))
         # >> Launchers in addon root should be able to create a new category
         if categoryID == VCATEGORY_ADDONROOT_ID:
-                commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+            commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)' ))
         commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
         listitem.addContextMenuItems(commands)

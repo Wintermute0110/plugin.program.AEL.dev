@@ -256,7 +256,7 @@ class FileName():
     def open(self, flags):
         pass
       
-    @abstractmethod  
+    @abstractmethod
     def close(self):
         pass
 

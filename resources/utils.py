@@ -53,6 +53,9 @@ def is_android():
     
     return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
 
+def launcher_supports_roms(launcher_type):
+    return launcher_type is not LAUNCHER_STANDALONE and launcher_type is not LAUNCHER_FAVOURITES
+
 # --- AEL modules ---
 # >> utils.py must not depend on any other AEL module to avoid circular dependencies.
 
