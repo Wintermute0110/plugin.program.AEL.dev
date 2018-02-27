@@ -39,7 +39,7 @@ class launcherBuilder():
         typeOptions[LAUNCHER_FAVOURITES]  = 'Kodi favourite launcher'
         typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
         typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
-        #typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)' todo: not finished yet
+        typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)'
         typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
         if sys.platform == 'win32':
             typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
@@ -297,22 +297,29 @@ def get_title_from_selected_favourite(input, launcher):
 
 def get_available_retroarch_cores(settings):
 
-    cores = []
+    cores = {}
     
-    if sys.platform == 'win32':
-        retroarchFolder = FileNameFactory.create(settings['io_retroarch_sys_dir'])
-        retroarchFolder.append('cores\\')
-        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(retroarchFolder.getOriginalPath()))
+    if is_windows():
+        retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])
+        cores_folder = retroarch_folder.pjoin('cores\\')
+        info_folder = retroarch_folder.pjoin('info\\')
+
+        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getOriginalPath()))
 
         if retroarchFolder.exists():
-            files = retroarchFolder.scanFilesInPathAsFileNameObjects('*.dll')
+            files = cores_folder.scanFilesInPathAsFileNameObjects('*.dll')
             for file in files:
                 log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
-                cores.append(file.getBase())
+                info_file = file.switchExtension('info')
+                info_file = info_folder.pjoin(info_file.getBase())
+                info_text = info_file.readAll()
+                line = info_text.splitlines()[0]
+
+                cores[file.getBase()] = line
 
             return cores
 
-    if sys.platform.startswith('linux'):
+    if is_android():
         androidFolder = FileNameFactory.create('/data/com.retroarch/cores/')
         log_debug("get_available_retroarch_cores() scanning path '{0}'".format(androidFolder.getOriginalPath()))
 
