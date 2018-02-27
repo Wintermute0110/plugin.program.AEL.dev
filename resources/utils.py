@@ -32,6 +32,7 @@ import string
 import fnmatch
 import HTMLParser
 
+from constants import *
 from filename import *
 from utils_kodi import *
 
