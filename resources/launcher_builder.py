@@ -135,18 +135,19 @@ class launcherBuilder():
         elif launcher_type == LAUNCHER_RETROARCH:
             
             # >> If Retroarch System dir not configured or found abort.
-            sys_dir_FN = FileNameFactory.create(settings['io_retroarch_sys_dir'])
+            sys_dir_FN = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
             if not sys_dir_FN.exists():
                 kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
                 return
 
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = DummyWizardDialog('application', self.settings['io_retroarch_sys_dir'], wizard)
-            wizard = SelectionWizardDialog('core', 'Select the core', get_available_retroarch_cores(self.settings), wizard)
-            wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, wizard) 
+            wizard = DummyWizardDialog('application', get_retroarch_app_folder(self.settings), wizard)
+            wizard = DictionarySelectionWizardDialog('retro_core', 'Select the core', get_available_retroarch_cores, wizard)
+            wizard = DictionarySelectionWizardDialog('retro_config', 'Select the config', get_available_retroarch_configurations, wizard)
+            wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard) 
             wizard = DummyWizardDialog('romext', '', wizard, getExtensionsFromAppPath)
-            wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
+            wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g nes|zip)', wizard)
             wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             wizard = DummyWizardDialog('assets_path', '', wizard, getValueFromRomPath)
@@ -390,40 +391,74 @@ def validate_gamestream_server_connection(input, item_key, launcher):
 
     return input
 
-def get_available_retroarch_cores(settings):
-
-    cores = {}
+def get_retroarch_app_folder(settings):
     
     if is_windows():
-        retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])
-        cores_folder = retroarch_folder.pjoin('cores\\')
-        info_folder = retroarch_folder.pjoin('info\\')
-
-        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getOriginalPath()))
-
-        if retroarchFolder.exists():
-            files = cores_folder.scanFilesInPathAsFileNameObjects('*.dll')
-            for file in files:
-                log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
-                info_file = file.switchExtension('info')
-                info_file = info_folder.pjoin(info_file.getBase())
-                info_text = info_file.readAll()
-                line = info_text.splitlines()[0]
-
-                cores[file.getBase()] = line
-
-            return cores
+        retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])      
+        return retroarch_folder.getOriginalPath()
 
     if is_android():
-        androidFolder = FileNameFactory.create('/data/com.retroarch/cores/')
-        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(androidFolder.getOriginalPath()))
+        android_folder = FileNameFactory.create('/data/data/')
+        
+        if not android_folder.exists():
+            android_folder = FileNameFactory.create('/storage/emulated/0/Android/data/')
 
-        if androidFolder.exists():
-            files = androidFolder.scanFilesInPathAsFileNameObjects('*.so')
-            for file in files:
-                log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
-                cores.append(file.getBase())
+        if not android_folder.exists():
+            android_folder = FileNameFactory.create('/storage/sdcard0/Android/data/')
+            
+        retroarch_folder = android_folder.pjoin('com.retroarch/')     
+        return retroarch_folder.getOriginalPath()
 
-            return cores
+    return ''
 
+def get_available_retroarch_cores(item_key, launcher):
+
+    cores = {}
+    retroarch_folder = FileNameFactory.create(launcher['application'])
+    cores_mask = '*.*'
+
+    if is_windows():
+        cores_mask = '*.dll'
+    if is_android():
+        cores_mask = '*.so'
+
+    cores_folder = retroarch_folder.pjoin('cores/')
+    info_folder = retroarch_folder.pjoin('info/')
+
+    log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getOriginalPath()))
+
+    if not info_folder.exists():
+        log_warning('Retroarch info folder not found {}'.format(info_folder.getOriginalPath()))
+
+    if cores_folder.exists():
+        files = cores_folder.scanFilesInPathAsFileNameObjects(cores_mask)
+        for file in files:
+            log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
+            
+            info_file = file.switchExtension('info')
+            info_file = info_folder.pjoin(info_file.getBase())
+            info_text = info_file.readAll()
+            line = info_text.splitlines()[0]
+            i = line.find('"')
+                
+            cores[file.getOriginalPath()] = line[i+1:-1]
+
+        return cores
+
+    log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
     return cores
+
+def get_available_retroarch_configurations(item_key, launcher):
+    
+    configs = {}
+    retroarch_folder = FileNameFactory.create(launcher['application'])
+    
+    log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getOriginalPath()))
+
+    files = retroarch_folder.scanFilesInPathAsFileNameObjects('*.cfg')
+    for file in files:
+        log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getOriginalPath()))
+                
+        configs[file.getOriginalPath()] = file.getBase_noext()
+
+    return configs

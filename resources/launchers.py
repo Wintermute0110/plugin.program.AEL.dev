@@ -471,12 +471,12 @@ class RetroarchLauncher(StandardRomLauncher):
         
     def _selectApplicationToUse(self):
         
-        if sys.platform == 'win32':
-            self.application = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
+        if is_windows():
+            self.application = FileNameFactory.create(self.launcher['application'])
             self.application = self.application.append('retroarch.exe')  
             return
 
-        if sys.platform.startswith('linux'):
+        if is_android():
             self.application = FileNameFactory.create('/system/bin/am')
             return
 
@@ -486,22 +486,18 @@ class RetroarchLauncher(StandardRomLauncher):
 
     def _selectArgumentsToUse(self):
 
-        retroCore = self.launcher['core']
-            
-        if is_windows():
-            appPath = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
-            corePath = appPath.pjoin(FileNameFactory.create('core'), retroCore)
-            
-            self.arguments = "-L  {0} ".format(corePath.getOriginalPath())
-            self.arguments += "'$rom$'"
+        if is_windows():            
+            self.arguments =  '-L "$retro_core$" '
+            self.arguments += '-c "$retro_config$" '
+            self.arguments += '"$rom$"'
             return
 
         if is_android():
 
-            self.arguments = 'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
+            self.arguments =  'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
             self.arguments += '-e ROM \'$rom$\' '
-            self.arguments += '-e LIBRETRO /data/data/com.retroarch/cores/{0} '.format(retroCore)
-            self.arguments += '-e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg '
+            self.arguments += '-e LIBRETRO $retro_core$ '
+            self.arguments += '-e CONFIGFILE $retro_config$ '
             self.arguments += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture'
             return
 
