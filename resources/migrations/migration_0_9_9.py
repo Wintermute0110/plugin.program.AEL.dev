@@ -37,7 +37,7 @@ class Migration_0_9_9(Migration):
             log_info('[Migration][0.9.9] Validating launcher [{}] {}'.format(key, launcher['m_name']))
 
             # does not yet contain launcher type?
-            if not 'type' in launcher:
+            if not 'type' in launcher or launcher['type'] == '':
                 log_debug('[Migration][0.9.9] Launcher "{}" does not have a "type" field yet.')
                 self._set_launchertype(launcher)
                 

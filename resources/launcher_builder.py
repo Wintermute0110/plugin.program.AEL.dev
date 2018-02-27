@@ -10,10 +10,15 @@ from utils import *
 from utils_kodi import *
 from disk_IO import *
 from platforms import *
+from gamestream import *
 
 class launcherBuilder():
 
-    def createLauncher(self, categoryID, launchers, categories, settings, categories_file_path):
+    def __init__(self, settings, categories_file_path):
+        self.settings = settings
+        self.categories_file_path = categories_file_path
+
+    def createLauncher(self, categoryID, launchers, categories):
     
         # >> If categoryID not found user is creating a new launcher using the context menu
         # >> of a launcher in addon root.
@@ -40,9 +45,13 @@ class launcherBuilder():
         typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
         typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
         typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)'
-        typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
-        if sys.platform == 'win32':
+        typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
+
+        if is_windows():
             typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
+
+        if not is_android():
+            typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
 
         dialog = DictionaryDialog()
         launcher_type = dialog.select('Create New Launcher', typeOptions)
@@ -54,15 +63,13 @@ class launcherBuilder():
         launcher         = fs_new_launcher()
         launcher['id']   = launcherID
         launcher['type'] = launcher_type
-
-        filter = '.bat|.exe|.cmd|.lnk' if sys.platform == 'win32' else ''
-            
+                    
         # --- Standalone launcher ---
         if launcher_type == LAUNCHER_STANDALONE:
 
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, filter, wizard)
+            wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, get_appbrowser_filter, wizard)
             wizard = DummyWizardDialog('args', '', wizard)
             wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
             wizard = DummyWizardDialog('m_name', '', wizard, getTitleFromAppPath)
@@ -85,7 +92,7 @@ class launcherBuilder():
         
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, filter, wizard) 
+            wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, get_appbrowser_filter, wizard) 
             wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
             wizard = DummyWizardDialog('romext', '', wizard, getExtensionsFromAppPath)
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
@@ -102,7 +109,7 @@ class launcherBuilder():
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
             wizard = DummyWizardDialog('application', RETROPLAYER_LAUNCHER_APP_NAME, wizard)
-            wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, filter, wizard) 
+            wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, get_appbrowser_filter, wizard) 
             wizard = DummyWizardDialog('romext', '', wizard, getExtensionsFromAppPath)
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
             wizard = DummyWizardDialog('args', '%rom%', wizard)
@@ -135,8 +142,8 @@ class launcherBuilder():
 
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = DummyWizardDialog('application', settings['io_retroarch_sys_dir'], wizard)
-            wizard = SelectionWizardDialog('core', 'Select the core', get_available_retroarch_cores(settings), wizard)
+            wizard = DummyWizardDialog('application', self.settings['io_retroarch_sys_dir'], wizard)
+            wizard = SelectionWizardDialog('core', 'Select the core', get_available_retroarch_cores(self.settings), wizard)
             wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, wizard) 
             wizard = DummyWizardDialog('romext', '', wizard, getExtensionsFromAppPath)
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
@@ -155,6 +162,30 @@ class launcherBuilder():
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
             wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)         
+            
+        # --- NVidia Gamestream launcher ---
+        elif launcher_type == LAUNCHER_NVGAMESTREAM:
+            info_txt = 'To pair with your Geforce Experience Computer we need to make use of valid certificates. '
+            info_txt += 'Unfortunately at this moment we cannot create these certificates directly from within Kodi.\n'
+            info_txt += 'Please read the wiki for details how to create them before you go further.'
+
+            wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
+            wizard = DummyWizardDialog('type', launcher_type, wizard)
+            wizard = FormattedMessageWizardDialog('certificates_path', 'Pairing with Gamestream PC', info_txt, wizard)
+            wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}, wizard, check_if_selected_gamestream_client_exists, lambda p: is_android())
+            wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'}, wizard, None, lambda p: not is_android())
+            wizard = FileBrowseWizardDialog('application', 'Select the Gamestream client jar', 1, get_appbrowser_filter, wizard, None, lambda p: not is_android())
+            wizard = KeyboardWizardDialog('args', 'Additional arguments', wizard, None, lambda p: not is_android())
+            wizard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, validate_gamestream_server_connection)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
+            wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)   
+            # Pairing with pin code will be postponed untill crypto and certificate support in kodi
+            # wizard = DummyWizardDialog('pincode', None, wizard, generatePairPinCode)
+            wizard = DummyWizardDialog('certificates_path', None, wizard, try_to_resolve_path_to_nvidia_certificates)
+            wizard = FileBrowseWizardDialog('certificates_path', 'Select the path with valid certificates', 0, '', wizard, validate_nvidia_certificates) 
+            wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+
 
         # --- Create new launcher. categories.xml is save at the end of this function ---
         # NOTE than in the database original paths are always stored.
@@ -180,15 +211,18 @@ class launcherBuilder():
 
         launcher['timestamp_launcher'] = time.time()
         launchers[launcherID] = launcher
-
+        msg = 'Created {0} {1}'.format(get_launcher_type_name(launcher_type), launcher['m_name'])
         # >> Notify user
-        kodi_notify('Created {0} {1}'.format(getLauncherTypeName(launcher_type), launcher['m_name']))
+        kodi_notify(msg)
+        
+        for key in sorted(launcher.iterkeys()):
+            log_debug('launcher[{}] = {}'.format(key, launcher[key]))
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
-        fs_write_catfile(categories_file_path, categories, launchers)
+        fs_write_catfile(self.categories_file_path, categories, launchers)
 
-def getLauncherTypeName(launcher_type):
+def get_launcher_type_name(launcher_type):
     
     if launcher_type == LAUNCHER_STANDALONE:
         return "Standalone launcher"
@@ -210,8 +244,11 @@ def getLauncherTypeName(launcher_type):
 
     if launcher_type == LAUNCHER_STEAM:
         return "Steam launcher"
+    
+    if launcher_type == LAUNCHER_NVGAMESTREAM:
+        return "Nvidia GameStream launcher"
 
-def getTitleFromAppPath(input, launcher):
+def getTitleFromAppPath(input, item_key, launcher):
 
     if input:
         return input
@@ -223,7 +260,7 @@ def getTitleFromAppPath(input, launcher):
     title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
     return title_formatted
 
-def getExtensionsFromAppPath(input ,launcher):
+def getExtensionsFromAppPath(input, item_key ,launcher):
     
     if input:
         return input
@@ -234,7 +271,7 @@ def getExtensionsFromAppPath(input ,launcher):
     extensions = emudata_get_program_extensions(appPath.getBase())
     return extensions
 
-def getArgumentsFromAppPath(input, launcher):
+def getArgumentsFromAppPath(input, item_key, launcher):
     
     if input:
         return input
@@ -245,7 +282,7 @@ def getArgumentsFromAppPath(input, launcher):
     default_arguments = emudata_get_program_arguments(appPath.getBase())
     return default_arguments
 
-def getValueFromRomPath(input, launcher):
+def getValueFromRomPath(input, item_key, launcher):
 
     if input:
         return input
@@ -253,7 +290,7 @@ def getValueFromRomPath(input, launcher):
     romPath = launcher['rompath']
     return romPath
 
-def getValueFromAssetsPath(input, launcher):
+def getValueFromAssetsPath(input, item_key, launcher):
 
     if input:
         return input
@@ -294,6 +331,64 @@ def get_title_from_selected_favourite(input, launcher):
             return favourites[key][0]
 
     return getTitleFromAppPath(input, launcher)
+
+def get_appbrowser_filter(item_key, launcher):
+    
+    if item_key in launcher:
+        application = launcher[item_key]
+        if application == 'JAVA':
+            return '.jar'
+
+    return '.bat|.exe|.cmd|.lnk' if is_windows() else ''
+
+def generatePairPinCode(input, item_key, launcher):
+    
+    return gamestreamServer(None, None).generatePincode()
+
+def check_if_selected_gamestream_client_exists(input, item_key, launcher):
+
+    if input == 'NVIDIA':
+        nvidiaDataFolder = FileNameFactory.create('/data/data/com.nvidia.tegrazone3/')
+        nvidiaAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
+        if not nvidiaAppFolder.exists() and not nvidiaDataFolder.exists():
+            kodi_notify_warn('Could not find Nvidia Gamestream client. Make sure it\'s installed.')
+
+    if input == 'MOONLIGHT':
+        moonlightDataFolder = FileNameFactory.create('/data/data/com.limelight/')
+        moonlightAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.limelight/')
+        if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
+            kodi_notify_warn('Could not find Moonlight Gamestream client. Make sure it\'s installed.')
+        
+    return input
+
+
+def try_to_resolve_path_to_nvidia_certificates(input, item_key, launcher):
+    
+    path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
+    return path
+
+def validate_nvidia_certificates(input, item_key, launcher):
+
+    certificates_path = FileNameFactory.create(input)
+    gs = GameStreamServer(input, certificates_path)
+    if not gs.validate_certificates():
+        kodi_notify_warn('Could not find certificates to validate. Make sure you already paired with the server with the Shield or Moonlight applications.')
+
+    return certificates_path.getOriginalPath()
+
+
+def validate_gamestream_server_connection(input, item_key, launcher):
+
+    gs = GameStreamServer(input, None)
+    if not gs.connect():
+        kodi_notify_warn('Could not connect to gamestream server')
+
+    launcher['server_id'] = gs.get_uniqueid()
+    launcher['server_hostname'] = gs.get_hostname()
+
+    log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_id'],launcher['server_hostname']))
+
+    return input
 
 def get_available_retroarch_cores(settings):
 

@@ -17,7 +17,8 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, random, urllib2
+import sys, random, urllib2, json, httplib, ssl
+import xml.etree.ElementTree as ET
 
 # --- AEL packages ---
 try:
@@ -124,6 +125,7 @@ def net_get_URL_oneline(url):
 
 def net_get_URL_original(url):
     page_data = ''
+    
     req = urllib2.Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     log_debug('net_get_URL_original() Reading URL "{0}"'.format(req.get_full_url()))
@@ -131,18 +133,81 @@ def net_get_URL_original(url):
     try:
         f = urllib2.urlopen(req)
         encoding = f.headers['content-type'].split('charset=')[-1]
-        if encoding == 'text/html': encoding = 'utf-8'
-        log_debug('net_get_URL_original() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
-    except IOError as e:
+    except IOError as e:    
         log_error('(IOError) Exception in net_get_URL_original()')
         log_error('(IOError) {0}'.format(str(e)))
         return page_data
 
-    # --- Convert to Unicode ---
     num_bytes = len(page_bytes)
     log_debug('net_get_URL_original() Read {0} bytes'.format(num_bytes))
-    page_data = unicode(page_bytes, encoding)
+
+    # --- Convert to Unicode ---    
+    if encoding == 'text/html': encoding = 'utf-8'
+    if encoding == 'text/plain' and 'UTF-8' in page_bytes: encoding = 'utf-8'
+    if encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
+    
+    log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
+    if encoding != 'utf-16':
+        page_data = unicode(page_bytes, encoding)
+
+    if encoding == 'utf-16':
+        page_data = page_bytes.encode('utf-16')
 
     return page_data
+
+def net_get_URL_using_handler(url, handler = None):
+
+    page_data = None
+    opener = urllib2.build_opener(handler)
+    
+    log_debug('net_get_URL_using_handler() Reading URL "{0}"'.format(url))
+    try:
+        f = opener.open(url)
+        encoding = f.headers['content-type'].split('charset=')[-1]
+        page_bytes = f.read()
+        f.close()
+    except IOError as e:    
+        log_error('(IOError) Exception in net_get_URL_using_handler()')
+        log_error('(IOError) {0}'.format(str(e)))
+        return page_data
+
+    num_bytes = len(page_bytes)
+    log_debug('net_get_URL_using_handler() Read {0} bytes'.format(num_bytes))
+
+    # --- Convert to Unicode ---    
+    if encoding == 'text/html': encoding = 'utf-8'
+    if encoding == 'text/plain' and 'UTF-8' in page_bytes: encoding = 'utf-8'
+    if encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
+    
+    log_debug('net_get_URL_using_handler() encoding = "{0}"'.format(encoding))
+    if encoding != 'utf-16':
+        page_data = unicode(page_bytes, encoding)
+
+    if encoding == 'utf-16':
+        page_data = page_bytes.encode('utf-16')
+    return page_data
+    
+def net_get_URL_as_json(url):
+
+    page_data = net_get_URL_original(url)
+    return json.loads(page_data)
+
+class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
+    def __init__(self, key, cert):
+        ctx = ssl._create_unverified_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    
+        urllib2.HTTPSHandler.__init__(self, context = ctx)
+        
+        self.context = ctx;
+        self.key = key
+        self.cert = cert
+
+    def https_open(self, req):
+        return self.do_open(self.getConnection, req)
+
+    def getConnection(self, host, timeout=300):
+        return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert, context = self.context)

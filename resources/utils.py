@@ -35,6 +35,24 @@ import HTMLParser
 from filename import *
 from utils_kodi import *
 
+# OS utils
+# >> Determine platform
+# >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+def is_windows():    
+    return sys.platform == 'win32' or sys.platform == 'win64' or sys.platform == 'cygwin'
+
+def is_osx():
+    return sys.platform.startswith('darwin')
+
+def is_linux():
+     return sys.platform.startswith('linux') and not is_android()
+
+def is_android():
+    if not sys.platform.startswith('linux'):
+        return False
+    
+    return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
+
 def launcher_supports_roms(launcher_type):
     return launcher_type is not LAUNCHER_STANDALONE and launcher_type is not LAUNCHER_FAVOURITES
 
@@ -471,6 +489,26 @@ def misc_generate_random_SID():
     sid = base.hexdigest()
 
     return sid
+
+#
+# Version helper class
+#
+class VersionNumber(object):
+
+    def __init__(self, versionString):
+        self.versionNumber = versionString.split('.')
+
+    def getFullString(self):
+        return '.'.join(self.versionNumber)
+
+    def getMajor(self):
+        return int(self.versionNumber[0])
+
+    def getMinor(self):
+        return int(self.versionNumber[1])
+
+    def getBuild(self):
+        return int(self.versionNumber[2])
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
