@@ -96,6 +96,20 @@ class Test_utils_kodi_tests(unittest.TestCase):
         # assert
         self.assertIsNotNone(actual)
         self.assertEqual(actual, expected)
+    
+    def test_when_using_a_condition_function_with_the_wizard_it_will_responsd_correctly(self):
+
+        # arrange
+        expected = 'expected'
+        target = DummyWizardDialog('actual', expected, None, None, lambda p: True)
+        props = {}
+
+        # act
+        target.runWizard(props)
+        actual = props['actual']
         
+        # assert
+        self.assertEqual(expected, actual)
+       
 if __name__ == '__main__':
     unittest.main()
