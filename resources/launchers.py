@@ -485,20 +485,22 @@ class RetroarchLauncher(StandardRomLauncher):
         pass
 
     def _selectArgumentsToUse(self):
-
+        
         if is_windows():            
             self.arguments =  '-L "$retro_core$" '
             self.arguments += '-c "$retro_config$" '
             self.arguments += '"$rom$"'
+            self.arguments += self.launcher['args']
             return
 
         if is_android():
 
             self.arguments =  'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
+            self.arguments += '-n com.retroarch/.browser.retroactivity.RetroActivityFuture '
             self.arguments += '-e ROM \'$rom$\' '
             self.arguments += '-e LIBRETRO $retro_core$ '
             self.arguments += '-e CONFIGFILE $retro_config$ '
-            self.arguments += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture'
+            self.arguments += self.launcher['args']
             return
 
         #todo other os

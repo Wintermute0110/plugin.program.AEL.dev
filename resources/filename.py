@@ -122,6 +122,15 @@ class FileName():
         self.path = self.path.replace("'", "\\'")
         self.path = self.path.replace('"', '\\"')
 
+    def path_separator(self):
+        count_backslash = self.originalPath.count('\\')
+        count_forwardslash = self.originalPath.count('/')
+
+        if count_backslash > count_forwardslash:
+            return '\\'
+        
+        return '/'
+
     # ---------------------------------------------------------------------------------------------
     # Decomposes a file name path or directory into its constituents
     #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
@@ -237,6 +246,10 @@ class FileName():
     # ---------------------------------------------------------------------------------------------
     
     @abstractmethod
+    def readline(self):
+        return None
+    
+    @abstractmethod
     def readAll(self):
         return None
     
@@ -270,6 +283,32 @@ class FileName():
     def readJson(self):
         contents = self.readAllUnicode()
         return json.loads(contents)
+
+    # Opens INI file and reads it
+    def readIniFile(self):
+        import ConfigParser
+    
+        config = ConfigParser.ConfigParser()
+        config.readfp(self.open('r'))
+
+        return config
+
+    # Opens a propery file and reads it
+    # Reads a given properties file with each line of the format key=value.  Returns a dictionary containing the pairs.
+    def readPropertyFile(self):
+        import csv
+        
+        file_contents = self.readAll()
+        file_lines = file_contents.splitlines()
+
+        result={ }
+        reader = csv.reader(file_lines, delimiter=str('='), quoting=csv.QUOTE_NONE)
+        for row in reader:
+            if len(row) != 2:
+                raise csv.Error("Too many fields on row with contents: "+str(row))
+            result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
+        
+        return result
 
     # --- Configure JSON writer ---
     # NOTE More compact JSON files (less blanks) load faster because size is smaller.
@@ -389,6 +428,21 @@ class KodiFileName(FileName):
     # File IO functions
     # ---------------------------------------------------------------------------------------------
     
+    def readline(self, encoding='utf-8'):
+        if self.fileHandle is None:
+            raise OSError('file not opened')
+
+        line = u''
+        char = self.fileHandle.read(1)
+        if char is '':
+            return ''
+
+        while char and char != u'\n':
+            line += unicode(char, encoding)
+            char = self.fileHandle.read(1)
+
+        return line
+
     def readAll(self):
         contents = None
         file = xbmcvfs.File(self.originalPath)
@@ -418,6 +472,7 @@ class KodiFileName(FileName):
 
     def open(self, flags):
         self.fileHandle = xbmcvfs.File(self.originalPath, flags)
+        return self
         
     def close(self):
         if self.fileHandle is None:
@@ -501,6 +556,12 @@ class StandardFileName(FileName):
     # File IO functions
     # ---------------------------------------------------------------------------------------------
     
+    def readline(self):
+        if self.fileHandle is None:
+            raise OSError('file not opened')
+
+        return self.fileHandle.readline()
+
     def readAll(self):
         contents = None
         with open(self.path, 'r') as f:
@@ -526,7 +587,8 @@ class StandardFileName(FileName):
        self.fileHandle.write(bytes)
 
     def open(self, flags):
-        self.fileHandle = open(self.path, flags)
+        self.fileHandle = os.open(self.path, flags)
+        return self
         
     def close(self):
         if self.fileHandle is None:
@@ -534,4 +596,3 @@ class StandardFileName(FileName):
 
         self.fileHandle.close()
         self.fileHandle = None
-

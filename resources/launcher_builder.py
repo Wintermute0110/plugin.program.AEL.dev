@@ -72,8 +72,8 @@ class launcherBuilder():
             wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, get_appbrowser_filter, wizard)
             wizard = DummyWizardDialog('args', '', wizard)
             wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
-            wizard = DummyWizardDialog('m_name', '', wizard, getTitleFromAppPath)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = DummyWizardDialog('m_name', '', wizard, get_title_from_app_path)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             
         # --- Standalone launcher ---
@@ -98,10 +98,10 @@ class launcherBuilder():
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
             wizard = DummyWizardDialog('args', '', wizard, getArgumentsFromAppPath)
             wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
-            wizard = DummyWizardDialog('m_name', '', wizard, getTitleFromAppPath)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = DummyWizardDialog('m_name', '', wizard, get_title_from_app_path)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = DummyWizardDialog('assets_path', '', wizard, getValueFromRomPath)
+            wizard = DummyWizardDialog('assets_path', '', wizard, get_value_from_rompath)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
 
         # --- Retroplayer Launcher ---
@@ -113,9 +113,9 @@ class launcherBuilder():
             wizard = DummyWizardDialog('romext', '', wizard, getExtensionsFromAppPath)
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
             wizard = DummyWizardDialog('args', '%rom%', wizard)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = DummyWizardDialog('assets_path', '', wizard, getValueFromRomPath)
+            wizard = DummyWizardDialog('assets_path', '', wizard, get_value_from_rompath)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
             
         # --- LNK launcher (Windows only) ---
@@ -126,9 +126,9 @@ class launcherBuilder():
             wizard = FileBrowseWizardDialog('rompath', 'Select the LNKs path', 0, '', wizard) 
             wizard = DummyWizardDialog('romext', 'lnk', wizard)
             wizard = DummyWizardDialog('args', '%rom%', wizard)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = DummyWizardDialog('assets_path', '', wizard, getValueFromRomPath)
+            wizard = DummyWizardDialog('assets_path', '', wizard, get_value_from_rompath)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
             
         # --- Retroarch launcher ---
@@ -142,15 +142,17 @@ class launcherBuilder():
 
             wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
             wizard = DummyWizardDialog('type', launcher_type, wizard)
-            wizard = DummyWizardDialog('application', get_retroarch_app_folder(self.settings), wizard)
-            wizard = DictionarySelectionWizardDialog('retro_core', 'Select the core', get_available_retroarch_cores, wizard)
-            wizard = DictionarySelectionWizardDialog('retro_config', 'Select the config', get_available_retroarch_configurations, wizard)
+            wizard = DummyWizardDialog('application', self.settings['io_retroarch_sys_dir'], wizard)
+            wizard = DictionarySelectionWizardDialog('retro_config', 'Select the configuration', get_available_retroarch_configurations, wizard)
+            wizard = FileBrowseWizardDialog('retro_config', 'Select the configuration', 0, '', wizard, None, user_browses_for_configuration) 
+            wizard = DictionarySelectionWizardDialog('retro_core_info', 'Select the core', get_available_retroarch_cores, wizard, load_selected_core_info)
             wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard) 
-            wizard = DummyWizardDialog('romext', '', wizard, getExtensionsFromAppPath)
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g nes|zip)', wizard)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = DummyWizardDialog('args', get_default_retroarch_arguments, wizard)
+            wizard = KeyboardWizardDialog('args', 'Extra application arguments', wizard)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            wizard = DummyWizardDialog('assets_path', '', wizard, getValueFromRomPath)
+            wizard = DummyWizardDialog('assets_path', '', wizard, get_value_from_rompath)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
     
         # --- Steam launcher ---
@@ -159,7 +161,7 @@ class launcherBuilder():
             wizard = DummyWizardDialog('type', launcher_type, wizard)
             wizard = DummyWizardDialog('application', 'Steam', wizard)
             wizard = KeyboardWizardDialog('steamid','Steam ID', wizard)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
             wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)         
@@ -178,7 +180,7 @@ class launcherBuilder():
             wizard = FileBrowseWizardDialog('application', 'Select the Gamestream client jar', 1, get_appbrowser_filter, wizard, None, lambda p: not is_android())
             wizard = KeyboardWizardDialog('args', 'Additional arguments', wizard, None, lambda p: not is_android())
             wizard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, validate_gamestream_server_connection)
-            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+            wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
             wizard = DummyWizardDialog('rompath', '', wizard, getValueFromAssetsPath)   
             # Pairing with pin code will be postponed untill crypto and certificate support in kodi
@@ -249,7 +251,7 @@ def get_launcher_type_name(launcher_type):
     if launcher_type == LAUNCHER_NVGAMESTREAM:
         return "Nvidia GameStream launcher"
 
-def getTitleFromAppPath(input, item_key, launcher):
+def get_title_from_app_path(input, item_key, launcher):
 
     if input:
         return input
@@ -283,7 +285,7 @@ def getArgumentsFromAppPath(input, item_key, launcher):
     default_arguments = emudata_get_program_arguments(appPath.getBase())
     return default_arguments
 
-def getValueFromRomPath(input, item_key, launcher):
+def get_value_from_rompath(input, item_key, launcher):
 
     if input:
         return input
@@ -331,7 +333,7 @@ def get_title_from_selected_favourite(input, launcher):
         if fav_action == key:
             return favourites[key][0]
 
-    return getTitleFromAppPath(input, launcher)
+    return get_title_from_app_path(input, launcher)
 
 def get_appbrowser_filter(item_key, launcher):
     
@@ -393,72 +395,144 @@ def validate_gamestream_server_connection(input, item_key, launcher):
 
 def get_retroarch_app_folder(settings):
     
-    if is_windows():
-        retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])      
+    retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])      
+    
+    if retroarch_folder.exists():
         return retroarch_folder.getOriginalPath()
 
     if is_android():
-        android_folder = FileNameFactory.create('/data/data/')
         
-        if not android_folder.exists():
-            android_folder = FileNameFactory.create('/storage/emulated/0/Android/data/')
+        android_retroarch_folders = [
+            '/storage/emulated/0/Android/data/com.retroarch/',
+            '/data/data/com.retroarch/',
+            '/storage/sdcard0/Android/data/com.retroarch/',
+            '/data/user/0/com.retroarch']
 
-        if not android_folder.exists():
-            android_folder = FileNameFactory.create('/storage/sdcard0/Android/data/')
-            
-        retroarch_folder = android_folder.pjoin('com.retroarch/')     
-        return retroarch_folder.getOriginalPath()
+        
+        for retroach_folder_path in android_retroarch_folders:
+            retroarch_folder = FileNameFactory.create(retroach_folder_path)
+            if retroarch_folder.exists():
+                return retroarch_folder.getOriginalPath()
 
-    return ''
+    return '/'
+
+def get_available_retroarch_configurations(item_key, launcher):
+    
+    configs = OrderedDict()
+    configs['BROWSE'] = 'Browse for configuration'
+
+    retroarch_folders = []
+    retroarch_folders.append(FileNameFactory.create(launcher['application']))
+
+    if is_android():
+        retroarch_folders.append(FileNameFactory.create('/storage/emulated/0/Android/data/com.retroarch/'))
+        retroarch_folders.append(FileNameFactory.create('/data/data/com.retroarch/'))
+        retroarch_folders.append(FileNameFactory.create('/storage/sdcard0/Android/data/com.retroarch'))
+        retroarch_folders.append(FileNameFactory.create('/data/user/0/com.retroarch'))
+        
+    for retroarch_folder in retroarch_folders:
+        log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getOriginalPath()))
+        files = retroarch_folder.scanFilesInPathAsFileNameObjects('*.cfg')
+
+        if len(files) < 1:
+            continue
+
+        for file in files:
+            log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getOriginalPath()))
+                
+            configs[file.getOriginalPath()] = file.getBase_noext()
+
+        return configs
+
+    return configs
+
+def user_browses_for_configuration(item_key, launcher):
+    return launcher[item_key] == 'BROWSE'
 
 def get_available_retroarch_cores(item_key, launcher):
 
     cores = {}
-    retroarch_folder = FileNameFactory.create(launcher['application'])
-    cores_mask = '*.*'
+    cores_ext = '*.*'
 
     if is_windows():
-        cores_mask = '*.dll'
+        cores_ext = '*.dll'
     if is_android():
-        cores_mask = '*.so'
+        cores_ext = '*.so'
 
-    cores_folder = retroarch_folder.pjoin('cores/')
-    info_folder = retroarch_folder.pjoin('info/')
-
+    config_file     = FileNameFactory.create(launcher['retro_config'])
+    parent_dir      = config_file.getDirAsFileName()
+    configuration   = config_file.readPropertyFile()    
+    info_folder     = create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
+    cores_folder    = create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
+        
     log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getOriginalPath()))
 
     if not info_folder.exists():
         log_warning('Retroarch info folder not found {}'.format(info_folder.getOriginalPath()))
-
-    if cores_folder.exists():
-        files = cores_folder.scanFilesInPathAsFileNameObjects(cores_mask)
-        for file in files:
-            log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
-            
-            info_file = file.switchExtension('info')
-            info_file = info_folder.pjoin(info_file.getBase())
-            info_text = info_file.readAll()
-            line = info_text.splitlines()[0]
-            i = line.find('"')
-                
-            cores[file.getOriginalPath()] = line[i+1:-1]
-
+        return cores
+    
+    if not cores_folder.exists():
+        log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
         return cores
 
-    log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+    files = cores_folder.scanFilesInPathAsFileNameObjects(cores_ext)
+    for file in files:
+        log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
+            
+        info_file = file.switchExtension('info')
+        info_file = info_folder.pjoin(info_file.getBase())
+        core_info = info_file.readPropertyFile()
+        cores[info_file.getOriginalPath()] = core_info['display_name']
+
     return cores
 
-def get_available_retroarch_configurations(item_key, launcher):
-    
-    configs = {}
-    retroarch_folder = FileNameFactory.create(launcher['application'])
-    
-    log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getOriginalPath()))
+def create_path_from_retroarch_setting(path_from_setting, parent_dir):
 
-    files = retroarch_folder.scanFilesInPathAsFileNameObjects('*.cfg')
-    for file in files:
-        log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getOriginalPath()))
-                
-        configs[file.getOriginalPath()] = file.getBase_noext()
+    if not path_from_setting.endswith('\\') and not path_from_setting.endswith('/'):
+        path_from_setting = path_from_setting + parent_dir.path_separator()
 
-    return configs
+    if path_from_setting.startswith(':\\'):
+        path_from_setting = path_from_setting[2:]
+        return parent_dir.pjoin(path_from_setting)
+    else:
+        return FileNameFactory.create(path_from_setting)
+
+def load_selected_core_info(input, item_key, launcher):
+
+    info_file       = FileNameFactory.create(input)
+    config_file     = FileNameFactory.create(launcher['retro_config'])
+    parent_dir      = config_file.getDirAsFileName()
+    configuration   = config_file.readPropertyFile()    
+    cores_folder    = create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
+    
+    if is_windows():
+        cores_ext = 'dll'
+    if is_android():
+        cores_ext = 'so'
+        
+    if not cores_folder.exists():
+        log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+        kodi_notify_error('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+        return ''
+
+    core_file = info_file.switchExtension(cores_ext)
+    core_file = cores_folder.pjoin(core_file.getBase())
+    core_info = info_file.readPropertyFile()
+
+    launcher[item_key]      = info_file.getOriginalPath()
+    launcher['retro_core']  = core_file.getOriginalPath()
+    launcher['romext']      = core_info['supported_extensions']
+    launcher['platform']    = core_info['systemname']
+    launcher['m_developer'] = core_info['manufacturer']
+    launcher['m_name']      = core_info['systemname']
+
+    return input
+
+def get_default_retroarch_arguments():
+
+    args = ''
+    if is_android():
+        args += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60'
+
+    return args
+            
