@@ -1,5 +1,9 @@
 [B]Advanced Emulator Launcher | version 0.9.9 | XX May/June 2018[/B]
 
+WIP      Check out the ListItem constructor offscreen parameter in Leia. It can dramatically speed
+         up ListItem creation and population.
+         See https://forum.kodi.tv/showthread.php?tid=329315&pid=2711937#pid2711937
+
 WIP      Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
 
 WIP      Complete Extranafart support for Categories/Launchers.
