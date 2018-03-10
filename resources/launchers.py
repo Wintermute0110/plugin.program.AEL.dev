@@ -486,7 +486,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
     def _selectArgumentsToUse(self):
         
-        if is_windows():            
+        if is_windows() or is_linux():            
             self.arguments =  '-L "$retro_core$" '
             self.arguments += '-c "$retro_config$" '
             self.arguments += '"$rom$"'

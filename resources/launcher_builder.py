@@ -427,13 +427,13 @@ def get_available_retroarch_configurations(item_key, launcher):
     if is_android():
         retroarch_folders.append(FileNameFactory.create('/storage/emulated/0/Android/data/com.retroarch/'))
         retroarch_folders.append(FileNameFactory.create('/data/data/com.retroarch/'))
-        retroarch_folders.append(FileNameFactory.create('/storage/sdcard0/Android/data/com.retroarch'))
-        retroarch_folders.append(FileNameFactory.create('/data/user/0/com.retroarch'))
+        retroarch_folders.append(FileNameFactory.create('/storage/sdcard0/Android/data/com.retroarch/'))
+        retroarch_folders.append(FileNameFactory.create('/data/user/0/com.retroarch/'))
         
     for retroarch_folder in retroarch_folders:
         log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getOriginalPath()))
-        files = retroarch_folder.scanFilesInPathAsFileNameObjects('*.cfg')
-
+        files = retroarch_folder.recursiveScanFilesInPathAsFileNameObjects('*.cfg')
+        
         if len(files) < 1:
             continue
 
@@ -456,7 +456,7 @@ def get_available_retroarch_cores(item_key, launcher):
 
     if is_windows():
         cores_ext = '*.dll'
-    if is_android():
+    else:
         cores_ext = '*.so'
 
     config_file     = FileNameFactory.create(launcher['retro_config'])
@@ -507,7 +507,7 @@ def load_selected_core_info(input, item_key, launcher):
     
     if is_windows():
         cores_ext = 'dll'
-    if is_android():
+    else:
         cores_ext = 'so'
         
     if not cores_folder.exists():

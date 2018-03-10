@@ -197,6 +197,10 @@ class FileName():
     def recursiveScanFilesInPath(self, mask = '*.*'):
         return []
 
+    @abstractmethod
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
+
     def _decodeName(self, name):
         if type(name) == str:
             try:
@@ -363,6 +367,21 @@ class KodiFileName(FileName):
             files.extend(subPathFiles)
 
         return files
+    
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__create__(filePath.getOriginalPath()))
+
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPathAsFileNameObjects(mask)
+            files.extend(subPathFiles)
+
+        return files
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
@@ -520,6 +539,16 @@ class StandardFileName(FileName):
             for filename in fnmatch.filter(foundfiles, mask):
                 filePath = self.pjoin(self._decodeName(filename))
                 files.append(filePath.getPath())
+
+        return files
+        
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                filePath = self.__create__(fileName)
+                files.append(filePath)
 
         return files
 
