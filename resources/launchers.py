@@ -21,27 +21,14 @@ class LauncherFactory():
         self.romsetFactory = romsetFactory
         self.executorFactory = executorFactory
 
-    def create(self, launcherID, launchers, rom = None):
-             
-        if launcherID not in launchers:
-            log_error('launcherfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
-            return None
+    def _load(self, launcher_type, launcher, launchers, rom):
         
-        launcher = launchers[launcherID]
-        launcherType = launcher['type'] if 'type' in launcher else None
-
-        if launcherType is None:
-            launcherType = self._determineType(rom) # backwardscompatibilty
-            
-        if launcherType == LAUNCHER_STANDALONE:
+        if launcher_type == LAUNCHER_STANDALONE:
             return ApplicationLauncher(self.settings, self.executorFactory, launcher)
 
-        if launcherType == LAUNCHER_FAVOURITES:
+        if launcher_type == LAUNCHER_FAVOURITES:
             return KodiLauncher(self.settings, self.executorFactory, launcher)
-
-        if rom is None:
-            return None
-        
+                
         statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
 
         if launcherType == LAUNCHER_RETROPLAYER:
@@ -58,12 +45,43 @@ class LauncherFactory():
 
         return None
 
-    # for backwards compatibility
-    def _determineType(self, rom):
-        if rom is None:
-            return LAUNCHER_STANDALONE
 
-        return LAUNCHER_ROM
+    def create(self, launcherID, launchers, rom = None):
+             
+        if launcherID not in launchers:
+            log_error('launcherfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
+            return None
+        
+        launcher = launchers[launcherID]
+        launcher_type = launcher['type'] if 'type' in launcher else None
+
+        return self._load(launcher_type, launcher, launchers, rom)
+
+    def create_new(self, category_id):
+
+        # --- Show "Create New Launcher" dialog ---
+        typeOptions = OrderedDict()
+        typeOptions[LAUNCHER_STANDALONE]  = 'Standalone launcher (Game/Application)'
+        typeOptions[LAUNCHER_FAVOURITES]  = 'Kodi favourite launcher'
+        typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
+        typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
+        typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)'
+        typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
+        if is_windows():
+            typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
+
+        dialog = DictionaryDialog()
+        launcher_type = dialog.select('Create New Launcher', typeOptions)
+        if type is None: return
+    
+        log_info('launchers.create_new() New launcher (launcher_type = {0})'.format(launcher_type))
+
+        launcherID       = misc_generate_random_SID()
+        launcher         = fs_new_launcher()
+        launcher['id']   = launcherID
+        launcher['type'] = launcher_type
+
+        launcher_obj = self._load(launcher_type, {}, launchers, None)
 
 #
 # Abstract base class for launching anything that is supported.
@@ -84,6 +102,17 @@ class Launcher():
         self.application    = None
         self.arguments      = None
         self.title          = None
+    
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    @abstractmethod
+    def create_new(self):
+        
+        launcherID       = misc_generate_random_SID()
+        launcher         = fs_new_launcher()
+        launcher['id']   = launcherID
+        launcher['type'] = launcher_type
 
     #
     # Launchs a ROM launcher or standalone launcher
@@ -248,6 +277,18 @@ class ApplicationLauncher(Launcher):
         
         super(ApplicationLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'])
         
+    def create_new(self):
+        
+        wizard = DummyWizardDialog('categoryID', launcher_categoryID, None)
+        wizard = DummyWizardDialog('type', launcher_type, wizard)
+        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, 7, wizard)
+        wizard = DummyWizardDialog('args', '', wizard)
+        wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
+        wizard = DummyWizardDialog('m_name', '', wizard, getTitleFromAppPath)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, getTitleFromAppPath)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+            
+
     def launch(self):
 
         self.title              = self.launcher['m_name']
