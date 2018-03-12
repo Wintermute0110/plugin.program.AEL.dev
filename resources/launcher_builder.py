@@ -477,10 +477,13 @@ def get_available_retroarch_cores(item_key, launcher):
 
     files = cores_folder.scanFilesInPathAsFileNameObjects(cores_ext)
     for file in files:
-        log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))
-            
+        
+        log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))    
         info_file = file.switchExtension('info')
         info_file = info_folder.pjoin(info_file.getBase())
+        log_debug("get_available_retroarch_cores() using info '{0}'".format(info_file.getOriginalPath()))    
+
+        log_debug("get: {}".format(info_file.readAll()))
         core_info = info_file.readPropertyFile()
         cores[info_file.getOriginalPath()] = core_info['display_name']
 
@@ -495,7 +498,13 @@ def create_path_from_retroarch_setting(path_from_setting, parent_dir):
         path_from_setting = path_from_setting[2:]
         return parent_dir.pjoin(path_from_setting)
     else:
-        return FileNameFactory.create(path_from_setting)
+        folder = FileNameFactory.create(path_from_setting)
+        if '/data/user/0/' in folder.getOriginalPath():
+            alternative_folder = foldexr.getOriginalPath()
+            alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
+            folder = FileNameFactory.create(alternative_folder)
+
+        return folder
 
 def load_selected_core_info(input, item_key, launcher):
 
