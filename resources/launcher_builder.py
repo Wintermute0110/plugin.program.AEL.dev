@@ -144,11 +144,12 @@ class launcherBuilder():
             wizard = DummyWizardDialog('type', launcher_type, wizard)
             wizard = DummyWizardDialog('application', self.settings['io_retroarch_sys_dir'], wizard)
             wizard = DictionarySelectionWizardDialog('retro_config', 'Select the configuration', get_available_retroarch_configurations, wizard)
-            wizard = FileBrowseWizardDialog('retro_config', 'Select the configuration', 0, '', wizard, None, user_browses_for_configuration) 
+            wizard = FileBrowseWizardDialog('retro_config', 'Select the configuration', 0, '', wizard, None, user_selected_custom_browsing) 
             wizard = DictionarySelectionWizardDialog('retro_core_info', 'Select the core', get_available_retroarch_cores, wizard, load_selected_core_info)
+            wizard = KeyboardWizardDialog('retro_core_info', 'Enter path to core file', wizard, load_selected_core_info, user_selected_custom_browsing)
             wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard) 
             wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g nes|zip)', wizard)
-            wizard = DummyWizardDialog('args', get_default_retroarch_arguments, wizard)
+            wizard = DummyWizardDialog('args', get_default_retroarch_arguments(), wizard)
             wizard = KeyboardWizardDialog('args', 'Extra application arguments', wizard)
             wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
             wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
@@ -313,7 +314,7 @@ def get_kodi_favourites():
 
     return fav_options
 
-def get_icon_from_selected_favourite(input, launcher):
+def get_icon_from_selected_favourite(input, item_key, launcher):
 
     fav_action = launcher['application']
     favourites = kodi_read_favourites()
@@ -324,7 +325,7 @@ def get_icon_from_selected_favourite(input, launcher):
 
     return 'DefaultProgram.png'
 
-def get_title_from_selected_favourite(input, launcher):
+def get_title_from_selected_favourite(input, item_key, launcher):
     
     fav_action = launcher['application']
     favourites = kodi_read_favourites()
@@ -446,12 +447,13 @@ def get_available_retroarch_configurations(item_key, launcher):
 
     return configs
 
-def user_browses_for_configuration(item_key, launcher):
+def user_selected_custom_browsing(item_key, launcher):
     return launcher[item_key] == 'BROWSE'
 
 def get_available_retroarch_cores(item_key, launcher):
-
-    cores = {}
+    
+    cores = OrderedDict()
+    cores['BROWSE'] = 'Manual enter path to core'
     cores_ext = '*.*'
 
     if is_windows():
@@ -477,13 +479,15 @@ def get_available_retroarch_cores(item_key, launcher):
 
     files = cores_folder.scanFilesInPathAsFileNameObjects(cores_ext)
     for file in files:
-        
+                
         log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))    
-        info_file = file.switchExtension('info')
-        info_file = info_folder.pjoin(info_file.getBase())
-        log_debug("get_available_retroarch_cores() using info '{0}'".format(info_file.getOriginalPath()))    
+        info_file = switch_core_to_info_file(file, info_folder)
 
-        log_debug("get: {}".format(info_file.readAll()))
+        if not info_file.exists():
+            log_warning('get_available_retroarch_cores() Cannot find "{}". Skipping core "{}"'.format(info_file.getOriginalPath(), file.getBase()))
+            continue
+
+        log_debug("get_available_retroarch_cores() using info '{0}'".format(info_file.getOriginalPath()))    
         core_info = info_file.readPropertyFile()
         cores[info_file.getOriginalPath()] = core_info['display_name']
 
@@ -508,24 +512,31 @@ def create_path_from_retroarch_setting(path_from_setting, parent_dir):
 
 def load_selected_core_info(input, item_key, launcher):
 
-    info_file       = FileNameFactory.create(input)
-    config_file     = FileNameFactory.create(launcher['retro_config'])
-    parent_dir      = config_file.getDirAsFileName()
-    configuration   = config_file.readPropertyFile()    
-    cores_folder    = create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
+    if input == 'BROWSE':
+        return input
     
     if is_windows():
         cores_ext = 'dll'
     else:
         cores_ext = 'so'
+
+    if input.endswith(cores_ext):
+        core_file = FileNameFactory.create(input)
+        launcher['retro_core']  = core_file.getOriginalPath()
+        return input
+
+    config_file     = FileNameFactory.create(launcher['retro_config'])
+    parent_dir      = config_file.getDirAsFileName()
+    configuration   = config_file.readPropertyFile()    
+    cores_folder    = create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
+    info_file       = FileNameFactory.create(input)
         
     if not cores_folder.exists():
         log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
         kodi_notify_error('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
         return ''
 
-    core_file = info_file.switchExtension(cores_ext)
-    core_file = cores_folder.pjoin(core_file.getBase())
+    core_file = switch_info_to_core_file(info_file, cores_folder, cores_ext)
     core_info = info_file.readPropertyFile()
 
     launcher[item_key]      = info_file.getOriginalPath()
@@ -536,6 +547,28 @@ def load_selected_core_info(input, item_key, launcher):
     launcher['m_name']      = core_info['systemname']
 
     return input
+
+def switch_core_to_info_file(core_file, info_folder):
+    
+    info_file = core_file.switchExtension('info')
+   
+    if is_android():
+        info_file = info_folder.pjoin(info_file.getBase().replace('_android.', '.'))
+    else:
+        info_file = info_folder.pjoin(info_file.getBase())
+
+    return info_file
+
+def switch_info_to_core_file(info_file, cores_folder, cores_ext):
+    
+    core_file = info_file.switchExtension(cores_ext)
+
+    if is_android():
+        core_file = cores_folder.pjoin(core_file.getBase().replace('.', '_android.'))
+    else:
+        core_file = cores_folder.pjoin(core_file.getBase())
+
+    return core_file
 
 def get_default_retroarch_arguments():
 
