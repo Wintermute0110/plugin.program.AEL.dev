@@ -10,8 +10,6 @@ from disk_IO import *
 from utils import *
 from utils_kodi import *
 
-# >> Determine platform to execute launcher on
-# >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
 class ExecutorFactory():
 
     def __init__(self, settings, logFile):
@@ -24,7 +22,7 @@ class ExecutorFactory():
         return self.create(app)
 
     def create(self, application):
-        
+                
         if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
             or 'xbmc-fav-' in application.getOriginalPath() or 'xbmc-sea-' in application.getOriginalPath():
             return XbmcExecutor(self.logFile)
@@ -32,7 +30,7 @@ class ExecutorFactory():
         if re.search('.*://.*', application.getOriginalPath()):
             return WebBrowserExecutor(self.logFile)
         
-        if sys.platform == 'win32':
+        if is_windows():
 
             if application.getExt().lower() == '.bat' or application.getExt().lower() == '.cmd' :
                 return WindowsBatchFileExecutor(self.logFile, self.settings['show_batch_window'])
@@ -43,10 +41,10 @@ class ExecutorFactory():
 
             return WindowsExecutor(self.logFile, self.settings['windows_cd_apppath'], self.settings['windows_close_fds'])
 
-        if sys.platform.startswith('linux'):
+        if is_linux() or is_android():
             return LinuxExecutor(self.logFile, self.settings['lirc_state'])
         
-        if sys.platform.startswith('darwin'):
+        if is_osx():
             return OSXExecutor(self.logFile)
 
         kodi_notify_warn('Cannot determine the running platform')

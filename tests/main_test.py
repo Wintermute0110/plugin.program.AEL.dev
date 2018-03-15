@@ -118,7 +118,7 @@ class Test_maintests(unittest.TestCase):
     def test_migrations(self):
         
         # arrange
-        shutil.copy2(self.TEST_ASSETS_DIR + "\\categories_example.xml", self.TEST_ASSETS_DIR + "\\categories.xml")
+        shutil.copy2(self.TEST_ASSETS_DIR + "\\ms_categories.xml", self.TEST_ASSETS_DIR + "\\categories.xml")
         main.__addon_version__ = '0.9.9-alpha'
 
         target = main.Main()

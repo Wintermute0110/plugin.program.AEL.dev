@@ -43,6 +43,10 @@ class LauncherFactory():
         if launcherType == LAUNCHER_STEAM:
             return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher, rom)
 
+        if launcherType == LAUNCHER_NVGAMESTREAM:
+            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, False, launcher, rom)
+
+
         return None
 
 
@@ -386,8 +390,11 @@ class KodiLauncher(Launcher):
         pass
 
 class StandardRomLauncher(Launcher):
-
+    
     def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
+
+        self.validate_if_app_exists = True
+        self.validate_if_rom_exists = True
 
         self.rom = rom
         self.categoryID = ''
@@ -465,9 +472,9 @@ class StandardRomLauncher(Launcher):
         log_info('StandardRomLauncher() rombase      "{0}"'.format(rombase))
         log_info('StandardRomLauncher() rombasenoext "{0}"'.format(rombase_noext))
         log_info('StandardRomLauncher() application  "{0}"'.format(self.application.getPath()))
+        log_info('StandardRomLauncher() appbase      "{0}"'.format(self.application.getBase()))
         log_info('StandardRomLauncher() apppath      "{0}"'.format(apppath))
 
-        
         # ~~~~ Argument substitution ~~~~~
         log_info('StandardRomLauncher() raw arguments   "{0}"'.format(self.arguments))
         self.arguments = self.arguments.replace('$categoryID$', self.categoryID)
@@ -480,11 +487,24 @@ class StandardRomLauncher(Launcher):
         self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
         self.arguments = self.arguments.replace('$romtitle$', self.title)
         self.arguments = self.arguments.replace('$apppath$', apppath)
+        self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
+
         # >> Legacy names for argument substitution
         self.arguments = self.arguments.replace('%rom%', romFile.getPath())
         self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
+
+        # automatic substitution of rom values
+        for rom_key, rom_value in self.rom.iteritems():
+            if isinstance(rom_value, basestring):
+                self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)        
+                
+        # automatic substitution of launcher values
+        for launcher_key, launcher_value in self.launcher.iteritems():
+            if isinstance(launcher_value, basestring):
+                self.arguments = self.arguments.replace('${}$'.format(launcher_key), launcher_value)
+                
         log_info('StandardRomLauncher() final arguments "{0}"'.format(self.arguments))
-        
+    
     def launch(self):
         
         self.title  = self.rom['m_name']
@@ -498,12 +518,12 @@ class StandardRomLauncher(Launcher):
         log_info('StandardRomLauncher() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
 
         # --- Check for errors and abort if found --- todo: CHECK
-        if not self.application.exists():
+        if self.validate_if_app_exists and not self.application.exists():
             log_error('Launching app not found "{0}"'.format(self.application.getPath()))
             kodi_notify_warn('Launching app not found {0}'.format(self.application.getOriginalPath()))
             return
 
-        if not ROMFileName.exists():
+        if self.validate_if_rom_exists and not ROMFileName.exists():
             log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
             kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
             return
@@ -553,12 +573,12 @@ class RetroarchLauncher(StandardRomLauncher):
         
     def _selectApplicationToUse(self):
         
-        if sys.platform == 'win32':
-            self.application = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
+        if is_windows():
+            self.application = FileNameFactory.create(self.launcher['application'])
             self.application = self.application.append('retroarch.exe')  
             return
 
-        if sys.platform.startswith('linux'):
+        if is_android():
             self.application = FileNameFactory.create('/system/bin/am')
             return
 
@@ -567,24 +587,22 @@ class RetroarchLauncher(StandardRomLauncher):
         pass
 
     def _selectArgumentsToUse(self):
-
-        retroCore = self.launcher['core']
-            
-        if sys.platform == 'win32':
-            appPath = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
-            corePath = appPath.pjoin(FileNameFactory.create('core'), retroCore)
-            
-            self.arguments = "-L  {0} ".format(corePath.getOriginalPath())
-            self.arguments += "'$rom$'"
+        
+        if is_windows() or is_linux():            
+            self.arguments =  '-L "$retro_core$" '
+            self.arguments += '-c "$retro_config$" '
+            self.arguments += '"$rom$"'
+            self.arguments += self.launcher['args']
             return
 
-        if sys.platform.startswith('linux'):
+        if is_android():
 
-            self.arguments = 'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
+            self.arguments =  'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
+            self.arguments += '-n com.retroarch/.browser.retroactivity.RetroActivityFuture '
             self.arguments += '-e ROM \'$rom$\' '
-            self.arguments += '-e LIBRETRO /data/data/com.retroarch/cores/{0} '.format(retroCore)
-            self.arguments += '-e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg '
-            self.arguments += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture'
+            self.arguments += '-e LIBRETRO $retro_core$ '
+            self.arguments += '-e CONFIGFILE $retro_config$ '
+            self.arguments += self.launcher['args']
             return
 
         #todo other os
@@ -615,3 +633,72 @@ class SteamLauncher(Launcher):
         
         super(SteamLauncher, self).launch()
         pass
+
+class NvidiaGameStreamLauncher(StandardRomLauncher):
+        
+    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
+
+        super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, escape_romfile, launcher, rom)
+        self.validate_if_rom_exists = False
+
+    def _selectApplicationToUse(self):
+        
+        streamClient = self.launcher['application']
+        
+        # java application selected (moonlight-pc)
+        if '.jar' in streamClient:
+            self.application = FileNameFactory.create(os.getenv("JAVA_HOME"))
+            if is_windows():
+                self.application = self.application.pjoin('bin\\java.exe')
+            else:
+                self.application = self.application.pjoin('bin/java')
+
+            return
+
+        if is_windows():
+            self.application = FileNameFactory.create(streamClient)
+            return
+
+        if is_android():
+            self.application = FileNameFactory.create('/system/bin/am')
+            return
+
+        pass
+
+    def _selectArgumentsToUse(self):
+        
+        streamClient = self.launcher['application']
+            
+        # java application selected (moonlight-pc)
+        if '.jar' in streamClient:
+            self.arguments =  '-jar "$application$" '
+            self.arguments += '-host $server$ '
+            self.arguments += '-fs '
+            self.arguments += '-app "$gamestream_name$" '
+            self.arguments += self.launcher['args']
+            return
+
+        if is_android():
+
+            if streamClient == 'NVIDIA':
+                self.arguments =  'start --user 0 -a android.intent.action.VIEW '
+                self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
+                self.arguments += '-d nvidia://stream/target/2/$streamid$'
+                return
+
+            if streamClient == 'MOONLIGHT':
+                self.arguments =  'start --user 0 -a android.intent.action.MAIN '
+                self.arguments += '-c android.intent.category.LAUNCHER ' 
+                self.arguments += '-n com.limelight/.Game '
+                self.arguments += '-e Host $server$ '
+                self.arguments += '-e AppId $streamid$ '
+                self.arguments += '-e AppName "$gamestream_name$" '
+                self.arguments += '-e PcName "$server_hostname$" '
+                self.arguments += '-e UUID $server_id$ '
+                self.arguments += '-e UniqueId {} '.format(misc_generate_random_SID())
+
+                return
+        
+        # else
+        self.arguments = self.launcher['args']
+        pass 

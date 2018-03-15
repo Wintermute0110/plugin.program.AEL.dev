@@ -219,7 +219,7 @@ def kodi_get_cached_image_FN(image_FN):
 #
 def kodi_update_image_cache(img_path_FN):
     # What if image is not cached?
-    cached_thumb_FN = kodi_get_cached_image_FN(img_path)
+    cached_thumb_FN = kodi_get_cached_image_FN(img_path_FN)
     log_debug('kodi_update_image_cache()       img_path_FN OP {0}'.format(img_path_FN.getOriginalPath()))
     log_debug('kodi_update_image_cache()   cached_thumb_FN OP {0}'.format(cached_thumb_FN.getOriginalPath()))
 
@@ -230,7 +230,7 @@ def kodi_update_image_cache(img_path_FN):
     if cached_thumb_ext == '.tbn':
         img_path_ext = img_path_FN.getExt()
         cached_thumb_FN = FileNameFactory.create(cached_thumb_FN.getOriginalPath().replace('.tbn', img_path_ext))
-        log_debug('kodi_update_image_cache() U cached_thumb_FN OP {0}'.format(cached_thumb.getOriginalPath()))
+        log_debug('kodi_update_image_cache() U cached_thumb_FN OP {0}'.format(cached_thumb_FN.getOriginalPath()))
 
     # --- Check if file exists in the cache ---
     # xbmc.getCacheThumbName() seems to return a filename even if the local file does not exist!
@@ -270,26 +270,62 @@ def kodi_update_image_cache(img_path_FN):
 # the previous wizarddialog in each new one.
 # You can then call the method 'runWizard()' on the last created instance.
 # 
+# Each wizard has a customFunction which will can be called after executing this 
+# specific dialog. It also has a conditionalFunction which can be called before
+# executing this dialog which will indicate if this dialog may be shown (True return value).
+# 
 class WizardDialog():
     __metaclass__ = ABCMeta
     
-    def __init__(self, property_key, title, decoratorDialog,  customFunction = None):
+    def __init__(self, property_key, title, decoratorDialog, customFunction = None, conditionalFunction = None):
+
         self.title = title
         self.property_key = property_key
         self.decoratorDialog = decoratorDialog
         self.customFunction = customFunction
+        self.conditionalFunction = conditionalFunction
+        self.cancelled = False
 
     def runWizard(self, properties):
 
-        if not self.show(properties):
+        if not self.executeDialog(properties):
             log_warning('User stopped wizard')
             return None
         
         return properties
+
+    def executeDialog(self, properties):
+        
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.executeDialog(properties):
+                return False
+
+        if self.conditionalFunction is not None:
+            mayShow = self.conditionalFunction(self.property_key, properties)
+            if not mayShow:
+                log_debug('Skipping dialog for key: {0}'.format(self.property_key))
+                return True
+
+        output = self.show(properties)
+        
+        if self.cancelled:
+            return False
+
+        if self.customFunction is not None:
+            output = self.customFunction(output, self.property_key, properties)
+
+        if self.property_key:
+            properties[self.property_key] = output
+            log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+
+        return True
         
     @abstractmethod
     def show(self, properties):
         return True
+
+    def _cancel(self):
+        self.cancelled = True
 
 #
 # Wizard dialog which accepts a keyboard user input.
@@ -298,58 +334,41 @@ class KeyboardWizardDialog(WizardDialog):
     
     def show(self, properties):
 
-        if self.decoratorDialog is not None:
-            if not self.decoratorDialog.show(properties):
-                return False
-
         log_debug('Executing keyboard wizard dialog for key: {0}'.format(self.property_key))
         originalText = properties[self.property_key] if self.property_key in properties else ''
 
         textInput = xbmc.Keyboard(originalText, self.title)
         textInput.doModal()
+
         if not textInput.isConfirmed(): 
-            return False
+            self._cancel()
+            return None
 
         output = textInput.getText().decode('utf-8')
-
-        if self.customFunction is not None:
-            output = self.customFunction(output, properties)
-
-        properties[self.property_key] = output
-        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
-
-        return True
+        return output
   
 #
 # Wizard dialog which shows a list of options to select from.
 # 
 class SelectionWizardDialog(WizardDialog):
 
-    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None):
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
         
         self.options = options
-        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
+        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
        
     def show(self, properties):
         
-        if self.decoratorDialog is not None:
-            if not self.decoratorDialog.show(properties):
-                return False
-            
         log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
         dialog = xbmcgui.Dialog()
         selection = dialog.select(self.title, self.options)
 
         if selection < 0:
-           return False
+            self._cancel()
+            return None
        
         output = self.options[selection]
-        if self.customFunction is not None:
-            output = self.customFunction(selection, properties)
-
-        properties[self.property_key] = output
-        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
-        return True
+        return output
 
   
 #
@@ -359,88 +378,129 @@ class SelectionWizardDialog(WizardDialog):
 # 
 class DictionarySelectionWizardDialog(WizardDialog):
 
-    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None):
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
         
         self.options = options
-        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
+        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
        
     def show(self, properties):
         
-        if self.decoratorDialog is not None:
-            if not self.decoratorDialog.show(properties):
-                return False
-            
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
         dialog = DictionaryDialog()
+                
+        if callable(self.options):
+            self.options = self.options(self.property_key, properties)
+
         output = dialog.select(self.title, self.options)
 
         if output is None:
-           return False
+            self._cancel()
+            return None
        
-        if self.customFunction is not None:
-            output = self.customFunction(output, properties)
-
-        properties[self.property_key] = output
-        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
-        return True
+        return output
     
 #
 # Wizard dialog which shows a filebrowser.
 # 
 class FileBrowseWizardDialog(WizardDialog):
     
-    def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None):
+    def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None, conditionalFunction = None):
         
         self.browseType = browseType
         self.filter = filter
-        super(FileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction)
+        super(FileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
        
     def show(self, properties):
         
-        if self.decoratorDialog is not None:
-            if not self.decoratorDialog.show(properties):
-                return False
-            
         log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
         originalPath = properties[self.property_key] if self.property_key in properties else ''
+
+        if callable(self.filter):
+            self.filter = self.filter(self.property_key, properties)
        
         output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath).decode('utf-8')
 
         if not output:
-           return False
+            self._cancel()
+            return None
        
-        if self.customFunction is not None:
-            output = self.customFunction(output, properties)
+        return output
 
-        properties[self.property_key] = output
-        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
-        return True
+#
+# Wizard dialog which shows an input for one of the following types:
+#    - xbmcgui.INPUT_ALPHANUM (standard keyboard)
+#    - xbmcgui.INPUT_NUMERIC (format: #)
+#    - xbmcgui.INPUT_DATE (format: DD/MM/YYYY)
+#    - xbmcgui.INPUT_TIME (format: HH:MM)
+#    - xbmcgui.INPUT_IPADDRESS (format: #.#.#.#)
+#    - xbmcgui.INPUT_PASSWORD (return md5 hash of input, input is masked)
+#
+class InputWizardDialog(WizardDialog):
+           
+    def __init__(self, property_key, title, inputType, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.inputType = inputType
+        super(InputWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+       
+    def show(self, properties):
+        
+        log_debug('Executing {0} input wizard dialog for key: {1}'.format(self.inputType, self.property_key))
+        originalValue = properties[self.property_key] if self.property_key in properties else ''
+
+        output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
+
+        if not output:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which shows you a message formatted with a value from the dictionary.
+#
+# Example:
+#   dictionary item {'token':'roms'}
+#   inputtext: 'I like {} a lot'
+#   result message on screen: 'I like roms a lot'
+#
+# Formatting is optional
+#
+class FormattedMessageWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, title, text, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.text = text
+        super(FormattedMessageWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
     
+    def show(self, properties):
+
+        log_debug('Executing message wizard dialog for key: {0}'.format(self.property_key))
+        format_values = properties[self.property_key] if self.property_key in properties else ''
+        full_text = self.text.format(format_values)
+        output = xbmcgui.Dialog().ok(self.title, full_text)
+
+        if not output:
+            self._cancel()
+            return None
+        
+        return output
+
+
 #
 # Wizard dialog which does nothing or shows anything.
 # It only sets a certain property with the predefined value.
 # 
 class DummyWizardDialog(WizardDialog):
 
-    def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None):
+    def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None, conditionalFunction = None):
         
         self.predefinedValue = predefinedValue
-        super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction)
+        super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
         
-        if self.decoratorDialog is not None:
-            if not self.decoratorDialog.show(properties):
-                return False
-            
         log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
-        output = self.predefinedValue
-        if self.customFunction is not None:
-            output = self.customFunction(output, properties)
-
-        properties[self.property_key] = output
-        log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
-        return True
+        return self.predefinedValue
 
 # 
 # Kodi dialog with select box based on a dictionary
