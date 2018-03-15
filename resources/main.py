@@ -983,13 +983,42 @@ class Main:
         kodi_refresh_container()
 
     def _command_add_new_launcher(self, categoryID):
+        
+        launcher_categoryID = None
 
-        launcher = self.launcherFactory.create_new()
+        # >> If categoryID not found user is creating a new launcher using the context menu
+        # >> of a launcher in addon root.
+        if categoryID not in self.categories:
+            log_info('Category ID not found. Creating laucher in addon root.')
+            launcher_categoryID = VCATEGORY_ADDONROOT_ID
+        else:
+            # --- Ask user if launcher is created on selected category or on root menu ---
+            category_name = self.categories[categoryID]['m_name']
+            options = {}
+            options[categoryID]             = 'Create Launcher in "{0}" category'.format(category_name)
+            options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in addon root'
+
+            dialog = DictionaryDialog()
+            launcher_categoryID = dialog.select('Choose Launcher category', options)
+
+        if launcher_categoryID is None:
+            return
+    
+        launcher = self.launcherFactory.create(None, self.launchers)
+        launcher_data = launcher.build(self.categories, launcher_categoryID)
         #builder = launcherBuilder()
         #builder.createLauncher(categoryID, self.launchers, self.categories, self.settings, CATEGORIES_FILE_PATH)
 
-        launcher.create()
+        launcherID = launcher_data['id']
+        launchers[launcherID] = launcher_data
 
+        # >> Notify user
+        kodi_notify('Created {0} {1}'.format(getLauncherTypeName(launcher_type), launcher_data['m_name']))
+
+        # >> If this point is reached then changes to metadata/images were made.
+        # >> Save categories and update container contents so user sees those changes inmediately.
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        
         kodi_refresh_container()
 
     def _command_edit_launcher(self, categoryID, launcherID):
