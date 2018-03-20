@@ -728,6 +728,9 @@ class RetroplayerLauncher(StandardRomLauncher):
             
         return wizard
 
+#
+# Read RetroarchLauncher.md
+#
 class RetroarchLauncher(StandardRomLauncher):
         
     def _selectApplicationToUse(self):
