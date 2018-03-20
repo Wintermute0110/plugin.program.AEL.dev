@@ -41,7 +41,6 @@ from rom_audit import *
 from scrap import *
 from autoconfig import *
 
-from launcher_builder import *
 from launchers import *
 from romsets import *
 from executors import *
@@ -1004,15 +1003,18 @@ class Main:
             return
     
         launcher = self.launcherFactory.create(None, self.launchers)
+        if launcher is None:
+            return
+
         launcher_data = launcher.build(self.categories, launcher_categoryID)
-        #builder = launcherBuilder()
-        #builder.createLauncher(categoryID, self.launchers, self.categories, self.settings, CATEGORIES_FILE_PATH)
+        if launcher_data is None:
+            return
 
         launcherID = launcher_data['id']
-        launchers[launcherID] = launcher_data
+        self.launchers[launcherID] = launcher_data
 
         # >> Notify user
-        kodi_notify('Created {0} {1}'.format(getLauncherTypeName(launcher_type), launcher_data['m_name']))
+        kodi_notify('Created {0} {1}'.format(launcher.get_launcher_type_name(), launcher_data['m_name']))
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.

@@ -15,6 +15,8 @@ from romstats import *
 from disk_IO import *
 from utils import *
 from utils_kodi import *
+    
+from gamestream import *
 
 class LauncherFactory():
 
@@ -23,32 +25,35 @@ class LauncherFactory():
         self.romsetFactory = romsetFactory
         self.executorFactory = executorFactory
 
-    def _load(self, launcher_type, launcher, launchers, rom):
+    def _load(self, launcher_type, launcher_data, launchers, rom):
         
         if launcher_type == LAUNCHER_STANDALONE:
-            return ApplicationLauncher(self.settings, self.executorFactory, launcher)
+            return ApplicationLauncher(self.settings, self.executorFactory, launcher_data)
 
         if launcher_type == LAUNCHER_FAVOURITES:
-            return KodiLauncher(self.settings, self.executorFactory, launcher)
+            return KodiLauncher(self.settings, self.executorFactory, launcher_data)
                 
         statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
 
-        if launcherType == LAUNCHER_RETROPLAYER:
-            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher, rom)
+        if launcher_type == LAUNCHER_RETROPLAYER:
+            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, rom)
 
-        if launcherType == LAUNCHER_RETROARCH:
-            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
+        if launcher_type == LAUNCHER_RETROARCH:
+            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
 
-        if launcherType == LAUNCHER_ROM:
-            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher, rom)
+        if launcher_type == LAUNCHER_ROM:
+            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
+        
+        if launcher_type == LAUNCHER_LNK:
+            return LnkLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
 
-        if launcherType == LAUNCHER_STEAM:
-            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher, rom)
+        if launcher_type == LAUNCHER_STEAM:
+            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, rom)
 
-        if launcherType == LAUNCHER_NVGAMESTREAM:
-            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, False, launcher, rom)
+        if launcher_type == LAUNCHER_NVGAMESTREAM:
+            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, False, launcher_data, rom)
 
-
+        log_warning('Unsupported launcher requested. Type {}'.format(launcher_type))
         return None
 
 
@@ -58,12 +63,14 @@ class LauncherFactory():
         if launcherID is None:            
             # --- Show "Create New Launcher" dialog ---
             typeOptions = OrderedDict()
-            typeOptions[LAUNCHER_STANDALONE]  = 'Standalone launcher (Game/Application)'
-            typeOptions[LAUNCHER_FAVOURITES]  = 'Kodi favourite launcher'
-            typeOptions[LAUNCHER_ROM]         = 'ROM launcher (Emulator)'
-            typeOptions[LAUNCHER_RETROPLAYER] = 'ROM launcher (Kodi Retroplayer)'
-            typeOptions[LAUNCHER_RETROARCH]   = 'ROM launcher (Retroarch)'
-            typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
+            typeOptions[LAUNCHER_STANDALONE]   = 'Standalone launcher (Game/Application)'
+            typeOptions[LAUNCHER_FAVOURITES]   = 'Kodi favourite launcher'
+            typeOptions[LAUNCHER_ROM]          = 'ROM launcher (Emulator)'
+            typeOptions[LAUNCHER_RETROPLAYER]  = 'ROM launcher (Kodi Retroplayer)'
+            typeOptions[LAUNCHER_RETROARCH]    = 'ROM launcher (Retroarch)'
+            typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
+            if not is_android():
+                typeOptions[LAUNCHER_STEAM] = 'Steam launcher'
             if is_windows():
                 typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
 
@@ -139,7 +146,7 @@ class Launcher():
             # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
             # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
             # >> launcher is edited using Python passing by assignment.
-            assets_init_asset_dir(FileNameFactory.create(launcher['assets_path']), self.launcher)
+            assets_init_asset_dir(FileNameFactory.create(self.launcher['assets_path']), self.launcher)
 
         self.launcher['timestamp_launcher'] = time.time()
         #launchers[launcherID] = launcher
@@ -311,6 +318,10 @@ class Launcher():
     def get_launcher_type(self):
         return LAUNCHER_STANDALONE
 
+    @abstractmethod
+    def get_launcher_type_name(self):        
+        return "Standalone launcher"
+
     #
     # Creates a new launcher using a wizard of dialogs.
     #
@@ -339,6 +350,13 @@ class Launcher():
                 return '.jar'
 
         return '.bat|.exe|.cmd|.lnk' if is_windows() else ''
+
+    #
+    # Wizard helper, when a user wants to set a custom value
+    # instead of the predefined list items.
+    #
+    def _user_selected_custom_browsing(self, item_key, launcher):
+        return launcher[item_key] == 'BROWSE'
 
 class ApplicationLauncher(Launcher):
     
@@ -372,6 +390,9 @@ class ApplicationLauncher(Launcher):
     
     def get_launcher_type(self):
         return LAUNCHER_STANDALONE
+    
+    def get_launcher_type_name(self):        
+        return "Standalone launcher"
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -386,18 +407,13 @@ class ApplicationLauncher(Launcher):
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             
         return wizard
-    #
-    # Wizard helper, when a user wants to set a custom value
-    # instead of the predefined list items.
-    #
-    def _user_selected_custom_browsing(self, item_key, launcher):
-        return launcher[item_key] == 'BROWSE'
 
 class KodiLauncher(Launcher):
     
     def __init__(self, settings, executorFactory, launcher):
         
-        super(KodiLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'])
+        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
+        super(KodiLauncher, self).__init__(launcher, settings, executorFactory, toggle_window)
         
     def launch(self):
 
@@ -413,6 +429,9 @@ class KodiLauncher(Launcher):
     
     def get_launcher_type(self):
         return LAUNCHER_FAVOURITES
+    
+    def get_launcher_type_name(self):        
+        return "Kodi favourite launcher"
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -473,7 +492,8 @@ class StandardRomLauncher(Launcher):
         self.statsStrategy = statsStrategy
 
         non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
-        super(StandardRomLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'], non_blocking_flag)
+        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
+        super(StandardRomLauncher, self).__init__(launcher, settings, executorFactory, toggle_window, non_blocking_flag)
 
     def _selectApplicationToUse(self):
 
@@ -609,6 +629,9 @@ class StandardRomLauncher(Launcher):
     
     def get_launcher_type(self):
         return LAUNCHER_ROM
+    
+    def get_launcher_type_name(self):        
+        return "ROM launcher"
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -668,7 +691,31 @@ class StandardRomLauncher(Launcher):
         romPath = romPath.pjoin('games')
 
         return romPath.getOriginalPath()
+    
+class LnkLauncher(StandardRomLauncher):
+    
+    def get_launcher_type(self):
+        return LAUNCHER_LNK
+    
+    def get_launcher_type_name(self):        
+        return "LNK launcher"
 
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        
+        wizard = DummyWizardDialog('application', LNK_LAUNCHER_APP_NAME, wizard)
+        wizard = FileBrowseWizardDialog('rompath', 'Select the LNKs path', 0, '', wizard)
+        wizard = DummyWizardDialog('romext', 'lnk', wizard)
+        wizard = DummyWizardDialog('args', '%rom%', wizard)
+        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+            
+        return wizard
 
 # --- Execute Kodi Retroplayer if launcher configured to do so ---
 # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
@@ -707,6 +754,9 @@ class RetroplayerLauncher(StandardRomLauncher):
     
     def get_launcher_type(self):
         return LAUNCHER_RETROPLAYER
+    
+    def get_launcher_type_name(self):        
+        return "Retroplayer launcher"
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -714,12 +764,10 @@ class RetroplayerLauncher(StandardRomLauncher):
     def _get_builder_wizard(self, wizard):
         
         wizard = DummyWizardDialog('application', RETROPLAYER_LAUNCHER_APP_NAME, wizard)
-        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard) 
         wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
         wizard = DummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
         wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
-        wizard = DummyWizardDialog('args', '', wizard, self._get_arguments_from_application_path)
-        wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
+        wizard = DummyWizardDialog('args', '%rom%', wizard)
         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
@@ -772,22 +820,20 @@ class RetroarchLauncher(StandardRomLauncher):
 
     def get_launcher_type(self):
         return LAUNCHER_RETROARCH
+    
+    def get_launcher_type_name(self):        
+        return "Retroarch launcher"
 
     #
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        
-        # >> If Retroarch System dir not configured or found abort.
-        sys_dir_FN = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
-        if not sys_dir_FN.exists():
-            kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
-            return
-
-        wizard = DummyWizardDialog('application', self.settings['io_retroarch_sys_dir'], wizard)
+                
+        wizard = DummyWizardDialog('application', self._get_retroarch_app_folder(self.settings), wizard)
+        wizard = FileBrowseWizardDialog('application', 'Select the Retroarch path', 0, '', wizard) 
         wizard = DictionarySelectionWizardDialog('retro_config', 'Select the configuration', self._get_available_retroarch_configurations, wizard)
         wizard = FileBrowseWizardDialog('retro_config', 'Select the configuration', 0, '', wizard, None, self._user_selected_custom_browsing) 
-        wizard = DictionarySelectionWizardDialog('retro_core_info', 'Select the core', self._get_retroarch_app_folder, wizard, self._load_selected_core_info)
+        wizard = DictionarySelectionWizardDialog('retro_core_info', 'Select the core', self._get_available_retroarch_cores, wizard, self._load_selected_core_info)
         wizard = KeyboardWizardDialog('retro_core_info', 'Enter path to core file', wizard, self._load_selected_core_info, self._user_selected_custom_browsing)
         wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard) 
         wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g nes|zip)', wizard)
@@ -990,7 +1036,8 @@ class SteamLauncher(Launcher):
         self.statsStrategy = statsStrategy
 
         non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
-        super(SteamLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'], non_blocking_flag)
+        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
+        super(SteamLauncher, self).__init__(launcher, settings, executorFactory, toggle_window, non_blocking_flag)
         
     def launch(self):
         
@@ -1005,10 +1052,16 @@ class SteamLauncher(Launcher):
         self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
         
         super(SteamLauncher, self).launch()
-        pass
+        pass    
+
+    def supports_launching_roms(self):
+        return True
     
     def get_launcher_type(self):
         return LAUNCHER_STEAM
+    
+    def get_launcher_type_name(self):        
+        return "Steam launcher"
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -1017,15 +1070,26 @@ class SteamLauncher(Launcher):
         
         wizard = DummyWizardDialog('application', 'Steam', wizard)
         wizard = KeyboardWizardDialog('steamid','Steam ID', wizard)
+        wizard = DummyWizardDialog('m_name', 'Steam', wizard)
         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
         wizard = DummyWizardDialog('rompath', '', wizard, self._get_value_from_assetpath)         
                     
         return wizard
+    
+    def _get_value_from_assetpath(self, input, item_key, launcher):
 
+        if input:
+            return input
+
+        romPath = FileNameFactory.create(launcher['assets_path'])
+        romPath = romPath.pjoin('games')
+
+        return romPath.getOriginalPath()
+    
 class NvidiaGameStreamLauncher(StandardRomLauncher):
-        
+
     def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
 
         super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, escape_romfile, launcher, rom)
@@ -1092,10 +1156,12 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
         # else
         self.arguments = self.launcher['args']
         pass 
-
-    
+  
     def get_launcher_type(self):
         return LAUNCHER_NVGAMESTREAM
+    
+    def get_launcher_type_name(self):        
+        return "Nvidia GameStream launcher"
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -1107,10 +1173,10 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
         info_txt += 'Please read the wiki for details how to create them before you go further.'
 
         wizard = FormattedMessageWizardDialog('certificates_path', 'Pairing with Gamestream PC', info_txt, wizard)
-        wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}, wizard, self._check_if_selected_gamestream_client_exists, lambda p: is_android())
-        wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'}, wizard, None, lambda p: not is_android())
-        wizard = FileBrowseWizardDialog('application', 'Select the Gamestream client jar', 1, self._get_appbrowser_filter, wizard, None, lambda p: not is_android())
-        wizard = KeyboardWizardDialog('args', 'Additional arguments', wizard, None, lambda p: not is_android())
+        wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}, wizard, self._check_if_selected_gamestream_client_exists, lambda pk,p: is_android())
+        wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'}, wizard, None, lambda pk,p: not is_android())
+        wizard = FileBrowseWizardDialog('application', 'Select the Gamestream client jar', 1, self._get_appbrowser_filter, wizard, None, lambda pk,p: not is_android())
+        wizard = KeyboardWizardDialog('args', 'Additional arguments', wizard, None, lambda pk,p: not is_android())
         wizard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, self._validate_gamestream_server_connection)
         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
