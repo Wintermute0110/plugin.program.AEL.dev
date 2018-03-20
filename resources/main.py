@@ -985,7 +985,6 @@ class Main:
     def _command_add_new_launcher(self, categoryID):
         
         launcher_categoryID = None
-
         # >> If categoryID not found user is creating a new launcher using the context menu
         # >> of a launcher in addon root.
         if categoryID not in self.categories:

@@ -7,6 +7,8 @@ import xbmc, xbmcgui
 
 # --- Modules/packages in this plugin ---
 from constants import *
+from platforms import *
+
 from executors import *
 from romsets import *
 from romstats import *
@@ -120,7 +122,7 @@ class Launcher():
 
         # --- Create new launcher. categories.xml is save at the end of this function ---
         # NOTE than in the database original paths are always stored.
-        self.launcher = wizard.runWizard(launcher)
+        self.launcher = wizard.runWizard(self.launcher)
         if not self.launcher:
             return None
         
@@ -301,18 +303,6 @@ class Launcher():
             xbmc.Player().play()
         log_debug('postExecution() function ENDS')
 
-    def get_title_from_app_path(self, input, launcher):
-
-        if input:
-            return input
-
-        app = launcher['application']
-        appPath = FileNameFactory.create(app)
-
-        title = appPath.getBase_noext()
-        title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
-        return title_formatted
-
     @abstractmethod
     def supports_launching_roms(self):
         return False
@@ -328,11 +318,34 @@ class Launcher():
     def _get_builder_wizard(self, wizard):
         return wizard
 
+    def _get_title_from_app_path(self, input, item_key, launcher):
+
+        if input:
+            return input
+
+        app = launcher['application']
+        appPath = FileNameFactory.create(app)
+
+        title = appPath.getBase_noext()
+        title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
+
+        return title_formatted
+    
+    def _get_appbrowser_filter(self, item_key, launcher):
+    
+        if item_key in launcher:
+            application = launcher[item_key]
+            if application == 'JAVA':
+                return '.jar'
+
+        return '.bat|.exe|.cmd|.lnk' if is_windows() else ''
+
 class ApplicationLauncher(Launcher):
     
     def __init__(self, settings, executorFactory, launcher):
         
-        super(ApplicationLauncher, self).__init__(launcher, settings, executorFactory, launcher['toggle_window'])
+        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
+        super(ApplicationLauncher, self).__init__(launcher, settings, executorFactory, toggle_window)
         
     def launch(self):
 
@@ -365,14 +378,20 @@ class ApplicationLauncher(Launcher):
     #
     def _get_builder_wizard(self, wizard):
         
-        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, 7, wizard)
+        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard)
         wizard = DummyWizardDialog('args', '', wizard)
         wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
-        wizard = DummyWizardDialog('m_name', '', wizard, get_title_from_app_path)
-        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, get_title_from_app_path)
+        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             
         return wizard
+    #
+    # Wizard helper, when a user wants to set a custom value
+    # instead of the predefined list items.
+    #
+    def _user_selected_custom_browsing(self, item_key, launcher):
+        return launcher[item_key] == 'BROWSE'
 
 class KodiLauncher(Launcher):
     
@@ -388,6 +407,57 @@ class KodiLauncher(Launcher):
         
         super(KodiLauncher, self).launch()
         pass
+    
+    def supports_launching_roms(self):
+        return False
+    
+    def get_launcher_type(self):
+        return LAUNCHER_FAVOURITES
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        
+        wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', self._get_kodi_favourites(), wizard)
+        wizard = DummyWizardDialog('s_icon', '', wizard, self._get_icon_from_selected_favourite)
+        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_selected_favourite)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+            
+        return wizard
+    
+    def _get_kodi_favourites(self):
+
+        favourites = kodi_read_favourites()
+        fav_options = {}
+
+        for key in favourites:
+            fav_options[key] = favourites[key][0]
+
+        return fav_options
+
+    def _get_icon_from_selected_favourite(self, input, item_key, launcher):
+
+        fav_action = launcher['application']
+        favourites = kodi_read_favourites()
+
+        for key in favourites:
+            if fav_action == key:
+                return favourites[key][1]
+
+        return 'DefaultProgram.png'
+
+    def _get_title_from_selected_favourite(self, input, item_key, launcher):
+    
+        fav_action = launcher['application']
+        favourites = kodi_read_favourites()
+
+        for key in favourites:
+            if fav_action == key:
+                return favourites[key][0]
+
+        return _get_title_from_app_path(input, launcher)
 
 class StandardRomLauncher(Launcher):
     
@@ -534,10 +604,76 @@ class StandardRomLauncher(Launcher):
         super(StandardRomLauncher, self).launch()
         pass
 
+    def supports_launching_roms(self):
+        return True
+    
+    def get_launcher_type(self):
+        return LAUNCHER_ROM
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        
+        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard) 
+        wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
+        wizard = DummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
+        wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
+        wizard = DummyWizardDialog('args', '', wizard, self._get_arguments_from_application_path)
+        wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
+        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+            
+        return wizard
+
+    def _get_extensions_from_app_path(self, input, item_key ,launcher):
+    
+        if input:
+            return input
+
+        app = launcher['application']
+        appPath = FileNameFactory.create(app)
+    
+        extensions = emudata_get_program_extensions(appPath.getBase())
+        return extensions
+    
+    def _get_arguments_from_application_path(self, input, item_key, launcher):
+    
+        if input:
+            return input
+
+        app = launcher['application']
+        appPath = FileNameFactory.create(app)
+    
+        default_arguments = emudata_get_program_arguments(appPath.getBase())
+        return default_arguments
+
+    def _get_value_from_rompath(self, input, item_key, launcher):
+
+        if input:
+            return input
+
+        romPath = launcher['rompath']
+        return romPath
+
+    def _get_value_from_assetpath(self, input, item_key, launcher):
+
+        if input:
+            return input
+
+        romPath = FileNameFactory.create(launcher['assets_path'])
+        romPath = romPath.pjoin('games')
+
+        return romPath.getOriginalPath()
+
+
 # --- Execute Kodi Retroplayer if launcher configured to do so ---
 # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
-class RetroplayerLauncher(StandardRomSet):
+class RetroplayerLauncher(StandardRomLauncher):
 
     def launch(self):
         log_info('RetroplayerLauncher() Executing ROM with Kodi Retroplayer ...')
@@ -568,6 +704,29 @@ class RetroplayerLauncher(StandardRomSet):
         xbmc.Player().play(ROMFileName.getOriginalPath(), listitem)
         log_verb('RetroplayerLauncher() Calling xbmc.Player().play() returned. Leaving function.')
         pass
+    
+    def get_launcher_type(self):
+        return LAUNCHER_RETROPLAYER
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        
+        wizard = DummyWizardDialog('application', RETROPLAYER_LAUNCHER_APP_NAME, wizard)
+        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard) 
+        wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
+        wizard = DummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
+        wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
+        wizard = DummyWizardDialog('args', '', wizard, self._get_arguments_from_application_path)
+        wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
+        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+            
+        return wizard
 
 class RetroarchLauncher(StandardRomLauncher):
         
@@ -608,6 +767,217 @@ class RetroarchLauncher(StandardRomLauncher):
         #todo other os
         pass 
 
+    def get_launcher_type(self):
+        return LAUNCHER_RETROARCH
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        
+        # >> If Retroarch System dir not configured or found abort.
+        sys_dir_FN = FileNameFactory.create(self.settings['io_retroarch_sys_dir'])
+        if not sys_dir_FN.exists():
+            kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
+            return
+
+        wizard = DummyWizardDialog('application', self.settings['io_retroarch_sys_dir'], wizard)
+        wizard = DictionarySelectionWizardDialog('retro_config', 'Select the configuration', self._get_available_retroarch_configurations, wizard)
+        wizard = FileBrowseWizardDialog('retro_config', 'Select the configuration', 0, '', wizard, None, self._user_selected_custom_browsing) 
+        wizard = DictionarySelectionWizardDialog('retro_core_info', 'Select the core', self._get_retroarch_app_folder, wizard, self._load_selected_core_info)
+        wizard = KeyboardWizardDialog('retro_core_info', 'Enter path to core file', wizard, self._load_selected_core_info, self._user_selected_custom_browsing)
+        wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard) 
+        wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g nes|zip)', wizard)
+        wizard = DummyWizardDialog('args', self._get_default_retroarch_arguments(), wizard)
+        wizard = KeyboardWizardDialog('args', 'Extra application arguments', wizard)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+                    
+        return wizard
+
+    def _get_retroarch_app_folder(self, settings):
+    
+        retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])      
+    
+        if retroarch_folder.exists():
+            return retroarch_folder.getOriginalPath()
+
+        if is_android():
+        
+            android_retroarch_folders = [
+                '/storage/emulated/0/Android/data/com.retroarch/',
+                '/data/data/com.retroarch/',
+                '/storage/sdcard0/Android/data/com.retroarch/',
+                '/data/user/0/com.retroarch']
+
+        
+            for retroach_folder_path in android_retroarch_folders:
+                retroarch_folder = FileNameFactory.create(retroach_folder_path)
+                if retroarch_folder.exists():
+                    return retroarch_folder.getOriginalPath()
+
+        return '/'
+
+    def _get_available_retroarch_configurations(self, item_key, launcher):
+    
+        configs = OrderedDict()
+        configs['BROWSE'] = 'Browse for configuration'
+
+        retroarch_folders = []
+        retroarch_folders.append(FileNameFactory.create(launcher['application']))
+
+        if is_android():
+            retroarch_folders.append(FileNameFactory.create('/storage/emulated/0/Android/data/com.retroarch/'))
+            retroarch_folders.append(FileNameFactory.create('/data/data/com.retroarch/'))
+            retroarch_folders.append(FileNameFactory.create('/storage/sdcard0/Android/data/com.retroarch/'))
+            retroarch_folders.append(FileNameFactory.create('/data/user/0/com.retroarch/'))
+        
+        for retroarch_folder in retroarch_folders:
+            log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getOriginalPath()))
+            files = retroarch_folder.recursiveScanFilesInPathAsFileNameObjects('*.cfg')
+        
+            if len(files) < 1:
+                continue
+
+            for file in files:
+                log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getOriginalPath()))
+                
+                configs[file.getOriginalPath()] = file.getBase_noext()
+
+            return configs
+
+        return configs
+
+    def _get_available_retroarch_cores(self, item_key, launcher):
+    
+        cores = OrderedDict()
+        cores['BROWSE'] = 'Manual enter path to core'
+        cores_ext = '*.*'
+
+        if is_windows():
+            cores_ext = '*.dll'
+        else:
+            cores_ext = '*.so'
+
+        config_file     = FileNameFactory.create(launcher['retro_config'])
+        parent_dir      = config_file.getDirAsFileName()
+        configuration   = config_file.readPropertyFile()    
+        info_folder     = self._create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
+        cores_folder    = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
+        
+        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getOriginalPath()))
+
+        if not info_folder.exists():
+            log_warning('Retroarch info folder not found {}'.format(info_folder.getOriginalPath()))
+            return cores
+    
+        if not cores_folder.exists():
+            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+            return cores
+
+        files = cores_folder.scanFilesInPathAsFileNameObjects(cores_ext)
+        for file in files:
+                
+            log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))    
+            info_file = self._switch_core_to_info_file(file, info_folder)
+
+            if not info_file.exists():
+                log_warning('get_available_retroarch_cores() Cannot find "{}". Skipping core "{}"'.format(info_file.getOriginalPath(), file.getBase()))
+                continue
+
+            log_debug("get_available_retroarch_cores() using info '{0}'".format(info_file.getOriginalPath()))    
+            core_info = info_file.readPropertyFile()
+            cores[info_file.getOriginalPath()] = core_info['display_name']
+
+        return cores
+
+    def _load_selected_core_info(self, input, item_key, launcher):
+
+        if input == 'BROWSE':
+            return input
+    
+        if is_windows():
+            cores_ext = 'dll'
+        else:
+            cores_ext = 'so'
+
+        if input.endswith(cores_ext):
+            core_file = FileNameFactory.create(input)
+            launcher['retro_core']  = core_file.getOriginalPath()
+            return input
+
+        config_file     = FileNameFactory.create(launcher['retro_config'])
+        parent_dir      = config_file.getDirAsFileName()
+        configuration   = config_file.readPropertyFile()    
+        cores_folder    = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
+        info_file       = FileNameFactory.create(input)
+        
+        if not cores_folder.exists():
+            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+            kodi_notify_error('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+            return ''
+
+        core_file = self._switch_info_to_core_file(info_file, cores_folder, cores_ext)
+        core_info = info_file.readPropertyFile()
+
+        launcher[item_key]      = info_file.getOriginalPath()
+        launcher['retro_core']  = core_file.getOriginalPath()
+        launcher['romext']      = core_info['supported_extensions']
+        launcher['platform']    = core_info['systemname']
+        launcher['m_developer'] = core_info['manufacturer']
+        launcher['m_name']      = core_info['systemname']
+
+        return input
+
+    def _get_default_retroarch_arguments(self):
+
+        args = ''
+        if is_android():
+            args += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60'
+
+        return args
+    
+    def _create_path_from_retroarch_setting(self, path_from_setting, parent_dir):
+
+        if not path_from_setting.endswith('\\') and not path_from_setting.endswith('/'):
+            path_from_setting = path_from_setting + parent_dir.path_separator()
+
+        if path_from_setting.startswith(':\\'):
+            path_from_setting = path_from_setting[2:]
+            return parent_dir.pjoin(path_from_setting)
+        else:
+            folder = FileNameFactory.create(path_from_setting)
+            if '/data/user/0/' in folder.getOriginalPath():
+                alternative_folder = foldexr.getOriginalPath()
+                alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
+                folder = FileNameFactory.create(alternative_folder)
+
+            return folder
+
+    def _switch_core_to_info_file(self, core_file, info_folder):
+    
+        info_file = core_file.switchExtension('info')
+   
+        if is_android():
+            info_file = info_folder.pjoin(info_file.getBase().replace('_android.', '.'))
+        else:
+            info_file = info_folder.pjoin(info_file.getBase())
+
+        return info_file
+
+    def _switch_info_to_core_file(self, info_file, cores_folder, cores_ext):
+    
+        core_file = info_file.switchExtension(cores_ext)
+
+        if is_android():
+            core_file = cores_folder.pjoin(core_file.getBase().replace('.', '_android.'))
+        else:
+            core_file = cores_folder.pjoin(core_file.getBase())
+
+        return core_file
+
 class SteamLauncher(Launcher):
 
     def __init__(self, settings, executorFactory, statsStrategy, launcher, rom):
@@ -633,6 +1003,23 @@ class SteamLauncher(Launcher):
         
         super(SteamLauncher, self).launch()
         pass
+    
+    def get_launcher_type(self):
+        return LAUNCHER_STEAM
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        
+        wizard = DummyWizardDialog('application', 'Steam', wizard)
+        wizard = KeyboardWizardDialog('steamid','Steam ID', wizard)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
+        wizard = DummyWizardDialog('rompath', '', wizard, self._get_value_from_assetpath)         
+                    
+        return wizard
 
 class NvidiaGameStreamLauncher(StandardRomLauncher):
         
@@ -702,3 +1089,81 @@ class NvidiaGameStreamLauncher(StandardRomLauncher):
         # else
         self.arguments = self.launcher['args']
         pass 
+
+    
+    def get_launcher_type(self):
+        return LAUNCHER_NVGAMESTREAM
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        
+        info_txt = 'To pair with your Geforce Experience Computer we need to make use of valid certificates. '
+        info_txt += 'Unfortunately at this moment we cannot create these certificates directly from within Kodi.\n'
+        info_txt += 'Please read the wiki for details how to create them before you go further.'
+
+        wizard = FormattedMessageWizardDialog('certificates_path', 'Pairing with Gamestream PC', info_txt, wizard)
+        wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}, wizard, self._check_if_selected_gamestream_client_exists, lambda p: is_android())
+        wizard = DictionarySelectionWizardDialog('application', 'Select the client', {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'}, wizard, None, lambda p: not is_android())
+        wizard = FileBrowseWizardDialog('application', 'Select the Gamestream client jar', 1, self._get_appbrowser_filter, wizard, None, lambda p: not is_android())
+        wizard = KeyboardWizardDialog('args', 'Additional arguments', wizard, None, lambda p: not is_android())
+        wizard = InputWizardDialog('server', 'Gamestream Server', xbmcgui.INPUT_IPADDRESS, wizard, self._validate_gamestream_server_connection)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
+        wizard = DummyWizardDialog('rompath', '', wizard, self._get_value_from_assetpath)   
+        # Pairing with pin code will be postponed untill crypto and certificate support in kodi
+        # wizard = DummyWizardDialog('pincode', None, wizard, generatePairPinCode)
+        wizard = DummyWizardDialog('certificates_path', None, wizard, self._try_to_resolve_path_to_nvidia_certificates)
+        wizard = FileBrowseWizardDialog('certificates_path', 'Select the path with valid certificates', 0, '', wizard, self._validate_nvidia_certificates) 
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)       
+                    
+        return wizard
+
+    def _generatePairPinCode(self, input, item_key, launcher):
+    
+        return gamestreamServer(None, None).generatePincode()
+
+    def _check_if_selected_gamestream_client_exists(self, input, item_key, launcher):
+
+        if input == 'NVIDIA':
+            nvidiaDataFolder = FileNameFactory.create('/data/data/com.nvidia.tegrazone3/')
+            nvidiaAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
+            if not nvidiaAppFolder.exists() and not nvidiaDataFolder.exists():
+                kodi_notify_warn('Could not find Nvidia Gamestream client. Make sure it\'s installed.')
+
+        if input == 'MOONLIGHT':
+            moonlightDataFolder = FileNameFactory.create('/data/data/com.limelight/')
+            moonlightAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.limelight/')
+            if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
+                kodi_notify_warn('Could not find Moonlight Gamestream client. Make sure it\'s installed.')
+        
+        return input
+
+    def _try_to_resolve_path_to_nvidia_certificates(self, input, item_key, launcher):
+    
+        path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
+        return path
+
+    def _validate_nvidia_certificates(self, input, item_key, launcher):
+
+        certificates_path = FileNameFactory.create(input)
+        gs = GameStreamServer(input, certificates_path)
+        if not gs.validate_certificates():
+            kodi_notify_warn('Could not find certificates to validate. Make sure you already paired with the server with the Shield or Moonlight applications.')
+
+        return certificates_path.getOriginalPath()
+
+
+    def _validate_gamestream_server_connection(self, input, item_key, launcher):
+
+        gs = GameStreamServer(input, None)
+        if not gs.connect():
+            kodi_notify_warn('Could not connect to gamestream server')
+
+        launcher['server_id'] = gs.get_uniqueid()
+        launcher['server_hostname'] = gs.get_hostname()
+
+        log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_id'],launcher['server_hostname']))
+
+        return input
