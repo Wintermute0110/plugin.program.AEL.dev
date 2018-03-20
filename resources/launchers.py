@@ -467,6 +467,9 @@ class RetroplayerLauncher(StandardRomSet):
         log_verb('RetroplayerLauncher() Calling xbmc.Player().play() returned. Leaving function.')
         pass
 
+#
+# Read RetroarchLauncher.md
+#
 class RetroarchLauncher(StandardRomLauncher):
         
     def _selectApplicationToUse(self):
