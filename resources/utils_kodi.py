@@ -301,7 +301,7 @@ class WizardDialog():
                 return False
 
         if self.conditionalFunction is not None:
-            mayShow = self.conditionalFunction(properties)
+            mayShow = self.conditionalFunction(self.property_key, properties)
             if not mayShow:
                 log_debug('Skipping dialog for key: {0}'.format(self.property_key))
                 return True
@@ -387,6 +387,10 @@ class DictionarySelectionWizardDialog(WizardDialog):
         
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
         dialog = DictionaryDialog()
+                
+        if callable(self.options):
+            self.options = self.options(self.property_key, properties)
+
         output = dialog.select(self.title, self.options)
 
         if output is None:
