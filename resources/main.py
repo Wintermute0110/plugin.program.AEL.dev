@@ -980,7 +980,7 @@ class Main:
         # >> Save categories and update container contents so user sees those changes inmediately.
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
-
+        
     def _command_add_new_launcher(self, categoryID):
         
         launcher_categoryID = None
@@ -1021,38 +1021,244 @@ class Main:
         fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         
         kodi_refresh_container()
+        
+    def _command_delete_launcher(self, launcher):
 
-    def _command_edit_launcher(self, categoryID, launcherID):
-        # --- Shows a select box with the options to edit ---
+        confirmed = False
+
+        # >> ROMs launcher
+        if launcher.supports_launching_roms():
+            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
+            num_roms = len(roms)
+            confirmed = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs. '.format(launcher.get_name(), num_roms) +
+                                    'Are you sure you want to delete it?')
+        # >> Standalone launcher
+        else:
+            confirmed = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(launcher.get_name()) +
+                                    'Are you sure you want to delete it?')
+
+        if not confirmed: 
+            return
+
+        # >> Remove JSON/XML file if exist
+        # >> Remove launcher from database. Categories.xml will be saved at the end of function
+        fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcher.get_id()])
+        self.launchers.pop(launcher.get_id())
+        kodi_notify('Deleted Launcher {0}'.format(launcher.get_name()))
+
+    def _command_edit_launcher_category(self, launcher):
+
+        current_category_ID = launcher.get_data()['categoryID']
+
+        # >> If no Categories there is nothing to change
+        if len(self.categories) == 0:
+            kodi_dialog_OK('There is no Categories. Nothing to change.')
+            return
+
         dialog = xbmcgui.Dialog()
-        finished_str = 'Finished' if self.launchers[launcherID]['finished'] == True else 'Unfinished'
-        if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
-            category_name = 'Addon root (no category)'
+        # Add special root cateogory at the beginning
+        categories_id   = [VCATEGORY_ADDONROOT_ID]
+        categories_name = ['Addon root (no category)']
+        
+        for key in self.categories:
+            categories_id.append(self.categories[key]['id'])
+            categories_name.append(self.categories[key]['m_name'])
+        
+        selected_cat = dialog.select('Select the category', categories_name)
+        if selected_cat < 0: return
+
+        new_categoryID = categories_id[selected_cat]
+        launcher.update_category(new_categoryID)
+        log_debug('_command_edit_launcher() current category   ID "{0}"'.format(current_category_ID))
+        log_debug('_command_edit_launcher() new     category   ID "{0}"'.format(new_categoryID))
+        log_debug('_command_edit_launcher() new     category name "{0}"'.format(categories_name[selected_cat]))
+
+        # >> Save cateogries/launchers
+        launcher.update_timestamp()
+        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+        # >> Display new category where launcher has moved
+        # For some reason ReplaceWindow() does not work, bu Container.Update() does.
+        # See http://forum.kodi.tv/showthread.php?tid=293844
+        if new_categoryID == VCATEGORY_ADDONROOT_ID:
+            plugin_url = self.base_url
         else:
-            category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
-        if self.launchers[launcherID]['rompath'] == '':
-            type = dialog.select('Select action for Launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata ...',
-                                  'Edit Assets/Artwork ...',
-                                  'Choose default Assets/Artwork ...',
-                                  'Change Category: {0}'.format(category_name),
-                                  'Launcher status: {0}'.format(finished_str),
-                                  'Advanced Modifications ...',
-                                  'Export Launcher XML configuration ...',
-                                  'Delete Launcher'])
-        else:
-            type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
-                                 ['Edit Metadata ...',
-                                  'Edit Assets/Artwork ...',
-                                  'Choose default Assets/Artwork ...',
-                                  'Change Category: {0}'.format(category_name),
-                                  'Launcher status: {0}'.format(finished_str),
-                                  'Manage ROMs ...',
-                                  'Audit ROMs / Launcher view mode ...',
-                                  'Advanced Modifications ...',
-                                  'Export Launcher XML configuration ...',
-                                  'Delete Launcher'])
-        if type < 0: return
+            plugin_url = '{0}?com=SHOW_LAUNCHERS&amp;catID={1}'.format(self.base_url, new_categoryID)
+        exec_str = 'Container.Update({0},replace)'.format(plugin_url)
+        log_debug('_command_edit_launcher() Plugin URL     "{0}"'.format(plugin_url))
+        log_debug('_command_edit_launcher() Executebuiltin "{0}"'.format(exec_str))
+        xbmc.executebuiltin(exec_str)
+        kodi_notify('Launcher new Category is {0}'.format(categories_name[selected_cat]))
+        return
+    
+    def _command_edit_launcher_metadata(self, launcher):
+               
+        launcher_options = launcher.get_metadata_edit_options()
+
+        # >> Make a list of available metadata scrapers
+        # todo: make a separate menu item 'Scrape' with after that a list to select instead of merging it now with other options.
+        scraper_obj_list  = []
+        scraper_menu_list = []
+        for scrap_obj in scrapers_metadata:
+            scraper_obj_list.append(scrap_obj)
+            launcher_options['SCRAPE_' + scrap_obj.name] = 'Scrape metadata from {0} ...'.format(scrap_obj.name)
+            log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
+
+        dialog = DictionaryDialog()
+        selected_option = dialog.select('Edit Launcher Metadata', launcher_options)
+         
+        if selected_option is None:
+            self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
+            return
+        
+        # --- Edition of the launcher name ---
+        if selected_option == 'EDIT_TITLE':
+            
+            current_name = launcher.get_name()
+            keyboard = xbmc.Keyboard(current_name, 'Edit title')
+            keyboard.doModal()
+
+            if not keyboard.isConfirmed():
+                self._command_edit_launcher_metadata(launcher)
+                return
+
+            title = keyboard.getText().decode('utf-8')
+            if not launcher.change_name(title, self.categories, ROMS_DIR):
+                kodi_notify('Launcher Title not changed')
+            else:
+                kodi_notify('Launcher Title is now {0}'.format(launcher.get_name()))
+
+            return
+
+        # --- Selection of the launcher platform from AEL "official" list ---
+        if selected_option == 'EDIT_PLATFORM':
+            launcher_data = launcher.get_data()
+            p_idx = get_AEL_platform_index(launcher_data['platform'])
+            sel_platform = xbmcgui.Dialog().select('Select the platform', AEL_platform_list, preselect = p_idx)
+            if sel_platform < 0: 
+                self._command_edit_launcher_metadata(launcher)
+                return
+
+            if p_idx == sel_platform:
+                kodi_notify('Launcher Platform not changed')
+                return
+
+            self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
+            kodi_notify('Launcher Platform is now {0}'.format(AEL_platform_list[sel_platform]))
+
+        if selected_option == 'EDIT_RELEASEYEAR':
+            return #todo
+        
+        if selected_option == 'EDIT_GENRE':
+            return #todo
+        
+        if selected_option == 'EDIT_DEVELOPER':
+            return #todo
+        
+        if selected_option == 'EDIT_RATING':
+            return #todo
+        
+        if selected_option == 'EDIT_PLOT':
+            return #todo
+        
+        if selected_option == 'IMPORT_NFO_FILE':
+            return #todo
+        
+        if selected_option == 'IMPORT_NFO_FILE_BROWSE':
+            return #todo
+        
+        if selected_option == 'SAVE_NFO_FILE':
+            return #todo
+        
+        log_warning('_command_edit_launcher_metadata(): Unsupported menu option selected "{}"'.format(selected_option))
+        self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
+        return
+        
+    def _command_edit_launcher(self, categoryID, launcherID):
+
+        launcher = self.launcherFactory.create(launcherID, self.launchers)
+        if launcher is None:
+            return
+        
+        # --- Shows a select box with the options to edit ---
+        dialog = DictionaryDialog()
+        launcher_options = launcher.get_edit_options()
+        selected_option = dialog.select('Select action for Launcher {0}'.format(launcher.get_name()), launchers_options),
+
+        if selected_option is None:
+            return
+
+        if selected_option == 'EDIT_METADATA':
+            self._command_edit_launcher_metadata(launcher)
+            return #todo
+        
+        if selected_option == 'EDIT_ASSETS':
+            return #todo
+
+        if selected_option == 'SET_DEFAULT_ASSETS':
+            return #todo
+        
+        # --- Change launcher's Category ---
+        if selected_option == 'CHANGE_CATEGORY':
+            self._command_edit_launcher_category(launcher)
+            return
+
+        # --- Launcher status (finished [bool]) ---
+        if selected_option == 'LAUNCHER_STATUS':            
+            launcher.change_finished_status()
+            kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(launcher.get_name(), launcher.get_state()))
+
+        if selected_option == 'MANAGE_ROMS':
+            return #todo
+
+        if selected_option == 'AUDIT_ROMS':
+            return #todo
+        
+        if selected_option == 'ADVANCED_MODS':
+            return #todo
+
+        # --- Export Launcher XML configuration ---
+        if selected_option == 'EXPORT_LAUNCHER':
+            
+            # >> Ask user for a path to export the launcher configuration
+            dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
+                                                '', False, False).decode('utf-8')
+            launcher.export_configuration(dir_path, self.categories)
+            return
+
+        # --- Remove Launcher menu option ---
+        if selected_option == 'DELETE_LAUNCHER':
+            self._command_delete_launcher(launcher)
+            return
+
+        #finished_str = 'Finished' if self.launchers[launcherID]['finished'] == True else 'Unfinished'
+        #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        #    category_name = 'Addon root (no category)'
+        #else:
+        #    category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
+        #if self.launchers[launcherID]['rompath'] == '':
+        #    type = dialog.select('Select action for Launcher {0}'.format(self.launchers[launcherID]['m_name']),
+        #                         ['Edit Metadata ...',
+        #                          'Edit Assets/Artwork ...',
+        #                          'Choose default Assets/Artwork ...',
+        #                          'Change Category: {0}'.format(category_name),
+        #                          'Launcher status: {0}'.format(finished_str),
+        #                          'Advanced Modifications ...',
+        #                          'Export Launcher XML configuration ...',
+        #                          'Delete Launcher'])
+        #else:
+        #    type = dialog.select('Select action for launcher {0}'.format(self.launchers[launcherID]['m_name']),
+        #                         ['Edit Metadata ...',
+        #                          'Edit Assets/Artwork ...',
+        #                          'Choose default Assets/Artwork ...',
+        #                          'Change Category: {0}'.format(category_name),
+        #                          'Launcher status: {0}'.format(finished_str),
+        #                          'Manage ROMs ...',
+        #                          'Audit ROMs / Launcher view mode ...',
+        #                          'Advanced Modifications ...',
+        #                          'Export Launcher XML configuration ...',
+        #                          'Delete Launcher'])
+        #if type < 0: return
 
         # --- Edition of the launcher metadata ---
         type_nb = 0
@@ -1084,41 +1290,41 @@ class Main:
             if type2 < 0: return
 
             # --- Edition of the launcher name ---
-            if type2 == 0:
-                launcher = self.launchers[launcherID]
-                keyboard = xbmc.Keyboard(launcher['m_name'], 'Edit title')
-                keyboard.doModal()
-                if not keyboard.isConfirmed(): return
-                title = keyboard.getText().decode('utf-8')
-                if title == '': title = launcher['m_name']
-                old_launcher_name = launcher['m_name']
-                new_launcher_name = title.rstrip()
-                log_debug('_command_edit_launcher() Edit Title: old_launcher_name "{0}"'.format(old_launcher_name))
-                log_debug('_command_edit_launcher() Edit Title: new_launcher_name "{0}"'.format(new_launcher_name))
-                if old_launcher_name == new_launcher_name:
-                    kodi_notify('Launcher Title not changed')
-                    return
-
-                # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-                old_roms_base_noext = launcher['roms_base_noext']
-                categoryID = launcher['categoryID']
-                category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
-                new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-                fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
-                launcher['m_name'] = new_launcher_name
-                launcher['roms_base_noext'] = new_roms_base_noext
-                kodi_notify('Launcher Title is now {0}'.format(new_launcher_name))
+            #if type2 == 0:
+            #    launcher = self.launchers[launcherID]
+            #    keyboard = xbmc.Keyboard(launcher['m_name'], 'Edit title')
+            #    keyboard.doModal()
+            #    if not keyboard.isConfirmed(): return
+            #    title = keyboard.getText().decode('utf-8')
+            #    if title == '': title = launcher['m_name']
+            #    old_launcher_name = launcher['m_name']
+            #    new_launcher_name = title.rstrip()
+            #    log_debug('_command_edit_launcher() Edit Title: old_launcher_name "{0}"'.format(old_launcher_name))
+            #    log_debug('_command_edit_launcher() Edit Title: new_launcher_name "{0}"'.format(new_launcher_name))
+            #    if old_launcher_name == new_launcher_name:
+            #        kodi_notify('Launcher Title not changed')
+            #        return
+            #
+            #    # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
+            #    old_roms_base_noext = launcher['roms_base_noext']
+            #    categoryID = launcher['categoryID']
+            #    category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
+            #    new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
+            #    fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
+            #    launcher['m_name'] = new_launcher_name
+            #    launcher['roms_base_noext'] = new_roms_base_noext
+            #    kodi_notify('Launcher Title is now {0}'.format(new_launcher_name))
 
             # --- Selection of the launcher platform from AEL "official" list ---
-            elif type2 == 1:
-                p_idx = get_AEL_platform_index(self.launchers[launcherID]['platform'])
-                sel_platform = xbmcgui.Dialog().select('Select the platform', AEL_platform_list, preselect = p_idx)
-                if sel_platform < 0: return
-                if p_idx == sel_platform:
-                    kodi_notify('Launcher Platform not changed')
-                    return
-                self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
-                kodi_notify('Launcher Platform is now {0}'.format(AEL_platform_list[sel_platform]))
+            #elif type2 == 1:
+            #    p_idx = get_AEL_platform_index(self.launchers[launcherID]['platform'])
+            #    sel_platform = xbmcgui.Dialog().select('Select the platform', AEL_platform_list, preselect = p_idx)
+            #    if sel_platform < 0: return
+            #    if p_idx == sel_platform:
+            #        kodi_notify('Launcher Platform not changed')
+            #        return
+            #    self.launchers[launcherID]['platform'] = AEL_platform_list[sel_platform]
+            #    kodi_notify('Launcher Platform is now {0}'.format(AEL_platform_list[sel_platform]))
 
             # --- Edition of the launcher release date (year) ---
             elif type2 == 2:
@@ -1382,56 +1588,56 @@ class Main:
                 asset_name = assets_get_asset_name_str(launcher['default_clearlogo'])
                 kodi_notify('Launcher Clearlogo mapped to {0}'.format(asset_name))
 
-        # --- Change launcher's Category ---
-        type_nb = type_nb + 1
-        if type == type_nb:
-            current_category_ID = self.launchers[launcherID]['categoryID']
-
-            # >> If no Categories there is nothing to change
-            if len(self.categories) == 0:
-                kodi_dialog_OK('There is no Categories. Nothing to change.')
-                return
-            dialog = xbmcgui.Dialog()
-            # Add special root cateogory at the beginning
-            categories_id   = [VCATEGORY_ADDONROOT_ID]
-            categories_name = ['Addon root (no category)']
-            for key in self.categories:
-                categories_id.append(self.categories[key]['id'])
-                categories_name.append(self.categories[key]['m_name'])
-            selected_cat = dialog.select('Select the category', categories_name)
-            if selected_cat < 0: return
-            new_categoryID = categories_id[selected_cat]
-            self.launchers[launcherID]['categoryID'] = new_categoryID
-            log_debug('_command_edit_launcher() current category   ID "{0}"'.format(current_category_ID))
-            log_debug('_command_edit_launcher() new     category   ID "{0}"'.format(new_categoryID))
-            log_debug('_command_edit_launcher() new     category name "{0}"'.format(categories_name[selected_cat]))
-
-            # >> Save cateogires/launchers
-            self.launchers[launcherID]['timestamp_launcher'] = time.time()
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-
-            # >> Display new category where launcher has moved
-            # For some reason ReplaceWindow() does not work, bu Container.Update() does.
-            # See http://forum.kodi.tv/showthread.php?tid=293844
-            if new_categoryID == VCATEGORY_ADDONROOT_ID:
-                plugin_url = self.base_url
-            else:
-                plugin_url = '{0}?com=SHOW_LAUNCHERS&amp;catID={1}'.format(self.base_url, new_categoryID)
-            exec_str = 'Container.Update({0},replace)'.format(plugin_url)
-            log_debug('_command_edit_launcher() Plugin URL     "{0}"'.format(plugin_url))
-            log_debug('_command_edit_launcher() Executebuiltin "{0}"'.format(exec_str))
-            xbmc.executebuiltin(exec_str)
-            kodi_notify('Launcher new Category is {0}'.format(categories_name[selected_cat]))
-            return
+        ## --- Change launcher's Category ---
+        #type_nb = type_nb + 1
+        #if type == type_nb:
+        #    current_category_ID = self.launchers[launcherID]['categoryID']
+        #
+        #    # >> If no Categories there is nothing to change
+        #    if len(self.categories) == 0:
+        #        kodi_dialog_OK('There is no Categories. Nothing to change.')
+        #        return
+        #    dialog = xbmcgui.Dialog()
+        #    # Add special root cateogory at the beginning
+        #    categories_id   = [VCATEGORY_ADDONROOT_ID]
+        #    categories_name = ['Addon root (no category)']
+        #    for key in self.categories:
+        #        categories_id.append(self.categories[key]['id'])
+        #        categories_name.append(self.categories[key]['m_name'])
+        #    selected_cat = dialog.select('Select the category', categories_name)
+        #    if selected_cat < 0: return
+        #    new_categoryID = categories_id[selected_cat]
+        #    self.launchers[launcherID]['categoryID'] = new_categoryID
+        #    log_debug('_command_edit_launcher() current category   ID "{0}"'.format(current_category_ID))
+        #    log_debug('_command_edit_launcher() new     category   ID "{0}"'.format(new_categoryID))
+        #    log_debug('_command_edit_launcher() new     category name "{0}"'.format(categories_name[selected_cat]))
+        #
+        #    # >> Save cateogires/launchers
+        #    self.launchers[launcherID]['timestamp_launcher'] = time.time()
+        #    fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        #
+        #    # >> Display new category where launcher has moved
+        #    # For some reason ReplaceWindow() does not work, bu Container.Update() does.
+        #    # See http://forum.kodi.tv/showthread.php?tid=293844
+        #    if new_categoryID == VCATEGORY_ADDONROOT_ID:
+        #        plugin_url = self.base_url
+        #    else:
+        #        plugin_url = '{0}?com=SHOW_LAUNCHERS&amp;catID={1}'.format(self.base_url, new_categoryID)
+        #    exec_str = 'Container.Update({0},replace)'.format(plugin_url)
+        #    log_debug('_command_edit_launcher() Plugin URL     "{0}"'.format(plugin_url))
+        #    log_debug('_command_edit_launcher() Executebuiltin "{0}"'.format(exec_str))
+        #    xbmc.executebuiltin(exec_str)
+        #    kodi_notify('Launcher new Category is {0}'.format(categories_name[selected_cat]))
+        #    return
 
         # --- Launcher status (finished [bool]) ---
-        type_nb = type_nb + 1
-        if type == type_nb:
-            finished = self.launchers[launcherID]['finished']
-            finished = False if finished else True
-            finished_display = 'Finished' if finished == True else 'Unfinished'
-            self.launchers[launcherID]['finished'] = finished
-            kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]['m_name'], finished_display))
+        #type_nb = type_nb + 1
+        #if type == type_nb:
+        #    finished = self.launchers[launcherID]['finished']
+        #    finished = False if finished else True
+        #    finished_display = 'Finished' if finished == True else 'Unfinished'
+        #    self.launchers[launcherID]['finished'] = finished
+        #    kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]['m_name'], finished_display))
 
         # --- Launcher Manage ROMs menu option ---
         # ONLY for ROM launchers, not for standalone launchers
@@ -2296,58 +2502,58 @@ class Main:
                     kodi_notify('Launcher Multidisc support is now {0}'.format(multidisc_str))
 
         # --- Export Launcher XML configuration ---
-        type_nb = type_nb + 1
-        if type == type_nb:
-            launcher = self.launchers[launcherID]
-            launcher_fn_str = 'Launcher_' + text_title_to_filename_str(launcher['m_name']) + '.xml'
-            log_debug('_command_edit_launcher() Exporting Launcher configuration')
-            log_debug('_command_edit_launcher() Name     "{0}"'.format(launcher['m_name']))
-            log_debug('_command_edit_launcher() ID       {0}'.format(launcher['id']))
-            log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
-
-            # >> Ask user for a path to export the launcher configuration
-            dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
-                                               '', False, False).decode('utf-8')
-            if not dir_path: return
-            export_FN = FileNameFactory.create(dir_path).pjoin(launcher_fn_str)
-            if export_FN.exists():
-                ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
-                if not ret:
-                    kodi_notify_warn('Export of Launcher XML cancelled')
-                    return
-
-            # --- Print error message is something goes wrong writing file ---
-            try:
-                autoconfig_export_launcher(launcher, export_FN, self.categories)
-            except AEL_Error as E:
-                kodi_notify_warn('{0}'.format(E))
-            else:
-                kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
-            # >> No need to update categories.xml and timestamps so return now.
-            return
+        #type_nb = type_nb + 1
+        #if type == type_nb:
+        #    launcher = self.launchers[launcherID]
+        #    launcher_fn_str = 'Launcher_' + text_title_to_filename_str(launcher['m_name']) + '.xml'
+        #    log_debug('_command_edit_launcher() Exporting Launcher configuration')
+        #    log_debug('_command_edit_launcher() Name     "{0}"'.format(launcher['m_name']))
+        #    log_debug('_command_edit_launcher() ID       {0}'.format(launcher['id']))
+        #    log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
+        #
+        #    # >> Ask user for a path to export the launcher configuration
+        #    dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
+        #                                       '', False, False).decode('utf-8')
+        #    if not dir_path: return
+        #    export_FN = FileNameFactory.create(dir_path).pjoin(launcher_fn_str)
+        #    if export_FN.exists():
+        #        ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
+        #        if not ret:
+        #            kodi_notify_warn('Export of Launcher XML cancelled')
+        #            return
+        #
+        #    # --- Print error message is something goes wrong writing file ---
+        #    try:
+        #        autoconfig_export_launcher(launcher, export_FN, self.categories)
+        #    except AEL_Error as E:
+        #        kodi_notify_warn('{0}'.format(E))
+        #    else:
+        #        kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
+        #    # >> No need to update categories.xml and timestamps so return now.
+        #    return
 
         # --- Remove Launcher menu option ---
-        type_nb = type_nb + 1
-        if type == type_nb:
-            rompath = self.launchers[launcherID]['rompath']
-            launcher_name = self.launchers[launcherID]['m_name']
-            # >> Standalone launcher
-            if rompath == '':
-                ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(launcher_name) +
-                                        'Are you sure you want to delete it?')
-            # >> ROMs launcher
-            else:
-                roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
-                num_roms = len(roms)
-                ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs. '.format(launcher_name, num_roms) +
-                                        'Are you sure you want to delete it?')
-            if not ret: return
-
-            # >> Remove JSON/XML file if exist
-            # >> Remove launcher from database. Categories.xml will be saved at the end of function
-            fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
-            self.launchers.pop(launcherID)
-            kodi_notify('Deleted Launcher {0}'.format(launcher_name))
+        #type_nb = type_nb + 1
+        #if type == type_nb:
+        #    rompath = self.launchers[launcherID]['rompath']
+        #    launcher_name = self.launchers[launcherID]['m_name']
+        #    # >> Standalone launcher
+        #    if rompath == '':
+        #        ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(launcher_name) +
+        #                                'Are you sure you want to delete it?')
+        #    # >> ROMs launcher
+        #    else:
+        #        roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
+        #        num_roms = len(roms)
+        #        ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs. '.format(launcher_name, num_roms) +
+        #                                'Are you sure you want to delete it?')
+        #    if not ret: return
+        #
+        #    # >> Remove JSON/XML file if exist
+        #    # >> Remove launcher from database. Categories.xml will be saved at the end of function
+        #    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
+        #    self.launchers.pop(launcherID)
+        #    kodi_notify('Deleted Launcher {0}'.format(launcher_name))
 
         # User pressed cancel or close dialog
         if type < 0: return

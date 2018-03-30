@@ -322,13 +322,111 @@ class Launcher():
     def get_launcher_type_name(self):        
         return "Standalone launcher"
 
+    def get_id(self):
+        return self.launcher['id']
+
+    def get_name(self):
+        return self.launcher['m_name'] if 'm_name' in self.launcher else 'Unknown';
+    
+    def get_category_id(self):
+        return self.launcher['category_id']
+
+    def get_data(self):
+        return self.launcher
+
+    def get_state(self):
+        finished = self.launcher['finished']
+        finished_display = 'Finished' if finished == True else 'Unfinished'
+        return finished_display
+
+    #
+    # Returns a dictionary of options to choose from
+    # with which you can edit or manage this specific launcher.
+    #
+    @abstractmethod
+    def get_edit_options(self):
+        return {}
+    
+    #
+    # Returns a dictionary of options to choose from
+    # with which you can edit the metadata of this specific launcher.
+    #
+    @abstractmethod
+    def get_metadata_edit_options(self):
+        return {}
+
+    def change_finished_status(self):
+        finished = self.launcher['finished']
+        finished = False if finished else True
+        self.launchers['finished'] = finished
+
+    def update_timestamp(self):
+        self.launcher['timestamp_launcher'] = time.time()
+
+    def update_category(self, category_id):
+        self.launcher['categoryID'] = category_id
+
+    def export_configuration(self, path_to_export, categories):
+        
+        launcher_fn_str = 'Launcher_' + text_title_to_filename_str(self.get_name()) + '.xml'
+        log_debug('_command_edit_launcher() Exporting Launcher configuration')
+        log_debug('_command_edit_launcher() Name     "{0}"'.format(self.get_name()))
+        log_debug('_command_edit_launcher() ID       {0}'.format(self.get_id()))
+        log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
+
+        if not path_to_export: return
+
+        export_FN = FileNameFactory.create(path_to_export).pjoin(launcher_fn_str)
+        if export_FN.exists():
+            confirm = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
+            if not confirm:
+                kodi_notify_warn('Export of Launcher XML cancelled')
+        
+        # --- Print error message is something goes wrong writing file ---
+        try:
+            autoconfig_export_launcher(self.launcher, export_FN, categories)
+        except AEL_Error as E:
+            kodi_notify_warn('{0}'.format(E))
+        else:
+            kodi_notify('Exported Launcher "{0}" XML config'.format(self.get_name()))
+        # >> No need to update categories.xml and timestamps so return now.
+        
+    # todo: move roms_dir to factory and inject through constructor for rom launchers only
+    # categories should come from some kind of categoriesrepository
+    @abstractmethod
+    def change_name(self, new_name, categories, roms_dir):
+        return False
+        if new_name == '': 
+            return False
+        
+        old_launcher_name = self.get_name()
+        new_launcher_name = new_name.rstrip()
+
+        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
+        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
+        
+        if old_launcher_name == new_launcher_name:
+            return False
+        
+        # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
+        old_roms_base_noext = self.launcher['roms_base_noext']
+        categoryID = self.get_category_id()
+
+        category_name = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
+        new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, self.get_id())
+        fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
+
+        self.launcher['m_name'] = new_launcher_name
+        self.launcher['roms_base_noext'] = new_roms_base_noext
+
+        return True
     #
     # Creates a new launcher using a wizard of dialogs.
     #
     @abstractmethod
     def _get_builder_wizard(self, wizard):
         return wizard
-
+    
     def _get_title_from_app_path(self, input, item_key, launcher):
 
         if input:
@@ -393,6 +491,64 @@ class ApplicationLauncher(Launcher):
     
     def get_launcher_type_name(self):        
         return "Standalone launcher"
+    
+    def get_edit_options(self):
+
+        category_name = 'ToDo'
+        #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        #    category_name = 'Addon root (no category)'
+        #else:
+        #    category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
+        options = OrderedDict()
+        options['EDIT_METADATA']      = 'Edit Metadata ...'
+        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['CHANGE_CATEGORY']    = 'Change Category: {0}'.format(category_name)
+        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
+        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
+        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']    = 'Delete Launcher'
+
+        return options
+
+    def get_metadata_edit_options(self):
+        
+        # >> Metadata edit dialog
+        NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launcher)
+        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+        plot_str = text_limit_string(self.launcher['m_plot'], PLOT_STR_MAXSIZE)
+
+        options = OrderedDict()
+        options['EDIT_TITLE']   = "Edit Title: '{0}'".format(self.get_name())
+        options['EDIT_PLATFORM']   = "Edit Platform: {0}".format(self.launcher['platform'])
+        options['EDIT_RELEASEYEAR']   = "Edit Release Year: '{0}'".format(self.launcher['m_year'])
+        options['EDIT_GENRE']   = "Edit Genre: '{0}'".format(self.launcher['m_genre'])
+        options['EDIT_DEVELOPER']   = "Edit Developer: '{0}'".format(self.launcher['m_developer'])
+        options['EDIT_RATING'] = "Edit Rating: '{0}'".format(self.launcher['m_rating'])
+        options['EDIT_PLOT'] = "Edit Plot: '{0}'".format(plot_str)
+        options['IMPORT_NFO_FILE'] = 'Import NFO file (default, {0})'.format(NFO_found_str)
+        options['IMPORT_NFO_FILE_BROWSE'] = 'Import NFO file (browse NFO file) ...'
+        options['SAVE_NFO_FILE'] = 'Save NFO file (default location)'
+
+        return options
+            
+    # todo: move roms_dir to factory and inject through constructor for rom launchers only
+    # categories should come from some kind of categoriesrepository
+    def change_name(self, new_name, categories, roms_dir):
+        if new_name == '': 
+            return False
+        
+        old_launcher_name = self.get_name()
+        new_launcher_name = new_name.rstrip()
+
+        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
+        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
+        
+        if old_launcher_name == new_launcher_name:
+            return False
+        
+        self.launcher['m_name'] = new_launcher_name
+        return True
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -432,6 +588,41 @@ class KodiLauncher(Launcher):
     
     def get_launcher_type_name(self):        
         return "Kodi favourite launcher"
+    
+    def get_edit_options(self):
+
+        category_name = 'ToDo'
+        #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        #    category_name = 'Addon root (no category)'
+        #else:
+        #    category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
+        options = OrderedDict()
+        options['EDIT_METADATA']      = 'Edit Metadata ...'
+        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['CHANGE_CATEGORY']    = 'Change Category: {0}'.format(category_name)
+        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
+        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
+        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']    = 'Delete Launcher'
+
+        return options
+
+    def change_name(self, new_name, categories, roms_dir):
+        if new_name == '': 
+            return False
+        
+        old_launcher_name = self.get_name()
+        new_launcher_name = new_name.rstrip()
+
+        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
+        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
+        
+        if old_launcher_name == new_launcher_name:
+            return False
+        
+        self.launcher['m_name'] = new_launcher_name
+        return True
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -632,10 +823,57 @@ class StandardRomLauncher(Launcher):
     
     def get_launcher_type_name(self):        
         return "ROM launcher"
+    
+    def get_edit_options(self):
 
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
+        finished_str = 'Finished' if self.launcher['finished'] == True else 'Unfinished'
+        category_name = 'ToDo'
+        #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        #    category_name = 'Addon root (no category)'
+        #else:
+        #    category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
+        options = OrderedDict()
+        options['EDIT_METADATA']      = 'Edit Metadata ...'
+        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['CHANGE_CATEGORY']    = 'Change Category: {0}'.format(category_name)
+        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(finished_str)
+        options['MANAGE_ROMS']        = 'Manage ROMs ...'
+        options['AUDIT_ROMS']         = 'Audit ROMs / Launcher view mode ...'
+        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
+        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']    = 'Delete Launcher'
+
+        return options
+
+    # todo: move roms_dir to factory and inject through constructor for rom launchers only
+    # categories should come from some kind of categoriesrepository
+    def change_name(self, new_name, categories, roms_dir):
+        if new_name == '': 
+            return False
+        
+        old_launcher_name = self.get_name()
+        new_launcher_name = new_name.rstrip()
+
+        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
+        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
+        
+        if old_launcher_name == new_launcher_name:
+            return False
+        
+        # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
+        old_roms_base_noext = self.launcher['roms_base_noext']
+        categoryID = self.get_category_id()
+
+        category_name = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
+        new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, self.get_id())
+        fs_rename_ROMs_database(roms_dir, old_roms_base_noext, new_roms_base_noext)
+
+        self.launcher['m_name'] = new_launcher_name
+        self.launcher['roms_base_noext'] = new_roms_base_noext
+
+        return True
+
     def _get_builder_wizard(self, wizard):
         
         wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard) 
@@ -1062,10 +1300,29 @@ class SteamLauncher(Launcher):
     
     def get_launcher_type_name(self):        
         return "Steam launcher"
+    
+    def get_edit_options(self):
 
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
+        finished_str = 'Finished' if self.launcher['finished'] == True else 'Unfinished'
+        category_name = 'ToDo'
+        #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        #    category_name = 'Addon root (no category)'
+        #else:
+        #    category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
+        options = OrderedDict()
+        options['EDIT_METADATA']      = 'Edit Metadata ...'
+        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['CHANGE_CATEGORY']    = 'Change Category: {0}'.format(category_name)
+        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(finished_str)
+        options['MANAGE_ROMS']        = 'Manage ROMs ...'
+        options['AUDIT_ROMS']         = 'Audit ROMs / Launcher view mode ...'
+        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
+        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']    = 'Delete Launcher'
+
+        return options
+
     def _get_builder_wizard(self, wizard):
         
         wizard = DummyWizardDialog('application', 'Steam', wizard)
