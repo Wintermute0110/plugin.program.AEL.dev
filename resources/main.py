@@ -165,8 +165,8 @@ class Main:
         for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
         # log_debug('PLUGIN_DATA_DIR OP "{0}"'.format(PLUGIN_DATA_DIR.getOriginalPath()))
         # log_debug('PLUGIN_DATA_DIR  P "{0}"'.format(PLUGIN_DATA_DIR.getPath()))
-        # log_debug('CURRENT_ADDON_DIR OP "{0}"'.format(CURRENT_ADDON_DIR.getOriginalPath()))
-        # log_debug('CURRENT_ADDON_DIR  P "{0}"'.format(CURRENT_ADDON_DIR.getPath()))
+        # log_debug('AEL_ADDON_DIR OP "{0}"'.format(AEL_ADDON_DIR.getOriginalPath()))
+        # log_debug('AEL_ADDON_DIR  P "{0}"'.format(AEL_ADDON_DIR.getPath()))
 
         # --- Get DEBUG information for the log --
         if self.settings['log_level'] == LOG_DEBUG:
@@ -1344,7 +1344,7 @@ class Main:
                 log_debug('_command_edit_launcher() User chose scraper "{0}"'.format(scraper_obj.name))
 
                 # --- Initialise asset scraper ---
-                scraper_obj.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+                scraper_obj.set_addon_dir(AEL_ADDON_DIR.getPath())
                 log_debug('_command_edit_launcher() Initialised scraper "{0}"'.format(scraper_obj.name))
 
                 # >> If this returns False there were no changes so no need to save categories.xml
@@ -2699,7 +2699,7 @@ class Main:
                 log_debug('_command_edit_rom() User chose scraper "{0}"'.format(scraper_obj.name))
 
                 # --- Initialise asset scraper ---
-                scraper_obj.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+                scraper_obj.set_addon_dir(AEL_ADDON_DIR.getPath())
                 log_debug('_command_edit_rom() Initialised scraper "{0}"'.format(scraper_obj.name))
 
                 # >> If this returns False there were no changes so no need to save ROMs JSON.
@@ -4549,7 +4549,7 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path_FN = CURRENT_ADDON_DIR.pjoin(xml_file)
+        xml_path_FN = AEL_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
         log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
         games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
@@ -4584,7 +4584,7 @@ class Main:
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path_FN = CURRENT_ADDON_DIR.pjoin(xml_file)
+        xml_path_FN = AEL_ADDON_DIR.pjoin(xml_file)
         log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
         log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
         games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
@@ -6847,7 +6847,7 @@ class Main:
         loading_ticks_start = time.time()
         if scraper == 'AEL':
             xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+            xml_path = os.path.join(AEL_ADDON_DIR.getPath(), xml_file)
             # log_debug('xml_file = {0}'.format(xml_file))
             log_debug('Loading AEL XML {0}'.format(xml_path))
             games = audit_load_OfflineScraper_XML(xml_path)
@@ -6871,7 +6871,7 @@ class Main:
             info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(game['cloneof'])
         elif scraper == 'LaunchBox':
             xml_file = platform_AEL_to_LB_XML[platform]
-            xml_path = os.path.join(CURRENT_ADDON_DIR.getPath(), xml_file)
+            xml_path = os.path.join(AEL_ADDON_DIR.getPath(), xml_file)
             # log_debug('xml_file = {0}'.format(xml_file))
             log_debug('Loading LaunchBox XML {0}'.format(xml_path))
             games = audit_load_OfflineScraper_XML(xml_path)
@@ -8564,7 +8564,7 @@ class Main:
             # exactly the number returned by the settings. If scrapers are changed make sure the
             # list in scrapers.py and in settings.xml have same values!
             self.scraper_data = scrapers_metadata_MAME[self.settings['scraper_metadata_MAME']]
-            self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+            self.scraper_data.set_addon_dir(AEL_ADDON_DIR.getPath())
             log_verb('Loaded metadata MAME scraper "{0}"'.format(self.scraper_data.name))
 
             # --- Asset scrapers ---
@@ -8626,7 +8626,7 @@ class Main:
         else:
             # --- Metadata scraper ---
             self.scraper_data = scrapers_metadata[self.settings['scraper_metadata']]
-            self.scraper_data.set_addon_dir(CURRENT_ADDON_DIR.getPath())
+            self.scraper_data.set_addon_dir(AEL_ADDON_DIR.getPath())
             log_verb('Loaded metadata scraper "{0}"'.format(self.scraper_data.name))
 
             # --- Asset scrapers ---
