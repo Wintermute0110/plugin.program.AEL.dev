@@ -3317,10 +3317,17 @@ class Main:
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if category_dic['finished'] else 4
         listitem = xbmcgui.ListItem(category_dic['m_name'])
-        listitem.setInfo('video', {'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
-                                   'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
-                                   'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
-                                   'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+        if category_dic['m_year']:
+            listitem.setInfo('video', {'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
+                                       'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
+                                       'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
+                                       'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+        else:
+            listitem.setInfo('video', {'title'   : category_dic['m_name'],
+                                       'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
+                                       'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
+                                       'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
         # --- Set Category artwork ---
         # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
@@ -3797,6 +3804,7 @@ class Main:
                                        'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
                                        'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty('platform', launcher_dic['platform'])
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         # --- Set ListItem artwork ---
         kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
@@ -4232,6 +4240,7 @@ class Main:
         listitem.setProperty('nplayers', rom['m_nplayers'])
         listitem.setProperty('esrb', rom['m_esrb'])
         listitem.setProperty('platform', platform)
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM)
 
         # --- Set ROM artwork ---
         # >> AEL custom artwork fields

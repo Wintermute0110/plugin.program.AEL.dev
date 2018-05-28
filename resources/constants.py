@@ -79,11 +79,15 @@ VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
 # --- Content type property to be used by skins ---
-AEL_CONTENT_WINDOW_ID       = 10000
-AEL_CONTENT_LABEL           = 'AEL_Content'
-AEL_CONTENT_VALUE_LAUNCHERS = 'launchers'
-AEL_CONTENT_VALUE_ROMS      = 'roms'
-AEL_CONTENT_VALUE_NONE      = ''
+AEL_CONTENT_WINDOW_ID          = 10000
+AEL_CONTENT_LABEL              = 'AEL_Content'
+AEL_CONTENT_VALUE_LAUNCHERS    = 'launchers'
+AEL_CONTENT_VALUE_ROMS         = 'roms'
+AEL_CONTENT_VALUE_CATEGORY     = 'category'
+AEL_CONTENT_VALUE_STD_LAUNCHER = 'std_launcher'
+AEL_CONTENT_VALUE_ROM_LAUNCHER = 'rom_launcher'
+AEL_CONTENT_VALUE_ROM          = 'rom'
+AEL_CONTENT_VALUE_NONE         = ''
 
 # --- ROM flags used by skins to display status icons ---
 AEL_INFAV_BOOL_LABEL                 = 'AEL_InFav'
