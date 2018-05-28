@@ -1,4 +1,4 @@
-[B]Advanced Emulator Launcher | version 0.9.9 | XX May/June 2018[/B]
+[B]Planned features / TODO[/B]
 
 WIP      Check out the ListItem constructor offscreen parameter in Leia. It can dramatically speed
          up ListItem creation and population.
@@ -79,6 +79,12 @@ WIP      Filtering of BIOSes not working properly for MAME ROMs.
          Use the offline scraper DB to determine what is a BIOS/Device in MAME.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2697000#pid2697000
 
+
+[B]Advanced Emulator Launcher | version 0.9.8 | XX June 2018[/B]
+
+WIP      New properties to notify skins about Std launchers, ROM launchers, Categories, and
+         number of items in a Launcher.
+
 WIP      Create a couple of new ROM context menus, "Manage Recently played ROM" and 
          "Manage Most played ROM". Both will have the following options: "Delete this ROM",
          "Delete all Unlinked ROMs".
@@ -87,9 +93,6 @@ WIP      Create a couple of new ROM context menus, "Manage Recently played ROM" 
 WIP      Option to rescrape all ROM assets in a similar fashion to "Scan ROMs local artwork".
          Create a menu entry in "Edit Launcher", "Manage ROMs", "Scrape ROMs artwork".
          "Scrape ROMs artwork" will use the same scraper settings in options as the ROM Scanner.
-
-
-[B]Advanced Emulator Launcher | version 0.9.8 | XX March 2018[/B]
 
 FEATURE  Add Year and Developer for Categories.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653
