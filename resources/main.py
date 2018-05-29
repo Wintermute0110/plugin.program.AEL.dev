@@ -3413,6 +3413,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title' : vcategory_name, 'plot' : vcategory_plot, 'overlay' : 4 })
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
         commands = []
         update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
@@ -3436,6 +3437,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
@@ -3457,6 +3459,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
@@ -3477,6 +3480,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
@@ -3497,6 +3501,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
@@ -3588,6 +3593,7 @@ class Main:
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
         update_vcat_URL = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
@@ -3636,6 +3642,7 @@ class Main:
         listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
         # >> Set platform property to render platform icon on skins.
         listitem.setProperty('platform', platform)
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
@@ -3672,6 +3679,7 @@ class Main:
         vlauncher_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_icon.png').getPath()
         vlauncher_fanart = AEL_FANART_FILE_PATH.getPath()
         vlauncher_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_poster.png').getPath()
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         listitem = xbmcgui.ListItem(title_str)
         listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
@@ -3804,7 +3812,10 @@ class Main:
                                        'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
                                        'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty('platform', launcher_dic['platform'])
-        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if launcher_dic['rompath']:
+            listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        else:
+            listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_STD_LAUNCHER)
 
         # --- Set ListItem artwork ---
         kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
