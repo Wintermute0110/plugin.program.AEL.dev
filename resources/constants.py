@@ -89,6 +89,9 @@ AEL_CONTENT_VALUE_ROM_LAUNCHER = 'rom_launcher'
 AEL_CONTENT_VALUE_ROM          = 'rom'
 AEL_CONTENT_VALUE_NONE         = ''
 
+# >> Value is the number of items inside a launcher.
+AEL_NUMITEMS_LABEL             = 'AEL_NumItems'
+
 # --- ROM flags used by skins to display status icons ---
 AEL_INFAV_BOOL_LABEL                 = 'AEL_InFav'
 AEL_INFAV_BOOL_VALUE_TRUE            = 'InFav_True'
