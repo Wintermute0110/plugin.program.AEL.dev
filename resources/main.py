@@ -574,6 +574,19 @@ class Main:
         else:
             log_error('_misc_set_AEL_Content() Invalid AEL_Content_Value "{0}"'.format(AEL_Content_Value))
 
+    def _misc_set_AEL_Launcher_Content(self, launcher_dic):
+        kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
+        icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_icon', kodi_thumb)
+        clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
+        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, launcher_dic['m_name'])
+        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, icon_path)
+        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, clearlogo_path)
+
+    def _misc_clear_AEL_Launcher_Content(self):
+        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, '')
+        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, '')
+        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, '')
+
     def _command_add_new_category(self):
         dialog = xbmcgui.Dialog()
         keyboard = xbmc.Keyboard('', 'New Category Name')
@@ -3256,6 +3269,7 @@ class Main:
     def _command_render_categories(self):
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+        self._misc_clear_AEL_Launcher_Content()
 
         # --- For every category, add it to the listbox. Order alphabetically by name ---
         for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
@@ -3521,6 +3535,7 @@ class Main:
     def _gui_render_vcategories_root(self):
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+        self._misc_clear_AEL_Launcher_Content()
         self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
         self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
         self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
@@ -3614,6 +3629,7 @@ class Main:
     def _gui_render_AEL_scraper_launchers(self):
         self._misc_set_default_sorting_method()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+        self._misc_clear_AEL_Launcher_Content()
 
         # >> Open info dictionary
         gamedb_info_dic = fs_load_JSON_file(GAMEDB_INFO_DIR, GAMEDB_JSON_BASE_NOEXT)
@@ -3657,6 +3673,7 @@ class Main:
     def _gui_render_LB_scraper_launchers(self):
         self._misc_set_default_sorting_method()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+        self._misc_clear_AEL_Launcher_Content()
 
         # >> Open info dictionary
         gamedb_info_dic = fs_load_JSON_file(LAUNCHBOX_INFO_DIR, LAUNCHBOX_JSON_BASE_NOEXT)
@@ -3707,6 +3724,7 @@ class Main:
         # >> Set content type
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+        self._misc_clear_AEL_Launcher_Content()
 
         # --- If the category has no launchers then render nothing ---
         launcher_IDs = []
@@ -3875,6 +3893,7 @@ class Main:
         # --- Set content type and sorting methods ---
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+        self._misc_clear_AEL_Launcher_Content()
 
         # --- Check for errors ---
         if launcherID not in self.launchers:
@@ -3963,10 +3982,6 @@ class Main:
     # Renders the ROMs listbox for a given standard launcher or the Parent ROMs of a PClone launcher.
     #
     def _command_render_roms(self, categoryID, launcherID):
-        # --- Set content type and sorting methods ---
-        self._misc_set_all_sorting_methods()
-        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-
         # --- Check for errors ---
         if launcherID not in self.launchers:
             log_error('_command_render_roms() Launcher ID not found in self.launchers')
@@ -3974,6 +3989,11 @@ class Main:
             return
         selectedLauncher = self.launchers[launcherID]
         view_mode = selectedLauncher['launcher_display_mode']
+
+        # --- Set content type and sorting methods ---
+        self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+        self._misc_set_AEL_Launcher_Content(selectedLauncher)
 
         # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
         # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
@@ -4413,6 +4433,7 @@ class Main:
         # >> Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+        self._misc_clear_AEL_Launcher_Content()
 
         # --- Load Favourite ROMs ---
         roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
@@ -4439,6 +4460,7 @@ class Main:
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_SIZE)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+        self._misc_clear_AEL_Launcher_Content()
 
         # --- Load virtual launchers in this category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:

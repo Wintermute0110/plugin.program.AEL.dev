@@ -89,6 +89,10 @@ AEL_CONTENT_VALUE_ROM_LAUNCHER = 'rom_launcher'
 AEL_CONTENT_VALUE_ROM          = 'rom'
 AEL_CONTENT_VALUE_NONE         = ''
 
+AEL_LAUNCHER_NAME_LABEL        = 'AEL_Launch_Name'
+AEL_LAUNCHER_ICON_LABEL        = 'AEL_Launch_Icon'
+AEL_LAUNCHER_CLEARLOGO_LABEL   = 'AEL_Launch_Clearlogo'
+
 # >> Value is the number of items inside a launcher.
 AEL_NUMITEMS_LABEL             = 'AEL_NumItems'
 
