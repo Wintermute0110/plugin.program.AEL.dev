@@ -205,7 +205,9 @@ def autoconfig_export_category(category, export_FN):
 def autoconfig_get_default_import_category():
     l = {
         'name' : '',
+        'year' : '',
         'genre' : '',
+        'developer' : '',
         'rating' : '',
         'plot' : '',
         'Asset_Prefix' : '',
