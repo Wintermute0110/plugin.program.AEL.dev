@@ -99,7 +99,7 @@ class LinuxExecutor(Executor):
         if non_blocking:
             # >> In a non-blocking launch stdout/stderr of child process cannot be recorded.
             log_info('LinuxExecutor: Launching non-blocking process subprocess.Popen()')
-            p = subprocess.Popen(exec_list, close_fds = True)
+            p = subprocess.Popen(command, close_fds = True)
         else:
             with open(self.logFile.getPath(), 'w') as f:
                 retcode = subprocess.call(command, stdout = f, stderr = subprocess.STDOUT, close_fds = True)

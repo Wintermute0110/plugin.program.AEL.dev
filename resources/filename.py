@@ -181,7 +181,16 @@ class FileName():
 
         new_path = self.__create__(copiedPath.replace(ext, targetExt))
         return new_path
+    
+    # Checks the extension to determine the type of the file
+    def is_image_file(self):
+        ext = self.getExt()
+        return ext.lower() in ['png', 'jpg', 'gif', 'bmp']
 
+    def is_video_file(self):
+        ext = self.getExt()
+        return ext.lower() in ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
+    
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------

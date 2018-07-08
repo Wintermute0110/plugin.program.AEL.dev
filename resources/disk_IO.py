@@ -1714,45 +1714,45 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
 # See https://docs.python.org/2/reference/datamodel.html
 #
 # Function asumes that the NFO file already exists.
+# - moved to launcher
+#def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
+#    # --- Get NFO file name ---
+#    log_debug('fs_import_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
 #
-def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
-    # --- Get NFO file name ---
-    log_debug('fs_import_launcher_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
-
-    # --- Import data ---
-    if nfo_FileName.exists():
-        # >> Read NFO file data
-        try:
-            item_nfo = nfo_FileName.readAllUnicode()
-            item_nfo = item_nfo.replace('\r', '').replace('\n', '')
-        except:
-            kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getOriginalPath()))
-            log_error("fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
-            return False
-        # log_debug("fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
-    else:
-        kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
-        log_info("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
-        return False
-
-    # Find data
-    item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
-    item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
-    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
-    item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
-    item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
-
-    # >> Careful about object mutability! This should modify the dictionary
-    # >> passed as argument outside this function.
-    if item_year:      launchers[launcherID]['m_year']      = text_unescape_XML(item_year[0])
-    if item_genre:     launchers[launcherID]['m_genre']     = text_unescape_XML(item_genre[0])
-    if item_developer: launchers[launcherID]['m_developer'] = text_unescape_XML(item_developer[0])
-    if item_rating:    launchers[launcherID]['m_rating']    = text_unescape_XML(item_rating[0])
-    if item_plot:      launchers[launcherID]['m_plot']      = text_unescape_XML(item_plot[0])
-
-    log_verb("fs_import_launcher_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
-
-    return True
+#    # --- Import data ---
+#    if nfo_FileName.exists():
+#        # >> Read NFO file data
+#        try:
+#            item_nfo = nfo_FileName.readAllUnicode()
+#            item_nfo = item_nfo.replace('\r', '').replace('\n', '')
+#        except:
+#            kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getOriginalPath()))
+#            log_error("fs_import_launcher_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
+#            return False
+#        # log_debug("fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
+#    else:
+#        kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
+#        log_info("fs_import_launcher_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
+#        return False
+#
+#    # Find data
+#    item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+#    item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+#    item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
+#    item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
+#    item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
+#
+#    # >> Careful about object mutability! This should modify the dictionary
+#    # >> passed as argument outside this function.
+#    if item_year:      launchers[launcherID]['m_year']      = text_unescape_XML(item_year[0])
+#    if item_genre:     launchers[launcherID]['m_genre']     = text_unescape_XML(item_genre[0])
+#    if item_developer: launchers[launcherID]['m_developer'] = text_unescape_XML(item_developer[0])
+#    if item_rating:    launchers[launcherID]['m_rating']    = text_unescape_XML(item_rating[0])
+#    if item_plot:      launchers[launcherID]['m_plot']      = text_unescape_XML(item_plot[0])
+#
+#    log_verb("fs_import_launcher_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
+#
+#    return True
 
 #
 # Used by autoconfig_import_launcher(). Returns a dictionary with the Launcher NFO file information.
