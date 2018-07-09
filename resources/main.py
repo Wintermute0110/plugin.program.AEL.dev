@@ -1107,8 +1107,7 @@ class Main:
          
         if selected_option is None:
             log_debug('_command_edit_launcher_metadata(): Selected option = NONE')
-            self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-            return
+            return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
                 
         log_debug('_command_edit_launcher_metadata(): Selected option = {0}'.format(selected_option))
 
@@ -1120,43 +1119,45 @@ class Main:
             keyboard.doModal()
 
             if not keyboard.isConfirmed():
-                self._command_edit_launcher_metadata(launcher)
-                return
+                return self._command_edit_launcher_metadata(launcher)
 
             title = keyboard.getText().decode('utf-8')
             if not launcher.change_name(title, self.categories, ROMS_DIR):
                 kodi_notify('Launcher Title not changed')
             else:
                 launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                kodi_refresh_container()
                 kodi_notify('Launcher Title is now {0}'.format(launcher.get_name()))
             
-            self._command_edit_launcher_metadata(launcher)
-            return
+            return self._command_edit_launcher_metadata(launcher)
 
         # --- Selection of the launcher platform from AEL "official" list ---
         if selected_option == 'EDIT_PLATFORM':
-            changed = self._list_edit_launcher_metadata('Platform', AEL_platform_list, str('Unknown'), launcher.get_platform, launcher.update_platform)
+            changed = self._list_edit_launcher_metadata('Platform', AEL_platform_list, 'Unknown', launcher.get_platform, launcher.update_platform)
             if changed:
                 launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-                kodi_refresh_container()
-
-            self._command_edit_launcher_metadata(launcher)
-            return
+                
+            return self._command_edit_launcher_metadata(launcher)
 
         # --- Edition of the launcher release date (year) ---
         if selected_option == 'EDIT_RELEASEYEAR':            
-            self._text_edit_launcher_metadata('release year', launcher.get_releaseyear, launcher.update_releaseyear)
-            return
+            
+            if self._text_edit_launcher_metadata('release year', launcher.get_releaseyear, launcher.update_releaseyear):
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            
+            return self._command_edit_launcher_metadata(launcher)
         
         # --- Edition of the launcher genre ---
         if selected_option == 'EDIT_GENRE':            
-            self._text_edit_launcher_metadata('genre', launcher.get_genre, launcher.update_genre)
-            return
+            if self._text_edit_launcher_metadata('genre', launcher.get_genre, launcher.update_genre):
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            
+            return self._command_edit_launcher_metadata(launcher)
         
         if selected_option == 'EDIT_DEVELOPER':            
-            self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer)
-            return
+            if self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer):
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            
+            return self._command_edit_launcher_metadata(launcher)
         
         if selected_option == 'EDIT_RATING':
             options =  {}
@@ -1173,12 +1174,17 @@ class Main:
             options[9] = 'Rating 9'
             options[10] = 'Rating 10'
 
-            self._list_edit_launcher_metadata('Rating', options, -1, launcher.get_rating, launcher.update_rating)
+            if self._list_edit_launcher_metadata('Rating', options, -1, launcher.get_rating, launcher.update_rating):
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            
+            return self._command_edit_launcher_metadata(launcher)
 
         # --- Edit launcher description (plot) ---
         if selected_option == 'EDIT_PLOT':
-            self._text_edit_launcher_metadata('Plot', launcher.get_plot, launcher.update_plot)
-            return
+            if self._text_edit_launcher_metadata('Plot', launcher.get_plot, launcher.update_plot):
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            
+            return self._command_edit_launcher_metadata(launcher)
 
         # --- Import launcher metadata from NFO file (default location) ---
         if selected_option == 'IMPORT_NFO_FILE':
@@ -1186,32 +1192,30 @@ class Main:
             # >> Launcher is edited using Python passing by assigment
             # >> Returns True if changes were made
             NFO_file = fs_get_launcher_NFO_name(self.settings, launcher.get_data())
-            if not launcher.import_nfo_file(NFO_file):
-                return
+            if launcher.import_nfo_file(NFO_file):
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
 
-            kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
-            return
+            return self._command_edit_launcher_metadata(launcher)
         
         # --- Browse for NFO file ---
         if selected_option == 'IMPORT_NFO_FILE_BROWSE':
 
             NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
             if not NFO_file: 
-                self._command_edit_launcher_metadata(launcher)
-                return
+                return self._command_edit_launcher_metadata(launcher)
 
             NFO_FileName = FileNameFactory.create(NFO_file)
             if not NFO_FileName.exists(): 
-                self._command_edit_launcher_metadata(launcher)
-                return
+                return self._command_edit_launcher_metadata(launcher)
 
             # >> Launcher is edited using Python passing by assigment
             # >> Returns True if changes were made
-            if not launcher.import_nfo_file(NFO_FileName):
-                return
+            if launcher.import_nfo_file(NFO_FileName):
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
-            kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
-            return
+            return self._command_edit_launcher_metadata(launcher)
         
         # --- Export launcher metadata to NFO file ---
         if selected_option == 'SAVE_NFO_FILE':
@@ -1221,7 +1225,7 @@ class Main:
                 kodi_notify('Exported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
             # >> No need to save launchers so return
-            return
+            return self._command_edit_launcher_metadata(launcher)
         
         # --- Scrape launcher metadata ---
         if selected_option.startswith("SCRAPE_"):
@@ -1235,12 +1239,13 @@ class Main:
             log_debug('_command_edit_launcher_metadata() Initialised scraper "{0}"'.format(scraper_obj.name))
         
             # >> If this returns False there were no changes so no need to save categories.xml
-            if not self._gui_scrap_launcher_metadata(launcher.get_id(), scraper_obj): 
-                return
+            if self._gui_scrap_launcher_metadata(launcher.get_id(), scraper_obj): 
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)                
+
+            return self._command_edit_launcher_metadata(launcher)
 
         log_warning('_command_edit_launcher_metadata(): Unsupported menu option selected "{}"'.format(selected_option))
-        self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-        return
+        return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
 
     def _command_edit_launcher(self, categoryID, launcherID):
 
@@ -1255,17 +1260,16 @@ class Main:
         
         if selected_option is None:
             log_debug('_command_edit_launcher(): No selected option')
+            kodi_refresh_container()
             return
         
         log_debug('_command_edit_launcher(): Selected option = {0}'.format(selected_option))
         if type(selected_option) is tuple:
             selected_option = selected_option[0]
-
-        log_debug('_command_edit_launcher(): Selected option = {0}'.format(selected_option))
+            log_debug('_command_edit_launcher(): Selected option = {0}'.format(selected_option))
 
         if selected_option == 'EDIT_METADATA':
-            self._command_edit_launcher_metadata(launcher)
-            return
+            return self._command_edit_launcher_metadata(launcher)
         
         # --- Edit Launcher Assets/Artwork ---
         if selected_option == 'EDIT_ASSETS':
@@ -1294,18 +1298,17 @@ class Main:
             # >> Execute select dialog
             selected_option = xbmcgui.Dialog().select('Edit Launcher Assets/Artwork', list = list_items, useDetails = True)
             if selected_option < 0: 
-                self._command_edit_launcher(categoryID, launcherID)
-                return
+                return self._command_edit_launcher(categoryID, launcherID)
 
             selected_asset_kind = assets.keys()[selected_option]
 
             # --- Edit Assets ---
             # >> If this function returns False no changes were made. No need to save categories
             # >> XML and update container.
-            if not self._gui_edit_asset(KIND_LAUNCHER, selected_asset_kind, launcher.get_data()): 
-                return
+            if self._gui_edit_asset(KIND_LAUNCHER, selected_asset_kind, launcher.get_data()): 
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
-            return
+            return self._command_edit_launcher(categoryID, launcherID)
 
         # --- Choose Launcher default icon/fanart/banner/poster/clearlogo ---
         if selected_option == 'SET_DEFAULT_ASSETS':
@@ -1339,8 +1342,7 @@ class Main:
             # >> Execute select dialog
             selected_kind_index = xbmcgui.Dialog().select('Edit Launcher default Assets/Artwork', list = list_items, useDetails = True)
             if selected_kind_index < 0: 
-                self._command_edit_launcher(categoryID, launcherID)
-                return
+                return self._command_edit_launcher(categoryID, launcherID)
             
             selected_kind = asset_defaults.keys()[selected_kind_index]
             
@@ -1350,26 +1352,27 @@ class Main:
                 if mappable_asset_kind == ASSET_TRAILER:
                     continue
 
-                list_item = xbmcgui.ListItem(label = ASSET_NAMES[mappable_asset_kind], label2 = assets[mappable_asset_kind] if launcher[mappable_asset_kind] else 'Not set')
-                list_item.setArt({'icon' : assets[mappable_asset_kind] if launcher[mappable_asset_kind] else 'DefaultAddonNone.png'})
+                list_item = xbmcgui.ListItem(label = ASSET_NAMES[mappable_asset_kind], label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
+                list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
                 mappable_asset_list_items.append(list_item)
                 
             # >> Krypton feature: User preselected item in select() dialog.
-            preselected_index = mappable_asset_list.index(asset_defaults[selected_kind])
+            preselected_index = asset_defaults.keys().index(selected_kind)
             new_selected_kind_index = xbmcgui.Dialog().select('Choose Launcher default asset for {}'.format(ASSET_NAMES[selected_kind]), 
-                                       list = mappable_asset_list, useDetails = True, preselect = preselected_index)
+                                       list = mappable_asset_list_items, useDetails = True, preselect = preselected_index)
             if new_selected_kind_index < 0: 
-                self._command_edit_launcher(categoryID, launcherID)
-                return
+                return self._command_edit_launcher(categoryID, launcherID)
             
             new_selected_kind = assets.keys()[new_selected_kind_index]
             
             launcher.set_default_asset(selected_kind, new_selected_kind)
             default_asset_name = ASSET_NAMES[selected_kind]
             asset_name = ASSET_NAMES[new_selected_kind]
+            
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Launcher {0} mapped to {1}'.format(default_asset_name, asset_name))
         
-            return
+            return self._command_edit_launcher(categoryID, launcherID)
         
         # --- Change launcher's Category ---
         if selected_option == 'CHANGE_CATEGORY':
@@ -2271,16 +2274,16 @@ class Main:
         keyboard.doModal()
             
         if not keyboard.isConfirmed(): 
-            self._command_edit_launcher_metadata(launcher)
-            return
+            return False
 
         new_value = keyboard.getText().decode('utf-8')
         if old_value == new_value:
             kodi_notify('Launcher {} not changed'.format(metadata_name))
-            return
+            return False
 
         set_method(new_value)
         kodi_notify('Launcher {} is now {}'.format(metadata_name, new_value))
+        return True
 
     def _list_edit_launcher_metadata(self, metadata_name, options, default_value, get_method, set_method):
 
@@ -2305,10 +2308,10 @@ class Main:
             kodi_notify('Launcher {} not changed'.format(metadata_name))
             return False
 
-        #selected_option = options[selected_index]
         set_method(selected_option)
+        textual_option = options[selected_option]
 
-        kodi_notify('Launcher {} is now {}'.format(metadata_name, selected_option))
+        kodi_notify('Launcher {} is now {}'.format(metadata_name, textual_option))
         return True
         
     #

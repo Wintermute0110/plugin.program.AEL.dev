@@ -340,13 +340,13 @@ class Launcher():
         return self.launcher['m_developer'] if 'm_developer' in self.launcher else ''
 
     def get_rating(self):
-        return self.launcher['m_rating'] if 'm_rating' in self.launcher else -1
+        return int(self.launcher['m_rating']) if 'm_rating' in self.launcher else -1
 
     def get_plot(self):
         return self.launcher['m_plot'] if 'm_plot' in self.launcher else ''
 
     def get_category_id(self):
-        return self.launcher['category_id']
+        return self.launcher['category_id'] if 'category_id' in self.launcher else None
 
     def is_non_blocking(self):
         return self.launcher['non_blocking']
@@ -379,10 +379,10 @@ class Launcher():
 
         return default_assets
     
-    def set_default_asset(default_asset_kind_key, mapped_to_kind_key):
+    def set_default_asset(self, default_asset_kind_key, mapped_to_kind_key):
         
         asset_kind  = assets_get_info_scheme(default_asset_kind_key)
-        map_to_kind = asset_get_info_scheme(mapped_to_kind_key)
+        map_to_kind = assets_get_info_scheme(mapped_to_kind_key)
 
         self.launcher[asset_kind.default_key] = map_to_kind.key
 
@@ -424,7 +424,7 @@ class Launcher():
     def change_finished_status(self):
         finished = self.launcher['finished']
         finished = False if finished else True
-        self.launchers['finished'] = finished
+        self.launcher['finished'] = finished
 
     def update_timestamp(self):
         self.launcher['timestamp_launcher'] = time.time()
@@ -445,7 +445,7 @@ class Launcher():
         self.launcher['m_developer'] = developer
 
     def update_rating(self, rating):
-        self.launcher['m_rating'] = rating
+        self.launcher['m_rating'] = int(rating)
         
     def update_plot(self, plot):
         self.launcher['m_plot'] = plot
@@ -463,22 +463,22 @@ class Launcher():
     def import_nfo_file(self, nfo_file_path):
 
         # --- Get NFO file name ---
-        log_debug('import_nfo_file() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
+        log_debug('launcher.import_nfo_file() Importing launcher NFO "{0}"'.format(nfo_file_path.getOriginalPath()))
 
         # --- Import data ---
-        if nfo_FileName.exists():
+        if nfo_file_path.exists():
             # >> Read NFO file data
             try:
-                item_nfo = nfo_FileName.readAllUnicode()
+                item_nfo = nfo_file_path.readAllUnicode()
                 item_nfo = item_nfo.replace('\r', '').replace('\n', '')
             except:
-                kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getOriginalPath()))
-                log_error("import_nfo_file() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
+                kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getOriginalPath()))
+                log_error("launcher.import_nfo_file() Exception reading NFO file '{0}'".format(nfo_file_path.getOriginalPath()))
                 return False
             # log_debug("fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
         else:
-            kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
-            log_info("import_nfo_file() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
+            kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path.getBase()))
+            log_info("launcher.import_nfo_file() NFO file not found '{0}'".format(nfo_file_path.getOriginalPath()))
             return False
 
         # Find data
@@ -496,7 +496,7 @@ class Launcher():
         if item_rating:    self.update_rating(text_unescape_XML(item_rating[0]))
         if item_plot:      self.update_plot(text_unescape_XML(item_plot[0]))
 
-        log_verb("import_nfo_file() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
+        log_verb("import_nfo_file() Imported '{0}'".format(nfo_file_path.getOriginalPath()))
 
         return True
 
@@ -854,7 +854,7 @@ class RomLauncher(Launcher):
     def set_default_rom_asset(self, default_asset_kind_key, mapped_to_kind_key):
         
         asset_kind  = assets_get_info_scheme(default_asset_kind_key)
-        map_to_kind = asset_get_info_scheme(mapped_to_kind_key)
+        map_to_kind = assets_get_info_scheme(mapped_to_kind_key)
 
         self.launcher[asset_kind.rom_default_key] = map_to_kind.key
 
@@ -1130,13 +1130,17 @@ class ApplicationLauncher(Launcher):
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
         plot_str = text_limit_string(self.launcher['m_plot'], PLOT_STR_MAXSIZE)
 
+        rating = self.get_rating()
+        if rating == -1:
+            rating = 'not rated'
+
         options = OrderedDict()
         options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
         options['EDIT_PLATFORM']          = "Edit Platform: {0}".format(self.launcher['platform'])
         options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.launcher['m_year'])
         options['EDIT_GENRE']             = "Edit Genre: '{0}'".format(self.launcher['m_genre'])
         options['EDIT_DEVELOPER']         = "Edit Developer: '{0}'".format(self.launcher['m_developer'])
-        options['EDIT_RATING']            = "Edit Rating: '{0}'".format(self.launcher['m_rating'])
+        options['EDIT_RATING']            = "Edit Rating: '{0}'".format(rating)
         options['EDIT_PLOT']              = "Edit Plot: '{0}'".format(plot_str)
         options['IMPORT_NFO_FILE']        = 'Import NFO file (default, {0})'.format(NFO_found_str)
         options['IMPORT_NFO_FILE_BROWSE'] = 'Import NFO file (browse NFO file) ...'
