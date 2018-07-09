@@ -1377,12 +1377,13 @@ class Main:
         # --- Change launcher's Category ---
         if selected_option == 'CHANGE_CATEGORY':
             self._command_edit_launcher_category(launcher)
-            return
+            return self._command_edit_launcher(categoryID, launcherID)
 
         # --- Launcher status (finished [bool]) ---
         if selected_option == 'LAUNCHER_STATUS':            
             launcher.change_finished_status()
             kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(launcher.get_name(), launcher.get_state()))
+            return self._command_edit_launcher(categoryID, launcherID)
 
         # --- Launcher Manage ROMs menu option ---
         # ONLY for ROM launchers, not for standalone launchers
