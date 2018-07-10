@@ -15,6 +15,7 @@ from romstats import *
 from disk_IO import *
 from utils import *
 from utils_kodi import *
+from autoconfig import *
     
 from gamestream import *
 
@@ -537,10 +538,10 @@ class Launcher():
     def export_configuration(self, path_to_export, categories):
         
         launcher_fn_str = 'Launcher_' + text_title_to_filename_str(self.get_name()) + '.xml'
-        log_debug('_command_edit_launcher() Exporting Launcher configuration')
-        log_debug('_command_edit_launcher() Name     "{0}"'.format(self.get_name()))
-        log_debug('_command_edit_launcher() ID       {0}'.format(self.get_id()))
-        log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
+        log_debug('launcher.export_configuration() Exporting Launcher configuration')
+        log_debug('launcher.export_configuration() Name     "{0}"'.format(self.get_name()))
+        log_debug('launcher.export_configuration() ID       {0}'.format(self.get_id()))
+        log_debug('launcher.export_configuration() l_fn_str "{0}"'.format(launcher_fn_str))
 
         if not path_to_export: return
 

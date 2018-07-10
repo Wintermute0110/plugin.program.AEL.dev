@@ -1045,6 +1045,8 @@ class Main:
         # >> Remove launcher from database. Categories.xml will be saved at the end of function
         fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcher.get_id()])
         self.launchers.pop(launcher.get_id())
+        
+        launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_notify('Deleted Launcher {0}'.format(launcher.get_name()))
 
     def _command_edit_launcher_category(self, launcher):
@@ -1403,12 +1405,10 @@ class Main:
             return
 
         if selected_option == 'AUDIT_ROMS':
-            self._command_audit_roms(launcher)
-            return
+            return self._command_audit_roms(launcher)
         
         if selected_option == 'ADVANCED_MODS':
-            self._command_advanced_modifications(launcher)
-            return
+            return self._command_advanced_modifications(launcher)
 
         # --- Export Launcher XML configuration ---
         if selected_option == 'EXPORT_LAUNCHER':
@@ -1417,20 +1417,15 @@ class Main:
             dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
                                                 '', False, False).decode('utf-8')
             launcher.export_configuration(dir_path, self.categories)
-            return
+            return self._command_edit_launcher(categoryID, launcherID)
 
         # --- Remove Launcher menu option ---
         if selected_option == 'DELETE_LAUNCHER':
             self._command_delete_launcher(launcher)
+            kodi_refresh_container()
             return
-
-        # >> If this point is reached then changes to launcher metadata/assets were made.
-        # >> Save categories and update container contents so user sees those changes inmediately.
-        # NOTE Update edited launcher timestamp only if launcher was not deleted!
-        if launcherID in self.launchers: self.launchers[launcherID]['timestamp_launcher'] = time.time()
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_refresh_container()
-        return
+        
+        return self._command_edit_launcher(categoryID, launcherID)
 
     def _command_manage_roms(self, launcher, command):
 
