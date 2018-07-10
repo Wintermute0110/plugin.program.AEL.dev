@@ -1425,7 +1425,8 @@ class Main:
             kodi_refresh_container()
             return
         
-        return self._command_edit_launcher(categoryID, launcherID)
+        log_warning('_command_edit_launcher(): Unsupported menu option selected "{}"'.format(selected_option))
+        return
 
     def _command_manage_roms(self, launcher, command):
 
