@@ -340,7 +340,7 @@ class Launcher():
         return self.launcher['m_developer'] if 'm_developer' in self.launcher else ''
 
     def get_rating(self):
-        return int(self.launcher['m_rating']) if 'm_rating' in self.launcher else -1
+        return int(self.launcher['m_rating']) if self.launcher['m_rating'] else -1
 
     def get_plot(self):
         return self.launcher['m_plot'] if 'm_plot' in self.launcher else ''
@@ -1067,18 +1067,25 @@ class ApplicationLauncher(Launcher):
     
     def get_additional_argument(self, index):
         args = self.get_all_additional_arguments()
-        return arg_str[index]
+        return args[index]
 
     def get_all_additional_arguments(self):
         return self.launcher['args_extra']
 
     def add_additional_argument(self, arg):
-        self.launcher['args_extra'].append(arg_path)
+
+        if not self.launcher['args_extra']:
+            self.launcher['args_extra'] = []
+
+        self.launcher['args_extra'].append(arg)
         log_debug('launcher.add_additional_argument() Appending extra_args to launcher {0}'.format(self.get_id()))
         
     def set_additional_argument(self, index, arg):
+        if not self.launcher['args_extra']:
+            self.launcher['args_extra'] = []
+
         self.launcher['args_extra'][index] = arg
-        log_debug('launcher.set_additional_argument() Edited args_extra[{0}] to "{1}"'.format(index, launcher['args_extra'][index]))
+        log_debug('launcher.set_additional_argument() Edited args_extra[{0}] to "{1}"'.format(index, self.launcher['args_extra'][index]))
 
     def remove_additional_argument(self, index):
         del self.launcher['args_extra'][index]

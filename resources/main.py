@@ -1377,6 +1377,7 @@ class Main:
         # --- Change launcher's Category ---
         if selected_option == 'CHANGE_CATEGORY':
             self._command_edit_launcher_category(launcher)
+            kodi_refresh_container()
             return self._command_edit_launcher(categoryID, launcherID)
 
         # --- Launcher status (finished [bool]) ---
@@ -2025,8 +2026,14 @@ class Main:
         selected_option = dialog.select('Launcher Advanced Modification', launcher_options),
         
         if selected_option is None:
-            return
-
+            log_debug('_command_advanced_modifications(): Selected option = NONE')
+            return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
+                
+        log_debug('_command_advanced_modifications(): Selected option = {0}'.format(selected_option))
+        if type(selected_option) is tuple:
+            selected_option = selected_option[0]
+            log_debug('_command_advanced_modifications(): Selected option = {0}'.format(selected_option))
+        
         ###### DEPCRECATED: With so many types and differences this will be to hard to implement. 
         ###################################
         # >> Choose launching mechanism
@@ -2067,12 +2074,14 @@ class Main:
             keyboard = xbmc.Keyboard(args, 'Edit application arguments')
             keyboard.doModal()
 
-            if not keyboard.isConfirmed(): return
+            if not keyboard.isConfirmed(): return self._command_advanced_modifications(launcher)
             altered_args = keyboard.getText().decode('utf-8')
             
             launcher.change_arguments(altered_args)
+
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Changed launcher arguments')
-            return
+            return self._command_advanced_modifications(launcher)
 
         # --- Launcher Additional arguments ---
         if selected_option == 'ADDITIONAL_ARGS':
@@ -2086,7 +2095,7 @@ class Main:
             selected_arg_idx = xbmcgui.Dialog().select('Launcher additional arguments', ['Add new additional arguments ...'] + additional_args_list_options)
 
             if selected_arg_idx < 0:
-                return
+                return self._command_advanced_modifications(launcher)
 
             # >> Add new additional arguments
             if selected_arg_idx == 0:
@@ -2095,31 +2104,40 @@ class Main:
                 if not keyboard.isConfirmed(): return
                 new_argument = keyboard.getText().decode('utf-8')
                 launcher.add_additional_argument(new_argument)
+                
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 kodi_notify('Added additional arguments to launcher {0}'.format(launcher.get_name()))
-                return
+                return self._command_advanced_modifications(launcher)
             
+            selected_arg_idx = selected_arg_idx-1
             selected_arg = launcher.get_additional_argument(selected_arg_idx)
             edit_action = xbmcgui.Dialog().select('Modify extra arguments',
                                         ["Edit '{0}' ...".format(selected_arg), 
                                         'Delete extra arguments'])
-            if edit_action < 0: return
+
+            if edit_action < 0: 
+                return self._command_advanced_modifications(launcher)
 
             if edit_action == 0:
-                keyboard = xbmc.Keyboard(selected_args, 'Edit application arguments')
+                keyboard = xbmc.Keyboard(selected_arg, 'Edit application arguments')
                 keyboard.doModal()
-                if not keyboard.isConfirmed(): return
+                if not keyboard.isConfirmed(): return self._command_advanced_modifications(launcher)
                 
                 altered_arg = keyboard.getText().decode('utf-8')
                 launcher.set_additional_argument(selected_arg_idx, altered_arg)
+                
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 kodi_notify('Changed extra arguments in launcher {0}'.format(launcher.get_name()))
 
             elif edit_action == 1:
                 ret = kodi_dialog_yesno('Are you sure you want to delete Launcher additional arguments "{0}"?'.format(selected_arg))
-                if not ret: return
+                if not ret: return self._command_advanced_modifications(launcher)
                 launcher.remove_additional_argument(selected_arg_idx)
+                
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 kodi_notify('Removed argument from extra arguments in launcher {0}'.format(launcher.get_name()))
 
-            return
+            return self._command_advanced_modifications(launcher)
                 
         # --- Launcher ROM path menu option (Only ROM launchers) ---
         if selected_option == 'CHANGE_ROMPATH':
@@ -2151,13 +2169,14 @@ class Main:
             is_windowed = launcher.is_in_windowed_mode()
             p_idx = 1 if is_windowed else 0
             type3 = xbmcgui.Dialog().select('Toggle Kodi into windowed mode', ['OFF (default)', 'ON'], preselect = p_idx)
-            if type3 < 0: return
+            if type3 < 0 or type3 == p_idx: return self._command_advanced_modifications(launcher)
 
             is_windowed = launcher.set_windowed_mode(type3 > 0)
-
             minimise_str = 'ON' if is_windowed else 'OFF'
+            
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Toggle Kodi into windowed mode {0}'.format(minimise_str))
-            return
+            return self._command_advanced_modifications(launcher)
 
         # --- Non-blocking launcher flag ---_
         if selected_option == 'TOGGLE_NONBLOCKING':
@@ -2166,106 +2185,37 @@ class Main:
             p_idx = 1 if is_non_blocking else 0
             type3 = xbmcgui.Dialog().select('Non-blocking launcher', ['OFF (default)', 'ON'], preselect = p_idx)
 
-            if type3 < 0: return
+            if type3 < 0 or type3 == p_idx: return self._command_advanced_modifications(launcher)
             
             is_non_blocking = launcher.set_non_blocking(type3 > 0)
             non_blocking_str = 'ON' if is_non_blocking else 'OFF'
+
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Launcher Non-blocking is now {0}'.format(non_blocking_str))
-            return
+            
+            return self._command_advanced_modifications(launcher)
 
         # --- Multidisc ROM support (Only ROM launchers) ---
         if selected_option == 'TOGGLE_MULTIDISC':
             if not launcher.supports_launching_roms(): 
-                return
+                return self._command_advanced_modifications(launcher)
 
             supports_multidisc = launcher.support_multidisc()
             p_idx = 1 if supports_multidisc else 0
             type3 = xbmcgui.Dialog().select('Multidisc support launcher', ['OFF (default)', 'ON'], preselect = p_idx)
 
-            if type3 < 0: return
+            if type3 < 0 or type3 == p_idx: return self._command_advanced_modifications(launcher)
             
             supports_multidisc = launcher.set_multidisc_support(type3 > 0)
             multidisc_str = 'ON' if supports_multidisc else 'OFF'
+            
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Launcher Multidisc support is now {0}'.format(multidisc_str))
-            return
-       
+            
+            return self._command_advanced_modifications(launcher)
 
-        #type_nb = type_nb + 1
-        #if type == type_nb:
-        #    toggle_window_str = 'ON' if self.launchers[launcherID]['toggle_window'] else 'OFF'
-        #    non_blocking_str = 'ON' if self.launchers[launcherID]['non_blocking'] else 'OFF'
-        #    multidisc_str = 'ON' if self.launchers[launcherID]['multidisc'] else 'OFF'
-        #    filter_str   = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
-        #    if self.launchers[launcherID]['application'] == RETROPLAYER_LAUNCHER_APP_NAME:
-        #        launcher_str = 'Kodi Retroplayer'
-        #    elif self.launchers[launcherID]['application'] == LNK_LAUNCHER_APP_NAME:
-        #        launcher_str = 'LNK Launcher'
-        #    else:
-        #        launcher_str = "'{0}'".format(self.launchers[launcherID]['application'])
-
-        # --- Export Launcher XML configuration ---
-        #type_nb = type_nb + 1
-        #if type == type_nb:
-        #    launcher = self.launchers[launcherID]
-        #    launcher_fn_str = 'Launcher_' + text_title_to_filename_str(launcher['m_name']) + '.xml'
-        #    log_debug('_command_edit_launcher() Exporting Launcher configuration')
-        #    log_debug('_command_edit_launcher() Name     "{0}"'.format(launcher['m_name']))
-        #    log_debug('_command_edit_launcher() ID       {0}'.format(launcher['id']))
-        #    log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
-        #
-        #    # >> Ask user for a path to export the launcher configuration
-        #    dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
-        #                                       '', False, False).decode('utf-8')
-        #    if not dir_path: return
-        #    export_FN = FileNameFactory.create(dir_path).pjoin(launcher_fn_str)
-        #    if export_FN.exists():
-        #        ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
-        #        if not ret:
-        #            kodi_notify_warn('Export of Launcher XML cancelled')
-        #            return
-        #
-        #    # --- Print error message is something goes wrong writing file ---
-        #    try:
-        #        autoconfig_export_launcher(launcher, export_FN, self.categories)
-        #    except AEL_Error as E:
-        #        kodi_notify_warn('{0}'.format(E))
-        #    else:
-        #        kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
-        #    # >> No need to update categories.xml and timestamps so return now.
-        #    return
-
-        # --- Remove Launcher menu option ---
-        #type_nb = type_nb + 1
-        #if type == type_nb:
-        #    rompath = self.launchers[launcherID]['rompath']
-        #    launcher_name = self.launchers[launcherID]['m_name']
-        #    # >> Standalone launcher
-        #    if rompath == '':
-        #        ret = kodi_dialog_yesno('Launcher "{0}" is standalone. '.format(launcher_name) +
-        #                                'Are you sure you want to delete it?')
-        #    # >> ROMs launcher
-        #    else:
-        #        roms = fs_load_ROMs_JSON(ROMS_DIR, self.launchers[launcherID])
-        #        num_roms = len(roms)
-        #        ret = kodi_dialog_yesno('Launcher "{0}" has {1} ROMs. '.format(launcher_name, num_roms) +
-        #                                'Are you sure you want to delete it?')
-        #    if not ret: return
-        #
-        #    # >> Remove JSON/XML file if exist
-        #    # >> Remove launcher from database. Categories.xml will be saved at the end of function
-        #    fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
-        #    self.launchers.pop(launcherID)
-        #    kodi_notify('Deleted Launcher {0}'.format(launcher_name))
-
-        # User pressed cancel or close dialog
-       # if type < 0: return
-
-        # >> If this point is reached then changes to launcher metadata/assets were made.
-        # >> Save categories and update container contents so user sees those changes inmediately.
-        # NOTE Update edited launcher timestamp only if launcher was not deleted!
-        if launcherID in self.launchers: self.launchers[launcherID]['timestamp_launcher'] = time.time()
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_refresh_container()
+        log_warning('_command_advanced_modifications(): Unsupported menu option selected "{}"'.format(selected_option))
+        return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
 
         
     def _text_edit_launcher_metadata(self, metadata_name, get_method, set_method):
@@ -3600,7 +3550,6 @@ class Main:
         elif launcher_type == LAUNCHER_LNK:
             launcher_desc = 'Lnks'
         
-            
         if launcher_supports_roms(launcher_type) and self.settings['display_launcher_roms']:
             if launcher_dic['nointro_xml_file']:
                 if launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
