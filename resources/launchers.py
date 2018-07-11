@@ -418,9 +418,30 @@ class Launcher():
     # Returns a dictionary of options to choose from
     # with which you can edit the metadata of this specific launcher.
     #
-    @abstractmethod
     def get_metadata_edit_options(self):
-        return {}
+        
+        # >> Metadata edit dialog
+        NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launcher)
+        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+        plot_str = text_limit_string(self.launcher['m_plot'], PLOT_STR_MAXSIZE)
+
+        rating = self.get_rating()
+        if rating == -1:
+            rating = 'not rated'
+
+        options = OrderedDict()
+        options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
+        options['EDIT_PLATFORM']          = "Edit Platform: {0}".format(self.launcher['platform'])
+        options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.launcher['m_year'])
+        options['EDIT_GENRE']             = "Edit Genre: '{0}'".format(self.launcher['m_genre'])
+        options['EDIT_DEVELOPER']         = "Edit Developer: '{0}'".format(self.launcher['m_developer'])
+        options['EDIT_RATING']            = "Edit Rating: '{0}'".format(rating)
+        options['EDIT_PLOT']              = "Edit Plot: '{0}'".format(plot_str)
+        options['IMPORT_NFO_FILE']        = 'Import NFO file (default, {0})'.format(NFO_found_str)
+        options['IMPORT_NFO_FILE_BROWSE'] = 'Import NFO file (browse NFO file) ...'
+        options['SAVE_NFO_FILE']          = 'Save NFO file (default location)'
+
+        return options
 
     def change_finished_status(self):
         finished = self.launcher['finished']
@@ -1131,31 +1152,6 @@ class ApplicationLauncher(Launcher):
 
         return options
 
-    def get_metadata_edit_options(self):
-        
-        # >> Metadata edit dialog
-        NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launcher)
-        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text_limit_string(self.launcher['m_plot'], PLOT_STR_MAXSIZE)
-
-        rating = self.get_rating()
-        if rating == -1:
-            rating = 'not rated'
-
-        options = OrderedDict()
-        options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
-        options['EDIT_PLATFORM']          = "Edit Platform: {0}".format(self.launcher['platform'])
-        options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.launcher['m_year'])
-        options['EDIT_GENRE']             = "Edit Genre: '{0}'".format(self.launcher['m_genre'])
-        options['EDIT_DEVELOPER']         = "Edit Developer: '{0}'".format(self.launcher['m_developer'])
-        options['EDIT_RATING']            = "Edit Rating: '{0}'".format(rating)
-        options['EDIT_PLOT']              = "Edit Plot: '{0}'".format(plot_str)
-        options['IMPORT_NFO_FILE']        = 'Import NFO file (default, {0})'.format(NFO_found_str)
-        options['IMPORT_NFO_FILE_BROWSE'] = 'Import NFO file (browse NFO file) ...'
-        options['SAVE_NFO_FILE']          = 'Save NFO file (default location)'
-
-        return options
-
     #
     # Creates a new launcher using a wizard of dialogs.
     #
@@ -1214,9 +1210,17 @@ class KodiLauncher(Launcher):
 
         return options
     
+    
     def get_advanced_modification_options(self):
+        
+        toggle_window_str = 'ON' if self.launcher['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
 
-        return super(KodiLauncher, self).get_advanced_modification_options()
+        options = super(KodiLauncher, self).get_advanced_modification_options()
+        options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
+
+        return options
 
     def change_name(self, new_name, categories, roms_dir):
         if new_name == '': 
