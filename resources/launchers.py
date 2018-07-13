@@ -43,7 +43,7 @@ class LauncherFactory():
             return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
 
         if launcher_type == LAUNCHER_ROM:
-            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
+            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom, True, True)
         
         if launcher_type == LAUNCHER_LNK:
             return LnkLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
@@ -348,6 +348,13 @@ class Launcher():
 
     def get_category_id(self):
         return self.launcher['category_id'] if 'category_id' in self.launcher else None
+    
+    def is_in_windowed_mode(self):
+        return self.launcher['toggle_window']
+
+    def set_windowed_mode(self, windowed_mode):
+        self.launcher['toggle_window'] = windowed_mode
+        return self.is_in_windowed_mode()
 
     def is_non_blocking(self):
         return self.launcher['non_blocking']
@@ -700,13 +707,13 @@ class RomLauncher(Launcher):
         rompath       = romFile.getDir()
         rombase       = romFile.getBase()
         rombase_noext = romFile.getBase_noext()
-        log_info('StandardRomLauncher() romfile      "{0}"'.format(romFile.getPath()))
-        log_info('StandardRomLauncher() rompath      "{0}"'.format(rompath))
-        log_info('StandardRomLauncher() rombase      "{0}"'.format(rombase))
-        log_info('StandardRomLauncher() rombasenoext "{0}"'.format(rombase_noext))
-        log_info('StandardRomLauncher() application  "{0}"'.format(self.application.getPath()))
-        log_info('StandardRomLauncher() appbase      "{0}"'.format(self.application.getBase()))
-        log_info('StandardRomLauncher() apppath      "{0}"'.format(apppath))
+        log_info('RomLauncher() romfile      "{0}"'.format(romFile.getPath()))
+        log_info('RomLauncher() rompath      "{0}"'.format(rompath))
+        log_info('RomLauncher() rombase      "{0}"'.format(rombase))
+        log_info('RomLauncher() rombasenoext "{0}"'.format(rombase_noext))
+        log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
+        log_info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
+        log_info('RomLauncher() apppath      "{0}"'.format(apppath))
 
         # ~~~~ Argument substitution ~~~~~
         log_info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
@@ -866,7 +873,7 @@ class RomLauncher(Launcher):
                 # >> Exclude unconfigured assets (empty strings).
                 if not self.launcher[A_i.path_key] or not self.launcher[A_j.path_key]: continue
                 # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
-                if launcher[A_i.path_key] == launcher[A_j.path_key]:
+                if self.launcher[A_i.path_key] == self.launcher[A_j.path_key]:
                     duplicated_bool_list[i] = True
                     duplicated_name_list.append('{0} and {1}'.format(A_i.name, A_j.name))
                     log_info('asset_get_duplicated_asset_list() DUPLICATED {0} and {1}'.format(A_i.name, A_j.name))
@@ -974,11 +981,8 @@ class RomLauncher(Launcher):
             log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
             self.launcher['nointro_xml_file'] = ''
 
-    def set_number_of_roms(num_of_roms):
+    def set_number_of_roms(self, num_of_roms):
         self.launcher['num_roms'] = num_of_roms
-
-    def is_in_windowed_mode(self):
-        return self.launcher['toggle_window']
         
     def support_multidisc(self):
         return self.launcher['multidisc']
@@ -1112,14 +1116,7 @@ class ApplicationLauncher(Launcher):
     def remove_additional_argument(self, index):
         del self.launcher['args_extra'][index]
         log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
-
-    def is_in_windowed_mode(self):
-        return self.launcher['toggle_window']
-
-    def set_windowed_mode(self, windowed_mode):
-        self.launcher['toggle_window'] = windowed_mode
-        return self.is_in_windowed_mode()
-
+        
     def get_edit_options(self):
 
         category_name = 'ToDo'
@@ -1290,10 +1287,39 @@ class StandardRomLauncher(RomLauncher):
     
     def get_launcher_type_name(self):        
         return "ROM launcher"   
-
+    
+    def change_arguments(self, args):
+        self.launcher['args'] = args
+        
     def get_args(self):
         return self.launcher['args']
     
+    def get_additional_argument(self, index):
+        args = self.get_all_additional_arguments()
+        return args[index]
+
+    def get_all_additional_arguments(self):
+        return self.launcher['args_extra']
+
+    def add_additional_argument(self, arg):
+
+        if not self.launcher['args_extra']:
+            self.launcher['args_extra'] = []
+
+        self.launcher['args_extra'].append(arg)
+        log_debug('launcher.add_additional_argument() Appending extra_args to launcher {0}'.format(self.get_id()))
+        
+    def set_additional_argument(self, index, arg):
+        if not self.launcher['args_extra']:
+            self.launcher['args_extra'] = []
+
+        self.launcher['args_extra'][index] = arg
+        log_debug('launcher.set_additional_argument() Edited args_extra[{0}] to "{1}"'.format(index, self.launcher['args_extra'][index]))
+
+    def remove_additional_argument(self, index):
+        del self.launcher['args_extra'][index]
+        log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
+
     def get_rom_extensions(self):
         return self.launcher['romext']
 
