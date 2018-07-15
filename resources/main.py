@@ -2010,7 +2010,7 @@ class Main:
             else:
                 # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                 launcher.reset_nointro_xmldata()
-                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.'))
+                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
                 return self._command_audit_roms(launcher)
            
             launcher.set_number_of_roms(len(roms))
