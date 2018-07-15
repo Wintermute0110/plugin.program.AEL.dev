@@ -375,7 +375,7 @@ class Launcher():
         assets[ASSET_TRAILER]    = self.launcher['s_trailer']     if self.launcher['s_trailer']    else ''
 
         return assets
-
+    
     def get_asset_defaults(self):
         default_assets = {}
         
@@ -849,6 +849,9 @@ class RomLauncher(Launcher):
 
         return assets
 
+    def get_rom_asset_default(self, asset_info):
+        return self.launcher[asset_info.rom_default_key] if asset_info.rom_default_key in self.launcher else None
+
     def get_rom_asset_defaults(self):
         
         default_assets = {}
@@ -880,12 +883,9 @@ class RomLauncher(Launcher):
 
         return duplicated_name_list
 
-    def set_default_rom_asset(self, default_asset_kind_key, mapped_to_kind_key):
+    def set_default_rom_asset(self, asset_kind, mapped_to_kind):
         
-        asset_kind  = assets_get_info_scheme(default_asset_kind_key)
-        map_to_kind = assets_get_info_scheme(mapped_to_kind_key)
-
-        self.launcher[asset_kind.rom_default_key] = map_to_kind.key
+        self.launcher[asset_kind.rom_default_key] = mapped_to_kind.key
 
     def get_asset_path(self, asset_info):
         if not asset_info:

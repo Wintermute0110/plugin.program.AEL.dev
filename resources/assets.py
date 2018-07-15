@@ -126,6 +126,16 @@ ROM_ASSET_LIST = [
     ASSET_FLYER,     ASSET_MAP,    ASSET_MANUAL,   ASSET_TRAILER
 ]
 
+DEFAULTABLE_ROM_ASSETLIST = [
+    ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO
+]
+
+MAPPBLE_ROM_ASSET_LIST = [
+    ASSET_TITLE,     ASSET_SNAP,   ASSET_BOXFRONT, ASSET_BOXBACK,
+    ASSET_CARTRIDGE, ASSET_FANART, ASSET_BANNER,   ASSET_CLEARLOGO,  
+    ASSET_FLYER,     ASSET_MAP
+]
+
 # --- Plugin will search these file extensions for assets ---
 # >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
 IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'bmp']
@@ -557,6 +567,14 @@ class AssetInfoFactory:
 
         return rom_asset_kinds
 
+    def get_assets_by(self, keys):
+        asset_kinds = []
+        for asset_key in keys:
+            asset_kinds.append(self.asset_infos[asset_key])
+
+        return asset_kinds
+
+
     def get_asset_info(self, asset_kind):
         
         asset_info = self.asset_infos.get(asset_kind, None)
@@ -584,157 +602,19 @@ class AssetInfo:
     exts_dialog = []
     path_key    = ''
 
+    
+    def __eq__(self, other):
+        return isinstance(other, AssetInfo) and self.kind == other.kind
+
+    def __hash__(self):
+        return self.kind.__hash__()
+
 def assets_get_info_scheme(asset_kind):
-    A = AssetInfo()
 
-    if asset_kind == ASSET_ICON:
-        A.kind        = ASSET_ICON
-        A.key         = 's_icon'
-        A.default_key = 'default_icon'
-        A.rom_default_key = 'roms_default_icon'
-        A.name        = 'Icon'
-        A.fname_infix = 'icon'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_icon'
+    assets_factory = AssetInfoFactory()
+    A = assets_factory.get_asset_info(asset_kind)
 
-    elif asset_kind == ASSET_FANART:
-        A.kind              = ASSET_FANART
-        A.key               = 's_fanart'
-        A.default_key       = 'default_fanart'
-        A.rom_default_key   = 'roms_default_fanart'
-        A.name              = 'Fanart'
-        A.fname_infix       = 'fanart'
-        A.kind_str          = 'image'
-        A.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key          = 'path_fanart'
-    elif asset_kind == ASSET_BANNER:
-        A.kind              = ASSET_BANNER
-        A.key               = 's_banner'
-        A.default_key       = 'default_banner'
-        A.rom_default_key   = 'roms_default_banner'
-        A.name              = 'Banner'
-        A.fname_infix       = 'banner'
-        A.kind_str          = 'image'
-        A.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key          = 'path_banner'
-    elif asset_kind == ASSET_POSTER:
-        A.kind        = ASSET_POSTER
-        A.key         = 's_poster'
-        A.default_key = 'default_poster'
-        A.rom_default_key = 'roms_default_poster'
-        A.name        = 'Poster'
-        A.fname_infix = 'poster'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_poster'
-    elif asset_kind == ASSET_CLEARLOGO:
-        A.kind        = ASSET_CLEARLOGO
-        A.key         = 's_clearlogo'
-        A.default_key = 'default_clearlogo'
-        A.rom_default_key = 'roms_default_clearlogo'
-        A.name        = 'Clearlogo'
-        A.fname_infix = 'clearlogo'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_clearlogo'
-    elif asset_kind == ASSET_CONTROLLER:
-        A.kind        = ASSET_CONTROLLER
-        A.key         = 's_controller'
-        A.name        = 'Controller'
-        A.fname_infix = 'controller'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_controller'
-    elif asset_kind == ASSET_TRAILER:
-        A.kind        = ASSET_TRAILER
-        A.key         = 's_trailer'
-        A.name        = 'Trailer'
-        A.fname_infix = 'trailer'
-        A.kind_str    = 'video'
-        A.exts        = asset_get_filesearch_extension_list(TRAILER_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(TRAILER_EXTENSIONS)
-        A.path_key    = 'path_trailer'
-    elif asset_kind == ASSET_TITLE:
-        A.kind        = ASSET_TITLE
-        A.key         = 's_title'
-        A.name        = 'Title'
-        A.fname_infix = 'title'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_title'
-    elif asset_kind == ASSET_SNAP:
-        A.kind        = ASSET_SNAP
-        A.key         = 's_snap'
-        A.name        = 'Snap'
-        A.fname_infix = 'snap'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_snap'
-    elif asset_kind == ASSET_BOXFRONT:
-        A.kind        = ASSET_BOXFRONT
-        A.key         = 's_boxfront'
-        A.name        = 'Boxfront'
-        A.fname_infix = 'boxfront'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_boxfront'
-    elif asset_kind == ASSET_BOXBACK:
-        A.kind        = ASSET_BOXBACK
-        A.key         = 's_boxback'
-        A.name        = 'Boxback'
-        A.fname_infix = 'boxback'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_boxback'
-    elif asset_kind == ASSET_CARTRIDGE:
-        A.kind        = ASSET_CARTRIDGE
-        A.key         = 's_cartridge'
-        A.name        = 'Cartridge'
-        A.fname_infix = 'cartridge'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_cartridge'
-    elif asset_kind == ASSET_FLYER:
-        A.kind        = ASSET_FLYER
-        A.key         = 's_flyer'
-        A.name        = 'Flyer'
-        A.fname_infix = 'flyer'
-        A.kind_str    = 'image'
-        A.fname_infix = 'poster'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_flyer'
-    elif asset_kind == ASSET_MAP:
-        A.kind        = ASSET_MAP
-        A.key         = 's_map'
-        A.name        = 'Map'
-        A.fname_infix = 'map'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSIONS)
-        A.path_key    = 'path_map'
-    elif asset_kind == ASSET_MANUAL:
-        A.kind        = ASSET_MANUAL
-        A.key         = 's_manual'
-        A.name        = 'Manual'
-        A.fname_infix = 'manual'
-        A.kind_str    = 'manual'
-        A.exts        = asset_get_filesearch_extension_list(MANUAL_EXTENSIONS)
-        A.exts_dialog = asset_get_dialog_extension_list(MANUAL_EXTENSIONS)
-        A.path_key    = 'path_manual'
-    else:
+    if A is None:
         log_error('assets_get_info_scheme() Wrong asset_kind = {0}'.format(asset_kind))
 
     # --- Ultra DEBUG ---

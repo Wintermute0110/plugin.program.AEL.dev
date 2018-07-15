@@ -1430,63 +1430,45 @@ class Main:
         # --- Choose default ROMs assets/artwork ---
         if command == 'SET_ROMS_DEFAULT_ARTWORK':
           
-            list_items = []
-            assets = launcher.get_rom_assets()
-            asset_defaults = launcher.get_rom_asset_defaults()
+            list_items = {}
+            assets = self.assetFactory.get_assets_by(DEFAULTABLE_ROM_ASSETLIST)
+            mappable_assets = self.assetFactory.get_assets_by(MAPPBLE_ROM_ASSET_LIST)
 
-            for asset_kind in asset_defaults:
+            for asset_info in assets:
+                current_default_key = launcher.get_rom_asset_default(asset_info)
+                if current_default_key and current_default_key != '':
+                    current_default_key = ASSET_KEYS_TO_CONSTANTS[current_default_key]
+                    current_default = self.assetFactory.get_asset_info(current_default_key)
+                    list_items[asset_info] = 'Choose asset for {0} (currently {1})'.format(asset_info.name, current_default.name)
+                else:
+                    list_items[asset_info] = 'Choose asset for {0} (currently not set)'.format(asset_info.name)
 
-                actual_asset_kind = asset_defaults[asset_kind]
-                actual_asset_name = ASSET_NAMES[actual_asset_kind] if actual_asset_kind in ASSET_NAMES else ''
-                asset = assets[actual_asset_kind] if actual_asset_kind in assets and assets[actual_asset_kind] else ''
-
-                # >> Create ListItems and label2
-                label1_text = 'Choose asset for {0} (currently {1})'.format(ASSET_NAMES[asset_kind], actual_asset_name)
-                label2_text = asset if asset else 'Not set'
-                list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
-                
-                # >> Set artwork with setArt()
-                item_img = 'DefaultAddonNone.png'
-                if asset != '':
-                    item_path = FileNameFactory.create(asset)
-                    if item_path.is_video_file():
-                        item_img = 'DefaultAddonVideo.png'
-                    else:
-                        item_img = asset
-
-                list_item.setArt({'icon' : item_img})
-                list_items.append(list_item)
-
-            # >> Execute select dialog
-            selected_kind_index = xbmcgui.Dialog().select('Edit ROMs default Assets/Artwork', list = list_items, useDetails = True)
-            if selected_kind_index < 0:   
+            dialog = DictionaryDialog()
+            selected_asset = dialog.select('Edit ROMs default Assets/Artwork', list_items)
+            
+            if selected_asset is None:
                 return self._command_manage_roms(launcher)
-            
-            selected_kind = asset_defaults.keys()[selected_kind_index]
-            
+
+            default_key = launcher.get_rom_asset_default(selected_asset)
+            default_key = ASSET_KEYS_TO_CONSTANTS[default_key]
+            default_kind = None
+
             # >> Build ListItem of assets that can be mapped.
-            mappable_asset_list_items = []
-            for mappable_asset_kind in assets:
-                if mappable_asset_kind == ASSET_TRAILER:
-                    continue
-                
-                list_item = xbmcgui.ListItem(label = ASSET_NAMES[mappable_asset_kind], label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
-                list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
-                mappable_asset_list_items.append(list_item)
-                
+            mappable_asset_list_items = {}
+            for mappable_asset in mappable_assets:
+                mappable_asset_list_items[mappable_asset] = mappable_asset.name
+                if mappable_asset.kind == default_key:
+                    default_kind = mappable_asset
+
             # >> Krypton feature: User preselected item in select() dialog.
-            preselected_index = mappable_asset_list_items.index(asset_defaults[selected_kind])
-            new_selected_kind_index = xbmcgui.Dialog().select('Choose ROMs default asset for {}'.format(ASSET_NAMES[selected_kind]), 
-                                       list = mappable_asset_list, useDetails = True, preselect = preselected_index)
-            if new_selected_kind_index < 0:                   
+            selected_mappable_asset = dialog.select('Choose ROMs default asset for {}'.format(selected_asset.name), mappable_asset_list_items, default_kind)
+            if selected_mappable_asset is None or selected_mappable_asset == default_kind:                   
                 return self._command_manage_roms(launcher)
-            
-            new_selected_kind = assets.keys()[new_selected_kind_index]
-            
-            launcher.set_default_rom_asset(selected_kind, new_selected_kind)
-            default_asset_name = ASSET_NAMES[selected_kind]
-            asset_name = ASSET_NAMES[new_selected_kind]
-            kodi_notify('ROMs {0} mapped to {1}'.format(default_asset_name, asset_name))
+                        
+            launcher.set_default_rom_asset(selected_asset, selected_mappable_asset)
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+            kodi_notify('ROMs {0} mapped to {1}'.format(selected_asset.name, selected_mappable_asset.name))
           
             return self._command_manage_roms(launcher)
 
