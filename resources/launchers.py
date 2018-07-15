@@ -946,12 +946,12 @@ class RomLauncher(Launcher):
         if mode == LAUNCHER_DMODE_PCLONE or mode == LAUNCHER_DMODE_1G1R:
             # >> Check if user configured a No-Intro DAT. If not configured  or file does
             # >> not exists refuse to switch to PClone view and force normal mode.
-            if not launcher.has_nointro_xml():
+            if not self.has_nointro_xml():
                 log_info('RomsLauncher.change_display_mode() No-Intro DAT not configured.')
                 log_info('RomsLauncher.change_display_mode() Forcing Flat view mode.')
                 mode = LAUNCHER_DMODE_FLAT
             else:
-                nointro_xml_file_FName = launcher.get_nointro_xml_filepath()
+                nointro_xml_file_FName = self.get_nointro_xml_filepath()
                 if not nointro_xml_file_FName.exists():
                     log_info('RomsLauncher.change_display_mode() No-Intro DAT not found.')
                     log_info('RomsLauncher.change_display_mode() Forcing Flat view mode.')

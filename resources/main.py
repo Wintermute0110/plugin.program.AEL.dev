@@ -1401,7 +1401,6 @@ class Main:
 
         # --- Export Launcher XML configuration ---
         if selected_option == 'EXPORT_LAUNCHER':
-            z
             # >> Ask user for a path to export the launcher configuration
             dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
                                                 '', False, False).decode('utf-8')
@@ -1863,34 +1862,42 @@ class Main:
         selected_option = dialog.select('Audit ROMs / Launcher view mode', launcher_options),
         
         if selected_option is None:
-            return
+            return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
+        
+        log_debug('_command_audit_roms(): Selected option = {0}'.format(selected_option))
+        if type(selected_option) is tuple:
+            selected_option = selected_option[0]
+            log_debug('_command_audit_roms(): Selected option = {0}'.format(selected_option))
                         
         # --- Change launcher view mode (Normal or PClone) ---
         if selected_option == 'CHANGE_DISPLAY_MODE':
             # >> Krypton feature: preselect the current item.
             # >> NOTE Preselect must be called with named parameter, otherwise it does not work well.
             display_mode = launcher.get_display_mode()
-            modes_list = dict(LAUNCHER_DMODE_LIST)
-
+            modes_list = {key: key for key in LAUNCHER_DMODE_LIST}
+            log_debug(display_mode)
             selected_mode = dialog.select('Launcher display mode', modes_list, preselect = display_mode)
-            if selected_mode is None: 
-                return
+            if selected_mode is None or selected_mode == display_mode: 
+                return self._command_audit_roms(launcher)
 
             actual_mode = launcher.change_display_mode(selected_mode)
             if actual_mode != selected_mode:
                 kodi_dialog_OK('No-Intro DAT not configured or cannot be found. PClone or 1G1R view mode cannot be set.')
-
+                return self._command_audit_roms(launcher)
+                
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Launcher view mode set to {0}'.format(selected_mode))
-            return
+            return self._command_audit_roms(launcher)
         
         # --- Delete No-Intro XML parent-clone DAT ---
         if selected_option == 'DELETE_NO_INTRO':
             if not launcher.has_nointro_xml():
                 kodi_dialog_OK('No-Intro/Redump XML DAT file not configured.')
-                return
+                return self._command_audit_roms(launcher)
                     
             ret = xbmcgui.Dialog().yesno('Advanced Emulator Launcher', 'Delete No-Intro/Redump XML DAT file?')
-            if not ret: return
+            if not ret: 
+                return self._command_audit_roms(launcher)
 
             launcher.reset_nointro_xmldata()
             kodi_dialog_OK('No-Intro DAT deleted. No-Intro Missing ROMs will be removed now.')
@@ -1904,7 +1911,9 @@ class Main:
             fs_write_ROMs_JSON(ROMS_DIR, launcher_data, roms)
 
             launcher.set_number_of_roms(len(roms))
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Removed No-Intro/Redump XML DAT file')
+            return self._command_audit_roms(launcher)
 
         # --- Add No-Intro XML parent-clone DAT ---
         if selected_option == 'ADD_NO_INTRO':                
@@ -1914,7 +1923,8 @@ class Main:
             # Fixed in Krypton Beta 6 http://forum.kodi.tv/showthread.php?tid=298161
                         
             dat_file = xbmcgui.Dialog().browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
-            if not FileNameFactory.create(dat_file).exists(): return
+            if not FileNameFactory.create(dat_file).exists(): 
+                return self._command_audit_roms(launcher)
             
             launcher.set_nointro_xml_file = dat_file
             kodi_dialog_OK('DAT file successfully added. Launcher ROMs will be audited now.')
@@ -1937,6 +1947,8 @@ class Main:
                 kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
             
             launcher.set_number_of_roms(len(roms))
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            return self._command_audit_roms(launcher)
                 
         # --- Create Parent/Clone DAT based on ROM filenames ---
         if selected_option == 'CREATE_PARENTCLONE_DAT':
@@ -1946,13 +1958,14 @@ class Main:
                 ret = d.yesno('Advanced Emulator Launcher',
                                 'This Launcher has a DAT file attached. Creating a filename '
                                 'based DAT will remove the No-Intro/Redump DAT. Continue?')
-                if not ret: return
+                if not ret: 
+                    return self._command_audit_roms(launcher)
                 # >> Delete No-Intro/Redump DAT and reset ROM audit.
                     
             # >> Create an artificial <roms_base_noext>_DAT.json file. Keep launcher
             # >> nointro_xml_file = '' because the artificial DAT is not an official DAT.
             kodi_dialog_OK('Not implemented yet. Sorry.')
-            return
+            return self._command_audit_roms(launcher)
 
         # --- Display ROMs ---
         if selected_option == 'CHANGE_DISPLAY_ROMS':
@@ -1960,19 +1973,20 @@ class Main:
             # >> If no DAT configured exit.
             if not launcher.has_nointro_xml():
                 kodi_dialog_OK('No-Intro/Redump XML DAT file not configured.')
-                return
+                return self._command_audit_roms(launcher)
                        
             # >> Krypton feature: preselect the current item.
             display_mode = launcher.get_nointro_display_mode()
-            modes_list = dict(NOINTRO_DMODE_LIST)
+            modes_list = {key: key for key in NOINTRO_DMODE_LIST}
 
             selected_mode = dialog.select('Roms display mode', modes_list, preselect = display_mode)
             if selected_mode is None: 
-                return
+                return self._command_audit_roms(launcher)
 
             launcher.change_nointro_display_mode(selected_mode)
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
             kodi_notify('Display ROMs changed to "{0}"'.format(selected_mode))       
-            return
+            return self._command_audit_roms(launcher)
         
         # --- Update ROM audit ---
         if selected_option == 'UPDATE_ROM_AUDIT':
@@ -1996,11 +2010,15 @@ class Main:
             else:
                 # >> ERROR when auditing the ROMs. Unset nointro_xml_file
                 launcher.reset_nointro_xmldata()
-                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
+                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.'))
+                return self._command_audit_roms(launcher)
            
             launcher.set_number_of_roms(len(roms))
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            return self._command_audit_roms(launcher)
 
-        return
+        log_warning('_command_audit_roms(): Unsupported menu option selected "{}"'.format(selected_option))
+        return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
 
     # --- Launcher Advanced Modifications menu option ---
     def _command_advanced_modifications(self, launcher):
