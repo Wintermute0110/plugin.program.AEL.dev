@@ -7625,7 +7625,10 @@ class Main:
                 log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
                 # >>  Note that on Windows, you cannot set close_fds to true and also redirect the 
                 # >> standard handles by setting stdin, stdout or stderr.
-                if windows_cd_apppath and windows_close_fds:
+                if is_android():
+                    cmd = ' '.join(cmds)
+                    retcode = os.system(cmd.encode('utf-8'))
+                elif windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
                 elif windows_cd_apppath and not windows_close_fds:
                     with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
