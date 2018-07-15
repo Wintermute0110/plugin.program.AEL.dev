@@ -37,10 +37,10 @@ class LauncherFactory():
         statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
 
         if launcher_type == LAUNCHER_RETROPLAYER:
-            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, rom)
+            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, rom, True, True)
 
         if launcher_type == LAUNCHER_RETROARCH:
-            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
+            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom, True, True)
 
         if launcher_type == LAUNCHER_ROM:
             return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom, True, True)
@@ -1435,7 +1435,6 @@ class LnkLauncher(StandardRomLauncher):
     #
     def _get_builder_wizard(self, wizard):
         
-        wizard = DummyWizardDialog('application', LNK_LAUNCHER_APP_NAME, wizard)
         wizard = FileBrowseWizardDialog('rompath', 'Select the LNKs path', 0, '', wizard)
         wizard = DummyWizardDialog('romext', 'lnk', wizard)
         wizard = DummyWizardDialog('args', '%rom%', wizard)
@@ -1450,7 +1449,7 @@ class LnkLauncher(StandardRomLauncher):
 # --- Execute Kodi Retroplayer if launcher configured to do so ---
 # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
-class RetroplayerLauncher(RomLauncher):
+class RetroplayerLauncher(StandardRomLauncher):
 
     def launch(self):
         log_info('RetroplayerLauncher() Executing ROM with Kodi Retroplayer ...')
