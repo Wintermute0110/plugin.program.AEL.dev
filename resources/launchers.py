@@ -888,10 +888,14 @@ class RomLauncher(Launcher):
         self.launcher[asset_kind.rom_default_key] = map_to_kind.key
 
     def get_asset_path(self, asset_info):
-        return self.launcher[asset_info.path_key]
+        if not asset_info:
+            return None
+
+        return self.launcher[asset_info.path_key] if asset_info.path_key in self.launcher else None
 
     def set_asset_path(self, asset_info, path):
-         self.launcher[asset_info.path_key] = arg_path
+        log_debug('Setting "{}" to {}'.format(asset_info.path_key, path))
+        self.launcher[asset_info.path_key] = path
 
     # todo: move roms_dir to factory and inject through constructor for rom launchers only
     # categories should come from some kind of categoriesrepository

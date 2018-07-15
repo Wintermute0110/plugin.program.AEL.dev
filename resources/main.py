@@ -1469,8 +1469,7 @@ class Main:
             for mappable_asset_kind in assets:
                 if mappable_asset_kind == ASSET_TRAILER:
                     continue
-
-
+                
                 list_item = xbmcgui.ListItem(label = ASSET_NAMES[mappable_asset_kind], label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
                 list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
                 mappable_asset_list_items.append(list_item)
@@ -1498,7 +1497,8 @@ class Main:
 
             for asset_info in assets:
                 path = launcher.get_asset_path(asset_info)
-                list_items[asset_info] = "Change {0} path: '{1}'".format(asset_info.plural, path)
+                if path:
+                    list_items[asset_info] = "Change {0} path: '{1}'".format(asset_info.plural, path)
 
             dialog = DictionaryDialog()
             selected_asset = dialog.select('ROM Asset directories ', list_items)
@@ -1509,10 +1509,11 @@ class Main:
             selected_asset_path = launcher.get_asset_path(selected_asset)
             dialog = xbmcgui.Dialog()
             dir_path = dialog.browse(0, 'Select {0} path'.format(selected_asset.plural), 'files', '', False, False, selected_asset_path).decode('utf-8')
-            if not dir_path:  
+            if not dir_path or dir_path == selected_asset_path:  
                 return self._command_manage_roms(launcher)
                 
-            launcher.set_asset_path(asset_info, dir_path)
+            launcher.set_asset_path(selected_asset, dir_path)
+            launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
                 
             # >> Check for duplicate paths and warn user.
             duplicated_name_list = launcher.get_duplicated_asset_dirs()
@@ -1521,6 +1522,7 @@ class Main:
                 kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
                                 'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
+            kodi_notify('Changed rom asset dir for {0} to {1}'.format(selected_asset.name, dir_path))
             return self._command_manage_roms(launcher)
 
         # --- Scan ROMs local artwork ---
