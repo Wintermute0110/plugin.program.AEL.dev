@@ -7625,10 +7625,7 @@ class Main:
                 log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
                 # >>  Note that on Windows, you cannot set close_fds to true and also redirect the 
                 # >> standard handles by setting stdin, stdout or stderr.
-                if is_android():
-                    cmd = ' '.join(cmds)
-                    retcode = os.system(cmd.encode('utf-8'))
-                elif windows_cd_apppath and windows_close_fds:
+                if windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
                 elif windows_cd_apppath and not windows_close_fds:
                     with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
@@ -7644,7 +7641,13 @@ class Main:
                     raise Exception('Logical error')
                 log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))
 
-        # >> Linux and Android
+        # Android
+        elif is_android():
+             
+            retcode = os.system("{0} {1}".format(application, arguments).encode('utf-8'))
+            log_info('_run_process() Process retcode = {0}'.format(retcode))
+
+        # >> Linux
         # >> New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
         # >> process. This is to avoid Kodi opens sockets be inherited by the child process. A
         # >> wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
