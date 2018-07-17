@@ -2037,10 +2037,15 @@ class Main:
             selected_option = selected_option[0]
             log_debug('_command_advanced_modifications(): Selected option = {0}'.format(selected_option))
         
-        ###### DEPCRECATED: With so many types and differences this will be to hard to implement. 
-        ###################################
         # >> Choose launching mechanism
-        #if selected_option == 'CHANGE_APPLICATION':
+        if selected_option == 'CHANGE_APPLICATION':
+            if launcher.change_application():                
+                launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+                kodi_notify('Changed launcher application')
+            
+            return self._command_advanced_modifications(launcher)
+
+
         #    if sys.platform == 'win32':
         #        answer = dialog.select('Choose launcher mechanism',
         #                                ['Use Kodi Retroplayer',

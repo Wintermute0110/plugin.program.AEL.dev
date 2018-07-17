@@ -37,13 +37,13 @@ class LauncherFactory():
         statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
 
         if launcher_type == LAUNCHER_RETROPLAYER:
-            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, rom, True, True)
+            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, rom)
 
         if launcher_type == LAUNCHER_RETROARCH:
-            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom, True, True)
+            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
 
         if launcher_type == LAUNCHER_ROM:
-            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom, True, True)
+            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
         
         if launcher_type == LAUNCHER_LNK:
             return LnkLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
@@ -363,6 +363,11 @@ class Launcher():
         self.launcher['non_blocking'] = is_non_blocking
         return self.is_non_blocking()
 
+    # Change the application this launcher uses
+    # Override if changeable.
+    def change_application(self):
+        return False
+
     def get_assets(self):
         assets = {}
         
@@ -667,11 +672,8 @@ class Launcher():
 class RomLauncher(Launcher):
     __metaclass__ = ABCMeta
     
-    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom, validate_if_app_exists, validate_if_rom_exists):
-
-        self.validate_if_app_exists = validate_if_app_exists
-        self.validate_if_rom_exists = validate_if_rom_exists
-
+    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
+        
         self.rom = rom
         self.categoryID = ''
 
@@ -684,55 +686,66 @@ class RomLauncher(Launcher):
     
     @abstractmethod
     def _selectApplicationToUse(self):
-        pass
+        return True
     
     @abstractmethod
     def _selectArgumentsToUse(self):
-        pass
+        return True
 
     @abstractmethod
     def _selectRomFileToUse(self):
         return None
     
     # ~~~~ Argument substitution ~~~~~
-    def _parseArguments(self, romFile):
+    def _parseArguments(self):
         
-        # --- Escape quotes and double quotes in ROMFileName ---
-        # >> This maybe useful to Android users with complex command line arguments
-        if self.escape_romfile:
-            log_info("RomLauncher() Escaping ROMFileName ' and \"")
-            romFile.escapeQuotes()
-
-        apppath       = self.application.getDir()
-        rompath       = romFile.getDir()
-        rombase       = romFile.getBase()
-        rombase_noext = romFile.getBase_noext()
-        log_info('RomLauncher() romfile      "{0}"'.format(romFile.getPath()))
-        log_info('RomLauncher() rompath      "{0}"'.format(rompath))
-        log_info('RomLauncher() rombase      "{0}"'.format(rombase))
-        log_info('RomLauncher() rombasenoext "{0}"'.format(rombase_noext))
-        log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
-        log_info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
-        log_info('RomLauncher() apppath      "{0}"'.format(apppath))
-
-        # ~~~~ Argument substitution ~~~~~
         log_info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
+        
+        # Application based arguments replacements
+        if self.application and isinstance(self.application, FileName):
+            
+            apppath = self.application.getDir()
+
+            log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
+            log_info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
+            log_info('RomLauncher() apppath      "{0}"'.format(apppath))
+
+            self.arguments = self.arguments.replace('$apppath$', apppath)
+            self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
+
+        # ROM based arguments replacements
+        if self.selected_rom:
+            # --- Escape quotes and double quotes in ROMFileName ---
+            # >> This maybe useful to Android users with complex command line arguments
+            if self.escape_romfile:
+                log_info("RomLauncher() Escaping ROMFileName ' and \"")
+                self.selected_rom.escapeQuotes()
+                
+            rompath       = self.selected_rom.getDir()
+            rombase       = self.selected_rom.getBase()
+            rombase_noext = self.selected_rom.getBase_noext()
+            
+            log_info('RomLauncher() romfile      "{0}"'.format(self.selected_rom.getPath()))
+            log_info('RomLauncher() rompath      "{0}"'.format(rompath))
+            log_info('RomLauncher() rombase      "{0}"'.format(rombase))
+            log_info('RomLauncher() rombasenoext "{0}"'.format(rombase_noext))
+
+            self.arguments = self.arguments.replace('$rom$', self.selected_rom.getPath())
+            self.arguments = self.arguments.replace('$romfile$', self.selected_rom.getPath())
+            self.arguments = self.arguments.replace('$rompath$', rompath)
+            self.arguments = self.arguments.replace('$rombase$', rombase)
+            self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
+            
+            # >> Legacy names for argument substitution
+            self.arguments = self.arguments.replace('%rom%', romFile.getPath())
+            self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
+        
+        # Default arguments replacements
         self.arguments = self.arguments.replace('$categoryID$', self.categoryID)
         self.arguments = self.arguments.replace('$launcherID$', self.launcher['id'])
         self.arguments = self.arguments.replace('$romID$', self.rom['id'])
-        self.arguments = self.arguments.replace('$rom$', romFile.getPath())
-        self.arguments = self.arguments.replace('$romfile$', romFile.getPath())
-        self.arguments = self.arguments.replace('$rompath$', rompath)
-        self.arguments = self.arguments.replace('$rombase$', rombase)
-        self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
         self.arguments = self.arguments.replace('$romtitle$', self.title)
-        self.arguments = self.arguments.replace('$apppath$', apppath)
-        self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
-
-        # >> Legacy names for argument substitution
-        self.arguments = self.arguments.replace('%rom%', romFile.getPath())
-        self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
-
+        
         # automatic substitution of rom values
         for rom_key, rom_value in self.rom.iteritems():
             if isinstance(rom_value, basestring):
@@ -748,27 +761,25 @@ class RomLauncher(Launcher):
     def launch(self):
         
         self.title  = self.rom['m_name']
+        self.selected_rom = None
 
-        self._selectApplicationToUse()
-        self._selectArgumentsToUse()
+        applicationIsSet    = self._selectApplicationToUse()
+        argumentsAreSet     = self._selectArgumentsToUse()
+        romIsSelected       = self._selectRomFileToUse()
         
-        ROMFileName = self._selectRomFileToUse()
+        if not applicationIsSet or not argumentsAreSet or not romIsSelected:
+            return
+        
 
         log_info('RomLauncher() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
         log_info('RomLauncher() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
-
-        # --- Check for errors and abort if found --- todo: CHECK
-        if self.validate_if_app_exists and not self.application.exists():
-            log_error('Launching app not found "{0}"'.format(self.application.getPath()))
-            kodi_notify_warn('Launching app not found {0}'.format(self.application.getOriginalPath()))
-            return
 
         if self.validate_if_rom_exists and not ROMFileName.exists():
             log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
             kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
             return
         
-        self._parseArguments(ROMFileName)
+        self._parseArguments()
         self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
         
         super(RomLauncher, self).launch()
@@ -1089,6 +1100,19 @@ class ApplicationLauncher(Launcher):
         self.launcher['m_name'] = new_launcher_name
         return True
     
+    def change_application(self):
+
+        current_application = self.launcher['application']
+        selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
+                                                      self._get_appbrowser_filter('application', self.launcher), 
+                                                      False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.launcher['application'] = selected_application
+        return True
+
     def change_arguments(self, args):
         self.launcher['args'] = args
         
@@ -1146,6 +1170,7 @@ class ApplicationLauncher(Launcher):
         non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
 
         options = super(ApplicationLauncher, self).get_advanced_modification_options()
+        options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.launcher['application'])
         options['MODIFY_ARGS']          = "Modify Arguments: '{0}'".format(self.launcher['args'])
         options['ADDITIONAL_ARGS']      = "Modify aditional arguments ..."
         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
@@ -1192,6 +1217,20 @@ class KodiLauncher(Launcher):
     def get_launcher_type_name(self):        
         return "Kodi favourite launcher"
     
+    def change_application(self):
+
+        current_application = self.launcher['application']
+        
+        dialog = DictionaryDialog()
+        selected_application = dialog.select('Select the favourite', self._get_kodi_favourites(), current_application)
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.launcher['application'] = selected_application
+        self.launcher['original_favname'] = self._get_title_from_selected_favourite(selected_application, 'original_favname', self.launcher)
+        return True
+
     def get_edit_options(self):
 
         category_name = 'ToDo'
@@ -1217,7 +1256,10 @@ class KodiLauncher(Launcher):
         toggle_window_str = 'ON' if self.launcher['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
 
+        org_favname = self.launcher['original_favname'] if 'original_favname' in self.launcher else 'unknown'
+
         options = super(KodiLauncher, self).get_advanced_modification_options()
+        options['CHANGE_APPLICATION']   = "Change favourite: '{0}'".format(org_favname)
         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
 
@@ -1246,6 +1288,7 @@ class KodiLauncher(Launcher):
         
         wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', self._get_kodi_favourites(), wizard)
         wizard = DummyWizardDialog('s_icon', '', wizard, self._get_icon_from_selected_favourite)
+        wizard = DummyWizardDialog('original_favname', '', wizard, self._get_title_from_selected_favourite)
         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_selected_favourite)
         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
@@ -1292,6 +1335,19 @@ class StandardRomLauncher(RomLauncher):
     def get_launcher_type_name(self):        
         return "ROM launcher"   
     
+    def change_application(self):
+
+        current_application = self.launcher['application']
+        selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
+                                                      self._get_appbrowser_filter('application', self.launcher), 
+                                                      False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.launcher['application'] = selected_application
+        return True
+
     def change_arguments(self, args):
         self.launcher['args'] = args
         
@@ -1337,6 +1393,7 @@ class StandardRomLauncher(RomLauncher):
         multidisc_str     = 'ON' if self.launcher['multidisc'] else 'OFF'
         
         options = super(StandardRomLauncher, self).get_advanced_modification_options()
+        options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.launcher['application'])
         options['MODIFY_ARGS'] = "Modify Arguments: '{0}'".format(self.launcher['args'])
         options['ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
         options['CHANGE_ROMPATH'] = "Change ROM path: '{0}'".format(self.launcher['rompath'])
@@ -1355,6 +1412,14 @@ class StandardRomLauncher(RomLauncher):
         else:
             self.application = FileNameFactory.create(self.launcher['application'])
 
+        # --- Check for errors and abort if found --- todo: CHECK
+        if not self.application.exists():
+            log_error('StandardRomLauncher._selectApplicationToUse(): Launching app not found "{0}"'.format(self.application.getPath()))
+            kodi_notify_warn('Launching app not found {0}'.format(self.application.getOriginalPath()))
+            return False
+
+        return True
+
     def _selectArgumentsToUse(self):
 
         if self.rom['altarg']:
@@ -1369,32 +1434,44 @@ class StandardRomLauncher(RomLauncher):
             dselect_ret = dialog.select('Select launcher arguments', arg_list)
             
             if dselect_ret < 0: 
-                return
+                return False
             
             log_info('StandardRomLauncher() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
             self.arguments = arg_list[dselect_ret]
         else:
             self.arguments = self.launcher['args']
 
+        return True
+
     def _selectRomFileToUse(self):
         
         if not 'disks' in self.rom or not self.rom['disks']:
-            return FileNameFactory.create(self.rom['filename'])
+            self.selected_rom = FileNameFactory.create(self.rom['filename'])
+            return True
                 
-        log_info('StandardRomLauncher() Multidisc ROM set detected')
+        log_info('StandardRomLauncher._selectRomFileToUse() Multidisc ROM set detected')
         dialog = xbmcgui.Dialog()
         dselect_ret = dialog.select('Select ROM to launch in multidisc set', self.rom['disks'])
         if dselect_ret < 0:
-           return
+           return False
 
         selected_rom_base = self.rom['disks'][dselect_ret]
-        log_info('StandardRomLauncher() Selected ROM "{0}"'.format(selected_rom_base))
+        log_info('StandardRomLauncher._selectRomFileToUse() Selected ROM "{0}"'.format(selected_rom_base))
 
         ROM_temp = FileNameFactory.create(self.rom['filename'])
         ROM_dir = FileNameFactory.create(ROM_temp.getDir())
         ROMFileName = ROM_dir.pjoin(selected_rom_base)
 
-        return ROMFileName
+        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
+        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
+
+        if self.validate_if_rom_exists and not ROMFileName.exists():
+            log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
+            kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
+            return False
+
+        self.selected_rom = ROMFileName
+        return True
 
     #
     # Creates a new launcher using a wizard of dialogs.
@@ -1494,8 +1571,6 @@ class RetroplayerLauncher(StandardRomLauncher):
         multidisc_str     = 'ON' if self.launcher['multidisc'] else 'OFF'
         
         options = super(StandardRomLauncher, self).get_advanced_modification_options()
-        options['MODIFY_ARGS'] = "Modify Arguments: '{0}'".format(self.launcher['args'])
-        options['ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
         options['CHANGE_ROMPATH'] = "Change ROM path: '{0}'".format(self.launcher['rompath'])
         options['CHANGE_ROMEXT'] = "Modify ROM extensions: '{0}'".format(self.launcher['romext'])
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
@@ -1525,8 +1600,44 @@ class RetroplayerLauncher(StandardRomLauncher):
 #
 # Read RetroarchLauncher.md
 #
-class RetroarchLauncher(RomLauncher):
+class RetroarchLauncher(StandardRomLauncher):
+    
+    def get_launcher_type(self):
+        return LAUNCHER_RETROARCH
+    
+    def get_launcher_type_name(self):        
+        return "Retroarch launcher"
+    
+    def change_application(self):
+
+        current_application = self.launcher['application']
+        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
+                                                      '', False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.launcher['application'] = selected_application
+        return True
+
+    def get_advanced_modification_options(self):
         
+        toggle_window_str = 'ON' if self.launcher['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
+        multidisc_str     = 'ON' if self.launcher['multidisc'] else 'OFF'
+        
+        options = super(StandardRomLauncher, self).get_advanced_modification_options()
+        options['CHANGE_APPLICATION']   = "Change Retroarch path: '{0}'".format(self.launcher['application'])
+        options['MODIFY_ARGS'] = "Modify Arguments: '{0}'".format(self.launcher['args'])
+        options['ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
+        options['CHANGE_ROMPATH'] = "Change ROM path: '{0}'".format(self.launcher['rompath'])
+        options['CHANGE_ROMEXT'] = "Modify ROM extensions: '{0}'".format(self.launcher['romext'])
+        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
+        
+        return options
+
     def _selectApplicationToUse(self):
         
         if is_windows():
@@ -1563,13 +1674,7 @@ class RetroarchLauncher(RomLauncher):
 
         #todo other os
         pass 
-
-    def get_launcher_type(self):
-        return LAUNCHER_RETROARCH
     
-    def get_launcher_type_name(self):        
-        return "Retroarch launcher"
-
     #
     # Creates a new launcher using a wizard of dialogs.
     #
@@ -1591,6 +1696,7 @@ class RetroarchLauncher(RomLauncher):
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
                     
         return wizard
+
 
     def _get_retroarch_app_folder(self, settings):
     
@@ -1787,28 +1893,51 @@ class SteamLauncher(RomLauncher):
         non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
         toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
         super(SteamLauncher, self).__init__(launcher, settings, executorFactory, toggle_window, non_blocking_flag)
-        
-    def launch(self):
-        
-        self.title  = self.rom['m_name']
-        
-        url = 'steam://rungameid/'
-
-        self.application = FileNameFactory.create('steam://rungameid/')
-        self.arguments = str(self.rom['steamid'])
-
-        log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
-        self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
-        
-        super(SteamLauncher, self).launch()
-        pass    
-
+    
     def get_launcher_type(self):
         return LAUNCHER_STEAM
     
     def get_launcher_type_name(self):        
         return "Steam launcher"
     
+    def get_advanced_modification_options(self):
+        
+        toggle_window_str = 'ON' if self.launcher['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
+        
+        options = super(StandardRomLauncher, self).get_advanced_modification_options()
+        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        
+        return options
+    
+    def _selectApplicationToUse(self):
+        self.application = FileNameFactory.create('steam://rungameid/')
+        return True
+
+    def _selectArgumentsToUse(self):        
+        self.arguments = '$steamid$'
+        return True
+
+    def _selectRomFileToUse(self):
+        log_info('SteamLauncher._selectRomFileToUse() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.title))
+        return True
+    
+   #def launch(self):
+   #    
+   #    self.title  = self.rom['m_name']
+   #    
+   #    url = 'steam://rungameid/'
+   #
+   #    self.application = FileNameFactory.create('steam://rungameid/')
+   #    self.arguments = str(self.rom['steamid'])
+   #
+   #    log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
+   #    self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
+   #    
+   #    super(SteamLauncher, self).launch()
+   #    pass    
+
     def _get_builder_wizard(self, wizard):
         
         wizard = DummyWizardDialog('application', 'Steam', wizard)
