@@ -7641,7 +7641,13 @@ class Main:
                     raise Exception('Logical error')
                 log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))
 
-        # >> Linux and Android
+        # Android
+        elif is_android():
+             
+            retcode = os.system("{0} {1}".format(application, arguments).encode('utf-8'))
+            log_info('_run_process() Process retcode = {0}'.format(retcode))
+
+        # >> Linux
         # >> New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
         # >> process. This is to avoid Kodi opens sockets be inherited by the child process. A
         # >> wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
