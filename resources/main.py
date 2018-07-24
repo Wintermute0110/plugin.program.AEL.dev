@@ -244,14 +244,6 @@ class Main:
             log_info('Execute migrations')
             self.execute_migrations(last_migrated_to_version)
 
-        # -- Bootstrap instances -- 
-        self.assetFactory      = AssetInfoFactory()
-        self.romsetFactory     = RomSetFactory(PLUGIN_DATA_DIR)
-        executorFactory        = ExecutorFactory(self.settings, LAUNCH_LOG_FILE_PATH)
-        self.launcherFactory   = LauncherFactory(self.settings, self.romsetFactory, executorFactory)
-        self.romscannerFactory = RomScannersFactory(self.settings, REPORTS_DIR, CURRENT_ADDON_DIR)
-        self.scraperFactory    = ScraperFactory(self.settings, CURRENT_ADDON_DIR)
-
         # --- Process URL ---
         self.base_url     = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
@@ -278,6 +270,14 @@ class Main:
         self.categories = {}
         self.launchers = {}
         self.update_timestamp = fs_load_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+
+        # -- Bootstrap instances -- 
+        self.assetFactory      = AssetInfoFactory()
+        self.romsetFactory     = RomSetFactory(PLUGIN_DATA_DIR)
+        executorFactory        = ExecutorFactory(self.settings, LAUNCH_LOG_FILE_PATH)
+        self.launcherFactory   = LauncherFactory(self.settings, self.categories, self.launchers, self.romsetFactory, executorFactory)
+        self.romscannerFactory = RomScannersFactory(self.settings, REPORTS_DIR, CURRENT_ADDON_DIR)
+        self.scraperFactory    = ScraperFactory(self.settings, CURRENT_ADDON_DIR)
 
         # --- Get addon command ---
         command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
@@ -1003,7 +1003,7 @@ class Main:
         if launcher_categoryID is None:
             return
     
-        launcher = self.launcherFactory.create(None, self.launchers)
+        launcher = self.launcherFactory.create(None)
         if launcher is None:
             return
 
@@ -1251,7 +1251,7 @@ class Main:
 
     def _command_edit_launcher(self, categoryID, launcherID):
 
-        launcher = self.launcherFactory.create(launcherID, self.launchers)
+        launcher = self.launcherFactory.create(launcherID)
         if launcher is None:
             return
         
@@ -6903,7 +6903,7 @@ class Main:
             kodi_dialog_OK('Could not load rom. Check the logs')
             return
 
-        launcher = self.launcherFactory.create(launcherID, self.launchers, rom)
+        launcher = self.launcherFactory.create(launcherID, rom)
         
         # --- Check launcher is OK ---
         if launcher is None:

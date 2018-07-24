@@ -21,43 +21,46 @@ from gamestream import *
 
 class LauncherFactory():
 
-    def __init__(self, settings, romsetFactory, executorFactory):
+    def __init__(self, settings, categories_data, launchers_data, romsetFactory, executorFactory):
+
         self.settings = settings
         self.romsetFactory = romsetFactory
         self.executorFactory = executorFactory
+        self.categories_data = categories_data
+        self.launchers_data = launchers_data
 
-    def _load(self, launcher_type, launcher_data, launchers, rom):
+    def _load(self, launcher_type, launcher_data, category, rom):
         
         if launcher_type == LAUNCHER_STANDALONE:
-            return ApplicationLauncher(self.settings, self.executorFactory, launcher_data)
+            return ApplicationLauncher(self.settings, self.executorFactory, launcher_data, category)
 
         if launcher_type == LAUNCHER_FAVOURITES:
-            return KodiLauncher(self.settings, self.executorFactory, launcher_data)
+            return KodiLauncher(self.settings, self.executorFactory, launcher_data, category)
                 
-        statsStrategy = RomStatisticsStrategy(self.romsetFactory, launchers)
+        statsStrategy = RomStatisticsStrategy(self.romsetFactory, self.launchers_data)
 
         if launcher_type == LAUNCHER_RETROPLAYER:
-            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, rom)
+            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, category, rom)
 
         if launcher_type == LAUNCHER_RETROARCH:
-            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
+            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, category, rom)
 
         if launcher_type == LAUNCHER_ROM:
-            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
+            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, category, rom)
         
         if launcher_type == LAUNCHER_LNK:
-            return LnkLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, rom)
+            return LnkLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, category, rom)
 
         if launcher_type == LAUNCHER_STEAM:
-            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, rom)
+            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, category, rom)
 
         if launcher_type == LAUNCHER_NVGAMESTREAM:
-            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, rom)
+            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, category, rom)
 
         log_warning('Unsupported launcher requested. Type {}'.format(launcher_type))
         return None
 
-    def create(self, launcherID, launchers, rom = None):
+    def create(self, launcherID, rom = None):
         
         # Create and return new launcher instance
         if launcherID is None:            
@@ -80,17 +83,20 @@ class LauncherFactory():
                 return None
             else:
                 log_info('launcherfactory.create() New launcher (launcher_type = {0})'.format(launcher_type))
-                return self._load(launcher_type, {}, launchers, None)
+                return self._load(launcher_type, {}, None)
         
         # Load existing launcher and return instance
-        if launcherID not in launchers:
+        if launcherID not in self.launchers_data:
             log_error('launcherfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
             return None
         
-        launcher = launchers[launcherID]
+        launcher = self.launchers_data[launcherID]
         launcher_type = launcher['type'] if 'type' in launcher else None
 
-        return self._load(launcher_type, launcher, launchers, rom)
+        category_id = launcher['categoryID'] if 'categoryID' in launcher else VCATEGORY_ADDONROOT_ID
+        category = self.categories_data[category_id] if category_id in self.categories_data else None
+
+        return self._load(launcher_type, launcher, category, rom)
 
 #
 # Abstract base class for launching anything that is supported.
@@ -99,9 +105,10 @@ class LauncherFactory():
 class Launcher():
     __metaclass__ = ABCMeta
     
-    def __init__(self, launcher, settings, executorFactory, toggle_window, non_blocking = False):
+    def __init__(self, launcher, category, settings, executorFactory, toggle_window, non_blocking = False):
         
         self.launcher        = launcher
+        self.category        = category
         self.settings        = settings
         self.executorFactory = executorFactory
 
@@ -671,7 +678,7 @@ class Launcher():
 class RomLauncher(Launcher):
     __metaclass__ = ABCMeta
     
-    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
+    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, category, rom):
         
         self.rom = rom
         self.categoryID = ''
@@ -681,7 +688,7 @@ class RomLauncher(Launcher):
 
         non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
         toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
-        super(RomLauncher, self).__init__(launcher, settings, executorFactory, toggle_window, non_blocking_flag)
+        super(RomLauncher, self).__init__(launcher, category, settings, executorFactory, toggle_window, non_blocking_flag)
     
     @abstractmethod
     def _selectApplicationToUse(self):
@@ -781,7 +788,7 @@ class RomLauncher(Launcher):
     def get_edit_options(self):
 
         finished_str = 'Finished' if self.launcher['finished'] == True else 'Unfinished'   
-        category_name = 'ToDo'
+        category_name = self.category['m_name'] if self.category else 'Addon root (no category)'
         #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
         #    category_name = 'Addon root (no category)'
         #else:
@@ -1037,10 +1044,10 @@ class RomLauncher(Launcher):
     
 class ApplicationLauncher(Launcher):
     
-    def __init__(self, settings, executorFactory, launcher):
+    def __init__(self, settings, executorFactory, launcher, category):
         
         toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
-        super(ApplicationLauncher, self).__init__(launcher, settings, executorFactory, toggle_window)
+        super(ApplicationLauncher, self).__init__(launcher, category, settings, executorFactory, toggle_window)
         
     def launch(self):
 
@@ -1136,7 +1143,7 @@ class ApplicationLauncher(Launcher):
         
     def get_edit_options(self):
 
-        category_name = 'ToDo'
+        category_name = self.category['m_name'] if self.category else 'Addon root (no category)'
         #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
         #    category_name = 'Addon root (no category)'
         #else:
@@ -1183,10 +1190,10 @@ class ApplicationLauncher(Launcher):
 
 class KodiLauncher(Launcher):
     
-    def __init__(self, settings, executorFactory, launcher):
+    def __init__(self, settings, executorFactory, launcher, category):
         
         toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
-        super(KodiLauncher, self).__init__(launcher, settings, executorFactory, toggle_window)
+        super(KodiLauncher, self).__init__(launcher, category, settings, executorFactory, toggle_window)
         
     def launch(self):
 
@@ -1222,7 +1229,7 @@ class KodiLauncher(Launcher):
 
     def get_edit_options(self):
 
-        category_name = 'ToDo'
+        category_name = self.category['m_name'] if self.category else 'Addon root (no category)'
         #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
         #    category_name = 'Addon root (no category)'
         #else:
@@ -1883,12 +1890,12 @@ class RetroarchLauncher(StandardRomLauncher):
  #   
 class SteamLauncher(RomLauncher):
 
-    def __init__(self, settings, executorFactory, statsStrategy, launcher, rom):
+    def __init__(self, settings, executorFactory, statsStrategy, launcher, category, rom):
 
         self.rom = rom
         self.categoryID = ''
 
-        super(SteamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, rom)
+        super(SteamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, category, rom)
     
     def get_launcher_type(self):
         return LAUNCHER_STEAM
@@ -1968,9 +1975,9 @@ class SteamLauncher(RomLauncher):
  #   
 class NvidiaGameStreamLauncher(RomLauncher):
 
-    def __init__(self, settings, executorFactory, statsStrategy, launcher, rom):
+    def __init__(self, settings, executorFactory, statsStrategy, launcher, category, rom):
 
-        super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, rom)
+        super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, category, rom)
         self.validate_if_rom_exists = False
 
     def get_launcher_type(self):
