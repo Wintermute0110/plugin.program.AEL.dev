@@ -2044,38 +2044,7 @@ class Main:
                 kodi_notify('Changed launcher application')
             
             return self._command_advanced_modifications(launcher)
-
-
-        #    if sys.platform == 'win32':
-        #        answer = dialog.select('Choose launcher mechanism',
-        #                                ['Use Kodi Retroplayer',
-        #                                'Use Windows LNK launcher',
-        #                                'Choose launching application'])
-        #        if answer < 0: return
-        #        if   answer == 0: launcher_type = LAUNCHER_RETROPLAYER
-        #        elif answer == 1: launcher_type = LAUNCHER_LNK
-        #        elif answer == 2: launcher_type = LAUNCHER_ROM
-        #    else:
-        #        answer = kodi_dialog_yesno('Use Kodi Retroplayer in this launcher? '
-        #                                    'Answer NO to choose a new launching application.')
-        #        if answer: launcher_type = LAUNCHER_RETROPLAYER
-        #        else:      launcher_type = LAUNCHER_ROM
-        #
-        #    # >> Choose launching application
-        #    if launcher_type == LAUNCHER_RETROPLAYER:
-        #        self.launchers[launcherID]['application'] = RETROPLAYER_LAUNCHER_APP_NAME
-        #        kodi_notify('Launcher app is Retroplayer')
-        #    elif launcher_type == LAUNCHER_LNK:
-        #        self.launchers[launcherID]['application'] = LNK_LAUNCHER_APP_NAME
-        #        kodi_notify('Launcher app is Windows LNK launcher')
-        #    elif launcher_type == LAUNCHER_ROM:
-        #        app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '', 
-        #                                        False, False, self.launchers[launcherID]['application'])
-        #        if not app: return
-        #        self.launchers[launcherID]['application'] = app
-        #        kodi_notify('Changed launcher application')
-
-
+        
         # --- Edition of the launcher arguments ---
         if selected_option == 'MODIFY_ARGS':
             args = launcher.get_args()

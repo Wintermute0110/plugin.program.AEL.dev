@@ -52,7 +52,7 @@ class LauncherFactory():
             return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, rom)
 
         if launcher_type == LAUNCHER_NVGAMESTREAM:
-            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, False, launcher_data, rom)
+            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, rom)
 
         log_warning('Unsupported launcher requested. Type {}'.format(launcher_type))
         return None
@@ -422,10 +422,9 @@ class Launcher():
     @abstractmethod
     def get_advanced_modification_options(self):
         
-        options = OrderedDict()
-        #options['CHANGE_APPLICATION'] = "Change Application: {0}".format(self.get_launcher_type_name()) #deprecated
-        
+        options = OrderedDict()        
         return options
+
     #
     # Returns a dictionary of options to choose from
     # with which you can edit the metadata of this specific launcher.
@@ -694,7 +693,7 @@ class RomLauncher(Launcher):
 
     @abstractmethod
     def _selectRomFileToUse(self):
-        return None
+        return True
     
     # ~~~~ Argument substitution ~~~~~
     def _parseArguments(self):
@@ -769,16 +768,7 @@ class RomLauncher(Launcher):
         
         if not applicationIsSet or not argumentsAreSet or not romIsSelected:
             return
-        
-
-        log_info('RomLauncher() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
-        log_info('RomLauncher() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
-
-        if self.validate_if_rom_exists and not ROMFileName.exists():
-            log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
-            return
-        
+               
         self._parseArguments()
         self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
         
@@ -790,24 +780,23 @@ class RomLauncher(Launcher):
     
     def get_edit_options(self):
 
-        finished_str = 'Finished' if self.launcher['finished'] == True else 'Unfinished'
+        finished_str = 'Finished' if self.launcher['finished'] == True else 'Unfinished'   
         category_name = 'ToDo'
         #if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
         #    category_name = 'Addon root (no category)'
         #else:
         #    category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
-        options = OrderedDict([
-           ('EDIT_METADATA',        'Edit Metadata ...'),
-           ('EDIT_ASSETS',          'Edit Assets/Artwork ...'),
-           ('SET_DEFAULT_ASSETS',   'Choose default Assets/Artwork ...'),
-           ('CHANGE_CATEGORY',      'Change Category: {0}'.format(category_name)),
-           ('LAUNCHER_STATUS',      'Launcher status: {0}'.format(finished_str)),
-           ('MANAGE_ROMS',          'Manage ROMs ...'),
-           ('AUDIT_ROMS',           'Audit ROMs / Launcher view mode ...'),
-           ('ADVANCED_MODS',        'Advanced Modifications ...'),
-           ('EXPORT_LAUNCHER',      'Export Launcher XML configuration ...'),
-           ('DELETE_LAUNCHER',      'Delete Launcher')  
-        ])
+        options = OrderedDict()
+        options['EDIT_METADATA']        = 'Edit Metadata ...'
+        options['EDIT_ASSETS']          = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS']   = 'Choose default Assets/Artwork ...'
+        options['CHANGE_CATEGORY']      = 'Change Category: {}'.format(category_name)
+        options['LAUNCHER_STATUS']      = 'Launcher status: {}'.format(finished_str)
+        options['MANAGE_ROMS']          = 'Manage ROMs ...'
+        options['AUDIT_ROMS']           = 'Audit ROMs / Launcher view mode ...'
+        options['ADVANCED_MODS']        = 'Advanced Modifications ...'
+        options['EXPORT_LAUNCHER']      = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']      = 'Delete Launcher'
 
         return options
     
@@ -1465,7 +1454,7 @@ class StandardRomLauncher(RomLauncher):
         log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
         log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
 
-        if self.validate_if_rom_exists and not ROMFileName.exists():
+        if not ROMFileName.exists():
             log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
             kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
             return False
@@ -1499,11 +1488,22 @@ class LnkLauncher(StandardRomLauncher):
     
     def get_launcher_type_name(self):        
         return "LNK launcher"
-           
+     
+    def get_edit_options(self):
+
+        options = super(LnkLauncher, self).get_edit_options()
+        del options['AUDIT_ROMS']
+
+        return options
+    
     def get_advanced_modification_options(self):
         
         options = super(LnkLauncher, self).get_advanced_modification_options()
+        del options['CHANGE_APPLICATION']
+        del options['MODIFY_ARGS']
+        del options['ADDITIONAL_ARGS']
         del options['CHANGE_ROMEXT']
+        del options['TOGGLE_MULTIDISC']
         
         return options
 
@@ -1696,8 +1696,7 @@ class RetroarchLauncher(StandardRomLauncher):
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
                     
         return wizard
-
-
+    
     def _get_retroarch_app_folder(self, settings):
     
         retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])      
@@ -1888,11 +1887,8 @@ class SteamLauncher(RomLauncher):
 
         self.rom = rom
         self.categoryID = ''
-        self.statsStrategy = statsStrategy
 
-        non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
-        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
-        super(SteamLauncher, self).__init__(launcher, settings, executorFactory, toggle_window, non_blocking_flag)
+        super(SteamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, rom)
     
     def get_launcher_type(self):
         return LAUNCHER_STEAM
@@ -1900,12 +1896,19 @@ class SteamLauncher(RomLauncher):
     def get_launcher_type_name(self):        
         return "Steam launcher"
     
+    def get_edit_options(self):
+        
+        options = super(SteamLauncher, self).get_edit_options()
+        del options['AUDIT_ROMS']
+
+        return options
+
     def get_advanced_modification_options(self):
         
         toggle_window_str = 'ON' if self.launcher['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
         
-        options = super(StandardRomLauncher, self).get_advanced_modification_options()
+        options = super(SteamLauncher, self).get_advanced_modification_options()
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         
@@ -1923,21 +1926,21 @@ class SteamLauncher(RomLauncher):
         log_info('SteamLauncher._selectRomFileToUse() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.title))
         return True
     
-   #def launch(self):
-   #    
-   #    self.title  = self.rom['m_name']
-   #    
-   #    url = 'steam://rungameid/'
-   #
-   #    self.application = FileNameFactory.create('steam://rungameid/')
-   #    self.arguments = str(self.rom['steamid'])
-   #
-   #    log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
-   #    self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
-   #    
-   #    super(SteamLauncher, self).launch()
-   #    pass    
-
+       #def launch(self):
+       #    
+       #    self.title  = self.rom['m_name']
+       #    
+       #    url = 'steam://rungameid/'
+       #
+       #    self.application = FileNameFactory.create('steam://rungameid/')
+       #    self.arguments = str(self.rom['steamid'])
+       #
+       #    log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
+       #    self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
+       #    
+       #    super(SteamLauncher, self).launch()
+       #    pass    
+    
     def _get_builder_wizard(self, wizard):
         
         wizard = DummyWizardDialog('application', 'Steam', wizard)
@@ -1965,11 +1968,33 @@ class SteamLauncher(RomLauncher):
  #   
 class NvidiaGameStreamLauncher(RomLauncher):
 
-    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, rom):
+    def __init__(self, settings, executorFactory, statsStrategy, launcher, rom):
 
-        super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, escape_romfile, launcher, rom)
+        super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, rom)
         self.validate_if_rom_exists = False
 
+    def get_launcher_type(self):
+        return LAUNCHER_NVGAMESTREAM
+    
+    def get_launcher_type_name(self):        
+        return "Nvidia GameStream launcher"
+
+    def get_edit_options(self):
+
+        options = super(NvidiaGameStreamLauncher, self).get_edit_options()
+        del options['AUDIT_ROMS']
+
+        return options
+
+    def get_advanced_modification_options(self):
+        
+        toggle_window_str = 'ON' if self.launcher['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
+        
+        options = super(SteamLauncher, self).get_advanced_modification_options()
+        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        
     def _selectApplicationToUse(self):
         
         streamClient = self.launcher['application']
@@ -1982,17 +2007,17 @@ class NvidiaGameStreamLauncher(RomLauncher):
             else:
                 self.application = self.application.pjoin('bin/java')
 
-            return
+            return True
 
         if is_windows():
             self.application = FileNameFactory.create(streamClient)
-            return
+            return True
 
         if is_android():
             self.application = FileNameFactory.create('/system/bin/am')
-            return
+            return True
 
-        pass
+        return True
 
     def _selectArgumentsToUse(self):
         
@@ -2005,7 +2030,7 @@ class NvidiaGameStreamLauncher(RomLauncher):
             self.arguments += '-fs '
             self.arguments += '-app "$gamestream_name$" '
             self.arguments += self.launcher['args']
-            return
+            return True
 
         if is_android():
 
@@ -2013,7 +2038,7 @@ class NvidiaGameStreamLauncher(RomLauncher):
                 self.arguments =  'start --user 0 -a android.intent.action.VIEW '
                 self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
                 self.arguments += '-d nvidia://stream/target/2/$streamid$'
-                return
+                return True
 
             if streamClient == 'MOONLIGHT':
                 self.arguments =  'start --user 0 -a android.intent.action.MAIN '
@@ -2026,17 +2051,26 @@ class NvidiaGameStreamLauncher(RomLauncher):
                 self.arguments += '-e UUID $server_id$ '
                 self.arguments += '-e UniqueId {} '.format(misc_generate_random_SID())
 
-                return
+                return True
         
         # else
         self.arguments = self.launcher['args']
-        pass 
+        return True 
   
-    def get_launcher_type(self):
-        return LAUNCHER_NVGAMESTREAM
+    def _selectRomFileToUse(self):
+        return True
     
-    def get_launcher_type_name(self):        
-        return "Nvidia GameStream launcher"
+    def get_advanced_modification_options(self):
+        
+        toggle_window_str = 'ON' if self.launcher['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.launcher['non_blocking'] else 'OFF'
+        
+        options = super(NvidiaGameStreamLauncher, self).get_advanced_modification_options()
+        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        
+        return options
+    
 
     #
     # Creates a new launcher using a wizard of dialogs.
