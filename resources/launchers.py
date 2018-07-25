@@ -19,6 +19,24 @@ from autoconfig import *
     
 from gamestream import *
 
+class LauncherRepository():
+    
+    def __init__(self, settings):
+        self.settings = settings
+
+    def find_launcher(self, launcher_id):
+        return None
+
+    def find_all_launchers(self):
+        return None
+
+    def find_launchers_by_category(self, category_id):
+        return None
+
+    def save_launcher(self, launcher):
+        return True
+
+
 class LauncherFactory():
 
     def __init__(self, settings, categories_data, launchers_data, romsetFactory, executorFactory):
