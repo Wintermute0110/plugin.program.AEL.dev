@@ -38,23 +38,6 @@ ASSET_FLYER      = 1300  # ROMs have FLYER, Categories/Launchers/Collections hav
 ASSET_MAP        = 1400
 ASSET_MANUAL     = 1500
 
-ASSET_NAMES = {}
-ASSET_NAMES[ASSET_ICON]       = 'Icon'
-ASSET_NAMES[ASSET_FANART]     = 'Fanart'
-ASSET_NAMES[ASSET_BANNER]     = 'Banner'
-ASSET_NAMES[ASSET_POSTER]     = 'Poster'
-ASSET_NAMES[ASSET_CLEARLOGO]  = 'Clearlogo'
-ASSET_NAMES[ASSET_CONTROLLER] = 'Controller'
-ASSET_NAMES[ASSET_TRAILER]    = 'Trailer'
-ASSET_NAMES[ASSET_TITLE]      = 'Title'
-ASSET_NAMES[ASSET_SNAP]       = 'Snap'
-ASSET_NAMES[ASSET_BOXFRONT]   = 'Boxfront'
-ASSET_NAMES[ASSET_BOXBACK]    = 'Boxback'
-ASSET_NAMES[ASSET_CARTRIDGE]  = 'Cartridge'
-ASSET_NAMES[ASSET_FLYER]      = 'Flyer'
-ASSET_NAMES[ASSET_MAP]        = 'Map'
-ASSET_NAMES[ASSET_MANUAL]     = 'Manual'
-
 # todo: default assets should use the constant values instead
 # of the string names.
 ASSET_KEYS_TO_CONSTANTS = {}
