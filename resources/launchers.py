@@ -9,6 +9,7 @@ import xbmc, xbmcgui
 from constants import *
 from platforms import *
 
+from assets import *
 from executors import *
 from romsets import *
 from romstats import *
@@ -377,34 +378,35 @@ class Launcher():
 
     def get_assets(self):
         assets = {}
+        asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_CONTROLLER, ASSET_TRAILER]
+
+        asset_factory = AssetInfoFactory.create()
+        asset_kinds = asset_factory.get_assets_by(asset_keys)
         
-        assets[ASSET_BANNER]     = self.launcher['s_banner']      if self.launcher['s_banner']     else ''
-        assets[ASSET_ICON]       = self.launcher['s_icon']        if self.launcher['s_icon']       else ''
-        assets[ASSET_FANART]     = self.launcher['s_fanart']      if self.launcher['s_fanart']     else ''
-        assets[ASSET_POSTER]     = self.launcher['s_poster']      if self.launcher['s_poster']     else ''
-        assets[ASSET_CLEARLOGO]  = self.launcher['s_clearlogo']   if self.launcher['s_clearlogo']  else ''
-        assets[ASSET_CONTROLLER] = self.launcher['s_controller']  if self.launcher['s_controller'] else ''
-        assets[ASSET_TRAILER]    = self.launcher['s_trailer']     if self.launcher['s_trailer']    else ''
+        for asset_kind in asset_kinds:
+            asset = self.launcher[asset_kind.key] if self.launcher[asset_kind.key] else ''            
+            assets[asset_kind] = asset
 
         return assets
     
     def get_asset_defaults(self):
-        default_assets = {}
         
-        default_assets[ASSET_BANNER]     = ASSET_KEYS_TO_CONSTANTS[self.launcher['default_banner']]      if self.launcher['default_banner']     else ''
-        default_assets[ASSET_ICON]       = ASSET_KEYS_TO_CONSTANTS[self.launcher['default_icon']]        if self.launcher['default_icon']       else ''
-        default_assets[ASSET_FANART]     = ASSET_KEYS_TO_CONSTANTS[self.launcher['default_fanart']]      if self.launcher['default_fanart']     else ''
-        default_assets[ASSET_POSTER]     = ASSET_KEYS_TO_CONSTANTS[self.launcher['default_poster']]      if self.launcher['default_poster']     else ''
-        default_assets[ASSET_CLEARLOGO]  = ASSET_KEYS_TO_CONSTANTS[self.launcher['default_clearlogo']]   if self.launcher['default_clearlogo']  else ''
+        default_assets = {}        
+        default_asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO]
+        
+        asset_factory = AssetInfoFactory.create()
+        default_asset_kinds = asset_factory.get_assets_by(default_asset_keys)
+
+        for asset_kind in default_asset_kinds:
+            mapped_asset_key = self.launcher[asset_kind.default_key] if self.launcher[asset_kind.default_key] else ''
+            mapped_asset_kind = asset_factory.get_asset_info_by_namekey(mapped_asset_key)
+            
+            default_assets[asset_kind] = mapped_asset_kind
 
         return default_assets
     
-    def set_default_asset(self, default_asset_kind_key, mapped_to_kind_key):
-        
-        asset_kind  = assets_get_info_scheme(default_asset_kind_key)
-        map_to_kind = assets_get_info_scheme(mapped_to_kind_key)
-
-        self.launcher[asset_kind.default_key] = map_to_kind.key
+    def set_default_asset(self, asset_kind, mapped_to_kind):
+        self.launcher[asset_kind.default_key] = mapped_to_kind.key
 
     def get_data(self):
         return self.launcher
