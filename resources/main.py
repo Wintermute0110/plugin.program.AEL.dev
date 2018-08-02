@@ -272,13 +272,13 @@ class Main:
         self.update_timestamp = fs_load_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # -- Bootstrap instances -- 
-        self.assetFactory      = AssetInfoFactory()
+        self.assetFactory      = AssetInfoFactory.create()
         self.romsetFactory     = RomSetFactory(PLUGIN_DATA_DIR)
         executorFactory        = ExecutorFactory(self.settings, LAUNCH_LOG_FILE_PATH)
         self.launcherFactory   = LauncherFactory(self.settings, self.categories, self.launchers, self.romsetFactory, executorFactory)
         self.romscannerFactory = RomScannersFactory(self.settings, REPORTS_DIR, CURRENT_ADDON_DIR)
         self.scraperFactory    = ScraperFactory(self.settings, CURRENT_ADDON_DIR)
-
+        
         # --- Get addon command ---
         command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
         log_debug('command = "{0}"'.format(command))
@@ -1281,7 +1281,7 @@ class Main:
 
             for asset_kind in assets:
                 # >> Create ListItems and label2
-                label1_text = 'Edit {} ...'.format(ASSET_NAMES[asset_kind])
+                label1_text = 'Edit {} ...'.format(asset_kind.name)
                 label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
                 list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
                 
@@ -1307,7 +1307,7 @@ class Main:
             # --- Edit Assets ---
             # >> If this function returns False no changes were made. No need to save categories
             # >> XML and update container.
-            if self._gui_edit_asset(KIND_LAUNCHER, selected_asset_kind, launcher.get_data()): 
+            if self._gui_edit_asset(KIND_LAUNCHER, selected_asset_kind.kind, launcher.get_data()): 
                 launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             return self._command_edit_launcher(categoryID, launcherID)
@@ -1320,23 +1320,23 @@ class Main:
             asset_defaults = launcher.get_asset_defaults()
 
             for asset_kind in asset_defaults:
+                mapped_asset_kind = asset_defaults[asset_kind]
 
-                actual_asset_kind = asset_defaults[asset_kind]
-                actual_asset_name = ASSET_NAMES[actual_asset_kind] if actual_asset_kind in ASSET_NAMES else ''
-
+                mapped_asset_name = mapped_asset_kind.name if mapped_asset_kind else ''
+                mapped_asset = assets[mapped_asset_kind] if assets[mapped_asset_kind]  != '' else 'Not set'
+            
                 # >> Create ListItems and label2
-                label1_text = 'Choose asset for {0} (currently {1})'.format(ASSET_NAMES[asset_kind], actual_asset_name)
-                label2_text = assets[actual_asset_kind] if assets[actual_asset_kind] != '' else 'Not set'
-                list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
+                label1_text = 'Choose asset for {0} (currently {1})'.format(asset_kind.name, mapped_asset_name)
+                list_item = xbmcgui.ListItem(label = label1_text, label2 = mapped_asset)
                 
                 # >> Set artwork with setArt()
                 item_img = 'DefaultAddonNone.png'
-                if assets[actual_asset_kind] != '':
-                    item_path = FileNameFactory.create(assets[actual_asset_kind])
+                if assets[mapped_asset_kind] != '':
+                    item_path = FileNameFactory.create(assets[mapped_asset_kind])
                     if item_path.is_video_file():
                         item_img = 'DefaultAddonVideo.png'
                     else:
-                        item_img = assets[actual_asset_kind]
+                        item_img = assets[mapped_asset_kind]
 
                 list_item.setArt({'icon' : item_img})
                 list_items.append(list_item)
@@ -1351,28 +1351,27 @@ class Main:
             # >> Build ListItem of assets that can be mapped.
             mappable_asset_list_items = []
             for mappable_asset_kind in assets:
-                if mappable_asset_kind == ASSET_TRAILER:
+                if mappable_asset_kind.kind == ASSET_TRAILER:
                     continue
 
-                list_item = xbmcgui.ListItem(label = ASSET_NAMES[mappable_asset_kind], label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
+                list_item = xbmcgui.ListItem(label = mappable_asset_kind.name, 
+                                             label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
                 list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
                 mappable_asset_list_items.append(list_item)
                 
             # >> Krypton feature: User preselected item in select() dialog.
             preselected_index = asset_defaults.keys().index(selected_kind)
-            new_selected_kind_index = xbmcgui.Dialog().select('Choose Launcher default asset for {}'.format(ASSET_NAMES[selected_kind]), 
+            new_selected_kind_index = xbmcgui.Dialog().select('Choose Launcher default asset for {}'.format(selected_kind.name), 
                                        list = mappable_asset_list_items, useDetails = True, preselect = preselected_index)
+
             if new_selected_kind_index < 0: 
                 return self._command_edit_launcher(categoryID, launcherID)
             
-            new_selected_kind = assets.keys()[new_selected_kind_index]
-            
+            new_selected_kind = assets.keys()[new_selected_kind_index]            
             launcher.set_default_asset(selected_kind, new_selected_kind)
-            default_asset_name = ASSET_NAMES[selected_kind]
-            asset_name = ASSET_NAMES[new_selected_kind]
             
             launcher.save(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-            kodi_notify('Launcher {0} mapped to {1}'.format(default_asset_name, asset_name))
+            kodi_notify('Launcher {0} mapped to {1}'.format(selected_kind.name, new_selected_kind.name))
         
             return self._command_edit_launcher(categoryID, launcherID)
         

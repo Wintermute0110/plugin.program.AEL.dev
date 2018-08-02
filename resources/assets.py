@@ -38,23 +38,6 @@ ASSET_FLYER      = 1300  # ROMs have FLYER, Categories/Launchers/Collections hav
 ASSET_MAP        = 1400
 ASSET_MANUAL     = 1500
 
-ASSET_NAMES = {}
-ASSET_NAMES[ASSET_ICON]       = 'Icon'
-ASSET_NAMES[ASSET_FANART]     = 'Fanart'
-ASSET_NAMES[ASSET_BANNER]     = 'Banner'
-ASSET_NAMES[ASSET_POSTER]     = 'Poster'
-ASSET_NAMES[ASSET_CLEARLOGO]  = 'Clearlogo'
-ASSET_NAMES[ASSET_CONTROLLER] = 'Controller'
-ASSET_NAMES[ASSET_TRAILER]    = 'Trailer'
-ASSET_NAMES[ASSET_TITLE]      = 'Title'
-ASSET_NAMES[ASSET_SNAP]       = 'Snap'
-ASSET_NAMES[ASSET_BOXFRONT]   = 'Boxfront'
-ASSET_NAMES[ASSET_BOXBACK]    = 'Boxback'
-ASSET_NAMES[ASSET_CARTRIDGE]  = 'Cartridge'
-ASSET_NAMES[ASSET_FLYER]      = 'Flyer'
-ASSET_NAMES[ASSET_MAP]        = 'Map'
-ASSET_NAMES[ASSET_MANUAL]     = 'Manual'
-
 # todo: default assets should use the constant values instead
 # of the string names.
 ASSET_KEYS_TO_CONSTANTS = {}
@@ -360,9 +343,23 @@ def assets_get_ROM_mapped_asset_idx(dict_object, key):
 
     return index
 
-class AssetInfoFactory: 
+class AssetInfoFactory(object): 
+        
+    __asset_infos = None
     
+    @staticmethod
+    def create():
+        return AssetInfoFactory()
+    
+    # do not use. Use factory method .create()
     def __init__(self):
+
+        if AssetInfoFactory.__asset_infos:
+            return
+
+        self.__load()
+
+    def __load(self):
 
         a_icon = AssetInfo()
         a_icon.kind             = ASSET_ICON
@@ -540,50 +537,61 @@ class AssetInfoFactory:
         a_manual.exts_dialog        = asset_get_dialog_extension_list(MANUAL_EXTENSIONS)
         a_manual.path_key           = 'path_manual'
 
-        self.asset_infos = {}
-        self.asset_infos[ASSET_ICON]        = a_icon
-        self.asset_infos[ASSET_FANART]      = a_fanart
-        self.asset_infos[ASSET_BANNER]      = a_banner
-        self.asset_infos[ASSET_POSTER]      = a_poster
-        self.asset_infos[ASSET_CLEARLOGO]   = a_clearlogo
-        self.asset_infos[ASSET_CONTROLLER]  = a_controller
-        self.asset_infos[ASSET_TRAILER]     = a_trailer
-        self.asset_infos[ASSET_TITLE]       = a_title
-        self.asset_infos[ASSET_SNAP]        = a_snap
-        self.asset_infos[ASSET_BOXFRONT]    = a_boxfront
-        self.asset_infos[ASSET_BOXBACK]     = a_boxback
-        self.asset_infos[ASSET_CARTRIDGE]   = a_cartridge
-        self.asset_infos[ASSET_FLYER]       = a_flyer
-        self.asset_infos[ASSET_MAP]         = a_map
-        self.asset_infos[ASSET_MANUAL]      = a_manual
+        asset_infos = {}
+        asset_infos[ASSET_ICON]        = a_icon
+        asset_infos[ASSET_FANART]      = a_fanart
+        asset_infos[ASSET_BANNER]      = a_banner
+        asset_infos[ASSET_POSTER]      = a_poster
+        asset_infos[ASSET_CLEARLOGO]   = a_clearlogo
+        asset_infos[ASSET_CONTROLLER]  = a_controller
+        asset_infos[ASSET_TRAILER]     = a_trailer
+        asset_infos[ASSET_TITLE]       = a_title
+        asset_infos[ASSET_SNAP]        = a_snap
+        asset_infos[ASSET_BOXFRONT]    = a_boxfront
+        asset_infos[ASSET_BOXBACK]     = a_boxback
+        asset_infos[ASSET_CARTRIDGE]   = a_cartridge
+        asset_infos[ASSET_FLYER]       = a_flyer
+        asset_infos[ASSET_MAP]         = a_map
+        asset_infos[ASSET_MANUAL]      = a_manual
+
+        AssetInfoFactory.__asset_infos = asset_infos
 
     def get_all(self):
-        return list(self.asset_infos.values())
+        return list(AssetInfoFactory.__asset_infos.values())
 
     def get_asset_kinds_for_roms(self):
         rom_asset_kinds = []
         for rom_asset_kind in ROM_ASSET_LIST:
-            rom_asset_kinds.append(self.asset_infos[rom_asset_kind])
+            rom_asset_kinds.append(AssetInfoFactory.__asset_infos[rom_asset_kind])
 
         return rom_asset_kinds
 
     def get_assets_by(self, keys):
         asset_kinds = []
         for asset_key in keys:
-            asset_kinds.append(self.asset_infos[asset_key])
+            asset_kinds.append(AssetInfoFactory.__asset_infos[asset_key])
 
         return asset_kinds
 
 
     def get_asset_info(self, asset_kind):
         
-        asset_info = self.asset_infos.get(asset_kind, None)
+        asset_info = AssetInfoFactory.__asset_infos.get(asset_kind, None)
 
         if asset_info is None:
             log_error('assets_get_info_scheme() Wrong asset_kind = {0}'.format(asset_kind))
             return AssetInfo()
 
         return asset_info
+
+    # todo: use 1 type of identifier not number constants and name strings ('s_icon')
+    def get_asset_info_by_namekey(self, name_key):
+
+        if name_key == '':
+            return None
+
+        kind = ASSET_KEYS_TO_CONSTANTS[name_key]
+        return self.get_asset_info(kind)
 
 # -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
@@ -611,7 +619,7 @@ class AssetInfo:
 
 def assets_get_info_scheme(asset_kind):
 
-    assets_factory = AssetInfoFactory()
+    assets_factory = AssetInfoFactory.create()
     A = assets_factory.get_asset_info(asset_kind)
 
     if A is None:
