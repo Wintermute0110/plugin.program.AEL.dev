@@ -278,6 +278,7 @@ class Main:
         self.launcherFactory   = LauncherFactory(self.settings, self.categories, self.launchers, self.romsetFactory, executorFactory)
         self.romscannerFactory = RomScannersFactory(self.settings, REPORTS_DIR, CURRENT_ADDON_DIR)
         self.scraperFactory    = ScraperFactory(self.settings, CURRENT_ADDON_DIR)
+        self.launcher_repository = LauncherRepository(self.settings, PLUGIN_DATA_DIR, self.launcherFactory)
         
         # --- Get addon command ---
         command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'

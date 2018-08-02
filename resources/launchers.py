@@ -20,12 +20,159 @@ from autoconfig import *
     
 from gamestream import *
 
-class LauncherRepository():
+#class CategoryRepository(object):
+
+
+class LauncherRepository(object):
     
-    def __init__(self, settings):
+    def __init__(self, settings, plugin_data_dir, launcher_factory):
+        
+        self.repository_file_path = plugin_data_dir.pjoin('categories.xml')
         self.settings = settings
+        self.launcher_factory = launcher_factory
+    
+    def _new_launcher_dataset(self):
+        l = {'id' : '',
+             'm_name' : '',
+             'm_year' : '',
+             'm_genre' : '',
+             'm_developer' : '',
+             'm_rating' : '',
+             'm_plot' : '',
+             'platform' : '',
+             'categoryID' : '',
+             'application' : '',
+             'args' : '',
+             'args_extra' : [],
+             'rompath' : '',
+             'romext' : '',
+             'finished': False,
+             'toggle_window' : False, # Former 'minimize'
+             'non_blocking' : False,
+             'multidisc' : True,
+             'roms_base_noext' : '',
+             'nointro_xml_file' : '',
+             'nointro_display_mode' : NOINTRO_DMODE_ALL,
+             'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
+             'num_roms' : 0,
+             'num_parents' : 0,
+             'num_clones' : 0,
+             'num_have' : 0,
+             'num_miss' : 0,
+             'num_unknown' : 0,
+             'timestamp_launcher' : 0.0,
+             'timestamp_report' : 0.0,
+             'default_icon' : 's_icon',
+             'default_fanart' : 's_fanart',
+             'default_banner' : 's_banner',
+             'default_poster' : 's_poster',
+             'default_clearlogo' : 's_clearlogo',
+             'default_controller' : 's_controller',
+             'Asset_Prefix' : '',
+             's_icon' : '',
+             's_fanart' : '',
+             's_banner' : '',
+             's_poster' : '',
+             's_clearlogo' : '',
+             's_controller' : '',
+             's_trailer' : '',
+             'roms_default_icon' : 's_boxfront',
+             'roms_default_fanart' : 's_fanart',
+             'roms_default_banner' : 's_banner',
+             'roms_default_poster' : 's_flyer',
+             'roms_default_clearlogo' : 's_clearlogo',
+             'ROM_asset_path' : '',
+             'path_title' : '',
+             'path_snap' : '',
+             'path_boxfront' : '',
+             'path_boxback' : '',
+             'path_cartridge' : '',
+             'path_fanart' : '',
+             'path_banner' : '',
+             'path_clearlogo' : '',
+             'path_flyer' : '',
+             'path_map' : '',
+             'path_manual' : '',
+             'path_trailer' : ''
+        }
+        return l
+
+    def _load_repository(self):
+        self._launchers = {}
+
+        # --- Parse using cElementTree ---
+        # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
+        log_verb('LauncherRepository._load_repository() Loading {0}'.format(self.repository_file_path.getOriginalPath()))
+        try:
+            xml_root = self.repository_file_path.readXml()
+        except IOError as e:
+            log_debug('LauncherRepository._load_repository() (IOError) errno = {0}'.format(e.errno))
+            # log_debug(unicode(errno.errorcode))
+            # >> No such file or directory
+            if e.errno == errno.ENOENT:
+                log_error('LauncherRepository._load_repository() (IOError) No such file or directory.')
+            else:
+                log_error('LauncherRepository._load_repository() (IOError) Unhandled errno value.')
+            
+            log_error('LauncherRepository._load_repository() (IOError) Return empty categories and launchers dictionaries.')
+            return
+        except ET.ParseError as e:
+            log_error('LauncherRepository._load_repository() (ParseError) Exception parsing XML categories.xml')
+            log_error('LauncherRepository._load_repository() (ParseError) {0}'.format(str(e)))
+            kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
+                           'Maybe XML file is corrupt or contains invalid characters.')
+            return
+
+        for launcher_element in xml_root.findall('launcher'):
+            # Default values
+            launcher = self._new_launcher_dataset()
+
+            # Parse child tags of category
+            for element_child in launcher_element:
+                # >> By default read strings
+                xml_text = category_child.text if element_child.text is not None else ''
+                xml_text = text_unescape_XML(xml_text)
+                xml_tag  = element_child.tag
+
+                if __debug_xml_parser: 
+                    log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+
+                # >> Transform list() datatype
+                if xml_tag == 'args_extra':
+                    launcher[xml_tag].append(xml_text)
+                # >> Transform Bool datatype
+                elif xml_tag == 'finished' or xml_tag == 'toggle_window' or xml_tag == 'non_blocking' or \
+                     xml_tag == 'multidisc':
+                    launcher[xml_tag] = True if xml_text == 'True' else False
+                # >> Transform Int datatype
+                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
+                     xml_tag == 'num_have' or xml_tag == 'num_miss'    or xml_tag == 'num_unknown':
+                    launcher[xml_tag] = int(xml_text)
+                # >> Transform Float datatype
+                elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
+                    launcher[xml_tag] = float(xml_text)
+                else:
+                    launcher[xml_tag] = xml_text
+
+            # --- Add launcher to categories dictionary ---
+            self._launchers[launcher['id']] = launcher
+    
+    # lazy loading of launchers through property
+    @property
+    def launchers(self):
+        if not self._launchers:
+            self._load_repository()
+
+        return self._launchers
 
     def find_launcher(self, launcher_id):
+
+        if not launcher_id in self.launchers:
+            log_debug('Launcher #{} not found'.format(launcher_id))
+            return None
+        
+        launcher_data = self.launchers[launcher_id]
+        launcher = launcher_factory.create_from_data(launcher_data)
         return None
 
     def find_all_launchers(self):
@@ -78,6 +225,15 @@ class LauncherFactory():
 
         log_warning('Unsupported launcher requested. Type {}'.format(launcher_type))
         return None
+
+    def create_from_data(self, launcher_data):
+        
+        launcher_type = launcher_data['type'] if 'type' in launcher_data else None
+
+        category_id = launcher_data['categoryID'] if 'categoryID' in launcher_data else VCATEGORY_ADDONROOT_ID
+        category = self.categories_data[category_id] if category_id in self.categories_data else None
+
+        return self._load(launcher_type, launcher_data, category, None)
 
     def create(self, launcherID, rom = None):
         
