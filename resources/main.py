@@ -945,30 +945,32 @@ class Main:
         
     def _command_add_new_launcher(self, categoryID):
         
-        launcher_categoryID = None
         # >> If categoryID not found user is creating a new launcher using the context menu
         # >> of a launcher in addon root.
-        if categoryID not in self.categories:
+        category = self.category_repository.find(categoryID)
+        if category is None:
             log_info('Category ID not found. Creating laucher in addon root.')
-            launcher_categoryID = VCATEGORY_ADDONROOT_ID
+            category = Category.create_root_category()
         else:
             # --- Ask user if launcher is created on selected category or on root menu ---
-            category_name = self.categories[categoryID]['m_name']
             options = {}
-            options[categoryID]             = 'Create Launcher in "{0}" category'.format(category_name)
+            options[categoryID]             = 'Create Launcher in "{0}" category'.format(category.get_name())
             options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in addon root'
 
             dialog = DictionaryDialog()
-            launcher_categoryID = dialog.select('Choose Launcher category', options)
+            selected_id = dialog.select('Choose Launcher category', options)
 
-        if launcher_categoryID is None:
-            return
+            if selected_id is None:
+                return
+
+            if selected_id is VCATEGORY_ADDONROOT_ID:
+                category = Category.create_root_category()
     
         launcher = self.launcherFactory.create(None)
         if launcher is None:
             return
 
-        launcher_data = launcher.build(self.categories, launcher_categoryID)
+        launcher_data = launcher.build(category)
         if launcher_data is None:
             return
 
@@ -6913,8 +6915,9 @@ class Main:
         ROM_NAME_LENGHT = 50
 
         # >> Report file name
-        if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
-        else:                             category_name = VCATEGORY_ADDONROOT_ID
+        category = self.category_repository.find(categoryID)
+        category_name = category.get_name() if category is not None else VCATEGORY_ADDONROOT_ID
+
         launcher = self.launchers[launcherID]
         roms_base_noext  = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
         report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')

@@ -183,6 +183,10 @@ class CategoryRepository(object):
         return self._categories
 
     def find(self, category_id):
+
+        if category_id == VCATEGORY_ADDONROOT_ID:
+            return Category.create_root_category()
+
         category_element = self.data_context.get_node('category', category_id)
         category_dict = self._parse_xml_to_dictionary(category_element)
         category = Category(category_dict)
@@ -274,7 +278,6 @@ class Category(object):
 
         return default_assets
     
-
     def get_data(self):
         return self.category_data
 
@@ -288,6 +291,11 @@ class Category(object):
         options['EXPORT_CATEGORY']    = 'Export Category XML configuration ...'
         options['DELETE_CATEGORY']    = 'Delete Category'
         return options
+
+    @staticmethod
+    def create_root_category():
+        c = {'id' : VCATEGORY_ADDONROOT_ID, 'm_name' : VCATEGORY_ADDONROOT_ID }
+        return Category(c)
 
 # -------------------------------------------------------------------------------------------------
 # Repository class for Launchers objects.
@@ -545,13 +553,13 @@ class Launcher():
     # Build new launcher.
     # Leave category_id empty to add launcher to root folder.
     #
-    def build(self, categories, category_id = None):
+    def build(self, category):
         
         launcherID            = misc_generate_random_SID()
         self.launcher         = fs_new_launcher()
         self.launcher['id']   = launcherID
                 
-        wizard = DummyWizardDialog('categoryID', category_id, None)
+        wizard = DummyWizardDialog('categoryID', category.get_id(), None)
         wizard = DummyWizardDialog('type', self.get_launcher_type(), wizard)
 
         wizard = self._get_builder_wizard(wizard)
@@ -565,8 +573,7 @@ class Launcher():
         if self.supports_launching_roms():
             # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
             # even launcher with the same name in the same category.
-            category_name   = categories[category_id]['m_name'] if category_id in categories else VCATEGORY_ADDONROOT_ID
-            roms_base_noext = fs_get_ROMs_basename(category_name, self.launcher['m_name'], launcherID)
+            roms_base_noext = fs_get_ROMs_basename(category.get_name(), self.launcher['m_name'], launcherID)
             self.launcher['roms_base_noext'] = roms_base_noext
             
             # --- Selected asset path ---
