@@ -330,6 +330,11 @@ class FileName():
                                 indent = JSON_indent, separators = JSON_separators)
         self.writeAll(unicode(json_data).encode('utf-8'))
 
+    # Opens file and writes xml. Give xml root element.
+    def writeXml(self, xml_root):
+        data = ET.tostring(xml_root)
+        self.writeAll(data)
+
 # -------------------------------------------------------------------------------------------------
 # Kodi Virtual Filesystem helper class.
 # Implementation of the FileName helper class which supports the xbmcvfs libraries.

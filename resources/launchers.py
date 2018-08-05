@@ -20,15 +20,284 @@ from autoconfig import *
     
 from gamestream import *
 
-#class CategoryRepository(object):
+# -------------------------------------------------------------------------------------------------
+# UnitOfWork context. Should be a singleton and only used by the repository
+# classes.
+# This class holds the actual XML data and reads/writes that data.
+# -------------------------------------------------------------------------------------------------
+class XmlDataContext(object):
+
+    def __init__(self, plugin_data_dir):
+        self._xml_root = None
+        self.repository_file_path = plugin_data_dir.pjoin('categories.xml')
+
+    # lazy loading of xml data through property
+    @property
+    def xml_data(self):
+        if self._xml_root is None:
+            self._load_xml()
+
+        return self._xml_root
+
+    def _load_xml(self):  
+        # --- Parse using cElementTree ---
+        # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
+        log_verb('XmlDataContext._load_xml() Loading {0}'.format(self.repository_file_path.getOriginalPath()))
+        try:
+            self._xml_root = self.repository_file_path.readXml()
+        except IOError as e:
+            log_debug('XmlDataContext._load_xml() (IOError) errno = {0}'.format(e.errno))
+            # log_debug(unicode(errno.errorcode))
+            # >> No such file or directory
+            if e.errno == errno.ENOENT:
+                log_error('XmlDataContext._load_xml() (IOError) No such file or directory.')
+            else:
+                log_error('CategoryRepository._load_xml() (IOError) Unhandled errno value.')
+            
+            log_error('XmlDataContext._load_xml() (IOError) Return empty categories and launchers dictionaries.')
+            return
+        except ET.ParseError as e:
+            log_error('XmlDataContext._load_xml() (ParseError) Exception parsing XML categories.xml')
+            log_error('XmlDataContext._load_xml() (ParseError) {0}'.format(str(e)))
+            kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
+                           'Maybe XML file is corrupt or contains invalid characters.')
+
+    def get_nodes(self, tag):   
+        return self.xml_data.findall(tag)
+
+    def get_node(self, tag, id):
+        query = "{}[id='{}']".format(tag, id)
+        log_debug('xpath query {}'.format(query))
+        return self.xml_data.find(query)
+
+    # creates/updates xml node identified by tag and id with the given dictionary of data
+    def save_node(self, tag, id, updated_data):
+        node_to_update = self.get_node(tag, id)
+
+        if node_to_update is None:
+            node_to_update = self.xml_data.makeelement(tag, {}) 
+            self.xml_data.append(node_to_update)
+
+        node_to_update.clear()
+        
+        for key in updated_data:
+            element = self.xml_data.makeelement(key, {})  
+            element.text = updated_data[key]
+            node_to_update.append(element)
+
+    def remove_node(self, tag, id):
+        node_to_remove = self.get_node(tag, id)
+
+        if node_to_remove is None:
+            return
+
+        self.xml_data.remove(node_to_remove)
+
+    def commit(self):
+        self.repository_file_path.writeXml(self._xml_root)
+        
+# -------------------------------------------------------------------------------------------------
+# Repository class for Category objects.
+# Arranges retrieving and storing of the categories from and into the xml data file.
+# -------------------------------------------------------------------------------------------------
+class CategoryRepository(object):
+    
+    def __init__(self, data_context):        
+        self.data_context = data_context
+
+    # -------------------------------------------------------------------------------------------------
+    # Data model used in the plugin
+    # Internally all string in the data model are Unicode. They will be encoded to
+    # UTF-8 when writing files.
+    # -------------------------------------------------------------------------------------------------
+    # These three functions create a new data structure for the given object and (very importantly) 
+    # fill the correct default values). These must match what is written/read from/to the XML files.
+    # Tag name in the XML is the same as in the data dictionary.
+    #
+    def _new_category_dataset():
+        c = {'id' : '',
+             'm_name' : '',
+             'm_year' : '',
+             'm_genre' : '',
+             'm_developer' : '',
+             'm_rating' : '',
+             'm_plot' : '',
+             'finished' : False,
+             'default_icon' : 's_icon',
+             'default_fanart' : 's_fanart',
+             'default_banner' : 's_banner',
+             'default_poster' : 's_poster',
+             'default_clearlogo' : 's_clearlogo',
+             'Asset_Prefix' : '',
+             's_icon' : '',
+             's_fanart' : '',
+             's_banner' : '',
+             's_poster' : '',
+             's_clearlogo' : '',
+             's_trailer' : ''
+             }
+
+        return c
 
 
+    def _load_repository(self):
+        
+        self._categories = {}
+        category_elements = self.data_context.get_nodes('category')
+        
+        for category_element in category_elements:
+            # Default values
+            #category = self._new_category_dataset()
+            category = self._parse_xml_to_dictionary(category_element)
+            # --- Add category to categories dictionary ---
+            self._categories[category['id']] = category
+    
+    def _parse_xml_to_dictionary(self, category_element):
+        
+        category = {}
+        # Parse child tags of category
+        for category_child in category_element:
+            
+            # By default read strings
+            xml_text = category_child.text if category_child.text is not None else ''
+            xml_text = text_unescape_XML(xml_text)
+            xml_tag  = category_child.tag
+            if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+
+            # Now transform data depending on tag name
+            if xml_tag == 'finished':
+                category[xml_tag] = True if xml_text == 'True' else False
+            else:
+                # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
+                category[xml_tag] = xml_text
+
+        return category
+
+
+    # lazy loading of categories through property
+    @property
+    def categories(self):
+        if not self._categories:
+            self._load_repository()
+
+        return self._categories
+
+    def find(self, category_id):
+        category_element = self.data_context.get_node('category', category_id)
+        category_dict = self._parse_xml_to_dictionary(category_element)
+        category = Category(category_dict)
+
+    def save(self, category):
+        category_id = category.get_id()
+        
+        self.data_context.save_node('category', category_id, category.get_data())        
+        self.data_context.commit()
+
+    def delete(self, category):
+        category_id = category.get_id()
+        
+        self.data_context.remove_node('category', category_id)
+        self.data_context.commit()
+
+class Category(object):
+
+    def __init__(self, category_data = None):
+        
+        self.category_data = category_data
+
+        if self.category_data is None:
+            self.category_data = {
+             'id' : misc_generate_random_SID(),
+             'm_name' : '',
+             'm_year' : '',
+             'm_genre' : '',
+             'm_developer' : '',
+             'm_rating' : '',
+             'm_plot' : '',
+             'finished' : False,
+             'default_icon' : 's_icon',
+             'default_fanart' : 's_fanart',
+             'default_banner' : 's_banner',
+             'default_poster' : 's_poster',
+             'default_clearlogo' : 's_clearlogo',
+             'Asset_Prefix' : '',
+             's_icon' : '',
+             's_fanart' : '',
+             's_banner' : '',
+             's_poster' : '',
+             's_clearlogo' : '',
+             's_trailer' : ''
+             }
+
+    def get_id(self):
+        return self.category_data['id']
+
+    def get_name(self):
+        return self.category_data['m_name'] if 'm_name' in self.category_data else 'Unknown'
+
+    def set_name(self, name):
+        self.category_data['m_name'] = name
+
+    def get_plot(self):
+        return self.category_data['m_plot']
+
+    def get_state(self):
+        finished_str = 'Finished' if self.category_data['finished'] == True else 'Unfinished'
+        return finished_str
+
+    def get_assets(self):
+        assets = {}
+        asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER]
+
+        asset_factory = AssetInfoFactory.create()
+        asset_kinds = asset_factory.get_assets_by(asset_keys)
+        
+        for asset_kind in asset_kinds:
+            asset = self.category_data[asset_kind.key] if self.category_data[asset_kind.key] else ''            
+            assets[asset_kind] = asset
+
+        return assets
+
+    def get_asset_defaults(self):
+        
+        default_assets = {}        
+        default_asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO]
+        
+        asset_factory = AssetInfoFactory.create()
+        default_asset_kinds = asset_factory.get_assets_by(default_asset_keys)
+
+        for asset_kind in default_asset_kinds:
+            mapped_asset_key = self.category_data[asset_kind.default_key] if self.category_data[asset_kind.default_key] else ''
+            mapped_asset_kind = asset_factory.get_asset_info_by_namekey(mapped_asset_key)
+            
+            default_assets[asset_kind] = mapped_asset_kind
+
+        return default_assets
+    
+
+    def get_data(self):
+        return self.category_data
+
+    def get_edit_options(self):
+    
+        options = OrderedDict()
+        options['EDIT_METADATA']      = 'Edit Metadata ...'
+        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['CATEGORY_STATUS']    = 'Category status: {0}'.format(self.get_state())
+        options['EXPORT_CATEGORY']    = 'Export Category XML configuration ...'
+        options['DELETE_CATEGORY']    = 'Delete Category'
+        return options
+
+# -------------------------------------------------------------------------------------------------
+# Repository class for Launchers objects.
+# Arranges retrieving and storing of the launchers from and into the xml data file.
+# -------------------------------------------------------------------------------------------------
 class LauncherRepository(object):
     
-    def __init__(self, settings, plugin_data_dir, launcher_factory):
+    def __init__(self, data_context, launcher_factory):       
         
-        self.repository_file_path = plugin_data_dir.pjoin('categories.xml')
-        self.settings = settings
+        self.data_context = data_context        
         self.launcher_factory = launcher_factory
     
     def _new_launcher_dataset(self):
@@ -98,32 +367,11 @@ class LauncherRepository(object):
         return l
 
     def _load_repository(self):
+
         self._launchers = {}
-
-        # --- Parse using cElementTree ---
-        # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
-        log_verb('LauncherRepository._load_repository() Loading {0}'.format(self.repository_file_path.getOriginalPath()))
-        try:
-            xml_root = self.repository_file_path.readXml()
-        except IOError as e:
-            log_debug('LauncherRepository._load_repository() (IOError) errno = {0}'.format(e.errno))
-            # log_debug(unicode(errno.errorcode))
-            # >> No such file or directory
-            if e.errno == errno.ENOENT:
-                log_error('LauncherRepository._load_repository() (IOError) No such file or directory.')
-            else:
-                log_error('LauncherRepository._load_repository() (IOError) Unhandled errno value.')
-            
-            log_error('LauncherRepository._load_repository() (IOError) Return empty categories and launchers dictionaries.')
-            return
-        except ET.ParseError as e:
-            log_error('LauncherRepository._load_repository() (ParseError) Exception parsing XML categories.xml')
-            log_error('LauncherRepository._load_repository() (ParseError) {0}'.format(str(e)))
-            kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
-                           'Maybe XML file is corrupt or contains invalid characters.')
-            return
-
-        for launcher_element in xml_root.findall('launcher'):
+        launcher_elements = self.data_context.get_nodes('launcher')
+        
+        for launcher_element in launcher_elements:
             # Default values
             launcher = self._new_launcher_dataset()
 
@@ -183,7 +431,6 @@ class LauncherRepository(object):
 
     def save_launcher(self, launcher):
         return True
-
 
 class LauncherFactory():
 

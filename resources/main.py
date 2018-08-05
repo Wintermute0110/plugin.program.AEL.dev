@@ -256,6 +256,7 @@ class Main:
         # log_debug('content_type = {0}'.format(self.content_type))
 
         # --- Addon first-time initialisation ---
+
         # >> When the addon is installed and the file categories.xml does not exist, just
         #    create an empty one with a default launcher.
         # >> NOTE Not needed anymore. Skins using shortcuts and/or widgets will call AEL concurrently
@@ -278,7 +279,10 @@ class Main:
         self.launcherFactory   = LauncherFactory(self.settings, self.categories, self.launchers, self.romsetFactory, executorFactory)
         self.romscannerFactory = RomScannersFactory(self.settings, REPORTS_DIR, CURRENT_ADDON_DIR)
         self.scraperFactory    = ScraperFactory(self.settings, CURRENT_ADDON_DIR)
-        self.launcher_repository = LauncherRepository(self.settings, PLUGIN_DATA_DIR, self.launcherFactory)
+
+        self.data_context        = XmlDataContext(PLUGIN_DATA_DIR)
+        self.category_repository = CategoryRepository(self.data_context)
+        self.launcher_repository = LauncherRepository(self.data_context, self.launcherFactory)
         
         # --- Get addon command ---
         command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
@@ -616,34 +620,36 @@ class Main:
         keyboard = xbmc.Keyboard('', 'New Category Name')
         keyboard.doModal()
         if not keyboard.isConfirmed(): return
+        
+        category = Category()
+        category.set_name(keyboard.getText().decode('utf-8'))
 
-        category = fs_new_category()
-        categoryID = misc_generate_random_SID()
-        category['id']     = categoryID
-        category['m_name'] = keyboard.getText().decode('utf-8')
-        self.categories[categoryID] = category
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_notify('Category {0} created'.format(category['m_name']))
+        self.category_repository.save(category)
+        
+        kodi_notify('Category {0} created'.format(category.get_name()))
         kodi_refresh_container()
 
+    # --- Shows a select box with the options to edit ---
     def _command_edit_category(self, categoryID):
-        # --- Shows a select box with the options to edit ---
-        dialog = xbmcgui.Dialog()
-        finished_str = 'Finished' if self.categories[categoryID]['finished'] == True else 'Unfinished'
-        type = dialog.select('Select action for Category {0}'.format(self.categories[categoryID]['m_name']),
-                             ['Edit Metadata ...',
-                              'Edit Assets/Artwork ...',
-                              'Choose default Assets/Artwork ...',
-                              'Category status: {0}'.format(finished_str),
-                              'Export Category XML configuration ...',
-                              'Delete Category'])
-        if type < 0: return
+        
+        category = self.category_repository.find(categoryID)
+        options = category.get_edit_options()
+        
+        dialog = DictionaryDialog()
+        selected_option = dialog.select('Select action for Category {0}'.format(category.get_name()), options)
+         
+        if selected_option is None:
+            log_debug('_command_edit_category(): Selected option = NONE')
+            return
+                
+        log_debug('_command_edit_category(): Selected option = {0}'.format(selected_option))
 
         # --- Edit category metadata ---
-        if type == 0:
-            NFO_FileName = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
+        if selected_option == 'EDIT_METADATA':
+            
+            NFO_FileName = fs_get_category_NFO_name(self.settings, category.get_data())
             NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-            plot_str = text_limit_string(self.categories[categoryID]['m_plot'], PLOT_STR_MAXSIZE)
+            plot_str = text_limit_string(category.get_plot(), PLOT_STR_MAXSIZE)
             dialog = xbmcgui.Dialog()
             type2 = dialog.select('Edit Category Metadata',
                                   ["Edit Title: '{0}'".format(self.categories[categoryID]['m_name']),
@@ -763,163 +769,120 @@ class Main:
         # --- Edit Category Assets/Artwork ---
         # >> New in Kodi Krypton: use new xbmcgui.Dialog().select() and get rid of ImgSelectDialog()
         #    class. Get rid of al calls to gui_show_image_select().
-        elif type == 1:
-            category = self.categories[categoryID]
+        if selected_option == 'EDIT_ASSETS':
 
-            # >> Lisitem elements and label2
-            label2_icon      = category['s_icon']      if category['s_icon']      else 'Not set'
-            label2_fanart    = category['s_fanart']    if category['s_fanart']    else 'Not set'
-            label2_banner    = category['s_banner']    if category['s_banner']    else 'Not set'
-            label2_poster    = category['s_poster']    if category['s_poster']    else 'Not set'
-            label2_clearlogo = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'
-            label2_trailer   = category['s_trailer']   if category['s_trailer']   else 'Not set'
-            icon_listitem      = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_icon)
-            fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
-            banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
-            poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
-            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
-            trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
+            assets = category.get_assets()
+            list_items = []
 
-            # >> Set lisitem artwork with setArt
-            img_icon         = category['s_icon']      if category['s_icon']      else 'DefaultAddonNone.png'
-            img_fanart       = category['s_fanart']    if category['s_fanart']    else 'DefaultAddonNone.png'
-            img_banner       = category['s_banner']    if category['s_banner']    else 'DefaultAddonNone.png'
-            img_poster       = category['s_poster']    if category['s_poster']    else 'DefaultAddonNone.png'
-            img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
-            img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
-            icon_listitem.setArt({'icon' : img_icon})
-            fanart_listitem.setArt({'icon' : img_fanart})
-            banner_listitem.setArt({'icon' : img_banner})
-            poster_listitem.setArt({'icon' : img_poster})
-            clearlogo_listitem.setArt({'icon' : img_clearlogo})
-            trailer_listitem.setArt({'icon' : img_trailer})
+            for asset_kind in assets:
+                # >> Create ListItems and label2
+                label1_text = 'Edit {} ...'.format(asset_kind.name)
+                label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
+                list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
+                
+                # >> Set artwork with setArt()
+                item_img = 'DefaultAddonNone.png'
+                if assets[asset_kind] != '':
+                    item_path = FileNameFactory.create(assets[asset_kind])
+                    if item_path.is_video_file():
+                        item_img = 'DefaultAddonVideo.png'
+                    else:
+                        item_img = assets[asset_kind]
+
+                list_item.setArt({'icon' : item_img})
+                list_items.append(list_item)
 
             # >> Execute select dialog
-            listitems = [icon_listitem, fanart_listitem, banner_listitem,
-                         poster_listitem, clearlogo_listitem, trailer_listitem]
-            type2 = dialog.select('Edit Category Assets/Artwork', list = listitems, useDetails = True)
-            if type2 < 0: return
+            selected_option = xbmcgui.Dialog().select('Edit Category Assets/Artwork', list = list_items, useDetails = True)
+            if selected_option < 0: 
+                return self._command_edit_category(categoryID)
+
+            selected_asset_kind = assets.keys()[selected_option]
 
             # --- Edit Assets ---
-            # >> If this function returns False no changes were made. No need to save categories XML
-            # >> and update container.
-            asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER]
-            asset_kind = asset_list[type2]
-            if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, category): return
+            # >> If this function returns False no changes were made. No need to save categories
+            # >> XML and update container.
+            if self._gui_edit_asset(KIND_CATEGORY, selected_asset_kind.kind, category.get_data()): 
+                self.category_repository.save(category)
+            
+            return self._command_edit_category(categoryID)
 
         # --- Choose Category default icon/fanart/banner/poster/clearlogo ---
-        elif type == 2:
-            category = self.categories[categoryID]
-            # >> Label1 and label2
-            asset_icon_str      = assets_get_asset_name_str(category['default_icon'])
-            asset_fanart_str    = assets_get_asset_name_str(category['default_fanart'])
-            asset_banner_str    = assets_get_asset_name_str(category['default_banner'])
-            asset_poster_str    = assets_get_asset_name_str(category['default_poster'])
-            asset_clearlogo_str = assets_get_asset_name_str(category['default_clearlogo'])
-            label2_icon         = category[category['default_icon']]      if category[category['default_icon']]      else 'Not set'
-            label2_fanart       = category[category['default_fanart']]    if category[category['default_fanart']]    else 'Not set'
-            label2_banner       = category[category['default_banner']]    if category[category['default_banner']]    else 'Not set'
-            label2_poster       = category[category['default_poster']]    if category[category['default_poster']]    else 'Not set'
-            label2_clearlogo    = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'Not set'
-            icon_listitem       = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str),
-                                                   label2 = label2_icon)
-            fanart_listitem     = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
-                                                   label2 = label2_fanart)
-            banner_listitem     = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str),
-                                                   label2 = label2_banner)
-            poster_listitem     = xbmcgui.ListItem(label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str),
-                                                   label2 = label2_poster)
-            clearlogo_listitem  = xbmcgui.ListItem(label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str),
-                                                   label2 = label2_clearlogo)
+        if selected_option == 'SET_DEFAULT_ASSETS':
 
-            # >> Asset image
-            img_icon            = category[category['default_icon']]      if category[category['default_icon']]      else 'DefaultAddonNone.png'
-            img_fanart          = category[category['default_fanart']]    if category[category['default_fanart']]    else 'DefaultAddonNone.png'
-            img_banner          = category[category['default_banner']]    if category[category['default_banner']]    else 'DefaultAddonNone.png'
-            img_poster          = category[category['default_poster']]    if category[category['default_poster']]    else 'DefaultAddonNone.png'
-            img_clearlogo       = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'DefaultAddonNone.png'
-            icon_listitem.setArt({'icon' : img_icon})
-            fanart_listitem.setArt({'icon' : img_fanart})
-            banner_listitem.setArt({'icon' : img_banner})
-            poster_listitem.setArt({'icon' : img_poster})
-            clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            list_items = []
+            assets = category.get_assets()
+            asset_defaults = category.get_asset_defaults()
+
+            for asset_kind in asset_defaults:
+                mapped_asset_kind = asset_defaults[asset_kind]
+
+                mapped_asset_name = mapped_asset_kind.name if mapped_asset_kind else ''
+                mapped_asset = assets[mapped_asset_kind] if assets[mapped_asset_kind]  != '' else 'Not set'
+            
+                # >> Create ListItems and label2
+                label1_text = 'Choose asset for {0} (currently {1})'.format(asset_kind.name, mapped_asset_name)
+                list_item = xbmcgui.ListItem(label = label1_text, label2 = mapped_asset)
+                
+                # >> Set artwork with setArt()
+                item_img = 'DefaultAddonNone.png'
+                if assets[mapped_asset_kind] != '':
+                    item_path = FileNameFactory.create(assets[mapped_asset_kind])
+                    if item_path.is_video_file():
+                        item_img = 'DefaultAddonVideo.png'
+                    else:
+                        item_img = assets[mapped_asset_kind]
+
+                list_item.setArt({'icon' : item_img})
+                list_items.append(list_item)
 
             # >> Execute select dialog
-            listitems = [icon_listitem, fanart_listitem, banner_listitem, poster_listitem, clearlogo_listitem]
-            type2 = dialog.select('Edit Category default Assets/Artwork', list = listitems, useDetails = True)
-            if type2 < 0: return
-
+            selected_kind_index = xbmcgui.Dialog().select('Edit Category default Assets/Artwork', list = list_items, useDetails = True)
+            if selected_kind_index < 0: 
+                return self._command_edit_category(categoryID)
+            
+            selected_kind = asset_defaults.keys()[selected_kind_index]
+            
             # >> Build ListItem of assets that can be mapped.
-            Category_asset_ListItem_list = [
-                xbmcgui.ListItem(label = 'Icon',      label2 = category['s_icon'] if category['s_icon'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Fanart',    label2 = category['s_fanart'] if category['s_fanart'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Banner',    label2 = category['s_banner'] if category['s_banner'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Poster',    label2 = category['s_poster'] if category['s_poster'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Clearlogo', label2 = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'),
-            ]
-            Category_asset_ListItem_list[0].setArt({'icon' : category['s_icon'] if category['s_icon'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[1].setArt({'icon' : category['s_fanart'] if category['s_fanart'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[2].setArt({'icon' : category['s_banner'] if category['s_banner'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[3].setArt({'icon' : category['s_poster'] if category['s_poster'] else 'DefaultAddonNone.png'})
-            Category_asset_ListItem_list[4].setArt({'icon' : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'})
+            mappable_asset_list_items = []
+            for mappable_asset_kind in assets:
+                if mappable_asset_kind.kind == ASSET_TRAILER:
+                    continue
 
+                list_item = xbmcgui.ListItem(label = mappable_asset_kind.name, 
+                                             label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
+                list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
+                mappable_asset_list_items.append(list_item)
+                
             # >> Krypton feature: User preselected item in select() dialog.
-            if type2 == 0:
-                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_icon')
-                type_s = dialog.select('Choose Category default asset for Icon',
-                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
-                if type_s < 0: return
-                assets_choose_Category_mapped_artwork(category, 'default_icon', type_s)
-                asset_name = assets_get_asset_name_str(category['default_icon'])
-                kodi_notify('Category Icon mapped to {0}'.format(asset_name))
-            elif type2 == 1:
-                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_fanart')
-                type_s = dialog.select('Choose Category default asset for Fanart',
-                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
-                if type_s < 0: return
-                assets_choose_Category_mapped_artwork(category, 'default_fanart', type_s)
-                asset_name = assets_get_asset_name_str(category['default_fanart'])
-                kodi_notify('Category Fanart mapped to {0}'.format(asset_name))
-            elif type2 == 2:
-                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_banner')
-                type_s = dialog.select('Choose Category default asset for Banner',
-                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
-                if type_s < 0: return
-                assets_choose_Category_mapped_artwork(category, 'default_banner', type_s)
-                asset_name = assets_get_asset_name_str(category['default_banner'])
-                kodi_notify('Category Banner mapped to {0}'.format(asset_name))
-            elif type2 == 3:
-                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_poster')
-                type_s = dialog.select('Choose Category default asset for Poster',
-                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
-                if type_s < 0: return
-                assets_choose_Category_mapped_artwork(category, 'default_poster', type_s)
-                asset_name = assets_get_asset_name_str(category['default_poster'])
-                kodi_notify('Category Poster mapped to {0}'.format(asset_name))
-            elif type2 == 4:
-                p_idx = assets_get_Category_mapped_asset_idx(category, 'default_clearlogo')
-                type_s = dialog.select('Choose Category default asset for Clearlogo',
-                                       list = Category_asset_ListItem_list, useDetails = True, preselect = p_idx)
-                if type_s < 0: return
-                assets_choose_Category_mapped_artwork(category, 'default_clearlogo', type_s)
-                asset_name = assets_get_asset_name_str(category['default_clearlogo'])
-                kodi_notify('Category Clearlogo mapped to {0}'.format(asset_name))
+            preselected_index = asset_defaults.keys().index(selected_kind)
+            new_selected_kind_index = xbmcgui.Dialog().select('Choose Category default asset for {}'.format(selected_kind.name), 
+                                       list = mappable_asset_list_items, useDetails = True, preselect = preselected_index)
 
+            if new_selected_kind_index < 0: 
+                return self._command_edit_category(categoryID)
+            
+            new_selected_kind = assets.keys()[new_selected_kind_index]            
+            category.set_default_asset(selected_kind, new_selected_kind)
+            
+            self.category_repository.save(category)
+            kodi_notify('Category {0} mapped to {1}'.format(selected_kind.name, new_selected_kind.name))
+        
+            return self._command_edit_category(categoryID)
+        
         # --- Category Status (Finished or unfinished) ---
-        elif type == 3:
-            finished = self.categories[categoryID]['finished']
-            finished = False if finished else True
-            finished_display = 'Finished' if finished == True else 'Unfinished'
-            self.categories[categoryID]['finished'] = finished
-            kodi_dialog_OK('Category "{0}" status is now {1}'.format(self.categories[categoryID]['m_name'], finished_display))
+        if selected_option == 'CATEGORY_STATUS':            
+            category.change_finished_status()
+            kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_state()))
+            return self._command_edit_category(categoryID, launcherID)
 
         # --- Export Launcher XML configuration ---
-        elif type == 4:
-            category = self.categories[categoryID]
-            category_fn_str = 'Category_' + text_title_to_filename_str(category['m_name']) + '.xml'
+        if selected_option == 'EXPORT_CATEGORY':          
+            category_data = category.get_data()
+            category_fn_str = 'Category_' + text_title_to_filename_str(category.get_name()) + '.xml'
             log_debug('_command_edit_category() Exporting Category configuration')
-            log_debug('_command_edit_category() Name     "{0}"'.format(category['m_name']))
-            log_debug('_command_edit_category() ID       {0}'.format(category['id']))
+            log_debug('_command_edit_category() Name     "{0}"'.format(category.get_name()))
+            log_debug('_command_edit_category() ID       {0}'.format(category.get_id()))
             log_debug('_command_edit_category() l_fn_str "{0}"'.format(category_fn_str))
 
             # --- Ask user for a path to export the launcher configuration ---
@@ -940,18 +903,18 @@ class Main:
             # >> inside the function autoconfig_export_category() and the sucess message is never
             # >> printed. This is the standard way of handling error messages in AEL code.
             try:
-                autoconfig_export_category(category, export_FN)
+                autoconfig_export_category(category_data, export_FN)
             except AEL_Error as E:
                 kodi_notify_warn('{0}'.format(E))
             else:
-                kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
+                kodi_notify('Exported Category "{0}" XML config'.format(category.get_name()))
             # >> No need to update categories.xml and timestamps so return now.
             return
 
         # --- Remove category. Also removes launchers in that category ---
-        elif type == 5:
+        if selected_option == 'DELETE_CATEGORY':    
             launcherID_list = []
-            category_name = self.categories[categoryID]['m_name']
+            category_name = category.get_name()
             for launcherID in sorted(self.launchers.iterkeys()):
                 if self.launchers[launcherID]['categoryID'] == categoryID:
                     launcherID_list.append(launcherID)
@@ -968,20 +931,17 @@ class Main:
                     fs_unlink_ROMs_database(ROMS_DIR, self.launchers[launcherID])
                     self.launchers.pop(launcherID)
                 # >> Delete category from database.
-                self.categories.pop(categoryID)
+                self.category_repository.delete(category)
             else:
                 ret = kodi_dialog_yesno('Category "{0}" contains no launchers. '.format(category_name) +
                                         'Are you sure you want to delete "{0}"?'.format(category_name))
                 if not ret: return
                 log_info('Deleting category "{0}" id {1}'.format(category_name, categoryID))
                 log_info('Category has no launchers, so no launchers to delete.')
-                self.categories.pop(categoryID)
-            kodi_notify('Deleted category {0}'.format(category_name))
+                self.category_repository.delete(category)
 
-        # >> If this point is reached then changes to metadata/images were made.
-        # >> Save categories and update container contents so user sees those changes inmediately.
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        kodi_refresh_container()
+            kodi_notify('Deleted category {0}'.format(category_name))
+            kodi_refresh_container()
         
     def _command_add_new_launcher(self, categoryID):
         
