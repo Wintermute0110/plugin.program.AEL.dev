@@ -510,14 +510,20 @@ class DictionaryDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, dictOptions):
-        
-        selection = self.dialog.select(title, dictOptions.values())
+    def select(self, title, dictOptions, preselect = None):
+
+        preselected_index = -1
+        if preselect is not None:
+            preselected_value = dictOptions[preselect]
+            preselected_index = dictOptions.values().index(preselected_value)
+
+        selection = self.dialog.select(title, dictOptions.values(), preselect = preselected_index)
 
         if selection < 0:
             return None
-
-        return dictOptions.keys()[selection]
+        
+        key = list(dictOptions.keys())[selection]
+        return key
 
 class ProgressDialogStrategy(object):
     

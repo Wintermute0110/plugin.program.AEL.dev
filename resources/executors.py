@@ -41,7 +41,10 @@ class ExecutorFactory():
 
             return WindowsExecutor(self.logFile, self.settings['windows_cd_apppath'], self.settings['windows_close_fds'])
 
-        if is_linux() or is_android():
+        if is_android():
+            return AndroidExecutor()
+
+        if is_linux():
             return LinuxExecutor(self.logFile, self.settings['lirc_state'])
         
         if is_osx():
@@ -68,7 +71,7 @@ class XbmcExecutor(Executor):
         xbmc.executebuiltin('XBMC.{0}'.format(arguments))
         pass
     
-# >> Linux and Android
+# >> Linux
 # >> New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
 # >> process. This is to avoid Kodi opens sockets be inherited by the child process. A
 # >> wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
@@ -99,7 +102,7 @@ class LinuxExecutor(Executor):
         if non_blocking:
             # >> In a non-blocking launch stdout/stderr of child process cannot be recorded.
             log_info('LinuxExecutor: Launching non-blocking process subprocess.Popen()')
-            p = subprocess.Popen(exec_list, close_fds = True)
+            p = subprocess.Popen(command, close_fds = True)
         else:
             with open(self.logFile.getPath(), 'w') as f:
                 retcode = subprocess.call(command, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
@@ -108,6 +111,19 @@ class LinuxExecutor(Executor):
                 xbmc.executebuiltin('LIRC.start')
 
         pass
+
+class AndroidExecutor(Executor):
+
+    def __init__(self):
+
+        super(AndroidExecutor, self).__init__(None)
+
+    def execute(self, application, arguments, non_blocking):
+        retcode = os.system("{0} {1}".format(application.getPath(), arguments).encode('utf-8'))
+
+        log_info('AndroidExecutor: Process retcode = {0}'.format(retcode))
+        pass
+
 
 class OSXExecutor(Executor):
 
