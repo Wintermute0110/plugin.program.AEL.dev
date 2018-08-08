@@ -70,6 +70,11 @@ class XmlDataContext(object):
         log_debug('xpath query {}'.format(query))
         return self.xml_data.find(query)
 
+    def get_nodes_by(self, tag, field, value):
+        query = "{}[{}='{}']".format(tag, field, value)
+        log_debug('xpath query {}'.format(query))
+        return self.xml_data.find(query)
+
     # creates/updates xml node identified by tag and id with the given dictionary of data
     def save_node(self, tag, id, updated_data):
         node_to_update = self.get_node(tag, id)
@@ -139,19 +144,6 @@ class CategoryRepository(object):
 
         return c
 
-
-    def _load_repository(self):
-        
-        self._categories = {}
-        category_elements = self.data_context.get_nodes('category')
-        
-        for category_element in category_elements:
-            # Default values
-            #category = self._new_category_dataset()
-            category = self._parse_xml_to_dictionary(category_element)
-            # --- Add category to categories dictionary ---
-            self._categories[category['id']] = category
-    
     def _parse_xml_to_dictionary(self, category_element):
         
         category = {}
@@ -173,15 +165,6 @@ class CategoryRepository(object):
 
         return category
 
-
-    # lazy loading of categories through property
-    @property
-    def categories(self):
-        if not self._categories:
-            self._load_repository()
-
-        return self._categories
-
     def find(self, category_id):
 
         if category_id == VCATEGORY_ADDONROOT_ID:
@@ -193,7 +176,7 @@ class CategoryRepository(object):
     
     def find_all(self):
         
-        categories = {}
+        categories = []
         category_elements = self.data_context.get_nodes('category')
         
         for category_element in category_elements:
@@ -201,14 +184,36 @@ class CategoryRepository(object):
             category = Category(category_data)
 
             # --- Add category to categories dictionary ---
-            categories[category.get_id()] = category
+            categories.append(category)
 
         return categories
+
+    def get_simple_list(self):
+        
+        category_list = {}
+        category_elements = self.data_context.get_nodes('category')
+        for category_element in category_elements:
+            id = category_element.find('id').text()
+            name = category_element.find('m_name').text()
+            category_list[id] = name
+
+        return category_list
+
+    def count(self):
+        return len(self.data_context.get_nodes('category'))
 
     def save(self, category):
         category_id = category.get_id()
         
         self.data_context.save_node('category', category_id, category.get_data())        
+        self.data_context.commit()
+
+    def save_collection(self, categories):
+        
+        for category in categories:
+            category_id = category.get_id()
+            self.data_context.save_node('category', category_id, category.get_data())        
+
         self.data_context.commit()
 
     def delete(self, category):
@@ -354,31 +359,59 @@ class LauncherRepository(object):
             return None
 
         launcher_data = self._parse_xml_to_dictionary(launcher_element)
-        launcher = launcher_factory.create_from_data(launcher_data)
+        launcher = launcher_factory.create(launcher_data)
         
         return launcher
     
     def find_all(self):
         
-        launchers = {}
+        launchers = []
         launcher_elements = self.data_context.get_nodes('launcher')
         
         for launcher_element in launcher_elements:
             launcher_data = self._parse_xml_to_dictionary(launcher_element)
-            launcher = launcher_factory.create_from_data(launcher_data)
+            launcher = launcher_factory.create(launcher_data)
 
-            # --- Add launcher to launchers dictionary ---
-            launchers[launcher.get_id()] = launcher
+            launchers.append(launcher)
 
         return launchers
 
-    def save(self, launcher):
-        launcher_id = launcher.get_id()
+    def find_by_category(self, category_id):
+        
+        launchers = []
+        launcher_elements = self.data_context.get_nodes_by('launcher', 'category_id', category_id )
+        
+        for launcher_element in launcher_elements:
+            launcher_data = self._parse_xml_to_dictionary(launcher_element)
+            launcher = launcher_factory.create(launcher_data)
 
+            launchers.append(launcher)
+
+        return launchers
+
+    def save(self, launcher, update_launcher_timestamp = True):
+        
+        if update_launcher_timestamp:
+            launcher.update_timestamp()
+
+        launcher_id = launcher.get_id()
         launcher_data = launcher.get_data()
-        launcher_data['timestamp_launcher'] = time.time()
         
         self.data_context.save_node('launcher', launcher_id, launcher_data)        
+        self.data_context.commit()
+
+    def save_collection(self, launchers, update_launcher_timestamp = True):
+        
+        for launcher in launchers:
+            
+            if update_launcher_timestamp:
+                launcher.update_timestamp()
+
+            launcher_id = launcher.get_id()
+            launcher_data = launcher.get_data()
+            
+            self.data_context.save_node('launcher', launcher_id, launcher_data)       
+
         self.data_context.commit()
 
     def delete(self, launcher):
@@ -387,15 +420,13 @@ class LauncherRepository(object):
         self.data_context.remove_node('launcher', launcher_id)
         self.data_context.commit()
 
-class LauncherFactory():
+class LauncherFactory(object):
 
-    def __init__(self, settings, categories_data, launchers_data, romsetFactory, executorFactory):
+    def __init__(self, settings, romsetFactory, executorFactory):
 
         self.settings = settings
         self.romsetFactory = romsetFactory
         self.executorFactory = executorFactory
-        self.categories_data = categories_data
-        self.launchers_data = launchers_data
 
     def _load(self, launcher_type, launcher_data, category, rom):
         
@@ -428,7 +459,24 @@ class LauncherFactory():
         log_warning('Unsupported launcher requested. Type {}'.format(launcher_type))
         return None
 
-    def create_from_data(self, launcher_data):
+    def get_supported_types(self):
+        
+        typeOptions = OrderedDict()
+        typeOptions[LAUNCHER_STANDALONE]   = 'Standalone launcher (Game/Application)'
+        typeOptions[LAUNCHER_FAVOURITES]   = 'Kodi favourite launcher'
+        typeOptions[LAUNCHER_ROM]          = 'ROM launcher (Emulator)'
+        typeOptions[LAUNCHER_RETROPLAYER]  = 'ROM launcher (Kodi Retroplayer)'
+        typeOptions[LAUNCHER_RETROARCH]    = 'ROM launcher (Retroarch)'
+        typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
+        
+        if not is_android():
+            typeOptions[LAUNCHER_STEAM] = 'Steam launcher'
+        if is_windows():
+            typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
+
+        return typeOptions
+
+    def create(self, launcher_data):
         
         launcher_type = launcher_data['type'] if 'type' in launcher_data else None
 
@@ -437,48 +485,16 @@ class LauncherFactory():
 
         return self._load(launcher_type, launcher_data, category, None)
 
-    def create(self, launcherID, rom = None):
+    def create_new(self, launcher_type):
+        return self._load(launcher_type, None, None)
         
-        # Create and return new launcher instance
-        if launcherID is None:            
-            # --- Show "Create New Launcher" dialog ---
-            typeOptions = OrderedDict()
-            typeOptions[LAUNCHER_STANDALONE]   = 'Standalone launcher (Game/Application)'
-            typeOptions[LAUNCHER_FAVOURITES]   = 'Kodi favourite launcher'
-            typeOptions[LAUNCHER_ROM]          = 'ROM launcher (Emulator)'
-            typeOptions[LAUNCHER_RETROPLAYER]  = 'ROM launcher (Kodi Retroplayer)'
-            typeOptions[LAUNCHER_RETROARCH]    = 'ROM launcher (Retroarch)'
-            typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
-            if not is_android():
-                typeOptions[LAUNCHER_STEAM] = 'Steam launcher'
-            if is_windows():
-                typeOptions[LAUNCHER_LNK] = 'LNK launcher (Windows only)'
 
-            dialog = DictionaryDialog()
-            launcher_type = dialog.select('Create New Launcher', typeOptions)
-            if type is None: 
-                return None
-            else:
-                log_info('launcherfactory.create() New launcher (launcher_type = {0})'.format(launcher_type))
-                return self._load(launcher_type, {}, None)
-        
-        # Load existing launcher and return instance
-        if launcherID not in self.launchers_data:
-            log_error('launcherfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
-            return None
-        
-        launcher = self.launchers_data[launcherID]
-        launcher_type = launcher['type'] if 'type' in launcher else None
+# -------------------------------------------------------------------------------------------------
+# Abstract base class for business objects which support the generic metadata properties
+# -------------------------------------------------------------------------------------------------
+class MetaDataItem(ABCMeta):
 
-        category_id = launcher['categoryID'] if 'categoryID' in launcher else VCATEGORY_ADDONROOT_ID
-        category = self.categories_data[category_id] if category_id in self.categories_data else None
-
-        return self._load(launcher_type, launcher, category, rom)
-
-class MetaDataItem(object):
-    __metaclass__ = ABCMeta
-    
-    def __init__(self, entity_data)
+    def __init__(self, entity_data):
         self.entity_data = entity_data
 
     def get_id(self):
@@ -510,6 +526,9 @@ class MetaDataItem(object):
     def get_data(self):
         return self.entity_data
 
+    def set_id(self, id):
+        self.entity_data['id'] = id
+
     def set_name(self, name):
         self.entity_data['m_name'] = name
 
@@ -533,14 +552,22 @@ class MetaDataItem(object):
         finished = False if finished else True
         self.entity_data['finished'] = finished
 
-class Category(MetaDataItem):
+    def import_data(self, data):
+        for key in data:
+            self.entity_data[key] = data[key]
+        pass
 
+# -------------------------------------------------------------------------------------------------
+# Class representing the categories in AEL.
+# -------------------------------------------------------------------------------------------------
+class Category(MetaDataItem):
+    
     def __init__(self, category_data = None):
         
         super(category_data)
 
         if self.entity_data is None:
-            self.category_data = {
+            self.entity_data = {
              'id' : misc_generate_random_SID(),
              'm_name' : '',
              'm_year' : '',
@@ -607,17 +634,20 @@ class Category(MetaDataItem):
     def create_root_category():
         c = {'id' : VCATEGORY_ADDONROOT_ID, 'm_name' : 'Root category' }
         return Category(c)
-
-#
+    
+# -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything that is supported.
 # Implement classes that inherit this base class to support new ways of launching.
-#
+# -------------------------------------------------------------------------------------------------
 class Launcher(MetaDataItem):
     __metaclass__ = ABCMeta
     
     def __init__(self, launcher_data, category, settings, executorFactory, toggle_window, non_blocking = False):
         
         super(launcher_data)
+
+        if self.entity_data is None:
+            self.entity_data = self._default_data()
 
         self.category        = category
         self.settings        = settings
@@ -630,16 +660,79 @@ class Launcher(MetaDataItem):
         self.arguments      = None
         self.title          = None
     
+    def _default_data(self):
+        l = {'id' : misc_generate_random_SID(),
+             'm_name' : '',
+             'm_year' : '',
+             'm_genre' : '',
+             'm_developer' : '',
+             'm_rating' : '',
+             'm_plot' : '',
+             'platform' : '',
+             'categoryID' : '',
+             'application' : '',
+             'args' : '',
+             'args_extra' : [],
+             'rompath' : '',
+             'romext' : '',
+             'finished': False,
+             'toggle_window' : False, # Former 'minimize'
+             'non_blocking' : False,
+             'multidisc' : True,
+             'roms_base_noext' : '',
+             'nointro_xml_file' : '',
+             'nointro_display_mode' : NOINTRO_DMODE_ALL,
+             'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
+             'num_roms' : 0,
+             'num_parents' : 0,
+             'num_clones' : 0,
+             'num_have' : 0,
+             'num_miss' : 0,
+             'num_unknown' : 0,
+             'timestamp_launcher' : 0.0,
+             'timestamp_report' : 0.0,
+             'default_icon' : 's_icon',
+             'default_fanart' : 's_fanart',
+             'default_banner' : 's_banner',
+             'default_poster' : 's_poster',
+             'default_clearlogo' : 's_clearlogo',
+             'default_controller' : 's_controller',
+             'Asset_Prefix' : '',
+             's_icon' : '',
+             's_fanart' : '',
+             's_banner' : '',
+             's_poster' : '',
+             's_clearlogo' : '',
+             's_controller' : '',
+             's_trailer' : '',
+             'roms_default_icon' : 's_boxfront',
+             'roms_default_fanart' : 's_fanart',
+             'roms_default_banner' : 's_banner',
+             'roms_default_poster' : 's_flyer',
+             'roms_default_clearlogo' : 's_clearlogo',
+             'ROM_asset_path' : '',
+             'path_title' : '',
+             'path_snap' : '',
+             'path_boxfront' : '',
+             'path_boxback' : '',
+             'path_cartridge' : '',
+             'path_fanart' : '',
+             'path_banner' : '',
+             'path_clearlogo' : '',
+             'path_flyer' : '',
+             'path_map' : '',
+             'path_manual' : '',
+             'path_trailer' : ''
+        }
+
+        return l
+
     #
     # Build new launcher.
     # Leave category_id empty to add launcher to root folder.
     #
     def build(self, category):
-        
-        launcherID               = misc_generate_random_SID()
-        self.entity_data         = fs_new_launcher()
-        self.entity_data['id']   = launcherID
-                
+                        
         wizard = DummyWizardDialog('categoryID', category.get_id(), None)
         wizard = DummyWizardDialog('type', self.get_launcher_type(), wizard)
 
@@ -649,7 +742,7 @@ class Launcher(MetaDataItem):
         # NOTE than in the database original paths are always stored.
         self.entity_data = wizard.runWizard(self.entity_data)
         if not self.entity_data:
-            return None
+            return False
         
         if self.supports_launching_roms():
             # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
@@ -667,9 +760,8 @@ class Launcher(MetaDataItem):
             assets_init_asset_dir(FileNameFactory.create(self.entity_data['assets_path']), self.entity_data)
 
         self.entity_data['timestamp_launcher'] = time.time()
-        #launchers[launcherID] = launcher
 
-        return self.entity_data
+        return True
     
     #
     # Launchs a ROM launcher or standalone launcher
@@ -944,8 +1036,25 @@ class Launcher(MetaDataItem):
 
         return options
 
+    def get_timestamp(self):
+        timestamp = self.entity_data['timestamp_launcher']
+        if timestamp is None or timestamp == '':
+            return float(0)
+
+        return float(timestamp)
+   
+    def get_report_timestamp(self):
+        timestamp = self.entity_data['timestamp_report']
+        if timestamp is None or timestamp == '':
+            return float(0)
+
+        return float(timestamp)
+
     def update_timestamp(self):
         self.entity_data['timestamp_launcher'] = time.time()
+        
+    def update_report_timestamp(self):
+        self.entity_data['timestamp_report'] = time.time()
 
     def update_category(self, category_id):
         self.entity_data['categoryID'] = category_id
@@ -1037,7 +1146,7 @@ class Launcher(MetaDataItem):
 
         return True
 
-    def export_configuration(self, path_to_export, categories):
+    def export_configuration(self, path_to_export, category):
         
         launcher_fn_str = 'Launcher_' + text_title_to_filename_str(self.get_name()) + '.xml'
         log_debug('launcher.export_configuration() Exporting Launcher configuration')
@@ -1055,7 +1164,7 @@ class Launcher(MetaDataItem):
         
         # --- Print error message is something goes wrong writing file ---
         try:
-            autoconfig_export_launcher(self.entity_data, export_FN, categories)
+            autoconfig_export_launcher(self.entity_data, export_FN, category.get_data())
         except AEL_Error as E:
             kodi_notify_warn('{0}'.format(E))
         else:
@@ -1128,26 +1237,23 @@ class Launcher(MetaDataItem):
     def _user_selected_custom_browsing(self, item_key, launcher):
         return launcher[item_key] == 'BROWSE'
     
-#
+# -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything roms or item based.
 # This base class has methods to support launching applications with variable input
 # arguments or items like roms.
 # Inherit from this base class to implement your own specific rom launcher.
-#
+# -------------------------------------------------------------------------------------------------
 class RomLauncher(Launcher):
     __metaclass__ = ABCMeta
     
-    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher, category, rom):
+    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher_data, category):
         
-        self.rom = rom
-        self.categoryID = ''
-
         self.escape_romfile = escape_romfile
         self.statsStrategy = statsStrategy
 
-        non_blocking_flag = launcher['non_blocking'] if 'non_blocking' in launcher else False
-        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
-        super(RomLauncher, self).__init__(launcher, category, settings, executorFactory, toggle_window, non_blocking_flag)
+        non_blocking_flag = launcher_data['non_blocking'] if 'non_blocking' in launcher_data else False
+        toggle_window =  launcher_data['toggle_window'] if 'toggle_window' in launcher_data else False
+        super(RomLauncher, self).__init__(launcher_data, category, settings, executorFactory, toggle_window, non_blocking_flag)
     
     @abstractmethod
     def _selectApplicationToUse(self):
@@ -1244,6 +1350,9 @@ class RomLauncher(Launcher):
     def supports_launching_roms(self):
         return True  
     
+    def load_rom(self, rom):
+        self.rom = rom
+
     def get_edit_options(self):
 
         finished_str = 'Finished' if self.entity_data['finished'] == True else 'Unfinished'   
@@ -1397,8 +1506,21 @@ class RomLauncher(Launcher):
     def change_rom_path(self, path):
         self.entity_data['rompath'] = path
 
+    def get_rom_asset_path(self):
+        path = self.entity_data['ROM_asset_path']
+        if path is None or path == '':
+            return None
+        
+        return FileNameFactory.create(path)
+
     def get_roms_base(self):
         return self.entity_data['roms_base_noext']
+
+    def get_roms_xml_file(self):
+        return self.entity_data['roms_xml_file']
+    
+    def set_roms_xml_file(self, xml_file):
+        self.entity_data['roms_xml_file'] = xml_file
 
     # todo: add actual romset here
     def clear_roms(self):
@@ -1500,7 +1622,10 @@ class RomLauncher(Launcher):
         romPath = romPath.pjoin('games')
 
         return romPath.getOriginalPath()
-    
+   
+#
+# Standalone application launcher
+# 
 class ApplicationLauncher(Launcher):
     
     def __init__(self, settings, executorFactory, launcher, category):
@@ -1646,7 +1771,10 @@ class ApplicationLauncher(Launcher):
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
             
         return wizard
-
+    
+#
+# Kodi favorites launcher
+#
 class KodiLauncher(Launcher):
     
     def __init__(self, settings, executorFactory, launcher, category):
@@ -1781,7 +1909,10 @@ class KodiLauncher(Launcher):
                 return favourites[key][0]
 
         return _get_title_from_app_path(input, launcher)
-
+    
+#
+# Standard rom launcher where user can fully customize all settings.
+#
 class StandardRomLauncher(RomLauncher):
        
     def get_launcher_type(self):
@@ -1947,6 +2078,9 @@ class StandardRomLauncher(RomLauncher):
             
         return wizard
  
+#
+# Launcher for .lnk files (windows)
+#
 class LnkLauncher(StandardRomLauncher):
     
     def get_launcher_type(self):

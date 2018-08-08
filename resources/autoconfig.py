@@ -37,6 +37,7 @@ from utils_kodi import *
 from disk_IO import *
 from assets import *
 from platforms import *
+from launchers import *
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.
@@ -137,24 +138,25 @@ def autoconfig_export_all(categories, launchers, export_FN):
 
     # --- Export Categories ---
     # >> Data which is not string must be converted to string
-    for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
-        category = categories[categoryID]
-        log_verb('autoconfig_export_all() Category "{0}" (ID "{1}")'.format(category['m_name'], categoryID))
-        autoconfig_export_category_str_list(category, str_list)
+    category_names = {}
+    for category in sorted(categories, key = lambda c : class.get_name()):
+        log_verb('autoconfig_export_all() Category "{0}" (ID "{1}")'.format(category.get_name(), category.get_id()))
+        autoconfig_export_category_str_list(category.get_data(), str_list)
+        category_names[category.get_id()] = category.get_name()
 
     # --- Export Launchers and add XML tail ---
     # >> Data which is not string must be converted to string
-    for launcherID in sorted(launchers, key = lambda x : launchers[x]['m_name']):
-        launcher = launchers[launcherID]
-        if launcher['categoryID'] in categories:
-            category_name = categories[launcher['categoryID']]['m_name']
-        elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+    for launcher in sorted(launchers, key = lambda l : l.get_name()):
+        category_id = launcher.get_category_id()
+        if category_id in category_names:
+            category_name = category_names[category_id]
+        elif category_id == VCATEGORY_ADDONROOT_ID:
             category_name = VCATEGORY_ADDONROOT_ID
         else:
             kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
             return
-        log_verb('autoconfig_export_all() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
-        autoconfig_export_launcher_str_list(launcher, category_name, str_list)
+        log_verb('autoconfig_export_all() Launcher "{0}" (ID "{1}")'.format(launcher.get_name(), launcher.get_id()))
+        autoconfig_export_launcher_str_list(launcher.get_data(), category_name, str_list)
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
     # >> Export file. Strings in the list are Unicode. Encode to UTF-8 when writing to file.
@@ -164,24 +166,21 @@ def autoconfig_export_all(categories, launchers, export_FN):
 # Export a single Launcher XML configuration.
 # Check if the output XML file exists (and show a warning dialog if so) is done in caller.
 #
-def autoconfig_export_launcher(launcher, export_FN, categories):
+def autoconfig_export_launcher(launcher_data, export_FN, category_data):
     # --- Export single Launcher ---
-    launcherID = launcher['id']
-    if launcher['categoryID'] in categories:
-        category_name = categories[launcher['categoryID']]['m_name']
-    elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
-        category_name = VCATEGORY_ADDONROOT_ID
-    else:
+    launcherID = launcher_data['id']
+    if category_data is None:
         kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
         raise AEL_Error('Error exporting Launcher XML configuration')
-    log_verb('autoconfig_export_launcher() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
+
+    log_verb('autoconfig_export_launcher() Launcher "{0}" (ID "{1}")'.format(launcher_data['m_name'], launcherID))
 
     # --- Create list of strings ---
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     str_list.append('<advanced_emulator_launcher_configuration>\n')
-    autoconfig_export_launcher_str_list(launcher, category_name, str_list)
+    autoconfig_export_launcher_str_list(launcher_data, category_data['m_name'], str_list)
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
     # >> Export file. Strings in the list are Unicode. Encode to UTF-8 when writing to file.

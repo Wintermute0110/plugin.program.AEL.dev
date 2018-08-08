@@ -42,67 +42,62 @@ class RomSetFactory():
         if not self.VIRTUAL_CAT_RATING_DIR.exists():    self.VIRTUAL_CAT_RATING_DIR.makedirs()
         if not self.COLLECTIONS_DIR.exists():           self.COLLECTIONS_DIR.makedirs()
 
-    def create(self, categoryID, launcherID, launchers):
+    def create(self, categoryID, launcher_data):
         
+        launcherID = launcher_data['id']
         log_debug('romsetfactory.create(): categoryID={0}'.format(categoryID))
         log_debug('romsetfactory.create(): launcherID={0}'.format(launcherID))
         
-        launcher = None
-        if launcherID in launchers:
-            launcher = launchers[launcherID]
-        else:
-            log_warning('romsetfactory.create(): Launcher "{0}" not found in launchers'.format(launcherID))
-
         description = self.createDescription(categoryID)
 
         # --- ROM in Favourites ---
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            return FavouritesRomSet(self.FAV_JSON_FILE_PATH, launcher, description)
+            return FavouritesRomSet(self.FAV_JSON_FILE_PATH, launcher_data, description)
                 
         # --- ROM in Most played ROMs ---
         elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-            return FavouritesRomSet(self.MOST_PLAYED_FILE_PATH, launcher, description)
+            return FavouritesRomSet(self.MOST_PLAYED_FILE_PATH, launcher_data, description)
 
         # --- ROM in Recently played ROMs list ---
         elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
-            return RecentlyPlayedRomSet(self.RECENT_PLAYED_FILE_PATH, launcher, description)
+            return RecentlyPlayedRomSet(self.RECENT_PLAYED_FILE_PATH, launcher_data, description)
 
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            return CollectionRomSet(self.COLLECTIONS_FILE_PATH, launcher, self.COLLECTIONS_DIR, launcherID, description)
+            return CollectionRomSet(self.COLLECTIONS_FILE_PATH, launcher_data, self.COLLECTIONS_DIR, launcherID, description)
 
         # --- ROM in Virtual Launcher ---
         elif categoryID == VCATEGORY_TITLE_ID:
             log_info('RomSetFactory() loading ROM set Title Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_TITLE_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_TITLE_DIR, launcher_data, launcherID, description)
         elif categoryID == VCATEGORY_YEARS_ID:
             log_info('RomSetFactory() loading ROM set Years Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_YEARS_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_YEARS_DIR, launcher_data, launcherID, description)
         elif categoryID == VCATEGORY_GENRE_ID:
             log_info('RomSetFactory() loading ROM set Genre Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_GENRE_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_GENRE_DIR, launcher_data, launcherID, description)
         elif categoryID == VCATEGORY_DEVELOPER_ID:
             log_info('RomSetFactory() loading ROM set Studio Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_DEVELOPER_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_DEVELOPER_DIR, launcher_data, launcherID, description)
         elif categoryID == VCATEGORY_NPLAYERS_ID:
             log_info('RomSetFactory() loading ROM set NPlayers Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_NPLAYERS_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_NPLAYERS_DIR, launcher_data, launcherID, description)
         elif categoryID == VCATEGORY_ESRB_ID:
             log_info('RomSetFactory() loading ROM set ESRB Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_ESRB_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_ESRB_DIR, launcher_data, launcherID, description)
         elif categoryID == VCATEGORY_RATING_ID:
             log_info('RomSetFactory() loading ROM set Rating Virtual Launcher ...')
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_RATING_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_RATING_DIR, launcher_data, launcherID, description)
         elif categoryID == VCATEGORY_CATEGORY_ID:
-            return VirtualLauncherRomSet(self.VIRTUAL_CAT_CATEGORY_DIR, launcher, launcherID, description)
+            return VirtualLauncherRomSet(self.VIRTUAL_CAT_CATEGORY_DIR, launcher_data, launcherID, description)
           
         elif categoryID == VCATEGORY_PCLONES_ID \
-            and 'launcher_display_mode' in launcher \
-            and launcher['launcher_display_mode'] != LAUNCHER_DMODE_FLAT:
-            return PcloneRomSet(self.ROMS_DIR, launcher, description)
+            and 'launcher_display_mode' in launcher_data \
+            and launcher_data['launcher_display_mode'] != LAUNCHER_DMODE_FLAT:
+            return PcloneRomSet(self.ROMS_DIR, launcher_data, description)
         
         log_info('RomSetFactory() loading standard romset...')
-        return StandardRomSet(self.ROMS_DIR, launcher, description)
+        return StandardRomSet(self.ROMS_DIR, launcher_data, description)
 
     def createDescription(self, categoryID):
          
