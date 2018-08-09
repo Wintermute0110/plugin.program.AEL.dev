@@ -362,7 +362,17 @@ class LauncherRepository(object):
         launcher = launcher_factory.create(launcher_data)
         
         return launcher
-    
+   
+    def find_all_ids(self):
+        
+        launcher_ids = []
+        launcher_id_elements = self.data_context.get_nodes('launcher/id')
+        
+        for launcher_id_element in launcher_id_elements:
+            launcher_ids.append(launcher_id_element.text())
+
+        return launcher_ids
+
     def find_all(self):
         
         launchers = []
@@ -376,6 +386,20 @@ class LauncherRepository(object):
 
         return launchers
 
+    def find_by_launcher_type(self, launcher_type):
+        
+        launchers = []
+        launcher_elements = self.data_context.get_nodes_by('launcher', 'type', launcher_type )
+        
+        for launcher_element in launcher_elements:
+            launcher_data = self._parse_xml_to_dictionary(launcher_element)
+            launcher = launcher_factory.create(launcher_data)
+
+            launchers.append(launcher)
+
+        return launchers
+    
+
     def find_by_category(self, category_id):
         
         launchers = []
@@ -388,6 +412,9 @@ class LauncherRepository(object):
             launchers.append(launcher)
 
         return launchers
+    
+    def count(self):
+        return len(self.data_context.get_nodes('launcher'))
 
     def save(self, launcher, update_launcher_timestamp = True):
         
@@ -1171,36 +1198,6 @@ class Launcher(MetaDataItem):
             kodi_notify('Exported Launcher "{0}" XML config'.format(self.get_name()))
         # >> No need to update categories.xml and timestamps so return now.
 
-    # todo: move roms_dir to factory and inject through constructor for rom launchers only
-    # categories should come from some kind of categoriesrepository
-    @abstractmethod
-    def change_name(self, new_name, categories, roms_dir):
-        return False
-        if new_name == '': 
-            return False
-        
-        old_launcher_name = self.get_name()
-        new_launcher_name = new_name.rstrip()
-
-        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
-        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
-        
-        if old_launcher_name == new_launcher_name:
-            return False
-        
-        # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-        old_roms_base_noext = self.entity_data['roms_base_noext']
-        categoryID = self.get_category_id()
-
-        category_name = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
-        new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, self.get_id())
-        fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
-
-        self.set_name(new_launcher_name)
-        self.entity_data['roms_base_noext'] = new_roms_base_noext
-
-        return True
-     
     #
     # Creates a new launcher using a wizard of dialogs.
     #
@@ -1463,18 +1460,17 @@ class RomLauncher(Launcher):
         self.entity_data[asset_kind.rom_default_key] = mapped_to_kind.key
 
     def get_asset_path(self, asset_info):
-        if not asset_info:
+        if not asset_info or not if asset_info.path_key in self.entity_data:
             return None
 
-        return self.entity_data[asset_info.path_key] if asset_info.path_key in self.entity_data else None
+        asset_path = self.entity_data[asset_info.path_key] 
+        return FileNameFactory.create(asset_path)
 
     def set_asset_path(self, asset_info, path):
         log_debug('Setting "{}" to {}'.format(asset_info.path_key, path))
         self.entity_data[asset_info.path_key] = path
-
-    # todo: move roms_dir to factory and inject through constructor for rom launchers only
-    # categories should come from some kind of categoriesrepository
-    def change_name(self, new_name, categories, roms_dir):
+        
+    def change_name(self, new_name):
         if new_name == '': 
             return False
         
@@ -1487,17 +1483,7 @@ class RomLauncher(Launcher):
         if old_launcher_name == new_launcher_name:
             return False
         
-        # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-        old_roms_base_noext = self.entity_data['roms_base_noext']
-        categoryID = self.get_category_id()
-
-        category_name = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
-        new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, self.get_id())
-        fs_rename_ROMs_database(roms_dir, old_roms_base_noext, new_roms_base_noext)
-
         self.entity_data['m_name'] = new_launcher_name
-        self.entity_data['roms_base_noext'] = new_roms_base_noext
-
         return True
 
     def getRomPath(self):
@@ -1515,6 +1501,9 @@ class RomLauncher(Launcher):
 
     def get_roms_base(self):
         return self.entity_data['roms_base_noext']
+
+    def update_roms_base(self, roms_base_noext):
+        self.entity_data['roms_base_noext'] = roms_base_noext
 
     def get_roms_xml_file(self):
         return self.entity_data['roms_xml_file']
@@ -1661,25 +1650,7 @@ class ApplicationLauncher(Launcher):
     
     def get_launcher_type_name(self):        
         return "Standalone launcher"
-     
-    # todo: move roms_dir to factory and inject through constructor for rom launchers only
-    # categories should come from some kind of categoriesrepository
-    def change_name(self, new_name, categories, roms_dir):
-        if new_name == '': 
-            return False
-        
-        old_launcher_name = self.get_name()
-        new_launcher_name = new_name.rstrip()
-
-        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
-        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
-        
-        if old_launcher_name == new_launcher_name:
-            return False
-        
-        self.entity_data['m_name'] = new_launcher_name
-        return True
-    
+         
     def change_application(self):
 
         current_application = self.entity_data['application']
@@ -1833,7 +1804,6 @@ class KodiLauncher(Launcher):
 
         return options
     
-    
     def get_advanced_modification_options(self):
         
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
@@ -1847,23 +1817,7 @@ class KodiLauncher(Launcher):
         options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
 
         return options
-
-    def change_name(self, new_name, categories, roms_dir):
-        if new_name == '': 
-            return False
-        
-        old_launcher_name = self.get_name()
-        new_launcher_name = new_name.rstrip()
-
-        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
-        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
-        
-        if old_launcher_name == new_launcher_name:
-            return False
-        
-        self.entity_data['m_name'] = new_launcher_name
-        return True
-
+    
     #
     # Creates a new launcher using a wizard of dialogs.
     #
