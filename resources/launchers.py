@@ -106,7 +106,7 @@ class XmlDataContext(object):
 # Arranges retrieving and storing of the categories from and into the xml data file.
 # -------------------------------------------------------------------------------------------------
 class CategoryRepository(object):
-    
+
     def __init__(self, data_context):        
         self.data_context = data_context
 
@@ -145,6 +145,7 @@ class CategoryRepository(object):
         return c
 
     def _parse_xml_to_dictionary(self, category_element):
+        __debug_xml_parser = False
         
         category = {}
         # Parse child tags of category
@@ -318,6 +319,7 @@ class LauncherRepository(object):
         return self._launchers
     
     def _parse_xml_to_dictionary(self, launcher_element):
+        __debug_xml_parser = False
         # Default values
         launcher = self._new_launcher_dataset()
 
@@ -405,6 +407,10 @@ class LauncherRepository(object):
         launchers = []
         launcher_elements = self.data_context.get_nodes_by('launcher', 'category_id', category_id )
         
+        if launcher_elements is None:
+            log_debug('No launchers found in category #{}'.format(category_id))
+            return launchers
+
         for launcher_element in launcher_elements:
             launcher_data = self._parse_xml_to_dictionary(launcher_element)
             launcher = launcher_factory.create(launcher_data)
@@ -519,7 +525,8 @@ class LauncherFactory(object):
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic metadata properties
 # -------------------------------------------------------------------------------------------------
-class MetaDataItem(ABCMeta):
+class MetaDataItem(object):
+    __metaclass__ = ABCMeta
 
     def __init__(self, entity_data):
         self.entity_data = entity_data
@@ -591,7 +598,7 @@ class Category(MetaDataItem):
     
     def __init__(self, category_data = None):
         
-        super(category_data)
+        super(Category, self).__init__(category_data)
 
         if self.entity_data is None:
             self.entity_data = {
@@ -646,6 +653,9 @@ class Category(MetaDataItem):
 
         return default_assets
     
+    def get_trailer(self):
+        return self.entity_data['s_trailer']
+
     def get_edit_options(self):
     
         options = OrderedDict()
@@ -666,12 +676,12 @@ class Category(MetaDataItem):
 # Abstract base class for launching anything that is supported.
 # Implement classes that inherit this base class to support new ways of launching.
 # -------------------------------------------------------------------------------------------------
-class Launcher(MetaDataItem):
+class Launcher(object):
     __metaclass__ = ABCMeta
     
     def __init__(self, launcher_data, category, settings, executorFactory, toggle_window, non_blocking = False):
         
-        super(launcher_data)
+        super(Launcher, self).__init__(launcher_data)
 
         if self.entity_data is None:
             self.entity_data = self._default_data()
@@ -1460,7 +1470,7 @@ class RomLauncher(Launcher):
         self.entity_data[asset_kind.rom_default_key] = mapped_to_kind.key
 
     def get_asset_path(self, asset_info):
-        if not asset_info or not if asset_info.path_key in self.entity_data:
+        if not asset_info or not asset_info.path_key in self.entity_data:
             return None
 
         asset_path = self.entity_data[asset_info.path_key] 

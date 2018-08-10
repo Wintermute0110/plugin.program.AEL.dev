@@ -715,7 +715,7 @@ class Main:
                     kodi_notify('Category Rating changed to Not Set')
                 elif rating >= 1 and rating <= 11:
                     category.update_rating(rating - 1)
-                    kodi_notify('Category Rating is now {0}'.format(category.get_rating())
+                    kodi_notify('Category Rating is now {0}'.format(category.get_rating()))
                 elif rating < 0:
                     kodi_notify('Category rating not changed')
                     return
@@ -2999,7 +2999,7 @@ class Main:
 
         # >> For every category, add it to the listbox. Order alphabetically by name
         for category in sorted(categories, key = lambda c : c.get_name()):
-            self._gui_render_category_row(category.get_data())
+            self._gui_render_category_row(category)
 
         # --- Render categoryless launchers. Order alphabetically by name ---
         catless_launchers = self.launcher_repository.find_by_category(VCATEGORY_ADDONROOT_ID)
@@ -3040,7 +3040,7 @@ class Main:
 
         # >> For every category, add it to the listbox. Order alphabetically by name
         for category in sorted(categories, key = lambda c : c.get_name()):
-            self._gui_render_category_row(category.get_data())
+            self._gui_render_category_row(category)
 
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3051,11 +3051,12 @@ class Main:
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if category.get_state() else 4
         listitem = xbmcgui.ListItem(category.get_name())
-        listitem.setInfo('video', {'title'   : category.get_name(),    'year'    : category_dic['m_year'],
-                                   'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
-                                   'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
-                                   'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+        listitem.setInfo('video', {'title'   : category.get_name(),    'year'    : category.get_releaseyear(),
+                                   'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
+                                   'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
+                                   'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY })
 
+        category_dic = category.get_data()
         # --- Set Category artwork ---
         # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
         icon_path      = asset_get_default_asset_Category(category_dic, 'default_icon', 'DefaultFolder.png')
@@ -3069,7 +3070,7 @@ class Main:
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
         commands = []
-        categoryID = category_dic['id']
+        categoryID = category.get_id()
         commands.append(('View Category data',  self._misc_url_RunPlugin('VIEW', categoryID)))
         commands.append(('Edit Category',       self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
@@ -3080,7 +3081,7 @@ class Main:
         listitem.addContextMenuItems(commands)
 
         # --- Add row ---
-        url_str = self._misc_url('SHOW_LAUNCHERS', key)
+        url_str = self._misc_url('SHOW_LAUNCHERS', categoryID)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
 
     def _gui_render_category_favourites_row(self):
@@ -4415,7 +4416,7 @@ class Main:
         for laucnher in launchers:
 
             # If launcher is standalone skip
-            if launcher.supports_launching_roms()': 
+            if launcher.supports_launching_roms(): 
                 continue
 
             roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
@@ -4851,7 +4852,8 @@ class Main:
 
             # >> If Favourite does not have launcher skip it. It has been marked as 'Unlinked Launcher'
             # >> in step 1.
-            if launcher_id not in all_launcher_ids continue
+            if launcher_id not in all_launcher_ids:
+               continue
 
             # >> Load launcher ROMs
             launcher = self.launcher_repository.find(launcher_id)
@@ -6066,7 +6068,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
                     
                     launcher = self.launcher_repository.find(launcherID)
-                    romSet = self.romsetFactory.create(categoryID, launcher.get_data()))
+                    romSet = self.romsetFactory.create(categoryID, launcher.get_data())
                     rom = romSet.loadRom(romID)
 
                     if rom is None:
@@ -8040,10 +8042,17 @@ class Main:
 
         categories = self.category_repository.find_all()
         launchers = self.launcher_repository.find_all()
+        
+        category_datas = {}
+        launcher_datas = {}
+        for category in categories:
+            category_datas[category.get_id()] = category.get_data()                
+        for launcher in launchers:
+            launcher_datas[launcher.get_id()] = launcher.get_data()
 
         # --- Export stuff ---
         try:
-            autoconfig_export_all(categories, launchers, export_FN)
+            autoconfig_export_all(category_datas, laucnher_datas, export_FN)
         except AEL_Error as E:
             kodi_notify_warn('{0}'.format(E))
         else:
