@@ -32,7 +32,7 @@ class Test_Launcher(unittest.TestCase):
 
     def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
         # arrange
-        launcher_data = {}
+        launcher_data = {'id': 'aap'}
 
         # act
         factory = LauncherFactory(None, None, None)
@@ -346,7 +346,8 @@ class Test_Launcher(unittest.TestCase):
         launcher_data['romext'] = None
         launcher_data['args_extra'] = None
         launcher_data['roms_base_noext'] = 'snes'
-        launcher_data['core'] = 'mame_libretro_android.so'
+        launcher_data['retro_core'] = '/data/data/com.retroarch/cores/mame_libretro_android.so'
+        launcher_data['retro_config'] = '/storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg'
         launcher_data['application'] = None
 
         rom = {}
@@ -368,7 +369,7 @@ class Test_Launcher(unittest.TestCase):
         settings['delay_tempo'] = 1
 
         expected = '/system/bin/am'
-        expectedArgs = "start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM 'superrom.zip' -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture"
+        expectedArgs = "start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n com.retroarch/.browser.retroactivity.RetroActivityFuture -e ROM 'superrom.zip' -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg "
 
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
         launcher = factory.create(launcher_data)

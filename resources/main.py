@@ -3072,7 +3072,7 @@ class Main:
         if category.get_state() and self.settings['display_hide_finished']: return
 
         # --- Create listitem row ---
-        ICON_OVERLAY = 5 if category.get_state() else 4
+        ICON_OVERLAY = 5 if category.is_finished() else 4
         listitem = xbmcgui.ListItem(category.get_name())
         listitem.setInfo('video', {'title'   : category.get_name(),    'year'    : category.get_releaseyear(),
                                    'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
@@ -4485,13 +4485,13 @@ class Main:
             kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
             return
 
-        if categoryID != None and categoryID != '':
-            # >> ROM in Virtual Launcher
+        if 'launcherID' in rom:
             virtualLauncherID = rom['launcherID']
             launcher = self.launcher_repository.find(virtualLauncherID)
 
         # --- Load favourites ---
-        favRomSet = self.romsetFactory.create(VCATEGORY_FAVOURITES_ID, launcher.get_data()) #VLAUNCHER_FAVOURITES_ID
+        favlauncher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+        favRomSet = self.romsetFactory.create(VCATEGORY_FAVOURITES_ID, favlauncher.get_data()) #VLAUNCHER_FAVOURITES_ID
         roms_fav = favRomSet.loadRoms()
 
         # --- DEBUG info ---
@@ -5622,7 +5622,7 @@ class Main:
         romSet = self.romsetFactory.create(categoryID, launcher.get_data())
         rom = romSet.loadRom(romID)
 
-        if categoryID != None and categoryID != '':
+        if 'launcherID' in rom:
             # >> ROM in Virtual Launcher
             virtualLauncherID = rom['launcherID']
             launcher = self.launcher_repository.find(virtualLauncherID)
@@ -7032,7 +7032,7 @@ class Main:
         log_verb('_roms_create_launcher_reports() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
         log_verb('_roms_create_launcher_reports() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
         log_verb('_roms_create_launcher_reports() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
-        roms_base_noext = fs_get_ROMs_basename(category_name, auncher.get_name(), launcherID)
+        roms_base_noext = fs_get_ROMs_basename(category_name, launcher.get_name(), launcherID)
         report_file_name = REPORTS_DIR.pjoin(roms_base_noext + '.txt')
         log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
 

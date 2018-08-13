@@ -378,6 +378,10 @@ class LauncherRepository(object):
 
     def find(self, launcher_id):
 
+        if launcher_id in [VLAUNCHER_FAVOURITES_ID, VLAUNCHER_RECENT_ID, VLAUNCHER_MOST_PLAYED_ID]:
+            launcher = self.launcher_factory.create_new(launcher_id)
+            return launcher
+
         launcher_element = self.data_context.get_node('launcher', launcher_id)
 
         if launcher_element is None:
@@ -492,6 +496,10 @@ class LauncherFactory(object):
 
     def _load(self, launcher_type, launcher_data):
         
+        if launcher_type in [VLAUNCHER_FAVOURITES_ID, VLAUNCHER_RECENT_ID, VLAUNCHER_MOST_PLAYED_ID]:
+            launcher_data = { 'id' : launcher_type }
+            return VirtualLauncher(launcher_data, self.settings, self.executorFactory)
+
         if launcher_type == LAUNCHER_STANDALONE:
             return ApplicationLauncher(launcher_data, self.settings, self.executorFactory)
 
@@ -545,7 +553,7 @@ class LauncherFactory(object):
 
     def create_new(self, launcher_type):
         return self._load(launcher_type, None)
-    
+
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic metadata properties
 # -------------------------------------------------------------------------------------------------
@@ -1289,7 +1297,34 @@ class Launcher(MetaDataItem):
     #
     def _user_selected_custom_browsing(self, item_key, launcher):
         return launcher[item_key] == 'BROWSE'
+   
+     
+class VirtualLauncher(Launcher):
+      
+    def launch(self):
+        pass
+
+    def supports_launching_roms(self):
+        return False
     
+    def get_launcher_type(self):
+        return None
+    
+    def get_launcher_type_name(self):        
+        return "Virtual launcher"
+         
+    def get_edit_options(self):
+        options = OrderedDict()
+        return options
+
+    def get_advanced_modification_options(self):
+        options = OrderedDict()
+        return options
+
+    def _get_builder_wizard(self, wizard):
+        return wizard
+    
+
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything roms or item based.
 # This base class has methods to support launching applications with variable input
@@ -1362,8 +1397,12 @@ class RomLauncher(Launcher):
             self.arguments = self.arguments.replace('%rom%', self.selected_rom.getPath())
             self.arguments = self.arguments.replace('%ROM%', self.selected_rom.getPath())
         
+        category_id = self.get_category_id()
+        if category_id is None:
+            category_id = ''
+
         # Default arguments replacements
-        self.arguments = self.arguments.replace('$categoryID$', self.get_category_id())
+        self.arguments = self.arguments.replace('$categoryID$', category_id)
         self.arguments = self.arguments.replace('$launcherID$', self.entity_data['id'])
         self.arguments = self.arguments.replace('$romID$', self.rom['id'])
         self.arguments = self.arguments.replace('$romtitle$', self.title)
@@ -2045,7 +2084,7 @@ class StandardRomLauncher(RomLauncher):
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
             
         return wizard
- 
+
 # -------------------------------------------------------------------------------------------------
 # Launcher for .lnk files (windows)
 # -------------------------------------------------------------------------------------------------
@@ -2212,15 +2251,15 @@ class RetroarchLauncher(StandardRomLauncher):
         if is_windows():
             self.application = FileNameFactory.create(self.entity_data['application'])
             self.application = self.application.append('retroarch.exe')  
-            return
+            return True
 
         if is_android():
             self.application = FileNameFactory.create('/system/bin/am')
-            return
+            return True
 
         #todo other os
         self.application = ''
-        pass
+        return False
 
     def _selectArgumentsToUse(self):
         
@@ -2229,7 +2268,7 @@ class RetroarchLauncher(StandardRomLauncher):
             self.arguments += '-c "$retro_config$" '
             self.arguments += '"$rom$"'
             self.arguments += self.entity_data['args']
-            return
+            return True
 
         if is_android():
 
@@ -2239,10 +2278,10 @@ class RetroarchLauncher(StandardRomLauncher):
             self.arguments += '-e LIBRETRO $retro_core$ '
             self.arguments += '-e CONFIGFILE $retro_config$ '
             self.arguments += self.entity_data['args'] if 'args' in self.entity_data else ''
-            return
+            return True
 
         #todo other os
-        pass 
+        return False
     
     #
     # Creates a new launcher using a wizard of dialogs.
