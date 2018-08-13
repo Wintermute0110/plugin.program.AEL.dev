@@ -41,6 +41,12 @@ class FakeRomSet(RomSet):
 
 class FakeExecutor(Executor):
     
+    def getActualApplication(self):
+        return self.actualApplication
+
+    def getActualArguments(self):
+        return self.actualArgs
+
     def execute(self, application, arguments, non_blocking):
         self.actualApplication = application
         self.actualArgs = arguments

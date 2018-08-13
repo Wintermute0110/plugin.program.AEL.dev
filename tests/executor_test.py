@@ -1,4 +1,4 @@
-import unittest, mock, os, sys
+import unittest, mock, os, sys 
 from mock import *
 
 from resources.utils import *
@@ -26,14 +26,14 @@ class Test_executortests(unittest.TestCase):
         print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
         print '---------------------------------------------------------------------------'
         
-    @patch('resources.executors.sys')            
-    def test_if_on_linux_factory_loads_with_correct_executor(self, mock_sys):
+    @patch('resources.executors.is_windows')
+    @patch('resources.executors.is_linux')            
+    def test_if_on_linux_factory_loads_with_correct_executor(self, is_linux_mock, is_windows_mock):
         
         # arrange
-        mock_sys.configure_mock(platform='linux')
-        set_log_level(LOG_VERB)
-        set_use_print(True)
-
+        is_linux_mock.return_value = True
+        is_windows_mock.return_value = False
+        
         launcherPath = FileNameFactory.create('path')
 
         settings = {}
@@ -48,14 +48,16 @@ class Test_executortests(unittest.TestCase):
         expected = 'LinuxExecutor'
         self.assertEqual(actual, expected)
                 
-    @patch('resources.executors.sys')            
-    def test_if_on_windows_factory_loads_with_correct_executor(self, mock_sys):
+    @patch('resources.executors.is_windows')
+    @patch('resources.executors.is_osx')
+    @patch('resources.executors.is_linux')                   
+    def test_if_on_windows_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
         
         # arrange
-        mock_sys.configure_mock(platform='win32')
-        set_log_level(LOG_VERB)
-        set_use_print(True)
-        
+        is_linux_mock.return_value = False
+        is_windows_mock.return_value = True
+        is_osx_mock.return_value = False
+
         launcherPath = FileNameFactory.create('path')
 
         settings = {}
@@ -71,14 +73,16 @@ class Test_executortests(unittest.TestCase):
         expected = 'WindowsExecutor'
         self.assertEqual(actual, expected)  
         
-    @patch('resources.executors.sys')            
-    def test_if_on_windows_with_bat_files_factory_loads_with_correct_executor(self, mock_sys):
+    @patch('resources.executors.is_windows')
+    @patch('resources.executors.is_osx')
+    @patch('resources.executors.is_linux')               
+    def test_if_on_windows_with_bat_files_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
 
         # arrange
-        mock_sys.configure_mock(platform='win32')
-        set_log_level(LOG_VERB)
-        set_use_print(True)
-        
+        is_linux_mock.return_value = False
+        is_windows_mock.return_value = True
+        is_osx_mock.return_value = False
+                
         launcherPath = FileNameFactory.create('c:\\app\\testcase.bat')
 
         settings = {}
@@ -92,14 +96,16 @@ class Test_executortests(unittest.TestCase):
         actual = executor.__class__.__name__
         expected = 'WindowsBatchFileExecutor'
         self.assertEqual(actual, expected)  
-
-    @patch('resources.executors.sys')            
-    def test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor(self, mock_sys):
+        
+    @patch('resources.executors.is_windows')
+    @patch('resources.executors.is_osx')
+    @patch('resources.executors.is_linux')       
+    def test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
 
         # arrange
-        mock_sys.configure_mock(platform='win32')
-        set_log_level(LOG_VERB)
-        set_use_print(True)
+        is_linux_mock.return_value = False
+        is_windows_mock.return_value = True
+        is_osx_mock.return_value = False
         
         launcherPath = FileNameFactory.create('c:\\app\\testcase.lnk')
 
@@ -133,13 +139,15 @@ class Test_executortests(unittest.TestCase):
         expected = 'XbmcExecutor'
         self.assertEqual(actual, expected)
         
-    @patch('resources.executors.sys')            
-    def test_if_on_osx_factory_loads_with_correct_executor(self, mock_sys):
+    @patch('resources.executors.is_windows')
+    @patch('resources.executors.is_osx')
+    @patch('resources.executors.is_linux')            
+    def test_if_on_osx_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
 
         # arrange
-        mock_sys.configure_mock(platform='darwin')
-        set_log_level(LOG_VERB)
-        set_use_print(True)
+        is_linux_mock.return_value = False
+        is_windows_mock.return_value = False
+        is_osx_mock.return_value = True
 
         launcherPath = FileNameFactory.create('durp\\apple\\durp')
 

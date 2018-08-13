@@ -13,6 +13,8 @@ from assets import *
 from executors import *
 from romsets import *
 from romstats import *
+
+from filename import *
 from disk_IO import *
 from utils import *
 from utils_kodi import *
@@ -27,9 +29,9 @@ from gamestream import *
 # -------------------------------------------------------------------------------------------------
 class XmlDataContext(object):
 
-    def __init__(self, plugin_data_dir):
+    def __init__(self, xml_file_path):
         self._xml_root = None
-        self.repository_file_path = plugin_data_dir.pjoin('categories.xml')
+        self.repository_file_path = xml_file_path
 
     # lazy loading of xml data through property
     @property
@@ -63,17 +65,18 @@ class XmlDataContext(object):
                            'Maybe XML file is corrupt or contains invalid characters.')
 
     def get_nodes(self, tag):   
+        log_debug('XmlDataContext.get_nodes(): xpath query "{}"'.format(tag))
         return self.xml_data.findall(tag)
 
     def get_node(self, tag, id):
         query = "{}[id='{}']".format(tag, id)
-        log_debug('xpath query {}'.format(query))
+        log_debug('XmlDataContext.get_node(): xpath query "{}"'.format(query))
         return self.xml_data.find(query)
 
     def get_nodes_by(self, tag, field, value):
         query = "{}[{}='{}']".format(tag, field, value)
-        log_debug('xpath query {}'.format(query))
-        return self.xml_data.find(query)
+        log_debug('XmlDataContext.get_nodes_by(): xpath query "{}"'.format(query))
+        return self.xml_data.findall(query)
 
     # creates/updates xml node identified by tag and id with the given dictionary of data
     def save_node(self, tag, id, updated_data):
@@ -87,8 +90,16 @@ class XmlDataContext(object):
         
         for key in updated_data:
             element = self.xml_data.makeelement(key, {})  
-            element.text = updated_data[key]
-            node_to_update.append(element)
+            updated_value = updated_data[key]
+            
+            ## >> To simulate a list with XML allow multiple XML tags.
+            if isinstance(updated_data, list):
+                for extra_value in updated_value:
+                    element.text = unicode(extra_value)
+                    node_to_update.append(element)
+            else:
+                element.text = unicode(updated_value)
+                node_to_update.append(element)
 
     def remove_node(self, tag, id):
         node_to_remove = self.get_node(tag, id)
@@ -99,6 +110,7 @@ class XmlDataContext(object):
         self.xml_data.remove(node_to_remove)
 
     def commit(self):
+        log_info('Committing changes to XML file. File: {}'.format(self.repository_file_path.getOriginalPath()))
         self.repository_file_path.writeXml(self._xml_root)
         
 # -------------------------------------------------------------------------------------------------
@@ -106,7 +118,7 @@ class XmlDataContext(object):
 # Arranges retrieving and storing of the categories from and into the xml data file.
 # -------------------------------------------------------------------------------------------------
 class CategoryRepository(object):
-
+    
     def __init__(self, data_context):        
         self.data_context = data_context
 
@@ -155,7 +167,7 @@ class CategoryRepository(object):
             xml_text = category_child.text if category_child.text is not None else ''
             xml_text = text_unescape_XML(xml_text)
             xml_tag  = category_child.tag
-            if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+            if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text.encode('utf-8')))
 
             # Now transform data depending on tag name
             if xml_tag == 'finished':
@@ -172,16 +184,25 @@ class CategoryRepository(object):
             return Category.create_root_category()
 
         category_element = self.data_context.get_node('category', category_id)
+
+        if category_element is None:
+            log_debug('Cannot find category with id {}'.format(category_id))
+            return None
+
         category_dict = self._parse_xml_to_dictionary(category_element)
         category = Category(category_dict)
+        return category
     
     def find_all(self):
         
         categories = []
         category_elements = self.data_context.get_nodes('category')
+        log_debug('{} categories found'.format(len(category_elements)))
         
         for category_element in category_elements:
             category_data = self._parse_xml_to_dictionary(category_element)
+            
+            log_debug('Creating category instance for category#{}'.format(category_data['id']))
             category = Category(category_data)
 
             # --- Add category to categories dictionary ---
@@ -194,8 +215,8 @@ class CategoryRepository(object):
         category_list = {}
         category_elements = self.data_context.get_nodes('category')
         for category_element in category_elements:
-            id = category_element.find('id').text()
-            name = category_element.find('m_name').text()
+            id = category_element.find('id').text
+            name = category_element.find('m_name').text
             category_list[id] = name
 
         return category_list
@@ -322,16 +343,19 @@ class LauncherRepository(object):
         __debug_xml_parser = False
         # Default values
         launcher = self._new_launcher_dataset()
+        
+        if __debug_xml_parser: 
+            log_debug('Element has {} child elements'.format(len(launcher_element)))
 
-        # Parse child tags of category
+        # Parse child tags of launcher element
         for element_child in launcher_element:
             # >> By default read strings
-            xml_text = category_child.text if element_child.text is not None else ''
+            xml_text = element_child.text if element_child.text is not None else ''
             xml_text = text_unescape_XML(xml_text)
             xml_tag  = element_child.tag
 
             if __debug_xml_parser: 
-                log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+                log_debug('{0} --> {1}'.format(xml_tag, xml_text.encode('utf-8')))
 
             # >> Transform list() datatype
             if xml_tag == 'args_extra':
@@ -342,7 +366,7 @@ class LauncherRepository(object):
                 launcher[xml_tag] = True if xml_text == 'True' else False
             # >> Transform Int datatype
             elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
-                    xml_tag == 'num_have' or xml_tag == 'num_miss'    or xml_tag == 'num_unknown':
+                    xml_tag == 'num_have' or xml_tag == 'num_miss' or xml_tag == 'num_unknown':
                 launcher[xml_tag] = int(xml_text)
             # >> Transform Float datatype
             elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
@@ -361,7 +385,7 @@ class LauncherRepository(object):
             return None
 
         launcher_data = self._parse_xml_to_dictionary(launcher_element)
-        launcher = launcher_factory.create(launcher_data)
+        launcher = self.launcher_factory.create(launcher_data)
         
         return launcher
    
@@ -399,21 +423,22 @@ class LauncherRepository(object):
 
             launchers.append(launcher)
 
-        return launchers
-    
+        return launchers   
 
     def find_by_category(self, category_id):
         
         launchers = []
-        launcher_elements = self.data_context.get_nodes_by('launcher', 'category_id', category_id )
+        launcher_elements = self.data_context.get_nodes_by('launcher', 'categoryID', category_id )
         
-        if launcher_elements is None:
+        if launcher_elements is None or len(launcher_elements) == 0:
             log_debug('No launchers found in category #{}'.format(category_id))
             return launchers
 
+        log_debug('{} launchers found in category #{}'.format(len(launcher_elements), category_id))
+        
         for launcher_element in launcher_elements:
             launcher_data = self._parse_xml_to_dictionary(launcher_element)
-            launcher = launcher_factory.create(launcher_data)
+            launcher = self.launcher_factory.create(launcher_data)
 
             launchers.append(launcher)
 
@@ -452,7 +477,11 @@ class LauncherRepository(object):
         
         self.data_context.remove_node('launcher', launcher_id)
         self.data_context.commit()
-
+        
+# -------------------------------------------------------------------------------------------------
+# Factory class for creating the specific/derived launchers based upon the given type and 
+# dictionary with launcher data.
+# -------------------------------------------------------------------------------------------------
 class LauncherFactory(object):
 
     def __init__(self, settings, romsetFactory, executorFactory):
@@ -461,35 +490,35 @@ class LauncherFactory(object):
         self.romsetFactory = romsetFactory
         self.executorFactory = executorFactory
 
-    def _load(self, launcher_type, launcher_data, category, rom):
+    def _load(self, launcher_type, launcher_data):
         
         if launcher_type == LAUNCHER_STANDALONE:
-            return ApplicationLauncher(self.settings, self.executorFactory, launcher_data, category)
+            return ApplicationLauncher(launcher_data, self.settings, self.executorFactory)
 
         if launcher_type == LAUNCHER_FAVOURITES:
-            return KodiLauncher(self.settings, self.executorFactory, launcher_data, category)
+            return KodiLauncher(launcher_data, self.settings, self.executorFactory)
                 
-        statsStrategy = RomStatisticsStrategy(self.romsetFactory, self.launchers_data)
+        statsStrategy = RomStatisticsStrategy(self.romsetFactory, launcher_data)
 
         if launcher_type == LAUNCHER_RETROPLAYER:
-            return RetroplayerLauncher(self.settings, None, None, self.settings['escape_romfile'], launcher_data, category, rom)
+            return RetroplayerLauncher(launcher_data, self.settings, None, None, self.settings['escape_romfile'])
 
         if launcher_type == LAUNCHER_RETROARCH:
-            return RetroarchLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, category, rom)
+            return RetroarchLauncher(launcher_data, self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'])
 
         if launcher_type == LAUNCHER_ROM:
-            return StandardRomLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, category, rom)
+            return StandardRomLauncher(launcher_data, self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'])
         
         if launcher_type == LAUNCHER_LNK:
-            return LnkLauncher(self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'], launcher_data, category, rom)
+            return LnkLauncher(launcher_data, self.settings, self.executorFactory, statsStrategy, self.settings['escape_romfile'])
 
         if launcher_type == LAUNCHER_STEAM:
-            return SteamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, category, rom)
+            return SteamLauncher(launcher_data, self.settings, self.executorFactory, statsStrategy)
 
         if launcher_type == LAUNCHER_NVGAMESTREAM:
-            return NvidiaGameStreamLauncher(self.settings, self.executorFactory, statsStrategy, launcher_data, category, rom)
+            return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory, statsStrategy)
 
-        log_warning('Unsupported launcher requested. Type {}'.format(launcher_type))
+        log_warning('Unsupported launcher requested. Type "{}"'.format(launcher_type))
         return None
 
     def get_supported_types(self):
@@ -510,18 +539,13 @@ class LauncherFactory(object):
         return typeOptions
 
     def create(self, launcher_data):
-        
         launcher_type = launcher_data['type'] if 'type' in launcher_data else None
-
-        category_id = launcher_data['categoryID'] if 'categoryID' in launcher_data else VCATEGORY_ADDONROOT_ID
-        category = self.categories_data[category_id] if category_id in self.categories_data else None
-
-        return self._load(launcher_type, launcher_data, category, None)
+        log_debug('Creating launcher instance for launcher#{} type({})'.format(launcher_data['id'], launcher_type))
+        return self._load(launcher_type, launcher_data)
 
     def create_new(self, launcher_type):
-        return self._load(launcher_type, None, None)
-        
-
+        return self._load(launcher_type, None)
+    
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic metadata properties
 # -------------------------------------------------------------------------------------------------
@@ -535,7 +559,10 @@ class MetaDataItem(object):
         return self.entity_data['id']
 
     def get_name(self):
-        return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'
+        if 'm_name' in self.entity_data:
+           return self.entity_data['m_name']
+        else:
+           return 'Unknown'
 
     def get_releaseyear(self):
         return self.entity_data['m_year'] if 'm_year' in self.entity_data else ''
@@ -551,7 +578,10 @@ class MetaDataItem(object):
 
     def get_plot(self):
         return self.entity_data['m_plot'] if 'm_plot' in self.entity_data else ''
-           
+    
+    def is_finished(self):
+        return 'finished' in self.entity_data and self.entity_data['finished']
+    
     def get_state(self):
         finished = self.entity_data['finished']
         finished_display = 'Finished' if finished == True else 'Unfinished'
@@ -632,7 +662,7 @@ class Category(MetaDataItem):
         asset_kinds = asset_factory.get_assets_by(asset_keys)
         
         for asset_kind in asset_kinds:
-            asset = self.category_data[asset_kind.key] if self.category_data[asset_kind.key] else ''            
+            asset = self.entity_data[asset_kind.key] if self.entity_data[asset_kind.key] else ''            
             assets[asset_kind] = asset
 
         return assets
@@ -646,13 +676,16 @@ class Category(MetaDataItem):
         default_asset_kinds = asset_factory.get_assets_by(default_asset_keys)
 
         for asset_kind in default_asset_kinds:
-            mapped_asset_key = self.category_data[asset_kind.default_key] if self.category_data[asset_kind.default_key] else ''
+            mapped_asset_key = self.entity_data[asset_kind.default_key] if self.entity_data[asset_kind.default_key] else ''
             mapped_asset_kind = asset_factory.get_asset_info_by_namekey(mapped_asset_key)
             
             default_assets[asset_kind] = mapped_asset_kind
 
         return default_assets
     
+    def set_default_asset(self, asset_kind, mapped_to_kind):
+        self.entity_data[asset_kind.default_key] = mapped_to_kind.key
+
     def get_trailer(self):
         return self.entity_data['s_trailer']
 
@@ -676,23 +709,19 @@ class Category(MetaDataItem):
 # Abstract base class for launching anything that is supported.
 # Implement classes that inherit this base class to support new ways of launching.
 # -------------------------------------------------------------------------------------------------
-class Launcher(object):
+class Launcher(MetaDataItem):
     __metaclass__ = ABCMeta
     
-    def __init__(self, launcher_data, category, settings, executorFactory, toggle_window, non_blocking = False):
+    def __init__(self, launcher_data, settings, executorFactory):
         
         super(Launcher, self).__init__(launcher_data)
 
         if self.entity_data is None:
             self.entity_data = self._default_data()
 
-        self.category        = category
         self.settings        = settings
         self.executorFactory = executorFactory
-
-        self.toggle_window  = toggle_window
-        self.non_blocking   = non_blocking
-
+        
         self.application    = None
         self.arguments      = None
         self.title          = None
@@ -819,9 +848,9 @@ class Launcher(object):
         log_debug('Launcher arguments = "{0}"'.format(self.arguments))
         log_debug('Launcher executor = "{0}"'.format(executor.__class__.__name__))
 
-        self.preExecution(self.title, self.toggle_window)
-        executor.execute(self.application, self.arguments, self.non_blocking)
-        self.postExecution(self.toggle_window)
+        self.preExecution(self.title, self.is_in_windowed_mode())
+        executor.execute(self.application, self.arguments, self.is_non_blocking())
+        self.postExecution(self.is_in_windowed_mode())
 
         pass
     
@@ -968,6 +997,22 @@ class Launcher(object):
     @abstractmethod
     def get_launcher_type_name(self):        
         return "Standalone launcher"
+ 
+    def change_name(self, new_name):
+        if new_name == '': 
+            return False
+        
+        old_launcher_name = self.get_name()
+        new_launcher_name = new_name.rstrip()
+
+        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
+        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
+        
+        if old_launcher_name == new_launcher_name:
+            return False
+        
+        self.entity_data['m_name'] = new_launcher_name
+        return True
 
     def get_platform(self):
         return self.entity_data['platform'] if 'platform' in self.entity_data else ''
@@ -983,7 +1028,7 @@ class Launcher(object):
         return self.is_in_windowed_mode()
 
     def is_non_blocking(self):
-        return self.entity_data['non_blocking']
+        return 'non_blocking' in self.entity_data and self.entity_data['non_blocking']
 
     def set_non_blocking(self, is_non_blocking):
         self.entity_data['non_blocking'] = is_non_blocking
@@ -1199,9 +1244,10 @@ class Launcher(object):
             if not confirm:
                 kodi_notify_warn('Export of Launcher XML cancelled')
         
+        category_data = category.get_data() if category is not None else {}
         # --- Print error message is something goes wrong writing file ---
         try:
-            autoconfig_export_launcher(self.entity_data, export_FN, category.get_data())
+            autoconfig_export_launcher(self.entity_data, export_FN, category_data)
         except AEL_Error as E:
             kodi_notify_warn('{0}'.format(E))
         else:
@@ -1253,14 +1299,12 @@ class Launcher(object):
 class RomLauncher(Launcher):
     __metaclass__ = ABCMeta
     
-    def __init__(self, settings, executorFactory, statsStrategy, escape_romfile, launcher_data, category):
+    def __init__(self, launcher_data, settings, executorFactory, statsStrategy, escape_romfile):
         
         self.escape_romfile = escape_romfile
         self.statsStrategy = statsStrategy
 
-        non_blocking_flag = launcher_data['non_blocking'] if 'non_blocking' in launcher_data else False
-        toggle_window =  launcher_data['toggle_window'] if 'toggle_window' in launcher_data else False
-        super(RomLauncher, self).__init__(launcher_data, category, settings, executorFactory, toggle_window, non_blocking_flag)
+        super(RomLauncher, self).__init__(launcher_data, settings, executorFactory)
     
     @abstractmethod
     def _selectApplicationToUse(self):
@@ -1315,11 +1359,11 @@ class RomLauncher(Launcher):
             self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
             
             # >> Legacy names for argument substitution
-            self.arguments = self.arguments.replace('%rom%', romFile.getPath())
-            self.arguments = self.arguments.replace('%ROM%', romFile.getPath())
+            self.arguments = self.arguments.replace('%rom%', self.selected_rom.getPath())
+            self.arguments = self.arguments.replace('%ROM%', self.selected_rom.getPath())
         
         # Default arguments replacements
-        self.arguments = self.arguments.replace('$categoryID$', self.categoryID)
+        self.arguments = self.arguments.replace('$categoryID$', self.get_category_id())
         self.arguments = self.arguments.replace('$launcherID$', self.entity_data['id'])
         self.arguments = self.arguments.replace('$romID$', self.rom['id'])
         self.arguments = self.arguments.replace('$romtitle$', self.title)
@@ -1363,16 +1407,12 @@ class RomLauncher(Launcher):
     def get_edit_options(self):
 
         finished_str = 'Finished' if self.entity_data['finished'] == True else 'Unfinished'   
-        category_name = self.category['m_name'] if self.category else 'Addon root (no category)'
-        #if self.entity_datas[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
-        #    category_name = 'Addon root (no category)'
-        #else:
-        #    category_name = self.categories[self.entity_datas[launcherID]['categoryID']]['m_name']
+
         options = OrderedDict()
         options['EDIT_METADATA']        = 'Edit Metadata ...'
         options['EDIT_ASSETS']          = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS']   = 'Choose default Assets/Artwork ...'
-        options['CHANGE_CATEGORY']      = 'Change Category: {}'.format(category_name)
+        options['CHANGE_CATEGORY']      = 'Change Category'
         options['LAUNCHER_STATUS']      = 'Launcher status: {}'.format(finished_str)
         options['MANAGE_ROMS']          = 'Manage ROMs ...'
         options['AUDIT_ROMS']           = 'Audit ROMs / Launcher view mode ...'
@@ -1479,23 +1519,7 @@ class RomLauncher(Launcher):
     def set_asset_path(self, asset_info, path):
         log_debug('Setting "{}" to {}'.format(asset_info.path_key, path))
         self.entity_data[asset_info.path_key] = path
-        
-    def change_name(self, new_name):
-        if new_name == '': 
-            return False
-        
-        old_launcher_name = self.get_name()
-        new_launcher_name = new_name.rstrip()
-
-        log_debug('launcher.change_name() Changing name: old_launcher_name "{0}"'.format(old_launcher_name))
-        log_debug('launcher.change_name() Changing name: new_launcher_name "{0}"'.format(new_launcher_name))
-        
-        if old_launcher_name == new_launcher_name:
-            return False
-        
-        self.entity_data['m_name'] = new_launcher_name
-        return True
-
+       
     def getRomPath(self):
         return FileNameFactory.create(self.entity_data['rompath'])
 
@@ -1621,17 +1645,12 @@ class RomLauncher(Launcher):
         romPath = romPath.pjoin('games')
 
         return romPath.getOriginalPath()
-   
-#
+ 
+# -------------------------------------------------------------------------------------------------
 # Standalone application launcher
-# 
+# -------------------------------------------------------------------------------------------------
 class ApplicationLauncher(Launcher):
-    
-    def __init__(self, settings, executorFactory, launcher, category):
-        
-        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
-        super(ApplicationLauncher, self).__init__(launcher, category, settings, executorFactory, toggle_window)
-        
+            
     def launch(self):
 
         self.title              = self.entity_data['m_name']
@@ -1708,16 +1727,11 @@ class ApplicationLauncher(Launcher):
         
     def get_edit_options(self):
 
-        category_name = self.category['m_name'] if self.category else 'Addon root (no category)'
-        #if self.entity_datas[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
-        #    category_name = 'Addon root (no category)'
-        #else:
-        #    category_name = self.categories[self.entity_datas[launcherID]['categoryID']]['m_name']
         options = OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CHANGE_CATEGORY']    = 'Change Category: {0}'.format(category_name)
+        options['CHANGE_CATEGORY']    = 'Change Category'
         options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
         options['ADVANCED_MODS']      = 'Advanced Modifications ...'
         options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
@@ -1753,16 +1767,11 @@ class ApplicationLauncher(Launcher):
             
         return wizard
     
-#
+# -------------------------------------------------------------------------------------------------
 # Kodi favorites launcher
-#
+# -------------------------------------------------------------------------------------------------
 class KodiLauncher(Launcher):
-    
-    def __init__(self, settings, executorFactory, launcher, category):
-        
-        toggle_window =  launcher['toggle_window'] if 'toggle_window' in launcher else False
-        super(KodiLauncher, self).__init__(launcher, category, settings, executorFactory, toggle_window)
-        
+            
     def launch(self):
 
         self.title              = self.entity_data['m_name']
@@ -1797,16 +1806,11 @@ class KodiLauncher(Launcher):
 
     def get_edit_options(self):
 
-        category_name = self.category['m_name'] if self.category else 'Addon root (no category)'
-        #if self.entity_datas[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
-        #    category_name = 'Addon root (no category)'
-        #else:
-        #    category_name = self.categories[self.entity_datas[launcherID]['categoryID']]['m_name']
         options = OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CHANGE_CATEGORY']    = 'Change Category: {0}'.format(category_name)
+        options['CHANGE_CATEGORY']    = 'Change Category'
         options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
         options['ADVANCED_MODS']      = 'Advanced Modifications ...'
         options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
@@ -1874,9 +1878,9 @@ class KodiLauncher(Launcher):
 
         return _get_title_from_app_path(input, launcher)
     
-#
+# -------------------------------------------------------------------------------------------------
 # Standard rom launcher where user can fully customize all settings.
-#
+# -------------------------------------------------------------------------------------------------
 class StandardRomLauncher(RomLauncher):
        
     def get_launcher_type(self):
@@ -2042,9 +2046,9 @@ class StandardRomLauncher(RomLauncher):
             
         return wizard
  
-#
+# -------------------------------------------------------------------------------------------------
 # Launcher for .lnk files (windows)
-#
+# -------------------------------------------------------------------------------------------------
 class LnkLauncher(StandardRomLauncher):
     
     def get_launcher_type(self):
@@ -2090,6 +2094,7 @@ class LnkLauncher(StandardRomLauncher):
 # --- Execute Kodi Retroplayer if launcher configured to do so ---
 # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
+# -------------------------------------------------------------------------------------------------
 class RetroplayerLauncher(StandardRomLauncher):
 
     def launch(self):
@@ -2160,10 +2165,10 @@ class RetroplayerLauncher(StandardRomLauncher):
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
             
         return wizard
-
-#
+    
+# -------------------------------------------------------------------------------------------------
 # Read RetroarchLauncher.md
-#
+# -------------------------------------------------------------------------------------------------
 class RetroarchLauncher(StandardRomLauncher):
     
     def get_launcher_type(self):
@@ -2233,7 +2238,7 @@ class RetroarchLauncher(StandardRomLauncher):
             self.arguments += '-e ROM \'$rom$\' '
             self.arguments += '-e LIBRETRO $retro_core$ '
             self.arguments += '-e CONFIGFILE $retro_config$ '
-            self.arguments += self.entity_data['args']
+            self.arguments += self.entity_data['args'] if 'args' in self.entity_data else ''
             return
 
         #todo other os
@@ -2442,17 +2447,13 @@ class RetroarchLauncher(StandardRomLauncher):
 
         return core_file
     
- #
- # Launcher to use with a local Steam application and account.
- #   
+# -------------------------------------------------------------------------------------------------
+# Launcher to use with a local Steam application and account.
+# -------------------------------------------------------------------------------------------------
 class SteamLauncher(RomLauncher):
 
-    def __init__(self, settings, executorFactory, statsStrategy, launcher, category, rom):
-
-        self.rom = rom
-        self.categoryID = ''
-
-        super(SteamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, category, rom)
+    def __init__(self, launcher_data, settings, executorFactory, statsStrategy):
+        super(SteamLauncher, self).__init__(launcher_data, settings, executorFactory, statsStrategy, False)
     
     def get_launcher_type(self):
         return LAUNCHER_STEAM
@@ -2527,15 +2528,14 @@ class SteamLauncher(RomLauncher):
 
         return romPath.getOriginalPath()
  
- #
- # Launcher to use with Nvidia Gamestream servers.
- #   
+# -------------------------------------------------------------------------------------------------
+# Launcher to use with Nvidia Gamestream servers.
+# -------------------------------------------------------------------------------------------------
 class NvidiaGameStreamLauncher(RomLauncher):
 
-    def __init__(self, settings, executorFactory, statsStrategy, launcher, category, rom):
+    def __init__(self, launcher_data, settings, executorFactory, statsStrategy):
 
-        super(NvidiaGameStreamLauncher, self).__init__(settings, executorFactory, statsStrategy, False, launcher, category, rom)
-        self.validate_if_rom_exists = False
+        super(NvidiaGameStreamLauncher, self).__init__(launcher_data, settings, executorFactory, statsStrategy, False)
 
     def get_launcher_type(self):
         return LAUNCHER_NVGAMESTREAM

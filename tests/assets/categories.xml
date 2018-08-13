@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <advanced_emulator_launcher version="1">
 <control>
-  <update_timestamp>1520419407.03</update_timestamp>
+  <update_timestamp>1534162481.24</update_timestamp>
 </control>
 <category>
   <id>9fadfcd748eb3aba2df85f4e3995ef3f</id>
@@ -2828,7 +2828,7 @@
   <ROM_asset_path />
   <application>/system/bin/am</application>
   <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
-  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <categoryID>root_category</categoryID>
   <default_banner>s_banner</default_banner>
   <default_clearlogo>s_clearlogo</default_clearlogo>
   <default_controller>s_controller</default_controller>

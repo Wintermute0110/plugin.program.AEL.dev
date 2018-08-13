@@ -32,11 +32,11 @@ class Test_Launcher(unittest.TestCase):
 
     def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
         # arrange
-        launchers = {}
+        launcher_data = {}
 
         # act
         factory = LauncherFactory(None, None, None)
-        actual = factory.create('ABC', launchers)
+        actual = factory.create(launcher_data)
         
         # assert
         self.assertIsNone(actual)
@@ -47,21 +47,22 @@ class Test_Launcher(unittest.TestCase):
         # arrange
         mock_exeFactory.create.return_value = FakeExecutor(None)
         
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['application'] = 'path'
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['romext'] = ''
-        launchers['ABC']['application'] = ''
-        launchers['ABC']['args'] = ''
-        launchers['ABC']['args_extra'] = ''
+        launcher_data = {}
+        launcher_data['id'] = 'ABC'
+        launcher_data['type'] = LAUNCHER_STANDALONE
+        launcher_data['application'] = 'path'
+        launcher_data['toggle_window'] = True
+        launcher_data['romext'] = ''
+        launcher_data['application'] = ''
+        launcher_data['args'] = ''
+        launcher_data['args_extra'] = ''
 
         settings = {}
         settings['lirc_state'] = True
 
         # act
         factory = LauncherFactory(settings, None, mock_exeFactory)
-        launcher = factory.create('ABC', launchers)
+        launcher = factory.create(launcher_data)
         
         # assert        
         actual = launcher.__class__.__name__
@@ -75,12 +76,13 @@ class Test_Launcher(unittest.TestCase):
         expectedApp = 'AbcDefGhiJlkMnoPqrStuVw'
         expectedArgs = 'doop dap dib'
 
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['application'] = expectedApp
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['args'] = expectedArgs
-        launchers['ABC']['m_name'] = 'MyApp'
+        launcher_data = {}
+        launcher_data['id'] = 'ABC'
+        launcher_data['type'] = LAUNCHER_STANDALONE
+        launcher_data['application'] = expectedApp
+        launcher_data['toggle_window'] = True
+        launcher_data['args'] = expectedArgs
+        launcher_data['m_name'] = 'MyApp'
 
         settings = {}
         settings['windows_cd_apppath'] = ''
@@ -94,7 +96,7 @@ class Test_Launcher(unittest.TestCase):
         mock_exeFactory.create.return_value = mock
 
         factory = LauncherFactory(settings, None, mock_exeFactory)
-        launcher = factory.create('ABC', launchers)
+        launcher = factory.create(launcher_data)
 
         # act
         launcher.launch()
@@ -113,12 +115,13 @@ class Test_Launcher(unittest.TestCase):
         expectedApp = 'C:\Sparta\Action.exe'
         expectedArgs = 'this is C:\Sparta'
 
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['application'] = expectedApp
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['args'] = 'this is $apppath%'
-        launchers['ABC']['m_name'] = 'MyApp'
+        launcher_data = {}
+        launcher_data['id'] = 'ABC'
+        launcher_data['type'] = 'STANDALONE'
+        launcher_data['application'] = expectedApp
+        launcher_data['toggle_window'] = True
+        launcher_data['args'] = 'this is $apppath%'
+        launcher_data['m_name'] = 'MyApp'
         
         mock = FakeExecutor(None)
         mock_exeFactory.create.return_value = mock
@@ -132,7 +135,7 @@ class Test_Launcher(unittest.TestCase):
         settings['delay_tempo'] = 1
         
         factory = LauncherFactory(settings, None, mock_exeFactory)
-        launcher = factory.create('ABC', launchers)
+        launcher = factory.create(launcher_data)
 
         # act
         launcher.launch()
@@ -149,15 +152,16 @@ class Test_Launcher(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
 
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['application'] = 'path'
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['romext'] = ''
-        launchers['ABC']['application'] = ''
-        launchers['ABC']['args'] = ''
-        launchers['ABC']['args_extra'] = ''
-        launchers['ABC']['roms_base_noext'] = 'snes'
+        launcher_data = {}
+        launcher_data['id'] = 'ABC'
+        launcher_data['application'] = 'path'
+        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['toggle_window'] = True
+        launcher_data['romext'] = ''
+        launcher_data['application'] = ''
+        launcher_data['args'] = ''
+        launcher_data['args_extra'] = ''
+        launcher_data['roms_base_noext'] = 'snes'
 
         rom = {}
         rom['m_name'] = 'TestCase'        
@@ -168,7 +172,8 @@ class Test_Launcher(unittest.TestCase):
 
         # act
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create('ABC', launchers, rom)
+        launcher = factory.create(launcher_data)
+        launcher.load_rom(rom)
         
         # assert
         actual = launcher.__class__.__name__
@@ -183,16 +188,16 @@ class Test_Launcher(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
 
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['id'] = 'ABC'
-        launchers['ABC']['application'] = 'path'
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['romext'] = ''
-        launchers['ABC']['application'] = ''
-        launchers['ABC']['args'] = '-a -b -c -d -e $rom$ -yes'
-        launchers['ABC']['args_extra'] = ''
-        launchers['ABC']['roms_base_noext'] = 'snes'
+        launcher_data= {}
+        launcher_data['id'] = 'ABC'
+        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['application'] = 'path'
+        launcher_data['toggle_window'] = True
+        launcher_data['romext'] = ''
+        launcher_data['application'] = ''
+        launcher_data['args'] = '-a -b -c -d -e $rom$ -yes'
+        launcher_data['args_extra'] = ''
+        launcher_data['roms_base_noext'] = 'snes'
 
         rom = {}
         rom['id'] = 'qqqq'
@@ -213,11 +218,12 @@ class Test_Launcher(unittest.TestCase):
         mock = FakeExecutor(None)
         mock_exeFactory.create.return_value = mock
 
-        expected = launchers['ABC']['application']
+        expected = launcher_data['application']
         expectedArgs = '-a -b -c -d -e testing.zip -yes'
 
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create('ABC', launchers, rom)
+        launcher = factory.create(launcher_data)
+        launcher.load_rom(rom)
 
         # act
         launcher.launch()
@@ -234,15 +240,16 @@ class Test_Launcher(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
 
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['application'] = 'path'
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['romext'] = ''
-        launchers['ABC']['application'] = ''
-        launchers['ABC']['args'] = ''
-        launchers['ABC']['args_extra'] = ''
-        launchers['ABC']['roms_base_noext'] = 'snes'
+        launcher_data = {}
+        launcher_data['id'] = 'ABC'
+        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['application'] = 'path'
+        launcher_data['toggle_window'] = True
+        launcher_data['romext'] = ''
+        launcher_data['application'] = ''
+        launcher_data['args'] = ''
+        launcher_data['args_extra'] = ''
+        launcher_data['roms_base_noext'] = 'snes'
 
         rom= {}
         rom['m_name'] = 'TestCase'
@@ -258,7 +265,8 @@ class Test_Launcher(unittest.TestCase):
 
         # act
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create('ABC', launchers, rom)
+        launcher = factory.create(launcher_data)
+        launcher.load_rom(rom)
         
         # assert        
         actual = launcher.__class__.__name__
@@ -274,16 +282,16 @@ class Test_Launcher(unittest.TestCase):
         set_log_level(LOG_VERB)
         set_use_print(True)
 
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['id'] = 'ABC'
-        launchers['ABC']['application'] = 'path'
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['romext'] = ''
-        launchers['ABC']['application'] = ''
-        launchers['ABC']['args'] = '-a -b -c -d -e $rom$ -yes'
-        launchers['ABC']['args_extra'] = ''
-        launchers['ABC']['roms_base_noext'] = 'snes'
+        launcher_data = {}
+        launcher_data['id'] = 'ABC'
+        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['application'] = 'c:\\temp\\'
+        launcher_data['toggle_window'] = True
+        launcher_data['romext'] = ''
+        launcher_data['application'] = ''
+        launcher_data['args'] = '-a -b -c -d -e $rom$ -yes'
+        launcher_data['args_extra'] = ''
+        launcher_data['roms_base_noext'] = 'snes'
 
         rom = {}
         rom['id'] = 'qqqq'
@@ -306,38 +314,40 @@ class Test_Launcher(unittest.TestCase):
         settings['suspend_audio_engine'] = False
         settings['delay_tempo'] = 1
 
-        expected = launchers['ABC']['application']
+        expected = launcher_data['application']
         expectedArgs = '-a -b -c -d -e d:\\games\\disc02.zip -yes'
 
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create('ABC', launchers, rom)
+        launcher = factory.create(launcher_data)
+        launcher.load_rom(rom)
 
         # act
         launcher.launch()
 
         # assert
         self.assertEqual(expectedArgs, mock.actualArgs)
-                
-    @patch('resources.launchers.sys')    
+    
+    @patch('resources.launchers.is_windows')
+    @patch('resources.launchers.is_android')
+    @patch('resources.launchers.is_linux')    
     @patch('resources.romsets.RomSetFactory')
     @patch('resources.executors.ExecutorFactory')
-    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android(self, mock_exeFactory, mock_romsFactory, mock_sys):
+    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android(self, mock_exeFactory, mock_romsFactory, is_linux_mock,is_android_mock, is_win_mock):
         
         # arrange
-        mock_sys.configure_mock(platform='linux')
-        set_log_level(LOG_VERB)
-        set_use_print(True)
+        is_linux_mock.return_value = False
+        is_win_mock.return_value = False
+        is_android_mock.return_value = True
 
-        launchers = {}
-        launchers['ABC'] = {}
-        launchers['ABC']['type'] = LAUNCHER_RETROARCH
-        launchers['ABC']['id'] = 'ABC'
-        launchers['ABC']['toggle_window'] = True
-        launchers['ABC']['romext'] = None
-        launchers['ABC']['args_extra'] = None
-        launchers['ABC']['roms_base_noext'] = 'snes'
-        launchers['ABC']['core'] = 'mame_libretro_android.so'
-        launchers['ABC']['application'] = None
+        launcher_data = {}
+        launcher_data['type'] = LAUNCHER_RETROARCH
+        launcher_data['id'] = 'ABC'
+        launcher_data['toggle_window'] = True
+        launcher_data['romext'] = None
+        launcher_data['args_extra'] = None
+        launcher_data['roms_base_noext'] = 'snes'
+        launcher_data['core'] = 'mame_libretro_android.so'
+        launcher_data['application'] = None
 
         rom = {}
         rom['id'] = 'qqqq'
@@ -361,13 +371,14 @@ class Test_Launcher(unittest.TestCase):
         expectedArgs = "start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM 'superrom.zip' -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture"
 
         factory = LauncherFactory(settings, mock_romsFactory, mock_exeFactory)
-        launcher = factory.create('ABC', launchers, rom)
+        launcher = factory.create(launcher_data)
+        launcher.load_rom(rom)
 
         # act
         launcher.launch()
 
         # assert
-        self.assertEqual(expected, mock.actualApplication.getPath())
+        self.assertEqual(expected, mock.getActualApplication().getPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
 
 if __name__ == '__main__':

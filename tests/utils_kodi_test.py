@@ -101,7 +101,7 @@ class Test_utils_kodi_tests(unittest.TestCase):
 
         # arrange
         expected = 'expected'
-        target = DummyWizardDialog('actual', expected, None, None, lambda p: True)
+        target = DummyWizardDialog('actual', expected, None, None, lambda p1, p2: True)
         props = {}
 
         # act

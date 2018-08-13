@@ -646,6 +646,7 @@
   <m_genre>Company</m_genre>
   <m_developer />
   <m_rating />
+  <type>ROM</type>
   <m_plot>CAVE Interactive CO., LTD. (Japanese: 株式会社ケイブ Hepburn: Kabushiki Gaisha Keibu), or CAVE for short, is a Japanese video game company founded in 1994 by former employees of Toaplan following its bankruptcy. They are known primarily for their &quot;bullet hell&quot; shoot &apos;em ups; from 1995 up to 2010, CAVE was one of the most prolific shoot &apos;em up developers in the Japanese market. Alongside this, CAVE has produced a variety of other types games for arcades, home consoles, PCs, and smartphones, also dating back to 1995.</m_plot>
   <platform>MAME</platform>
   <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
@@ -2687,6 +2688,7 @@
 </launcher>
 <launcher>
   <id>e230c7ade2c7492bd519e7f56bb59b3e</id>
+    <type>ROM</type>
   <m_name>Tecmo</m_name>
   <m_year />
   <m_genre />
@@ -2694,7 +2696,7 @@
   <m_rating />
   <m_plot>Tecmo Co., Ltd. (テクモ株式会社 Tekumo kabushikigaisha), was a Japanese video game corporation founded in 1967. It had its headquarters in Kudankita, Chiyoda, Tokyo.[1] and its subsidiary, Tecmo Inc, was located in Torrance, California.[2]&#10;Tecmo is known for the Star Force, Dead or Alive, Ninja Gaiden, Deception, Monster Rancher, Rygar, Tecmo Bowl, Fatal Frame and Gallop Racer video game series. When it was still called Tehkan, the company released arcade games such as Bomb Jack and Tehkan World Cup. The company was founded on July 31, 1967 as a supplier of cleaning equipment.[3][4] By 1969, it started to sell amusement equipment.[3]&#10;In 2009, Tecmo merged with Koei to form the holding company Tecmo Koei Holdings and was operated as a subsidiary until its disbandment in early 2010. In April 2010, Tecmo was dissolved and its video game franchises are now published by Koei Tecmo Games.[3][5][6] Tecmo is also the name of a distinct video game development company that was established in March 2010, but later folded into Tecmo Koei Games in April 2011.[7][8]&#10;As of 2014, the Tecmo brand continues to be used on Koei Tecmo Games&apos; video games.</m_plot>
   <platform>MAME</platform>
-  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <categoryID>root_category</categoryID>
   <application>/system/bin/am</application>
   <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
   <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Tecmo/games/</rompath>

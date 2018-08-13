@@ -28,6 +28,15 @@ class Test_maintests(unittest.TestCase):
         print 'TEST DIR: {}'.format(cls.TEST_DIR)
         print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
         print '---------------------------------------------------------------------------'
+        
+    def _read_file(self, path):
+        with open(path, 'r') as f:
+            return f.read()        
+
+    def _read_file_xml(self, path):
+        data = self._read_file(path)
+        root = ET.fromstring(data)
+        return root
 
     # todo: replace by moving settings to external class and mock a simple dictionary
     def mocked_settings(arg):
@@ -112,8 +121,23 @@ class Test_maintests(unittest.TestCase):
         # act
         target._cat_create_default()
         target._command_render_roms(None, launcherID)
-                
-        # assert
+     
+    @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
+    @patch('resources.filename.FileName.readXml')
+    def test_rendering_categories(self, mock_xmlreader, mock_addon):
+        
+        # arrange
+        mock_xmlreader.return_value = self._read_file_xml(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
+        
+        target = main.Main()
+        target._get_settings()
+        target._bootstrap_instances()
+        target.base_url = ''
+        target.addon_handle = 0
+
+        # act
+        target._command_render_categories()
+        
 
     def test_migrations(self):
         

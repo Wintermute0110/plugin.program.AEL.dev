@@ -34,12 +34,13 @@ class Test_romsettest(unittest.TestCase):
         target = RomSetFactory(mockPath)
 
         launcherID = 'ut1'
-        launchers = {}
-        launchers[launcherID] = {}
-        launchers[launcherID]['roms_base_noext'] = 'test'
+        
+        launcher = {}
+        launcher['id'] = launcherID
+        launcher['roms_base_noext'] = 'test'
         
         # act
-        actual = target.create(None, launcherID, launchers)
+        actual = target.create(None, launcher)
 
         # assert
         self.assertIsNotNone(actual)
@@ -50,12 +51,13 @@ class Test_romsettest(unittest.TestCase):
         mockPath = FileNameFactory.create('mock')
         target = RomSetFactory(mockPath)
         launcherID = '1234'
-        launchers = {}
-        launchers[launcherID] = {}
-        launchers[launcherID]['roms_base_noext'] = 'c:/abc'
         
+        launcher = {}
+        launcher['id'] = launcherID
+        launcher['roms_base_noext'] = 'c:/abc'
+                
         # act
-        romset = target.create(None, launcherID, launchers)
+        romset = target.create(None, launcher)
         actual = romset.__class__.__name__
 
         # assert
@@ -69,12 +71,13 @@ class Test_romsettest(unittest.TestCase):
         target = RomSetFactory(mockPath)
         categoryID = VCATEGORY_FAVOURITES_ID
         launcherID = VLAUNCHER_FAVOURITES_ID
-        launchers = {}
-        launchers[launcherID] =  {}
-        launchers[launcherID]['roms_base_noext'] = 'c:/abc'
-
+        
+        launcher = {}
+        launcher['id'] = launcherID
+        launcher['roms_base_noext'] = 'c:/abc'
+        
         # act
-        romset = target.create(categoryID, launcherID, launchers)
+        romset = target.create(categoryID, launcher)
         actual = romset.__class__.__name__
 
         # assert
@@ -88,12 +91,13 @@ class Test_romsettest(unittest.TestCase):
         target = RomSetFactory(mockPath)
         categoryID = VCATEGORY_MOST_PLAYED_ID
         launcherID = VLAUNCHER_MOST_PLAYED_ID
-        launchers = {}        
-        launchers[launcherID] = {}
-        launchers[launcherID]['roms_base_noext'] = 'c:/abc'
-
+        
+        launcher = {}
+        launcher['id'] = launcherID
+        launcher['roms_base_noext'] = 'c:/abc'
+        
         # act
-        romset = target.create(categoryID, launcherID, launchers)
+        romset = target.create(categoryID, launcher)
         actual = romset.__class__.__name__
 
         # assert
@@ -109,11 +113,12 @@ class Test_romsettest(unittest.TestCase):
        
         categoryID = VCATEGORY_RECENT_ID
         launcherID = VLAUNCHER_RECENT_ID
-        launchers = {}
-        launchers[launcherID] =  {}
-
+        
+        launcher = {}
+        launcher['id'] = launcherID
+        
         # act
-        romset = target.create(categoryID, launcherID, launchers)
+        romset = target.create(categoryID, launcher)
         actual = romset.__class__.__name__
 
         # assert
@@ -127,12 +132,11 @@ class Test_romsettest(unittest.TestCase):
         target = RomSetFactory(mockPath)
         
         categoryID = VCATEGORY_COLLECTIONS_ID
-        launcherID = 'TestID'
-        launchers = {}
-        launchers[launcherID] =  {}
+        launcher = {}
+        launcher['id'] = 'TestID'
 
         # act
-        romset = target.create(categoryID, launcherID, launchers)
+        romset = target.create(categoryID, launcher)
         actual = romset.__class__.__name__
 
         # assert
@@ -148,13 +152,14 @@ class Test_romsettest(unittest.TestCase):
         categoryIDs = [VCATEGORY_TITLE_ID, VCATEGORY_YEARS_ID, VCATEGORY_GENRE_ID, VCATEGORY_DEVELOPER_ID, VCATEGORY_CATEGORY_ID]
         launcherID = 'TestID'
         expected = 'VirtualLauncherRomSet'
-        launchers = {}
-        launchers[launcherID] = {}
-        launchers[launcherID]['roms_base_noext'] = 'c:/abc'
+        
+        launcher = {}
+        launcher['id'] = launcherID
+        launcher['roms_base_noext'] = 'c:/abc'
 
         # act
         for categoryID in categoryIDs:
-            romset = target.create(categoryID, launcherID, launchers)
+            romset = target.create(categoryID, launcher)
             actual = romset.__class__.__name__
             
             # assert
@@ -168,13 +173,14 @@ class Test_romsettest(unittest.TestCase):
 
         categoryID = VCATEGORY_PCLONES_ID
         launcherID = 'ut1'
-        launchers = {}
-        launchers[launcherID] = {}
-        launchers[launcherID]['roms_base_noext'] = 'test'
-        launchers[launcherID]['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
+       
+        launcher = {}
+        launcher['id'] = launcherID
+        launcher['roms_base_noext'] = 'c:/abc'
+        launcher['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
         
         # act
-        romset = target.create(categoryID, launcherID, launchers)
+        romset = target.create(categoryID, launcher)
         actual = romset.__class__.__name__
 
         # assert

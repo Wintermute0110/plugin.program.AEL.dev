@@ -149,6 +149,22 @@ class SingleInstance:
 # Main code
 #
 class Main:
+    
+    # -- Bootstrap instances -- 
+    def _bootstrap_instances(self):
+
+        self.assetFactory      = AssetInfoFactory.create()
+        self.romsetFactory     = RomSetFactory(PLUGIN_DATA_DIR)
+        executorFactory        = ExecutorFactory(self.settings, LAUNCH_LOG_FILE_PATH)
+        self.launcher_factory  = LauncherFactory(self.settings, self.romsetFactory, executorFactory)
+        self.romscannerFactory = RomScannersFactory(self.settings, REPORTS_DIR, CURRENT_ADDON_DIR)
+        self.scraperFactory    = ScraperFactory(self.settings, CURRENT_ADDON_DIR)
+        
+        xml_file_path            = PLUGIN_DATA_DIR.pjoin('categories.xml')
+        self.data_context        = XmlDataContext(xml_file_path)
+        self.category_repository = CategoryRepository(self.data_context)
+        self.launcher_repository = LauncherRepository(self.data_context, self.launcher_factory)
+
     # ---------------------------------------------------------------------------------------------
     # This is the plugin entry point.
     # ---------------------------------------------------------------------------------------------
@@ -265,17 +281,8 @@ class Main:
         # todo: why update timestamp?
 
         # -- Bootstrap instances -- 
-        self.assetFactory      = AssetInfoFactory.create()
-        self.romsetFactory     = RomSetFactory(PLUGIN_DATA_DIR)
-        executorFactory        = ExecutorFactory(self.settings, LAUNCH_LOG_FILE_PATH)
-        self.launcher_factory  = LauncherFactory(self.settings, self.romsetFactory, executorFactory)
-        self.romscannerFactory = RomScannersFactory(self.settings, REPORTS_DIR, CURRENT_ADDON_DIR)
-        self.scraperFactory    = ScraperFactory(self.settings, CURRENT_ADDON_DIR)
+        self._bootstrap_instances()
 
-        self.data_context        = XmlDataContext(PLUGIN_DATA_DIR)
-        self.category_repository = CategoryRepository(self.data_context)
-        self.launcher_repository = LauncherRepository(self.data_context, self.launcher_factory)
-        
         # --- Get addon command ---
         command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
         log_debug('command = "{0}"'.format(command))
@@ -380,6 +387,10 @@ class Main:
             self._command_add_new_category()
         elif command == 'EDIT_CATEGORY':
             self._command_edit_category(args['catID'][0])
+            
+        # --- Change launcher's Category ---
+        elif command == 'CHANGE_CATEGORY':
+            self._command_edit_launcher_category(args['launID'][0])
 
         # --- Launcher management ---
         elif command == 'ADD_LAUNCHER':
@@ -667,6 +678,7 @@ class Main:
                 category.set_name(new_title_str)
                 kodi_notify('Category Title is now {0}'.format(new_title_str))
 
+
             # --- Edition of the category release date (year) ---
             elif type2 == 1:
                 old_year_str = category.get_releaseyear()
@@ -761,6 +773,10 @@ class Main:
                 # >> No need to save categories/launchers
                 kodi_notify('Exported Category NFO file {0}'.format(NFO_FileName.getPath()))
                 return
+
+            # save
+            self.category_repository.save(category)
+            kodi_refresh_container()
 
         # --- Edit Category Assets/Artwork ---
         # >> New in Kodi Krypton: use new xbmcgui.Dialog().select() and get rid of ImgSelectDialog()
@@ -870,7 +886,11 @@ class Main:
         if selected_option == 'CATEGORY_STATUS':            
             category.change_finished_status()
             kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_state()))
-            return self._command_edit_category(categoryID, launcherID)
+            
+            self.category_repository.save(category)
+            kodi_refresh_container()
+
+            return self._command_edit_category(categoryID)
 
         # --- Export Launcher XML configuration ---
         if selected_option == 'EXPORT_CATEGORY':          
@@ -1056,6 +1076,7 @@ class Main:
         log_debug('_command_edit_launcher() Executebuiltin "{0}"'.format(exec_str))
         xbmc.executebuiltin(exec_str)
         kodi_notify('Launcher new Category is {0}'.format(categories_name[selected_cat]))
+        kodi_refresh_container()
         return
     
     def _command_edit_launcher_metadata(self, launcher):
@@ -1248,6 +1269,12 @@ class Main:
         if selected_option == 'EDIT_METADATA':
             return self._command_edit_launcher_metadata(launcher)
         
+        # --- Change launcher's Category ---
+        if selected_option == 'CHANGE_CATEGORY':
+            self._command_edit_launcher_category(launcher)
+            kodi_refresh_container()
+            return self._command_edit_launcher(categoryID, launcherID)
+
         # --- Edit Launcher Assets/Artwork ---
         if selected_option == 'EDIT_ASSETS':
         
@@ -1350,15 +1377,11 @@ class Main:
         
             return self._command_edit_launcher(categoryID, launcherID)
         
-        # --- Change launcher's Category ---
-        if selected_option == 'CHANGE_CATEGORY':
-            self._command_edit_launcher_category(launcher)
-            kodi_refresh_container()
-            return self._command_edit_launcher(categoryID, launcherID)
-
         # --- Launcher status (finished [bool]) ---
         if selected_option == 'LAUNCHER_STATUS':            
             launcher.change_finished_status()
+            self.launcher_repository.save(launcher)
+            kodi_refresh_container()
             kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(launcher.get_name(), launcher.get_state()))
             return self._command_edit_launcher(categoryID, launcherID)
 
@@ -3005,7 +3028,7 @@ class Main:
         catless_launchers = self.launcher_repository.find_by_category(VCATEGORY_ADDONROOT_ID)
 
         for launcher in sorted(catless_launchers, key = lambda l : l.get_name()):
-            self._gui_render_launcher_row(launcher.get_data())
+            self._gui_render_launcher_row(launcher)
 
         # --- AEL Favourites special category ---
         if not self.settings['display_hide_favs']: self._gui_render_category_favourites_row()
@@ -3471,7 +3494,7 @@ class Main:
 
         # >> Render launcher rows of this launcher
         for launcher in sorted(launchers, key = lambda l : l.get_name()):
-            self._gui_render_launcher_row(launcher.get_data())
+            self._gui_render_launcher_row(launcher)
 
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3490,19 +3513,20 @@ class Main:
 
         # >> Render all launchers
         for launcher in sorted(launchers, key = lambda l : l.get_name()):
-            self._gui_render_launcher_row(launcher.get_data())
+            self._gui_render_launcher_row(launcher)
+
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    def _gui_render_launcher_row(self, launcher_dic):
+    def _gui_render_launcher_row(self, launcher):
         # --- Do not render row if launcher finished ---
-        if launcher_dic['finished'] and self.settings['display_hide_finished']:
+        if launcher.is_finished() and self.settings['display_hide_finished']:
             return
 
         # --- Launcher tags ---
         # >> Do not plot ROM count on standalone launchers!
         # todo: add type in upgrade process
-        launcher_name = launcher_raw_name = launcher_dic['m_name']
-        launcher_type = launcher_dic['type'] if 'type' in launcher_dic else LAUNCHER_STANDALONE
+        launcher_name = launcher_raw_name = launcher.get_name()
+        launcher_type = launcher.get_launcher_type()
         launcher_desc = '?'
 
         if launcher_type == LAUNCHER_STANDALONE:
@@ -3522,7 +3546,8 @@ class Main:
         elif launcher_type == LAUNCHER_LNK:
             launcher_desc = 'Lnks'
         
-        if launcher_supports_roms(launcher_type) and self.settings['display_launcher_roms']:
+        launcher_dic = launcher.get_data()
+        if launcher.supports_launching_roms() and self.settings['display_launcher_roms']:
             if launcher_dic['nointro_xml_file']:
                 if launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
                     num_have    = launcher_dic['num_have']
@@ -3591,6 +3616,7 @@ class Main:
         commands = []
         launcherID = launcher_dic['id']
         categoryID = launcher_dic['categoryID']
+        
         commands.append(('View Launcher', self._misc_url_RunPlugin('VIEW', categoryID, launcherID) ))
         commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
         # >> ONLY for ROM launchers
@@ -5870,6 +5896,7 @@ class Main:
             STD_status = '{0} bytes'.format(size_stdout)
         else:
             STD_status = 'not found'
+
         if view_type == VIEW_LAUNCHER or view_type == VIEW_ROM_LAUNCHER:
             
             launcher = self.launcher_repository.find(launcherID)
