@@ -699,6 +699,7 @@ def fs_load_JSON_file(file_dir, file_base_noext):
 # <roms_base_noext>_parents.json
 # <roms_base_noext>_DAT.json
 #
+# DEPRECATED - using RomSetRepository for this
 def fs_unlink_ROMs_database(roms_dir_FN, launcher):
     roms_base_noext = launcher['roms_base_noext']
 

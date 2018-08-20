@@ -35,7 +35,7 @@ class Test_LauncherRepository(unittest.TestCase):
         # arrange
         xml_path = StandardFileName(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
         context = XmlDataContext(xml_path)
-        factory = LauncherFactory( {}, None, None)
+        factory = LauncherFactory( {}, None, FakeFile(self.TEST_ASSETS_DIR))
         target = LauncherRepository(context, factory)
 
         expected = 5
@@ -97,3 +97,22 @@ class Test_LauncherRepository(unittest.TestCase):
         # assert
         self.assertIsNotNone(actual)
         self.assertEqual(len(actual), expected)
+
+    def test_when_reading_rom_files_it_will_get_the_correct_collection(self):
+
+        # arrange
+        p = StandardFileName(self.TEST_ASSETS_DIR)
+        
+        target = RomSetRepository(p)
+        l = { 'id': 'abc', 'roms_base_noext': 'roms_Sega_32X_518519' }
+        launcher = StandardRomLauncher(l, None, None, None, None, False)
+        
+        expected = 35
+
+        # act
+        actual = target.find_by_launcher(launcher)
+        
+        # assert
+        self.assertIsNotNone(actual)
+        self.assertEqual(len(actual), expected)
+        

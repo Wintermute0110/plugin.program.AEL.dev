@@ -69,13 +69,17 @@ class FakeFile(KodiFileName):
 
     def getFakeContent(self):
         return self.fakeContent
+    
+    def readAllUnicode(self, encoding='utf-8'):
+        contents = self.fakeContent
+        return unicode(contents, encoding)
 
     def write(self, bytes):
        self.fakeContent = self.fakeContent + bytes
       
     def writeAll(self, bytes, flags='w'):
        self.fakeContent = self.fakeContent + bytes
-
+       
     def pjoin(self, *args):
         return self
 

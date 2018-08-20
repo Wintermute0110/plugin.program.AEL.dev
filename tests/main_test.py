@@ -122,11 +122,7 @@ class Test_maintests(unittest.TestCase):
         target._bootstrap_instances()
         target.addon_handle = 0
 
-        launcherID = 'my-launcher'
-        target.launcher = {}
-        target.launcher['id'] = launcherID
-        target.launcher['roms_base_noext'] = 'test'
-        target.launcher['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
+        launcherID = '2220af27d0937d78ce7bc8317f5e853a'
 
         # act
         target._command_render_roms(None, launcherID)

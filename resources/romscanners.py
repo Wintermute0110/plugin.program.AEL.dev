@@ -30,7 +30,7 @@ class RomScannersFactory():
         self.reports_dir = reports_dir
         self.addon_dir = addon_dir
 
-    def create(self, launcher, romset, scrapers):
+    def create(self, launcher, scrapers):
 
         launcherType = launcher['type'] if 'type' in launcher else LAUNCHER_ROM
         log_info('RomScannersFactory: Creating romscanner for {}'.format(launcherType))

@@ -324,6 +324,9 @@ class FileName():
         return result
 
     # --- Configure JSON writer ---
+    # >> json_unicode is either str or unicode
+    # >> See https://docs.python.org/2.7/library/json.html#json.dumps
+    # unicode(json_data) auto-decodes data to unicode if str
     # NOTE More compact JSON files (less blanks) load faster because size is smaller.
     def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
