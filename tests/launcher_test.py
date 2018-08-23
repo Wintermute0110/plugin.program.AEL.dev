@@ -358,7 +358,6 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertEqual(expected, mock.getActualApplication().getPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
-
         
     @patch('resources.launchers.is_windows')
     @patch('resources.launchers.is_android')

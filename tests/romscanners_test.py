@@ -35,15 +35,14 @@ class Test_romscannerstests(unittest.TestCase):
         
         # arrange
         settings = {}
-        launcher = {}
-        launcher['type'] = LAUNCHER_ROM
-        launcher['platform'] = 'nintendo'
-        romset = {}
+
+        launcher = StandardRomLauncher(None, settings, None, None, None, False)
+        launcher.update_platform('nintendo')
 
         target = RomScannersFactory(settings, '', '')
 
         # act
-        actual = target.create(launcher, romset, None)
+        actual = target.create(launcher, None)
 
         # assert
         self.assertIsNotNone(actual)
@@ -52,17 +51,16 @@ class Test_romscannerstests(unittest.TestCase):
         
         # arrange
         settings = {}
-        launcher = {}
-        launcher['type'] = LAUNCHER_STANDALONE
-        launcher['platform'] = 'nintendo'
-        romset = {}
+        
+        launcher = ApplicationLauncher(None, settings, None)
+        launcher.update_platform('nintendo')
 
         expected = "NullScanner"
 
         target = RomScannersFactory(settings, '', '')
 
         # act
-        scanner = target.create(launcher, romset, None)
+        scanner = target.create(launcher, None)
         actual = scanner.__class__.__name__
 
         # assert
@@ -72,43 +70,21 @@ class Test_romscannerstests(unittest.TestCase):
         
         # arrange
         settings = {}
-        launcher = {}
-        launcher['type'] = LAUNCHER_ROM
-        launcher['platform'] = 'nintendo'
-        romset = {}
+        
+        launcher = StandardRomLauncher(None, settings, None, None, None, False)
+        launcher.update_platform('nintendo')
 
         expected = "RomFolderScanner"
 
         target = RomScannersFactory(settings, '', '')
 
         # act
-        scanner = target.create(launcher, romset, None)
+        scanner = target.create(launcher, None)
         actual = scanner.__class__.__name__
 
         # assert
         self.assertEqual(actual, expected)
-
-    # Moved to scrapers      
-    #def test_when_creating_scanner_for_rom_launcher_for_mame_platform_it_will_be_correct_type(self):
-    #    
-    #    # arrange
-    #    settings = {}
-    #    launcher = {}
-    #    launcher['type'] = LAUNCHER_ROM
-    #    launcher['platform'] = 'MAME'
-    #    romset = {}
-    #
-    #    expected = "MameRomFolderScanner"
-    #
-    #    target = RomScannersFactory(settings, '', '')
-    #
-    #    # act
-    #    scanner = target.create(launcher, romset, None)
-    #    actual = scanner.__class__.__name__
-    #
-    #    # assert
-    #    self.assertEqual(actual, expected)
-    
+   
     def _getFakeSettings(self):
         
         settings = {}
@@ -174,16 +150,17 @@ class Test_romscannerstests(unittest.TestCase):
         scraped_rom['m_name'] = 'FakeScrapedRom'
         scrapers = [FakeScraper(scraped_rom)]
         
-        launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
-        launcher['nointro_xml_file'] = None
-
         roms = {}
-        romset = FakeRomSet(None, roms)
+        roms_repo = FakeRomSetRepository(roms)
+
+        launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
+        launcher_data['nointro_xml_file'] = None
+        launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
         
-        target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        target = RomFolderScanner(report_dir, addon_dir, launcher, settings, scrapers)
         
         # act
         target.scan()
@@ -211,29 +188,22 @@ class Test_romscannerstests(unittest.TestCase):
         scraped_rom = {}
         scraped_rom['m_name'] = 'FakeScrapedRom'
         scrapers = [FakeScraper(scraped_rom)]
-        
-        launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
-        launcher['nointro_xml_file'] = None
-
+                
         roms = {}
-        roms['1']= {}
-        roms['1']['m_name'] = 'this-one-will-be-deleted'
-        roms['1']['filename'] = '//not-existing/byebye.zip'
-        roms['2']= {}
-        roms['2']['m_name'] = 'this-one-will-be-deleted-too'
-        roms['2']['filename'] =  '//not-existing/byebye.zip'
-        roms['3']= {}
-        roms['3']['m_name'] = 'Rocket League'
-        roms['3']['filename'] =  '//fake/folder/rocket.zip'
-        roms['4']= {}
-        roms['4']['m_name'] = 'this-one-will-be-deleted-again'
-        roms['4']['filename'] = '//not-existing/byebye.zip'
-        romset = FakeRomSet(None, roms)
+        roms['1']= Rom({'id': '1', 'm_name': 'this-one-will-be-deleted', 'filename': '//not-existing/byebye.zip'})
+        roms['2']= Rom({'id': '2', 'm_name': 'this-one-will-be-deleted-too', 'filename': '//not-existing/byebye.zip'})
+        roms['3']= Rom({'id': '3', 'm_name': 'Rocket League', 'filename': '//fake/folder/rocket.zip'})
+        roms['4']= Rom({'id': '4', 'm_name': 'this-one-will-be-deleted-again', 'filename': '//not-existing/byebye.zip'})        
+        roms_repo = FakeRomSetRepository(roms)
+        
+        launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
+        launcher_data['nointro_xml_file'] = None
+        launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
         
-        target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        target = RomFolderScanner(report_dir, addon_dir, launcher, settings, scrapers)
         
         expectedRomCount = 3
 
@@ -266,20 +236,19 @@ class Test_romscannerstests(unittest.TestCase):
         settings = self._getFakeSettings()
         scrapers = [FakeScraper(None)]
         
-        launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
-        launcher['nointro_xml_file'] = None        
-        launcher['multidisc'] = True
-
         roms = {}
-        roms['1']= {}
-        roms['1']['m_name'] = 'Rocket League'
-        roms['1']['filename'] =  '//fake/folder/rocket.zip'
-        romset = FakeRomSet(None, roms)
+        roms['1']= Rom({'id': '1', 'm_name': 'Rocket League', 'filename': '//fake/folder/rocket.zip'})
+        roms_repo = FakeRomSetRepository(roms)
 
+        launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
+        launcher_data['nointro_xml_file'] = None        
+        launcher_data['multidisc'] = True
+        launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
+        
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
         
-        target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        target = RomFolderScanner(report_dir, addon_dir, launcher, settings, scrapers)
         
         expectedRomCount = 4
 
@@ -291,10 +260,10 @@ class Test_romscannerstests(unittest.TestCase):
         actualRomCount = len(actualRoms)
 
         i=0
-        for x, rom in actualRoms.iteritems():
+        for rom in actualRoms:
             i+=1
             print '- {} ------------------------'.format(i)
-            for key, value in rom.iteritems():
+            for key, value in rom.get_data().iteritems():
                 print '[{}] {}'.format(key, value)
 
         self.assertEqual(expectedRomCount, actualRomCount)
@@ -317,25 +286,20 @@ class Test_romscannerstests(unittest.TestCase):
         settings = self._getFakeSettings()
         scrapers = [FakeScraper(None)]
         
-        launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
-        launcher['nointro_xml_file'] = None
-
         roms = {}
-        roms['1']= {}
-        roms['1']['m_name'] = 'Rocket League'
-        roms['1']['filename'] =  '//fake/folder/rocket.zip'
-        roms['2']= {}
-        roms['2']['m_name'] = 'Zelda'
-        roms['2']['filename'] =  '//fake/folder/zelda.zip'
-        roms['3']= {}
-        roms['3']['m_name'] = 'Tetris'
-        roms['3']['filename'] =  '//fake/folder/tetris.zip'
-        romset = FakeRomSet(None, roms)
+        roms['1']= Rom({'id': '1', 'm_name': 'Rocket League', 'filename': '//fake/folder/rocket.zip'})
+        roms['2']= Rom({'id': '2', 'm_name': 'Zelda', 'filename': '//fake/folder/zelda.zip'})        
+        roms['3']= Rom({'id': '3', 'm_name': 'Tetris', 'filename': '//fake/folder/tetris.zip'})        
+        roms_repo = FakeRomSetRepository(roms)
+
+        launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
+        launcher_data['nointro_xml_file'] = None
+        launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
         
-        target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        target = RomFolderScanner(report_dir, addon_dir, launcher, settings, scrapers)
         
         expectedRomCount = 4
 
@@ -347,10 +311,10 @@ class Test_romscannerstests(unittest.TestCase):
         actualRomCount = len(actualRoms)
 
         i=0
-        for x, rom in actualRoms.iteritems():
+        for rom in actualRoms:
             i+=1
             print '- {} ------------------------'.format(i)
-            for key, value in rom.iteritems():
+            for key, value in rom.get_data().iteritems():
                 print '[{}] {}'.format(key, value)
 
         self.assertEqual(expectedRomCount, actualRomCount)
@@ -373,17 +337,16 @@ class Test_romscannerstests(unittest.TestCase):
 
         settings = self._getFakeSettings()
         scrapers = [FakeScraper(None)]
-        
-        launcher = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
-        launcher['nointro_xml_file'] = None
-
-        roms = {}
-        romset = FakeRomSet(None, roms)
+        roms_repo = FakeRomSetRepository({})
+                
+        launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
+        launcher_data['nointro_xml_file'] = None
+        launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
         
-        target = RomFolderScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        target = RomFolderScanner(report_dir, addon_dir, launcher, settings, scrapers)
         
         expectedRomCount = 3
 
@@ -395,10 +358,10 @@ class Test_romscannerstests(unittest.TestCase):
         actualRomCount = len(actualRoms)
 
         i=0
-        for x, rom in actualRoms.iteritems():
+        for rom in actualRoms:
             i+=1
             print '- {} ------------------------'.format(i)
-            for key, value in rom.iteritems():
+            for key, value in rom.get_data().iteritems():
                 print '[{}] {}'.format(key, value)
 
         self.assertEqual(expectedRomCount, actualRomCount)
@@ -421,27 +384,20 @@ class Test_romscannerstests(unittest.TestCase):
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
-        
-        launcher = self._getFakeLauncherMetaData(LAUNCHER_STEAM, 'Microsoft Windows', '')
-        launcher['nointro_xml_file'] = None
-        launcher['steamid'] = '09090909' #'76561198405030123' 
-        
+
         roms = {}
-        roms['1']= {}
-        roms['1']['m_name'] = 'this-one-will-be-deleted'
-        roms['1']['steamid'] = 99999
-        roms['2']= {}
-        roms['2']['m_name'] = 'this-one-will-be-deleted-too'
-        roms['2']['steamid'] = 777888444
-        roms['3']= {}
-        roms['3']['m_name'] = 'Rocket League'
-        roms['3']['steamid'] = 252950
-        roms['4']= {}
-        roms['4']['m_name'] = 'this-one-will-be-deleted-again'
-        roms['4']['steamid'] = 663434
-        romset = FakeRomSet(None, roms)
+        roms['1']= Rom({'id': '1', 'm_name': 'this-one-will-be-deleted', 'steamid': 99999})
+        roms['2']= Rom({'id': '2', 'm_name': 'this-one-will-be-deleted-too', 'steamid': 777888444})
+        roms['3']= Rom({'id': '3', 'm_name': 'Rocket League', 'steamid': 252950})
+        roms['4']= Rom({'id': '4', 'm_name': 'this-one-will-be-deleted-again', 'steamid': 663434})        
+        roms_repo = FakeRomSetRepository(roms)
+
+        launcher_data = self._getFakeLauncherMetaData(LAUNCHER_STEAM, 'Microsoft Windows', '')
+        launcher_data['nointro_xml_file'] = None
+        launcher_data['steamid'] = '09090909' #'76561198405030123' 
+        launcher = SteamLauncher(launcher_data, settings, None, roms_repo, None)
         
-        target = SteamScanner(report_dir, addon_dir, launcher, romset, settings, scrapers)
+        target = SteamScanner(report_dir, addon_dir, launcher, settings, scrapers)
         expectedRomCount = 5
 
         # act

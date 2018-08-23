@@ -742,6 +742,7 @@ def asset_get_duplicated_dir_list(launcher):
 # ROMFile                -> FileName object
 # enabled_ROM_asset_list -> list of booleans
 #
+# todo: !!!! Orphaned method?
 def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_LIST)

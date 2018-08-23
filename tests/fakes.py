@@ -5,39 +5,23 @@ from resources.romsets import *
 from resources.executors import *
 from resources.scrapers import *
 
-from resources.utils import *
+#from ressources.utils import *
 from resources.utils_kodi import *
 from resources.filename import *
 
-class FakeRomSet(RomSet):
-
-    def __init__(self, rom, roms = None):
-        self.rom = rom
+class FakeRomSetRepository(RomSetRepository):
+    
+    def __init__(self, roms):
+        self.roms = roms
+    
+    def find_by_launcher(self, launcher):
+        return self.roms
+    
+    def save_rom_set(self, launcher, roms):
         self.roms = roms
 
-    def romSetFileExists(self):
-        return True
-            
-    def loadRoms(self):
-        if self.roms is None:
-            return {}
-
-        return self.roms
-
-    def loadRomsAsList(self):
-        if self.roms is None:
-            return []
-
-        return self.roms
-
-    def loadRom(self, romId):
-        return self.rom
-
-    def saveRoms(self, roms):
-        pass
-
-    def clear(self):
-        pass
+    def delete_by_launcher(self, launcher):
+        self.roms = {}      
 
 class FakeExecutor(Executor):
     
@@ -100,12 +84,12 @@ class FakeScraper(Scraper):
     def _applyCandidate(self, romPath, rom):
 
         if self.rom_data_to_apply :
-            rom['m_name']      = self.rom_data_to_apply['m_name'] if 'm_name' in self.rom_data_to_apply else ''
-            rom['m_year']      = self.rom_data_to_apply['m_year'] if 'm_year' in self.rom_data_to_apply else ''     
-            rom['m_genre']     = self.rom_data_to_apply['m_genre'] if 'm_genre' in self.rom_data_to_apply else ''  
-            rom['m_developer'] = self.rom_data_to_apply['m_developer']if 'm_developer' in self.rom_data_to_apply else ''
-            rom['m_plot']      = self.rom_data_to_apply['m_plot'] if 'm_plot' in self.rom_data_to_apply else ''     
+            rom.set_custom_attribute('m_name',      self.rom_data_to_apply['m_name'] if 'm_name' in self.rom_data_to_apply else '')
+            rom.set_custom_attribute('m_year',      self.rom_data_to_apply['m_year'] if 'm_year' in self.rom_data_to_apply else '')    
+            rom.set_custom_attribute('m_genre',     self.rom_data_to_apply['m_genre'] if 'm_genre' in self.rom_data_to_apply else '')  
+            rom.set_custom_attribute('m_developer', self.rom_data_to_apply['m_developer']if 'm_developer' in self.rom_data_to_apply else '')
+            rom.set_custom_attribute('m_plot',      self.rom_data_to_apply['m_plot'] if 'm_plot' in self.rom_data_to_apply else '')
         else:
-            rom['m_name'] = romPath.getBase_noext()
+            rom.set_name(romPath.getBase_noext())
 
         return True

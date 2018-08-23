@@ -16,6 +16,7 @@ from scrap import *
 from romsets import *
 from scrapers import *
 from reporting import *
+from launchers import *
 
 from disk_IO import *
 from utils import *
@@ -32,19 +33,19 @@ class RomScannersFactory():
 
     def create(self, launcher, scrapers):
 
-        launcherType = launcher['type'] if 'type' in launcher else LAUNCHER_ROM
+        launcherType = launcher.get_launcher_type()
         log_info('RomScannersFactory: Creating romscanner for {}'.format(launcherType))
 
-        if not launcher_supports_roms(launcherType):
+        if not launcher.supports_launching_roms():
             return NullScanner(launcher, self.settings)
         
         if launcherType == LAUNCHER_STEAM:
-            return SteamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
+            return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
 
         if launcherType == LAUNCHER_NVGAMESTREAM:
             return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
                 
-        return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
+        return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
 
 
 class ScannerStrategy(ProgressDialogStrategy):
@@ -82,12 +83,11 @@ class NullScanner(ScannerStrategy):
 class RomScannerStrategy(ScannerStrategy):
     __metaclass__ = ABCMeta
       
-    def __init__(self, reports_dir, addon_dir, launcher, romset, settings, scrapers):
+    def __init__(self, reports_dir, addon_dir, launcher, settings, scrapers):
         
         self.reports_dir = reports_dir
         self.addon_dir = addon_dir
-        self.romset = romset
-        
+                
         self.scrapers = scrapers
 
         super(RomScannerStrategy, self).__init__(launcher, settings)
@@ -95,13 +95,13 @@ class RomScannerStrategy(ScannerStrategy):
     def scan(self):
         
         # --- Open ROM scanner report file ---
-        launcher_report = FileReporter(self.reports_dir, self.launcher, LogReporter(self.launcher))
+        launcher_report = FileReporter(self.reports_dir, self.launcher.get_data(), LogReporter(self.launcher.get_data()))
         launcher_report.open('RomScanner() Starting ROM scanner')
 
         # >> Check if there is an XML for this launcher. If so, load it.
         # >> If file does not exist or is empty then return an empty dictionary.
         launcher_report.write('Loading launcher ROMs ...')
-        roms = self.romset.loadRoms()
+        roms = self.launcher.get_roms()
         if roms is None:
             roms = {}
         
@@ -128,8 +128,7 @@ class RomScannerStrategy(ScannerStrategy):
             return None
 
         num_new_roms = len(new_roms)
-        for new_rom in new_roms:
-            roms[new_rom['id']] = new_rom
+        roms = roms + new_roms
 
         launcher_report.write('******************** ROM scanner finished. Report ********************')
         launcher_report.write('Removed dead ROMs {0:6d}'.format(num_removed_roms))
@@ -155,10 +154,10 @@ class RomScannerStrategy(ScannerStrategy):
 
     def cleanup(self):
         
-        launcher_report = LogReporter(self.launcher)
+        launcher_report = LogReporter(self.launcher.get_data())
         launcher_report.open('RomScanner() Starting Dead ROM cleaning')
 
-        roms = self.romset.loadRoms()
+        roms = self.launcher.get_roms()
         if roms is None:
             launcher_report.close()
             return {}
@@ -206,7 +205,7 @@ class RomFolderScanner(RomScannerStrategy):
         kodi_busydialog_ON()
         
         files = []
-        launcher_path = FileNameFactory.create(self.launcher['rompath'])
+        launcher_path = self.launcher.get_rom_path()
         launcher_report.write('Scanning files in {0}'.format(launcher_path.getOriginalPath()))
 
         if self.settings['scan_recursive']:
@@ -237,16 +236,17 @@ class RomFolderScanner(RomScannerStrategy):
             
         self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
             
-        for key in sorted(roms.iterkeys()):
-            log_debug('Searching {0}'.format(roms[key]['filename']))
+        for rom in reversed(roms):
+            fileName = rom.get_file()
+            log_debug('Searching {0}'.format(fileName.getOriginalPath()))
             self._updateProgress(i * 100 / num_roms)
-            i += 1
-            fileName = FileNameFactory.create(roms[key]['filename'])
+            
             if not fileName.exists():
                 log_debug('Not found')
-                log_debug('Deleting from DB {0}'.format(roms[key]['filename']))
-                del roms[key]
+                log_debug('Deleting from DB {0}'.format(fileName.getOriginalPath()))
+                roms.remove(rom)
                 num_removed_roms += 1
+            i += 1
             
         self._endProgressPhase()
 
@@ -263,8 +263,8 @@ class RomFolderScanner(RomScannerStrategy):
         launcher_report.write('Processing files ...')
         num_items_checked = 0
         
-        allowedExtensions = self.launcher['romext'].split("|")
-        launcher_multidisc = self.launcher['multidisc']
+        allowedExtensions = self.launcher.get_rom_extensions()
+        launcher_multidisc = self.launcher.supports_multidisc()
 
         for item in sorted(items):
             self._updateProgress(num_items_checked * 100 / num_items)
@@ -309,7 +309,7 @@ class RomFolderScanner(RomScannerStrategy):
                 # >> Check if the set is already in launcher ROMs.
                 MultiDisc_rom_id = None
                 for new_rom in new_roms:
-                    temp_FN = FileNameFactory.create(new_rom['filename'])
+                    temp_FN = new_rom.get_file()
                     if temp_FN.getBase() == MDSet.setName:
                         MultiDiscInROMs  = True
                         MultiDisc_rom    = new_rom
@@ -330,7 +330,7 @@ class RomFolderScanner(RomScannerStrategy):
                 # >> If set already in ROMs, just add this disk into the set disks field.
                 else:
                     log_info('Adding additional disk "{0}"'.format(MDSet.discName))
-                    MultiDisc_rom['disks'].append(MDSet.discName)
+                    MultiDisc_rom.add_disk(MDSet.discName)
                     # >> Reorder disks like Disk 1, Disk 2, ...
                     
                     # >> Process next file
@@ -345,8 +345,8 @@ class RomFolderScanner(RomScannerStrategy):
             # >> If file already in ROM list skip it
             self._updateProgressMessage(file_text, 'Checking if ROM is not already in collection...')
             repeatedROM = False
-            for rom_id in roms:
-                rpath = roms[rom_id]['filename'] 
+            for rom in roms:
+                rpath = rom.get_filename() 
                 if rpath == item: 
                     repeatedROM = True
         
@@ -367,17 +367,17 @@ class RomFolderScanner(RomScannerStrategy):
             # ~~~~~ Process new ROM and add to the list ~~~~~
             # --- Create new rom dictionary ---
             # >> Database always stores the original (non transformed/manipulated) path
-            romdata             = fs_new_rom()
-            romdata['id']       = misc_generate_random_SID()
-            romdata['filename'] = ROM.getOriginalPath()
-               
+            new_rom = Rom()
+            new_rom.set_file(ROM)
+
             searchTerm = text_format_ROM_name_for_scraping(ROM.getBase_noext())
 
             if self.scrapers:
                 for scraper in self.scrapers:
                     self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
-                    scraper.scrape(searchTerm, ROM, romdata)
+                    scraper.scrape(searchTerm, ROM, new_rom)
             
+            romdata = new_rom.get_data()
             log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
             log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
             log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
@@ -394,9 +394,9 @@ class RomFolderScanner(RomScannerStrategy):
             # --- This was the first ROM in a multidisc set ---
             if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
                 log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
-                romdata['disks'].append(MDSet.discName)
+                new_rom.add_disk(MDSet.discName)
             
-            new_roms.append(romdata)
+            new_roms.append(new_rom)
             
             # ~~~ Check if user pressed the cancel button ~~~
             if self._isProgressCanceled():
@@ -419,7 +419,7 @@ class SteamScanner(RomScannerStrategy):
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Steam account...')
 
         apikey = self.settings['steam-api-key']
-        steamid = self.launcher['steamid']
+        steamid = self.launcher.get_steam_id()
         url = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={}&steamid={}&include_appinfo=1'.format(apikey, steamid)
         
         self._updateProgress(70)
@@ -448,17 +448,16 @@ class SteamScanner(RomScannerStrategy):
         
         steamGameIds = set(steamGame['appid'] for steamGame in candidates)
 
-        for key in sorted(roms.iterkeys()):
-            rom = roms[key]
-            romSteamId = rom['steamid']
+        for rom in reversed(roms):
+            romSteamId = rom.get_custom_attribute('steamid')
             
             log_debug('Searching {0}'.format(romSteamId))
             self._updateProgress(i * 100 / num_roms)
             i += 1
 
             if romSteamId not in steamGameIds:
-                log_debug('Not found. Deleting from DB {0}'.format(rom['m_name']))
-                del roms[key]
+                log_debug('Not found. Deleting from DB {0}'.format(rom.get_name()))
+                roms.remove(rom)
                 num_removed_roms += 1
             
         self._endProgressPhase()
@@ -477,7 +476,7 @@ class SteamScanner(RomScannerStrategy):
         num_items_checked = 0
             
         self._startProgressPhase('Advanced Emulator Launcher', 'Checking for new ROMs ...')
-        steamIdsAlreadyInCollection = set(roms[key]['steamid'] for key in roms)
+        steamIdsAlreadyInCollection = set(rom.get_custom_attribute('steamid') for rom in roms)
         
         for steamGame in items:
             
@@ -494,26 +493,27 @@ class SteamScanner(RomScannerStrategy):
         
                 log_debug('Not found. Item {0} is new'.format(steamGame['name']))
 
-                launcher_path = FileNameFactory.create(self.launcher['rompath'])
+                launcher_path = self.launcher.get_rom_path()
                 romPath = launcher_path.pjoin('{0}.rom'.format(steamGame['appid']))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~
                 # --- Create new rom dictionary ---
                 # >> Database always stores the original (non transformed/manipulated) path
-                romdata  = fs_new_rom()
-                romdata['id']           = misc_generate_random_SID()
-                romdata['filename']     = romPath.getOriginalPath()
-                romdata['steamid']      = steamGame['appid']
-                romdata['steam_name']   = steamGame['name'] # so that we always have the original name
-                romdata['m_name']       = steamGame['name']
+                new_rom  = Rom()
+                new_rom.set_file(romPath)
+
+                new_rom.set_custom_attribute('steamid', steamGame['appid'])
+                new_rom.set_custom_attribute('steam_name', steamGame['name'])  # so that we always have the original name
+                new_rom.set_name(steamGame['name'])
 
                 searchTerm = steamGame['name']
                 
                 if self.scrapers:
                     for scraper in self.scrapers:
                         self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(scraper.getName()))
-                        scraper.scrape(searchTerm, romPath, romdata)
-            
+                        scraper.scrape(searchTerm, romPath, new_rom)
+                
+                romdata = new_rom.get_data()
                 log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
                 log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
                 log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
@@ -527,7 +527,7 @@ class SteamScanner(RomScannerStrategy):
                 log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
                 log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
             
-                new_roms.append(romdata)
+                new_roms.append(new_rom)
                             
                 # ~~~ Check if user pressed the cancel button ~~~
                 if self._isProgressCanceled():
@@ -550,8 +550,8 @@ class NvidiaStreamScanner(RomScannerStrategy):
         log_debug('Reading Nvidia GameStream server')
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
 
-        server_host = self.launcher['server']
-        certificates_path = FileNameFactory.create(self.launcher['certificates_path'])
+        server_host = self.launcher.get_server()
+        certificates_path = self.launcher.get_certificates_path()
 
         streamServer = GameStreamServer(server_host, certificates_path)
         connected = streamServer.connect()
@@ -582,17 +582,16 @@ class NvidiaStreamScanner(RomScannerStrategy):
         
         streamIds = set(streamableGame['ID'] for streamableGame in candidates)
 
-        for key in sorted(roms.iterkeys()):
-            rom = roms[key]
-            romStreamId = rom['streamid']
+        for rom in reversed(roms):
+            romStreamId = rom.get_custom_attribute('streamid')
             
             log_debug('Searching {0}'.format(romStreamId))
             self._updateProgress(i * 100 / num_roms)
             i += 1
 
             if romStreamId not in streamIds:
-                log_debug('Not found. Deleting from DB {0}'.format(rom['m_name']))
-                del roms[key]
+                log_debug('Not found. Deleting from DB {0}'.format(rom.get_name()))
+                roms.remove(rom)
                 num_removed_roms += 1
             
         self._endProgressPhase()
@@ -611,7 +610,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
         num_items_checked = 0
             
         self._startProgressPhase('Advanced Emulator Launcher', 'Checking for new ROMs ...')
-        streamIdsAlreadyInCollection = set(roms[key]['streamid'] for key in roms)
+        streamIdsAlreadyInCollection = set(rom.get_custom_attribute('streamid') for rom in roms)
         
         for streamableGame in items:
             
@@ -628,26 +627,27 @@ class NvidiaStreamScanner(RomScannerStrategy):
         
                 log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
-                launcher_path = FileNameFactory.create(self.launcher['rompath'])
+                launcher_path = launcher.get_rom_path()
                 romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~
                 # --- Create new rom dictionary ---
                 # >> Database always stores the original (non transformed/manipulated) path
-                romdata  = fs_new_rom()
-                romdata['id']               = misc_generate_random_SID()
-                romdata['filename']         = romPath.getOriginalPath()
-                romdata['streamid']         = streamableGame['ID']
-                romdata['gamestream_name']  = streamableGame['AppTitle'] # so that we always have the original name
-                romdata['m_name']           = streamableGame['AppTitle']
+                new_rom  = Rom()
+                new_rom.set_file(romPath)
 
+                new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
+                new_rom.set_custom_attribute('gamestream_name', streamableGame['AppTitle'])  # so that we always have the original name
+                new_rom.set_name(streamableGame['AppTitle'])
+                
                 searchTerm = streamableGame['AppTitle']
                 
                 if self.scrapers:
                     for scraper in self.scrapers:
                         self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
-                        scraper.scrape(searchTerm, romPath, romdata)
+                        scraper.scrape(searchTerm, romPath, new_rom)
             
+                romdata = new_rom.get_data()
                 log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
                 log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
                 log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
@@ -661,7 +661,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
                 log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
                 log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
             
-                new_roms.append(romdata)
+                new_roms.append(new_rom)
                             
                 # ~~~ Check if user pressed the cancel button ~~~
                 if self._isProgressCanceled():

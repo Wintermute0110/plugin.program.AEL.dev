@@ -438,7 +438,11 @@ class LauncherRepository(object):
         
         self.data_context.remove_node('launcher', launcher_id)
         self.data_context.commit()
-  
+        
+# -------------------------------------------------------------------------------------------------
+# Repository class for Collection objects.
+# Arranges retrieving and storing of the collection launchers from and into the xml data file.
+# -------------------------------------------------------------------------------------------------
 class CollectionRepository(object):
      
     def __init__(self, data_context):        
@@ -547,8 +551,7 @@ class RomSetRepository(object):
         except IOError:
             kodi_notify_warn('(IOError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
             log_error('fs_write_ROMs_JSON() (IOError) Cannot write {0} file'.format(repository_file.getOriginalPath()))       
- 
-            
+             
     # -------------------------------------------------------------------------------------------------
     # Standard ROM databases
     # -------------------------------------------------------------------------------------------------
@@ -827,8 +830,11 @@ class MetaDataItem(object):
         self.entity_data['m_developer'] = developer
 
     def update_rating(self, rating):
-        self.entity_data['m_rating'] = int(rating)
-        
+        try:
+            self.entity_data['m_rating'] = int(rating)
+        except:
+            self.entity_data['m_rating'] = ''
+
     def update_plot(self, plot):
         self.entity_data['m_plot'] = plot
 
@@ -847,6 +853,20 @@ class MetaDataItem(object):
         for key in data:
             self.entity_data[key] = data[key]
         pass
+
+    def set_custom_attribute(self, key, value):
+        self.entity_data[key] = value
+
+    def _get_value_as_filename(self, field):
+        
+        if not field in self.entity_data:
+            return None
+
+        path = self.entity_data[field]
+        if path == '':
+            return None
+
+        return FileNameFactory.create(path)
 
 # -------------------------------------------------------------------------------------------------
 # Class representing the categories in AEL.
@@ -948,9 +968,30 @@ class Rom(MetaDataItem):
              'm_year' : '',
              'm_genre' : '',
              'm_developer' : '',
+             'm_nplayers' : '',
+             'm_esrb' : ESRB_PENDING,
              'm_rating' : '',
              'm_plot' : '',
-             'finished' : False
+             'filename' : '',
+             'disks' : [],
+             'altapp' : '',
+             'altarg' : '',
+             'finished' : False,
+             'nointro_status' : NOINTRO_STATUS_NONE,
+             'pclone_status' : PCLONE_STATUS_NONE,
+             'cloneof' : '',
+             's_title' : '',
+             's_snap' : '',
+             's_boxfront' : '',
+             's_boxback' : '',
+             's_cartridge' : '',
+             's_fanart' : '',
+             's_banner' : '',
+             's_clearlogo' : '',
+             's_flyer' : '',
+             's_map' : '',
+             's_manual' : '',
+             's_trailer' : ''
              }
 
     # is this virtual only? Should we make a VirtualRom(Rom)?
@@ -979,7 +1020,7 @@ class Rom(MetaDataItem):
         return self.entity_data['filename']
 
     def get_file(self):
-        return FileNameFactory.create(self.get_filename())
+        return self._get_value_as_filename('filename')
 
     def has_multiple_disks(self):
         return 'disks' in self.entity_data and self.entity_data['disks']
@@ -992,6 +1033,21 @@ class Rom(MetaDataItem):
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
+
+    def copy_of_data(self):
+        return self.entity_data.copy()
+    
+    def set_file(self, file):
+        self.entity_data['filename'] = file.getOriginalPath()
+
+    def add_disk(self, disk):
+        self.entity_data['disks'].append(disk)
+
+    def set_number_of_players(self, amount):
+        self.entity_data['m_nplayers'] = amount
+
+    def set_esrb(self, esrb):
+        self.entity_data['m_esrb'] = esrb
 
     def increase_launch_count(self):
         launch_count = self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
@@ -1018,9 +1074,6 @@ class Rom(MetaDataItem):
             options['DELETE_ROM']   = 'Delete ROM'
 
         return options
-
-    def copy_of_data(self):
-        return self.entity_data.copy()
 
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything that is supported.
@@ -1941,28 +1994,23 @@ class RomLauncher(Launcher):
         self.entity_data[asset_kind.rom_default_key] = mapped_to_kind.key
 
     def get_asset_path(self, asset_info):
-        if not asset_info or not asset_info.path_key in self.entity_data:
+        if not asset_info:
             return None
 
-        asset_path = self.entity_data[asset_info.path_key] 
-        return FileNameFactory.create(asset_path)
+        return self._get_value_as_filename(asset_info.path_key)
 
     def set_asset_path(self, asset_info, path):
         log_debug('Setting "{}" to {}'.format(asset_info.path_key, path))
         self.entity_data[asset_info.path_key] = path
        
-    def getRomPath(self):
-        return FileNameFactory.create(self.entity_data['rompath'])
+    def get_rom_path(self):
+        return self._get_value_as_filename('rompath')
 
     def change_rom_path(self, path):
         self.entity_data['rompath'] = path
 
     def get_rom_asset_path(self):
-        path = self.entity_data['ROM_asset_path']
-        if path is None or path == '':
-            return None
-        
-        return FileNameFactory.create(path)
+        return self._get_value_as_filename('ROM_asset_path')
 
     def get_roms_base(self):
         return self.entity_data['roms_base_noext'] if 'roms_base_noext' in self.entity_data else None
@@ -2018,7 +2066,7 @@ class RomLauncher(Launcher):
         return self.entity_data['nointro_xml_file']
     
     def get_nointro_xml_filepath(self):
-        return FileNameFactory.create(self.entity_data['nointro_xml_file'])
+        return self._get_value_as_filename('nointro_xml_file')
 
     def set_nointro_xml_file(self, path):
         self.entity_data['nointro_xml_file'] = path
@@ -2031,12 +2079,12 @@ class RomLauncher(Launcher):
     def set_number_of_roms(self, num_of_roms):
         self.entity_data['num_roms'] = num_of_roms
         
-    def support_multidisc(self):
+    def supports_multidisc(self):
         return self.entity_data['multidisc']
 
     def set_multidisc_support(self, supports_multidisc):
         self.entity_data['multidisc'] = supports_multidisc
-        return self.support_multidisc()
+        return self.supports_multidisc()
 
     def _get_extensions_from_app_path(self, input, item_key ,launcher):
     
@@ -2310,6 +2358,9 @@ class KodiLauncher(Launcher):
 
         return _get_title_from_app_path(input, launcher)
    
+# -------------------------------------------------------------------------------------------------
+# Collection Launcher
+# ------------------------------------------------------------------------------------------------- 
 class CollectionLauncher(RomLauncher):
       
     def __init__(self, launcher_data, settings, romset_repository):
@@ -2349,8 +2400,7 @@ class CollectionLauncher(RomLauncher):
         return options
 
     def _get_builder_wizard(self, wizard):
-        return wizard
-    
+        return wizard    
 
 # -------------------------------------------------------------------------------------------------
 # Virtual Launcher
@@ -2454,8 +2504,15 @@ class StandardRomLauncher(RomLauncher):
         del self.entity_data['args_extra'][index]
         log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
 
-    def get_rom_extensions(self):
+    def get_rom_extensions_combined(self):
         return self.entity_data['romext']
+
+    def get_rom_extensions(self):
+
+        if not 'romext' in self.entity_data:
+            return []
+
+        return self.entity_data['romext'].split("|")
 
     def change_rom_extensions(self, ext):
         self.entity_data['romext'] = ext
@@ -2520,7 +2577,7 @@ class StandardRomLauncher(RomLauncher):
     def _selectRomFileToUse(self):
         
         if not self.rom.has_multiple_disks():
-            self.selected_rom_file = FileNameFactory.create(self.rom.get_filename())
+            self.selected_rom_file = self.rom.get_file()
             return True
                 
         disks = self.rom.get_disks()
@@ -2533,7 +2590,7 @@ class StandardRomLauncher(RomLauncher):
         selected_rom_base = disks[dselect_ret]
         log_info('StandardRomLauncher._selectRomFileToUse() Selected ROM "{0}"'.format(selected_rom_base))
 
-        ROM_temp = FileNameFactory.create(self.rom.get_filename())
+        ROM_temp = self.rom.get_file()
         ROM_dir = FileNameFactory.create(ROM_temp.getDir())
         ROMFileName = ROM_dir.pjoin(selected_rom_base)
 
@@ -2982,6 +3039,9 @@ class SteamLauncher(RomLauncher):
     def get_launcher_type_name(self):        
         return "Steam launcher"
     
+    def get_steam_id(self):
+        return self.entity_data['steamid']
+
     def get_edit_options(self):
         
         options = super(SteamLauncher, self).get_edit_options()
@@ -3064,6 +3124,12 @@ class NvidiaGameStreamLauncher(RomLauncher):
     
     def get_launcher_type_name(self):        
         return "Nvidia GameStream launcher"
+
+    def get_server(self):
+        return self.entity_data['server']
+
+    def get_certificates_path(self):
+        return self._get_value_as_filename('certificates_path')
 
     def get_edit_options(self):
 
