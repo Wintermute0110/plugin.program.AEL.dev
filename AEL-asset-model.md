@@ -16,29 +16,27 @@
 
 ## Category metadata labels ##
 
- Metadata name | AEL name  | setInfo label | Type                 |
----------------|-----------|---------------|----------------------|
- Title         | m_name    | title         | string               |
- Genre         | m_genre   | genre         | string               |
- Plot          | m_plot    | plot          | string               |
- Rating        | m_rating  | rating        | string range 0 to 10 |
- Trailer       | s_trailer | trailer       | string               |
-               |           | overlay       | int range 0 to 8     |
+| Metadata name | AEL name  | `setInfo()` | `setProperty()`| Infolabel               | Type                 |
+|---------------|-----------|-------------|----------------|-------------------------|----------------------|
+| Title         | m_name    | title       |                | `$INFO[ListItem.Label]` | string               |
+| Genre         | m_genre   | genre       |                | `$INFO[ListItem.Genre]` | string               |
+| Plot          | m_plot    | plot        |                | `$INFO[ListItem.Plot]`  | string               |
+| Rating        | m_rating  | rating      |                |                         | string from 0 to 10  |
 
  * setInfo first argument is `video`. 
 
-
 ## Categories asset labels ##
- 
- Asset name  | AEL name    | setArt label | setInfo label |
--------------|-------------|--------------|---------------|
- Thumb       | s_thumb     | thumb        |               |
- Fanart      | s_fanart    | fanart       |               |
- Banner      | s_banner    | banner       |               |
- Flyer       | s_flyer     | poster       |               |
- Trailer     | s_trailer   |              | trailer       |
- Extrafanart | extrafanart | extrafanart1 |               |
- Extrafanart | extrafanart | extrafanart2 |               |
+
+ Asset name  | AEL name    | `setArt()`   | `setInfo()`   | Infolabel                        |
+-------------|-------------|--------------|---------------|----------------------------------|
+ Icon        | s_icon      | icon         |               | `$INFO[ListItem.Icon]`           |
+ Fanart      | s_fanart    | fanart       |               | `$INFO[ListItem.Fanart]`         |
+ Banner      | s_banner    | banner       |               | `$INFO[ListItem.Art(banner)]`    |
+ Flyer       | s_flyer     | poster       |               | `$INFO[ListItem.Art(poster)]`    |
+ Clearlogo   | s_clearlogo | clearlogo    |               | `$INFO[ListItem.Art(clearlogo)]` |
+ Trailer     | s_trailer   |              | trailer       | `$INFO[ListItem.trailer]`        |
+ Extrafanart | extrafanart | extrafanart1 |               | `Not implemented yet`            |
+ Extrafanart | extrafanart | extrafanart2 |               | `Not implemented yet`            |
 
  * `thumb` = `DefaultFolder.png` is the default for categories.
 
