@@ -172,27 +172,41 @@ class Main:
         if self.settings['log_level'] == LOG_DEBUG:
             json_rpc_start = time.time()
 
-            # >> Properties: Kodi name and version
+            # >> Properties: Kodi name and version <<
             c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
                      ' "method" : "Application.GetProperties",'
-                     ' "params" : {"properties" : ["name", "version"]} }')
-            response = xbmc.executeJSONRPC(c_str)
-            log_debug('JSON      ''{0}'''.format(c_str))
-            log_debug('Response  ''{0}'''.format(response))
+                     ' "params" : {"properties" : ["name", "version"]}'
+                     '}')
+            response_props = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response_props))
 
-            # >> Skin in use
+            # >> Skin in use <<
             c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
                      ' "method" : "Settings.GetSettingValue",'
-                     ' "params" : {"setting" : "lookandfeel.skin"} }')
-            response = xbmc.executeJSONRPC(c_str)
-            log_debug('JSON      ''{0}'''.format(c_str))
-            log_debug('Response  ''{0}'''.format(response))
-            
-            # >> Print time of JSON RPC
-            json_rpc_end = time.time()
-            log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
+                     ' "params" : {"setting" : "lookandfeel.skin"}'
+                     '}')
+            response_skin = xbmc.executeJSONRPC(c_str)
+            # log_debug('JSON      ''{0}'''.format(c_str))
+            # log_debug('Response  ''{0}'''.format(response_skin))
 
-            # --- Save all settings into a file dor DEBUG ---
+            # >> Print time consumed by JSON RPC calls <<
+            json_rpc_end = time.time()
+            # log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
+
+            # >> Parse returned JSON and nice print <<
+            properties_dic = json.loads(response_props)
+            r_name     = properties_dic['result']['name']
+            r_major    = properties_dic['result']['version']['major']
+            r_minor    = properties_dic['result']['version']['minor']
+            r_revision = properties_dic['result']['version']['revision']
+            r_tag      = properties_dic['result']['version']['tag']
+            properties_dic = json.loads(response_skin)
+            r_skin = properties_dic['result']['value']
+            log_debug('JSON version "{0}" "{1}" "{2}" "{3}" "{4}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
+            log_debug('JSON skin    "{0}"'.format(r_skin))
+
+            # --- Save all Kodi settings into a file for DEBUG ---
             # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
             #          ' "method" : "Settings.GetSettings",'
             #          ' "params" : {"level":"expert"}}')
