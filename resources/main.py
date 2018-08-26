@@ -3362,7 +3362,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
         listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3389,7 +3389,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
@@ -3413,7 +3413,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_COLLECTIONS')
@@ -3437,7 +3437,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VCATEGORIES_ROOT')
@@ -3459,7 +3459,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
@@ -3481,7 +3481,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
@@ -3502,7 +3502,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_RECENTLY_PLAYED')
@@ -3523,7 +3523,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_MOST_PLAYED')
@@ -3620,7 +3620,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
@@ -3664,7 +3664,7 @@ class Main:
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', platform)
@@ -3708,7 +3708,7 @@ class Main:
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_LB_SCRAPER_ROMS', platform)
@@ -3870,7 +3870,7 @@ class Main:
         if categoryID == VCATEGORY_ADDONROOT_ID:
                 commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)' ))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add Launcher row to ListItem ---
@@ -4346,7 +4346,7 @@ class Main:
             commands.append(('Add ROM to Collection',     self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Edit Launcher',             self._misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
@@ -4377,7 +4377,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
@@ -4403,7 +4403,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
@@ -4525,7 +4525,7 @@ class Main:
             commands = []
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-            commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
             listitem.addContextMenuItems(commands, replaceItems = True)
 
             url_str = self._misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
@@ -5232,7 +5232,7 @@ class Main:
             commands.append(('Create New Collection',    self._misc_url_RunPlugin('ADD_COLLECTION')))
             commands.append(('Import Collection',        self._misc_url_RunPlugin('IMPORT_COLLECTION')))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-            commands.append(('Add-on settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
             listitem.addContextMenuItems(commands, replaceItems = True)
 
             # >> Use ROMs renderer to display collection ROMs
