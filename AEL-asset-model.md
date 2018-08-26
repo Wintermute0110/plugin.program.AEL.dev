@@ -14,7 +14,37 @@
 [Kodi_wiki_artwork]: http://kodi.wiki/view/InfoLabels#Images_Available_in_Kodi
 
 
+### List of Virtual Categories ###
+
+ * **{ROM Collections}**
+
+ * **[Browse by ...]**
+
+ * **[Browse AEL Offline Scraper]**
+
+ * **[Browse LaunchBox Offline Scraper]**
+
+ * Inside **[Browse by ...]**, **Browse ROMs by Title**, **Browse ROMs by Year**, ...
+
+### List of Virtual Launchers ###
+
+ * **<Favourites>**
+
+ * **[Recently played ROMs]**
+
+ * **[Most played ROMs]**
+
+ * Inside **{ROM Collections}**, every collection is a Virtual Launcher.
+
+ * Inside **[Browse AEL Offline Scraper]**, every platform name is a Virtual Launcher.
+
+ * Inside **[Browse LaunchBox Offline Scraper]**, every platform name is a Virtual Launcher.
+
 ## Category metadata labels ##
+
+ * Properties set by AEL when a **Category** or **Virtual Category** is selected.
+
+ * `setInfo()` first argument is `video`. 
 
 | Metadata name | AEL name  | `setInfo()` | `setProperty()`| Infolabel               | Type                 |
 |---------------|-----------|-------------|----------------|-------------------------|----------------------|
@@ -23,30 +53,38 @@
 | Plot          | m_plot    | plot        |                | `$INFO[ListItem.Plot]`  | string               |
 | Rating        | m_rating  | rating      |                |                         | string from 0 to 10  |
 
- * setInfo first argument is `video`. 
-
 ## Categories asset labels ##
 
- Asset name  | AEL name    | `setArt()`   | `setInfo()`   | Infolabel                        |
--------------|-------------|--------------|---------------|----------------------------------|
- Icon        | s_icon      | icon         |               | `$INFO[ListItem.Icon]`           |
- Fanart      | s_fanart    | fanart       |               | `$INFO[ListItem.Fanart]`         |
- Banner      | s_banner    | banner       |               | `$INFO[ListItem.Art(banner)]`    |
- Flyer       | s_flyer     | poster       |               | `$INFO[ListItem.Art(poster)]`    |
- Clearlogo   | s_clearlogo | clearlogo    |               | `$INFO[ListItem.Art(clearlogo)]` |
- Trailer     | s_trailer   |              | trailer       | `$INFO[ListItem.trailer]`        |
- Extrafanart | extrafanart | extrafanart1 |               | `Not implemented yet`            |
- Extrafanart | extrafanart | extrafanart2 |               | `Not implemented yet`            |
+ * Properties set by AEL when a **Category** or **Virtual Category** is selected.
 
- * `thumb` = `DefaultFolder.png` is the default for categories.
+ * `thumb = DefaultFolder.png` is the default for categories.
 
  * Trailer is an asset, however label is set with `setInfo()` instead of `setArt()`.
 
- * Do not set any artwork in the ListItem constructor, only with setArt().
-
- * `extrafanart` is a Python list.
+| Asset name  | AEL name    | `setArt()`   | `setInfo()`   | Infolabel                        |
+|-------------|-------------|--------------|---------------|----------------------------------|
+| Icon        | s_icon      | icon         |               | `$INFO[ListItem.Icon]`           |
+| Fanart      | s_fanart    | fanart       |               | `$INFO[ListItem.Fanart]`         |
+| Banner      | s_banner    | banner       |               | `$INFO[ListItem.Art(banner)]`    |
+| Flyer       | s_flyer     | poster       |               | `$INFO[ListItem.Art(poster)]`    |
+| Clearlogo   | s_clearlogo | clearlogo    |               | `$INFO[ListItem.Art(clearlogo)]` |
+| Trailer     | s_trailer   |              | trailer       | `$INFO[ListItem.trailer]`        |
+| Extrafanart | extrafanart | extrafanart1 |               | `Not implemented yet`            |
+| Extrafanart | extrafanart | extrafanart2 |               | `Not implemented yet`            |
 
 ## Launcher metadata labels ##
+
+ * Properties set by AEL when a **Launcher** or **Virtual Launcher** is selected.
+
+ * `setInfo()` first argument is `video`. 
+ 
+ * AEL platform uses an internal *official* list for the scrapers to work properly. 
+   Platform is never read from NFO files. Also, AEL platform is a Launcher property, 
+   not a ROM property.
+
+ * Year and Rating are integers according to Kodi Pydocs. However, they are stored as string. 
+   If Year and Rating are not set they are the empty strings, which is different from integer 0. 
+   Kodi seems to handle this behaviour well.
 
  Metadata name | AEL name  | setInfo | setProperty | Type                 |
 ---------------|-----------|---------|-------------|----------------------|
@@ -59,16 +97,6 @@
  Trailer       | s_trailer | trailer |             | string               |
  Platform      | platform  |         | platform    | string               |
                |           | overlay |             | int range 0 to 8     |
-
- * `setInfo()` first argument is `video`. 
- 
- * AEL platform uses an internal "official" list for the scrapers to work properly. 
-   Platform is never read from NFO files. Also, AEL platform is a Launcher property, 
-   not a ROM property.
-
- * Year and Rating are integers according to Kodi Pydocs. However, they are stored as string. 
-   If Year and Rating are not set they are the empty strings, which is different from integer 0. 
-   Kodi seems to handle this behaviour well.
 
 
 ## Launchers asset labels ##
