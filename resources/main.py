@@ -1589,8 +1589,8 @@ class Main:
                 type2 = dialog.select('Manage ROMs',
                                       ['Choose ROMs default artwork ...',
                                        'Manage ROMs asset directories ...',
-                                       'Scan ROMs local artwork',
-                                       'Scrape ROMs local artwork',
+                                       'Rescan ROMs local artwork',
+                                       'Scrape ROMs artwork',
                                        'Remove dead/missing ROMs',
                                        'Import ROMs metadata from NFO files',
                                        'Export ROMs metadata to NFO files',
@@ -1749,7 +1749,7 @@ class Main:
                         kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
                                        'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
-                # --- Scan ROMs local artwork ---
+                # --- Rescan ROMs local artwork ---
                 # >> A) First, local assets are searched for every ROM based on the filename.
                 # >> B) Next, missing assets are searched in the Parent/Clone group using the files
                 #       found in the previous step. This is much faster than searching for files again.
@@ -1941,9 +1941,11 @@ class Main:
                     pDialog.close()
                     kodi_notify('Rescaning of ROMs local artwork finished')
 
-                # --- Scrape ROMs local artwork ---
+                # --- Scrape ROMs artwork ---
+                # >> Mimic what the ROM scanner does. Use same settings as the ROM scanner.
+                # >> Like the ROM scanner, only scrape artwork not found locally.
                 elif type2 == 3:
-                    kodi_dialog_OK('Feature not coded yet, sorry.')
+                    kodi_dialog_OK('WIP feature not coded yet, sorry.')
                     return
 
                 # --- Remove Remove dead/missing ROMs ROMs ---
@@ -8580,7 +8582,7 @@ class Main:
         kodi_notify('Added ROM. Launcher has now {0} ROMs'.format(len(roms)))
 
     #
-    # ROM scanner. Called when user chooses "Add items" -> "Scan items"
+    # ROM scanner. Called when user chooses Launcher CM, "Add ROMs" -> "Scan for new ROMs"
     #
     def _roms_import_roms(self, launcherID):
         log_debug('========== _roms_import_roms() BEGIN ==================================================')
