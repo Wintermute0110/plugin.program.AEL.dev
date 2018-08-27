@@ -316,7 +316,7 @@ class NfoScraper(Scraper):
         rom.update_genre(self.nfo_dic['genre'])             # <genre>
         rom.update_developer(self.nfo_dic['developer'])     # <developer>
         rom.set_number_of_players(self.nfo_dic['nplayers']) # <nplayers>
-        rom.set_esrb(self.nfo_dic['esrb'])                  # <esrb>
+        rom.set_esrb_rating(self.nfo_dic['esrb'])           # <esrb>
         rom.update_rating(self.nfo_dic['rating'])           # <rating>
         rom.update_plot(self.nfo_dic['plot'])               # <plot>
 
@@ -371,7 +371,7 @@ class OnlineMetadataScraper(Scraper):
         rom.update_genre(self.gamedata['genre'])             # <genre>
         rom.update_developer(self.gamedata['developer'])     # <developer>
         rom.set_number_of_players(self.gamedata['nplayers']) # <nplayers>
-        rom.set_esrb(self.gamedata['esrb'])                  # <esrb>
+        rom.set_esrb_rating(self.gamedata['esrb'])           # <esrb>
         rom.update_plot(self.gamedata['plot'])               # <plot>
         
         return True

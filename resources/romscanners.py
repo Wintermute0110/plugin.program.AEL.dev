@@ -102,8 +102,9 @@ class RomScannerStrategy(ScannerStrategy):
         # >> If file does not exist or is empty then return an empty dictionary.
         launcher_report.write('Loading launcher ROMs ...')
         roms = self.launcher.get_roms()
+
         if roms is None:
-            roms = {}
+            roms = []
         
         num_roms = len(roms)
         launcher_report.write('{0} ROMs currently in database'.format(num_roms))
@@ -156,10 +157,12 @@ class RomScannerStrategy(ScannerStrategy):
         
         launcher_report = LogReporter(self.launcher.get_data())
         launcher_report.open('RomScanner() Starting Dead ROM cleaning')
+        log_debug('RomScanner() Starting Dead ROM cleaning')
 
         roms = self.launcher.get_roms()
         if roms is None:
             launcher_report.close()
+            log_info('RomScanner() No roms available to cleanup')
             return {}
         
         num_roms = len(roms)

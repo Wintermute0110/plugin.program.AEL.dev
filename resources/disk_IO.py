@@ -1580,6 +1580,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
 # See comments in fs_export_ROM_NFO() about verbosity.
 # About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
 #
+# DEPRECATED METHOD - Not called anymore
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     ROMFileName = FileNameFactory.create(roms[romID]['filename'])
     nfo_file_path = ROMFileName.switchExtension('.nfo')

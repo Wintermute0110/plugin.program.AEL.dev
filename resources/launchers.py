@@ -520,7 +520,15 @@ class RomSetRepository(object):
             log_error('RomSetRepository.find_by_launcher(): ValueError exception in json.load() function')
             log_error('RomSetRepository.find_by_launcher(): Dir  {0}'.format(repository_file.getOriginalPath()))
             log_error('RomSetRepository.find_by_launcher(): Size {0}'.format(statinfo.st_size))
+            return None
         
+            
+        # --- Extract roms from JSON data structure and ensure version is correct ---
+        if roms_data and isinstance(roms_data, list) and 'control' in roms_data[0]:
+            control_str = roms_data[0]['control']
+            version_int = roms_data[0]['version']
+            roms_data   = roms_data[1]
+
         roms = {}
         for key in roms_data:
             r = Rom(roms_data[key])
@@ -530,7 +538,16 @@ class RomSetRepository(object):
 
     def save_rom_set(self, launcher, roms):
         
-        roms_dictionary = dict((rom.get_id(), rom.get_data()) for rom in roms)
+        romdata = {key: roms[key].get_data() for (key) in roms}
+
+        # --- Create JSON data structure, including version number ---
+        control_dic = {
+            'control' : 'Advanced Emulator {} ROMs'.format(launcher.get_launcher_type_name()),
+            'version' : AEL_STORAGE_FORMAT
+        }
+        raw_data = []
+        raw_data.append(control_dic)
+        raw_data.append(romdata)
 
         # >> Get file names
         roms_base_noext = launcher.get_roms_base()
@@ -544,13 +561,13 @@ class RomSetRepository(object):
         # >> a mix of unicode and str objects.
         # >> See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
         try:
-            repository_file.writeJson(roms_dictionary)
+            repository_file.writeJson(raw_data)
         except OSError:
             kodi_notify_warn('(OSError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
-            log_error('fs_write_ROMs_JSON() (OSError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
+            log_error('RomSetRepository.save_rom_set() (OSError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
         except IOError:
             kodi_notify_warn('(IOError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
-            log_error('fs_write_ROMs_JSON() (IOError) Cannot write {0} file'.format(repository_file.getOriginalPath()))       
+            log_error('RomSetRepository.save_rom_set() (IOError) Cannot write {0} file'.format(repository_file.getOriginalPath()))       
              
     # -------------------------------------------------------------------------------------------------
     # Standard ROM databases
@@ -567,34 +584,34 @@ class RomSetRepository(object):
         roms_base_noext = launcher.get_roms_base()
 
         # >> Delete ROMs JSON file
-        roms_json_FN = roms_dir_FN.pjoin(roms_base_noext + '.json')
+        roms_json_FN = self.roms_dir.pjoin(roms_base_noext + '.json')
         if roms_json_FN.exists():
             log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_FN.getOriginalPath()))
             roms_json_FN.unlink()
 
         # >> Delete ROMs info XML file
-        roms_xml_FN = roms_dir_FN.pjoin(roms_base_noext + '.xml')
+        roms_xml_FN = self.roms_dir.pjoin(roms_base_noext + '.xml')
         if roms_xml_FN.exists():
             log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_FN.getOriginalPath()))
             roms_xml_FN.unlink()
 
         # >> Delete No-Intro/Redump stuff if exist
-        roms_index_CParent_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_CParent.json')
+        roms_index_CParent_FN = self.roms_dir.pjoin(roms_base_noext + '_index_CParent.json')
         if roms_index_CParent_FN.exists():
             log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_FN.getOriginalPath()))
             roms_index_CParent_FN.unlink()
 
-        roms_index_PClone_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_PClone.json')
+        roms_index_PClone_FN = self.roms_dir.pjoin(roms_base_noext + '_index_PClone.json')
         if roms_index_PClone_FN.exists():
             log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_FN.getOriginalPath()))
             roms_index_PClone_FN.unlink()
 
-        roms_parents_FN = roms_dir_FN.pjoin(roms_base_noext + '_parents.json')
+        roms_parents_FN = self.roms_dir.pjoin(roms_base_noext + '_parents.json')
         if roms_parents_FN.exists():
             log_info('Deleting parents JSON "{0}"'.format(roms_parents_FN.getOriginalPath()))
             roms_parents_FN.unlink()
 
-        roms_DAT_FN = roms_dir_FN.pjoin(roms_base_noext + '_DAT.json')
+        roms_DAT_FN = self.roms_dir.pjoin(roms_base_noext + '_DAT.json')
         if roms_DAT_FN.exists():
             log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getOriginalPath()))
             roms_DAT_FN.unlink()
@@ -1030,6 +1047,17 @@ class Rom(MetaDataItem):
             return []
 
         return self.entity_data['disks']
+    
+    def get_nfo_file(self):
+        ROMFileName = self.get_file()
+        nfo_file_path = ROMFileName.switchExtension('.nfo')
+        return nfo_file_path
+
+    def get_number_of_players(self):
+        return self.entity_data['m_nplayers']
+
+    def get_esrb_rating(self):
+        return self.entity_data['m_esrb']
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
@@ -1046,7 +1074,7 @@ class Rom(MetaDataItem):
     def set_number_of_players(self, amount):
         self.entity_data['m_nplayers'] = amount
 
-    def set_esrb(self, esrb):
+    def set_esrb_rating(self, esrb):
         self.entity_data['m_esrb'] = esrb
 
     def increase_launch_count(self):
@@ -1056,24 +1084,105 @@ class Rom(MetaDataItem):
 
     def get_edit_options(self, category_id):
 
-        options = OrderedDict()
-        options['EDIT_METADATA']      = 'Edit Metadata ...'
-        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
-        options['ROM_STATUS']         = 'Status: {0}'.format(self.get_state())
+        delete_rom_txt = 'Delete ROM'
 
-        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            options['DELETE_ROM']       = 'Delete Favourite ROM'
+        if category_id == VCATEGORY_FAVOURITES_ID:
+            delete_rom_txt = 'Delete Favourite ROM'
+        if category_id == VCATEGORY_COLLECTIONS_ID:
+            delete_rom_txt = 'Delete Collection ROM'
+
+        options = OrderedDict()
+        options['EDIT_METADATA']    = 'Edit Metadata ...'
+        options['EDIT_ASSETS']      = 'Edit Assets/Artwork ...'
+        options['ROM_STATUS']       = 'Status: {0}'.format(self.get_state()).encode('utf-8')
+
+        options['ADVANCED_MODS']    = 'Advanced Modifications ...'
+        options['DELETE_ROM']       = delete_rom_txt
+
+        if category_id == VCATEGORY_FAVOURITES_ID:
             options['MANAGE_FAV_ROM']   = 'Manage Favourite ROM object ...'
             
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            options['DELETE_ROM']           = 'Delete Collection ROM'
+        elif category_id == VCATEGORY_COLLECTIONS_ID:
             options['MANAGE_COL_ROM']       = 'Manage Collection ROM object ...'
             options['MANAGE_COL_ROM_POS']   = 'Manage Collection ROM position ...'
-        else:
-            options['DELETE_ROM']   = 'Delete ROM'
+        
+        return options
+    
+    # >> Metadata edit dialog
+    def get_metadata_edit_options(self):
+        
+        NFO_FileName = fs_get_ROM_NFO_name(self.get_data())
+        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+        plot_str = text_limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
+
+        rating = self.get_rating()
+        if rating == -1:
+            rating = 'not rated'
+
+        options = OrderedDict()
+        options['EDIT_TITLE']             = u"Edit Title: '{0}'".format(self.get_name()).encode('utf-8')
+        options['EDIT_RELEASEYEAR']       = u"Edit Release Year: '{0}'".format(self.get_releaseyear()).encode('utf-8')
+        options['EDIT_GENRE']             = u"Edit Genre: '{0}'".format(self.get_genre()).encode('utf-8')
+        options['EDIT_DEVELOPER']         = u"Edit Developer: '{0}'".format(self.get_developer()).encode('utf-8')
+        options['EDIT_NPLAYERS']          = u"Edit NPlayers: '{0}'".format(self.get_number_of_players()).encode('utf-8')
+        options['EDIT_ESRB']              = u"Edit ESRB rating: '{0}'".format(self.get_esrb_rating()).encode('utf-8')
+        options['EDIT_RATING']            = u"Edit Rating: '{0}'".format(rating).encode('utf-8')
+        options['EDIT_PLOT']              = u"Edit Plot: '{0}'".format(plot_str).encode('utf-8')
+        options['LOAD_PLOT']              = "Load Plot from TXT file ..."
+        options['IMPORT_NFO_FILE']        = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
+        options['SAVE_NFO_FILE']          = "Save NFO file (default location)"
 
         return options
+
+    #
+    # Reads an NFO file with ROM information.
+    # See comments in fs_export_ROM_NFO() about verbosity.
+    # About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
+    #
+    # todo: Replace with nfo_file_path.readXml() and just use XPath
+    def update_with_nfo_file(self, nfo_file_path, verbose = True):
+        
+        log_debug('Rom.update_with_nfo_file() Loading "{0}"'.format(nfo_file_path.getPath()))
+        if not nfo_file_path.exists():
+            if verbose:
+                kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path.getPath()))
+            log_debug("Rom.update_with_nfo_file() NFO file not found '{0}'".format(nfo_file_path.getOriginalPath()))
+            return False
+
+        # todo: Replace with nfo_file_path.readXml() and just use XPath
+
+        # --- Import data ---
+        # >> Read file, put in a string and remove line endings.
+        # >> We assume NFO files are UTF-8. Decode data to Unicode.
+        # file = open(nfo_file_path, 'rt')
+        nfo_str = nfo_file_path.readAllUnicode()
+        nfo_str = nfo_str.replace('\r', '').replace('\n', '')
+
+        # Search for metadata tags. Regular expression is non-greedy.
+        # See https://docs.python.org/2/library/re.html#re.findall
+        # If RE has no groups it returns a list of strings with the matches.
+        # If RE has groups then it returns a list of groups.
+        item_title     = re.findall('<title>(.*?)</title>', nfo_str)
+        item_year      = re.findall('<year>(.*?)</year>', nfo_str)
+        item_genre     = re.findall('<genre>(.*?)</genre>', nfo_str)
+        item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
+        item_nplayers  = re.findall('<nplayers>(.*?)</nplayers>', nfo_str)
+        item_esrb      = re.findall('<esrb>(.*?)</esrb>', nfo_str)
+        item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
+        item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
+
+        # >> Future work: ESRB and maybe nplayer fields must be sanitized.
+        if len(item_title) > 0:     self.entity_data['m_name']      = text_unescape_XML(item_title[0])
+        if len(item_year) > 0:      self.entity_data['m_year']      = text_unescape_XML(item_year[0])
+        if len(item_genre) > 0:     self.entity_data['m_genre']     = text_unescape_XML(item_genre[0])
+        if len(item_developer) > 0: self.entity_data['m_developer'] = text_unescape_XML(item_developer[0])
+        if len(item_nplayers) > 0:  self.entity_data['m_nplayers']  = text_unescape_XML(item_nplayers[0])
+        if len(item_esrb) > 0:      self.entity_data['m_esrb']      = text_unescape_XML(item_esrb[0])
+        if len(item_rating) > 0:    self.entity_data['m_rating']    = text_unescape_XML(item_rating[0])
+        if len(item_plot) > 0:      self.entity_data['m_plot']      = text_unescape_XML(item_plot[0])
+
+        if verbose:
+            kodi_notify('Imported {0}'.format(nfo_file_path.getPath()))
 
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything that is supported.
@@ -1184,7 +1293,7 @@ class Launcher(MetaDataItem):
             # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
             # even launcher with the same name in the same category.
 
-            roms_base_noext = fs_get_ROMs_basename(category.get_name(), self.entity_data['m_name'], launcherID)
+            roms_base_noext = fs_get_ROMs_basename(category.get_name(), self.entity_data['m_name'], self.get_id())
             self.entity_data['roms_base_noext'] = roms_base_noext
             
             # --- Selected asset path ---
@@ -1388,7 +1497,7 @@ class Launcher(MetaDataItem):
         return self.entity_data['platform'] if 'platform' in self.entity_data else ''
 
     def get_category_id(self):
-        return self.entity_data['category_id'] if 'category_id' in self.entity_data else None
+        return self.entity_data['categoryID'] if 'categoryID' in self.entity_data else None
     
     def is_in_windowed_mode(self):
         return self.entity_data['toggle_window']
@@ -1810,6 +1919,9 @@ class RomLauncher(Launcher):
 
         return rom_id in self.roms
 
+    def get_number_of_roms(self):
+        return self.entity_data['num_roms']
+
     def actual_amount_of_roms(self):
         
         if not self.has_roms():
@@ -1823,7 +1935,7 @@ class RomLauncher(Launcher):
         if not self.has_roms():
             self.load_roms()
 
-        return self.roms.values()
+        return self.roms.values() if self.roms else None
 
     def get_roms_filtered(self):
         
@@ -1867,8 +1979,15 @@ class RomLauncher(Launcher):
         return filtered_roms
 
     def update_rom_set(self, roms):
+
+        if not isinstance(roms,dict):
+            roms = dict((rom.get_id(), rom.get_data()) for rom in roms)
+
         self.romset_repository.save_rom_set(self, roms)
         self.roms = roms
+
+    def save_current_roms(self):
+        self.romset_repository.save_rom_set(self, self.roms)
 
     def save_rom(self, rom):
         
@@ -1876,7 +1995,7 @@ class RomLauncher(Launcher):
             self.load_roms()
 
         self.roms[rom.get_id()] = rom
-        self.romset_repository.save_rom_set(self, self.roms.values())
+        self.romset_repository.save_rom_set(self, self.roms)
 
     def delete_rom_set(self):
         self.romset_repository.delete_by_launcher(self)
@@ -1886,7 +2005,7 @@ class RomLauncher(Launcher):
             self.load_roms()
 
         self.roms.pop(rom_id)
-        self.romset_repository.save_rom_set(self, self.roms.values())
+        self.romset_repository.save_rom_set(self, self.roms)
 
     def get_edit_options(self):
 
@@ -2026,8 +2145,8 @@ class RomLauncher(Launcher):
 
     def clear_roms(self):
         self.entity_data['num_roms'] = 0
-        self.roms = []
-        self.romset_repository.delete_by_launcher()
+        self.roms = {}
+        self.romset_repository.delete_by_launcher(self)
 
     def get_display_mode(self):
         return self.entity_data['launcher_display_mode'] if 'launcher_display_mode' in self.entity_data else LAUNCHER_DMODE_FLAT
@@ -2076,7 +2195,11 @@ class RomLauncher(Launcher):
             log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
             self.entity_data['nointro_xml_file'] = ''
 
-    def set_number_of_roms(self, num_of_roms):
+    def set_number_of_roms(self, num_of_roms = -1):
+
+        if num_of_roms == -1:
+            num_of_roms = self.actual_amount_of_roms()
+
         self.entity_data['num_roms'] = num_of_roms
         
     def supports_multidisc(self):

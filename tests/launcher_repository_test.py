@@ -116,3 +116,40 @@ class Test_LauncherRepository(unittest.TestCase):
         self.assertIsNotNone(actual)
         self.assertEqual(len(actual), expected)
         
+    def test_when_reading_favourites_rom_files_it_will_get_the_correct_values(self):
+
+        # arrange
+        p = StandardFileName(self.TEST_ASSETS_DIR)
+        
+        target = RomSetRepository(p)
+        l = { 'id': 'abc', 'roms_base_noext': 'favourites' }
+        launcher = StandardRomLauncher(l, None, None, None, None, False)
+        
+        expected = 6
+
+        # act
+        actual = target.find_by_launcher(launcher)
+        
+        # assert
+        self.assertIsNotNone(actual)
+        self.assertEqual(len(actual), expected)
+
+    def test_storing_roms_will_create_a_file_with_correct_contents(self):
+        
+        # arrange
+        fake = FakeFile(self.TEST_ASSETS_DIR)
+        
+        target = RomSetRepository(fake)
+        l = { 'id': 'abc', 'roms_base_noext': 'testcase' }
+        launcher = StandardRomLauncher(l, None, None, None, None, False)
+
+        roms = {}
+        roms['1234'] = Rom()
+        roms['9998'] = Rom()
+        roms['7845'] = Rom()
+        
+        # act
+        target.save_rom_set(launcher, roms)
+                
+        # assert
+        print fake.getFakeContent()
