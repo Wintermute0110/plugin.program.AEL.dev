@@ -821,6 +821,12 @@ class MetaDataItem(object):
     def get_custom_attribute(self, key, default_value = None):
         return self.entity_data[key] if key in self.entity_data else default_value
 
+    def has_asset(self, asset_info):
+        if not asset_info.key in self.entity_data: 
+            return False
+
+        return self.entity_data[asset_info.key] != None and self.entity_data[asset_info.key] != ''
+
     def get_asset(self, asset_info):
         return self.entity_data[asset_info.key] if asset_info.key in self.entity_data else None
 
@@ -1021,17 +1027,23 @@ class Rom(MetaDataItem):
     def get_nointro_status(self):
         return self.entity_data['nointro_status']
 
+    def get_pclone_status(self):
+        return self.entity_data['pclone_status']
+
+    def get_clone(self):
+        return self.entity_data['cloneof']
+
     def has_alternative_application(self):
         return 'altapp' in self.entity_data and self.entity_data['altapp']
 
     def get_alternative_application(self):
-        return self.entiy_data['altapp']
+        return self.entity_data['altapp']
     
     def has_alternative_arguments(self):
         return 'altarg' in self.entity_data and self.entity_data['altarg']
 
     def get_alternative_arguments(self):
-        return self.entiy_data['altarg']
+        return self.entity_data['altarg']
 
     def get_filename(self):
         return self.entity_data['filename']
@@ -1061,7 +1073,7 @@ class Rom(MetaDataItem):
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
-
+    
     def copy_of_data(self):
         return self.entity_data.copy()
     
@@ -1081,6 +1093,12 @@ class Rom(MetaDataItem):
         launch_count = self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
         launch_count += 1
         self.entity_data['launch_count'] = launch_count
+        
+    def set_alternative_application(self, application):
+        self.entity_data['altapp'] = application
+    
+    def set_alternative_arguments(self, arg):
+        self.entity_data['altarg'] = arg
 
     def get_edit_options(self, category_id):
 
@@ -1132,6 +1150,19 @@ class Rom(MetaDataItem):
         options['IMPORT_NFO_FILE']        = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
         options['SAVE_NFO_FILE']          = "Save NFO file (default location)"
 
+        return options
+    
+    #
+    # Returns a dictionary of options to choose from
+    # with which you can do advanced modifications on this specific rom.
+    #
+    def get_advanced_modification_options(self):
+        
+        options = OrderedDict()        
+        
+        options['CHANGE_ROM_FILE']          = "Change ROM file: '{0}'".format(self.get_filename())
+        options['CHANGE_ALT_APPLICATION']   = "Alternative application: '{0}'".format(self.get_alternative_application())
+        options['CHANGE_ALT_ARGUMENTS']     = "Alternative arguments: '{0}'".format(self.get_alternative_arguments())
         return options
 
     #

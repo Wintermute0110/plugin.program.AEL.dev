@@ -191,6 +191,10 @@ class FileName():
         ext = self.getExt()
         return ext.lower() in ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
     
+    def is_document(self):
+        ext = self.getExt()
+        return ext.lower() in ['txt', 'pdf', 'doc']
+    
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------

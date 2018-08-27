@@ -206,7 +206,8 @@ def assets_init_asset_dir(assets_path_FName, launcher):
 # Create asset path and assign it to Launcher dictionary.
 #
 def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
-    subPath       = assets_path_FName.pjoin(pathName)
+    separator     = assets_path_FName.path_separator()
+    subPath       = assets_path_FName.pjoin(pathName + separator)
     launcher[key] = subPath.getOriginalPath()
     log_debug('assets_parse_asset_dir() Creating dir "{0}"'.format(subPath.getPath()))
     subPath.makedirs()
@@ -393,6 +394,7 @@ class AssetInfoFactory(object):
         a_banner.default_key       = 'default_banner'
         a_banner.rom_default_key   = 'roms_default_banner'
         a_banner.name              = 'Banner'
+        a_banner.description       = 'Banner / Marquee'
         a_banner.plural            = 'Banners'
         a_banner.fname_infix       = 'banner'
         a_banner.kind_str          = 'image'
@@ -474,6 +476,7 @@ class AssetInfoFactory(object):
         a_boxfront.kind             = ASSET_BOXFRONT
         a_boxfront.key              = 's_boxfront'
         a_boxfront.name             = 'Boxfront'
+        a_boxfront.description      = 'Boxfront / Cabinet'
         a_boxfront.plural           = 'Boxfronts'
         a_boxfront.fname_infix      = 'boxfront'
         a_boxfront.kind_str         = 'image'
@@ -485,6 +488,7 @@ class AssetInfoFactory(object):
         a_boxback.kind              = ASSET_BOXBACK
         a_boxback.key               = 's_boxback'
         a_boxback.name              = 'Boxback'
+        a_boxback.description       = 'Boxback / CPanel'
         a_boxback.plural            = 'Boxbacks'
         a_boxback.fname_infix       = 'boxback'
         a_boxback.kind_str          = 'image'
@@ -496,6 +500,7 @@ class AssetInfoFactory(object):
         a_cartridge.kind            = ASSET_CARTRIDGE
         a_cartridge.key             = 's_cartridge'
         a_cartridge.name            = 'Cartridge'
+        a_cartridge.description     = 'Cartridge / PCB'
         a_cartridge.plural          = 'Cartridges'
         a_cartridge.fname_infix     = 'cartridge'
         a_cartridge.kind_str        = 'image'
@@ -603,6 +608,7 @@ class AssetInfo:
     default_key = ''
     rom_default_key = ''
     name        = ''
+    description = name
     plural      = ''
     fname_infix = '' # Used only when searching assets when importing XML
     kind_str    = ''
@@ -610,6 +616,11 @@ class AssetInfo:
     exts_dialog = []
     path_key    = ''
 
+    def get_description(self):
+        if self.description == '':
+            return self.name
+        
+        return self.description
     
     def __eq__(self, other):
         return isinstance(other, AssetInfo) and self.kind == other.kind

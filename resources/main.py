@@ -601,7 +601,7 @@ class Main:
             return        
         
         if command == 'ROM_STATUS':
-            self._subcommand_change_rom_status(rom)
+            self._subcommand_change_rom_status(launcher, rom)
             return
 
         if command == 'EXPORT_CATEGORY':
@@ -711,6 +711,18 @@ class Main:
         if command == 'CREATE_PARENTCLONE_DAT': return
         if command == 'CHANGE_DISPLAY_ROMS': return
         if command == 'UPDATE_ROM_AUDIT': return
+
+        if command == 'CHANGE_ROM_FILE':
+            self._subcommand_change_rom_file(launcher, rom)
+            return
+
+        if command == 'CHANGE_ALT_APPLICATION':
+            self._subcommand_edit_rom_alternative_application(launcher, rom)
+            return
+
+        if command == 'CHANGE_ALT_ARGUMENTS':
+            self._subcommand_edit_rom_alternative_arguments(launcher, rom)
+            return
 
         if command == 'MANAGE_FAV_ROM':
             self._subcommand_manage_favourite_rom(launcher, rom)
@@ -2542,6 +2554,7 @@ class Main:
         # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
         # when user add more ROMs.
         launcher.clear_roms()
+        kodi_refresh_container()
         kodi_notify('Cleared ROMs from launcher database')
         return
 
@@ -2630,8 +2643,9 @@ class Main:
         return
         
     # --- Edit status ---
-    def _subcommand_change_rom_status(self, rom):
+    def _subcommand_change_rom_status(self, launcher, rom):
         rom.change_finished_status()
+        launcher.save_rom(rom)
         kodi_dialog_OK('ROM "{0}" status is now {1}'.format(rom.get_name(), rom.get_state()))
         
     # --- Edit ROM metadata ---
@@ -2798,112 +2812,100 @@ class Main:
 
     # --- Edit Launcher Assets/Artwork ---
     def _subcommand_edit_rom_assets(self, launcher, rom):
-        rom = roms[romID]
+                
+        asset_infos = self.assetFactory.get_asset_kinds_for_roms()
+        list_items = []
 
-        # >> Build asset image list for dialog
-        label2_title     = rom['s_title']     if rom['s_title']     else 'Not set'
-        label2_snap      = rom['s_snap']      if rom['s_snap']      else 'Not set'
-        label2_boxfront  = rom['s_boxfront']  if rom['s_boxfront']  else 'Not set'
-        label2_boxback   = rom['s_boxback']   if rom['s_boxback']   else 'Not set'
-        label2_cartridge = rom['s_cartridge'] if rom['s_cartridge'] else 'Not set'
-        label2_fanart    = rom['s_fanart']    if rom['s_fanart']    else 'Not set'
-        label2_banner    = rom['s_banner']    if rom['s_banner']    else 'Not set'
-        label2_clearlogo = rom['s_clearlogo'] if rom['s_clearlogo'] else 'Not set'
-        label2_flyer     = rom['s_flyer']     if rom['s_flyer']     else 'Not set'
-        label2_map       = rom['s_map']       if rom['s_map']       else 'Not set'
-        label2_manual    = rom['s_manual']    if rom['s_manual']    else 'Not set'
-        label2_trailer   = rom['s_trailer']   if rom['s_trailer']   else 'Not set'
-        img_title        = rom['s_title']           if rom['s_title']     else 'DefaultAddonNone.png'
-        img_snap         = rom['s_snap']            if rom['s_snap']      else 'DefaultAddonNone.png'
-        img_boxfront     = rom['s_boxfront']        if rom['s_boxfront']  else 'DefaultAddonNone.png'
-        img_boxback      = rom['s_boxback']         if rom['s_boxback']   else 'DefaultAddonNone.png'
-        img_cartridge    = rom['s_cartridge']       if rom['s_cartridge'] else 'DefaultAddonNone.png'
-        img_fanart       = rom['s_fanart']          if rom['s_fanart']    else 'DefaultAddonNone.png'
-        img_banner       = rom['s_banner']          if rom['s_banner']    else 'DefaultAddonNone.png'
-        img_clearlogo    = rom['s_clearlogo']       if rom['s_clearlogo'] else 'DefaultAddonNone.png'
-        img_flyer        = rom['s_flyer']           if rom['s_flyer']     else 'DefaultAddonNone.png'
-        img_map          = rom['s_map']             if rom['s_map']       else 'DefaultAddonNone.png'
-        img_manual       = 'DefaultAddonImages.png' if rom['s_manual']    else 'DefaultAddonNone.png'
-        img_trailer      = 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'
+        for asset_info in asset_infos:
+            # >> Create ListItems and label2
+            has_asset   = rom.has_asset(asset_info)
+            label1_text = 'Edit {} ...'.format(asset_info.get_description())
+            label2_text = rom.get_asset(asset_info) if has_asset else 'Not set'
+            list_item   = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
+                
+            # >> Set artwork with setArt()
+            item_img = 'DefaultAddonNone.png'
+            if has_asset:
+                item_path = rom.get_asset_file(asset_info)
+                if item_path.is_video_file():
+                    item_img = 'DefaultAddonVideo.png'
+                if item_path.is_document():
+                    item_img = 'DefaultAddonImages.png'
+                else:
+                    item_img = item_path.getOriginalPath()
 
-        # >> Create ListItem objects for select dialog
-        title_listitem     = xbmcgui.ListItem(label = 'Edit Title ...',              label2 = label2_title)
-        snap_listitem      = xbmcgui.ListItem(label = 'Edit Snap ...',               label2 = label2_snap)
-        boxfront_listitem  = xbmcgui.ListItem(label = 'Edit Boxfront / Cabinet ...', label2 = label2_boxfront)
-        boxback_listitem   = xbmcgui.ListItem(label = 'Edit Boxback / CPanel ...',   label2 = label2_boxback)
-        cartridge_listitem = xbmcgui.ListItem(label = 'Edit Cartridge / PCB ...',    label2 = label2_cartridge)
-        fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',             label2 = label2_fanart)
-        banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner / Marquee ...',   label2 = label2_banner)
-        clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...',          label2 = label2_clearlogo)
-        flyer_listitem     = xbmcgui.ListItem(label = 'Edit Flyer ...',              label2 = label2_flyer)
-        map_listitem       = xbmcgui.ListItem(label = 'Edit Map ...',                label2 = label2_map)
-        manual_listitem    = xbmcgui.ListItem(label = 'Edit Manual ...',             label2 = label2_manual)
-        trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',            label2 = label2_trailer)
-        title_listitem.setArt({'icon' : img_title})
-        snap_listitem.setArt({'icon' : img_snap})
-        boxfront_listitem.setArt({'icon' : img_boxfront})
-        boxback_listitem.setArt({'icon' : img_boxback})
-        cartridge_listitem.setArt({'icon' : img_cartridge})
-        fanart_listitem.setArt({'icon' : img_fanart})
-        banner_listitem.setArt({'icon' : img_banner})
-        clearlogo_listitem.setArt({'icon' : img_clearlogo})
-        flyer_listitem.setArt({'icon' : img_flyer})
-        map_listitem.setArt({'icon' : img_map})
-        manual_listitem.setArt({'icon' : img_manual})
-        trailer_listitem.setArt({'icon' : img_trailer})
+            list_item.setArt({'icon' : item_img})
+            list_items.append(list_item)
 
         # >> Execute select dialog
-        listitems = [title_listitem, snap_listitem, boxfront_listitem, boxback_listitem, cartridge_listitem,
-                        fanart_listitem, banner_listitem, clearlogo_listitem, 
-                        flyer_listitem, map_listitem, manual_listitem, trailer_listitem]
-        type2 = dialog.select('Edit ROM Assets/Artwork', list = listitems, useDetails = True)
-        if type2 < 0: return
-
+        selected_option = xbmcgui.Dialog().select('Edit ROM Assets/Artwork', list = list_items, useDetails = True)
+        if selected_option < 0: 
+            return self._command_edit_rom(launcher.get_category_id(), launcher.get_id(), rom.get_id())
+     
+        selected_asset_info = asset_infos[selected_option]
         # --- Edit Assets ---
-        # >> If this function returns False no changes were made. No need to save categories XML
-        # >> and update container.
-        asset_list = [ASSET_TITLE, ASSET_SNAP, ASSET_BOXFRONT, ASSET_BOXBACK, ASSET_CARTRIDGE,
-                        ASSET_FANART, ASSET_BANNER, ASSET_CLEARLOGO, 
-                        ASSET_FLYER, ASSET_MAP, ASSET_MANUAL, ASSET_TRAILER]
-        asset_kind = asset_list[type2]
-        if not self._gui_edit_asset(KIND_ROM, asset_kind, rom, categoryID, launcherID): return
+        # >> If this function returns False no changes were made. No need to save categories
+        # >> XML and update container.
+        if self._gui_edit_asset(KIND_ROM, selected_asset_info.kind, rom.get_data(), launcher.get_category_id(), launcher.get_id()): 
+            launcher.save_rom(rom)
+
+        self._subcommand_edit_rom_assets(launcher, rom)
+        return
 
     # --- Advanced ROM Modifications ---
-    def _subcommand_advanced_rom_modifications(self, rom):
-        dialog = xbmcgui.Dialog()
-        type2 = dialog.select('Advanced ROM Modifications',
-                                ["Change ROM file: '{0}'".format(roms[romID]['filename']),
-                                "Alternative application: '{0}'".format(roms[romID]['altapp']),
-                                "Alternative arguments: '{0}'".format(roms[romID]['altarg']) ])
-        if type2 < 0: return
+    def _subcommand_advanced_rom_modifications(self, launcher, rom):
 
-        # >> Change ROM file
-        if type2 == 0:
-            # >> Abort if multidisc ROM
-            if roms[romID]['disks']:
-                kodi_dialog_OK('Edition of multidisc ROMs not supported yet.')
-                return
-            filename = roms[romID]['filename']
-            romext   = launcher.get_rom_extensions_combined()
-            item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', '.' + romext.replace('|', '|.'),
-                                                False, False, filename).decode('utf-8')
-            if not item_file: return
-            roms[romID]['filename'] = item_file
-        # >> Alternative launcher application file path
-        elif type2 == 1:
-            filter_str = '.bat|.exe|.cmd' if sys.platform == 'win32' else ''
-            altapp = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
-                                                'files', filter_str,
-                                                False, False, roms[romID]['altapp']).decode('utf-8')
-            # Returns empty browse if dialog was canceled.
-            if not altapp: return
-            roms[romID]['altapp'] = altapp
-        # >> Alternative launcher arguments
-        elif type2 == 2:
-            keyboard = xbmc.Keyboard(roms[romID]['altarg'], 'Edit ROM custom application arguments')
-            keyboard.doModal()
-            if not keyboard.isConfirmed(): return
-            roms[romID]['altarg'] = keyboard.getText().decode('utf-8')
+        options = rom.get_advanced_modification_options()
+
+        dialog = DictionaryDialog()
+        selected_option = dialog.select('Advanced ROM Modifications', options)
+         
+        if selected_option is None:
+            log_debug('_subcommand_advanced_rom_modifications(): Selected option = NONE')
+            self._command_edit_rom(launcher.get_category_id(), launcher.get_id(), rom.get_id())
+            return
+                
+        log_debug('_subcommand_advanced_rom_modifications(): Selected option = {0}'.format(selected_option))
+        self.run_sub_command(selected_option, None, launcher, rom)
+        self._subcommand_advanced_rom_modifications(launcher, rom)
+        return
+
+    # >> Change ROM file
+    def _subcommand_change_rom_file(self, launcher, rom):
+
+        # >> Abort if multidisc ROM
+        if rom.has_multiple_disks():
+            kodi_dialog_OK('Edition of multidisc ROMs not supported yet.')
+            return
+
+        filename = rom.get_filename()
+        romext   = launcher.get_rom_extensions_combined()
+        item_file = xbmcgui.Dialog().browse(1, 'Select the file', 'files', '.' + romext.replace('|', '|.'),
+                                            False, False, filename).decode('utf-8')
+        if not item_file: return
+
+        item_file_FN = FileFactory.create(item_file)
+        rom.set_filename(item_file_FN)
+        launcher.save_rom(rom)
+    
+    # >> Alternative launcher application file path
+    def _subcommand_edit_rom_alternative_application(self,launcher, rom):
+
+        filter_str = '.bat|.exe|.cmd' if is_windows() else ''
+        altapp = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
+                                            'files', filter_str,
+                                            False, False, rom.get_alternative_application()).decode('utf-8')
+        # Returns empty browse if dialog was canceled.
+        if not altapp: 
+            return
+
+        rom.set_alternative_application(altapp)
+        launcher.save_rom(rom)
+
+    # >> Alternative launcher arguments
+    def _subcommand_edit_rom_alternative_arguments(self, launcher, rom):
+        if self._text_edit_rom_metadata('altarg', rom.get_alternative_arguments, rom.set_alternative_arguments):
+            launcher.save_rom(rom)
 
     # --- Delete ROM ---
     def _subcommand_delete_rom(self, launcher, rom):
@@ -2914,14 +2916,14 @@ class Main:
                             'ROMs then delete the XML DAT file.')
             return
 
-        log_info('_command_remove_rom() Deleting ROM from {0} (id {1})'.format(launcher.get_name(), romID))
+        log_info('_command_remove_rom() Deleting ROM from {0} (id {1})'.format(launcher.get_name(), rom.get_id()))
 
         # --- Confirm deletion ---
         msg_str = 'Are you sure you want to delete it from "{0}"?'.format(launcher.get_name())
-        ret = kodi_dialog_yesno('ROM "{0}". {}'.format(rom.get_name(), msg_str))
+        ret = kodi_dialog_yesno('ROM "{0}". {1}'.format(rom.get_name(), msg_str))
         if not ret: return
 
-        launcher.remove_rom(romID)
+        launcher.remove_rom(rom.get_id())
 
         # --- If there is a No-Intro XML configured audit ROMs ---
         if launcher.has_nointro_xml():
@@ -2932,6 +2934,7 @@ class Main:
                 kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
 
         # --- Notify user ---
+        kodi_refresh_container()
         kodi_notify('Deleted ROM {0}'.format(rom.get_name()))
             
     # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
@@ -4749,14 +4752,14 @@ class Main:
         
         # >> ROMs in standard launcher
         launcher = self.launcher_repository.find(launcherID)
-        rom = launcher.select_rom(rom_id)
+        rom = launcher.select_rom(romID)
 
         # >> Sanity check
         if not rom:
             kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
             return
 
-        if launcher.get_type() == LAUNCHER_VIRTUAL:
+        if launcher.get_launcher_type() == LAUNCHER_VIRTUAL:
             actual_launcher_id = rom.get_launcher_id()
             launcher = self.launcher_repository.find(actual_launcher_id)
 
@@ -4787,15 +4790,13 @@ class Main:
                 log_verb('User does not confirm addition. Exiting.')
                 return
 
-        # --- Add ROM to favourites ROMs and save to disk ---
-        
-        #roms_fav[romID] = fs_get_Favourite_from_ROM(rom, launcher.get_data())
-        favlauncher.save_rom(rom)
-     
         # >> If thumb is empty then use launcher thum. / If fanart is empty then use launcher fanart.
         # if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = launcher['thumb']
         # if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = launcher['fanart']
-        fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
+        
+        # --- Add ROM to favourites ROMs and save to disk ---
+        favlauncher.save_rom(rom)
+
         kodi_notify('ROM {0} added to Favourites'.format(rom.get_name()))
         kodi_refresh_container()
 
@@ -6163,7 +6164,7 @@ class Main:
         # --- Build menu base on view_type ---
         if LAUNCH_LOG_FILE_PATH.exists():
             stat_stdout = LAUNCH_LOG_FILE_PATH.stat()
-            size_stdout = stat_stdout.st_size
+            size_stdout = stat_stdout.st_size()
             STD_status = '{0} bytes'.format(size_stdout)
         else:
             STD_status = 'not found'
@@ -6177,7 +6178,7 @@ class Main:
             launcher_report_FN = REPORTS_DIR.pjoin(launcher.get_roms_base() + '_report.txt')
             if launcher_report_FN.exists():
                 stat_stdout = launcher_report_FN.stat()
-                size_stdout = stat_stdout.st_size
+                size_stdout = stat_stdout.st_size()
                 Report_status = '{0} bytes'.format(size_stdout)
             else:
                 Report_status = 'not found'
@@ -6541,7 +6542,7 @@ class Main:
                 return
 
             # --- If no ROMs in launcher do nothing ---
-            roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
+            roms = launcher.get_roms()
 
             if not roms:
                 kodi_notify_warn('No ROMs in launcher. Report not created')
@@ -6647,15 +6648,15 @@ class Main:
                 return
             else:
                 launcher = self.launcher_repository.find(launcherID)
-                roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
-                rom = roms[romID]
+                rom = launcher.select_rom(romID)
 
             # >> Show map image
-            s_map = rom['s_map']
-            if not s_map:
-                kodi_dialog_OK('Map image file not set for ROM "{0}"'.format(rom['m_name']))
+            map_asset_info = self.assetFactory.get_asset_info(ASSET_MAP)
+            map_FN = rom.get_asset_file(map_asset_info)
+            if map_FN is None:
+                kodi_dialog_OK('Map image file not set for ROM "{0}"'.format(rom.get_name()))
                 return
-            map_FN = FileNameFactory.create(s_map)
+
             if not map_FN.exists():
                 kodi_dialog_OK('Map image file not found.')
                 return
@@ -6689,38 +6690,29 @@ class Main:
 
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
-        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(rom['id'])
+        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(rom.get_id())
         # >> Metadata
-        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(rom['m_name'])
-        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(rom['m_year'])
-        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(rom['m_genre'])
-        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(rom['m_developer'])
-        info_text += "[COLOR violet]m_nplayers[/COLOR]: '{0}'\n".format(rom['m_nplayers'])
-        info_text += "[COLOR violet]m_esrb[/COLOR]: '{0}'\n".format(rom['m_esrb'])
-        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(rom['m_rating'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(rom['m_plot'])
+        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(rom.get_name())
+        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(rom.get_releaseyear())
+        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(rom.get_genre())
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(rom.get_developer())
+        info_text += "[COLOR violet]m_nplayers[/COLOR]: '{0}'\n".format(rom.get_number_of_players())
+        info_text += "[COLOR violet]m_esrb[/COLOR]: '{0}'\n".format(rom.get_esrb_rating())
+        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(rom.get_rating())
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(rom.get_plot())
         # >> Info
-        info_text += "[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])        
-        info_text += "[COLOR skyblue]disks[/COLOR]: {0}\n".format(rom['disks'])
-        info_text += "[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom['altapp'])
-        info_text += "[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
-        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
-        info_text += "[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
-        info_text += "[COLOR violet]pclone_status[/COLOR]: '{0}'\n".format(rom['pclone_status'])
-        info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(rom['cloneof'])
+        info_text += "[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom.get_filename())        
+        info_text += "[COLOR skyblue]disks[/COLOR]: {0}\n".format(rom.get_disks())
+        info_text += "[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom.get_alternative_application())
+        info_text += "[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom.get_alternative_arguments())
+        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom.is_finished())
+        info_text += "[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom.get_nointro_status())
+        info_text += "[COLOR violet]pclone_status[/COLOR]: '{0}'\n".format(rom.get_pclone_status())
+        info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(rom.get_clone())
         # >> Assets/artwork
-        info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
-        info_text += "[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
-        info_text += "[COLOR violet]s_boxfront[/COLOR]: '{0}'\n".format(rom['s_boxfront'])
-        info_text += "[COLOR violet]s_boxback[/COLOR]: '{0}'\n".format(rom['s_boxback'])
-        info_text += "[COLOR violet]s_cartridge[/COLOR]: '{0}'\n".format(rom['s_cartridge'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(rom['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(rom['s_banner'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(rom['s_clearlogo'])
-        info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(rom['s_flyer'])
-        info_text += "[COLOR violet]s_map[/COLOR]: '{0}'\n".format(rom['s_map'])
-        info_text += "[COLOR violet]s_manual[/COLOR]: '{0}'\n".format(rom['s_manual'])
-        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(rom['s_trailer'])
+        asset_infos = self.assetFactory.get_asset_kinds_for_roms()
+        for asset_info in asset_infos:
+            info_text += "[COLOR violet]{0}[/COLOR]: '{1}'\n".format(asset_info.key, rom.get_asset(asset_info))
 
         return info_text
 
@@ -6750,74 +6742,76 @@ class Main:
         return info_text
 
     def _misc_print_string_Launcher(self, launcher):
+        launcher_data = launcher.get_data()
+
         info_text  = ''
-        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(launcher['id'])
-        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(launcher['m_name'])
-        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(launcher['m_year'])
-        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(launcher['m_genre'])
-        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(launcher['m_developer'])
-        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(launcher['m_rating'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(launcher['m_plot'])
+        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(launcher_data['id'])
+        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(launcher_data['m_name'])
+        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(launcher_data['m_year'])
+        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(launcher_data['m_genre'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(launcher_data['m_developer'])
+        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(launcher_data['m_rating'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(launcher_data['m_plot'])
 
-        info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(launcher['platform'])
-        info_text += "[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
-        info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher['application'])
-        info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
-        info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(launcher['args_extra'])
-        info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
-        info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
+        info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(launcher_data['platform'])
+        info_text += "[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher_data['categoryID'])
+        info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher_data['application'])
+        info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher_data['args'])
+        info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(launcher_data['args_extra'])
+        info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher_data['rompath'])
+        info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher_data['romext'])
         # Bool settings
-        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
-        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(launcher['toggle_window'])
-        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(launcher['non_blocking'])
-        info_text += "[COLOR skyblue]multidisc[/COLOR]: {0}\n".format(launcher['multidisc'])
+        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher_data['finished'])
+        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(launcher_data['toggle_window'])
+        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(launcher_data['non_blocking'])
+        info_text += "[COLOR skyblue]multidisc[/COLOR]: {0}\n".format(launcher_data['multidisc'])
 
-        info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
-        info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
-        info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher['nointro_display_mode'])
-        info_text += "[COLOR violet]launcher_display_mode[/COLOR]: '{0}'\n".format(launcher['launcher_display_mode'])
-        info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher['num_roms'])
-        info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher['num_parents'])
-        info_text += "[COLOR skyblue]num_clones[/COLOR]: {0}\n".format(launcher['num_clones'])
-        info_text += "[COLOR skyblue]num_have[/COLOR]: {0}\n".format(launcher['num_have'])
-        info_text += "[COLOR skyblue]num_miss[/COLOR]: {0}\n".format(launcher['num_miss'])
-        info_text += "[COLOR skyblue]num_unknown[/COLOR]: {0}\n".format(launcher['num_unknown'])
-        info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
-        info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
+        info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher_data['roms_base_noext'])
+        info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher_data['nointro_xml_file'])
+        info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher_data['nointro_display_mode'])
+        info_text += "[COLOR violet]launcher_display_mode[/COLOR]: '{0}'\n".format(launcher_data['launcher_display_mode'])
+        info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher_data['num_roms'])
+        info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher_data['num_parents'])
+        info_text += "[COLOR skyblue]num_clones[/COLOR]: {0}\n".format(launcher_data['num_clones'])
+        info_text += "[COLOR skyblue]num_have[/COLOR]: {0}\n".format(launcher_data['num_have'])
+        info_text += "[COLOR skyblue]num_miss[/COLOR]: {0}\n".format(launcher_data['num_miss'])
+        info_text += "[COLOR skyblue]num_unknown[/COLOR]: {0}\n".format(launcher_data['num_unknown'])
+        info_text += "[COLOR skyblue]timestamp_launcher_data[/COLOR]: {0}\n".format(launcher_data['timestamp_launcher'])
+        info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher_data['timestamp_report'])
 
-        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(launcher['default_icon'])
-        info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher['default_fanart'])
-        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(launcher['default_banner'])
-        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(launcher['default_poster'])
-        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(launcher['default_clearlogo'])
-        info_text += "[COLOR violet]default_controller[/COLOR]: '{0}'\n".format(launcher['default_controller'])
-        info_text += "[COLOR violet]Asset_Prefix[/COLOR]: '{0}'\n".format(launcher['Asset_Prefix'])
-        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(launcher['s_icon'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(launcher['s_banner'])
-        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(launcher['s_poster'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(launcher['s_clearlogo'])
-        info_text += "[COLOR violet]s_controller[/COLOR]: '{0}'\n".format(launcher['s_controller'])
-        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(launcher['s_trailer'])
+        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(launcher_data['default_icon'])
+        info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher_data['default_fanart'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(launcher_data['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(launcher_data['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(launcher_data['default_clearlogo'])
+        info_text += "[COLOR violet]default_controller[/COLOR]: '{0}'\n".format(launcher_data['default_controller'])
+        info_text += "[COLOR violet]Asset_Prefix[/COLOR]: '{0}'\n".format(launcher_data['Asset_Prefix'])
+        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(launcher_data['s_icon'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher_data['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(launcher_data['s_banner'])
+        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(launcher_data['s_poster'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(launcher_data['s_clearlogo'])
+        info_text += "[COLOR violet]s_controller[/COLOR]: '{0}'\n".format(launcher_data['s_controller'])
+        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(launcher_data['s_trailer'])
 
-        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(launcher['roms_default_icon'])
-        info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(launcher['roms_default_fanart'])
-        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(launcher['roms_default_banner'])
-        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(launcher['roms_default_poster'])
-        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(launcher['roms_default_clearlogo'])
-        info_text += "[COLOR violet]ROM_asset_path[/COLOR]: '{0}'\n".format(launcher['ROM_asset_path'])
-        info_text += "[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher['path_title'])
-        info_text += "[COLOR violet]path_snap[/COLOR]: '{0}'\n".format(launcher['path_snap'])
-        info_text += "[COLOR violet]path_boxfront[/COLOR]: '{0}'\n".format(launcher['path_boxfront'])
-        info_text += "[COLOR violet]path_boxback[/COLOR]: '{0}'\n".format(launcher['path_boxback'])
-        info_text += "[COLOR violet]path_cartridge[/COLOR]: '{0}'\n".format(launcher['path_cartridge'])
-        info_text += "[COLOR violet]path_fanart[/COLOR]: '{0}'\n".format(launcher['path_fanart'])
-        info_text += "[COLOR violet]path_banner[/COLOR]: '{0}'\n".format(launcher['path_banner'])
-        info_text += "[COLOR violet]path_clearlogo[/COLOR]: '{0}'\n".format(launcher['path_clearlogo'])
-        info_text += "[COLOR violet]path_flyer[/COLOR]: '{0}'\n".format(launcher['path_flyer'])
-        info_text += "[COLOR violet]path_map[/COLOR]: '{0}'\n".format(launcher['path_map'])
-        info_text += "[COLOR violet]path_manual[/COLOR]: '{0}'\n".format(launcher['path_manual'])
-        info_text += "[COLOR violet]path_trailer[/COLOR]: '{0}'\n".format(launcher['path_trailer'])
+        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(launcher_data['roms_default_icon'])
+        info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(launcher_data['roms_default_fanart'])
+        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(launcher_data['roms_default_banner'])
+        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(launcher_data['roms_default_poster'])
+        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(launcher_data['roms_default_clearlogo'])
+        info_text += "[COLOR violet]ROM_asset_path[/COLOR]: '{0}'\n".format(launcher_data['ROM_asset_path'])
+        info_text += "[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher_data['path_title'])
+        info_text += "[COLOR violet]path_snap[/COLOR]: '{0}'\n".format(launcher_data['path_snap'])
+        info_text += "[COLOR violet]path_boxfront[/COLOR]: '{0}'\n".format(launcher_data['path_boxfront'])
+        info_text += "[COLOR violet]path_boxback[/COLOR]: '{0}'\n".format(launcher_data['path_boxback'])
+        info_text += "[COLOR violet]path_cartridge[/COLOR]: '{0}'\n".format(launcher_data['path_cartridge'])
+        info_text += "[COLOR violet]path_fanart[/COLOR]: '{0}'\n".format(launcher_data['path_fanart'])
+        info_text += "[COLOR violet]path_banner[/COLOR]: '{0}'\n".format(launcher_data['path_banner'])
+        info_text += "[COLOR violet]path_clearlogo[/COLOR]: '{0}'\n".format(launcher_data['path_clearlogo'])
+        info_text += "[COLOR violet]path_flyer[/COLOR]: '{0}'\n".format(launcher_data['path_flyer'])
+        info_text += "[COLOR violet]path_map[/COLOR]: '{0}'\n".format(launcher_data['path_map'])
+        info_text += "[COLOR violet]path_manual[/COLOR]: '{0}'\n".format(launcher_data['path_manual'])
+        info_text += "[COLOR violet]path_trailer[/COLOR]: '{0}'\n".format(launcher_data['path_trailer'])
 
         return info_text
 
@@ -7251,7 +7245,7 @@ class Main:
         log_debug('_command_view_Launcher_Report() Testing report file "{0}"'.format(report_stats_FN.getPath()))
         if not report_stats_FN.exists():
             kodi_dialog_OK('Report file not found. Will be generated now.')
-            self._roms_create_launcher_reports(categoryID, launcherID, roms)
+            self._roms_create_launcher_reports(category, launcher, roms)
             
             # >> Update report timestamp
             launcher.update_report_timestamp()
@@ -7264,7 +7258,7 @@ class Main:
         # --- If report timestamp is older than launchers last modification, recreate it ---
         if launcher.get_report_timestamp() <= launcher.get_timestamp():
             kodi_dialog_OK('Report is outdated. Will be regenerated now.')
-            self._roms_create_launcher_reports(categoryID, launcherID, roms)
+            self._roms_create_launcher_reports(category, launcher, roms)
             
             launcher.update_report_timestamp()
             self.launcher_repository.save(launcher)
@@ -7276,23 +7270,20 @@ class Main:
     #  3) Report of ROM artwork
     #  4) If No-Intro file, then No-Intro audit information.
     #
-    def _roms_create_launcher_reports(self, categoryID, launcherID, roms):
+    def _roms_create_launcher_reports(self, category, launcher, roms):
         ROM_NAME_LENGHT = 50
 
         # >> Report file name
-        category = self.category_repository.find(categoryID)
         category_name = category.get_name() if category is not None else VCATEGORY_ADDONROOT_ID
 
-        launcher = self.launcher_repository.find(launcherID)
-
-        roms_base_noext  = fs_get_ROMs_basename(category_name, launcher.get_name(), launcherID)
+        roms_base_noext  = fs_get_ROMs_basename(category_name, launcher.get_name(), launcher.get_id())
         report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
         report_meta_FN   = REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
         report_assets_FN = REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
         log_verb('_roms_create_launcher_reports() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
         log_verb('_roms_create_launcher_reports() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
         log_verb('_roms_create_launcher_reports() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
-        roms_base_noext = fs_get_ROMs_basename(category_name, launcher.get_name(), launcherID)
+        roms_base_noext = fs_get_ROMs_basename(category_name, launcher.get_name(), launcher.get_id())
         report_file_name = REPORTS_DIR.pjoin(roms_base_noext + '.txt')
         log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
 
@@ -7300,46 +7291,33 @@ class Main:
         num_roms = len(roms)
         missing_m_year      = missing_m_genre    = missing_m_developer = missing_m_nplayers  = 0
         missing_m_esrb      = missing_m_rating   = missing_m_plot      = 0
-        missing_s_title     = missing_s_snap     = missing_s_fanart    = missing_s_banner    = 0
-        missing_s_clearlogo = missing_s_boxfront = missing_s_boxback   = missing_s_cartridge = 0
-        missing_s_flyer     = missing_s_map      = missing_s_manual    = missing_s_trailer   = 0
         audit_none = audit_have = audit_miss = audit_unknown = 0
         audit_num_parents = audit_num_clones = 0
         check_list = []
         
-        asset_title     = self.assetFactory.get_asset_info(ASSET_TITLE)
-        asset_snap      = self.assetFactory.get_asset_info(ASSET_SNAP)
-        asset_boxfront  = self.assetFactory.get_asset_info(ASSET_BOXFRONT)
-        asset_boxback   = self.assetFactory.get_asset_info(ASSET_BOXBACK)
-        asset_cartridge = self.assetFactory.get_asset_info(ASSET_CARTRIDGE)
-        
-        path_title_P     = launcher.get_asset_path(asset_title).getPath()
-        path_snap_P      = launcher.get_asset_path(asset_snap).getPath()
-        path_boxfront_P  = launcher.get_asset_path(asset_boxfront).getPath()
-        path_boxback_P   = launcher.get_asset_path(asset_boxback).getPath()
-        path_cartridge_P = launcher.get_asset_path(asset_cartridge).getPath()
+        asset_kinds = self.assetFactory.get_asset_kinds_for_roms()
+        missing_assets = { asset.key: 0 for (asset) in asset_kinds }
 
-        for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
-            rom = roms[rom_id]
+        for rom in sorted(roms, key = lambda r : r.get_name()):
             rom_info = {}
-            rom_info['m_name'] = rom['m_name']
-            rom_info['m_nointro_status'] = rom['nointro_status']
-            rom_info['m_pclone_status'] = rom['pclone_status']
+            rom_info['m_name']           = rom.get_name()
+            rom_info['m_nointro_status'] = rom.get_nointro_status()
+            rom_info['m_pclone_status']  = rom.get_pclone_status()
             # --- Metadata ---
-            if rom['m_year']:                 rom_info['m_year']      = 'YES'
-            else:                             rom_info['m_year']      = '---'; missing_m_year += 1
-            if rom['m_genre']:                rom_info['m_genre']     = 'YES'
-            else:                             rom_info['m_genre']     = '---'; missing_m_genre += 1
-            if rom['m_developer']:            rom_info['m_developer'] = 'YES'
-            else:                             rom_info['m_developer'] = '---'; missing_m_developer += 1
-            if rom['m_nplayers']:             rom_info['m_nplayers']  = 'YES'
-            else:                             rom_info['m_nplayers']  = '---'; missing_m_nplayers += 1
-            if rom['m_esrb'] == ESRB_PENDING: rom_info['m_esrb']      = '---'; missing_m_esrb += 1
-            else:                             rom_info['m_studio']    = 'YES'
-            if rom['m_rating']:               rom_info['m_rating']    = 'YES'
-            else:                             rom_info['m_rating']    = '---'; missing_m_rating += 1
-            if rom['m_plot']:                 rom_info['m_plot']      = 'YES'
-            else:                             rom_info['m_plot']      = '---'; missing_m_plot += 1
+            if rom.get_releaseyear():                 rom_info['m_year']      = 'YES'
+            else:                                     rom_info['m_year']      = '---'; missing_m_year += 1
+            if rom.get_genre():                       rom_info['m_genre']     = 'YES'
+            else:                                     rom_info['m_genre']     = '---'; missing_m_genre += 1
+            if rom.get_developer():                   rom_info['m_developer'] = 'YES'
+            else:                                     rom_info['m_developer'] = '---'; missing_m_developer += 1
+            if rom.get_number_of_players():           rom_info['m_nplayers']  = 'YES'
+            else:                                     rom_info['m_nplayers']  = '---'; missing_m_nplayers += 1
+            if rom.get_esrb_rating() == ESRB_PENDING: rom_info['m_esrb']      = '---'; missing_m_esrb += 1
+            else:                                     rom_info['m_studio']    = 'YES'
+            if rom.get_rating():                      rom_info['m_rating']    = 'YES'
+            else:                                     rom_info['m_rating']    = '---'; missing_m_rating += 1
+            if rom.get_plot():                        rom_info['m_plot']      = 'YES'
+            else:                                     rom_info['m_plot']      = '---'; missing_m_plot += 1
             # --- Assets ---
             # >> Y means the asset exists and has the Base_noext of the ROM.
             # >> S means the asset exists and is a PClone group substitution.
@@ -7350,62 +7328,31 @@ class Main:
             # path_* and art getDir() equal and Base_noext() different ==> Maybe S or maybe C => O
             # To differentiate between S and C a test in the PClone group must be done.
             #
-            romfile_FN = FileNameFactory.create(rom['filename'])
+            romfile_FN = rom.get_file()
             romfile_getBase_noext = romfile_FN.getBase_noext()
-            if rom['s_title']:
-                rom_info['s_title'] = self._aux_get_info(FileNameFactory.create(rom['s_title']), path_title_P, romfile_getBase_noext)
-            else:
-                rom_info['s_title'] = '-'
-                missing_s_title += 1
-            if rom['s_snap']:
-                rom_info['s_snap'] = self._aux_get_info(FileNameFactory.create(rom['s_snap']), path_snap_P, romfile_getBase_noext)
-            else:
-                rom_info['s_snap'] = '-'
-                missing_s_snap += 1
-            if rom['s_boxfront']:
-                rom_info['s_boxfront'] = self._aux_get_info(FileNameFactory.create(rom['s_boxfront']), path_boxfront_P, romfile_getBase_noext)
-            else:
-                rom_info['s_boxfront'] = '-'
-                missing_s_boxfront += 1
-            if rom['s_boxback']:
-                rom_info['s_boxback'] = self._aux_get_info(FileNameFactory.create(rom['s_boxback']), path_boxback_P, romfile_getBase_noext)
-            else:
-                rom_info['s_boxback'] = '-'
-                missing_s_boxback += 1
-            if rom['s_cartridge']:
-                rom_info['s_cartridge'] = self._aux_get_info(FileNameFactory.create(rom['s_cartridge']), path_cartridge_P, romfile_getBase_noext)
-            else:                  
-                rom_info['s_cartridge'] = '-'
-                missing_s_cartridge += 1
-            if rom['s_fanart']:    rom_info['s_fanart']    = 'Y'
-            else:                  rom_info['s_fanart']    = '-'; missing_s_fanart += 1
-            if rom['s_banner']:    rom_info['s_banner']    = 'Y'
-            else:                  rom_info['s_banner']    = '-'; missing_s_banner += 1
-            if rom['s_clearlogo']: rom_info['s_clearlogo'] = 'Y'
-            else:                  rom_info['s_clearlogo'] = '-'; missing_s_clearlogo += 1
-            if rom['s_flyer']:     rom_info['s_flyer']     = 'Y'
-            else:                  rom_info['s_flyer']     = '-'; missing_s_flyer += 1
-            if rom['s_map']:       rom_info['s_map']       = 'Y'
-            else:                  rom_info['s_map']       = '-'; missing_s_map += 1
-            if rom['s_manual']:    rom_info['s_manual']    = 'Y'
-            else:                  rom_info['s_manual']    = '-'; missing_s_manual += 1
-            if rom['s_trailer']:   rom_info['s_trailer']   = 'Y'
-            else:                  rom_info['s_trailer']   = '-'; missing_s_trailer += 1
+
+            for asset_kind in asset_kinds:
+                if rom.has_asset(asset_kind):
+                    rom_info[asset_kind.key] = self._aux_get_info(rom.get_asset_file(asset_kind), launcher.get_asset_path(asset_kind).getPath(), romfile_getBase_noext)
+                else:
+                    rom_info[asset_kind.key] = '-'
+                    missing_assets[asset_kind.key] = missing_assets[asset_kind.key] + 1
+
             # --- ROM audit ---
-            if   rom['nointro_status'] == NOINTRO_STATUS_NONE:    audit_none += 1
-            elif rom['nointro_status'] == NOINTRO_STATUS_HAVE:    audit_have += 1
-            elif rom['nointro_status'] == NOINTRO_STATUS_MISS:    audit_miss += 1
-            elif rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN: audit_unknown += 1
+            if   rom.get_nointro_status() == NOINTRO_STATUS_NONE:    audit_none += 1
+            elif rom.get_nointro_status() == NOINTRO_STATUS_HAVE:    audit_have += 1
+            elif rom.get_nointro_status() == NOINTRO_STATUS_MISS:    audit_miss += 1
+            elif rom.get_nointro_status() == NOINTRO_STATUS_UNKNOWN: audit_unknown += 1
             else:
-                log_error('Unknown audit status {0}.'.format(rom['nointro_status']))
-                kodi_dialog_OK('Unknown audit status {0}. This is a bug, please report it.'.format(rom['nointro_status']))
+                log_error('Unknown audit status {0}.'.format(rom.get_nointro_status()))
+                kodi_dialog_OK('Unknown audit status {0}. This is a bug, please report it.'.format(rom.get_nointro_status()))
                 return
-            if   rom['pclone_status'] == PCLONE_STATUS_PARENT: audit_num_parents += 1
-            elif rom['pclone_status'] == PCLONE_STATUS_CLONE:  audit_num_clones += 1
-            elif rom['pclone_status'] == PCLONE_STATUS_NONE:   pass
+            if   rom.get_pclone_status() == PCLONE_STATUS_PARENT: audit_num_parents += 1
+            elif rom.get_pclone_status() == PCLONE_STATUS_CLONE:  audit_num_clones += 1
+            elif rom.get_pclone_status() == PCLONE_STATUS_NONE:   pass
             else:
-                log_error('Unknown pclone status {0}.'.format(rom['pclone_status']))
-                kodi_dialog_OK('Unknown pclone status {0}. This is a bug, please report it.'.format(rom['pclone_status']))
+                log_error('Unknown pclone status {0}.'.format(rom.get_pclone_status()))
+                kodi_dialog_OK('Unknown pclone status {0}. This is a bug, please report it.'.format(rom.get_pclone_status()))
                 return
 
             # >> Add to list
@@ -7435,46 +7382,7 @@ class Main:
         miss_s_esrb_pcent = float(missing_m_esrb*100) / num_roms
         miss_s_rating_pcent = float(missing_m_rating*100) / num_roms
         miss_s_plot_pcent = float(missing_m_plot*100) / num_roms
-
-        have_s_title = num_roms - missing_s_title
-        have_s_snap = num_roms - missing_s_snap
-        have_s_boxfront = num_roms - missing_s_boxfront
-        have_s_boxback = num_roms - missing_s_boxback
-        have_s_cartridge = num_roms - missing_s_cartridge
-        have_s_fanart = num_roms - missing_s_fanart
-        have_s_banner = num_roms - missing_s_banner
-        have_s_clearlogo = num_roms - missing_s_clearlogo
-        have_s_flyer = num_roms - missing_s_flyer
-        have_s_map = num_roms - missing_s_map
-        have_s_manual = num_roms - missing_s_manual
-        have_s_trailer = num_roms - missing_s_trailer
-
-        have_s_title_pcent = float(have_s_title*100) / num_roms
-        have_s_snap_pcent = float(have_s_snap*100) / num_roms
-        have_s_boxfront_pcent = float(have_s_boxfront*100) / num_roms
-        have_s_boxback_pcent = float(have_s_boxback*100) / num_roms
-        have_s_cartridge_pcent = float(have_s_cartridge*100) / num_roms
-        have_s_fanart_pcent = float(have_s_fanart*100) / num_roms
-        have_s_banner_pcent = float(have_s_banner*100) / num_roms
-        have_s_clearlogo_pcent = float(have_s_clearlogo*100) / num_roms
-        have_s_flyer_pcent = float(have_s_flyer*100) / num_roms
-        have_s_map_pcent = float(have_s_map*100) / num_roms
-        have_s_manual_pcent = float(have_s_manual*100) / num_roms
-        have_s_trailer_pcent = float(have_s_trailer*100) / num_roms
-
-        miss_s_title_pcent = float(missing_s_title*100) / num_roms
-        miss_s_snap_pcent = float(missing_s_snap*100) / num_roms
-        miss_s_boxfront_pcent = float(missing_s_boxfront*100) / num_roms
-        miss_s_boxback_pcent = float(missing_s_boxback*100) / num_roms
-        miss_s_cartridge_pcent = float(missing_s_cartridge*100) / num_roms
-        miss_s_fanart_pcent = float(missing_s_fanart*100) / num_roms
-        miss_s_banner_pcent = float(missing_s_banner*100) / num_roms
-        miss_s_clearlogo_pcent = float(missing_s_clearlogo*100) / num_roms
-        miss_s_flyer_pcent = float(missing_s_flyer*100) / num_roms
-        miss_s_map_pcent = float(missing_s_map*100) / num_roms
-        miss_s_manual_pcent = float(missing_s_manual*100) / num_roms
-        miss_s_trailer_pcent = float(missing_s_trailer*100) / num_roms
-
+                
         # --- Step 2: Statistics report ---
         # >> Launcher name printed on window title
         # >> Audit statistics
@@ -7487,7 +7395,8 @@ class Main:
         str_list.append('Unknown ROMs     {0:5d}\n'.format(audit_unknown))
         str_list.append('Parent           {0:5d}\n'.format(audit_num_parents))
         str_list.append('Clones           {0:5d}\n'.format(audit_num_clones))
-        # >> Metadata
+       
+       # >> Metadata
         str_list.append('\n<Metadata statistics>\n')
         str_list.append('Year      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
             have_m_year, missing_m_year, have_s_year_pcent, miss_s_year_pcent))
@@ -7503,33 +7412,18 @@ class Main:
             have_m_rating, missing_m_rating, have_s_rating_pcent, miss_s_rating_pcent))
         str_list.append('Plot      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
             have_m_plot, missing_m_plot, have_s_plot_pcent, miss_s_plot_pcent))
+        
         # >> Assets statistics
         str_list.append('\n<Asset statistics>\n')
-        str_list.append('Title     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_title, missing_s_title, have_s_title_pcent, miss_s_title_pcent))
-        str_list.append('Snap      {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_snap, missing_s_snap, have_s_snap_pcent, miss_s_snap_pcent))
-        str_list.append('Boxfront  {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_boxfront, missing_s_boxfront, have_s_boxfront_pcent, miss_s_boxfront_pcent))
-        str_list.append('Boxback   {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_boxback, missing_s_boxback, have_s_boxback_pcent, miss_s_boxback_pcent))
-        str_list.append('Cartridge {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_cartridge, missing_s_cartridge, have_s_cartridge_pcent, miss_s_cartridge_pcent))
-        str_list.append('Fanart    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_fanart, missing_s_fanart, have_s_fanart_pcent, miss_s_fanart_pcent))
-        str_list.append('Banner    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_banner, missing_s_banner, have_s_banner_pcent, miss_s_banner_pcent))
-        str_list.append('Clearlogo {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_clearlogo, missing_s_clearlogo, have_s_clearlogo_pcent, miss_s_clearlogo_pcent))
-        str_list.append('Flyer     {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_flyer, missing_s_flyer, have_s_flyer_pcent, miss_s_flyer_pcent))
-        str_list.append('Map       {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_map, missing_s_map, have_s_map_pcent, miss_s_map_pcent))
-        str_list.append('Manual    {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_manual, missing_s_manual, have_s_manual_pcent, miss_s_manual_pcent))
-        str_list.append('Trailer   {0:5d} have / {1:5d} miss  ({2:5.1f}%, {3:5.1f}%)\n'.format(
-            have_s_trailer, missing_s_trailer, have_s_trailer_pcent, miss_s_trailer_pcent))
+        for asset_kind in asset_kinds:
+            miss_of_kind        = missing_assets[asset_kind.key]
+            miss_of_kind_pcent  = float(miss_of_kind*100) / num_roms
+            has_of_kind         = num_roms - miss_of_kind
+            has_of_kind_pcent   = float(has_of_kind*100)  / num_roms
 
+            str_list.append('{0}     {1:5d} have / {2:5d} miss  ({3:5.1f}%, {4:5.1f}%)\n'.format(
+                asset_kind.name, has_of_kind, miss_of_kind, has_of_kind_pcent, miss_of_kind_pcent))
+        
         # >> Step 3: Metadata report
         str_meta_list = []
         str_meta_list.append('{0} Year Genre Developer Rating Plot Audit    PClone\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
