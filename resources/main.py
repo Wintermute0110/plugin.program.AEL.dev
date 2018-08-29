@@ -5922,7 +5922,7 @@ class Main:
         log_info('Adding ROM to Collection')
         log_info('Collection {0}'.format(collection['m_name']))
         log_info('romID      {0}'.format(romID))
-        log_info('ROM m_name {0}'.format(rom['m_name']))
+        log_info('ROM m_name {0}'.format(rom.get_name()))
 
         # >> Check if ROM already in this collection an warn user if so
         rom_already_in_collection = False
@@ -5935,7 +5935,7 @@ class Main:
             log_info('ROM already in collection')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(rom['m_name'], collection['m_name']))
+                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(rom.get_name(), collection['m_name']))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
@@ -5943,7 +5943,7 @@ class Main:
         else:
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(rom2['m_name'], collection['m_name']))
+                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(rom2.get_name(), collection['m_name']))
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
@@ -6023,7 +6023,7 @@ class Main:
         # --- Search by Studio ---
         type_nb = type_nb + 1
         if type == type_nb:
-            searched_list = self._search_launcher_field('m_studio', roms)
+            searched_list = self._search_launcher_field('m_developer', roms)
             dialog = xbmcgui.Dialog()
             selected_value = dialog.select('Select a Studio ...', searched_list)
             if selected_value < 0: return
@@ -6046,7 +6046,7 @@ class Main:
         #
         # NOTE ActivateWindow() / RunPlugin() / RunAddon() seem not to work here
         log_debug('_command_search_launcher() Container.Update URL {0}'.format(url))
-        xbmc.executebuiltin('Container.Update({0})'.format(url))
+        xbmc.executebuiltin(u'Container.Update({0})'.format(url).encode('utf-8'))
 
     #
     # Auxiliar function used in Launcher searches.
@@ -6077,7 +6077,7 @@ class Main:
         launcher = self.launcher_repository.find(launcherID)
 
         # --- Load Launcher ROMs ---
-        roms = launchers.get_roms()
+        roms = launcher.get_roms()
 
         # --- Empty ROM dictionary / Loading error ---
         if not roms:
@@ -6092,14 +6092,14 @@ class Main:
         for rom in roms:
             rom_data = rom.get_data()
             rom_field_str = rom_data[rom_search_field].lower()
-            if rom_field_str == '' and text == empty: rl[keyr] = rom
+            if rom_field_str == '' and text == empty: rl[rom.get_id()] = rom
 
             if rom_search_field == 'm_name':
                 if not rom_field_str.find(text) == -1:
-                    rl[keyr] = rom
+                    rl[rom.get_id()] = rom
             else:
                 if rom_field_str == text:
-                    rl[keyr] = rom
+                    rl[rom.get_id()] = rom
 
         # --- Render ROMs ---
         self._misc_set_all_sorting_methods()
@@ -6319,24 +6319,30 @@ class Main:
                 info_text += self._misc_print_string_Collection(collection)
             else:
                 # --- Read ROMs ---
+                log_info('_command_view_menu() Viewing ROM in {} ...'.format(launcher.get_launcher_type_name()))
+                
+                if romID == UNKNOWN_ROMS_PARENT_ID:
+                    kodi_dialog_OK('You cannot view this ROM!')
+                    return
+
+                # >> Check launcher is OK
+                launcher = self.launcher_repository.find(launcherID)
+                if launcher is None:
+                    kodi_dialog_OK('launcherID not found in launchers')
+                    return
+
+                launcher_in_category = False if categoryID == VCATEGORY_ADDONROOT_ID else True
+                if launcher_in_category: category = self.category_repository.find(categoryID)
+
+                rom = launcher.select_rom(romID)
+                window_title = '{} ROM data'.format(launcher.get_launcher_type_name())
+                
                 regular_launcher = True
-                if categoryID == VCATEGORY_FAVOURITES_ID:
-                    log_info('_command_view_menu() Viewing ROM in Favourites ...')
-                    roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-                    rom = roms[romID]
-                    window_title = 'Favourite ROM data'
+                if launcher.get_launcher_type() == LAUNCHER_VIRTUAL or launcher.get_launcher_type() == LAUNCHER_COLLECTION:
                     regular_launcher = False
-                    vlauncher_label = 'Favourite'
+                    vlauncher_label = launcher.get_name()
 
-                elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-                    log_info('_command_view_menu() Viewing ROM in Most played ROMs list ...')
-                    most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
-                    rom = most_played_roms[romID]
-                    window_title = 'Most Played ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Most Played ROM'
-
-                elif categoryID == VCATEGORY_RECENT_ID:
+                if categoryID == VCATEGORY_RECENT_ID:
                     log_info('_command_view_menu() Viewing ROM in Recently played ROMs ...')
                     recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
@@ -6347,123 +6353,7 @@ class Main:
                     window_title = 'Recently played ROM data'
                     regular_launcher = False
                     vlauncher_label = 'Recently played ROM'
-
-                elif categoryID == VCATEGORY_TITLE_ID:
-                    log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
-                    
-                    launcher = self.launcher_repository.find(launcherID)
-                    rom = launcher.select_rom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-
-                    window_title = 'Virtual Launcher Title ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher Title'
-
-                elif categoryID == VCATEGORY_YEARS_ID:
-                    log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
-                    
-                    launcher = self.launcher_repository.find(launcherID)
-                    rom = launcher.select_rom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-
-                    window_title = 'Virtual Launcher Year ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher Year'
-
-                elif categoryID == VCATEGORY_GENRE_ID:
-                    log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
-                    
-                    launcher = self.launcher_repository.find(launcherID)
-                    rom = launcher.select_rom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-
-                    window_title = 'Virtual Launcher Genre ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher Genre'
-                    
-                elif categoryID == VCATEGORY_DEVELOPER_ID:
-                    log_info('_command_view_menu() Viewing ROM in Developer Virtual Launcher ...')
-
-                    launcher = self.launcher_repository.find(launcherID)
-                    rom = launcher.select_rom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-                    
-                    window_title = 'Virtual Launcher Studio ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher Studio'
-
-                elif categoryID == VCATEGORY_NPLAYERS_ID:
-                    log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
-                    
-                    launcher = self.launcher_repository.find(launcherID)
-                    romSet = self.romsetFactory.create(categoryID, launcher.get_data())
-                    rom = romSet.loadRom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-
-                    window_title = 'Virtual Launcher NPlayer ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher NPlayer'
-
-                elif categoryID == VCATEGORY_ESRB_ID:
-                    log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
-                    
-                    launcher = self.launcher_repository.find(launcherID)
-                    romSet = self.romsetFactory.create(categoryID, launcher.get_data())
-                    rom = romSet.loadRom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-
-                    window_title = 'Virtual Launcher ESRB ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher ESRB'
-
-                elif categoryID == VCATEGORY_RATING_ID:
-                    log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
-                    
-                    launcher = self.launcher_repository.find(launcherID)
-                    romSet = self.romsetFactory.create(categoryID, launcher.get_data())
-                    rom = romSet.loadRom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-
-                    window_title = 'Virtual Launcher Rating ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher Rating'
-
-                elif categoryID == VCATEGORY_CATEGORY_ID:
-                    log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
-                    
-                    launcher = self.launcher_repository.find(launcherID)
-                    romSet = self.romsetFactory.create(categoryID, launcher.get_data())
-                    rom = romSet.loadRom(romID)
-
-                    if rom is None:
-                        kodi_dialog_OK('Virtual launcher rom not found.')
-                        return
-
-                    window_title = 'Virtual Launcher Category ROM data'
-                    regular_launcher = False
-                    vlauncher_label = 'Virtual Launcher Category'
-
+                
                 # --- ROM in Collection ---
                 elif categoryID == VCATEGORY_COLLECTIONS_ID:
                     log_info('_command_view_menu() Viewing ROM in Collection ...')
@@ -6479,24 +6369,6 @@ class Main:
                     window_title = '{0} Collection ROM data'.format(collection['m_name'])
                     regular_launcher = False
                     vlauncher_label = 'Collection'
-
-                # --- ROM in regular launcher ---
-                else:
-                    log_info('_command_view_menu() Viewing ROM in Launcher ...')
-                    if romID == UNKNOWN_ROMS_PARENT_ID:
-                        kodi_dialog_OK('You cannot view this ROM!')
-                        return
-                    # >> Check launcher is OK
-                    launcher = self.launcher_repository.find(launcherID)
-                    if launcher is None:
-                        kodi_dialog_OK('launcherID not found in launchers')
-                        return
-
-                    launcher_in_category = False if categoryID == VCATEGORY_ADDONROOT_ID else True
-                    if launcher_in_category: category = self.category_repository.find(categoryID)
-
-                    rom = launcher.select_rom(romID)
-                    window_title = 'Launcher ROM data'
 
                 # --- Make information string ---
                 info_text  = '[COLOR orange]ROM information[/COLOR]\n'

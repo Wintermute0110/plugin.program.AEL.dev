@@ -943,6 +943,9 @@ class Category(MetaDataItem):
 
         return assets
 
+    def is_virtual(self):
+        return False
+
     def get_asset_defaults(self):
         
         default_assets = {}        
@@ -980,7 +983,14 @@ class Category(MetaDataItem):
     def create_root_category():
         c = {'id' : VCATEGORY_ADDONROOT_ID, 'm_name' : 'Root category' }
         return Category(c)
+  
+# -------------------------------------------------------------------------------------------------
+# Class representing the virtual categories in AEL.
+# -------------------------------------------------------------------------------------------------
+class VirtualCategory(Category):
     
+    def is_virtual(self):
+        return True
 # -------------------------------------------------------------------------------------------------
 # Class representing a ROM file you can play through AEL.
 # -------------------------------------------------------------------------------------------------
@@ -2092,7 +2102,7 @@ class RomLauncher(Launcher):
         favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
         favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
         favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
-        favourite.set_custom_attribute('rompath',               self.get_rom_path())
+        favourite.set_custom_attribute('rompath',               self.get_rom_path().getOriginalPath())
         favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
         favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
         favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())

@@ -342,6 +342,9 @@ class FileName():
         data = ET.tostring(xml_root)
         self.writeAll(data)
 
+    def __str__(self):
+        return self.getOriginalPath()
+
 # -------------------------------------------------------------------------------------------------
 # Kodi Virtual Filesystem helper class.
 # Implementation of the FileName helper class which supports the xbmcvfs libraries.
