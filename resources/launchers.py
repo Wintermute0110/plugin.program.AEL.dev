@@ -764,14 +764,17 @@ class RomStatisticsStrategy(object):
             recently_played_roms = temp_list
 
         self.recent_played_launcher.update_rom_set(recently_played_roms)
+
+        recent_rom.increase_launch_count()
         
         # --- Compute most played ROM statistics ---
         most_played_roms = self.most_played_launcher.get_roms()
+        if most_played_roms is None:
+            most_played_roms = []
+        else:
+            most_played_roms = [rom for rom in most_played_roms if rom.get_id() != recent_rom.get_id()]
         
-        recent_rom.increase_launch_count()
-        most_played_roms = [rom for rom in most_played_roms if rom.get_id() != recent_rom.get_id()]
-        most_played_roms.insert(0, recent_rom)
-        
+        most_played_roms.append(recent_rom)
         self.most_played_launcher.update_rom_set(most_played_roms)
 
 # -------------------------------------------------------------------------------------------------
@@ -817,6 +820,9 @@ class MetaDataItem(object):
     
     def get_data(self):
         return self.entity_data
+
+    def copy_of_data(self):
+        return self.entity_data.copy()
 
     def get_custom_attribute(self, key, default_value = None):
         return self.entity_data[key] if key in self.entity_data else default_value
@@ -1032,7 +1038,7 @@ class Rom(MetaDataItem):
 
     def get_clone(self):
         return self.entity_data['cloneof']
-
+    
     def has_alternative_application(self):
         return 'altapp' in self.entity_data and self.entity_data['altapp']
 
@@ -1071,11 +1077,11 @@ class Rom(MetaDataItem):
     def get_esrb_rating(self):
         return self.entity_data['m_esrb']
 
+    def get_favourite_status(self):
+        return self.entity_data['fav_status']
+
     def get_launch_count(self):
         return self.entity_data['launch_count']
-    
-    def copy_of_data(self):
-        return self.entity_data.copy()
     
     def set_file(self, file):
         self.entity_data['filename'] = file.getOriginalPath()
@@ -1089,6 +1095,12 @@ class Rom(MetaDataItem):
     def set_esrb_rating(self, esrb):
         self.entity_data['m_esrb'] = esrb
 
+    # todo: definitly something for a inherited FavouriteRom class
+    # >> Favourite ROM unique fields
+    # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
+    def set_favourite_status(self, state):
+        self.entity_data['fav_status'] = state
+        
     def increase_launch_count(self):
         launch_count = self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
         launch_count += 1
@@ -1099,6 +1111,10 @@ class Rom(MetaDataItem):
     
     def set_alternative_arguments(self, arg):
         self.entity_data['altarg'] = arg
+
+    def copy(self):
+        data = self.copy_of_data()
+        return Rom(data)
 
     def get_edit_options(self, category_id):
 
@@ -1172,7 +1188,7 @@ class Rom(MetaDataItem):
     #
     # todo: Replace with nfo_file_path.readXml() and just use XPath
     def update_with_nfo_file(self, nfo_file_path, verbose = True):
-        
+
         log_debug('Rom.update_with_nfo_file() Loading "{0}"'.format(nfo_file_path.getPath()))
         if not nfo_file_path.exists():
             if verbose:
@@ -1214,6 +1230,9 @@ class Rom(MetaDataItem):
 
         if verbose:
             kodi_notify('Imported {0}'.format(nfo_file_path.getPath()))
+
+        return
+
 
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything that is supported.
@@ -2012,7 +2031,7 @@ class RomLauncher(Launcher):
     def update_rom_set(self, roms):
 
         if not isinstance(roms,dict):
-            roms = dict((rom.get_id(), rom.get_data()) for rom in roms)
+            roms = dict((rom.get_id(), rom) for rom in roms)
 
         self.romset_repository.save_rom_set(self, roms)
         self.roms = roms
@@ -2037,6 +2056,57 @@ class RomLauncher(Launcher):
 
         self.roms.pop(rom_id)
         self.romset_repository.save_rom_set(self, self.roms)
+    
+    # -------------------------------------------------------------------------------------------------
+    # Favourite ROM creation/management
+    # -------------------------------------------------------------------------------------------------
+    #
+    # Creates a new Favourite ROM dictionary from parent ROM and Launcher.
+    #
+    # No-Intro Missing ROMs are not allowed in Favourites or Virtual Launchers.
+    # fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
+    #  'OK'                ROM filename exists and launcher exists and ROM id exists
+    #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
+    #  'Unlinked Launcher' ROM filename exists but Launcher ID not found
+    #                      Note that if the launcher does not exists implies ROM ID does not exist.
+    #                      If launcher doesn't exist ROM JSON cannot be loaded.
+    #  'Broken'            ROM filename does not exist. ROM is unplayable
+    #
+    def convert_rom_to_favourite(self, rom_id):
+
+        rom = self.select_rom(rom_id)
+
+        # >> Copy original rom     
+        # todo: Should we make a FavouriteRom class inheriting Rom?
+        favourite = rom.copy()
+
+        # Delete nointro_status field from ROM. Make sure this is done in the copy to be
+        # returned to avoid chaning the function parameters (dictionaries are mutable!)
+        # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
+        # NOTE keep it!
+        # del favourite['nointro_status']
+
+        # >> Copy parent launcher fields into Favourite ROM
+        favourite.set_custom_attribute('launcherID',            self.get_id())
+        favourite.set_custom_attribute('platform',              self.get_platform())
+        favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
+        favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
+        favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
+        favourite.set_custom_attribute('rompath',               self.get_rom_path())
+        favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
+        favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
+        favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())
+        favourite.set_custom_attribute('roms_default_icon',     self.get_custom_attribute('roms_default_icon'))
+        favourite.set_custom_attribute('roms_default_fanart',   self.get_custom_attribute('roms_default_fanart'))
+        favourite.set_custom_attribute('roms_default_banner',   self.get_custom_attribute('roms_default_banner'))
+        favourite.set_custom_attribute('roms_default_poster',   self.get_custom_attribute('roms_default_poster'))
+        favourite.set_custom_attribute('roms_default_clearlogo',self.get_custom_attribute('roms_default_clearlogo'))
+
+        # >> Favourite ROM unique fields
+        # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
+        favourite.set_favourite_status('OK')
+
+        return favourite
 
     def get_edit_options(self):
 
@@ -2225,7 +2295,7 @@ class RomLauncher(Launcher):
         if self.entity_data['nointro_xml_file']:
             log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
             self.entity_data['nointro_xml_file'] = ''
-
+           
     def set_number_of_roms(self, num_of_roms = -1):
 
         if num_of_roms == -1:

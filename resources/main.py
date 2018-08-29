@@ -4789,15 +4789,12 @@ class Main:
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
-
-        # >> If thumb is empty then use launcher thum. / If fanart is empty then use launcher fanart.
-        # if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = launcher['thumb']
-        # if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = launcher['fanart']
-        
+            
         # --- Add ROM to favourites ROMs and save to disk ---
-        favlauncher.save_rom(rom)
+        fav_rom = launcher.convert_rom_to_favourite(romID)
+        favlauncher.save_rom(fav_rom)
 
-        kodi_notify('ROM {0} added to Favourites'.format(rom.get_name()))
+        kodi_notify('ROM {0} added to Favourites'.format(fav_rom.get_name()))
         kodi_refresh_container()
 
     #
