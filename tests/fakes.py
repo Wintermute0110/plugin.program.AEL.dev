@@ -20,7 +20,7 @@ class FakeRomSetRepository(RomSetRepository):
     def save_rom_set(self, launcher, roms):
         self.roms = roms
 
-    def delete_by_launcher(self, launcher):
+    def delete_all_by_launcher(self, launcher):
         self.roms = {}      
 
 class FakeExecutor(Executor):

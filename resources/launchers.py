@@ -205,7 +205,7 @@ class CategoryRepository(object):
         self.data_context.save_node('category', category_id, category.get_data())        
         self.data_context.commit()
 
-    def save_collection(self, categories):
+    def save_multiple(self, categories):
         
         for category in categories:
             category_id = category.get_id()
@@ -419,7 +419,7 @@ class LauncherRepository(object):
         self.data_context.save_node('launcher', launcher_id, launcher_data)        
         self.data_context.commit()
 
-    def save_collection(self, launchers, update_launcher_timestamp = True):
+    def save_multiple(self, launchers, update_launcher_timestamp = True):
         
         for launcher in launchers:
             
@@ -477,7 +477,49 @@ class CollectionRepository(object):
         collection_data = self._parse_xml_to_dictionary(collection_element)
         collection = self.launcher_factory.create(collection_data)
         return collection
+
+    def find_all(self):
+        
+        collections = []
+        collection_elements = self.data_context.get_nodes('Collection')
+        
+        for collection_element in collection_elements:
+            collection_data = self._parse_xml_to_dictionary(collection_element)
+            collection = self.launcher_factory.create(collection_data)
+
+            collections.append(collection)
+
+        return collections
+
+    def save(self, collection, update_launcher_timestamp = True):
+        
+        if update_launcher_timestamp:
+            collection.update_timestamp()
+
+        collection_id   = collection.get_id()
+        collection_data = collection.get_data()
+        
+        self.data_context.save_node('Collection', collection_id, collection_data)        
+        self.data_context.commit()
+
+    def save_multiple(self, collections, update_launcher_timestamp = True):
+        
+        for collection in collections:
+            
+            if update_launcher_timestamp:
+                collection.update_timestamp()
+                
+            collection_id   = collection.get_id()
+            collection_data = collection.get_data()
+            
+            self.data_context.save_node('Collection', collection_id, collection_data)       
+
+        self.data_context.commit()
     
+ROMSET_CPARENT  = '_index_CParent'
+ROMSET_PCLONE   = '_index_PClone'
+ROMSET_PARENTS  = '_parents'
+ROMSET_DAT      = '_DAT'
 # -------------------------------------------------------------------------------------------------
 # Repository class for Rom Set objects.
 # Arranges retrieving and storing of roms belonging to a particular launcher.
@@ -579,8 +621,8 @@ class RomSetRepository(object):
     # <roms_base_noext>_index_PClone.json
     # <roms_base_noext>_parents.json
     # <roms_base_noext>_DAT.json
-    #
-    def delete_by_launcher(self, launcher):
+    #    
+    def delete_all_by_launcher(self, launcher):
         roms_base_noext = launcher.get_roms_base()
 
         # >> Delete ROMs JSON file
@@ -615,7 +657,17 @@ class RomSetRepository(object):
         if roms_DAT_FN.exists():
             log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getOriginalPath()))
             roms_DAT_FN.unlink()
-            
+
+    def delete_by_launcher(self, launcher, kind):
+
+        roms_base_noext     = launcher.get_roms_base()
+        rom_set_file_name   = roms_base_noext + kind
+        rom_set_path        = self.roms_dir.pjoin(rom_set_file_name + '.json')
+
+        if rom_set_path.exists():
+            log_info('delete_by_launcher() Deleting {0}'.format(rom_set_path.getPath()))
+            rom_set_path.unlink()
+        
 # -------------------------------------------------------------------------------------------------
 # Factory class for creating the specific/derived launchers based upon the given type and 
 # dictionary with launcher data.
@@ -658,8 +710,9 @@ class LauncherFactory(object):
         if not self.VIRTUAL_CAT_RATING_DIR.exists():    self.VIRTUAL_CAT_RATING_DIR.makedirs()
         if not self.COLLECTIONS_DIR.exists():           self.COLLECTIONS_DIR.makedirs()
 
+    
     def _initialize_virtual_launchers(self):
-
+        
         log_info('LauncherFactory() Preinitializing virtual launchers.')
         
         # create default data
@@ -991,6 +1044,7 @@ class VirtualCategory(Category):
     
     def is_virtual(self):
         return True
+
 # -------------------------------------------------------------------------------------------------
 # Class representing a ROM file you can play through AEL.
 # -------------------------------------------------------------------------------------------------
@@ -1104,6 +1158,15 @@ class Rom(MetaDataItem):
 
     def set_esrb_rating(self, esrb):
         self.entity_data['m_esrb'] = esrb
+
+    def set_nointro_status(self, status):
+        self.entity_data['nointro_status'] = status
+
+    def set_pclone_status(self, status):
+        self.entity_data['pclone_status'] = status
+
+    def set_clone(self, clone):
+        self.entity_data['cloneof'] = clone
 
     # todo: definitly something for a inherited FavouriteRom class
     # >> Favourite ROM unique fields
@@ -2058,7 +2121,12 @@ class RomLauncher(Launcher):
         self.romset_repository.save_rom_set(self, self.roms)
 
     def delete_rom_set(self):
-        self.romset_repository.delete_by_launcher(self)
+        self.romset_repository.delete_all_by_launcher(self)
+
+    def reset_parent_and_clone_roms(self):
+        self.romset_repository.delete_by_launcher(self, ROMSET_CPARENT)
+        self.romset_repository.delete_by_launcher(self, ROMSET_PCLONE)
+        self.romset_repository.delete_by_launcher(self, ROMSET_PARENTS)
 
     def remove_rom(self, rom_id):
         if not self.has_roms():
@@ -2257,7 +2325,7 @@ class RomLauncher(Launcher):
     def clear_roms(self):
         self.entity_data['num_roms'] = 0
         self.roms = {}
-        self.romset_repository.delete_by_launcher(self)
+        self.romset_repository.delete_all_by_launcher(self)
 
     def get_display_mode(self):
         return self.entity_data['launcher_display_mode'] if 'launcher_display_mode' in self.entity_data else LAUNCHER_DMODE_FLAT
@@ -2305,7 +2373,16 @@ class RomLauncher(Launcher):
         if self.entity_data['nointro_xml_file']:
             log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
             self.entity_data['nointro_xml_file'] = ''
-           
+
+    def set_audit_stats(self, num_of_roms, num_audit_parents, num_audit_clones, num_audit_have, num_audit_miss, num_audit_unknown):
+        
+        self.set_number_of_roms(get_number_of_roms)
+        self.entity_data['num_parents'] = num_audit_parents
+        self.entity_data['num_clones']  = num_audit_clones
+        self.entity_data['num_have']    = num_audit_have
+        self.entity_data['num_miss']    = num_audit_miss
+        self.entity_data['num_unknown'] = num_audit_unknown
+            
     def set_number_of_roms(self, num_of_roms = -1):
 
         if num_of_roms == -1:

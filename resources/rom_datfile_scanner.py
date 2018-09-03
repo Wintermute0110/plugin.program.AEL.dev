@@ -4,16 +4,16 @@ import xbmc, xbmcgui
 # --- Modules/packages in this plugin ---
 from constants import *
 from romsets import *
+from rom_audit import *
 
 from utils import *
 from utils_kodi import *
 
 class RomDatFileScanner(ProgressDialogStrategy):
     
-    def __init__(self, settings, romsetsFactory):
+    def __init__(self, settings):
         
         self.settings = settings
-        self.romsetsFactory = romsetsFactory
 
         super(RomDatFileScanner, self).__init__()
 
@@ -34,8 +34,8 @@ class RomDatFileScanner(ProgressDialogStrategy):
     #   False -> There was a problem with the audit.
     #
     #def _roms_update_NoIntro_status(self, roms, nointro_xml_file_FileName):
-    def update_roms_NoIntro_status(self, launcher, roms, nointro_xml_file_FileName):
-
+    def update_roms_NoIntro_status(self, launcher):
+                
         __debug_progress_dialogs = False
         __debug_time_step = 0.0005
         
@@ -47,6 +47,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
         if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Check if DAT file exists ---
+        nointro_xml_file_FileName = launcher.get_nointro_xml_filepath()
         if not nointro_xml_file_FileName.exists():
             log_warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_FileName.getOriginalPath()))
             return False
@@ -68,12 +69,12 @@ class RomDatFileScanner(ProgressDialogStrategy):
             item_counter = 0
             filtered_roms_nointro = {}
             for rom_id in roms_nointro:
-                rom = roms_nointro[rom_id]
-                BIOS_str_list = re.findall('\[BIOS\]', rom['name'])
+                rom_data = roms_nointro[rom_id]
+                BIOS_str_list = re.findall('\[BIOS\]', rom_data['name'])
                 if not BIOS_str_list:
-                    filtered_roms_nointro[rom_id] = rom
+                    filtered_roms_nointro[rom_id] = rom_data
                 else:
-                    log_debug('_roms_update_NoIntro_status() Removed BIOS "{0}"'.format(rom['name']))
+                    log_debug('_roms_update_NoIntro_status() Removed BIOS "{0}"'.format(rom_data['name']))
                 item_counter += 1
                 self._updateProgress((item_counter*100)/num_items)
                 if __debug_progress_dialogs: time.sleep(__debug_time_step)
@@ -88,9 +89,9 @@ class RomDatFileScanner(ProgressDialogStrategy):
         self._updateProgress(0, 'Creating No-Intro and ROM sets ...')
         roms_nointro_set = set(roms_nointro.keys())
         roms_set = set()
-        for rom_id in roms:
+        for rom in roms:
             # >> Use the ROM basename.
-            ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
+            ROMFileName = rom.get_file()
             roms_set.add(ROMFileName.getBase_noext())
         self._updateProgress(100)
         if __debug_progress_dialogs: time.sleep(0.5)
@@ -99,14 +100,14 @@ class RomDatFileScanner(ProgressDialogStrategy):
         self._updateProgress(0, 'Audit Step 1/4: Checking Have and Unknown ROMs ...')
         num_items = len(roms)
         item_counter = 0
-        for rom_id in roms:
-            ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
+        for rom in roms:
+            ROMFileName = rom.get_file()
             if ROMFileName.getBase_noext() in roms_nointro_set:
-                roms[rom_id]['nointro_status'] = NOINTRO_STATUS_HAVE
+                rom.set_nointro_status(NOINTRO_STATUS_HAVE)
                 audit_have += 1
                 log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBase_noext()))
             else:
-                roms[rom_id]['nointro_status'] = NOINTRO_STATUS_UNKNOWN
+                rom.set_nointro_status(NOINTRO_STATUS_UNKNOWN)
                 audit_unknown += 1
                 log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBase_noext()))
             item_counter += 1
@@ -118,10 +119,10 @@ class RomDatFileScanner(ProgressDialogStrategy):
         self._updateProgress(0, 'Audit Step 2/4: Checking Missing ROMs ...')
         num_items = len(roms)
         item_counter = 0
-        for rom_id in roms:
-            ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
+        for rom in roms:
+            ROMFileName = rom.get_file()
             if not ROMFileName.exists():
-                roms[rom_id]['nointro_status'] = NOINTRO_STATUS_MISS
+                rom.set_nointro_status(NOINTRO_STATUS_MISS)
                 audit_miss += 1
                 log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBase_noext()))
             item_counter += 1
@@ -135,21 +136,19 @@ class RomDatFileScanner(ProgressDialogStrategy):
         self._updateProgress(0, 'Audit Step 3/4: Adding Missing ROMs ...')
         num_items = len(roms_nointro_set)
         item_counter = 0
-        ROMPath = FileNameFactory.create(launcher['rompath'])
+        ROMPath = launcher.get_rom_path()
         for nointro_rom in sorted(roms_nointro_set):
             # log_debug('_roms_update_NoIntro_status() Checking "{0}"'.format(nointro_rom))
             if nointro_rom not in roms_set:
                 # Add new "fake" missing ROM. This ROM cannot be launched!
                 # Added ROMs have special extension .nointro
-                rom = fs_new_rom()
-                rom_id                = misc_generate_random_SID()
-                rom['id']             = rom_id
-                rom['filename']       = ROMPath.pjoin(nointro_rom + '.nointro').getOriginalPath()
-                rom['m_name']         = nointro_rom
-                rom['nointro_status'] = NOINTRO_STATUS_MISS
-                roms[rom_id]          = rom
+                rom = Rom()
+                rom.set_file(ROMPath.pjoin(nointro_rom + '.nointro'))
+                rom.set_name(nointro_rom)
+                rom.set_nointro_status(NOINTRO_STATUS_MISS)
+                roms.append(rom)
                 audit_miss += 1
-                log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom['m_name']))
+                log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom.get_name()))
                 # log_debug('_roms_update_NoIntro_status()    OP   "{0}"'.format(rom['filename']))
             item_counter += 1
             self._updateProgress((item_counter*100)/num_items)
@@ -211,24 +210,21 @@ class RomDatFileScanner(ProgressDialogStrategy):
         num_items = len(roms)
         item_counter = 0
         audit_parents = audit_clones = 0
-        for rom_id in roms:
+        for rom in roms:
+            rom_id = rom.get_id()
             if rom_id in roms_pclone_index:
-                roms[rom_id]['pclone_status'] = PCLONE_STATUS_PARENT
+                rom.set_pclone_status(PCLONE_STATUS_PARENT)
                 audit_parents += 1
             else:
-                roms[rom_id]['cloneof'] = clone_parent_dic[rom_id]
-                roms[rom_id]['pclone_status'] = PCLONE_STATUS_CLONE
+                rom.set_clone(clone_parent_dic[rom_id])
+                rom.set_pclone_status(PCLONE_STATUS_CLONE)
                 audit_clones += 1
             item_counter += 1
             self._updateProgress((item_counter*100)/num_items)
             if __debug_progress_dialogs: time.sleep(__debug_time_step)
         self._updateProgress(100)
-        launcher['num_roms']    = len(roms)
-        launcher['num_parents'] = audit_parents
-        launcher['num_clones']  = audit_clones
-        launcher['num_have']    = audit_have
-        launcher['num_miss']    = audit_miss
-        launcher['num_unknown'] = audit_unknown
+
+        launcher.set_audit_stats(len(roms), audit_parents, audit_clones, audit_have, audit_miss, audit_unknown)
 
         # --- Make a Parent only ROM list and save JSON ---
         # >> This is to speed up rendering of launchers in 1G1R display mode
@@ -282,49 +278,39 @@ class RomDatFileScanner(ProgressDialogStrategy):
         # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE and
         #            set PClone status to PCLONE_STATUS_NONE
         log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
-        for rom_id in sorted(roms.iterkeys()): 
-            roms[rom_id]['nointro_status'] = NOINTRO_STATUS_NONE
-            roms[rom_id]['pclone_status']  = PCLONE_STATUS_NONE
+        for rom in roms: 
+            rom.set_nointro_status(NOINTRO_STATUS_NONE)
+            rom.set_pclone_status(PCLONE_STATUS_NONE)
+
         log_info('_roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
 
         # >> Step 3) Delete PClone index and Parent ROM list.
-        roms_base_noext         = launcher['roms_base_noext']
-        CParent_roms_base_noext = roms_base_noext + '_index_CParent'
-        PClone_roms_base_noext  = roms_base_noext + '_index_PClone'
-        parents_roms_base_noext = roms_base_noext + '_parents'
-        CParent_FN = ROMS_DIR.pjoin(CParent_roms_base_noext + '.json')
-        PClone_FN  = ROMS_DIR.pjoin(PClone_roms_base_noext + '.json')
-        parents_FN = ROMS_DIR.pjoin(parents_roms_base_noext + '.json')
-        if CParent_FN.exists():
-            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(CParent_FN.getPath()))
-            CParent_FN.unlink()
-        if PClone_FN.exists():
-            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(PClone_FN.getPath()))
-            PClone_FN.unlink()
-        if parents_FN.exists():
-            log_info('_roms_reset_NoIntro_status() Deleting {0}'.format(parents_FN.getPath()))
-            parents_FN.unlink()
+        launcher.reset_parent_and_clone_roms()
 
-    # todo: move to romset
     # Deletes missing ROMs
     #
     def _roms_delete_missing_ROMs(self, roms):
+
         num_removed_roms = 0
         num_roms = len(roms)
         log_info('_roms_delete_missing_ROMs() Launcher has {0} ROMs'.format(num_roms))
         if num_roms > 0:
             log_verb('_roms_delete_missing_ROMs() Starting dead items scan')
-            for rom_id in sorted(roms.iterkeys()):
-                if not roms[rom_id]['filename']:
-                    log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(roms[rom_id]['m_name']))
+
+            for rom in reversed(roms):
+            
+                ROMFileName = rom.get_file()
+                if not rom_file:
+                    log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(rom.get_name()))
                     continue
-                ROMFileName = FileNameFactory.create(roms[rom_id]['filename'])
+
                 log_debug('_roms_delete_missing_ROMs() Test "{0}"'.format(ROMFileName.getBase()))
                 # --- Remove missing ROMs ---
                 if not ROMFileName.exists():
                     log_debug('_roms_delete_missing_ROMs() RM   "{0}"'.format(ROMFileName.getBase()))
-                    del roms[rom_id]
+                    roms.remove(rom)
                     num_removed_roms += 1
+
             if num_removed_roms > 0:
                 log_info('_roms_delete_missing_ROMs() {0} dead ROMs removed successfully'.format(num_removed_roms))
             else:
