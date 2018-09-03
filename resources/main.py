@@ -496,11 +496,17 @@ class Main:
                 self._subcommand_edit_launcher_metadata(launcher)
                 return
 
+        
+            
         if command == 'EDIT_TITLE': 
             if has_rom:
                 self._subcommand_edit_rom_title(launcher, rom)
                 return 
-            self._subcommand_change_launcher_name(launcher)
+            if has_launcher:
+                self._subcommand_change_launcher_name(launcher)
+                return
+            
+            self._subcommand_edit_category_title(category)
             return
 
         if command == 'EDIT_PLATFORM': 
@@ -511,35 +517,50 @@ class Main:
             if has_rom:
                 self._subcommand_edit_rom_release_year(launcher, rom)
                 return
-            self._subcommand_edit_launcher_releaseyear(launcher)
+            if has_launcher:
+                self._subcommand_edit_launcher_releaseyear(launcher)
+                return
+            self._subcommand_edit_category_releaseyear(category)
             return
 
         if command == 'EDIT_GENRE': 
             if has_rom:
                 self._subcommand_edit_rom_genre(launcher, rom)
                 return
-            self._subcommand_edit_launcher_genre(launcher)
+            if has_launcher:
+                self._subcommand_edit_launcher_genre(launcher)
+                return
+            self._subcommand_edit_category_genre(category)
             return
 
         if command == 'EDIT_DEVELOPER': 
             if has_rom:
                 self._subcommand_edit_rom_developer(launcher, rom)
                 return
-            self._subcommand_edit_launcher_developer(launcher)
+            if has_launcher:
+                self._subcommand_edit_launcher_developer(launcher)
+                return
+            self._subcommand_edit_category_developer(category)
             return
 
         if command == 'EDIT_RATING': 
             if has_rom:
                 self._subcommand_edit_rom_rating(launcher, rom)
                 return
-            self._subcommand_edit_launcher_rating(launcher)
+            if has_launcher:
+                self._subcommand_edit_launcher_rating(launcher)
+                return
+            self._subcommand_edit_category_rating(category)
             return
         
         if command == 'EDIT_PLOT': 
             if has_rom:
                 self._subcommand_edit_rom_description(launcher, rom)
                 return
-            self._subcommand_edit_launcher_plot(launcher)
+            if has_launcher:
+                self._subcommand_edit_launcher_plot(launcher)
+                return
+            self._subcommand_edit_category_plot(category)
             return
         
         if command == 'LOAD_PLOT':
@@ -562,14 +583,22 @@ class Main:
             return
 
         if command == 'IMPORT_NFO_FILE_BROWSE': 
-            self._subcommand_browse_import_launcher_nfo_file(launcher)
+            if has_launcher:
+                self._subcommand_browse_import_launcher_nfo_file(launcher)
+                return
+            
+            self._subcommand_browse_import_category_nfo_file(category)
             return
 
         if command == 'SAVE_NFO_FILE': 
             if has_rom:
                 self._subcommand_export_rom_metadata(launcher, rom)
                 return
-            self._subcommand_save_launcher_nfo_file(launcher)
+            if has_launcher:
+                self._subcommand_save_launcher_nfo_file(launcher)
+                return
+
+            self._subcommand_save_category_nfo_file(category)
             return
 
         if command == 'EDIT_ASSETS':
@@ -590,7 +619,7 @@ class Main:
             if has_launcher:
                 self._subcommand_set_launcher_default_assets(launcher)
                 return
-
+        
         if command == 'CATEGORY_STATUS':
             self._subcommand_change_category_status(category)
             return
@@ -880,6 +909,8 @@ class Main:
     #
     
     
+    
+    
     def _misc_set_default_sorting_method(self):
         # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
         if self.addon_handle < 0: return
@@ -1039,9 +1070,7 @@ class Main:
     # Former _edit_rom()
     # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID if we are editing
     # a ROM in Favourites.
-    #
-    
-    
+    #    
     def _command_edit_rom(self, categoryID, launcherID, romID):
         
         if romID == UNKNOWN_ROMS_PARENT_ID:
@@ -1126,133 +1155,109 @@ class Main:
     
     # --- Edit category metadata ---
     def _subcommand_edit_category_metadata(self, category):
-            
-        NFO_FileName = fs_get_category_NFO_name(self.settings, category.get_data())
-        NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text_limit_string(category.get_plot(), PLOT_STR_MAXSIZE)
-        dialog = xbmcgui.Dialog()
-        type2 = dialog.select('Edit Category Metadata',
-                                ["Edit Title: '{0}'".format(category.get_name()),
-                                "Edit Release Year: '{0}'".format(category.get_releaseyear()),
-                                "Edit Genre: '{0}'".format(category.get_genre()),
-                                "Edit Developer: '{0}'".format(category.get_developer()),
-                                "Edit Rating: '{0}'".format(category.get_rating()),
-                                "Edit Plot: '{0}'".format(plot_str),
-                                'Import NFO file (default, {0})'.format(NFO_str),
-                                'Import NFO file (browse NFO file) ...',
-                                'Save NFO file (default location)'])
-        if type2 < 0: return
-
-        # --- Edition of the category name ---
-        if type2 == 0:
-            keyboard = xbmc.Keyboard(category.get_name(), 'Edit Title')
-            keyboard.doModal()
-            if not keyboard.isConfirmed(): return
-            title = keyboard.getText().decode('utf-8')
-            if title == '': title = category.get_name()
-            new_title_str = title.strip()
-            category.set_name(new_title_str)
-            kodi_notify('Category Title is now {0}'.format(new_title_str))
-
-
-        # --- Edition of the category release date (year) ---
-        elif type2 == 1:
-            old_year_str = category.get_releaseyear()
-            keyboard = xbmc.Keyboard(old_year_str, 'Edit Category release year')
-            keyboard.doModal()
-            if not keyboard.isConfirmed(): return
-            new_year_str = keyboard.getText().decode('utf-8')
-            if old_year_str == new_year_str:
-                kodi_notify('Category Year not changed')
-                return
-
-            category.update_releaseyear(new_year_str)
-            kodi_notify('Category Year is now {0}'.format(new_year_str))
-
-        # --- Edition of the category genre ---
-        elif type2 == 2:
-            keyboard = xbmc.Keyboard(category.get_genre(), 'Edit Genre')
-            keyboard.doModal()
-            if not keyboard.isConfirmed(): return
-            new_genre_str = keyboard.getText().decode('utf-8')
-            category.update_genre(new_genre_str)
-            kodi_notify('Category Genre is now {0}'.format(new_genre_str))
-
-        # --- Edition of the category developer ---
-        elif type2 == 3:
-            old_developer_str = category.get_developer()
-            keyboard = xbmc.Keyboard(old_developer_str, 'Edit developer')
-            keyboard.doModal()
-            if not keyboard.isConfirmed(): return
-            new_developer_str = keyboard.getText().decode('utf-8')
-            if old_developer_str == new_developer_str:
-                kodi_notify('Category Developer not changed')
-                return
-
-            category.update_developer(new_developer_str)
-            kodi_notify('Category Developer is now {0}'.format(new_developer_str))
-
-        # --- Edition of the category rating ---
-        elif type2 == 4:
-            rating = dialog.select('Edit Category Rating',
-                                    ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
-                                    'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
-            # >> Rating not set, empty string
-            if rating == 0:
-                category.update_rating(-1)
-                kodi_notify('Category Rating changed to Not Set')
-            elif rating >= 1 and rating <= 11:
-                category.update_rating(rating - 1)
-                kodi_notify('Category Rating is now {0}'.format(category.get_rating()))
-            elif rating < 0:
-                kodi_notify('Category rating not changed')
-                return
-
-        # --- Edition of the plot (description) ---
-        elif type2 == 5:
-            old_plot_str = category.get_plot()
-            keyboard = xbmc.Keyboard(category.get_plot(), 'Edit Plot')
-            keyboard.doModal()
-            if not keyboard.isConfirmed(): return
-            new_plot_str = keyboard.getText().decode('utf-8')
-            if old_plot_str == new_plot_str:
-                kodi_notify('Category Plot not changed')
-                return
                 
-            category.update_plot(new_plot_str)
-            kodi_notify('Launcher Plot is now "{0}"'.format(new_plot_str))
+        category_options = category.get_metadata_edit_options()
 
-        # --- Import category metadata from NFO file (automatic) ---
-        elif type2 == 6:
-            # >> Returns True if changes were made
-            NFO_file = fs_get_category_NFO_name(self.settings, category.get_data())
-            if not fs_import_category_NFO(NFO_file, category.get_data()): return
-            kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
+        dialog = DictionaryDialog()
+        selected_option = dialog.select('Edit Category Metadata', category_options)
+         
+        if selected_option is None:
+            log_debug('_subcommand_edit_category_metadata(): Selected option = NONE')
+            return self._command_edit_category(category.get_id())
+                
+        log_debug('_subcommand_edit_category_metadata(): Selected option = {0}'.format(selected_option))
+        self.run_sub_command(selected_option, category)
+        self._subcommand_edit_category_metadata(category)
+        return
 
-        # --- Browse for category NFO file ---
-        elif type2 == 7:
-            NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
-            log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
-            if not NFO_file: return
-            NFO_FileName = FileNameFactory.create(NFO_file)
-            if not NFO_FileName.exists(): return
-            # >> Returns True if changes were made
-            if not fs_import_category_NFO(NFO_FileName, category.get_data()): return
-            kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
+    # --- Edition of the category name ---
+    def _subcommand_edit_category_title(self, category):
+        if self._text_edit_category_metadata('Title', category.get_name, category.set_name):
+            self.category_repository.save(category)   
+            
+    # --- Edition of the category release date (year) ---
+    def _subcommand_edit_category_releaseyear(self, category):
+            
+        if self._text_edit_category_metadata('release year', category.get_releaseyear, category.update_releaseyear):
+            self.category_repository.save(category)   
+            
+        # --- Edition of the category genre ---
+    def _subcommand_edit_launcher_genre(self, category):
 
-        # --- Export category metadata to NFO file ---
-        elif type2 == 8:
-            NFO_FileName = fs_get_category_NFO_name(self.settings, category.get_data())
-            # >> Returns False if exception happened. If an Exception happened function notifies
-            # >> user, so display nothing to not overwrite error notification.
-            if not fs_export_category_NFO(NFO_FileName, category.get_data()): return
-            # >> No need to save categories/launchers
-            kodi_notify('Exported Category NFO file {0}'.format(NFO_FileName.getPath()))
-            return
+        if self._text_edit_category_metadata('genre', category.get_genre, category.update_genre):
+	        self.category_repository.save(category)
+
+    # --- Edition of the category developer ---
+    def _subcommand_edit_category_developer(self, category):
+	
+	    if self._text_edit_category_metadata('developer', category.get_developer, category.update_developer):
+            self.category_repository.save(category)
+            kodi_refresh_container()
+
+    
+    # --- Edition of the category rating ---
+    def _subcommand_edit_category_rating(self, category):
+
+        options =  {}
+        options[-1] = 'Not set'
+        options[0] = 'Rating 0'
+        options[1] = 'Rating 1'
+        options[2] = 'Rating 2'
+        options[3] = 'Rating 3'
+        options[4] = 'Rating 4'
+        options[5] = 'Rating 5'
+        options[6] = 'Rating 6'
+        options[7] = 'Rating 7'
+        options[8] = 'Rating 8'
+        options[9] = 'Rating 9'
+        options[10] = 'Rating 10'
+
+        if self._list_edit_category_metadata('Rating', options, -1, category.get_rating, category.update_rating):
+            self.category_repository.save(category)
+            
+    # --- Edition of the plot (description) ---
+    def _subcommand_edit_category_plot(self, category):
+
+        if self._text_edit_category_metadata('Plot', category.get_plot, category.update_plot):
+            self.category_repository.save(category)
+
+    # --- Import category metadata from NFO file (automatic) ---
+    def _subcommand_import_category_nfo_file(self, category):
+        # >> Returns True if changes were made
+        NFO_file = fs_get_category_NFO_name(self.settings, category.get_data())
+        if not fs_import_category_NFO(NFO_file, category.get_data()): return
+        kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
 
         # save
         self.category_repository.save(category)
         kodi_refresh_container()
+
+    # --- Browse for category NFO file ---
+    def _subcommand_browse_import_category_nfo_file(self, category):
+
+        NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
+        log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
+        if not NFO_file: return
+        NFO_FileName = FileNameFactory.create(NFO_file)
+        if not NFO_FileName.exists(): return
+        # >> Returns True if changes were made
+        if not fs_import_category_NFO(NFO_FileName, category.get_data()): return
+        kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))   
+
+        # save
+        self.category_repository.save(category)
+        kodi_refresh_container()
+
+    # --- Export category metadata to NFO file ---
+    def _subcommand_save_category_nfo_file(self, category):
+
+        NFO_FileName = fs_get_category_NFO_name(self.settings, category.get_data())
+        # >> Returns False if exception happened. If an Exception happened function notifies
+        # >> user, so display nothing to not overwrite error notification.
+        if not fs_export_category_NFO(NFO_FileName, category.get_data()): return
+        # >> No need to save categories/launchers
+        kodi_notify('Exported Category NFO file {0}'.format(NFO_FileName.getPath()))
+        return
 
     # --- Edit Category Assets/Artwork ---
     # >> New in Kodi Krypton: use new xbmcgui.Dialog().select() and get rid of ImgSelectDialog()
@@ -1578,30 +1583,22 @@ class Main:
             self.launcher_repository.save(launcher)
 
     # --- Edition of the launcher release date (year) ---
-    
-    
     def _subcommand_edit_launcher_releaseyear(self, launcher):
             
         if self._text_edit_launcher_metadata('release year', launcher.get_releaseyear, launcher.update_releaseyear):
             self.launcher_repository.save(launcher)   
 
     # --- Edition of the launcher genre ---
-    
-    
     def _subcommand_edit_launcher_genre(self, launcher):
 
         if self._text_edit_launcher_metadata('genre', launcher.get_genre, launcher.update_genre):
 	        self.launcher_repository.save(launcher)
-        
-    
             
     def _subcommand_edit_launcher_developer(self, launcher):
 	
 	    if self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer):
 		    self.launcher_repository.save(launcher)
-
-    
-            
+       
     def _subcommand_edit_launcher_rating(self, launcher):
 
         options =  {}
@@ -1621,17 +1618,13 @@ class Main:
         if self._list_edit_launcher_metadata('Rating', options, -1, launcher.get_rating, launcher.update_rating):
             self.launcher_repository.save(launcher)
 
-    # --- Edit launcher description (plot) ---
-    
-    
+    # --- Edit launcher description (plot) ---   
     def _subcommand_edit_launcher_plot(self, launcher):
 
         if self._text_edit_launcher_metadata('Plot', launcher.get_plot, launcher.update_plot):
             self.launcher_repository.save(launcher)
     
-    # --- Import launcher metadata from NFO file (default location) ---
-    
-    
+    # --- Import launcher metadata from NFO file (default location) ---    
     def _subcommand_import_launcher_nfo_file(self, launcher):
 
         # >> Get NFO file name for launcher
@@ -1643,8 +1636,6 @@ class Main:
             kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
         
     # --- Browse for NFO file ---
-    
-    
     def _subcommand_browse_import_launcher_nfo_file(self, launcher):
 
         NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
@@ -2364,6 +2355,7 @@ class Main:
                             # log_debug('PClone group ROM "{0}" (ID) {1})'.format(ROMFile_t.getBase(), set_rom_id))
                             asset_DB_file_t = roms[set_rom_id][AInfo.key]
                             if asset_DB_file_t:
+
                                 rom[AInfo.key] = asset_DB_file_t
                                 log_debug('Found {0:<9} "{1}"'.format(AInfo.name, asset_DB_file_t))
                                 # >> Stop as soon as one asset is found in the group.
@@ -3282,6 +3274,26 @@ class Main:
 
  
             
+    
+    
+    def _text_edit_category_metadata(self, metadata_name, get_method, set_method):
+
+        old_value = get_method()
+        keyboard = xbmc.Keyboard(old_value, 'Edit Category {}'.format(metadata_name))
+        keyboard.doModal()
+            
+        if not keyboard.isConfirmed(): 
+            return False
+
+        new_value = keyboard.getText().decode('utf-8')
+        if old_value == new_value:
+            kodi_notify('Category {} not changed'.format(metadata_name))
+            return False
+
+        set_method(new_value)
+        kodi_notify('Category {} is now {}'.format(metadata_name, new_value))
+        return True
+            
     def _text_edit_launcher_metadata(self, metadata_name, get_method, set_method):
 
         old_value = get_method()
@@ -3317,7 +3329,35 @@ class Main:
         set_method(new_value)
         kodi_notify('ROM {} is now {}'.format(metadata_name, new_value))
         return True
+    
+    def _list_edit_category_metadata(self, metadata_name, options, default_value, get_method, set_method):
 
+        if not isinstance(options, dict): 
+            options = {item: item for (item) in options}
+            
+        preselected_value = default_value
+        previous_value = get_method()
+
+        log_debug('Category currently has "{}" set for {}'.format(previous_value, metadata_name))
+
+        if previous_value in options.keys():
+            preselected_value = previous_value
+
+        dialog = DictionaryDialog()
+        selected_option = dialog.select('Select the {}'.format(metadata_name), options, preselect = preselected_value)
+        
+        if selected_option is None:
+            return False
+        
+        if selected_option == previous_value:
+            kodi_notify('Category {} not changed'.format(metadata_name))
+            return False
+
+        set_method(selected_option)
+        textual_option = options[selected_option]
+
+        kodi_notify('Category {} is now {}'.format(metadata_name, textual_option))
+        return True
 
     def _list_edit_launcher_metadata(self, metadata_name, options, default_value, get_method, set_method):
 
@@ -4079,6 +4119,7 @@ class Main:
         #     log_debug('value = {0}'.format(roms[key]))
 
     # --- ROM display filter ---
+    # OBSOLETE METHOD (validate)
     def get_nointro_display_mode(self):
 
         dp_mode = selectedLauncher.get_nointro_display_mode()
@@ -5628,28 +5669,20 @@ class Main:
     #
     def _command_delete_collection(self, categoryID, launcherID):
         # --- Load collection index and ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+        collection = self.collection_repository.findef(launcherID)
+        collection_rom_list = collection.get_roms()
 
         # --- Confirm deletion ---
         num_roms = len(collection_rom_list)
-        collection_name = collection['m_name']
+        collection_name = collection.get_name()
         ret = kodi_dialog_yesno('Collection "{0}" has {1} ROMs. '.format(collection_name, num_roms) +
                                 'Are you sure you want to delete it?')
         if not ret: return
 
         # --- Remove JSON file and delete collection object ---
-        collection_file_path = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
-        try:
-            if collection_file_path.exists(): collection_file_path.unlink()
-        except OSError:
-            log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path.getOriginalPath()))
-            kodi_notify_warn('OSError exception deleting collection JSON')
-        collections.pop(launcherID)
-        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        collection.clear_roms()
+        self.collection_repository.delete(collection)
+
         kodi_refresh_container()
         kodi_notify('Deleted ROM Collection "{0}"'.format(collection_name))
 

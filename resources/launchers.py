@@ -516,6 +516,15 @@ class CollectionRepository(object):
 
         self.data_context.commit()
     
+    def delete(self, collection):
+        collection_id = collection.get_id()
+        
+        self.data_context.remove_node('Collection', collection_id)
+        self.data_context.commit()
+        
+# -------------------------------------------------------------------------------------------------
+# Rom sets constants
+# -------------------------------------------------------------------------------------------------
 ROMSET_CPARENT  = '_index_CParent'
 ROMSET_PCLONE   = '_index_PClone'
 ROMSET_PARENTS  = '_parents'
@@ -1030,6 +1039,26 @@ class Category(MetaDataItem):
         options['CATEGORY_STATUS']    = 'Category status: {0}'.format(self.get_state())
         options['EXPORT_CATEGORY']    = 'Export Category XML configuration ...'
         options['DELETE_CATEGORY']    = 'Delete Category'
+        return options
+
+    def get_metadata_edit_options(self):
+
+        # >> Metadata edit dialog
+        NFO_FileName = fs_get_category_NFO_name(self.settings, self.entity_data)
+        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+        plot_str = text_limit_string(self.get_plot(), PLOT_STR_MAXSIZE)
+        
+        options = OrderedDict()
+        options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
+        options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.get_releaseyear())
+        options['EDIT_GENRE']             = "Edit Genre: '{0}'".format(self.get_genre())
+        options['EDIT_DEVELOPER']         = "Edit Developer: '{0}'".format(self.get_developer())
+        options['EDIT_RATING']            = "Edit Rating: '{0}'".format(self.get_rating())
+        options['EDIT_PLOT']              = "Edit Plot: '{0}'".format(plot_str)
+        options['IMPORT_NFO_FILE']        = 'Import NFO file (default, {0})'.format(NFO_found_str)
+        options['IMPORT_NFO_FILE_BROWSE'] = 'Import NFO file (browse NFO file) ...'
+        options['SAVE_NFO_FILE']          = 'Save NFO file (default location)'
+
         return options
 
     @staticmethod
