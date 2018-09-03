@@ -1189,11 +1189,10 @@ class Main:
 
     # --- Edition of the category developer ---
     def _subcommand_edit_category_developer(self, category):
-	
-	    if self._text_edit_category_metadata('developer', category.get_developer, category.update_developer):
+        
+        if self._text_edit_category_metadata('developer', category.get_developer, category.update_developer):
             self.category_repository.save(category)
             kodi_refresh_container()
-
     
     # --- Edition of the category rating ---
     def _subcommand_edit_category_rating(self, category):
@@ -2311,9 +2310,11 @@ class Main:
             kodi_dialog_OK('No-Intro/Redump DAT not configured and audit_pclone_assets is True. ' +
                             'Cancelling looking for assets in the Parent/Clone group.')
         elif self.settings['audit_pclone_assets'] and launcher.has_nointro_xml():
+            
             log_info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
-            roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher.get_roms_base() + '_index_PClone')
-            clone_parent_dic  = fs_load_JSON_file(ROMS_DIR, launcher.get_roms_base() + '_index_CParent')
+            #roms_pclone = launcher.get_pclone_roms()
+            #roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher.get_roms_base() + '_index_PClone')
+            #clone_parent_dic  = fs_load_JSON_file(ROMS_DIR, launcher.get_roms_base() + '_index_CParent')
             pDialog.create('Advanced Emulator Launcher', 'Searching for assets/artwork in the Parent/Clone group ...')
             num_items = len(roms)
             item_counter = 0

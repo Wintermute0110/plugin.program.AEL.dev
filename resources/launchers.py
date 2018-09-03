@@ -538,10 +538,12 @@ class RomSetRepository(object):
     def __init__(self, roms_dir):
         self.roms_dir = roms_dir
     
-    def find_by_launcher(self, launcher):
+    def find_by_launcher(self, launcher, view_mode = None):
 
         roms_base_noext = launcher.get_roms_base()
-        view_mode       = launcher.get_display_mode()
+
+        if view_mode is None:
+            view_mode = launcher.get_display_mode()
         
         if roms_base_noext is None:
             repository_file = self.roms_dir
@@ -551,12 +553,12 @@ class RomSetRepository(object):
 
         else:
             repository_file = self.roms_dir.pjoin('{}_parents.json'.format(roms_base_noext))
-            
+
         if not repository_file.exists():
             log_warning('Launcher "{0}" JSON not found.'.format(repository_file.getOriginalPath()))
             return None
         
-        log_info('RomSetRepository.find_by_launcher() Loading ROMs in Launcher ({}:{})...'.format(launcher.get_launcher_type_name(), launcher.get_name()))
+        log_info('RomSetRepository.find_by_launcher() Loading ROMs in Launcher ({}:{}) Mode: {}...'.format(launcher.get_launcher_type_name(), launcher.get_name(), view_mode))
 
         roms_data = {}
         # --- Parse using json module ---
@@ -586,6 +588,24 @@ class RomSetRepository(object):
             roms[key] = r
 
         return roms
+
+    def find_index_file_by_launcher(self, launcher):
+        
+        roms_base_noext = launcher.get_roms_base()
+        repository_file = self.roms_dir.pjoin('{}_pclone.json'.format(roms_base_noext))
+                
+        log_verb('RomSetRepository.find_index_file_by_launcher(): Loading rom index from file {0}'.format(repository_file.getOriginalPath()))
+        try:
+            index_data = repository_file.readJson()
+        except ValueError:
+            statinfo = repository_file.stat()
+            log_error('RomSetRepository.find_index_file_by_launcher(): ValueError exception in json.load() function')
+            log_error('RomSetRepository.find_index_file_by_launcher(): Dir  {0}'.format(repository_file.getOriginalPath()))
+            log_error('RomSetRepository.find_index_file_by_launcher(): Size {0}'.format(statinfo.st_size))
+            return None
+        
+        return index_data
+
 
     def save_rom_set(self, launcher, roms):
         
@@ -631,6 +651,7 @@ class RomSetRepository(object):
     # <roms_base_noext>_parents.json
     # <roms_base_noext>_DAT.json
     #    
+    
     def delete_all_by_launcher(self, launcher):
         roms_base_noext = launcher.get_roms_base()
 
@@ -667,6 +688,7 @@ class RomSetRepository(object):
             log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getOriginalPath()))
             roms_DAT_FN.unlink()
 
+    
     def delete_by_launcher(self, launcher, kind):
 
         roms_base_noext     = launcher.get_roms_base()
@@ -681,6 +703,8 @@ class RomSetRepository(object):
 # Factory class for creating the specific/derived launchers based upon the given type and 
 # dictionary with launcher data.
 # -------------------------------------------------------------------------------------------------
+
+
 class LauncherFactory(object):
     
     def __init__(self, settings, executorFactory, plugin_data_dir):
@@ -2790,6 +2814,7 @@ class VirtualLauncher(RomLauncher):
     
 # -------------------------------------------------------------------------------------------------
 # Standard rom launcher where user can fully customize all settings.
+# The standard rom launcher also supports pclone/parent roms.
 # -------------------------------------------------------------------------------------------------
 class StandardRomLauncher(RomLauncher):
        
@@ -2856,7 +2881,14 @@ class StandardRomLauncher(RomLauncher):
 
     def change_rom_extensions(self, ext):
         self.entity_data['romext'] = ext
-       
+    
+    def get_pclone_roms(self):
+        return self.romset_repository.find_by_launcher(self, LAUNCHER_DMODE_PCLONE)
+    
+    def get_pclone_indices(self):
+        
+        roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher.get_roms_base() + '_index_PClone')
+
     def get_advanced_modification_options(self):
         
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
