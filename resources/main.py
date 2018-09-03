@@ -878,6 +878,8 @@ class Main:
     #
     # Set Sorting methods
     #
+    
+    
     def _misc_set_default_sorting_method(self):
         # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
         if self.addon_handle < 0: return
@@ -1038,6 +1040,8 @@ class Main:
     # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID if we are editing
     # a ROM in Favourites.
     #
+    
+    
     def _command_edit_rom(self, categoryID, launcherID, romID):
         
         if romID == UNKNOWN_ROMS_PARENT_ID:
@@ -1067,67 +1071,7 @@ class Main:
             log_debug('_command_edit_rom(): Selected option = {0}'.format(selected_option))
 
         self.run_sub_command(selected_option, None, launcher, rom)
-        return
-           
-    # ---------------------------------------------------------------------------------------------
-    # Categories LisItem rendering
-    # ---------------------------------------------------------------------------------------------
-    
-    #
-    # Renders the addon Root window. Categories, categoryless launchers, Favourites, etc.
-    #
-    def _command_render_categories(self):
-        self._misc_set_all_sorting_methods()
-        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-
-        categories = self.category_repository.find_all()
-
-        # >> For every category, add it to the listbox. Order alphabetically by name
-        for category in sorted(categories, key = lambda c : c.get_name()):
-            self._gui_render_category_row(category)
-
-        # --- Render categoryless launchers. Order alphabetically by name ---
-        catless_launchers = self.launcher_repository.find_by_category(VCATEGORY_ADDONROOT_ID)
-
-        for launcher in sorted(catless_launchers, key = lambda l : l.get_name()):
-            self._gui_render_launcher_row(launcher)
-
-        # --- AEL Favourites special category ---
-        if not self.settings['display_hide_favs']: self._gui_render_category_favourites_row()
-
-        # --- AEL Collections special category ---
-        if not self.settings['display_hide_collections']: self._gui_render_category_collections_row()
-
-        # --- AEL Virtual Categories ---
-        if not self.settings['display_hide_vlaunchers']: self._gui_render_virtual_category_root_row()
-
-        # --- Browse Offline Scraper database ---
-        if not self.settings['display_hide_AEL_scraper']: self._gui_render_category_AEL_offline_scraper_row()
-        if not self.settings['display_hide_LB_scraper']: self._gui_render_category_LB_offline_scraper_row()
-
-        # --- Recently played and most played ROMs ---
-        if not self.settings['display_hide_recent']:     self._gui_render_category_recently_played_row()
-        if not self.settings['display_hide_mostplayed']: self._gui_render_category_most_played_row()
-
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-
-    #
-    # Renders all categories without Favourites, Collections, virtual categories, etc.
-    # This function is called by skins to build shortcuts menu.
-    #
-    def _command_render_all_categories(self):
-        categories = self.category_repository.find_all()
-
-        # >> If no categories render nothing
-        if not categories:
-            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-            return
-
-        # >> For every category, add it to the listbox. Order alphabetically by name
-        for category in sorted(categories, key = lambda c : c.get_name()):
-            self._gui_render_category_row(category)
-
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        return         
         
     # ---------------------------------------------------------------------------------------------
     # Sub commands
@@ -1634,22 +1578,30 @@ class Main:
             self.launcher_repository.save(launcher)
 
     # --- Edition of the launcher release date (year) ---
+    
+    
     def _subcommand_edit_launcher_releaseyear(self, launcher):
             
         if self._text_edit_launcher_metadata('release year', launcher.get_releaseyear, launcher.update_releaseyear):
             self.launcher_repository.save(launcher)   
 
     # --- Edition of the launcher genre ---
+    
+    
     def _subcommand_edit_launcher_genre(self, launcher):
 
         if self._text_edit_launcher_metadata('genre', launcher.get_genre, launcher.update_genre):
 	        self.launcher_repository.save(launcher)
         
+    
+            
     def _subcommand_edit_launcher_developer(self, launcher):
 	
 	    if self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer):
 		    self.launcher_repository.save(launcher)
 
+    
+            
     def _subcommand_edit_launcher_rating(self, launcher):
 
         options =  {}
@@ -1670,12 +1622,16 @@ class Main:
             self.launcher_repository.save(launcher)
 
     # --- Edit launcher description (plot) ---
+    
+    
     def _subcommand_edit_launcher_plot(self, launcher):
 
         if self._text_edit_launcher_metadata('Plot', launcher.get_plot, launcher.update_plot):
             self.launcher_repository.save(launcher)
     
     # --- Import launcher metadata from NFO file (default location) ---
+    
+    
     def _subcommand_import_launcher_nfo_file(self, launcher):
 
         # >> Get NFO file name for launcher
@@ -1687,6 +1643,8 @@ class Main:
             kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
         
     # --- Browse for NFO file ---
+    
+    
     def _subcommand_browse_import_launcher_nfo_file(self, launcher):
 
         NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
@@ -1713,6 +1671,8 @@ class Main:
             kodi_notify('Exported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
     # --- Scrape launcher metadata ---
+    
+    
     def _subcommand_scrape_launcher(self, launcher, selected_option):
 
         scraper_obj_name = selected_option.replace('SCRAPE_', '')
@@ -2702,21 +2662,29 @@ class Main:
             launcher.save_rom(rom)
 
     # --- Edition of the rom release year ---    
+    
+    
     def _subcommand_edit_rom_release_year(self, launcher, rom):
         if self._text_edit_rom_metadata('Release Year', rom.get_releaseyear, rom.update_releaseyear):
             launcher.save_rom(rom)
 
     # --- Edition of the rom game genre ---
+    
+    
     def _subcommand_edit_rom_genre(self, launcher, rom):
         if self._text_edit_rom_metadata('genre', rom.get_genre, rom.update_genre):
             launcher.save_rom(rom)
 
     # --- Edition of the rom developer ---
+    
+    
     def _subcommand_edit_rom_developer(self, launcher, rom):
         if self._text_edit_rom_metadata('developer', rom.get_developer, rom.update_developer):
             launcher.save_rom(rom)
 
     # --- Edition of launcher NPlayers ---
+    
+    
     def _subcommand_edit_rom_number_of_players(self, launcher, rom):
         # >> Show a dialog select with the most used NPlayer entries, and have one option
         # >> for manual entry.
@@ -2755,6 +2723,8 @@ class Main:
             launcher.save_rom(rom)
 
     # --- Edition of the ROM rating ---
+    
+    
     def _subcommand_edit_rom_rating(self, launcher, rom):
                 
         options =  {}
@@ -2775,12 +2745,16 @@ class Main:
             launcher.save_rom(rom)
 
     # --- Edit ROM description (plot) ---
+    
+    
     def _subcommand_edit_rom_description(self, launcher, rom):
         
         if self._text_edit_rom_metadata('plot', rom.get_plot, rom.update_plot):
             launcher.save_rom(rom)
 
     # --- Import of the rom game plot from TXT file ---
+    
+    
     def _subcommand_import_rom_plot_from_txt(self, launcher, rom):
 
         dialog = xbmcgui.Dialog()
@@ -3191,6 +3165,8 @@ class Main:
             elif type3 < 0: return
 
     # --- Manage Collection ROM position (ONLY for Favourite/Collection ROMs) ---
+    
+    
     def _subcommand_manage_collection_rom_position(self, launcher, rom):
         
         dialog = xbmcgui.Dialog()
@@ -3304,6 +3280,8 @@ class Main:
                 new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
             roms = new_roms
 
+ 
+            
     def _text_edit_launcher_metadata(self, metadata_name, get_method, set_method):
 
         old_value = get_method()
@@ -3339,6 +3317,7 @@ class Main:
         set_method(new_value)
         kodi_notify('ROM {} is now {}'.format(metadata_name, new_value))
         return True
+
 
     def _list_edit_launcher_metadata(self, metadata_name, options, default_value, get_method, set_method):
 
@@ -3397,6 +3376,70 @@ class Main:
 
         kodi_notify('ROM {} is now {}'.format(metadata_name, textual_option))
         return True
+
+    # ---------------------------------------------------------------------------------------------
+    # Render methods
+    # ---------------------------------------------------------------------------------------------
+        
+    # ---------------------------------------------------------------------------------------------
+    # Categories LisItem rendering
+    # ---------------------------------------------------------------------------------------------
+    
+    #
+    # Renders the addon Root window. Categories, categoryless launchers, Favourites, etc.
+    #
+    def _command_render_categories(self):
+        self._misc_set_all_sorting_methods()
+        self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+
+        categories = self.category_repository.find_all()
+
+        # >> For every category, add it to the listbox. Order alphabetically by name
+        for category in sorted(categories, key = lambda c : c.get_name()):
+            self._gui_render_category_row(category)
+
+        # --- Render categoryless launchers. Order alphabetically by name ---
+        catless_launchers = self.launcher_repository.find_by_category(VCATEGORY_ADDONROOT_ID)
+
+        for launcher in sorted(catless_launchers, key = lambda l : l.get_name()):
+            self._gui_render_launcher_row(launcher)
+
+        # --- AEL Favourites special category ---
+        if not self.settings['display_hide_favs']: self._gui_render_category_favourites_row()
+
+        # --- AEL Collections special category ---
+        if not self.settings['display_hide_collections']: self._gui_render_category_collections_row()
+
+        # --- AEL Virtual Categories ---
+        if not self.settings['display_hide_vlaunchers']: self._gui_render_virtual_category_root_row()
+
+        # --- Browse Offline Scraper database ---
+        if not self.settings['display_hide_AEL_scraper']: self._gui_render_category_AEL_offline_scraper_row()
+        if not self.settings['display_hide_LB_scraper']: self._gui_render_category_LB_offline_scraper_row()
+
+        # --- Recently played and most played ROMs ---
+        if not self.settings['display_hide_recent']:     self._gui_render_category_recently_played_row()
+        if not self.settings['display_hide_mostplayed']: self._gui_render_category_most_played_row()
+
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+
+    #
+    # Renders all categories without Favourites, Collections, virtual categories, etc.
+    # This function is called by skins to build shortcuts menu.
+    #
+    def _command_render_all_categories(self):
+        categories = self.category_repository.find_all()
+
+        # >> If no categories render nothing
+        if not categories:
+            xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+        # >> For every category, add it to the listbox. Order alphabetically by name
+        for category in sorted(categories, key = lambda c : c.get_name()):
+            self._gui_render_category_row(category)
+
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_category_row(self, category):
         # --- Do not render row if category finished ---
@@ -5911,6 +5954,8 @@ class Main:
         elif export_type == 1:
             kodi_notify('Exported ROM Collection {0} metadata and assets.'.format(collection['m_name']))
 
+    
+            
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
 
         # >> ROMs in standard launcher
@@ -7165,6 +7210,8 @@ class Main:
     #  3) Report of ROM artwork
     #  4) If No-Intro file, then No-Intro audit information.
     #
+    
+    
     def _roms_create_launcher_reports(self, category, launcher, roms):
         ROM_NAME_LENGHT = 50
 
@@ -7371,6 +7418,8 @@ class Main:
             kodi_notify_warn('Cannot write Launcher Report (IOError)')
 
         
+    
+            
     def _aux_get_info(self, asset_FN, path_asset_P, romfile_getBase_noext):
         # log_debug('title_FN.getDir() "{0}"'.format(title_FN.getDir()))
         # log_debug('path_title_P      "{0}"'.format(path_title_P))
@@ -8140,6 +8189,8 @@ class Main:
     #
     # Checks all databases and tries to update to newer version if possible
     #
+    
+    
     def _command_check_database(self):
         
         log_debug('_command_check_database() Beginning ....')
@@ -8342,6 +8393,8 @@ class Main:
             rom_data['m_developer'] = rom_data['m_studio']
             rom_data.pop('m_studio')
 
+    
+            
     def _misc_fix_Favourite_rom_object(self, rom):
         # --- Fix standard ROM fields ---
         self._misc_fix_rom_object(rom)
@@ -8357,6 +8410,8 @@ class Main:
             rom_data['toggle_window'] = rom_data['minimize']
             rom_data.pop('minimize')
 
+    
+            
     def _command_check_launchers(self):
         log_info('_command_check_launchers() Checking all Launchers configuration ...')
 
@@ -8460,6 +8515,8 @@ class Main:
             problems_found = True
             str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
 
+    
+            
     def _command_check_retro_BIOS(self):
         log_info('_command_check_retro_BIOS() Checking Retroarch BIOSes ...')
         check_only_mandatory = self.settings['io_retroarch_only_mandatory']
