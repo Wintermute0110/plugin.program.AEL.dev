@@ -547,10 +547,8 @@ class RomSetRepository(object):
         
         if roms_base_noext is None:
             repository_file = self.roms_dir
-
         elif view_mode == LAUNCHER_DMODE_FLAT:
             repository_file = self.roms_dir.pjoin('{}.json'.format(roms_base_noext))
-
         else:
             repository_file = self.roms_dir.pjoin('{}_parents.json'.format(roms_base_noext))
 
@@ -589,10 +587,10 @@ class RomSetRepository(object):
 
         return roms
 
-    def find_index_file_by_launcher(self, launcher):
+    def find_index_file_by_launcher(self, launcher, type):
         
         roms_base_noext = launcher.get_roms_base()
-        repository_file = self.roms_dir.pjoin('{}_pclone.json'.format(roms_base_noext))
+        repository_file = self.roms_dir.pjoin('{}{}.json'.format(roms_base_noext, type))
                 
         log_verb('RomSetRepository.find_index_file_by_launcher(): Loading rom index from file {0}'.format(repository_file.getOriginalPath()))
         try:
@@ -607,7 +605,7 @@ class RomSetRepository(object):
         return index_data
 
 
-    def save_rom_set(self, launcher, roms):
+    def save_rom_set(self, launcher, roms, view_mode = None):
         
         romdata = {key: roms[key].get_data() for (key) in roms}
 
@@ -622,7 +620,16 @@ class RomSetRepository(object):
 
         # >> Get file names
         roms_base_noext = launcher.get_roms_base()
-        repository_file = self.roms_dir.pjoin('{}.json'.format(roms_base_noext))
+
+        if view_mode is None:
+            view_mode = launcher.get_display_mode()
+        
+        if roms_base_noext is None:
+            repository_file = self.roms_dir
+        elif view_mode == LAUNCHER_DMODE_FLAT:
+            repository_file = self.roms_dir.pjoin('{}.json'.format(roms_base_noext))
+        else:
+            repository_file = self.roms_dir.pjoin('{}_parents.json'.format(roms_base_noext))
 
         log_verb('RomSetRepository.save_rom_set() Dir  {0}'.format(self.roms_dir.getOriginalPath()))
         log_verb('RomSetRepository.save_rom_set() JSON {0}'.format(repository_file.getOriginalPath()))
@@ -703,8 +710,6 @@ class RomSetRepository(object):
 # Factory class for creating the specific/derived launchers based upon the given type and 
 # dictionary with launcher data.
 # -------------------------------------------------------------------------------------------------
-
-
 class LauncherFactory(object):
     
     def __init__(self, settings, executorFactory, plugin_data_dir):
@@ -772,9 +777,6 @@ class LauncherFactory(object):
         romset_repository = RomSetRepository(self.ROMS_DIR)
         statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID], self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
        
-        #recentlyPlayedRomSet = self.romsetFactory.create(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, self.launchers)
-         #mostPlayedRomSet = self.romsetFactory.create(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, self.launchers)
-        
         if launcher_type == LAUNCHER_RETROPLAYER:
             return RetroplayerLauncher(launcher_data, self.settings, None, romset_repository, None, self.settings['escape_romfile'])
 
@@ -2066,6 +2068,9 @@ class RomLauncher(Launcher):
     def supports_launching_roms(self):
         return True  
     
+    def supports_parent_clone_roms(self):
+        return False
+    
     def load_roms(self):
         self.roms = self.romset_repository.find_by_launcher(self)
 
@@ -2112,47 +2117,13 @@ class RomLauncher(Launcher):
             self.load_roms()
 
         return self.roms.values() if self.roms else None
-
-    def get_roms_filtered(self):
+    
+    def get_rom_ids(self):
         
         if not self.has_roms():
             self.load_roms()
 
-        filtered_roms = []
-        view_mode = self.get_display_mode()
-        dp_mode   = self.get_nointro_display_mode()
-        
-        dp_modes_for_have    = [NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_HAVE_MISS]
-        dp_modes_for_miss    = [NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK]
-        dp_modes_for_unknown = [NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK]
-
-        for rom_id in self.roms:
-            rom = self.roms[rom_id]
-            nointro_status = rom.get_nointro_status()
-            
-        #pcloneset = self.romsetFactory.create(VCATEGORY_PCLONES_ID, launcher.get_data())
-        #pclone_index = pcloneset.loadRoms()
-
-            # >> Filter ROM
-            # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
-            # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
-            if not view_mode == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
-                filtered_roms.append(rom)
-
-            elif nointro_status == NOINTRO_STATUS_HAVE and dp_mode in dp_mode_for_have:
-                filtered_roms.append(rom)
-
-            elif nointro_status == NOINTRO_STATUS_MISS and dp_mode in dp_modes_for_miss:
-                filtered_roms.append(rom)
-
-            elif nointro_status == NOINTRO_STATUS_UNKNOWN and dp_mode in dp_modes_for_unknown:
-                filtered_roms.append(rom)
-
-            # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
-            else:
-                filtered_roms.append(rom)
-
-        return filtered_roms
+        return self.roms.keys() if self.roms else None
 
     def update_rom_set(self, roms):
 
@@ -2206,7 +2177,6 @@ class RomLauncher(Launcher):
     def convert_rom_to_favourite(self, rom_id):
 
         rom = self.select_rom(rom_id)
-
         # >> Copy original rom     
         # todo: Should we make a FavouriteRom class inheriting Rom?
         favourite = rom.copy()
@@ -2787,8 +2757,7 @@ class VirtualLauncher(RomLauncher):
     
     def get_launcher_type_name(self):        
         return "Virtual launcher"
-    
-    
+        
     def has_nointro_xml(self):
         return False    
 
@@ -2824,6 +2793,48 @@ class StandardRomLauncher(RomLauncher):
     def get_launcher_type_name(self):        
         return "ROM launcher"   
     
+    def supports_parent_clone_roms(self):
+        return True
+    
+    def get_roms_filtered(self):
+        
+        if not self.has_roms():
+            self.load_roms()
+
+        filtered_roms = []
+        view_mode     = self.get_display_mode()
+        dp_mode       = self.get_nointro_display_mode()
+        pclone_index  = self.get_pclone_index()
+        
+        dp_modes_for_have    = [NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_HAVE_MISS]
+        dp_modes_for_miss    = [NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK]
+        dp_modes_for_unknown = [NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK]
+        
+        for rom_id in roms_to_filter:
+            rom = roms[rom_id]
+            nointro_status = rom.get_nointro_status()
+            
+            # >> Filter ROM
+            # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
+            # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
+            if not view_mode == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
+                filtered_roms.append(rom)
+
+            elif nointro_status == NOINTRO_STATUS_HAVE and dp_mode in dp_mode_for_have:
+                filtered_roms.append(rom)
+
+            elif nointro_status == NOINTRO_STATUS_MISS and dp_mode in dp_modes_for_miss:
+                filtered_roms.append(rom)
+
+            elif nointro_status == NOINTRO_STATUS_UNKNOWN and dp_mode in dp_modes_for_unknown:
+                filtered_roms.append(rom)
+
+            # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
+            else:
+                filtered_roms.append(rom)
+
+        return filtered_roms
+
     def change_application(self):
 
         current_application = self.entity_data['application']
@@ -2882,12 +2893,22 @@ class StandardRomLauncher(RomLauncher):
     def change_rom_extensions(self, ext):
         self.entity_data['romext'] = ext
     
-    def get_pclone_roms(self):
+    def get_parent_roms(self):
         return self.romset_repository.find_by_launcher(self, LAUNCHER_DMODE_PCLONE)
     
     def get_pclone_indices(self):
+        return self.romset_repository.find_index_file_by_launcher(self, ROMSET_PCLONE)
+    
+    def get_parent_indices(self):
+        return self.romset_repository.find_index_file_by_launcher(self, ROMSET_CPARENT)
+
+    def update_parent_rom_set(self, roms):
         
-        roms_pclone_index = fs_load_JSON_file(ROMS_DIR, launcher.get_roms_base() + '_index_PClone')
+        if not isinstance(roms,dict):
+            roms = dict((rom.get_id(), rom) for rom in roms)
+
+        self.romset_repository.save_rom_set(self, roms, LAUNCHER_DMODE_PCLONE)
+        roms = roms
 
     def get_advanced_modification_options(self):
         

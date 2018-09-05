@@ -34,7 +34,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
     #   False -> There was a problem with the audit.
     #
     #def _roms_update_NoIntro_status(self, roms, nointro_xml_file_FileName):
-    def update_roms_NoIntro_status(self, launcher):
+    def update_roms_NoIntro_status(self, launcher, roms):
                 
         __debug_progress_dialogs = False
         __debug_time_step = 0.0005
@@ -42,7 +42,7 @@ class RomDatFileScanner(ProgressDialogStrategy):
         # --- Reset the No-Intro status and removed No-Intro missing ROMs ---
         audit_have = audit_miss = audit_unknown = 0
         self._startProgressPhase('Advanced Emulator Launcher', 'Deleting Missing/Dead ROMs and clearing flags ...')
-        self._roms_reset_NoIntro_status(launcher, roms)
+        self.roms_reset_NoIntro_status(launcher, roms)
         self._updateProgress(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 
@@ -267,22 +267,22 @@ class RomDatFileScanner(ProgressDialogStrategy):
     # 1) Remove all ROMs which does not exist.
     # 2) Set status of remaining ROMs to nointro_status = NOINTRO_STATUS_NONE
     #
-    def _roms_reset_NoIntro_status(self, launcher, roms):
-        log_info('_roms_reset_NoIntro_status() Launcher has {0} ROMs'.format(len(roms)))
+    def roms_reset_NoIntro_status_roms_reset_NoIntro_status(self, launcher, roms):
+        log_info('roms_reset_NoIntro_status() Launcher has {0} ROMs'.format(len(roms)))
         if len(roms) < 1: return
 
         # >> Step 1) Delete missing/dead ROMs
         num_removed_roms = self._roms_delete_missing_ROMs(roms)
-        log_info('_roms_reset_NoIntro_status() Removed {0} dead/missing ROMs'.format(num_removed_roms))
+        log_info('roms_reset_NoIntro_status() Removed {0} dead/missing ROMs'.format(num_removed_roms))
 
         # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE and
         #            set PClone status to PCLONE_STATUS_NONE
-        log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
+        log_info('roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
         for rom in roms: 
             rom.set_nointro_status(NOINTRO_STATUS_NONE)
             rom.set_pclone_status(PCLONE_STATUS_NONE)
 
-        log_info('_roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
+        log_info('roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
 
         # >> Step 3) Delete PClone index and Parent ROM list.
         launcher.reset_parent_and_clone_roms()
