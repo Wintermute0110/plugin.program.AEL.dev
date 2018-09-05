@@ -532,11 +532,16 @@ ROMSET_DAT      = '_DAT'
 # -------------------------------------------------------------------------------------------------
 # Repository class for Rom Set objects.
 # Arranges retrieving and storing of roms belonging to a particular launcher.
+#
+# NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
+#      a dictionary. Convert the Collection list into an ordered dictionary and then
+#      converted back the ordered dictionary into a list before saving the collection.            
 # -------------------------------------------------------------------------------------------------
 class RomSetRepository(object):
 
-    def __init__(self, roms_dir):
+    def __init__(self, roms_dir, store_as_dictionary = True):
         self.roms_dir = roms_dir
+        self.store_as_dictionary = store_as_dictionary
     
     def find_by_launcher(self, launcher, view_mode = None):
 
@@ -581,9 +586,15 @@ class RomSetRepository(object):
             roms_data   = roms_data[1]
 
         roms = {}
-        for key in roms_data:
-            r = Rom(roms_data[key])
-            roms[key] = r
+        if isinstance(roms_data, list):
+            for rom_data in roms_data:
+                r = Rom(rom_data)
+                key = r.get_id()
+                roms[key] = r
+        else:
+            for key in roms_data:
+                r = Rom(roms_data[key])
+                roms[key] = r
 
         return roms
 
@@ -607,7 +618,11 @@ class RomSetRepository(object):
 
     def save_rom_set(self, launcher, roms, view_mode = None):
         
-        romdata = {key: roms[key].get_data() for (key) in roms}
+        romdata = None
+        if self.store_as_dictionary:
+            romdata = {key: roms[key].get_data() for (key) in roms}
+        else:
+            romdata = [roms[key].get_data() for (key) in roms]
 
         # --- Create JSON data structure, including version number ---
         control_dic = {
@@ -657,8 +672,7 @@ class RomSetRepository(object):
     # <roms_base_noext>_index_PClone.json
     # <roms_base_noext>_parents.json
     # <roms_base_noext>_DAT.json
-    #    
-    
+    #  
     def delete_all_by_launcher(self, launcher):
         roms_base_noext = launcher.get_roms_base()
 
@@ -695,7 +709,8 @@ class RomSetRepository(object):
             log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getOriginalPath()))
             roms_DAT_FN.unlink()
 
-    
+        return
+
     def delete_by_launcher(self, launcher, kind):
 
         roms_base_noext     = launcher.get_roms_base()
@@ -706,10 +721,13 @@ class RomSetRepository(object):
             log_info('delete_by_launcher() Deleting {0}'.format(rom_set_path.getPath()))
             rom_set_path.unlink()
         
+        return
 # -------------------------------------------------------------------------------------------------
 # Factory class for creating the specific/derived launchers based upon the given type and 
 # dictionary with launcher data.
 # -------------------------------------------------------------------------------------------------
+
+
 class LauncherFactory(object):
     
     def __init__(self, settings, executorFactory, plugin_data_dir):
@@ -747,8 +765,8 @@ class LauncherFactory(object):
         if not self.VIRTUAL_CAT_ESRB_DIR.exists():      self.VIRTUAL_CAT_ESRB_DIR.makedirs()
         if not self.VIRTUAL_CAT_RATING_DIR.exists():    self.VIRTUAL_CAT_RATING_DIR.makedirs()
         if not self.COLLECTIONS_DIR.exists():           self.COLLECTIONS_DIR.makedirs()
-
-    
+   
+        
     def _initialize_virtual_launchers(self):
         
         log_info('LauncherFactory() Preinitializing virtual launchers.')
@@ -773,10 +791,14 @@ class LauncherFactory(object):
 
         if launcher_type == LAUNCHER_FAVOURITES:
             return KodiLauncher(launcher_data, self.settings, self.executorFactory)
-                
-        romset_repository = RomSetRepository(self.ROMS_DIR)
-        statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID], self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-       
+        
+        if launcher_type == LAUNCHER_COLLECTION:
+            collection_romset_repository = RomSetRepository(self.COLLECTIONS_DIR, False)
+            return CollectionLauncher(launcher_data, settings, collection_romset_repository)
+        
+        statsStrategy       = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID], self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+        romset_repository   = RomSetRepository(self.ROMS_DIR)
+        
         if launcher_type == LAUNCHER_RETROPLAYER:
             return RetroplayerLauncher(launcher_data, self.settings, None, romset_repository, None, self.settings['escape_romfile'])
 

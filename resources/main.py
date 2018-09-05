@@ -4912,13 +4912,12 @@ class Main:
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
             log_debug('_command_manage_favourites() Managing Favourite ROMs')
-            roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            fav_launcher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+            roms_fav = fav_launcher.get_roms()
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_debug('_command_manage_favourites() Managing Collection ROMs')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+            collection = self.collcollection_repository.find(launcherID)
+            collection_rom_list = collection.get_roms()
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
             #      converted back the ordered dictionary into a list before saving the collection.
