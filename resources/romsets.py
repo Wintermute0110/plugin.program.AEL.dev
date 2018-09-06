@@ -12,6 +12,9 @@ from disk_IO import *
 from utils import *
 from utils_kodi import *
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# OBSOLETE FILE
+# Will be removed soon.
 class RomSetFactory():
     
     def __init__(self, pluginDataDir):
