@@ -343,7 +343,19 @@ class FileName():
         self.writeAll(data)
 
     def __str__(self):
+        """Overrides the default implementation"""
         return self.getOriginalPath()
+
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, FileName):
+            return self.getOriginalPath().lower() == other.getOriginalPath().lower()
+        
+        return False
+
+    def __ne__(self, other):
+        """Overrides the default implementation (unnecessary in Python 3)"""
+        return not self.__eq__(other)
 
 # -------------------------------------------------------------------------------------------------
 # Kodi Virtual Filesystem helper class.

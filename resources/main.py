@@ -2960,31 +2960,32 @@ class Main:
             launcher_names = (l.get_name() for l in rom_launchers)
 
             dialog = xbmcgui.Dialog()
-            selected_launcher_index = dialog.select('New launcher for {0}'.format(roms[romID]['m_name']), launcher_names)
+            selected_launcher_index = dialog.select('New launcher for {0}'.format(rom.get_name()), launcher_names)
             if selected_launcher_index < 0: return
 
             # --- STEP 2: select ROMs in that launcher ---
             selected_launcher   = sorted_rom_launchers[selected_launcher_index]
-            launcher_roms       = fs_load_ROMs_JSON(ROMS_DIR, selected_launcher.get_data())
+            launcher_roms       = selected_launcher.get_roms()
             if not launcher_roms: return
             roms_IDs = []
             roms_names = []
-            for rom_id in launcher_roms:
+            for launcher_rom in launcher_roms:
                 # ROMs with nointro_status = 'Miss' are invalid! Do not add to the list
-                if launcher_roms[rom_id]['nointro_status'] == 'Miss': continue
+                nointro_stat = launcher_rom.get_nointro_status()
+                if nointro_stat == 'Miss': continue
                 roms_IDs.append(rom_id)
                 roms_names.append(launcher_roms[rom_id]['m_name'])
             sorted_idx = [i[0] for i in sorted(enumerate(roms_names), key=lambda x:x[1])]
             roms_IDs   = [roms_IDs[i] for i in sorted_idx]
             roms_names = [roms_names[i] for i in sorted_idx]
-            selected_rom = dialog.select('New ROM for Favourite {0}'.format(roms[romID]['m_name']), roms_names)
+            selected_rom = dialog.select('New ROM for Favourite {0}'.format(rom.get_name()), roms_names)
             if selected_rom < 0 : return
 
             # >> Collect ROM object.
-            old_fav_rom_ID  = romID
+            old_fav_rom_ID  = rom.get_id()
             new_fav_rom_ID  = roms_IDs[selected_rom]
-            old_fav_rom     = roms[romID]
-            parent_rom      = launcher_roms[new_fav_rom_ID]
+            old_fav_rom     = rom.get_name()
+            parent_rom      = selected_launcher.select_rom(new_fav_rom_ID)
             parent_launcher = selected_launcher.get_data()
 
             # >> Check that the selected ROM ID is not already in Favourites
@@ -4188,7 +4189,6 @@ class Main:
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
                 
-        #selectedLauncher = romset.launcher
         view_mode = launcher.get_display_mode()
         dp_mode   = launcher.get_nointro_display_mode()
         
@@ -4909,6 +4909,7 @@ class Main:
     # Manage Favourite/Collection ROMs as a whole.
     #
     def _command_manage_favourites(self, categoryID, launcherID, romID):
+
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
             log_debug('_command_manage_favourites() Managing Favourite ROMs')
@@ -4917,13 +4918,7 @@ class Main:
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_debug('_command_manage_favourites() Managing Collection ROMs')
             collection = self.collcollection_repository.find(launcherID)
-            collection_rom_list = collection.get_roms()
-            # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
-            #      a dictionary. Convert the Collection list into an ordered dictionary and then
-            #      converted back the ordered dictionary into a list before saving the collection.
-            roms_fav = OrderedDict()
-            for collection_rom in collection_rom_list:
-                roms_fav[collection_rom['id']] = collection_rom
+            roms_fav = collection.get_roms()
         else:
             kodi_dialog_OK('_command_manage_favourites() should be called for Favourites or Collections. '
                            'This is a bug, please report it.')
@@ -4956,7 +4951,7 @@ class Main:
                                '{0} Unliked ROM and '.format(self.num_fav_urom) +
                                '{0} Broken.'.format(self.num_fav_broken))
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                kodi_dialog_OK('You have {0} ROMs in Collection "{1}". '.format(self.num_fav_roms, collection['m_name']) +
+                kodi_dialog_OK('You have {0} ROMs in Collection "{1}". '.format(self.num_fav_roms, collection.get_name()) +
                                '{0} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
                                '{0} Unliked ROM and '.format(self.num_fav_urom) +
                                '{0} are Broken.'.format(self.num_fav_broken))
@@ -4995,7 +4990,7 @@ class Main:
             pDialog.create('Advanced Emulator Launcher', 'Repairing Unlinked Launcher/Broken ROMs ...')
             repair_rom_list = []
             num_broken_ROMs = 0
-            for rom_fav_ID in roms_fav:
+            for rom_fav in roms_fav:
                 pDialog.update(i * 100 / num_progress_items)
                 if pDialog.iscanceled():
                     pDialog.close()
@@ -5004,28 +4999,31 @@ class Main:
                 i += 1
 
                 # >> Only process Unlinked Launcher ROMs
-                if roms_fav[rom_fav_ID]['fav_status'] == 'OK': continue
-                if roms_fav[rom_fav_ID]['fav_status'] == 'Unlinked ROM': continue
-                fav_name = roms_fav[rom_fav_ID]['m_name']
+                fav_status = rom_fav.get_favourite_status()
+                if fav_status == 'OK': continue
+                if fav_status == 'Unlinked ROM': continue
+
+                fav_name = rom_fav.get_name()
                 num_broken_ROMs += 1
                 log_info('_command_manage_favourites() Repairing Fav ROM "{0}"'.format(fav_name))
-                log_info('_command_manage_favourites() Fav ROM status "{0}"'.format(roms_fav[rom_fav_ID]['fav_status']))
+                log_info('_command_manage_favourites() Fav ROM status "{0}"'.format(fav_status))
 
                 # >> Traverse all launchers and find rom by filename or base name
-                ROM_FN_FAV = FileNameFactory.create(roms_fav[rom_fav_ID]['filename'])
-                filename_found = False
+                ROM_FN_FAV      = rom_fav.get_file()
+                filename_found  = False
+                parent_rom      = None
+
                 launchers = self.launcher_repository.find_all()
                 for launcher in launchers:
                     # >> Load launcher ROMs
-                    roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
-                    for rom_id in roms:
-                        ROM_FN = FileNameFactory.create(roms[rom_id]['filename'])
-                        fav_name = roms_fav[rom_fav_ID]['m_name']
-                        if type == 1 and roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
+                    roms = launcher.get_roms()
+                    for rom in roms:
+                        ROM_FN = rom.get_file()
+                        if type == 1 and ROM_FN == ROM_FN_FAV:
                             log_info('_command_manage_favourites() Favourite {0} matched by filename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher.get_id()))
-                            log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
-                        elif type == 2 and ROM_FN_FAV.getBase() == ROM_FN.getBase():
+                            log_info('_command_manage_favourites() ROM {0}'.format(rom.get_id()))
+                        elif type == 2 and ROM_FN_FAV.getBase().lower() == ROM_FN.getBase().lower():
                             log_info('_command_manage_favourites() Favourite {0} matched by basename!'.format(fav_name))
                             log_info('_command_manage_favourites() Launcher {0}'.format(launcher.get_id()))
                             log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
@@ -5033,10 +5031,12 @@ class Main:
                             continue
                         # >> Match found. Break all for loops inmediately.
                         filename_found      = True
-                        new_fav_rom_ID      = rom_id
+                        new_fav_rom_ID      = rom.get_id()
                         new_fav_rom_laun_ID = launcher.get_id()
+                        parent_rom          = rom
                         break
-                    if filename_found: break
+                    if filename_found: 
+                        break
 
                 # >> Add ROM to the list of ROMs to be repaired.
                 if filename_found:
@@ -5046,8 +5046,8 @@ class Main:
                     rom_repair['old_fav_rom_ID']      = rom_fav_ID
                     rom_repair['new_fav_rom_ID']      = new_fav_rom_ID
                     rom_repair['new_fav_rom_laun_ID'] = new_fav_rom_laun_ID
-                    rom_repair['old_fav_rom']         = roms_fav[rom_fav_ID]
-                    rom_repair['parent_rom']          = roms[new_fav_rom_ID]
+                    rom_repair['old_fav_rom']         = rom_fav
+                    rom_repair['parent_rom']          = parent_rom
                     rom_repair['parent_launcher']     = parent_launcher.get_data()
                     repair_rom_list.append(rom_repair)
                 else:
@@ -5068,14 +5068,14 @@ class Main:
                 parent_rom          = rom_repair['parent_rom']
                 parent_launcher     = rom_repair['parent_launcher']
                 log_debug('_command_manage_favourites() Repairing ROM {0}'.format(old_fav_rom_ID))
-                log_debug('_command_manage_favourites() Name          {0}'.format(old_fav_rom['m_name']))
+                log_debug('_command_manage_favourites() Name          {0}'.format(old_fav_rom.get_name()))
                 log_debug('_command_manage_favourites() New ROM       {0}'.format(new_fav_rom_ID))
                 log_debug('_command_manage_favourites() New Launcher  {0}'.format(new_fav_rom_laun_ID))
 
                 # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
                 new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
-                roms_fav.pop(old_fav_rom_ID)
-                roms_fav[new_fav_rom['id']] = new_fav_rom
+                roms_fav.remove(old_fav_rom)
+                roms_fav.append(new_fav_rom)
                 num_repaired_ROMs += 1
             log_debug('_command_manage_favourites() Repaired {0} ROMs'.format(num_repaired_ROMs))
 
@@ -5205,7 +5205,7 @@ class Main:
     #
     # Check ROMs in favourites and set fav_status field.
     # roms_fav edited by passing by assigment, dictionaries are mutable.
-    #
+    # 
     def _fav_check_favourites(self, roms_fav):
         # --- Statistics ---
         self.num_fav_roms = len(roms_fav)
@@ -5215,8 +5215,8 @@ class Main:
 
         # --- Reset fav_status filed for all favourites ---
         log_debug('_fav_check_favourites() STEP 0: Reset status')
-        for rom_fav_ID in roms_fav:
-            roms_fav[rom_fav_ID]['fav_status'] = 'OK'
+        for rom_fav in roms_fav:
+            rom_fav.set_custom_attribute('fav_status', 'OK')
 
         # --- Progress dialog ---
         # >> Important to avoid multithread execution of the plugin and race conditions
@@ -5998,7 +5998,7 @@ class Main:
             launcher = self.launcher_repository.find(actual_launcher_id)
 
         # --- Load Collection index ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        collections = self.collection_repository.find_all()
 
         # --- If no collections so long and thanks for all the fish ---
         if not collections:
@@ -6006,37 +6006,30 @@ class Main:
             return
 
         # --- Ask user which Collection wants to add the ROM to ---
-        dialog = xbmcgui.Dialog()
-        collections_id = []
-        collections_name = []
-        for key in sorted(collections, key = lambda x : collections[x]['m_name']):
-            collections_id.append(collections[key]['id'])
-            collections_name.append(collections[key]['m_name'])
-        selected_idx = dialog.select('Select the collection', collections_name)
-        if selected_idx < 0: return
-        collectionID = collections_id[selected_idx]
+        dialog = DictionaryDialog()
+        collection_options = OrderedDict()
+        for collection in sorted(collections, key = lambda c : c.get_name()):
+            collection_options[collection.get_id()] = collection.get_name()
 
+        selected_id = dialog.select('Select the collection', collection_options)
+        if selected_id is None: return
+        
         # --- Load Collection ROMs ---
-        collection = collections[collectionID]
-        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+        collection = self.collection_repository.find(selected_id)
+
         log_info('Adding ROM to Collection')
-        log_info('Collection {0}'.format(collection['m_name']))
+        log_info('Collection {0}'.format(collection.get_name()))
         log_info('romID      {0}'.format(romID))
         log_info('ROM m_name {0}'.format(rom.get_name()))
 
         # >> Check if ROM already in this collection an warn user if so
-        rom_already_in_collection = False
-        for collection_rom in collection_rom_list:
-            if romID == collection_rom['id']:
-                rom_already_in_collection = True
-                break
+        rom_already_in_collection = collection.has_rom(romID)
 
         if rom_already_in_collection:
             log_info('ROM already in collection')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(rom.get_name(), collection['m_name']))
+                               'ROM {0} is already on Collection {1}. Overwrite it?'.format(rom.get_name(), collection.get_name()))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
@@ -6044,18 +6037,16 @@ class Main:
         else:
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(rom2.get_name(), collection['m_name']))
+                               "ROM '{0}'. Add this ROM to Collection '{1}'?".format(rom.get_name(), collection.get_name()))
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
 
         # --- Add ROM to favourites ROMs and save to disk ---
-        # >> Add ROM to the last position in the collection
-        collection_rom_list.append(new_collection_rom)
-        collection_json_FN = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        fs_write_Collection_ROMs_JSON(collection_json_FN, collection_rom_list)
+        # >> Add ROM to the last position in the collection --> todo
+        collection.save_rom(rom)
         kodi_refresh_container()
-        kodi_notify('Added ROM to Collection "{0}"'.format(collection['m_name']))
+        kodi_notify('Added ROM to Collection "{0}"'.format(collection.get_name()))
 
     #
     # Search ROMs in launcher
