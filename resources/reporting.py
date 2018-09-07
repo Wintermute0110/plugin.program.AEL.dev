@@ -8,9 +8,9 @@ from utils_kodi import *
 class Reporter(object):
     __metaclass__ = ABCMeta
 
-    def __init__(self, launcher, decoratorReporter = None):
+    def __init__(self, launcher_data, decoratorReporter = None):
 
-        self.launcher = launcher
+        self.launcher_data = launcher_data
         self.decoratorReporter = decoratorReporter
 
     @abstractmethod
@@ -45,10 +45,10 @@ class LogReporter(Reporter):
 
 class FileReporter(Reporter):
     
-    def __init__(self, reports_dir, launcher, decoratorReporter = None):
+    def __init__(self, reports_dir, launcher_data, decoratorReporter = None):
         
-        self.report_file = reports_dir.pjoin(launcher['roms_base_noext'] + '_report.txt')
-        super(FileReporter, self).__init__(launcher, decoratorReporter)
+        self.report_file = reports_dir.pjoin(launcher_data['roms_base_noext'] + '_report.txt')
+        super(FileReporter, self).__init__(launcher_data, decoratorReporter)
 
     def open(self, report_title):
 
@@ -57,16 +57,16 @@ class FileReporter(Reporter):
         self.report_file.open('w')
 
         # --- Get information from launcher ---
-        launcher_path = FileNameFactory.create(self.launcher['rompath'])
+        launcher_path = FileNameFactory.create(self.launcher_data['rompath'])
         
         self.write('******************** Report: {} ...  ********************'.format(report_title))
-        self.write('  Launcher name "{0}"'.format(self.launcher['m_name']))
-        self.write('  Launcher type "{0}"'.format(self.launcher['type'] if 'type' in self.launcher else 'Unknown'))
-        self.write('  launcher ID   "{0}"'.format(self.launcher['id']))
+        self.write('  Launcher name "{0}"'.format(self.launcher_data['m_name']))
+        self.write('  Launcher type "{0}"'.format(self.launcher_data['type'] if 'type' in self.launcher_data else 'Unknown'))
+        self.write('  launcher ID   "{0}"'.format(self.launcher_data['id']))
         self.write('  ROM path      "{0}"'.format(launcher_path.getPath()))
-        self.write('  ROM ext       "{0}"'.format(self.launcher['romext']))
-        self.write('  Platform      "{0}"'.format(self.launcher['platform']))
-        self.write(  'Multidisc     "{0}"'.format(self.launcher['multidisc']))
+        self.write('  ROM ext       "{0}"'.format(self.launcher_data['romext']))
+        self.write('  Platform      "{0}"'.format(self.launcher_data['platform']))
+        self.write(  'Multidisc     "{0}"'.format(self.launcher_data['multidisc']))
     
     def close(self):
         self.report_file.close()

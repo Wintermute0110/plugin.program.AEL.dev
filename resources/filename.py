@@ -191,6 +191,10 @@ class FileName():
         ext = self.getExt()
         return ext.lower() in ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
     
+    def is_document(self):
+        ext = self.getExt()
+        return ext.lower() in ['txt', 'pdf', 'doc']
+    
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
@@ -324,11 +328,34 @@ class FileName():
         return result
 
     # --- Configure JSON writer ---
+    # >> json_unicode is either str or unicode
+    # >> See https://docs.python.org/2.7/library/json.html#json.dumps
+    # unicode(json_data) auto-decodes data to unicode if str
     # NOTE More compact JSON files (less blanks) load faster because size is smaller.
     def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
         self.writeAll(unicode(json_data).encode('utf-8'))
+
+    # Opens file and writes xml. Give xml root element.
+    def writeXml(self, xml_root):
+        data = ET.tostring(xml_root)
+        self.writeAll(data)
+
+    def __str__(self):
+        """Overrides the default implementation"""
+        return self.getOriginalPath()
+
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, FileName):
+            return self.getOriginalPath().lower() == other.getOriginalPath().lower()
+        
+        return False
+
+    def __ne__(self, other):
+        """Overrides the default implementation (unnecessary in Python 3)"""
+        return not self.__eq__(other)
 
 # -------------------------------------------------------------------------------------------------
 # Kodi Virtual Filesystem helper class.

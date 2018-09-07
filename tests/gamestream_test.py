@@ -105,6 +105,7 @@ class Test_gamestream(unittest.TestCase):
         self.assertTrue(paired)
         
    # @patch('resources.gamestream.net_get_URL_using_handler')
+    @unittest.skip('only testable with actual server for now')
     def test_getting_apps_from_gamestream_server(self):#, http_mock):
 
         # arrange        

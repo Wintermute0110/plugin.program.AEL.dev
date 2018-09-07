@@ -96,10 +96,10 @@ class Test_cryptography_test(unittest.TestCase):
         self.assertEquals(expected, actual)
         self.assertEquals(expected, actual2)
         
-
+    @unittest.skip('PEM conversion testing with an original key')
     def test_converting_pkcs8_to_pem(self):
          # arrange
-        test_file = "C:\\Projects\\Kodi\\AEL\\plugin.program.advanced.emulator.launcher\\tests\\nvidia_p.key" 
+        test_file = "C:\\Projects\\Kodi\\AEL\\plugin.program.advanced.emulator.launcher\\tests\\assets\\nvidia.key" 
           
         file_contents = ''
         with open(test_file, 'r') as f:

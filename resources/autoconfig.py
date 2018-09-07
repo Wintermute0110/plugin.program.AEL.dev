@@ -164,24 +164,21 @@ def autoconfig_export_all(categories, launchers, export_FN):
 # Export a single Launcher XML configuration.
 # Check if the output XML file exists (and show a warning dialog if so) is done in caller.
 #
-def autoconfig_export_launcher(launcher, export_FN, categories):
+def autoconfig_export_launcher(launcher_data, export_FN, category_data):
     # --- Export single Launcher ---
-    launcherID = launcher['id']
-    if launcher['categoryID'] in categories:
-        category_name = categories[launcher['categoryID']]['m_name']
-    elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
-        category_name = VCATEGORY_ADDONROOT_ID
-    else:
+    launcherID = launcher_data['id']
+    if category_data is None:
         kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
         raise AEL_Error('Error exporting Launcher XML configuration')
-    log_verb('autoconfig_export_launcher() Launcher "{0}" (ID "{1}")'.format(launcher['m_name'], launcherID))
+
+    log_verb('autoconfig_export_launcher() Launcher "{0}" (ID "{1}")'.format(launcher_data['m_name'], launcherID))
 
     # --- Create list of strings ---
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     str_list.append('<advanced_emulator_launcher_configuration>\n')
-    autoconfig_export_launcher_str_list(launcher, category_name, str_list)
+    autoconfig_export_launcher_str_list(launcher_data, category_data['m_name'], str_list)
     str_list.append('</advanced_emulator_launcher_configuration>\n')
 
     # >> Export file. Strings in the list are Unicode. Encode to UTF-8 when writing to file.

@@ -54,9 +54,6 @@ def is_android():
     
     return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
 
-def launcher_supports_roms(launcher_type):
-    return launcher_type != LAUNCHER_STANDALONE and launcher_type != LAUNCHER_FAVOURITES
-
 # --- AEL modules ---
 # >> utils.py must not depend on any other AEL module to avoid circular dependencies.
 
@@ -421,14 +418,13 @@ def text_get_image_URL_extension(url):
 # File cache
 # -------------------------------------------------------------------------------------------------
 file_cache = {}
-def misc_add_file_cache(dir_str):
+def misc_add_file_cache(dir_FN):
     global file_cache
-
     # >> Create a set with all the files in the directory
-    if not dir_str:
+    if not dir_FN:
         log_debug('misc_add_file_cache() Empty dir_str. Exiting')
         return
-    dir_FN = FileNameFactory.create(dir_str)
+
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
 
     file_list = dir_FN.scanFilesInPathAsFileNameObjects()
@@ -436,13 +432,14 @@ def misc_add_file_cache(dir_str):
     file_set = [file.getBase().lower() for file in file_list]
 
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
-    file_cache[dir_str] = file_set
+    file_cache[dir_FN.getOriginalPath()] = file_set
 
 #
 # See misc_look_for_file() documentation below.
 #
-def misc_search_file_cache(dir_str, filename_noext, file_exts):
+def misc_search_file_cache(dir_path, filename_noext, file_exts):
     # log_debug('misc_search_file_cache() Searching in  "{0}"'.format(dir_str))
+    dir_str = dir_path.getOriginalPath()
     if dir_str not in file_cache:
         log_warning('Directory {0} not in file_cache'.format(dir_str))
         return None
@@ -454,7 +451,7 @@ def misc_search_file_cache(dir_str, filename_noext, file_exts):
         #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
         if file_base in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
-            return FileNameFactory.create(dir_str).pjoin(file_base)
+            return dir_path.pjoin(file_base)
 
     return None
 

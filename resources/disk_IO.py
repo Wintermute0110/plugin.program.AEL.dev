@@ -699,6 +699,7 @@ def fs_load_JSON_file(file_dir, file_base_noext):
 # <roms_base_noext>_parents.json
 # <roms_base_noext>_DAT.json
 #
+# DEPRECATED - using RomSetRepository for this
 def fs_unlink_ROMs_database(roms_dir_FN, launcher):
     roms_base_noext = launcher['roms_base_noext']
 
@@ -1579,6 +1580,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
 # See comments in fs_export_ROM_NFO() about verbosity.
 # About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
 #
+# DEPRECATED METHOD - Not called anymore
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     ROMFileName = FileNameFactory.create(roms[romID]['filename'])
     nfo_file_path = ROMFileName.switchExtension('.nfo')
@@ -1837,7 +1839,7 @@ def fs_export_category_NFO(nfo_FileName, category):
     return True
 
 from stat import *
-def fs_import_category_NFO(nfo_FileName, categories, categoryID):
+def fs_import_category_NFO(nfo_FileName, category_data):
     # --- Get NFO file name ---
     log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
 
@@ -1861,11 +1863,11 @@ def fs_import_category_NFO(nfo_FileName, categories, categoryID):
     item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
     item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
 
-    if item_year:      categories[categoryID]['m_year']      = text_unescape_XML(item_year[0])
-    if item_genre:     categories[categoryID]['m_genre']  = text_unescape_XML(item_genre[0])
-    if item_developer: categories[categoryID]['m_developer'] = text_unescape_XML(item_developer[0])
-    if item_rating:    categories[categoryID]['m_rating'] = text_unescape_XML(item_rating[0])
-    if item_plot:      categories[categoryID]['m_plot']   = text_unescape_XML(item_plot[0])
+    if item_year:      category_data['m_year']      = text_unescape_XML(item_year[0])
+    if item_genre:     category_data['m_genre']  = text_unescape_XML(item_genre[0])
+    if item_developer: category_data['m_developer'] = text_unescape_XML(item_developer[0])
+    if item_rating:    category_data['m_rating'] = text_unescape_XML(item_rating[0])
+    if item_plot:      category_data['m_plot']   = text_unescape_XML(item_plot[0])
 
     log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
 

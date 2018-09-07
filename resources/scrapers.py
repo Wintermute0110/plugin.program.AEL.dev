@@ -39,21 +39,26 @@ class ScraperFactory(ProgressDialogStrategy):
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         unconfigured_name_list = []
-        for i, asset_kind in enumerate(ROM_ASSET_LIST):
+        asset_factory = AssetInfoFactory.create()
+        rom_asset_infos = asset_factory.get_asset_kinds_for_roms()
+        i = 0;
+
+        for asset_info in rom_asset_infos:
             
-            asset_info = assets_get_info_scheme(asset_kind)
-            if not launcher[asset_info.path_key]:
+            asset_path = launcher.get_asset_path(asset_info)
+            if not asset_path:
                 unconfigured_name_list.append(asset_info.name)
                 log_verb('ScraperFactory.create() {0:<9} path unconfigured'.format(asset_info.name))
             else:
                 log_debug('ScraperFactory.create() {0:<9} path configured'.format(asset_info.name))
-                asset_scraper = self._get_asset_scraper(scan_asset_policy, asset_kind, asset_info, launcher)
+                asset_scraper = self._get_asset_scraper(scan_asset_policy, asset_info.kind, asset_info, launcher)
                 
                 if asset_scraper:
                     scrapers.append(asset_scraper)
                 
             self._updateProgress((100*i)/len(ROM_ASSET_LIST))
-            
+            i += 1
+
         self._endProgressPhase()
         
         if unconfigured_name_list:
@@ -68,7 +73,7 @@ class ScraperFactory(ProgressDialogStrategy):
     def _hasDuplicateArtworkDirs(self, launcher):
         
         log_info('Checking for duplicated artwork directories ...')
-        duplicated_name_list = asset_get_duplicated_dir_list(launcher)
+        duplicated_name_list = launcher.get_duplicated_asset_dirs()
 
         if duplicated_name_list:
             duplicated_asset_srt = ', '.join(duplicated_name_list)
@@ -124,7 +129,7 @@ class ScraperFactory(ProgressDialogStrategy):
     def _get_asset_scraper(self, scan_asset_policy, asset_kind, asset_info, launcher):
                 
         # >> Scrapers for MAME platform are different than rest of the platforms
-        scraper_implementation = getScraper(asset_kind, self.settings, launcher['platform'] == 'MAME')
+        scraper_implementation = getScraper(asset_kind, self.settings, launcher.get_platform() == 'MAME')
         
         # --- If scraper does not support particular asset return inmediately ---
         if scraper_implementation and not scraper_implementation.supports_asset(asset_kind):
@@ -266,12 +271,13 @@ class CleanTitleScraper(Scraper):
 
     def _applyCandidate(self, romPath, rom):        
 
-        if 'type' in self.launcher and self.launcher['type'] == LAUNCHER_STEAM:
+        if self.launcher.get_launcher_type() == LAUNCHER_STEAM:
             log_debug('CleanTitleScraper: Detected Steam launcher, leaving rom name untouched.')
             return True
 
         log_debug('Only cleaning ROM name.')
-        rom['m_name'] = text_format_ROM_title(romPath.getBase_noext(), self.scan_clean_tags)
+        rom_name = text_format_ROM_title(romPath.getBase_noext(), self.scan_clean_tags)
+        rom.set_name(rom_name)
         return True
 
 
@@ -305,14 +311,14 @@ class NfoScraper(Scraper):
     def _applyCandidate(self, romPath, rom):
         # NOTE <platform> is chosen by AEL, never read from NFO files. Indeed, platform
         #      is a Launcher property, not a ROM property.
-        rom['m_name']      = self.nfo_dic['title']     # <title>
-        rom['m_year']      = self.nfo_dic['year']      # <year>
-        rom['m_genre']     = self.nfo_dic['genre']     # <genre>
-        rom['m_developer'] = self.nfo_dic['developer'] # <developer>
-        rom['m_nplayers']  = self.nfo_dic['nplayers']  # <nplayers>
-        rom['m_esrb']      = self.nfo_dic['esrb']      # <esrb>
-        rom['m_rating']    = self.nfo_dic['rating']    # <rating>
-        rom['m_plot']      = self.nfo_dic['plot']      # <plot>
+        rom.set_name(self.nfo_dic['title'])                 # <title>
+        rom.update_releaseyear(self.nfo_dic['year'])        # <year>
+        rom.update_genre(self.nfo_dic['genre'])             # <genre>
+        rom.update_developer(self.nfo_dic['developer'])     # <developer>
+        rom.set_number_of_players(self.nfo_dic['nplayers']) # <nplayers>
+        rom.set_esrb_rating(self.nfo_dic['esrb'])           # <esrb>
+        rom.update_rating(self.nfo_dic['rating'])           # <rating>
+        rom.update_plot(self.nfo_dic['plot'])               # <plot>
 
         return True
 
@@ -337,7 +343,7 @@ class OnlineMetadataScraper(Scraper):
 
     def _getCandidates(self, searchTerm, romPath, rom):
         
-        platform = self.launcher['platform']
+        platform = self.launcher.get_platform()
         results = self.scraper_implementation.get_search(searchTerm, romPath.getBase_noext(), platform)
 
         return results
@@ -353,18 +359,20 @@ class OnlineMetadataScraper(Scraper):
 
         # --- Put metadata into ROM dictionary ---
         if self.scan_ignore_scrapped_title:
-            rom['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
-            log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(rom['m_name']))
+            rom_name = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
+            rom.set_name(rom_name)
+            log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(rom_name))
         else:
-            rom['m_name'] = self.gamedata['title']
-            log_debug("User wants scrapped name. Setting name to '{0}'".format(rom['m_name']))
+            rom_name = self.gamedata['title']
+            rom.set_name(rom_name)
+            log_debug("User wants scrapped name. Setting name to '{0}'".format(rom_name))
 
-        rom['m_year']      = self.gamedata['year']
-        rom['m_genre']     = self.gamedata['genre']
-        rom['m_developer'] = self.gamedata['developer']
-        rom['m_nplayers']  = self.gamedata['nplayers']
-        rom['m_esrb']      = self.gamedata['esrb']
-        rom['m_plot']      = self.gamedata['plot']
+        rom.update_releaseyear(self.gamedata['year'])        # <year>
+        rom.update_genre(self.gamedata['genre'])             # <genre>
+        rom.update_developer(self.gamedata['developer'])     # <developer>
+        rom.set_number_of_players(self.gamedata['nplayers']) # <nplayers>
+        rom.set_esrb_rating(self.gamedata['esrb'])           # <esrb>
+        rom.update_plot(self.gamedata['plot'])               # <plot>
         
         return True
 
@@ -381,7 +389,8 @@ class LocalAssetScraper(Scraper):
         # >> misc_add_file_cache() creates a set with all files in a given directory.
         # >> That set is stored in a function internal cache associated with the path.
         # >> Files in the cache can be searched with misc_search_file_cache()
-        misc_add_file_cache(launcher[asset_info.path_key])
+        asset_path = launcher.get_asset_path(asset_info)
+        misc_add_file_cache(asset_path)
 
         super(LocalAssetScraper, self).__init__(settings, launcher, scraping_mode, fallbackScraper)
         
@@ -392,7 +401,8 @@ class LocalAssetScraper(Scraper):
 
         # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         rom_basename_noext = romPath.getBase_noext()
-        local_asset = misc_search_file_cache(self.launcher[self.asset_info.path_key], rom_basename_noext, self.asset_info.exts)
+        asset_path = self.launcher.get_asset_path(self.asset_info)
+        local_asset = misc_search_file_cache(asset_path, rom_basename_noext, self.asset_info.exts)
 
         if not local_asset:
             log_verb('LocalAssetScraper._getCandidates() Missing  {0:<9}'.format(self.asset_info.name))
@@ -410,13 +420,13 @@ class LocalAssetScraper(Scraper):
 
     def _loadCandidate(self, candidate, romPath):
         
-        self.image_url = candidate['file'].getOriginalPath()
-        log_debug('OnlineAssetScraper._applyCandidate() local_asset_path "{0}"'.format(self.image_url))
+        self.image_url = candidate['file']
+        log_debug('OnlineAssetScraper._applyCandidate() local_asset_path "{0}"'.format(self.image_url.getOriginalPath()))
 
     def _applyCandidate(self, romPath, rom):
                 
-        log_debug('{0} scraper: user chose local image "{1}"'.format(self.asset_info.name, self.image_url))
-        rom[self.asset_info.key] = self.image_url
+        log_debug('{0} scraper: user chose local image "{1}"'.format(self.asset_info.name, self.image_url.getOriginalPath()))
+        rom.set_asset(self.asset_info, self.image_url)
         
         return True
 
@@ -436,7 +446,7 @@ class OnlineAssetScraper(Scraper):
         self.asset_kind = asset_kind
         self.asset_info = asset_info
 
-        self.asset_directory = FileNameFactory.create(launcher[asset_info.path_key])
+        self.asset_directory = launcher.get_asset_path(asset_info)
         scraping_mode = settings['asset_scraper_mode']
         
         # --- Initialise cache used in OnlineAssetScraper() as a static variable ---
@@ -452,7 +462,7 @@ class OnlineAssetScraper(Scraper):
 
     def _getCandidates(self, searchTerm, romPath, rom):
         log_verb('OnlineAssetScraper._getCandidates(): Scraping {0} with {1}. Searching for matching games ...'.format(self.asset_info.name, self.scraper_implementation.name))
-        platform = self.launcher['platform']
+        platform = self.launcher.get_platform()
 
         # --- Check cache to check if user choose a game previously ---
         log_debug('_getCandidates() Scraper ID          "{0}"'.format(self.scraper_id))
@@ -480,7 +490,7 @@ class OnlineAssetScraper(Scraper):
          # --- Cache selected game from get_search() ---
         OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id] = {
             'ROM_base_noext' : romPath.getBase_noext(),
-            'platform' : self.launcher['platform'],
+            'platform' : self.launcher.get_platform(),
             'game_dic' : candidate
         }
 
@@ -558,7 +568,6 @@ class OnlineAssetScraper(Scraper):
         # ~~~ Update Kodi cache with downloaded image ~~~
         # Recache only if local image is in the Kodi cache, this function takes care of that.
         kodi_update_image_cache(image_path)
-
-        rom[self.asset_info.key] = image_path.getOriginalPath()
         
+        rom.set_asset(self.asset_info, image_path)        
         return True
