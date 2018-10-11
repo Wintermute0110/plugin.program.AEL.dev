@@ -1,4 +1,7 @@
-[B]Advanced Emulator Launcher | version 0.9.9 | XX February 2018[/B]
+[B]Planned features / TODO[/B]
+
+WIP      [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
+         `plugin.program.AEL`.
 
 WIP      Added Retroarch launcher. Supports launching ROMs using an locally installed
          instance of Retroarch. For more details read RetroarchLauncher.md.
@@ -13,82 +16,140 @@ WIP      Moved FileName to its own file and made it abstract to be able to suppo
 
 WIP      Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
 
-WIP      Complete Extranafart support for Categories/Launchers.
+WIP      [CORE] Check out the ListItem constructor offscreen parameter in Leia. It can
+         dramatically speed up ListItem creation and population.
 
-WIP      Complete Extranafart support for ROMs.
+         See https://forum.kodi.tv/showthread.php?tid=329315&pid=2711937#pid2711937
 
-WIP      Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
-         online and offline scrapers. There is a Python implementation of the algorithm here,
-         https://github.com/seatgeek/fuzzywuzzy
+WIP      [CORE] Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
 
-WIP      Massive upgrade of AEL Offline scraper database.
+WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
+         This feature requires AML 0.9.X
+         AML creates the Category "Arcade (AML)" and places the exported launchers there.
 
-WIP      Update MAME Offline Scraper database to version 0.188 or 0.189
+WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
+         "Manage Most played ROM". Both will have the following options: "Delete this ROM",
+         "Delete all Unlinked ROMs".
 
-WIP      Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
-         See Chrisism patch in Github.
-         Copy remote ROMs for external launchers?
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
 
-WIP      Edit multi-disc ROMs.
+WIP      [CORE] Complete Extranafart support for Categories/Launchers.
 
-WIP      Fix artwork support for mult-disc ROMs.
+WIP      [CORE] Complete Extranafart support for ROMs.
+
+WIP      [CORE] Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
+         See Chrisism patch in Github. Copy remote ROMs for external launchers?
+
+WIP      [CORE] Think about exporting the AEL platform database using JSON-LD in accordance to
+         Garbear's idea.
+
+         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
+
+WIP      [CORE] Disable LNK $rom$ launcher with global setting.
+
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2640857#pid2640857
+
+WIP      [CORE] categoryID is redundant in SHOW_ROMS URL! Remove it or make it optional.
+
+         See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
+
+WIP      [CORE] Should plugin URL be rationalised and simplified to make skinner's life easier?
+
+         See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
+
+WIP      [CORE] Filtering of BIOSes not working properly for MAME ROMs.
+         Use the offline scraper DB to determine what is a BIOS/Device in MAME.
+
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2697000#pid2697000
+
+WIP      [MULTIDISC] Edit multi-disc ROMs.
+
+WIP      [MULTIDISC] Fix artwork support for mult-disc ROMs.
+
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628912#pid2628912
 
-WIP      Changes and suggestions propoed by Atsumori.
+WIP      [MISC] Changes and suggestions propoed by Atsumori.
 
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2586596#pid2586596
 
-WIP      LaunchBox Games Database scraper.
+WIP      [MANUALS] Port the PDF manual reader from AML into AEL.
+
+WIP      [ROM AUDIT] Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs
+         with no PClone information. See previous feature.
+
+WIP      [ROM AUDIT] Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM
+         Sorting). In "Edit Launcher", "Audit ROMs / Launcher view mode" include a new option
+         like "Create PClone DAT based on ROM filenames"
+
+WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs from Europe,
+         Japan or USA. This resembles what NARS No-Intro filtering does.
+
+WIP      [SCRAPERS] Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
+         online and offline scrapers. There is a Python implementation of the algorithm here:
+         https://github.com/seatgeek/fuzzywuzzy
+
+WIP      [SCRAPERS] Massive upgrade of AEL Offline scraper database.
+
+WIP      [SCRAPERS] Update MAME Offline Scraper database to version 0.188 or 0.189
+
+WIP      [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
+
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
+
+WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
+
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
+
+WIP      [SCRAPERS] MobyGames now has an API. I'm not sure if a key is needed.
+
+         See http://www.mobygames.com/info/api
+
+WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper is not working
+         any more.
+
+WIP      [SCRAPERS] LaunchBox Games Database scraper.
          Apparently LaunchBox GamesDB started as a copy of TheGamesDB. Currently there is no
          API to access LaunchBox GamesDB but an XML with all the database info can be downloaded.
 
          See http://gamesdb.launchbox-app.com/
          See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
 
-WIP      Have a look at https://www.screenscraper.fr/ and consider it for an online scraper.
+WIP      [SCRAPERS] Have a look at https://www.screenscraper.fr/ and consider it for an
+         online scraper.
+
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
 
-WIP      Think about exporting the AEL platform database using JSON-LD in accordance to
-         Garbear's idea.
-         See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
+WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
+         "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
+         "Scrape ROMs artwork". "Scrape ROMs artwork" will use the same scraper settings in
+         options as the ROM Scanner.
+         NOTE: this requires a lot of changes that will conflict with master branch. Delay this
+         feature for version 0.10.0.
 
-WIP      Add support for ScummVM platform in the Offline Scraper.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
 
-WIP      Disable LNK $rom$ launcher with global setting.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2640857#pid2640857
+WIP      [SCRAPERS] Fix TheGamesDB scraper. There has been a change in the web site including
+         a new API. I'm not sure wether AEL will need an API key.
 
-WIP      categoryID is redundant in SHOW_ROMS URL! Remove it or make it optional.
-         See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/75
 
-WIP      Should plugin URL be rationalised and simplified to make skinner's life easier?
-         See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
 
-WIP      Add an option to see the ROM Manual in PDF if exists. Maybe use GhostScript to render
-         the PDF into images like HyperLauncher does?
-         Add an option in context menu "View ROM/Launcher".
+[B]Advanced Emulator Launcher | version 0.9.8 | XX August 2018[/B]
 
-WIP      Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs with no
-         PClone information. See previous feature.
+WIP      [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
+         and number of items in a Launcher.
 
-WIP      Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM Sorting).
-         In "Edit Launcher", "Audit ROMs / Launcher view mode" include a new option like
-         "Create PClone DAT based on ROM filenames"
+FEATURE  [CORE] Add Year and Developer for Categories.
 
-WIP      Options to generate the 1G1R parent list, like prefer ROMs from Europe, Japan or USA.
-         This resembles what NARS No-Intro filtering does.
-
-[B]Advanced Emulator Launcher | version 0.9.8 | XX January 2018[/B]
-
-FEATURE  Add Year and Developer for Categories.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653
 
-FEATURE  Per-launcher setting to disable multi-disc ROM support.
+FEATURE  [CORE] Per-launcher setting to disable multi-disc ROM support.
 
-FEATURE  Added "Edit Category" context menu, "Export Category XML configuration".
+FEATURE  [CORE] Added "Edit Category" context menu, "Export Category XML configuration".
 
-WIP      Option to rescrape all assets from launcher in a similar fashion to "Scan ROMs local artwork".
+FEATURE  New AEL Theme of Icons/Fanarts for the Virtual Launchers. Kudos to Sagrath for this
+         contribution.
 
 FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
 
@@ -101,6 +162,7 @@ FIX      Fixed display_fav_status label in settings.xml
 FIX      Unicode fixes in kodi_update_image_cache()
 
 FIX      Fixed MobyGames scraper.
+
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/60
 
 

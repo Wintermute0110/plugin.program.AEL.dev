@@ -93,11 +93,22 @@ LAUNCHER_NVGAMESTREAM   = 'NVIDIASTREAM'
 LAUNCHER_FAVOURITES     = 'FAVOURITES'
 
 # --- Content type property to be used by skins ---
-AEL_CONTENT_WINDOW_ID       = 10000
-AEL_CONTENT_LABEL           = 'AEL_Content'
-AEL_CONTENT_VALUE_LAUNCHERS = 'launchers'
-AEL_CONTENT_VALUE_ROMS      = 'roms'
-AEL_CONTENT_VALUE_NONE      = ''
+AEL_CONTENT_WINDOW_ID          = 10000
+AEL_CONTENT_LABEL              = 'AEL_Content'
+AEL_CONTENT_VALUE_LAUNCHERS    = 'launchers'
+AEL_CONTENT_VALUE_ROMS         = 'roms'
+AEL_CONTENT_VALUE_CATEGORY     = 'category'
+AEL_CONTENT_VALUE_STD_LAUNCHER = 'std_launcher'
+AEL_CONTENT_VALUE_ROM_LAUNCHER = 'rom_launcher'
+AEL_CONTENT_VALUE_ROM          = 'rom'
+AEL_CONTENT_VALUE_NONE         = ''
+
+AEL_LAUNCHER_NAME_LABEL        = 'AEL_Launch_Name'
+AEL_LAUNCHER_ICON_LABEL        = 'AEL_Launch_Icon'
+AEL_LAUNCHER_CLEARLOGO_LABEL   = 'AEL_Launch_Clearlogo'
+
+# >> Value is the number of items inside a launcher.
+AEL_NUMITEMS_LABEL             = 'AEL_NumItems'
 
 # --- ROM flags used by skins to display status icons ---
 AEL_INFAV_BOOL_LABEL                 = 'AEL_InFav'
