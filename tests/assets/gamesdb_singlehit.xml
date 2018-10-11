@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Data>
+<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>
+<Game>
+<id>9079</id>
+<GameTitle>Pitfall: The Mayan Adventure</GameTitle>
+<PlatformId>33</PlatformId>
+<Platform>Sega 32X</Platform>
+<ReleaseDate>10/01/1995</ReleaseDate>
+<Overview>Pitfall: The Mayan Adventure is a side-scrolling action game in which you play adventurer Pitfall Harry Jr in search of his father Pitfall Harry. You battle your way through the Mayan jungles, waterfalls, deserted mines and can bungee jump and boomerang your way to safety. There are 13 levels and the action is fast and gripping. You will need to be attentive—and quick. Or prepare to die.</Overview>
+<ESRB>T - Teen</ESRB>
+<Genres><genre>Platform</genre></Genres><Co-op>No</Co-op>
+<Publisher>Activision</Publisher>
+<Developer>Activision</Developer>
+<Rating>7</Rating><Similar><SimilarCount>6</SimilarCount><Game><id>3979</id><PlatformId>28</PlatformId></Game><Game><id>3532</id><PlatformId>5</PlatformId></Game><Game><id>5075</id><PlatformId>21</PlatformId></Game><Game><id>667</id><PlatformId>18</PlatformId></Game><Game><id>24024</id><PlatformId>36</PlatformId></Game><Game><id>2918</id><PlatformId>6</PlatformId></Game></Similar><Images>
+<boxart side="front" width="640" height="876" thumb="boxart/thumb/original/front/9079-1.jpg">boxart/original/front/9079-1.jpg</boxart>
+<screenshot>
+<original width="640" height="480">screenshots/9079-1.jpg</original>
+<thumb>screenshots/thumb/9079-1.jpg</thumb>
+</screenshot>
+<clearlogo width="400" height="100">clearlogo/9079.png</clearlogo></Images>
+</Game>
+</Data>

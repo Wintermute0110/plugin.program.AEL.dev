@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher scraping engine
-#
-
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
-# Portions (c) 2010-2015 Angelscry
+# Advanced Emulator Launcher
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,8 +13,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# --- Python standard library ---
+# --- Python compiler flags ---
 from __future__ import unicode_literals
+
+# --- Python standard library ---
 import sys, urllib, urllib2, re
 
 # --- AEL modules ---
@@ -70,6 +70,10 @@ class Scraper_TheGamesDB():
         # >> quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
         # >> UTF-8 encoded string and does not work with Unicode strings.
         scraper_platform = scraper_platform.replace('-', ' ')
+        
+        # added encoding 
+        # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
+
         url = 'http://thegamesdb.net/api/GetGamesList.php?' + \
               'name={0}'.format(urllib.quote_plus(search_string.encode('utf8'))) + \
               '&platform={0}'.format(urllib.quote_plus(scraper_platform.encode('utf8')))

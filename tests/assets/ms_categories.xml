@@ -1,0 +1,2752 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<advanced_emulator_launcher version="1">
+<control>
+  <update_timestamp>1508360204.88</update_timestamp>
+</control>
+<category>
+  <id>9fadfcd748eb3aba2df85f4e3995ef3f</id>
+  <m_name>Android</m_name>
+  <m_genre />
+  <m_rating />
+  <m_plot />
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_trailer />
+</category>
+<category>
+  <id>89aa16032d46cf083e1544d961c58298</id>
+  <m_name>Arcade</m_name>
+  <m_genre>Emulator</m_genre>
+  <m_rating />
+  <m_plot>MAME (an acronym of Multiple Arcade Machine Emulator) is a free and open source emulator designed to recreate the hardware of arcade game systems in software on modern personal computers and other platforms. The intention is to preserve gaming history by preventing vintage games from being lost or forgotten. The aim of MAME is to be a reference to the inner workings of the emulated arcade machines; the ability to actually play the games is considered &quot;a nice side effect&quot;. Joystiq has listed MAME as an application that every gamer should have.The first public MAME release (0.1) was on February 5, 1997, by Nicola Salmoria. The emulator now supports over seven thousand unique games and ten thousand actual ROM image sets, though not all of the supported games are playable. MESS, an emulator for many video game consoles and computer systems, based on the MAME core, has been integrated into MAME in 2015.</m_plot>
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Arcade_fanart_5.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/arcade_logo.png</s_clearlogo>
+  <s_trailer />
+</category>
+<category>
+  <id>ffb5e028ed62472fd48838e46c802ed4</id>
+  <m_name>Atari</m_name>
+  <m_genre>Company</m_genre>
+  <m_rating />
+  <m_plot>Atari is a corporate and brand name owned by several entities since its inception in 1972, currently by Atari Interactive, a subsidiary of the French publisher Atari, SA (ASA). The original Atari, Inc. founded in 1972 by Nolan Bushnell and Ted Dabney was a pioneer in arcade games, home video game consoles, and home computers. The company&apos;s products, such as Pong and the Atari 2600, helped define the electronic entertainment industry from the 1970s to the mid-1980s.In 1984, the original Atari Inc. was split due to its role in the video game crash of 1983, and the arcade division was turned into Atari Games Inc. Atari Games received the rights to use the logo and brand name with appended text &quot;Games&quot; on arcade games, as well as rights to the original 1972–1984 arcade hardware properties. The Atari Consumer Electronics Division properties were in turn sold to Jack Tramiel&apos;s Tramel Technology Ltd., which then renamed itself to Atari Corporation. In 1996, Atari Corporation reverse-merged with disk-drive manufacturer JT Storage (JTS), becoming a division within the company.</m_plot>
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>/storage/MEDIASERVER/Media6/Roms/Atari/Atari_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Atari/atari_logo.png</s_clearlogo>
+  <s_trailer />
+</category>
+<category>
+  <id>e6a161e167f8813bcc9ed28569df6670</id>
+  <m_name>Nintendo</m_name>
+  <m_genre>Company</m_genre>
+  <m_rating />
+  <m_plot>Nintendo Co., Ltd. (Japanese: 任天堂株式会社 Hepburn: Nintendō Kabushiki gaisha) is a Japanese multinational consumer electronics and software company headquartered in Kyoto, Japan. Nintendo is the world&apos;s largest video game company by revenue. Founded on September 23, 1889, by Fusajiro Yamauchi, it originally produced handmade hanafuda playing cards. By 1963, the company had tried several small niche businesses, such as cab services and love hotels.Abandoning previous ventures in favor of toys in the 1960s, Nintendo then developed into a video game company in the 1970s, ultimately becoming one of the most influential in the industry and Japan&apos;s third most-valuable company with a market value of over $85 billion. Nintendo of America is also the majority owner of Major League Baseball&apos;s Seattle Mariners.The word Nintendo can be roughly translated from Japanese to English as &quot;leave luck to heaven&quot;. As of March 31, 2014, Nintendo has cumulative sales of over 670.43 million hardware units and 4.23 billion software units. The company has created some of the most well known and best-selling video game franchises in the industry, including Mario and The Legend of Zelda, among others.</m_plot>
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>/storage/MEDIASERVER/Media6/Roms/Nintendo/Nintendo_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/nintendo-logo.png</s_clearlogo>
+  <s_trailer />
+</category>
+<category>
+  <id>6f50701039f65871951b62209ea8e48f</id>
+  <m_name>PC</m_name>
+  <m_genre />
+  <m_rating />
+  <m_plot />
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/PC/PC_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/PC/pcgamer_banner.jpg</s_clearlogo>
+  <s_trailer />
+</category>
+<category>
+  <id>c20f56e7c2242b03e8133c512303ec63</id>
+  <m_name>Sega</m_name>
+  <m_genre>Company</m_genre>
+  <m_rating />
+  <m_plot>Sega Games Co., Ltd. (Japanese: 株式会社セガゲームス Hepburn: Kabushiki gaisha Sega gēmusu), originally short for Service Games and officially styled as SEGA, is a Japanese multinational video game developer and publisher headquartered in Tokyo, Japan, with multiple offices around the world. Sega developed and manufactured numerous home video game consoles from 1983 to 2001, but the financial losses incurred from their Dreamcast console caused the company to restructure itself in 2001, and focus on providing software as a third-party developer from then on. Nonetheless, Sega remains the world&apos;s most prolific arcade producer, with over 500 games in over 70 franchises on more than 20 different arcade system boards since 1981.Sega, along with their sub-studios, are known for their multi-million selling game franchises including Sonic the Hedgehog, Virtua Fighter, Phantasy Star, Yakuza, and Total War, amongst others. Sega&apos;s head offices are located in Ōta, Tokyo. Sega&apos;s North American division, Sega of America, is headquartered in Irvine, California, having moved there from San Francisco in 2015. Sega&apos;s European division, Sega Europe, is headquartered in the Brentford, London.</m_plot>
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>/storage/MEDIASERVER/Media6/Roms/Sega/SEGA_fanart_2.jpg</s_fanart>
+  <s_banner>smb://192.168.0.5/Media6/Roms/Sega/SEGA_icon_4.jpg</s_banner>
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/sega-logo.png</s_clearlogo>
+  <s_trailer />
+</category>
+<category>
+  <id>0038b79f6b5e48c85066a09a3de23e53</id>
+  <m_name>Sony</m_name>
+  <m_genre>Company</m_genre>
+  <m_rating />
+  <m_plot>Sony Corporation (ソニー株式会社 Sonī Kabushiki Gaisha), commonly referred to as Sony, styled SONY /ˈsoʊniː/, is a Japanese multinational conglomerate corporation headquartered in Kōnan Minato, Tokyo, Japan. Its diversified business includes consumer and professional electronics, gaming, entertainment and financial services. The company is one of the leading manufacturers of electronic products for the consumer and professional markets. Sony is ranked 116th on the 2015 list of Fortune Global 500.Sony Corporation is the electronics business unit and the parent company of the Sony Group, which is engaged in business through its four operating segments: electronics (including video games, network services and medical business), motion pictures, music and financial services. These make Sony one of the most comprehensive entertainment companies in the world. Sony&apos;s principal business operations include Sony Corporation (Sony Electronics in the U.S.), Sony Pictures Entertainment, Sony Interactive Entertainment, Sony Music Entertainment, Sony Mobile Communications (formerly Sony Ericsson) and Sony Financial. Sony is among the Worldwide Top 20 Semiconductor Sales Leaders and as of 2013, the fourth-largest television manufacturer in the world, after Samsung Electronics, LG Electronics and TCL.</m_plot>
+  <finished>False</finished>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Sony/sony_wallpaper.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sony/sony_logo_clear2.png</s_clearlogo>
+  <s_trailer />
+</category>
+<launcher>
+  <id>84289419b2450bc76da711e514f73e7b</id>
+  <m_name>2000&apos;s Arcade</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/2000s/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_2000&apos;s_Arcade_842894</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>30</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.95</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/2000s/arcade-logo.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/2000s/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/2000s/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/2000s/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/2000s/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/2000s/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/2000s/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/2000s/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/2000s/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/2000s/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/2000s/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/2000s/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/2000s/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>2220af27d0937d78ce7bc8317f5e853a</id>
+  <m_name>32x</m_name>
+  <m_year>1994</m_year>
+  <m_genre>Fifth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The 32X is an add-on for the Mega Drive/Genesis video game console. Codenamed &quot;Project Mars&quot;, the 32X was designed to expand the power of the Genesis and serve as a transitional console into the 32-bit era until the release of the Sega Saturn. Independent of the Genesis, the 32X uses its own ROM cartridges and has its own library of games. The add-on was distributed under the name Super 32X (スーパー32X Sūpā Sanjūni Ekkusu) in Japan, Genesis 32X in North America, Mega Drive 32X in the PAL region, and Mega 32X in Brazil.Unveiled by Sega at June 1994&apos;s Consumer Electronics Show, the 32X was presented as a low-cost option for consumers looking to play 32-bit games. Developed in response to the Atari Jaguar and concerns that the Saturn would not make it to market by the end of 1994, the product was first conceived as an entirely new console. At the suggestion of Sega of America executive Joe Miller and his team, the console was converted into an add-on to the existing Genesis and made more powerful. The final design contained two 32-bit central processing units and a 3D graphics processor. To bring the new add-on to market by its scheduled release date of November 1994, development of the new system and its games were rushed. The console failed to attract third-party video game developers and consumers because of the announcement of the Sega Saturn&apos;s simultaneous release in Japan. Sega&apos;s efforts to rush the 32X to market cut into available time for game development, resulting in a weak library of forty titles that could not fully use the add-on&apos;s hardware, including Genesis ports. By the end of 1994, the 32X had sold 665,000 units. After price reductions in 1995, it was discontinued in 1996 as Sega turned its focus to the Saturn.</m_plot>
+  <platform>Sega 32X</platform>
+  <categoryID>c20f56e7c2242b03e8133c512303ec63</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/picodrive_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Sega/32X/Games/</rompath>
+  <romext>32x|bin|32X</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Sega_32x_2220af</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>35</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.72</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Sega/32X/32X_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/32X/32X_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Sega/32X/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sega/32X/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sega/32X/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sega/32X/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sega/32X/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sega/32X/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sega/32X/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/32X/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sega/32X/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sega/32X/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sega/32X/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sega/32X/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>f78a9fc1e4b4a691c4a67ee4f8e251bd</id>
+  <m_name>70&apos;s Arcade</m_name>
+  <m_year>1970</m_year>
+  <m_genre>Time period</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The golden age of arcade video games was the era of greatest popularity and technological innovation for arcade video games. The exact time period is disputed, but key moments include the release of Space Invaders in 1978 and the introduction of vector display technology in 1979. The golden age lasted until the 1980s, when home video game consoles like the NES were introduced.</m_plot>
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/70s/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_70&apos;s_Arcade_f78a9f</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>17</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.48</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Arcade_banner_2.jpg</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/70s/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/70s/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/70s/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/70s/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/70s/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/70s/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/70s/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/70s/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/70s/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/70s/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/70s/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/70s/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>e35f7c64e4aec5ce334372c69477d601</id>
+  <m_name>80&apos;s Arcade</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/80s/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_80&apos;s_Arcade_e35f7c</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>455</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.67</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Arcade_banner_3.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Arcade Classics.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/80s/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/80s/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/80s/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/80s/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/80s/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/80s/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/80s/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/80s/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/80s/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/80s/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/80s/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/80s/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>7d03d60939df0b9b0d0f4499c9caf30c</id>
+  <m_name>90&apos;s Arcade</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/90s/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_90&apos;s_Arcade_7d03d6</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>470</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.45</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/arcade_fanart_9.png</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/90s/arcade-logo.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/90s/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/90s/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/90s/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/90s/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/90s/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/90s/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/90s/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/90s/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/90s/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/90s/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/90s/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/90s/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>dccbb83a0a7d6dabf47a33715eb83b04</id>
+  <m_name>ACE</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Ace/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_ACE_dccbb8</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>11</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.88</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Arcade_fanart_8.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Ace/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Ace/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Ace/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Ace/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Ace/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Ace/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Ace/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Ace/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Ace/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Ace/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Ace/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Ace/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>92ae9f487967da2f6bd1e43039eea270</id>
+  <m_name>Atari</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Atari/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Atari_92ae9f</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>125</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360200.38</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Atari/Atari2600Fanart.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Atari/Classics Atari.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Atari/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Atari/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Atari/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Atari/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Atari/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Atari/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Atari/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Atari/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Atari/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Atari/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Atari/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Atari/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>0b202fca0ee00df94257e84fa41ab1a3</id>
+  <m_name>Capcom Play System 1</m_name>
+  <m_year>1979</m_year>
+  <m_genre>Company</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>Capcom Co., Ltd. (Japanese: 株式会社カプコン Hepburn: Kabushiki-gaisha Kapukon), or Capcom, is a Japanese developer and publisher of video games, known for creating multi-million-selling franchises such as Mega Man, Street Fighter, Resident Evil, Devil May Cry, Ace Attorney, and Monster Hunter, as well as games based on the Disney animated properties. Originally established in 1979, it has since become an international enterprise with subsidiaries in North America, Europe, and East Asia.</m_plot>
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/CPS1/Games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Capcom_Play_System_1_0b202f</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>37</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.29</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/Capcom_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/Capcom_logo.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/CPS1/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>04ef88354dfde1f7d2d342cc2f5cbed4</id>
+  <m_name>Cave</m_name>
+  <m_year>1994</m_year>
+  <m_genre>Company</m_genre>
+  <m_developer />
+  <m_rating />
+  <type>ROM</type>
+  <m_plot>CAVE Interactive CO., LTD. (Japanese: 株式会社ケイブ Hepburn: Kabushiki Gaisha Keibu), or CAVE for short, is a Japanese video game company founded in 1994 by former employees of Toaplan following its bankruptcy. They are known primarily for their &quot;bullet hell&quot; shoot &apos;em ups; from 1995 up to 2010, CAVE was one of the most prolific shoot &apos;em up developers in the Japanese market. Alongside this, CAVE has produced a variety of other types games for arcades, home consoles, PCs, and smartphones, also dating back to 1995.</m_plot>
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Cave/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Cave_04ef88</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>16</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.5</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Cave/Cave-emblem.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Cave/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Cave/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Cave/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Cave/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Cave/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Cave/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Cave/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Cave/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Cave/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Cave/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Cave/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Cave/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>465236145afd62276e1c98c3a8a7c5f7</id>
+  <m_name>Data East</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/DataEast/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Data_East_465236</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>115</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.65</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/game_back.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/Data East.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/DataEast/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>c0132755a5cdc8411d46c53c7c9dd853</id>
+  <m_name>Dosbox</m_name>
+  <m_year>1981</m_year>
+  <m_genre>Operating system</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>MS-DOS (acronym for Microsoft Disk Operating System) is a discontinued operating system for x86-based personal computers mostly developed by Microsoft. It was the most commonly used member of the DOS family of operating systems, and was the main operating system for IBM PC compatible personal computers during the 1980s and the early 1990s, when it was gradually superseded by operating systems offering a graphical user interface (GUI), in various generations of the graphical Microsoft Windows operating system by Microsoft Corporation.MS-DOS resulted from a request in 1981 by IBM for an operating system to use in its IBM PC range of personal computers. Microsoft quickly bought the rights to 86-DOS from Seattle Computer Products, and began work on modifying it to meet IBM&apos;s specification. IBM licensed and released it in August 1981 as PC DOS 1.0 for use in their PCs. Although MS-DOS and PC DOS were initially developed in parallel by Microsoft and IBM, in subsequent years the two products diverged, with recognizable differences in compatibility, syntax, and capabilities.</m_plot>
+  <platform>Microsoft MS-DOS</platform>
+  <categoryID>6f50701039f65871951b62209ea8e48f</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/dosbox_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/PC/Dosbox/Games/</rompath>
+  <romext>conf</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_PC_Dosbox_c01327</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>750</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360199.04</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/PC/Dosbox/Microsoft MS-DOS_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/PC/Dosbox/msdos_logo.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/PC/Dosbox/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/PC/Dosbox/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/PC/Dosbox/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/PC/Dosbox/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/PC/Dosbox/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/PC/Dosbox/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/PC/Dosbox/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/PC/Dosbox/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/PC/Dosbox/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/PC/Dosbox/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/PC/Dosbox/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/PC/Dosbox/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>ba9d41480f305d6cbeea035fc47e3f4b</id>
+  <m_name>Dreamcast</m_name>
+  <m_year>1998</m_year>
+  <m_genre>Sixth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Dreamcast (Japanese: ドリームキャスト Hepburn: Dorīmukyasuto) is a home video game console released by Sega on November 27, 1998 in Japan, September 9, 1999 in North America, and October 14, 1999 in Europe. It was the first in the sixth generation of video game consoles, preceding Sony&apos;s PlayStation 2, Nintendo&apos;s GameCube and Microsoft&apos;s Xbox. The Dreamcast is Sega&apos;s final home console, marking the end of the company&apos;s 18 years in the console market.In contrast to the expensive hardware of the unsuccessful Sega Saturn, the Dreamcast was designed to reduce costs with &quot;off-the-shelf&quot; components, including a Hitachi SH-4 CPU and an NEC PowerVR2 GPU. Released in Japan to a subdued reception, the Dreamcast enjoyed a successful U.S. launch backed by a large marketing campaign, but interest in the system steadily declined as Sony built hype for the upcoming PlayStation 2. Sales did not meet Sega&apos;s expectations despite several price cuts, and the company continued to incur significant financial losses. After a change in leadership, Sega discontinued the Dreamcast on March 31, 2001, withdrawing from the console business and restructuring itself as a third-party publisher. 9.13 million Dreamcast units were sold worldwide.</m_plot>
+  <platform>Sega Dreamcast</platform>
+  <categoryID>c20f56e7c2242b03e8133c512303ec63</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.VIEW -n com.reicast.emulator/.MainActivity -eu Uri &quot;%rom%&quot;</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Sega/Dreamcast/Games/</rompath>
+  <romext>gdi</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Sega_Dreamcast_ba9d41</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>172</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360204.81</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/Dreamcast_fanart_3.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/Dreamcast_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sega/Dreamcast/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>f9505426676b8fca0dd22fe458d60fa6</id>
+  <m_name>Eolith</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Eolith/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Eolith_f95054</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>11</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.87</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Eolith/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>a02fd794455a2f522f521008ba4b3c3f</id>
+  <m_name>Gaelco</m_name>
+  <m_year>1990</m_year>
+  <m_genre>Company</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>Gaelco, S.A. is a Spanish company that develops and publishes arcade games and video games. At present it develops electronic dart machines under the name of &quot;Gaelco Darts&quot;.</m_plot>
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Gaelco/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Gaelco_a02fd7</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>15</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360200.31</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/Gaelco.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Gaelco/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>f4227b722cb24582089b218ab0be8de3</id>
+  <m_name>GameBoy</m_name>
+  <m_year>1989</m_year>
+  <m_genre>Fourth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Game Boy (Japanese: ゲームボーイ Hepburn: Gēmu Bōi) is an 8-bit handheld video game device developed and manufactured by Nintendo. It was released in Japan on April 21, 1989, in North America on July 31, 1989, and in Europe on September 28, 1990. It is the first handheld console in the Game Boy line, and was created by Gunpei Yokoi and Nintendo Research &amp; Development 1 (the same staff who had designed the Game &amp; Watch series as well as several popular games for the Nintendo Entertainment System). Redesigned versions were released in 1996 and 1998, in the form of Game Boy Pocket, and Game Boy Light (Japan only), respectively.</m_plot>
+  <platform>Nintendo GameBoy</platform>
+  <categoryID>e6a161e167f8813bcc9ed28569df6670</categoryID>
+  <application>/storage/MEDIASERVER/Media6/Roms/scraper.exe</application>
+  <args>&quot;%rom%&quot;</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Nintendo/Game Boy/Games/</rompath>
+  <romext>gb|gbc</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Nintendo_GameBoy_f4227b</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>0</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.98</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/Game Boy_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/Game Boy_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Nintendo/Game Boy/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>c218e24d99286a988c5525c8e99f9264</id>
+  <m_name>IGS</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/IGS/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_IGS_c218e2</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>24</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360204.47</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/IGS/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/IGS/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/IGS/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/IGS/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/IGS/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/IGS/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/IGS/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/IGS/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/IGS/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/IGS/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/IGS/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/IGS/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>295f3f9c4b50c8c33d91a4f93f8dbbbb</id>
+  <m_name>Irem</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Irem/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Irem_295f3f</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>51</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.55</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Irem/Irem.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Irem/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Irem/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Irem/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Irem/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Irem/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Irem/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Irem/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Irem/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Irem/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Irem/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Irem/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Irem/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>2239830e154892314958159129e83352</id>
+  <m_name>Jaguar</m_name>
+  <m_year>1993</m_year>
+  <m_genre>Firfth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Atari Jaguar is a home video game console that was developed by Atari Corporation. The console was the sixth and last programmable console to be developed under the Atari brand, originally released in North America in November 1993. Marketed by Atari as the first 64-bit video game console, the Jaguar was designed to compete with the existing 16-bit consoles (Sega Genesis and Super Nintendo Entertainment System) and the 32-bit 3DO Interactive Multiplayer platform (which launched the same year).Development on the Atari Jaguar started in the early 90s, and was designed by Flare Technology, who were tasked by Atari to create two consoles; the Atari Panther, which would compete with the Genesis and the Super NES, and a successor, the Jaguar, which would surpass the capabilities of any other console on the market at the time. With development of the Jaguar running ahead of schedule, the Panther was cancelled, and the release of the Jaguar was pushed forward. It was originally released to test markets in New York City and San Francisco in November 1993, and to the general public in 1994, with Cybermorph as the pack-in launch game.</m_plot>
+  <platform>Atari Jaguar</platform>
+  <categoryID>ffb5e028ed62472fd48838e46c802ed4</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/virtualjaguar_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Atari/Jaguar/Games/</rompath>
+  <romext>j64</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Atari_Jaguar_223983</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>43</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.58</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/Atari Jaguar_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/Atari Jaguar_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Atari/Jaguar/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>fb11a3507932a9a1340748d2a12f6ad5</id>
+  <m_name>Jaleco</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Jaleco/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Jaleco_fb11a3</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>64</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360200.29</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Jaleco/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>2b974eed8d0032fe30283ecb3b8107fd</id>
+  <m_name>Kaneko</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Kaneko/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Kaneko_2b974e</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>36</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.75</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Kaneko/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>721f79dd277f92bd389fb0f6c91b9639</id>
+  <m_name>Konami</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Konami/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Konami_721f79</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>156</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.85</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Konami/Konami.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Konami/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Konami/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Konami/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Konami/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Konami/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Konami/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Konami/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Konami/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Konami/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Konami/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Konami/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Konami/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>c874c7651d1baa533d97c922fa8606cd</id>
+  <m_name>Master System</m_name>
+  <m_year>1986</m_year>
+  <m_genre>Third generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Sega Master System (Japanese: セガマスターシステム Hepburn: Sega Masutā Shisutemu) is a third-generation home video game console that was manufactured by Sega. It was originally released in 1985 as the Sega Mark III in Japan. After being redesigned prior to its North American launch, the console was renamed Master System and released in 1986 in North America, 1987 in Europe, and 1989 in Brazil. The redesigned Master System was also released in Japan in 1987. Both the Mark III and the original Master System models could play with both cartridges (or &quot;Mega Cartridges&quot;, as they were officially called) and the credit card-sized Sega Cards, which retailed at lower prices than cartridges but had lower storage capacity; the Master System II and later models did not have the card slot. The Master System also featured accessories such as a light gun and 3D glasses which were designed to work with a range of specially coded games.</m_plot>
+  <platform>Unknown</platform>
+  <categoryID>c20f56e7c2242b03e8133c512303ec63</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/genesis_plus_gx_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Sega/Master System/Games/</rompath>
+  <romext>sms</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Sega_Master_System_c874c7</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>326</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360204.68</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>/storage/MEDIASERVER/Media6/Roms/Sega/Master System/Master System_fanart_2.jpg</s_fanart>
+  <s_banner>smb://192.168.0.5/Media6/Roms/Sega/Master System/Master System_banner_1.png</s_banner>
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Master System/Master System_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Sega/Master System/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sega/Master System/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sega/Master System/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sega/Master System/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sega/Master System/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sega/Master System/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sega/Master System/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Master System/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sega/Master System/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sega/Master System/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sega/Master System/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sega/Master System/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>1784c88a5563a5ddb93b8213fd1ffe82</id>
+  <m_name>Megadrive</m_name>
+  <m_year>1988</m_year>
+  <m_genre>Fourth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Sega Genesis, known as the Mega Drive (Japanese: メガドライブ Hepburn: Mega Doraibu) in most regions outside North America, is a 16-bit home video game console which was developed and sold by Sega Enterprises, Ltd. The Genesis was Sega&apos;s third console and the successor to the Master System. Sega first released the console as the Mega Drive in Japan in 1988, followed by a North American debut under the Genesis moniker in 1989. In 1990, the console was distributed as the Mega Drive by Virgin Mastertronic in Europe.Designed by an R&amp;D team supervised by Hideki Sato and Masami Ishikawa, the hardware was adapted from Sega&apos;s System 16 arcade board, centered on a Motorola 68000 processor as a primary CPU and a Zilog Z80 as a secondary processor. The system supports a library of more than 900 games created both by Sega and a wide array of third-party publishers and delivered on ROM-based cartridges. It can play Master System games when the separately sold Power Base Converter is inserted.</m_plot>
+  <platform>Unknown</platform>
+  <categoryID>c20f56e7c2242b03e8133c512303ec63</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/genesis_plus_gx_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Sega/Mega Drive/Games/</rompath>
+  <romext>md</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Sega_Megadrive_1784c8</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>962</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360204.42</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/Genesis_fanart_4.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/Genesis_banner_2.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sega/Mega Drive/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>25987e48b3d1bf00949f542eea3a78f1</id>
+  <m_name>Metro</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Metro/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Metro_25987e</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>23</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.0</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Metro/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Metro/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Metro/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Metro/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Metro/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Metro/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Metro/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Metro/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Metro/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Metro/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Metro/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Metro/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>3270199362532d865468d99a857423c2</id>
+  <m_name>Midway</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Midway/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Midway_327019</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>129</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360200.24</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Midway/Midway.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Midway/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Midway/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Midway/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Midway/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Midway/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Midway/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Midway/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Midway/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Midway/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Midway/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Midway/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Midway/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>254bc47b5c3d06a04515ea7c00fbbeb2</id>
+  <m_name>Mitchell</m_name>
+  <m_year>1980</m_year>
+  <m_genre>Company</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>Mitchell Corporation (株式会社ミッチェル) is a Japanese video game developer based in the Suginami ward of Tokyo. Roy Ozaki serves as president, and Koichi Niida serves as vice-president. Some employees are former Capcom and TAD Corporation employees. The company was originally established on February 1, 1960, as an import/export business by the father of Roy Ozaki. Ozaki and Niida took over the company and began acting as exclusive overseas agents for such video game companies as Visco, Video System, Seta, Metro, Home Data, and other small video game manufacturers in the 1980s. Company activity was suspended on 20 November 2012.[1]</m_plot>
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Mitchell/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Mitchell_254bc4</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>37</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.98</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Mitchell/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>5946e9c5795bdeb02e4d3c23a3aedce0</id>
+  <m_name>NES</m_name>
+  <m_year>1983</m_year>
+  <m_genre>Third generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Nintendo Entertainment System (also abbreviated as NES) is an 8-bit home video game console that was developed and manufactured by Nintendo. It was initially released in Japan as the Family Computer (Japanese: ファミリーコンピュータ Hepburn: Famirī Konpyūta) (also known by the portmanteau abbreviation Famicom (ファミコン Famikon) and abbreviated as FC) on July 15, 1983, and was later released in North America during 1985, in Europe during 1986, and Australia in 1987. In South Korea, it was known as the Hyundai Comboy (현대 컴보이 Hyeondae Keomboi) and was distributed by SK Hynix which then was known as Hyundai Electronics. It was succeeded by the Super Nintendo Entertainment System.</m_plot>
+  <platform>Nintendo NES</platform>
+  <categoryID>e6a161e167f8813bcc9ed28569df6670</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/nestopia_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Nintendo/NES/Games/</rompath>
+  <romext>nes</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Nintendo_NES_5946e9</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>1570</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.02</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/NES/NES_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/NES/NES_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Nintendo/NES/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Nintendo/NES/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Nintendo/NES/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Nintendo/NES/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Nintendo/NES/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/NES/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Nintendo/NES/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/NES/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Nintendo/NES/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Nintendo/NES/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Nintendo/NES/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Nintendo/NES/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>da07ae1d935df80a1de3fd85e724199d</id>
+  <m_name>Namco</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Namco/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Namco_da07ae</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>207</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.79</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Namco/Namcofanart.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Namco/Namco.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Namco/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Namco/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Namco/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Namco/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Namco/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Namco/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Namco/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Namco/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Namco/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Namco/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Namco/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Namco/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>e7fb5f85f0c39daf5d784f5ec80ac904</id>
+  <m_name>NeoGeo</m_name>
+  <m_year>1990</m_year>
+  <m_genre>Fourth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Neo Geo (Japanese: ネオジオ Hepburn: Neojio), stylised as NEO・GEO, also written as NEOGEO, is a cartridge-based arcade system board and fourth-generation home video game console released on April 26, 1990, by Japanese game company SNK Corporation. It was the first system in SNK&apos;s Neo Geo family. The Neo Geo was marketed as 24-bit; its CPU is technically a parallel processing 16/32-bit 68000-based system with an 8/16-bit Z80 coprocessor, while its GPU chipset has a 24-bit graphics data bus.The Neo Geo originally launched as the MVS (Multi Video System) coin-operated arcade machine. The MVS offers owners the ability to put up to six different cartridges into a single cabinet, a unique feature that was also a key economic consideration for operators with limited floorspace, as well as saving money in the long-run. With its games stored on self-contained cartridges, a game cabinet can be exchanged for a different game title by swapping the game&apos;s ROM-cartridge and cabinet artwork. A home console version was also made, called AES (Advanced Entertainment System). It was originally launched as a rental console for video game stores in Japan (called Neo Geo Rental System), with its high price causing SNK not to release it for home use - this was later reversed due to high demand and it came into the market as a luxury console. The AES had the same raw specs as the MVS and had full compatibility, thus managed to bring a true arcade experience to home users. As of 2013 it was the most expensive home video game console ever released, costing US$1,125 adjusted for inflation. The Neo Geo was revived along with the brand overall in December 2012 through the introduction of the Neo Geo X handheld and home system.</m_plot>
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/SNK/Neo-Geo/Games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_NeoGeo_e7fb5f</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>273</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360200.97</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/Neo Geo AES_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/neo-geo-logo2.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/SNK/Neo-Geo/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>4fa70f649eb7e2381908fbd4a6a1bc46</id>
+  <m_name>Nintendo</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Nintendo/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Nintendo_4fa70f</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>102</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.36</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Nintendo/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>ad8d26498eecdace9f6c8cfcbb774212</id>
+  <m_name>Nintendo 64</m_name>
+  <m_year>1996</m_year>
+  <m_genre>Fifth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Nintendo 64 (Japanese: ニンテンドー64 Hepburn: Nintendō Rokujūyon), stylized as NINTENDO64 and often referred to as N64, is Nintendo&apos;s third home video game console for the international market. Named for its 64-bit central processing unit, it was released in June 1996 in Japan, September 1996 in North America, March 1997 in Europe and Australia, September 1997 in France and December 1997 in Brazil. It is the industry&apos;s last major home console to use the cartridge as its primary storage format, although current handheld systems (such as the PlayStation Vita and Nintendo 3DS) also use cartridges. While the Nintendo 64 was succeeded by Nintendo&apos;s MiniDVD-based GameCube in November 2001, the consoles remained available until the system was retired in late 2003.</m_plot>
+  <platform>Nintendo 64</platform>
+  <categoryID>e6a161e167f8813bcc9ed28569df6670</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mupen64plus_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Nintendo/Nintendo 64/Games/</rompath>
+  <romext>z64|n64|rom</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Nintendo_Nintendo_64_ad8d26</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>421</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360200.71</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/Nintendo 64_fanart_2.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/Nintendo 64_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Nintendo/Nintendo 64/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>5f28bbb29adcdb099519cf5d23747200</id>
+  <m_name>Playstation</m_name>
+  <m_year>1994</m_year>
+  <m_genre>Fifth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The PlayStation (Japanese: プレイステーション Hepburn: Pureisutēshon) (officially abbreviated as PS, and commonly known as the PS1 or PSX) is a home video game console developed and marketed by Sony Computer Entertainment. The console was released on 3 December 1994 in Japan, 9 September 1995 in North America, 29 September 1995 in Europe, 15 November 1995 in Australia, and for Korea in 1996. The console was the first of the PlayStation lineup of home video game consoles. It primarily competed with the Nintendo 64 and the Sega Saturn as part of the fifth generation of video game consoles.</m_plot>
+  <platform>Sony PlayStation</platform>
+  <categoryID>0038b79f6b5e48c85066a09a3de23e53</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/pcsx_rearmed_libretro_neon_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Sony/Playstation/Games/</rompath>
+  <romext>bin</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Sony_Playstation_5f28bb</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>11</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.38</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Sony/Playstation/PlayStation_fanart_2.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sony/Playstation/PlayStation_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Sony/Playstation/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sony/Playstation/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sony/Playstation/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sony/Playstation/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sony/Playstation/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sony/Playstation/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sony/Playstation/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sony/Playstation/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sony/Playstation/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sony/Playstation/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sony/Playstation/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sony/Playstation/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>4ba9d423a2677deddc82de6e0de64d51</id>
+  <m_name>Psikyo</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/storage/MEDIASERVER/Nzbs/Thumbs.db</application>
+  <args>&quot;$rom$&quot;</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Psikyo/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Psikyo_4ba9d4</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>20</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.21</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/Psikyo.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Psikyo/games/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>71e23b726cfd6e13cc3518b993ee0df0</id>
+  <m_name>SNES</m_name>
+  <m_year>1990</m_year>
+  <m_genre>Fourth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Super Nintendo Entertainment System (officially abbreviated the Super NES or SNES, and commonly shortened to Super Nintendo) is a 16-bit home video game console developed by Nintendo that was released in 1990 in Japan and South Korea, 1991 in North America, 1992 in Europe and Australasia (Oceania), and 1993 in South America. In Japan, the system is called the Super Famicom (Japanese: スーパーファミコン Hepburn: Sūpā Famikon, officially adopting the abbreviated name of its predecessor, the Family Computer), or SFC for short.The SNES is Nintendo&apos;s second home console, following the Nintendo Entertainment System (NES). The console introduced advanced graphics and sound capabilities compared with other consoles at the time. Additionally, development of a variety of enhancement chips (which were integrated on game circuit boards) helped to keep it competitive in the marketplace.</m_plot>
+  <platform>Nintendo SNES</platform>
+  <categoryID>e6a161e167f8813bcc9ed28569df6670</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/bsnes_balanced_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Nintendo/SNES/Games/</rompath>
+  <romext>sfc</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Nintendo_SNES_71e23b</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>1692</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360200.11</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/SNES_fanart_1.jpg</s_fanart>
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/SNES_banner_4.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Nintendo/SNES/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>e26086de3b691734ebed4d67e050c4be</id>
+  <m_name>Sammy</m_name>
+  <m_year>1975</m_year>
+  <m_genre>Company</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>Sammy Corporation (Japanese: 株式会社サミー Hepburn: Kabushiki Gaisha Samī) was established on November 1, 1975 and is a leading developer and retailer of pachinko and pachislot systems in Japan. It is also known for publishing a small number of video games such as the Guilty Gear, The Rumble Fish and Survival Arts series of fighting games. In 2004, it merged with Sega to form a new holding company called Sega Sammy Holdings Inc.. All the video game businesses were transferred over to Sega.</m_plot>
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Sammy/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Sammy_e26086</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>79</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.26</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/Sammy Atomiswave.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Sammy/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>b53b89507512360a8007dbe2caf9e0d6</id>
+  <m_name>Saturn</m_name>
+  <m_year>1994</m_year>
+  <m_genre>Fifth generation console</m_genre>
+  <m_developer />
+  <m_rating />
+  <m_plot>The Sega Saturn (セガサターン Sega Satān) is a 32-bit fifth-generation home video game console that was developed by Sega and released on November 22, 1994 in Japan, May 11, 1995 in North America, and July 8, 1995 in Europe as the successor to the successful Sega Genesis. The Saturn has a dual-CPU architecture and eight processors. Its games are in CD-ROM format, and its game library contains several arcade ports as well as original titles.Development of the Saturn began in 1992, the same year Sega&apos;s groundbreaking 3D Model 1 arcade hardware debuted. Designed around a new CPU from Japanese electronics company Hitachi, another video display processor was incorporated into the system&apos;s design in early 1994 to better compete with Sony&apos;s forthcoming PlayStation. The Saturn was initially successful in Japan, but failed to sell in large numbers in the United States after its surprise May 1995 launch, four months before its scheduled release date. After the debut of the Nintendo 64 in late 1996, the Saturn rapidly lost market share in the U.S., where it was discontinued in 1998. Having sold 9.26 million units worldwide, the Saturn is considered a commercial failure. The failure of Sega&apos;s development teams to release a game in the Sonic the Hedgehog series, known in development as Sonic X-treme, has been considered a factor in the console&apos;s poor performance.</m_plot>
+  <platform>Sega Saturn</platform>
+  <categoryID>c20f56e7c2242b03e8133c512303ec63</categoryID>
+  <application>/system/bin/am</application>
+  <args> start --user 0 -n org.uoyabause.android/org.uoyabause.android.Yabause -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e org.uoyabause.android.FileNameEx &quot;%rom%&quot;</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Sega/Saturn/Games/</rompath>
+  <romext>nrg|mdf|bin|img</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Sega_Saturn_b53b89</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>74</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360204.88</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart>smb://192.168.0.5/Media6/Roms/Sega/Saturn/Saturn_fanart_1.jpg</s_fanart>
+  <s_banner>smb://192.168.0.5/Media6/Roms/Sega/Saturn/Saturn_banner_1.png</s_banner>
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Saturn/Saturn_banner_1.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Sega/Saturn/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Sega/Saturn/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Sega/Saturn/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Sega/Saturn/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Sega/Saturn/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Sega/Saturn/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Sega/Saturn/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Sega/Saturn/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Sega/Saturn/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Sega/Saturn/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Sega/Saturn/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Sega/Saturn/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>bf21d3206b184c79485498b805e3854b</id>
+  <m_name>Sega</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Sega/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Sega_bf21d3</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>181</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.19</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Sega/Classics SEGA.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Sega/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Sega/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Sega/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Sega/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Sega/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Sega/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Sega/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Sega/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Sega/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Sega/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Sega/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Sega/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>7cf9101b143411adee7e2205d42a04f4</id>
+  <m_name>Seibu</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Seibu/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Seibu_7cf910</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>26</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.4</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Seibu/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>2f429d27094af45a0125983890d9ac94</id>
+  <m_name>Sony</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Sony/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Sony_2f429d</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>34</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.19</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Sony/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Sony/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Sony/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Sony/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Sony/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Sony/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Sony/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Sony/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Sony/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Sony/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Sony/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Sony/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>e48752a7fef461274d026714778d6d5f</id>
+  <m_name>Taito</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Taito/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Taito_e48752</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>233</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360203.15</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Taito/Taito.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Taito/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Taito/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Taito/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Taito/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Taito/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Taito/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Taito/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Taito/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Taito/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Taito/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Taito/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Taito/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>c8e80a09e8b210afff9bbdce4ee342d5</id>
+  <m_name>Technos</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot />
+  <platform>MAME</platform>
+  <categoryID>89aa16032d46cf083e1544d961c58298</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Technos/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Technos_c8e80a</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>29</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360202.91</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Technos/Technos.png</s_clearlogo>
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Technos/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Technos/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Technos/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Technos/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Technos/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Technos/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Technos/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Technos/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Technos/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Technos/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Technos/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Technos/trailers</path_trailer>
+</launcher>
+<launcher>
+  <id>e230c7ade2c7492bd519e7f56bb59b3e</id>
+    <type>ROM</type>
+  <m_name>Tecmo</m_name>
+  <m_year />
+  <m_genre />
+  <m_developer />
+  <m_rating />
+  <m_plot>Tecmo Co., Ltd. (テクモ株式会社 Tekumo kabushikigaisha), was a Japanese video game corporation founded in 1967. It had its headquarters in Kudankita, Chiyoda, Tokyo.[1] and its subsidiary, Tecmo Inc, was located in Torrance, California.[2]&#10;Tecmo is known for the Star Force, Dead or Alive, Ninja Gaiden, Deception, Monster Rancher, Rygar, Tecmo Bowl, Fatal Frame and Gallop Racer video game series. When it was still called Tehkan, the company released arcade games such as Bomb Jack and Tehkan World Cup. The company was founded on July 31, 1967 as a supplier of cleaning equipment.[3][4] By 1969, it started to sell amusement equipment.[3]&#10;In 2009, Tecmo merged with Koei to form the holding company Tecmo Koei Holdings and was operated as a subsidiary until its disbandment in early 2010. In April 2010, Tecmo was dissolved and its video game franchises are now published by Koei Tecmo Games.[3][5][6] Tecmo is also the name of a distinct video game development company that was established in March 2010, but later folded into Tecmo Koei Games in April 2011.[7][8]&#10;As of 2014, the Tecmo brand continues to be used on Koei Tecmo Games&apos; video games.</m_plot>
+  <platform>MAME</platform>
+  <categoryID>root_category</categoryID>
+  <application>/system/bin/am</application>
+  <args>start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e ROM &quot;%rom%&quot; -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg -e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60 -n com.retroarch/.browser.retroactivity.RetroActivityFuture</args>
+  <rompath>/storage/MEDIASERVER/Media6/Roms/Arcade/Tecmo/games/</rompath>
+  <romext>zip</romext>
+  <finished>False</finished>
+  <minimize>False</minimize>
+  <non_blocking>False</non_blocking>
+  <roms_base_noext>roms_Arcade_Tecmo_e230c7</roms_base_noext>
+  <nointro_xml_file />
+  <nointro_display_mode>All ROMs</nointro_display_mode>
+  <launcher_display_mode>Flat mode</launcher_display_mode>
+  <num_roms>19</num_roms>
+  <num_parents>0</num_parents>
+  <num_clones>0</num_clones>
+  <num_have>0</num_have>
+  <num_miss>0</num_miss>
+  <num_unknown>0</num_unknown>
+  <timestamp_launcher>1508360204.83</timestamp_launcher>
+  <timestamp_report>0.0</timestamp_report>
+  <default_icon>s_icon</default_icon>
+  <default_fanart>s_fanart</default_fanart>
+  <default_banner>s_banner</default_banner>
+  <default_poster>s_poster</default_poster>
+  <default_clearlogo>s_clearlogo</default_clearlogo>
+  <default_controller>s_controller</default_controller>
+  <Asset_Prefix />
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+  <roms_default_icon>s_boxfront</roms_default_icon>
+  <roms_default_fanart>s_fanart</roms_default_fanart>
+  <roms_default_banner>s_banner</roms_default_banner>
+  <roms_default_poster>s_flyer</roms_default_poster>
+  <roms_default_clearlogo>s_clearlogo</roms_default_clearlogo>
+  <ROM_asset_path />
+  <path_title>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/titles</path_title>
+  <path_snap>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/snaps</path_snap>
+  <path_boxfront>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/boxfront</path_boxfront>
+  <path_boxback>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/boxback</path_boxback>
+  <path_cartridge>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/cartridges</path_cartridge>
+  <path_fanart>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/fanarts</path_fanart>
+  <path_banner>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/banners</path_banner>
+  <path_clearlogo>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/clearlogos</path_clearlogo>
+  <path_flyer>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/flyers</path_flyer>
+  <path_map>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/maps</path_map>
+  <path_manual>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/manuals</path_manual>
+  <path_trailer>smb://192.168.0.5/Media6/Roms/Arcade/Tecmo/trailers</path_trailer>
+</launcher>
+</advanced_emulator_launcher>

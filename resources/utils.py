@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-# Advanced Emulator Launcher miscellaneous functions
 #
-
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Advanced Emulator Launcher
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,12 +13,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-#
+# -------------------------------------------------------------------------------------------------
 # Utility functions which does not depend on Kodi modules (except log_* functions)
-#
+# -------------------------------------------------------------------------------------------------
+# --- Python compiler flags ---
+from __future__ import unicode_literals
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import sys
 import os
 import shutil
@@ -32,12 +32,30 @@ import string
 import fnmatch
 import HTMLParser
 
-# --- Kodi modules ---
-# >> FileName class uses xbmc.translatePath()
+from constants import *
+from filename import *
 from utils_kodi import *
 
+# OS utils
+# >> Determine platform
+# >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+def is_windows():    
+    return sys.platform == 'win32' or sys.platform == 'win64' or sys.platform == 'cygwin'
+
+def is_osx():
+    return sys.platform.startswith('darwin')
+
+def is_linux():
+     return sys.platform.startswith('linux') and not is_android()
+
+def is_android():
+    if not sys.platform.startswith('linux'):
+        return False
+    
+    return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
+
 # --- AEL modules ---
-# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
+# >> utils.py must not depend on any other AEL module to avoid circular dependencies.
 
 
 # OS utils
@@ -91,7 +109,7 @@ def XML_text(tag_name, tag_text, num_spaces = 2):
         tag_text = text_escape_XML(tag_text)
         line = '{0}<{1}>{2}</{3}>\n'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
     else:
-        # >> Empty tag    
+        # >> Empty tag
         line = '{0}<{1} />\n'.format(' ' * num_spaces, tag_name)
 
     return line
@@ -118,6 +136,10 @@ def text_str_2_Uni(string):
 # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
 #
 def text_escape_XML(data_str):
+
+    if not isinstance(data_str, basestring):
+        data_str = str(data_str)
+
     # Ampersand MUST BE replaced FIRST
     data_str = data_str.replace('&', '&amp;')
     data_str = data_str.replace('>', '&gt;')
@@ -398,17 +420,15 @@ def text_get_multidisc_info(ROM_FN):
 # Get extension of URL. Returns '' if not found.
 #
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
     
-    return ext
+    urlPath = FileNameFactory.create(url)
+    return urlPath.getExt()
 
 #
 # Defaults to .jpg if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
-    ext = os.path.splitext(path)[1]
+    ext = text_get_URL_extension(url)
     ret = '.jpg' if ext == '' else ext
 
     return ret
@@ -417,34 +437,40 @@ def text_get_image_URL_extension(url):
 # File cache
 # -------------------------------------------------------------------------------------------------
 file_cache = {}
-def misc_add_file_cache(dir_str):
+def misc_add_file_cache(dir_FN):
     global file_cache
-
     # >> Create a set with all the files in the directory
-    if not dir_str:
+    if not dir_FN:
         log_debug('misc_add_file_cache() Empty dir_str. Exiting')
         return
-    dir_FN = FileName(dir_str)
+
     log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
-    log_debug('misc_add_file_cache() Scanning  P "{0}"'.format(dir_FN.getPath()))
-    file_list = os.listdir(dir_FN.getPath())
-    file_set = set(file_list)
-    # for file in file_set: log_debug('File "{0}"'.format(file))
+
+    file_list = dir_FN.scanFilesInPathAsFileNameObjects()
+    # lower all filenames for easier matching
+    file_set = [file.getBase().lower() for file in file_list]
+
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
-    file_cache[dir_str] = file_set
+    file_cache[dir_FN.getOriginalPath()] = file_set
 
 #
 # See misc_look_for_file() documentation below.
 #
-def misc_search_file_cache(dir_str, filename_noext, file_exts):
+def misc_search_file_cache(dir_path, filename_noext, file_exts):
     # log_debug('misc_search_file_cache() Searching in  "{0}"'.format(dir_str))
+    dir_str = dir_path.getOriginalPath()
+    if dir_str not in file_cache:
+        log_warning('Directory {0} not in file_cache'.format(dir_str))
+        return None
+
     current_cache_set = file_cache[dir_str]
     for ext in file_exts:
         file_base = filename_noext + '.' + ext
-        # log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
+        file_base = file_base.lower()
+        #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
         if file_base in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
-            return FileName(dir_str).pjoin(file_base)
+            return dir_path.pjoin(file_base)
 
     return None
 
@@ -481,160 +507,25 @@ def misc_generate_random_SID():
 
     return sid
 
-# -------------------------------------------------------------------------------------------------
-# Filesystem helper class
-# This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in
-# caller code.
-# A) Transform paths like smb://server/directory/ into \\server\directory\
-# B) Use xbmc.translatePath() for paths starting with special://
-# -------------------------------------------------------------------------------------------------
-class FileName:
-    # pathString must be a Unicode string object
-    def __init__(self, pathString):
-        self.originalPath = pathString
-        self.path         = pathString
-        
-        # --- Path transformation ---
-        if self.originalPath.lower().startswith('smb:'):
-            self.path = self.path.replace('smb:', '')
-            self.path = self.path.replace('SMB:', '')
-            self.path = self.path.replace('//', '\\\\')
-            self.path = self.path.replace('/', '\\')
+#
+# Version helper class
+#
+class VersionNumber(object):
 
-        elif self.originalPath.lower().startswith('special:'):
-            self.path = xbmc.translatePath(self.path)
+    def __init__(self, versionString):
+        self.versionNumber = versionString.split('.')
 
-    def _join_raw(self, arg):
-        self.path         = os.path.join(self.path, arg)
-        self.originalPath = os.path.join(self.originalPath, arg)
+    def getFullString(self):
+        return '.'.join(self.versionNumber)
 
-        return self
+    def getMajor(self):
+        return int(self.versionNumber[0])
 
-    # Appends a string to path. Returns self FileName object
-    def append(self, arg):
-        self.path         = self.path + arg
-        self.originalPath = self.originalPath + arg
+    def getMinor(self):
+        return int(self.versionNumber[1])
 
-        return self
-
-    # >> Joins paths. Returns a new FileName object
-    def pjoin(self, *args):
-        child = FileName(self.originalPath)
-        for arg in args:
-            child._join_raw(arg)
-
-        return child
-
-    # Behaves like os.path.join()
-    #
-    # See http://blog.teamtreehouse.com/operator-overloading-python
-    # other is a FileName object. other originalPath is expected to be a subdirectory (path
-    # transformation not required)
-    def __add__(self, other):
-        current_path = self.originalPath
-        if type(other) is FileName:  other_path = other.originalPath
-        elif type(other) is unicode: other_path = other
-        elif type(other) is str:     other_path = other.decode('utf-8')
-        else: raise NameError('Unknown type for overloaded + in FileName object')
-        new_path = os.path.join(current_path, other_path)
-        child    = FileName(new_path)
-
-        return child
-
-    def escapeQuotes(self):
-        self.path = self.path.replace("'", "\\'")
-        self.path = self.path.replace('"', '\\"')
-
-    # ---------------------------------------------------------------------------------------------
-    # Decomposes a file name path or directory into its constituents
-    #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
-    #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
-    #   FileName.getBase()          File name with no path                        Sonic.zip
-    #   FileName.getBase_noext()    File name with no path and no extension       Sonic
-    #   FileName.getExt()           File extension                                .zip
-    # ---------------------------------------------------------------------------------------------
-    def getOriginalPath(self):
-        return self.originalPath
-
-    def getPath(self):
-        return self.path
-
-    def getPath_noext(self):
-        root, ext = os.path.splitext(self.path)
-
-        return root
-
-    def getDir(self):
-        return os.path.dirname(self.path)
-
-    def getBase(self):
-        return os.path.basename(self.path)
-
-    def getBase_noext(self):
-        basename  = os.path.basename(self.path)
-        root, ext = os.path.splitext(basename)
-        
-        return root
-
-    def getExt(self):
-        root, ext = os.path.splitext(self.path)
-        
-        return ext
-
-    # ---------------------------------------------------------------------------------------------
-    # Scanner functions
-    # ---------------------------------------------------------------------------------------------
-    def scanFilesInPath(self, mask):
-        files = []
-        filenames = os.listdir(self.path)
-        for filename in fnmatch.filter(filenames, mask):
-            files.append(os.path.join(self.path, filename))
-
-        return files
-
-    def scanFilesInPathAsPaths(self, mask):
-        files = []
-        filenames = os.listdir(self.path)
-        for filename in fnmatch.filter(filenames, mask):
-            files.append(FileName(os.path.join(self.path, filename)))
-
-        return files
-
-    def recursiveScanFilesInPath(self, mask):
-        files = []
-        for root, dirs, foundfiles in os.walk(self.path):
-            for filename in fnmatch.filter(foundfiles, mask):
-                files.append(os.path.join(root, filename))
-
-        return files
-
-    # ---------------------------------------------------------------------------------------------
-    # Filesystem functions
-    # ---------------------------------------------------------------------------------------------
-    def stat(self):
-        return os.stat(self.path)
-
-    def exists(self):
-        return os.path.exists(self.path)
-
-    def isdir(self):
-        return os.path.isdir(self.path)
-        
-    def isfile(self):
-        return os.path.isfile(self.path)
-
-    def makedirs(self):
-        if not os.path.exists(self.path): 
-            os.makedirs(self.path)
-
-    # os.remove() and os.unlink() are exactly the same.
-    def unlink(self):
-        os.unlink(self.path)
-
-    def rename(self, to):
-        os.rename(self.path, to.getPath())
+    def getBuild(self):
+        return int(self.versionNumber[2])
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers

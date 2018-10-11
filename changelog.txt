@@ -3,6 +3,19 @@
 WIP      [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
          `plugin.program.AEL`.
 
+WIP      Added Retroarch launcher. Supports launching ROMs using an locally installed
+         instance of Retroarch. For more details read RetroarchLauncher.md.
+
+WIP      Added NVIDIA Gamestream launcher. Supports scanning games from gamestream
+         server and launching games with Android client (Shield) or Moonlight-PC.
+         Extra steps needed to get correct certificates for connection.
+
+WIP      Moved FileName to its own file and made it abstract to be able to support
+         xbmcvfs but also just normal os operations in cases you run python script 
+         outside of kodi (like with tools etc.)
+
+WIP      Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
+
 WIP      [CORE] Check out the ListItem constructor offscreen parameter in Leia. It can
          dramatically speed up ListItem creation and population.
 

@@ -146,18 +146,17 @@ def audit_new_LB_gameImage():
 
 def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
     if not filename_FN.exists():
-        log_error("Cannot load file '{0}'".format(xml_file))
+        log_error("Cannot load file '{0}'".format(xml_file.getOriginalPath()))
         return
 
     # --- Parse using cElementTree ---
     log_verb('audit_load_LB_metadata_XML() Loading "{0}"'.format(filename_FN.getPath()))
     try:
-        xml_tree = ET.parse(filename_FN.getPath())
+        xml_root = filename_FN.readXml()
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
         return
-    xml_root = xml_tree.getroot()
     for xml_element in xml_root:
         if xml_element.tag == 'Game':
             game = audit_new_LB_game()
@@ -215,19 +214,19 @@ def audit_load_OfflineScraper_XML(xml_file):
     games = {}
 
     # --- Check that file exists ---
-    if not os.path.isfile(xml_file):
-        log_error("Cannot load file '{0}'".format(xml_file))
+    if not xml_file.exists():
+        log_error("Cannot load file '{0}'".format(xml_file.getOriginalPath()))
         return games
 
     # --- Parse using cElementTree ---
-    log_verb('audit_load_OfflineScraper_XML() Loading "{0}"'.format(xml_file))
+    log_verb('audit_load_OfflineScraper_XML() Loading "{0}"'.format(xml_file.getOriginalPath()))
     try:
-        xml_tree = ET.parse(xml_file)
+        xml_root = xml_file.readXml()
     except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
+        log_error('(ParseError) Exception parsing XML {0}'.format(xml_file.getOriginalPath()))
         log_error('(ParseError) {0}'.format(str(e)))
         return games
-    xml_root = xml_tree.getroot()
+
     for game_element in xml_root:
         if __debug_xml_parser:
             log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
@@ -271,7 +270,7 @@ def audit_load_NoIntro_XML_file(xml_FN):
     # --- Parse using cElementTree ---
     log_verb('Loading XML "{0}"'.format(xml_FN.getOriginalPath()))
     try:
-        xml_tree = ET.parse(xml_FN.getPath())
+        xml_root = xml_FN.readXml()
     except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
@@ -301,7 +300,7 @@ def audit_load_GameDB_XML(xml_FN):
         return games
     log_verb('Loading XML "{0}"'.format(xml_FN.getPath()))
     try:
-        xml_tree = ET.parse(xml_FN.getPath())
+        xml_root = xml_FN.readXml()
     except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
@@ -405,7 +404,7 @@ def audit_load_HyperList_XML(xml_FN):
         return games
     log_verb('Loading XML "{0}"'.format(xml_FN.getPath()))
     try:
-        xml_tree = ET.parse(xml_FN.getPath())
+        xml_root = xml_FN.readXml()
     except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
@@ -413,7 +412,6 @@ def audit_load_HyperList_XML(xml_FN):
     except IOError as e:
         log_error('(IOError) {0}'.format(str(e)))
         return games
-    xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
             log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
@@ -500,7 +498,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     names_to_ids_dic = {}
     for rom_id in roms:
         rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
+        ROMFileName = FileNameFactory.create(rom['filename'])
         rom_name = ROMFileName.getBase_noext()
         # log_debug('{0} --> {1}'.format(rom_name, rom_id))
         # log_debug('{0}'.format(rom))
@@ -509,7 +507,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     # --- Build PClone dictionary using ROM base_noext names ---
     for rom_id in roms:
         rom = roms[rom_id]
-        ROMFileName = FileName(rom['filename'])
+        ROMFileName = FileNameFactory.create(rom['filename'])
         rom_nointro_name = ROMFileName.getBase_noext()
         # log_debug('rom_id {0}'.format(rom_id))
         # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))

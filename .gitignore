@@ -8,4 +8,5 @@
 /plugin.program.advanced.emulator.launcher.pyproj.user
 /plugin.program.advanced.emulator.launcher.pyproj
 /.vs/plugin.program.advanced.emulator.launcher/v14/.suo
-/.cache/v/cache
+__pychache__/
+/.cache/

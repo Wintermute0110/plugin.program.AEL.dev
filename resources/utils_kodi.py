@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher miscellaneous functions
-#
-
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
-# Portions (c) 2010-2015 Angelscry
+# Advanced Emulator Launcher
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,13 +13,16 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-#
+# -------------------------------------------------------------------------------------------------
 # Utility functions which DEPEND on Kodi modules
-#
+# -------------------------------------------------------------------------------------------------
+# --- Python compiler flags ---
+from __future__ import unicode_literals
 
 # --- Python standard library ---
-from __future__ import unicode_literals
-import sys, os, shutil, time, random, hashlib, urlparse
+from abc import ABCMeta, abstractmethod
+import sys, os, time, random, hashlib, urlparse, json
+import xml.etree.ElementTree as ET
 
 # --- Kodi modules ---
 try:
@@ -29,18 +30,21 @@ try:
 except:
     from utils_kodi_standalone import *
 
-# --- AEL modules ---
-# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
+from filename import *
 
-# --- Constants ---------------------------------------------------------------
+# --- AEL modules ---
+# >> utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
+
+# --- Constants -----------------------------------------------------------------------------------
 LOG_ERROR   = 0
 LOG_WARNING = 1
 LOG_INFO    = 2
 LOG_VERB    = 3
 LOG_DEBUG   = 4
 
-# --- Internal globals --------------------------------------------------------
+# --- Internal globals ----------------------------------------------------------------------------
 current_log_level = LOG_INFO
+use_print_instead = False
 
 # -------------------------------------------------------------------------------------------------
 # Logging functions
@@ -50,45 +54,58 @@ def set_log_level(level):
 
     current_log_level = level
 
+def set_use_print(use_print):
+    global use_print_instead
+
+    use_print_instead = use_print
+
+#
 # For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
 #
 def log_debug(str_text):
     if current_log_level >= LOG_DEBUG:
-        # if it is str we assume it's "utf-8" encoded.
-        # will fail if called with other encodings (latin, etc).
+        # If str_text has str type then convert to unicode type using decode().
+        # We assume that str_text is encoded in UTF-8.
+        # This may fail if str_text is encoded in latin, etc.
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
 
         # At this point we are sure str_text is a unicode string.
         log_text = 'AEL DEBUG: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_VERB)
 
 def log_verb(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = 'AEL VERB : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_VERB)
 
 def log_info(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = 'AEL INFO : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_INFO)
 
 def log_warning(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = 'AEL WARN : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_WARNING)
 
 def log_error(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
         log_text = 'AEL ERROR: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+        log(log_text, LOG_ERROR)
 
-# -----------------------------------------------------------------------------
+def log(log_text, level):
+    if use_print_instead:
+        print(log_text.encode('utf-8'))
+    else:
+        xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
+
+# -------------------------------------------------------------------------------------------------
 # Kodi notifications and dialogs
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 #
 # Displays a modal dialog with an OK button. Dialog can have up to 3 rows of text, however first
 # row is multiline.
@@ -140,11 +157,36 @@ def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
-# -----------------------------------------------------------------------------
-# Kodi specific stuff
-# -----------------------------------------------------------------------------
-# About Kodi image cache
-#
+def kodi_toogle_fullscreen():
+    # >> Frodo and up compatible
+    xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
+
+FAVOURITES_PATH = "special://userdata/favourites.xml"
+
+def kodi_read_favourites():
+    
+    favourites = {}
+    favouritesFile = KodiFileName(FAVOURITES_PATH)
+
+    if favouritesFile.exists():
+        fav_xml = favouritesFile.readXml()
+        fav_elements = fav_xml.findall( 'favourite' )
+        for fav in fav_elements:
+            try:
+                fav_icon = fav.attrib[ 'thumb' ].encode('utf8','ignore')
+            except:
+                fav_icon = "DefaultProgram.png".encode('utf8','ignore')
+
+            fav_action = fav.text.encode('utf8','ignore')
+            fav_name = fav.attrib[ 'name' ].encode('utf8','ignore')
+
+            favourites[fav_action] = (fav_name, fav_icon, fav_action)
+
+    return favourites
+
+# -------------------------------------------------------------------------------------------------
+# Kodi image cache
+# -------------------------------------------------------------------------------------------------
 # See http://kodi.wiki/view/Caches_explained
 # See http://kodi.wiki/view/Artwork
 # See http://kodi.wiki/view/HOW-TO:Reduce_disk_space_usage
@@ -156,17 +198,16 @@ def kodi_refresh_container():
 # even smaller to save additional space.
 
 #
-# Gets where in Kodi image cache an image is located.
+# Gets where an image is located in Kodi image cache.
 # image_path is a Unicode string.
 # cache_file_path is a Unicode string.
 #
-def kodi_get_cached_image_FN(image_path):
-    THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
-
-    # --- Get the Kodi cached image ---
-    # This function return the cache file base name
-    base_name = xbmc.getCacheThumbName(image_path)
-    cache_file_path = os.path.join(THUMBS_CACHE_PATH, base_name[0], base_name)
+def kodi_get_cached_image_FN(image_FN):
+    FileNameFactory.create
+    THUMBS_CACHE_PATH_FN = FileNameFactory.create('special://profile/Thumbnails')
+    # >> This function return the cache file base name
+    base_name = xbmc.getCacheThumbName(image_FN.getOriginalPath())
+    cache_file_path = THUMBS_CACHE_PATH_FN.pjoin(base_name[0]).pjoin(base_name)
 
     return cache_file_path
 
@@ -176,64 +217,347 @@ def kodi_get_cached_image_FN(image_path):
 # Needles to say, only update image cache if image already was on the cache.
 # img_path is a Unicode string
 #
-def kodi_update_image_cache(img_path):
+def kodi_update_image_cache(img_path_FN):
     # What if image is not cached?
-    cached_thumb = kodi_get_cached_image_FN(img_path)
-    log_debug('kodi_update_image_cache()       img_path {0}'.format(img_path))
-    log_debug('kodi_update_image_cache()   cached_thumb {0}'.format(cached_thumb))
+    cached_thumb_FN = kodi_get_cached_image_FN(img_path_FN)
+    log_debug('kodi_update_image_cache()       img_path_FN OP {0}'.format(img_path_FN.getOriginalPath()))
+    log_debug('kodi_update_image_cache()   cached_thumb_FN OP {0}'.format(cached_thumb_FN.getOriginalPath()))
 
-    # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
-    # However, images in the cache have the original extension. Replace TBN extension
+    # For some reason xbmc.getCacheThumbName() returns a filename ending in TBN.
+    # However, images in the cache have the original extension. Replace the TBN extension
     # with that of the original image.
-    cached_thumb_root, cached_thumb_ext = os.path.splitext(cached_thumb)
+    cached_thumb_ext = cached_thumb_FN.getExt()
     if cached_thumb_ext == '.tbn':
-        img_path_root, img_path_ext = os.path.splitext(img_path)
-        cached_thumb = cached_thumb.replace('.tbn', img_path_ext)
-        log_debug('kodi_update_image_cache() U cached_thumb {0}'.format(cached_thumb))
+        img_path_ext = img_path_FN.getExt()
+        cached_thumb_FN = FileNameFactory.create(cached_thumb_FN.getOriginalPath().replace('.tbn', img_path_ext))
+        log_debug('kodi_update_image_cache() U cached_thumb_FN OP {0}'.format(cached_thumb_FN.getOriginalPath()))
 
     # --- Check if file exists in the cache ---
     # xbmc.getCacheThumbName() seems to return a filename even if the local file does not exist!
-    if not os.path.isfile(cached_thumb):
+    if not cached_thumb_FN.isfile():
         log_debug('kodi_update_image_cache() Cached image not found. Doing nothing')
         return
 
     # --- Copy local image into Kodi image cache ---
     # >> See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
     log_debug('kodi_update_image_cache() Image found in cache. Updating Kodi image cache')
-    log_debug('kodi_update_image_cache() copying {0}'.format(img_path))
-    log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb))
-    fs_encoding = sys.getfilesystemencoding()
-    log_debug('kodi_update_image_cache() fs_encoding = "{0}"'.format(fs_encoding))
-    encoded_img_path = img_path.encode(fs_encoding, 'ignore')
-    encoded_cached_thumb = cached_thumb.encode(fs_encoding, 'ignore')
+    log_debug('kodi_update_image_cache() copying {0}'.format(img_path_FN.getOriginalPath()))
+    log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb_FN.getOriginalPath()))
+    # fs_encoding = sys.getfilesystemencoding()
+    # log_debug('kodi_update_image_cache() fs_encoding = "{0}"'.format(fs_encoding))
+    # encoded_img_path = img_path.encode(fs_encoding, 'ignore')
+    # encoded_cached_thumb = cached_thumb.encode(fs_encoding, 'ignore')
     try:
-        shutil.copy2(encoded_img_path, encoded_cached_thumb)
+        # shutil.copy2(encoded_img_path, encoded_cached_thumb)
+        img_path_FN.copy(cached_thumb_FN)
     except OSError:
         log_kodi_notify_warn('AEL warning', 'Cannot update cached image (OSError)')
-        lod_error('Exception in kodi_update_image_cache()')
-        lod_error('(OSError) Cannot update cached image')
+        lod_debug('Cannot update cached image (OSError)')
 
-    # >> Is this really needed?
-    # xbmc.executebuiltin('XBMC.ReloadSkin()')
+# -------------------------------------------------------------------------------------------------
+# Kodi Wizards (by Chrisism)
+# -------------------------------------------------------------------------------------------------
+#
+# The wizarddialog implementations can be used to chain a collection of
+# different kodi dialogs and use them to fill a dictionary with user input.
+#
+# Each wizarddialog accepts a key which will correspond with the key/value combination
+# in the dictionary. It will also accept a customFunction (delegate or lambda) which
+# will be called after the dialog has been shown. Depending on the type of dialog some
+# other arguments might be needed.
+# 
+# The chaining is implemented by applying the decorator pattern and injecting
+# the previous wizarddialog in each new one.
+# You can then call the method 'runWizard()' on the last created instance.
+# 
+# Each wizard has a customFunction which will can be called after executing this 
+# specific dialog. It also has a conditionalFunction which can be called before
+# executing this dialog which will indicate if this dialog may be shown (True return value).
+# 
+class WizardDialog():
+    __metaclass__ = ABCMeta
+    
+    def __init__(self, property_key, title, decoratorDialog, customFunction = None, conditionalFunction = None):
 
-def kodi_toogle_fullscreen():
-    # >> Frodo and up compatible
-    xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
+        self.title = title
+        self.property_key = property_key
+        self.decoratorDialog = decoratorDialog
+        self.customFunction = customFunction
+        self.conditionalFunction = conditionalFunction
+        self.cancelled = False
 
-def kodi_kodi_read_favourites():
-    favourites = []
-    fav_names = []
-    if os.path.isfile(FAVOURITES_PATH):
-        fav_xml = parse(FAVOURITES_PATH)
-        fav_doc = fav_xml.documentElement.getElementsByTagName( 'favourite' )
-        for count, favourite in enumerate(fav_doc):
-            try:
-                fav_icon = favourite.attributes[ 'thumb' ].nodeValue
-            except:
-                fav_icon = "DefaultProgram.png"
-            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'),
-                               fav_icon.encode('utf8','ignore'),
-                               favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
-            fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
+    def runWizard(self, properties):
 
-    return favourites, fav_names
+        if not self.executeDialog(properties):
+            log_warning('User stopped wizard')
+            return None
+        
+        return properties
+
+    def executeDialog(self, properties):
+        
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.executeDialog(properties):
+                return False
+
+        if self.conditionalFunction is not None:
+            mayShow = self.conditionalFunction(self.property_key, properties)
+            if not mayShow:
+                log_debug('Skipping dialog for key: {0}'.format(self.property_key))
+                return True
+
+        output = self.show(properties)
+        
+        if self.cancelled:
+            return False
+
+        if self.customFunction is not None:
+            output = self.customFunction(output, self.property_key, properties)
+
+        if self.property_key:
+            properties[self.property_key] = output
+            log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+
+        return True
+        
+    @abstractmethod
+    def show(self, properties):
+        return True
+
+    def _cancel(self):
+        self.cancelled = True
+
+#
+# Wizard dialog which accepts a keyboard user input.
+# 
+class KeyboardWizardDialog(WizardDialog):
+    
+    def show(self, properties):
+
+        log_debug('Executing keyboard wizard dialog for key: {0}'.format(self.property_key))
+        originalText = properties[self.property_key] if self.property_key in properties else ''
+
+        textInput = xbmc.Keyboard(originalText, self.title)
+        textInput.doModal()
+
+        if not textInput.isConfirmed(): 
+            self._cancel()
+            return None
+
+        output = textInput.getText().decode('utf-8')
+        return output
+  
+#
+# Wizard dialog which shows a list of options to select from.
+# 
+class SelectionWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.options = options
+        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+       
+    def show(self, properties):
+        
+        log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
+        dialog = xbmcgui.Dialog()
+        selection = dialog.select(self.title, self.options)
+
+        if selection < 0:
+            self._cancel()
+            return None
+       
+        output = self.options[selection]
+        return output
+
+  
+#
+# Wizard dialog which shows a list of options to select from.
+# In comparison with the normal SelectionWizardDialog, this version allows a dictionary or key/value
+# list as the selectable options. The selected key will be used.
+# 
+class DictionarySelectionWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.options = options
+        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+       
+    def show(self, properties):
+        
+        log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
+        dialog = DictionaryDialog()
+                
+        if callable(self.options):
+            self.options = self.options(self.property_key, properties)
+
+        output = dialog.select(self.title, self.options)
+
+        if output is None:
+            self._cancel()
+            return None
+       
+        return output
+    
+#
+# Wizard dialog which shows a filebrowser.
+# 
+class FileBrowseWizardDialog(WizardDialog):
+    
+    def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.browseType = browseType
+        self.filter = filter
+        super(FileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+       
+    def show(self, properties):
+        
+        log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
+        originalPath = properties[self.property_key] if self.property_key in properties else ''
+
+        if callable(self.filter):
+            self.filter = self.filter(self.property_key, properties)
+       
+        output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath).decode('utf-8')
+
+        if not output:
+            self._cancel()
+            return None
+       
+        return output
+
+#
+# Wizard dialog which shows an input for one of the following types:
+#    - xbmcgui.INPUT_ALPHANUM (standard keyboard)
+#    - xbmcgui.INPUT_NUMERIC (format: #)
+#    - xbmcgui.INPUT_DATE (format: DD/MM/YYYY)
+#    - xbmcgui.INPUT_TIME (format: HH:MM)
+#    - xbmcgui.INPUT_IPADDRESS (format: #.#.#.#)
+#    - xbmcgui.INPUT_PASSWORD (return md5 hash of input, input is masked)
+#
+class InputWizardDialog(WizardDialog):
+           
+    def __init__(self, property_key, title, inputType, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.inputType = inputType
+        super(InputWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+       
+    def show(self, properties):
+        
+        log_debug('Executing {0} input wizard dialog for key: {1}'.format(self.inputType, self.property_key))
+        originalValue = properties[self.property_key] if self.property_key in properties else ''
+
+        output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
+
+        if not output:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which shows you a message formatted with a value from the dictionary.
+#
+# Example:
+#   dictionary item {'token':'roms'}
+#   inputtext: 'I like {} a lot'
+#   result message on screen: 'I like roms a lot'
+#
+# Formatting is optional
+#
+class FormattedMessageWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, title, text, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.text = text
+        super(FormattedMessageWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+    
+    def show(self, properties):
+
+        log_debug('Executing message wizard dialog for key: {0}'.format(self.property_key))
+        format_values = properties[self.property_key] if self.property_key in properties else ''
+        full_text = self.text.format(format_values)
+        output = xbmcgui.Dialog().ok(self.title, full_text)
+
+        if not output:
+            self._cancel()
+            return None
+        
+        return output
+
+
+#
+# Wizard dialog which does nothing or shows anything.
+# It only sets a certain property with the predefined value.
+# 
+class DummyWizardDialog(WizardDialog):
+
+    def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None, conditionalFunction = None):
+        
+        self.predefinedValue = predefinedValue
+        super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        
+        log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
+        return self.predefinedValue
+
+# 
+# Kodi dialog with select box based on a dictionary
+# 
+class DictionaryDialog(object):
+    
+    def __init__(self):
+        self.dialog = xbmcgui.Dialog()
+
+    def select(self, title, dictOptions, preselect = None):
+
+        preselected_index = -1
+        if preselect is not None:
+            preselected_value = dictOptions[preselect]
+            preselected_index = dictOptions.values().index(preselected_value)
+
+        selection = self.dialog.select(title, dictOptions.values(), preselect = preselected_index)
+
+        if selection < 0:
+            return None
+        
+        key = list(dictOptions.keys())[selection]
+        return key
+
+class ProgressDialogStrategy(object):
+    
+    def __init__(self):
+
+        self.progress = 0
+        self.progressDialog = xbmcgui.DialogProgress()
+        self.verbose = True
+
+    def _startProgressPhase(self, title, message):        
+        self.progressDialog.create(title, message)
+
+    def _updateProgress(self, progress, message1 = None, message2 = None):
+        
+        self.progress = progress
+
+        if not self.verbose:
+            self.progressDialog.update(progress)
+        else:
+            self.progressDialog.update(progress, message1, message2)
+
+    def _updateProgressMessage(self, message1, message2 = None):
+
+        if not self.verbose:
+            return
+
+        self.progressDialog.update(self.progress, message1, message2)
+
+    def _isProgressCanceled(self):
+        return self.progressDialog.iscanceled()
+
+    def _endProgressPhase(self, canceled=False):
+        
+        if not canceled:
+            self.progressDialog.update(100)
+
+        self.progressDialog.close()

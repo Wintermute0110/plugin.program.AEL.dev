@@ -175,3 +175,95 @@ scrapers_fanart_MAME    = [ NULL_obj, TheGamesDB_obj                            
 scrapers_marquee_MAME   = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
 scrapers_clearlogo_MAME = [ NULL_obj, TheGamesDB_obj,                              ArcadeDB_obj ]
 scrapers_flyer_MAME     = [ NULL_obj,                                              ArcadeDB_obj ]
+
+def getScraper(asset_kind, settings, useMame = False):
+
+    if useMame:
+        return getMameScraper(asset_kind, settings)
+
+    key = ASSET_SETTING_KEYS[asset_kind]
+        
+    if key == '':
+        return None
+
+    if key not in settings:
+        log_warning("Scraper with key {} not set in settings".format(key))
+        return None
+
+    scraper_index = settings[key]
+
+    if asset_kind == ASSET_TITLE:
+        return scrapers_title[scraper_index]
+        
+    if asset_kind == ASSET_SNAP:
+        return scrapers_snap[scraper_index]
+    
+    if asset_kind == ASSET_BOXFRONT:
+        return scrapers_boxfront[scraper_index]
+    
+    if asset_kind == ASSET_BOXBACK:
+        return scrapers_boxback[scraper_index]
+    
+    if asset_kind == ASSET_CARTRIDGE:
+        return scrapers_cartridge[scraper_index]
+    
+    if asset_kind == ASSET_FANART:
+        return scrapers_fanart[scraper_index]
+        
+    if asset_kind == ASSET_BANNER:
+        return scrapers_banner[scraper_index]
+    
+    if asset_kind == ASSET_CLEARLOGO:
+        return scrapers_clearlogo[scraper_index]
+
+    # >> Flyers only supported by ArcadeDB (for MAME). If platform is not MAME then deactivate
+    # >> this scraper.
+    # >> Map (not supported yet, use a null scraper)
+    # >> Manual (not supported yet, use a null scraper)
+    # >> Trailer (not supported yet, use a null scraper)
+    return NULL_obj
+ 
+def getMameScraper(asset_kind, settings):
+    
+    key = MAME_ASSET_SETTING_KEYS[asset_kind]
+    
+    if key == '':
+        return None
+    
+    if key not in settings:
+        log_warning("Scraper with key {} not set in settings".format(key))
+        return None
+
+    scraper_index = settings[key]
+    
+    if asset_kind == ASSET_TITLE:
+        return scrapers_title_MAME[scraper_index]
+        
+    if asset_kind == ASSET_SNAP:
+        return scrapers_snap_MAME[scraper_index]
+    
+    if asset_kind == ASSET_BOXFRONT:
+        return scrapers_cabinet_MAME[scraper_index]
+    
+    if asset_kind == ASSET_BOXBACK:
+        return scrapers_cpanel_MAME[scraper_index]
+    
+    if asset_kind == ASSET_CARTRIDGE:
+        return scrapers_pcb_MAME[scraper_index]
+    
+    if asset_kind == ASSET_FANART:
+        return scrapers_fanart_MAME[scraper_index]
+        
+    if asset_kind == ASSET_BANNER:
+        return scrapers_marquee_MAME[scraper_index]
+    
+    if asset_kind == ASSET_CLEARLOGO:
+        return scrapers_clearlogo_MAME[scraper_index]
+        
+    if asset_kind == ASSET_FLYER:
+        return scrapers_flyer_MAME[scraper_index]
+
+    # >> Map (not supported yet, use a null scraper)
+    # >> Manual (not supported yet, use a null scraper)
+    # >> Trailer (not supported yet, use a null scraper)
+    return NULL_obj
