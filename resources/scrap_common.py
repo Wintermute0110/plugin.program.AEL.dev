@@ -27,6 +27,7 @@ from utils import *
 
 # -----------------------------------------------------------------------------
 # TheGamesDB scraper common code
+# DEPRECATED --> now implemented in scrapers.py
 # ----------------------------------------------------------------------------- 
 class Scraper_TheGamesDB():
     def __init__(self):

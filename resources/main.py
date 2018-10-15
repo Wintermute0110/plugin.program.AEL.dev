@@ -838,6 +838,9 @@ class Main:
         self.settings['scraper_clearlogo_MAME'] = int(o.getSetting('scraper_clearlogo_MAME'))
         self.settings['scraper_flyer_MAME']     = int(o.getSetting('scraper_flyer_MAME'))
 
+        # todo: change to use actual key from settings
+        self.settings['thegamesdb_apikey']      = '8c1fba5b0f980c616554f1ad0b01341708f2e8800d4176e4f4250ed0093e1a5b'
+
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
         # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
@@ -1185,7 +1188,7 @@ class Main:
     def _subcommand_edit_launcher_genre(self, category):
 
         if self._text_edit_category_metadata('genre', category.get_genre, category.update_genre):
-	        self.category_repository.save(category)
+            self.category_repository.save(category)
 
     # --- Edition of the category developer ---
     def _subcommand_edit_category_developer(self, category):
@@ -1593,12 +1596,12 @@ class Main:
     def _subcommand_edit_launcher_genre(self, launcher):
 
         if self._text_edit_launcher_metadata('genre', launcher.get_genre, launcher.update_genre):
-	        self.launcher_repository.save(launcher)
+            self.launcher_repository.save(launcher)
             
     def _subcommand_edit_launcher_developer(self, launcher):
-	
-	    if self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer):
-		    self.launcher_repository.save(launcher)
+    
+        if self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer):
+            self.launcher_repository.save(launcher)
        
     def _subcommand_edit_launcher_rating(self, launcher):
 

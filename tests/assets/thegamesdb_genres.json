@@ -1,0 +1,87 @@
+{
+    "code": 200,
+    "status": "Success",
+    "data": {
+        "count": 19,
+        "genres": {
+            "1": {
+                "id": 1,
+                "name": "Action"
+            },
+            "2": {
+                "id": 2,
+                "name": "Adventure"
+            },
+            "3": {
+                "id": 3,
+                "name": "Construction and Management Simulation"
+            },
+            "4": {
+                "id": 4,
+                "name": "Role-Playing"
+            },
+            "5": {
+                "id": 5,
+                "name": "Puzzle"
+            },
+            "6": {
+                "id": 6,
+                "name": "Strategy"
+            },
+            "7": {
+                "id": 7,
+                "name": "Racing"
+            },
+            "8": {
+                "id": 8,
+                "name": "Shooter"
+            },
+            "9": {
+                "id": 9,
+                "name": "Life Simulation"
+            },
+            "10": {
+                "id": 10,
+                "name": "Fighting"
+            },
+            "11": {
+                "id": 11,
+                "name": "Sports"
+            },
+            "12": {
+                "id": 12,
+                "name": "Sandbox"
+            },
+            "13": {
+                "id": 13,
+                "name": "Flight Simulator"
+            },
+            "14": {
+                "id": 14,
+                "name": "MMO"
+            },
+            "15": {
+                "id": 15,
+                "name": "Platform"
+            },
+            "16": {
+                "id": 16,
+                "name": "Stealth"
+            },
+            "17": {
+                "id": 17,
+                "name": "Music"
+            },
+            "18": {
+                "id": 18,
+                "name": "Horror"
+            },
+            "19": {
+                "id": 19,
+                "name": "Vehicle Simulation"
+            }
+        }
+    },
+    "remaining_monthly_allowance": 259,
+    "extra_allowance": 0
+}

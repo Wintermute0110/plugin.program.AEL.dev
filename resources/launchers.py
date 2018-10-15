@@ -602,7 +602,11 @@ class RomSetRepository(object):
         
         roms_base_noext = launcher.get_roms_base()
         repository_file = self.roms_dir.pjoin('{}{}.json'.format(roms_base_noext, type))
-                
+        
+        if not repository_file.exists():
+            log_warning('RomSetRepository.find_index_file_by_launcher(): File not found {0}'.format(repository_file.getOriginalPath()))
+            return None
+        
         log_verb('RomSetRepository.find_index_file_by_launcher(): Loading rom index from file {0}'.format(repository_file.getOriginalPath()))
         try:
             index_data = repository_file.readJson()
@@ -1382,6 +1386,10 @@ class Rom(MetaDataItem):
             kodi_notify('Imported {0}'.format(nfo_file_path.getPath()))
 
         return
+
+    def __str__(self):
+        """Overrides the default implementation"""
+        return json.dumps(self.entity_data)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -2826,14 +2834,14 @@ class StandardRomLauncher(RomLauncher):
         filtered_roms = []
         view_mode     = self.get_display_mode()
         dp_mode       = self.get_nointro_display_mode()
-        pclone_index  = self.get_pclone_index()
+        pclone_index  = self.get_pclone_indices()
         
         dp_modes_for_have    = [NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_HAVE_MISS]
         dp_modes_for_miss    = [NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK]
         dp_modes_for_unknown = [NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK]
         
-        for rom_id in roms_to_filter:
-            rom = roms[rom_id]
+        for rom_id in self.roms:
+            rom = self.roms[rom_id]
             nointro_status = rom.get_nointro_status()
             
             # >> Filter ROM

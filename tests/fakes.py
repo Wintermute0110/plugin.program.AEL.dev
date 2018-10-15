@@ -69,8 +69,10 @@ class FakeFile(KodiFileName):
 
 class FakeScraper(Scraper):
     
-    def __init__(self, rom_data_to_apply = None):
+    def __init__(self, settings, launcher, rom_data_to_apply = None):
         self.rom_data_to_apply = rom_data_to_apply
+        scraper_settings = ScraperSettings(1,1,False,True)
+        super(FakeScraper, self).__init__(scraper_settings, launcher, True, []) 
 
     def getName(self):
         return 'FakeScraper'
@@ -78,18 +80,17 @@ class FakeScraper(Scraper):
     def _getCandidates(self, searchTerm, romPath, rom):
         return ['fake']
 
-    def _loadCandidate(self, candidate, romPath):
-        pass
-
-    def _applyCandidate(self, romPath, rom):
-
+    def _load_metadata(self, candidate, romPath, rom):
         if self.rom_data_to_apply :
-            rom.set_custom_attribute('m_name',      self.rom_data_to_apply['m_name'] if 'm_name' in self.rom_data_to_apply else '')
-            rom.set_custom_attribute('m_year',      self.rom_data_to_apply['m_year'] if 'm_year' in self.rom_data_to_apply else '')    
-            rom.set_custom_attribute('m_genre',     self.rom_data_to_apply['m_genre'] if 'm_genre' in self.rom_data_to_apply else '')  
-            rom.set_custom_attribute('m_developer', self.rom_data_to_apply['m_developer']if 'm_developer' in self.rom_data_to_apply else '')
-            rom.set_custom_attribute('m_plot',      self.rom_data_to_apply['m_plot'] if 'm_plot' in self.rom_data_to_apply else '')
+            self.gamedata['title']      = self.rom_data_to_apply['m_name'] if 'm_name' in self.rom_data_to_apply else ''
+            self.gamedata['year']      = self.rom_data_to_apply['m_year'] if 'm_year' in self.rom_data_to_apply else ''   
+            self.gamedata['genre']     = self.rom_data_to_apply['m_genre'] if 'm_genre' in self.rom_data_to_apply else ''
+            self.gamedata['developer'] = self.rom_data_to_apply['m_developer']if 'm_developer' in self.rom_data_to_apply else ''
+            self.gamedata['plot']      = self.rom_data_to_apply['m_plot'] if 'm_plot' in self.rom_data_to_apply else ''
         else:
-            rom.set_name(romPath.getBase_noext())
+            self.gamedata['title'] = romPath.getBase_noext()
 
-        return True
+    
+    def _load_assets(self, candidate, romPath, rom):
+        pass
+        

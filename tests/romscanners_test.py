@@ -97,6 +97,8 @@ class Test_romscannerstests(unittest.TestCase):
         settings['scraper_fanart'] = 0
         settings['scraper_banner'] = 0
         settings['scraper_clearlogo'] = 0
+        settings['metadata_scraper_mode'] = 1
+        settings['asset_scraper_mode'] = 1
         settings['scan_recursive'] = True
         settings['scan_ignore_bios'] = True
         
@@ -146,9 +148,6 @@ class Test_romscannerstests(unittest.TestCase):
         progress_canceled_mock.return_value = False
 
         settings = self._getFakeSettings()
-        scraped_rom = {}
-        scraped_rom['m_name'] = 'FakeScrapedRom'
-        scrapers = [FakeScraper(scraped_rom)]
         
         roms = {}
         roms_repo = FakeRomSetRepository(roms)
@@ -156,6 +155,10 @@ class Test_romscannerstests(unittest.TestCase):
         launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
         launcher_data['nointro_xml_file'] = None
         launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
+
+        scraped_rom = {}
+        scraped_rom['m_name'] = 'FakeScrapedRom'
+        scrapers = [FakeScraper(settings, launcher, scraped_rom)]
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
@@ -185,9 +188,6 @@ class Test_romscannerstests(unittest.TestCase):
         file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
 
         settings = self._getFakeSettings()
-        scraped_rom = {}
-        scraped_rom['m_name'] = 'FakeScrapedRom'
-        scrapers = [FakeScraper(scraped_rom)]
                 
         roms = {}
         roms['1']= Rom({'id': '1', 'm_name': 'this-one-will-be-deleted', 'filename': '//not-existing/byebye.zip'})
@@ -199,6 +199,10 @@ class Test_romscannerstests(unittest.TestCase):
         launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
         launcher_data['nointro_xml_file'] = None
         launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
+        
+        scraped_rom = {}
+        scraped_rom['m_name'] = 'FakeScrapedRom'
+        scrapers = [FakeScraper(settings, launcher, scraped_rom)]
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
@@ -234,7 +238,6 @@ class Test_romscannerstests(unittest.TestCase):
         file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
 
         settings = self._getFakeSettings()
-        scrapers = [FakeScraper(None)]
         
         roms = {}
         roms['1']= Rom({'id': '1', 'm_name': 'Rocket League', 'filename': '//fake/folder/rocket.zip'})
@@ -245,6 +248,8 @@ class Test_romscannerstests(unittest.TestCase):
         launcher_data['multidisc'] = True
         launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
         
+        scrapers = [FakeScraper(settings, launcher, None)]
+
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
         
@@ -284,7 +289,6 @@ class Test_romscannerstests(unittest.TestCase):
         file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
 
         settings = self._getFakeSettings()
-        scrapers = [FakeScraper(None)]
         
         roms = {}
         roms['1']= Rom({'id': '1', 'm_name': 'Rocket League', 'filename': '//fake/folder/rocket.zip'})
@@ -295,6 +299,8 @@ class Test_romscannerstests(unittest.TestCase):
         launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
         launcher_data['nointro_xml_file'] = None
         launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
+        
+        scrapers = [FakeScraper(settings, launcher, None)]
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
@@ -336,12 +342,13 @@ class Test_romscannerstests(unittest.TestCase):
         file_exists_mock.side_effect = lambda f: f.getOriginalPath().startswith('//fake/')
 
         settings = self._getFakeSettings()
-        scrapers = [FakeScraper(None)]
         roms_repo = FakeRomSetRepository({})
                 
         launcher_data = self._getFakeLauncherMetaData(LAUNCHER_ROM, 'Nintendo', 'zip')
         launcher_data['nointro_xml_file'] = None
         launcher = StandardRomLauncher(launcher_data, settings, None, roms_repo, None, False)
+        
+        scrapers = [FakeScraper(settings, launcher, None)]
 
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
@@ -378,10 +385,6 @@ class Test_romscannerstests(unittest.TestCase):
         settings = self._getFakeSettings()
         settings['steam-api-key'] = 'ABC123' #'BA1B6D6926F84920F8035F95B9B3E824'
         
-        scraped_rom = {}
-        scraped_rom['m_name'] = 'FakeScrapedRom'
-        scrapers = [FakeScraper(scraped_rom)]
-
         report_dir = FakeFile('//fake_reports/')
         addon_dir = FileNameFactory.create('//fake_addon/')
 
@@ -397,6 +400,10 @@ class Test_romscannerstests(unittest.TestCase):
         launcher_data['steamid'] = '09090909' #'76561198405030123' 
         launcher = SteamLauncher(launcher_data, settings, None, roms_repo, None)
         
+        scraped_rom = {}
+        scraped_rom['m_name'] = 'FakeScrapedRom'
+        scrapers = [FakeScraper(settings, launcher, scraped_rom)]
+
         target = SteamScanner(report_dir, addon_dir, launcher, settings, scrapers)
         expectedRomCount = 5
 
