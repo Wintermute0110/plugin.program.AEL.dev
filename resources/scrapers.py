@@ -28,6 +28,7 @@ class ScraperFactory(ProgressDialogStrategy):
 
         scrapers = []
 
+
         metadata_scraper = self._get_metadata_scraper(scan_metadata_policy, launcher)
         scrapers.append(metadata_scraper)
 
@@ -66,7 +67,6 @@ class ScraperFactory(ProgressDialogStrategy):
             kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
                            'Asset scanner will be disabled for this/those.')
         return scrapers
-
      
     # ~~~ Ensure there is no duplicate asset dirs ~~~
     # >> Abort scanning of assets if duplicates found
@@ -106,7 +106,7 @@ class ScraperFactory(ProgressDialogStrategy):
             scraper_index = self.settings['scraper_metadata']
 
             if scraper_index == 1:
-                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
+                onlineScraper = TheGamesDbScraper(self.settings, launcher, True, [], cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
             else:
                 scraper_implementation = scrapers_metadata[scraper_index]
@@ -123,7 +123,7 @@ class ScraperFactory(ProgressDialogStrategy):
             scraper_index = self.settings['scraper_metadata']
 
             if scraper_index == 1:
-                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
+                onlineScraper = TheGamesDbScraper(self.settings, launcher, True, [], cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
                 return onlineScraper
             else:
@@ -161,6 +161,10 @@ class ScraperFactory(ProgressDialogStrategy):
         elif scan_asset_policy == 1:
             log_verb('Asset policy: if not Local Image then Scraper ON')
             
+            if scraper_implementation.name == 'TheGamesDB':
+                onlineScraper = TheGamesDbScraper(self.settings, launcher, False, [asset_info])
+                return LocalAssetScraper(asset_kind, asset_info, self.settings, launcher, onlineScraper)
+
             onlineScraper = OnlineAssetScraper(scraper_implementation, asset_kind, asset_info, self.settings, launcher)
             return LocalAssetScraper(asset_kind, asset_info, self.settings, launcher, onlineScraper)
         
@@ -430,7 +434,7 @@ class Scraper():
 class NullScraper(Scraper):
 
     def __init__(self):
-        super(NullScraper, self).__init__(None, None, 1, True, None, None)
+        super(NullScraper, self).__init__(None, None, False, None)
         
     def scrape(self, search_term, romPath, rom):
         return True
@@ -724,6 +728,12 @@ class TheGamesDbScraper(Scraper):
             
         game_list = self._read_games_from_url(url, search_term, scraper_platform)
         
+        if len(game_list) == 0:
+            altered_search_term = self._cleanup_searchterm(search_term, romPath, rom)
+            if altered_search_term != search_term:
+                log_debug('TheGamesDbScraper::_getCandidates() No hits, trying again with altered search terms: {}'.format(altered_search_term))
+                return self._getCandidates(altered_search_term, romPath, rom)
+
         # >> Order list based on score
         game_list.sort(key = lambda result: result['order'], reverse = True)
 
@@ -745,7 +755,7 @@ class TheGamesDbScraper(Scraper):
         self.gamedata['plot']       = online_data['overview'] if 'overview' in online_data else '' 
         self.gamedata['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
         self.gamedata['developer']  = self._get_developers(online_data['developers']) if 'developers' in online_data else '' 
-        self.gamedata['year']       = online_data['release_date'][:4] if 'release_date' in online_data and online_data['release_date'] is not None and online_data['release_data'] != '' else ''
+        self.gamedata['year']       = online_data['release_date'][:4] if 'release_date' in online_data and online_data['release_date'] is not None and online_data['release_date'] != '' else ''
 
     def _load_assets(self, candidate, romPath, rom):
         
@@ -866,7 +876,17 @@ class TheGamesDbScraper(Scraper):
         asset_key = TheGamesDbScraper.asset_name_mapping[type]
         return asset_key
 
+    def _cleanup_searchterm(self, search_term, rom_path, rom):
+        altered_term = search_term.lower().strip()
+        for ext in self.launcher.get_rom_extensions():
+            altered_term = altered_term.replace(ext, '')
+
+        return altered_term
+
     def _get_publishers(self, publisher_ids):
+        
+        if publisher_ids is None:
+            return ''
 
         if self.publishers is None:
             log_debug('TheGamesDbScraper::No cached publishers. Retrieving from online.')
@@ -884,6 +904,9 @@ class TheGamesDbScraper(Scraper):
     
     def _get_genres(self, genre_ids):
 
+        if genre_ids is None:
+            return ''
+
         if self.genres is None:
             log_debug('TheGamesDbScraper::No cached genres. Retrieving from online.')
             self.genres = {}
@@ -899,6 +922,9 @@ class TheGamesDbScraper(Scraper):
         return ' / '.join(genre_names)
         
     def _get_developers(self, developer_ids):
+        
+        if developer_ids is None:
+            return ''
 
         if self.developers is None:
             log_debug('TheGamesDbScraper::No cached developers. Retrieving from online.')
