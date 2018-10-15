@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher package inisialisation file.
+# Advanced Emulator Launcher miscellaneous set of objects
 #
 
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
@@ -14,4 +13,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# Note that anything defined here will have the namespace of the package which is 'resources'.
+# --- Python standard library ---
+from __future__ import unicode_literals
+from __future__ import division
