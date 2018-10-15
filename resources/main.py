@@ -884,15 +884,15 @@ def m_get_settings():
     g_settings['scraper_clearlogo_MAME'] = int(o.getSetting('scraper_clearlogo_MAME'))
     g_settings['scraper_flyer_MAME']     = int(o.getSetting('scraper_flyer_MAME'))
 
-        # todo: change to use actual key from settings
-        self.settings['thegamesdb_apikey']      = '8c1fba5b0f980c616554f1ad0b01341708f2e8800d4176e4f4250ed0093e1a5b'
+    # todo: change to use actual key from settings
+    g_settings['thegamesdb_apikey']      = '8c1fba5b0f980c616554f1ad0b01341708f2e8800d4176e4f4250ed0093e1a5b'
 
-        # --- ROM audit ---
-        self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
-        # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
-        self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
-        # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
-        # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
+    # --- ROM audit ---
+    g_settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
+    # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
+    g_settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
+    # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
+    # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
 
     # --- Scrapers tab ---
     # g_settings['scraper_region']           = int(o.getSetting('scraper_region'))
