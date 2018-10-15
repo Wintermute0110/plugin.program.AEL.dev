@@ -84,7 +84,7 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
-        settings['thegamesdb_apikey'] = '8c1fba5b0f980c616554f1ad0b01341708f2e8800d4176e4f4250ed0093e1a5b'
+        settings['thegamesdb_apikey'] = 'abc123'
 
         return settings
 
