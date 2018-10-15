@@ -106,7 +106,7 @@ class ScraperFactory(ProgressDialogStrategy):
             scraper_index = self.settings['scraper_metadata']
 
             if scraper_index == 1:
-                onlineScraper = TheGamesDbMetadataScraper(self.settings, launcher, cleanTitleScraper)
+                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
             else:
                 scraper_implementation = scrapers_metadata[scraper_index]
@@ -123,7 +123,7 @@ class ScraperFactory(ProgressDialogStrategy):
             scraper_index = self.settings['scraper_metadata']
 
             if scraper_index == 1:
-                onlineScraper = TheGamesDbMetadataScraper(self.settings, launcher, cleanTitleScraper)
+                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
                 return onlineScraper
             else:
@@ -702,10 +702,10 @@ class TheGamesDbScraper(Scraper):
         platform = self.launcher.get_platform()
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         
-        log_debug('TheGamesDbMetadataScraper::_getCandidates() search_term         "{0}"'.format(search_term))
-        log_debug('TheGamesDbMetadataScraper::_getCandidates() rom_base_noext      "{0}"'.format(self.launcher.get_roms_base()))
-        log_debug('TheGamesDbMetadataScraper::_getCandidates() AEL platform        "{0}"'.format(platform))
-        log_debug('TheGamesDbMetadataScraper::_getCandidates() TheGamesDB platform "{0}"'.format(scraper_platform))
+        log_debug('TheGamesDbScraper::_getCandidates() search_term         "{0}"'.format(search_term))
+        log_debug('TheGamesDbScraper::_getCandidates() rom_base_noext      "{0}"'.format(self.launcher.get_roms_base()))
+        log_debug('TheGamesDbScraper::_getCandidates() AEL platform        "{0}"'.format(platform))
+        log_debug('TheGamesDbScraper::_getCandidates() TheGamesDB platform "{0}"'.format(scraper_platform))
         
         # >> Check if search term page data is in cache. If so it's a cache hit.
         game_id_from_cache = self._get_from_cache(search_term)
@@ -869,7 +869,7 @@ class TheGamesDbScraper(Scraper):
     def _get_publishers(self, publisher_ids):
 
         if self.publishers is None:
-            log_debug('TheGamesDbMetadataScraper::No cached publishers. Retrieving from online.')
+            log_debug('TheGamesDbScraper::No cached publishers. Retrieving from online.')
             self.publishers = {}
             url = 'https://api.thegamesdb.net/Publishers?apikey={}'.format(self.api_key)
             publishers_json = net_get_URL_as_json(url)
@@ -885,7 +885,7 @@ class TheGamesDbScraper(Scraper):
     def _get_genres(self, genre_ids):
 
         if self.genres is None:
-            log_debug('TheGamesDbMetadataScraper::No cached genres. Retrieving from online.')
+            log_debug('TheGamesDbScraper::No cached genres. Retrieving from online.')
             self.genres = {}
             url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self.api_key)
             genre_json = net_get_URL_as_json(url)
@@ -901,7 +901,7 @@ class TheGamesDbScraper(Scraper):
     def _get_developers(self, developer_ids):
 
         if self.developers is None:
-            log_debug('TheGamesDbMetadataScraper::No cached developers. Retrieving from online.')
+            log_debug('TheGamesDbScraper::No cached developers. Retrieving from online.')
             self.developers = {}
             url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self.api_key)
             developers_json = net_get_URL_as_json(url)
