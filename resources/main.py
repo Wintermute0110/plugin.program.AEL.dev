@@ -3,7 +3,7 @@
 # Advanced Emulator Launcher main script file
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 import sys
 import os
 import shutil
@@ -40,7 +41,12 @@ from abc import ABCMeta, abstractmethod
 # --- Kodi stuff ---
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
-# --- Modules/packages in this plugin ---
+# --- Modules/packages in this addon ---
+# Addon module dependencies:
+#                        scrap_*     
+#                        net_IO      platforms     constants
+#   main <-- objects <-- disk_IO <-- assets    <-- utils
+#
 from constants import *
 from filename import *
 from utils import *
@@ -72,55 +78,58 @@ __addon_type__    = __addon__.getAddonInfo('type').decode('utf-8')
 
 # --- Addon paths and constant definition ---
 # _PATH is a filename | _DIR is a directory.
-ADDONS_DATA_DIR           = FileNameFactory.create('special://profile/addon_data')
-PLUGIN_DATA_DIR           = ADDONS_DATA_DIR.pjoin(__addon_id__)
-BASE_DIR                  = FileNameFactory.create('special://profile')
-HOME_DIR                  = FileNameFactory.create('special://home')
-ADDONS_DIR                = HOME_DIR.pjoin('addons')
-AEL_ADDON_DIR             = ADDONS_DIR.pjoin(__addon_id__)
-AEL_ICON_FILE_PATH        = AEL_ADDON_DIR.pjoin('media/icon.png')
-AEL_FANART_FILE_PATH      = AEL_ADDON_DIR.pjoin('media/fanart.jpg')
-
-# --- Plugin database indices ---
 class AEL_Paths:
     def __init__(self):
-        self.CATEGORIES_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('categories.xml')
-        self.FAV_JSON_FILE_PATH        = PLUGIN_DATA_DIR.pjoin('favourites.json')
-        self.COLLECTIONS_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('collections.xml')
-        self.VCAT_TITLE_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_title.xml')
-        self.VCAT_YEARS_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_years.xml')
-        self.VCAT_GENRE_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('vcat_genre.xml')
-        self.VCAT_DEVELOPER_FILE_PATH  = PLUGIN_DATA_DIR.pjoin('vcat_developers.xml')
-        self.VCAT_NPLAYERS_FILE_PATH   = PLUGIN_DATA_DIR.pjoin('vcat_nplayers.xml')
-        self.VCAT_ESRB_FILE_PATH       = PLUGIN_DATA_DIR.pjoin('vcat_esrb.xml')
-        self.VCAT_RATING_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('vcat_rating.xml')
-        self.VCAT_CATEGORY_FILE_PATH   = PLUGIN_DATA_DIR.pjoin('vcat_category.xml')
-        self.LAUNCH_LOG_FILE_PATH      = PLUGIN_DATA_DIR.pjoin('launcher.log')
-        self.RECENT_PLAYED_FILE_PATH   = PLUGIN_DATA_DIR.pjoin('history.json')
-        self.MOST_PLAYED_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('most_played.json')
-        self.GAMEDB_INFO_DIR           = AEL_ADDON_DIR.pjoin('GameDBInfo')
+        # --- Base paths ---
+        self.ADDONS_DATA_DIR  = FileNameFactory.create('special://profile/addon_data')
+        self.ADDON_DATA_DIR   = self.ADDONS_DATA_DIR.pjoin(__addon_id__)
+        self.PROFILE_DIR      = FileNameFactory.create('special://profile')
+        self.HOME_DIR         = FileNameFactory.create('special://home')
+        self.ADDONS_DIR       = self.HOME_DIR.pjoin('addons')
+        self.ADDON_CODE_DIR   = self.ADDONS_DIR.pjoin(__addon_id__)
+        self.ICON_FILE_PATH   = self.ADDON_CODE_DIR.pjoin('media/icon.png')
+        self.FANART_FILE_PATH = self.ADDON_CODE_DIR.pjoin('media/fanart.jpg')
+
+        # --- Databases and reports ---
+        self.CATEGORIES_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('categories.xml')
+        self.FAV_JSON_FILE_PATH        = self.ADDON_DATA_DIR.pjoin('favourites.json')
+        self.COLLECTIONS_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('collections.xml')
+        self.VCAT_TITLE_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('vcat_title.xml')
+        self.VCAT_YEARS_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('vcat_years.xml')
+        self.VCAT_GENRE_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('vcat_genre.xml')
+        self.VCAT_DEVELOPER_FILE_PATH  = self.ADDON_DATA_DIR.pjoin('vcat_developers.xml')
+        self.VCAT_NPLAYERS_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('vcat_nplayers.xml')
+        self.VCAT_ESRB_FILE_PATH       = self.ADDON_DATA_DIR.pjoin('vcat_esrb.xml')
+        self.VCAT_RATING_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('vcat_rating.xml')
+        self.VCAT_CATEGORY_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('vcat_category.xml')
+        self.LAUNCH_LOG_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('launcher.log')
+        self.RECENT_PLAYED_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('history.json')
+        self.MOST_PLAYED_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('most_played.json')
+        self.BIOS_REPORT_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('report_BIOS.txt')
+        self.LAUNCHER_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_Launchers.txt')
+
+        # --- Offline scraper databases ---
+        self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('GameDBInfo')
         self.GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
-        self.LAUNCHBOX_INFO_DIR        = AEL_ADDON_DIR.pjoin('LaunchBox')
+        self.LAUNCHBOX_INFO_DIR        = self.ADDON_CODE_DIR.pjoin('LaunchBox')
         self.LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
-        self.BIOS_REPORT_FILE_PATH     = PLUGIN_DATA_DIR.pjoin('report_BIOS.txt')
-        self.LAUNCHER_REPORT_FILE_PATH = PLUGIN_DATA_DIR.pjoin('report_Launchers.txt')
 
         # --- Artwork and NFO for Categories and Launchers ---
-        self.DEFAULT_CAT_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-categories')
-        self.DEFAULT_COL_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-collections')
-        self.DEFAULT_LAUN_ASSET_DIR    = PLUGIN_DATA_DIR.pjoin('asset-launchers')
-        self.DEFAULT_FAV_ASSET_DIR     = PLUGIN_DATA_DIR.pjoin('asset-favourites')
-        self.VIRTUAL_CAT_TITLE_DIR     = PLUGIN_DATA_DIR.pjoin('db_title')
-        self.VIRTUAL_CAT_YEARS_DIR     = PLUGIN_DATA_DIR.pjoin('db_year')
-        self.VIRTUAL_CAT_GENRE_DIR     = PLUGIN_DATA_DIR.pjoin('db_genre')
-        self.VIRTUAL_CAT_DEVELOPER_DIR = PLUGIN_DATA_DIR.pjoin('db_developer')
-        self.VIRTUAL_CAT_NPLAYERS_DIR  = PLUGIN_DATA_DIR.pjoin('db_nplayer')
-        self.VIRTUAL_CAT_ESRB_DIR      = PLUGIN_DATA_DIR.pjoin('db_esrb')
-        self.VIRTUAL_CAT_RATING_DIR    = PLUGIN_DATA_DIR.pjoin('db_rating')
-        self.VIRTUAL_CAT_CATEGORY_DIR  = PLUGIN_DATA_DIR.pjoin('db_category')
-        self.ROMS_DIR                  = PLUGIN_DATA_DIR.pjoin('db_ROMs')
-        self.COLLECTIONS_DIR           = PLUGIN_DATA_DIR.pjoin('db_Collections')
-        self.REPORTS_DIR               = PLUGIN_DATA_DIR.pjoin('reports')
+        self.CATEGORIES_ASSET_DIR      = self.ADDON_DATA_DIR.pjoin('asset-categories')
+        self.COLLECTIONS_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-collections')
+        self.LAUNCHERS_ASSET_DIR       = self.ADDON_DATA_DIR.pjoin('asset-launchers')
+        self.FAVOURITES_ASSET_DIR      = self.ADDON_DATA_DIR.pjoin('asset-favourites')
+        self.VIRTUAL_CAT_TITLE_DIR     = self.ADDON_DATA_DIR.pjoin('db_title')
+        self.VIRTUAL_CAT_YEARS_DIR     = self.ADDON_DATA_DIR.pjoin('db_year')
+        self.VIRTUAL_CAT_GENRE_DIR     = self.ADDON_DATA_DIR.pjoin('db_genre')
+        self.VIRTUAL_CAT_DEVELOPER_DIR = self.ADDON_DATA_DIR.pjoin('db_developer')
+        self.VIRTUAL_CAT_NPLAYERS_DIR  = self.ADDON_DATA_DIR.pjoin('db_nplayer')
+        self.VIRTUAL_CAT_ESRB_DIR      = self.ADDON_DATA_DIR.pjoin('db_esrb')
+        self.VIRTUAL_CAT_RATING_DIR    = self.ADDON_DATA_DIR.pjoin('db_rating')
+        self.VIRTUAL_CAT_CATEGORY_DIR  = self.ADDON_DATA_DIR.pjoin('db_category')
+        self.ROMS_DIR                  = self.ADDON_DATA_DIR.pjoin('db_ROMs')
+        self.COLLECTIONS_DIR           = self.ADDON_DATA_DIR.pjoin('db_Collections')
+        self.REPORTS_DIR               = self.ADDON_DATA_DIR.pjoin('reports')
 
 # --- Global variables ---
 g_PATHS = AEL_Paths()
@@ -130,18 +139,21 @@ g_addon_handle = 0
 g_content_type = ''
 g_time_str = unicode(datetime.datetime.now())
 
+# --- Global objects ---
+g_assetFactory = None
+
 # -------------------------------------------------------------------------------------------------
 # Make AEL to run only 1 single instance
 # See http://forum.kodi.tv/showthread.php?tid=310697
 # -------------------------------------------------------------------------------------------------
-monitor           = xbmc.Monitor()
-main_window       = xbmcgui.Window(10000)
+g_monitor           = xbmc.Monitor()
+g_main_window       = xbmcgui.Window(10000)
 AEL_LOCK_PROPNAME = 'AEL_instance_lock'
 AEL_LOCK_VALUE    = 'True'
 class SingleInstance:
     def __enter__(self):
         # --- If property is True then another instance of AEL is running ---
-        if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
+        if g_main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
             log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
             # >> Apparently this message pulls the focus out of the launcher app. Disable it.
             # >> Has not effect. Kodi steals the focus from the launched app even if not message.
@@ -149,13 +161,13 @@ class SingleInstance:
                            'or close the launched application before launching a new one and try '
                            'again.')
             raise SystemExit
-        if monitor.abortRequested(): 
-            log_info('monitor.abortRequested() is True. Exiting plugin ...')
+        if g_monitor.abortRequested(): 
+            log_info('g_monitor.abortRequested() is True. Exiting plugin ...')
             raise SystemExit
 
         # --- Acquire lock for this instance ---
         log_debug('SingleInstance::__enter__() Lock not in use. Setting lock')
-        main_window.setProperty(AEL_LOCK_PROPNAME, AEL_LOCK_VALUE)
+        g_main_window.setProperty(AEL_LOCK_PROPNAME, AEL_LOCK_VALUE)
         return True
 
     def __exit__(self, type, value, traceback):
@@ -166,7 +178,7 @@ class SingleInstance:
 
         # --- Release lock even if an exception happened ---
         log_debug('SingleInstance::__exit__() Releasing lock')
-        main_window.setProperty(AEL_LOCK_PROPNAME, '')
+        g_main_window.setProperty(AEL_LOCK_PROPNAME, '')
 
 # ---------------------------------------------------------------------------------------------
 # This is the plugin entry point.
@@ -198,8 +210,8 @@ def run_plugin(addon_argv):
     # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
     # log_debug('__a_type__     "{0}"'.format(__addon_type__))
     for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
-    # log_debug('PLUGIN_DATA_DIR OP "{0}"'.format(PLUGIN_DATA_DIR.getOriginalPath()))
-    # log_debug('PLUGIN_DATA_DIR  P "{0}"'.format(PLUGIN_DATA_DIR.getPath()))
+    # log_debug('ADDON_DATA_DIR OP "{0}"'.format(ADDON_DATA_DIR.getOriginalPath()))
+    # log_debug('ADDON_DATA_DIR  P "{0}"'.format(ADDON_DATA_DIR.getPath()))
     # log_debug('AEL_ADDON_DIR OP "{0}"'.format(AEL_ADDON_DIR.getOriginalPath()))
     # log_debug('AEL_ADDON_DIR  P "{0}"'.format(AEL_ADDON_DIR.getPath()))
 
@@ -250,43 +262,44 @@ def run_plugin(addon_argv):
         # log_debug('Response  ''{0}'''.format(response.decode('utf-8')))
 
     # --- Addon data paths creation ---
-    if not PLUGIN_DATA_DIR.exists():           PLUGIN_DATA_DIR.makedirs()
-    if not DEFAULT_CAT_ASSET_DIR.exists():     DEFAULT_CAT_ASSET_DIR.makedirs()
-    if not DEFAULT_COL_ASSET_DIR.exists():     DEFAULT_COL_ASSET_DIR.makedirs()
-    if not DEFAULT_LAUN_ASSET_DIR.exists():    DEFAULT_LAUN_ASSET_DIR.makedirs()
-    if not DEFAULT_FAV_ASSET_DIR.exists():     DEFAULT_FAV_ASSET_DIR.makedirs()
-    if not VIRTUAL_CAT_TITLE_DIR.exists():     VIRTUAL_CAT_TITLE_DIR.makedirs()
-    if not VIRTUAL_CAT_YEARS_DIR.exists():     VIRTUAL_CAT_YEARS_DIR.makedirs()
-    if not VIRTUAL_CAT_GENRE_DIR.exists():     VIRTUAL_CAT_GENRE_DIR.makedirs()
-    if not VIRTUAL_CAT_DEVELOPER_DIR.exists(): VIRTUAL_CAT_DEVELOPER_DIR.makedirs()
-    if not VIRTUAL_CAT_NPLAYERS_DIR.exists():  VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
-    if not VIRTUAL_CAT_ESRB_DIR.exists():      VIRTUAL_CAT_ESRB_DIR.makedirs()
-    if not VIRTUAL_CAT_RATING_DIR.exists():    VIRTUAL_CAT_RATING_DIR.makedirs()
-    if not VIRTUAL_CAT_CATEGORY_DIR.exists():  VIRTUAL_CAT_CATEGORY_DIR.makedirs()
-    if not ROMS_DIR.exists():                  ROMS_DIR.makedirs()
-    if not COLLECTIONS_DIR.exists():           COLLECTIONS_DIR.makedirs()
-    if not REPORTS_DIR.exists():               REPORTS_DIR.makedirs()
+    if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
+    if not g_PATHS.CATEGORIES_ASSET_DIR.exists():      g_PATHS.CATEGORIES_ASSET_DIR.makedirs()
+    if not g_PATHS.COLLECTIONS_ASSET_DIR.exists():     g_PATHS.COLLECTIONS_ASSET_DIR.makedirs()
+    if not g_PATHS.LAUNCHERS_ASSET_DIR.exists():       g_PATHS.LAUNCHERS_ASSET_DIR.makedirs()
+    if not g_PATHS.FAVOURITES_ASSET_DIR.exists():      g_PATHS.FAVOURITES_ASSET_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_TITLE_DIR.exists():     g_PATHS.VIRTUAL_CAT_TITLE_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_YEARS_DIR.exists():     g_PATHS.VIRTUAL_CAT_YEARS_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_GENRE_DIR.exists():     g_PATHS.VIRTUAL_CAT_GENRE_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR.exists(): g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR.exists():  g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_ESRB_DIR.exists():      g_PATHS.VIRTUAL_CAT_ESRB_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_RATING_DIR.exists():    g_PATHS.VIRTUAL_CAT_RATING_DIR.makedirs()
+    if not g_PATHS.VIRTUAL_CAT_CATEGORY_DIR.exists():  g_PATHS.VIRTUAL_CAT_CATEGORY_DIR.makedirs()
+    if not g_PATHS.ROMS_DIR.exists():                  g_PATHS.ROMS_DIR.makedirs()
+    if not g_PATHS.COLLECTIONS_DIR.exists():           g_PATHS.COLLECTIONS_DIR.makedirs()
+    if not g_PATHS.REPORTS_DIR.exists():               g_PATHS.REPORTS_DIR.makedirs()
 
+    # --- Handle migrations ---
     current_version = LooseVersion(__addon_version__)
-    str_version = g_settings["migrated_version"]
-    if not str_version or str_version == '':
-        str_version = '0.0.0'
-
+    str_version = g_settings['migrated_version']
+    if not str_version or str_version == '': str_version = '0.0.0'
     try:
         last_migrated_to_version = LooseVersion(str_version)
     except:
         last_migrated_to_version = LooseVersion('0.0.0')
-
+    log_debug('current_version           {0}'.format(current_version))
+    log_debug('str_version               {0}'.format(str_version))
+    log_debug('last_migrated_to_version  {0}'.format(last_migrated_to_version))
     if current_version > last_migrated_to_version:
         log_info('Execute migrations')
-        self.execute_migrations(last_migrated_to_version)
+        m_execute_migrations(last_migrated_to_version)
 
     # --- Process URL ---
     g_base_url = addon_argv[0]
     g_addon_handle = int(addon_argv[1])
     args = urlparse.parse_qs(addon_argv[2][1:])
     # log_debug('args = {0}'.format(args))
-    # >> Interestingly, if plugin is called as type executable then args is empty.
+    # >> Interestingly, if plugin is called as type executable/program then content_type is empty.
     # >> However, if plugin is called as type video then Kodi adds the following
     # >> even for the first call: 'content_type': ['video']
     g_content_type = args['content_type'] if 'content_type' in args else None
@@ -332,21 +345,21 @@ def run_plugin(addon_argv):
     log_debug('Advanced Emulator Launcher run_plugin() exit')
 
 #
-# Bootstrap instances
+# Bootstrap factory instances
 #
 def m_bootstrap_instances():
-    self.assetFactory      = AssetInfoFactory.create()
-    self.romscannerFactory = RomScannersFactory(g_settings, REPORTS_DIR, CURRENT_ADDON_DIR)
-    self.scraperFactory    = ScraperFactory(g_settings, CURRENT_ADDON_DIR)
-    
+    # --- Utility objects ---
+    g_assetFactory          = AssetInfoFactory.create()
+    self.romscannerFactory  = RomScannersFactory(g_settings, REPORTS_DIR, CURRENT_ADDON_DIR)
+    self.scraperFactory     = ScraperFactory(g_settings, CURRENT_ADDON_DIR)
     executorFactory         = ExecutorFactory(g_settings, LAUNCH_LOG_FILE_PATH)
-    self.launcher_factory   = LauncherFactory(g_settings, executorFactory, PLUGIN_DATA_DIR)
+    self.launcher_factory   = LauncherFactory(g_settings, executorFactory, ADDON_DATA_DIR)
 
-    data_context             = XmlDataContext(PLUGIN_DATA_DIR.pjoin('categories.xml'))
-    self.category_repository = CategoryRepository(data_context)
-    self.launcher_repository = LauncherRepository(data_context, self.launcher_factory)
-
-    data_context                = XmlDataContext(PLUGIN_DATA_DIR.pjoin('collections.xml'))
+    # --- Load categories/launchers/collections databases ---
+    data_context                = XmlDataContext(ADDON_DATA_DIR.pjoin('categories.xml'))
+    self.category_repository    = CategoryRepository(data_context)
+    self.launcher_repository    = LauncherRepository(data_context, self.launcher_factory)
+    data_context                = XmlDataContext(ADDON_DATA_DIR.pjoin('collections.xml'))
     self.collection_repository  = CollectionRepository(data_context)
 
 #
@@ -354,7 +367,7 @@ def m_bootstrap_instances():
 #
 def m_run_concurrent(command, args):
     log_debug('Advanced Emulator Launcher run_concurrent() BEGIN')
-    
+
     # --- Name says it all ---
     if command == 'SHOW_ADDON_ROOT':
         self._command_render_categories()
@@ -925,11 +938,16 @@ def m_get_settings():
     g_settings['log_level']                = int(o.getSetting('log_level'))
     g_settings['migrated_version']         = o.getSetting('migrated_version')
 
-    # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
-    if g_settings['categories_asset_dir']  == '': g_settings['categories_asset_dir']  = DEFAULT_CAT_ASSET_DIR.getOriginalPath()
-    if g_settings['launchers_asset_dir']   == '': g_settings['launchers_asset_dir']   = DEFAULT_LAUN_ASSET_DIR.getOriginalPath()
-    if g_settings['favourites_asset_dir']  == '': g_settings['favourites_asset_dir']  = DEFAULT_FAV_ASSET_DIR.getOriginalPath()
-    if g_settings['collections_asset_dir'] == '': g_settings['collections_asset_dir'] = DEFAULT_COL_ASSET_DIR.getOriginalPath()
+    # >> Check if user changed default artwork paths for categories/launchers.
+    # >> If not, set sensible defaults.
+    if g_settings['categories_asset_dir']  == '':
+        g_settings['categories_asset_dir'] = g_PATHS.CATEGORIES_ASSET_DIR.getOriginalPath()
+    if g_settings['collections_asset_dir'] == '':
+        g_settings['collections_asset_dir'] = g_PATHS.COLLECTIONS_ASSET_DIR.getOriginalPath()
+    if g_settings['launchers_asset_dir']   == '':
+        g_settings['launchers_asset_dir'] = g_PATHS.LAUNCHERS_ASSET_DIR.getOriginalPath()
+    if g_settings['favourites_asset_dir']  == '':
+        g_settings['favourites_asset_dir'] = g_PATHS.FAVOURITES_ASSET_DIR.getOriginalPath()
 
     # --- Dump settings for DEBUG ---
     # log_debug('Settings dump BEGIN')
@@ -9700,7 +9718,7 @@ def m_command_import_legacy_AL():
     kodi_notify('Importing AL launchers.xml ...')
     AL_DATA_DIR = FileNameFactory.create('special://profile/addon_data/plugin.program.advanced.launcher')
     LAUNCHERS_FILE_PATH = AL_DATA_DIR.pjoin('launchers.xml')
-    FIXED_LAUNCHERS_FILE_PATH = PLUGIN_DATA_DIR.pjoin('fixed_launchers.xml')
+    FIXED_LAUNCHERS_FILE_PATH = ADDON_DATA_DIR.pjoin('fixed_launchers.xml')
 
     # >> Check that launchers.xml exist
     if not LAUNCHERS_FILE_PATH.exists():
@@ -10005,58 +10023,56 @@ def m_buildMenuItem(key, name, action, thumb, fanart, count, ui):
 def m_execute_migrations(last_migrated_to_version, to_version = None):
     import migrations
     import migrations.main
-    
+
     pDialog = xbmcgui.DialogProgress()
     pDialog.create('Advanced Emulator Launcher', 'Performing version upgrade migrations ...')
     pDialog.update(5)
 
-    migrations_folder     = CURRENT_ADDON_DIR.pjoin('resources/migrations')
+    migrations_folder     = g_PATHS.ADDON_CODE_DIR.pjoin('resources/migrations')
     migration_files       = migrations_folder.scanFilesInPathAsFileNameObjects('*.py')
-    applicable_migrations = self.select_applicable_migration_files(migration_files, last_migrated_to_version, to_version)
+    applicable_migrations = m_select_applicable_migration_files(migration_files, last_migrated_to_version, to_version)
 
     num_migrations = len(applicable_migrations)
     i = 1
     for version, migration_file in applicable_migrations.iteritems():
 
-        log_info('Migrating to version {} using file {}'.format(version, migration_file.getBase()))
+        log_info('Migrating to version {0} using file {1}'.format(version, migration_file.getBase()))
         pDialog.update( (i * 95 / num_migrations)+5, 'Migrating to version {} ...'.format(version))
     
-        module_namespace = 'migrations.{}'.format(migration_file.getBase_noext())
+        module_namespace = 'migrations.{0}'.format(migration_file.getBase_noext())
         module =__import__(module_namespace, globals(), locals(), ['migrations'])
         migration_class_name = module.MIGRATION_CLASS_NAME
         migration_class = getattr(module, migration_class_name)
         migration = migration_class()
-        migration.execute(CURRENT_ADDON_DIR, PLUGIN_DATA_DIR)
+        migration.execute(g_PATHS.ADDON_CODE_DIR, g_PATHS.ADDON_DATA_DIR)
 
         __addon_obj__.setSetting('migrated_version', version)
         i += 1
 
     if to_version is None:
         to_version = LooseVersion(__addon_version__)
-     
-    __addon_obj__.setSetting('migrated_version', str(to_version))
-    log_info("Finished migrating. Now set to version {}".format(to_version))
 
+    __addon__.setSetting('migrated_version', str(to_version))
     pDialog.update(100)
     pDialog.close()
+    log_info('Finished migrating. Now set to version {0}'.format(to_version))
 
 # Iterates through the migration files and selects those which
 # version number is higher/newer than the last run migration version.
 def m_select_applicable_migration_files(migration_files, last_migrated_to_version, to_version):
     applicable_migrations = {}
     for migration_file in migration_files:
-
         if migration_file.getBase_noext() == '__init__' or migration_file.getBase_noext() == 'main':
             continue
 
         file_name = migration_file.getBase_noext()
-        log_debug('Reading migration file {}'.format(file_name))
+        log_debug('Reading migration file {0}'.format(file_name))
         version_part = file_name.replace('migration_', '').replace('_', '.')
         migration_version = LooseVersion(version_part)
-    
+
         if migration_version > last_migrated_to_version and (to_version is None or migration_version <= to_version):
             applicable_migrations[version_part] = migration_file
-        
+
     applicable_migrations = OrderedDict(sorted(applicable_migrations.iteritems(), key=lambda (k,v): LooseVersion(k)))
 
     return applicable_migrations
