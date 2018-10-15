@@ -249,6 +249,7 @@ class Test_scrapertests(unittest.TestCase):
     @patch('resources.scrapers.net_download_img')
     @patch('resources.scrap_asset.net_get_URL_oneline')
     @patch('resources.scrap_common.net_get_URL_oneline')
+    @unittest.skip('GamesDB deprecated version')
     def test_when_scraping_online_assets_it_will_give_the_correct_result(self, mock_search, mock_singlehit, mock_imgdownload, mock_cache):
         
         # arrange
@@ -261,6 +262,7 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_asset_policy'] = 1
         settings['asset_scraper_mode'] = 0
         settings['metadata_scraper_mode'] = 0
+        settings['scan_ignore_scrap_title'] = 0
         
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
@@ -301,6 +303,7 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_asset_policy'] = 1
         settings['asset_scraper_mode'] = 0
         settings['metadata_scraper_mode'] = 0
+        settings['scan_ignore_scrap_title'] = 0
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
@@ -345,7 +348,8 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_asset_policy'] = 1
         settings['asset_scraper_mode'] = 0
         settings['metadata_scraper_mode'] = 0
-
+        settings['scan_ignore_scrap_title'] = 0
+        
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
         launcher.set_custom_attribute('path_title','/fake/title/')
