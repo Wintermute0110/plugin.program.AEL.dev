@@ -2,7 +2,7 @@
 # Advanced Emulator Launcher asset (artwork) related stuff
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 import os
 
 # --- AEL packages ---
@@ -66,14 +67,13 @@ ASSET_SETTING_KEYS[ASSET_CLEARLOGO] = 'scraper_clearlogo'
 ASSET_SETTING_KEYS[ASSET_CONTROLLER] = ''
 ASSET_SETTING_KEYS[ASSET_TRAILER] = ''
 ASSET_SETTING_KEYS[ASSET_TITLE] = 'scraper_title'
-ASSET_SETTING_KEYS[ASSET_SNAP] = 'scraper_snap'      
+ASSET_SETTING_KEYS[ASSET_SNAP] = 'scraper_snap'
 ASSET_SETTING_KEYS[ASSET_BOXFRONT] = 'scraper_boxfront'
 ASSET_SETTING_KEYS[ASSET_BOXBACK] = 'scraper_boxback'
 ASSET_SETTING_KEYS[ASSET_CARTRIDGE] = 'scraper_cart'
 ASSET_SETTING_KEYS[ASSET_FLYER] = ''
 ASSET_SETTING_KEYS[ASSET_MAP] = ''
 ASSET_SETTING_KEYS[ASSET_MANUAL] = ''
-    
 
 MAME_ASSET_SETTING_KEYS = {}
 MAME_ASSET_SETTING_KEYS[ASSET_ICON] = ''
@@ -345,23 +345,19 @@ def assets_get_ROM_mapped_asset_idx(dict_object, key):
     return index
 
 class AssetInfoFactory(object): 
-        
     __asset_infos = None
-    
+
     @staticmethod
     def create():
         return AssetInfoFactory()
-    
+
     # do not use. Use factory method .create()
     def __init__(self):
-
         if AssetInfoFactory.__asset_infos:
             return
-
         self.__load()
 
     def __load(self):
-
         a_icon = AssetInfo()
         a_icon.kind             = ASSET_ICON
         a_icon.key              = 's_icon'
@@ -580,7 +576,6 @@ class AssetInfoFactory(object):
 
 
     def get_asset_info(self, asset_kind):
-        
         asset_info = AssetInfoFactory.__asset_infos.get(asset_kind, None)
 
         if asset_info is None:
