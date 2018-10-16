@@ -5339,9 +5339,7 @@ class GameStreamServer(object):
 # OBSOLETE FILE
 # Will be removed soon.
 class RomSetFactory():
-    
     def __init__(self, pluginDataDir):
-
         self.ROMS_DIR                   = pluginDataDir.pjoin('db_ROMs')
         self.FAV_JSON_FILE_PATH         = pluginDataDir.pjoin('favourites.json')
         self.RECENT_PLAYED_FILE_PATH    = pluginDataDir.pjoin('history.json')
@@ -5426,7 +5424,6 @@ class RomSetFactory():
         return StandardRomSet(self.ROMS_DIR, launcher_data, description)
 
     def createDescription(self, categoryID):
-         
         if categoryID == VCATEGORY_FAVOURITES_ID:
             return RomSetDescription('Favourite', 'Browse favourites')
         elif categoryID == VCATEGORY_MOST_PLAYED_ID:
@@ -5450,7 +5447,6 @@ class RomSetFactory():
         elif categoryID == VCATEGORY_CATEGORY_ID:
             return RomSetDescription('Virtual Launcher Category', 'Browse by Category')
 
-        
        #if virtual_categoryID == VCATEGORY_TITLE_ID:
        #    vcategory_db_filename = VCAT_TITLE_FILE_PATH
        #    vcategory_name        = 'Browse by Title'
@@ -5479,7 +5475,6 @@ class RomSetFactory():
         return None
 
 class RomSetDescription():
-
     def __init__(self, title, description, isRegularLauncher = False):
         
         self.title = title
@@ -5489,13 +5484,13 @@ class RomSetDescription():
 
 class RomSet():
     __metaclass__ = ABCMeta
-    
+
     def __init__(self, romsDir, launcher, description):
         self.romsDir = romsDir
         self.launcher = launcher
         
         self.description = description
-        
+
     @abstractmethod
     def romSetFileExists(self):
         return False
@@ -5519,11 +5514,9 @@ class RomSet():
     @abstractmethod
     def clear(self):
         pass
-    
+
 class StandardRomSet(RomSet):
-    
     def __init__(self, romsDir, launcher, description):
-        
         self.roms_base_noext = launcher['roms_base_noext'] if launcher is not None and 'roms_base_noext' in launcher else None
         self.view_mode = launcher['launcher_display_mode'] if launcher is not None and 'launcher_display_mode' in launcher else None
 
@@ -5576,7 +5569,6 @@ class StandardRomSet(RomSet):
         return roms
 
     def loadRom(self, romId):
-        
         roms = self.loadRoms()
 
         if roms is None:
@@ -5599,16 +5591,13 @@ class StandardRomSet(RomSet):
         fs_unlink_ROMs_database(self.romsDir, self.launcher)
 
 class PcloneRomSet(StandardRomSet):
-
     def __init__(self, romsDir, launcher, description):
-
         super(PcloneRomSet, self).__init__(romsDir, launcher, description)
         
         self.roms_base_noext = launcher['roms_base_noext'] if launcher is not None and 'roms_base_noext' in launcher else None
         self.repositoryFile = self.romsDir.pjoin(self.roms_base_noext + '_index_PClone.json')
 
 class FavouritesRomSet(StandardRomSet):
-    
     def loadRoms(self):
         log_info('FavouritesRomSet() Loading ROMs in Favourites ...')
         roms = fs_load_Favourites_JSON(self.repositoryFile)
@@ -5619,9 +5608,7 @@ class FavouritesRomSet(StandardRomSet):
         fs_write_Favourites_JSON(self.repositoryFile, roms)
 
 class VirtualLauncherRomSet(StandardRomSet):
-    
     def __init__(self, romsDir, launcher, launcherID, description):
-
         self.launcherID = launcherID
         super(VirtualLauncherRomSet, self).__init__(romsDir, launcher, description)
 
@@ -5630,7 +5617,6 @@ class VirtualLauncherRomSet(StandardRomSet):
         return hashed_db_filename.exists()
 
     def loadRoms(self):
-
         if not self.romSetFileExists():
             log_warning('VirtualCategory "{0}" JSON not found.'.format(self.launcherID))
             return None
@@ -5644,26 +5630,24 @@ class VirtualLauncherRomSet(StandardRomSet):
         pass
 
 class RecentlyPlayedRomSet(RomSet):
-    
     def romSetFileExists(self):
         return self.romsDir.exists()
-    
+
     def loadRoms(self):
         log_info('RecentlyPlayedRomSet() Loading ROMs in Recently Played ROMs ...')
         romsList = self.loadRomsAsList()
-        
+
         roms = OrderedDict()
         for rom in romsList:
             roms[rom['id']] = rom
             
         return roms
-    
+
     def loadRomsAsList(self):
         roms = fs_load_Collection_ROMs_JSON(self.romsDir)
         return roms
 
     def loadRom(self, romId):
-        
         roms = self.loadRomsAsList()
 
         if roms is None:
@@ -5686,14 +5670,12 @@ class RecentlyPlayedRomSet(RomSet):
     def saveRoms(self, roms):
         fs_write_Collection_ROMs_JSON(self.romsDir, roms)
         pass
-    
+
     def clear(self):
         pass
 
 class CollectionRomSet(RomSet):
-    
     def __init__(self, romsDir, launcher, collection_dir, launcherID, description):
-
         self.collection_dir = collection_dir
         self.launcherID = launcherID
         super(CollectionRomSet, self).__init__(romsDir, launcher, description)
@@ -5704,7 +5686,7 @@ class CollectionRomSet(RomSet):
 
         roms_json_file = self.romsDir.pjoin(collection['roms_base_noext'] + '.json')
         return roms_json_file.exists()
-    
+
     def loadRomsAsList(self):
         (collections, update_timestamp) = fs_load_Collection_index_XML(self.romsDir)
         collection = collections[self.launcherID]
@@ -5725,9 +5707,8 @@ class CollectionRomSet(RomSet):
             roms[rom['id']] = rom
             
         return roms
-    
+
     def loadRom(self, romId):
-        
         roms = self.loadRomsAsList()
 
         if roms is None:
@@ -5748,7 +5729,6 @@ class CollectionRomSet(RomSet):
         return romData
 
     def saveRoms(self, roms):
-        
         # >> Convert back the OrderedDict into a list and save Collection
         collection_rom_list = []
         for key in roms:

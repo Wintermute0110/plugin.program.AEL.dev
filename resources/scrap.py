@@ -183,12 +183,11 @@ scrapers_flyer_MAME     = [ NULL_obj,                                           
 # #################################################################################################
 
 def getScraper(asset_kind, settings, useMame = False):
-
     if useMame:
         return getMameScraper(asset_kind, settings)
 
     key = ASSET_SETTING_KEYS[asset_kind]
-        
+
     if key == '':
         return None
 
@@ -200,25 +199,25 @@ def getScraper(asset_kind, settings, useMame = False):
 
     if asset_kind == ASSET_TITLE:
         return scrapers_title[scraper_index]
-        
+
     if asset_kind == ASSET_SNAP:
         return scrapers_snap[scraper_index]
-    
+
     if asset_kind == ASSET_BOXFRONT:
         return scrapers_boxfront[scraper_index]
-    
+
     if asset_kind == ASSET_BOXBACK:
         return scrapers_boxback[scraper_index]
-    
+
     if asset_kind == ASSET_CARTRIDGE:
         return scrapers_cartridge[scraper_index]
-    
+
     if asset_kind == ASSET_FANART:
         return scrapers_fanart[scraper_index]
-        
+
     if asset_kind == ASSET_BANNER:
         return scrapers_banner[scraper_index]
-    
+
     if asset_kind == ASSET_CLEARLOGO:
         return scrapers_clearlogo[scraper_index]
 
@@ -228,44 +227,43 @@ def getScraper(asset_kind, settings, useMame = False):
     # >> Manual (not supported yet, use a null scraper)
     # >> Trailer (not supported yet, use a null scraper)
     return NULL_obj
- 
+
 def getMameScraper(asset_kind, settings):
-    
     key = MAME_ASSET_SETTING_KEYS[asset_kind]
-    
+
     if key == '':
         return None
-    
+
     if key not in settings:
         log_warning("Scraper with key {} not set in settings".format(key))
         return None
 
     scraper_index = settings[key]
-    
+
     if asset_kind == ASSET_TITLE:
         return scrapers_title_MAME[scraper_index]
-        
+
     if asset_kind == ASSET_SNAP:
         return scrapers_snap_MAME[scraper_index]
-    
+
     if asset_kind == ASSET_BOXFRONT:
         return scrapers_cabinet_MAME[scraper_index]
-    
+
     if asset_kind == ASSET_BOXBACK:
         return scrapers_cpanel_MAME[scraper_index]
-    
+
     if asset_kind == ASSET_CARTRIDGE:
         return scrapers_pcb_MAME[scraper_index]
-    
+
     if asset_kind == ASSET_FANART:
         return scrapers_fanart_MAME[scraper_index]
-        
+
     if asset_kind == ASSET_BANNER:
         return scrapers_marquee_MAME[scraper_index]
-    
+
     if asset_kind == ASSET_CLEARLOGO:
         return scrapers_clearlogo_MAME[scraper_index]
-        
+
     if asset_kind == ASSET_FLYER:
         return scrapers_flyer_MAME[scraper_index]
 
@@ -275,21 +273,17 @@ def getMameScraper(asset_kind, settings):
     return NULL_obj
 
 class ScraperFactory(ProgressDialogStrategy):
-    
     def __init__(self, settings, addon_dir):
-
         self.settings = settings
         self.addon_dir = addon_dir
 
         super(ScraperFactory, self).__init__()
-        
+
     def create(self, launcher):
-        
         scan_metadata_policy    = self.settings['scan_metadata_policy']
         scan_asset_policy       = self.settings['scan_asset_policy']
 
         scrapers = []
-
 
         metadata_scraper = self._get_metadata_scraper(scan_metadata_policy, launcher)
         scrapers.append(metadata_scraper)
@@ -298,7 +292,7 @@ class ScraperFactory(ProgressDialogStrategy):
             return None
 
         self._startProgressPhase('Advanced Emulator Launcher', 'Preparing scrapers ...')
-        
+
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         unconfigured_name_list = []
@@ -323,17 +317,16 @@ class ScraperFactory(ProgressDialogStrategy):
             i += 1
 
         self._endProgressPhase()
-        
+
         if unconfigured_name_list:
             unconfigured_asset_srt = ', '.join(unconfigured_name_list)
             kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
                            'Asset scanner will be disabled for this/those.')
         return scrapers
-     
+
     # ~~~ Ensure there is no duplicate asset dirs ~~~
     # >> Abort scanning of assets if duplicates found
     def _hasDuplicateArtworkDirs(self, launcher):
-        
         log_info('Checking for duplicated artwork directories ...')
         duplicated_name_list = launcher.get_duplicated_asset_dirs()
 
@@ -343,14 +336,13 @@ class ScraperFactory(ProgressDialogStrategy):
             kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
                            'Change asset directories before continuing.')
             return True
-        
+
         log_info('No duplicated asset dirs found')
-        return False        
+        return False
 
     # >> Determine metadata action based on configured metadata policy
-    # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"    
+    # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
     def _get_metadata_scraper(self, scan_metadata_policy, launcher):
-
         cleanTitleScraper = CleanTitleScraper(self.settings, launcher)
 
         if scan_metadata_policy == 0:
@@ -400,10 +392,9 @@ class ScraperFactory(ProgressDialogStrategy):
         return cleanTitleScraper
 
     def _get_asset_scraper(self, scan_asset_policy, asset_kind, asset_info, launcher):
-                
         # >> Scrapers for MAME platform are different than rest of the platforms
         scraper_implementation = getScraper(asset_kind, self.settings, launcher.get_platform() == 'MAME')
-        
+
         # --- If scraper does not support particular asset return inmediately ---
         if scraper_implementation and not scraper_implementation.supports_asset(asset_kind):
             log_debug('ScraperFactory._get_asset_scraper() Scraper {0} does not support asset {1}. '
@@ -438,9 +429,7 @@ class ScraperFactory(ProgressDialogStrategy):
         return NullScraper()
 
 class ScraperSettings(object):
-    
     def __init__(self, metadata_scraping_mode=1, asset_scraping_mode=1, ignore_scraped_title=False, scan_clean_tags=True):
-        
         # --- Set scraping mode ---
         # values="Semi-automatic|Automatic"
         self.metadata_scraping_mode  = metadata_scraping_mode
@@ -450,7 +439,6 @@ class ScraperSettings(object):
 
     @staticmethod
     def create_from_settings(settings):
-        
         return ScraperSettings(
             settings['metadata_scraper_mode'] if 'metadata_scraper_mode' in settings else 1,
             settings['asset_scraper_mode'] if 'asset_scraper_mode' in settings else 1,
@@ -458,27 +446,24 @@ class ScraperSettings(object):
             settings['scan_clean_tags'] if 'scan_clean_tags' in settings else True)
 
 class ScrapeResult(object):
-
     metada_scraped  = False
     assets_scraped  = []
 
 class Scraper():
     __metaclass__ = ABCMeta
-    
+
     def __init__(self, scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
-        
         self.cache = {}
-        
+
         self.scraper_settings = scraper_settings
         self.launcher = launcher
-                
+
         self.scrape_metadata = scrape_metadata
         self.assets_to_scrape = assets_to_scrape
-        
+
         self.fallbackScraper = fallbackScraper
 
     def scrape(self, search_term, romPath, rom):
-                
         results = self._getCandidates(search_term, romPath, rom)
         log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(results)))
 
@@ -517,7 +502,7 @@ class Scraper():
             scraper_applied = self.fallbackScraper.scrape(search_term, romPath, rom)
         
         return scraper_applied
-    
+
     @abstractmethod
     def getName(self):
         return ''
@@ -527,14 +512,11 @@ class Scraper():
     @abstractmethod
     def _getCandidates(self, search_term, romPath, rom):
         return []
-    
+
     def _loadCandidate(self, candidate, romPath, rom):
-        
         self.gamedata = self._new_gamedata_dic()
-        
         if self.scrape_metadata:
             self._load_metadata(candidate, romPath, rom)
-
         if self.assets_to_scrape is not None and len(self.assets_to_scrape) > 0:
             self._load_assets(candidate, romPath, rom)
 
@@ -545,9 +527,8 @@ class Scraper():
     @abstractmethod
     def _load_assets(self, candidate, romPath, rom):        
         pass
-        
+
     def _applyCandidate(self, romPath, rom):
-        
         if not self.gamedata:
             log_verb('Scraper did not get the correct data.')
             return False
@@ -658,7 +639,6 @@ class Scraper():
         return True
 
     def _get_from_cache(self, search_term):
-
         if search_term in self.cache:
             return self.cache[search_term]
         
@@ -694,10 +674,9 @@ class Scraper():
         return assetdata
 
 class NullScraper(Scraper):
-
     def __init__(self):
         super(NullScraper, self).__init__(None, None, False, None)
-        
+
     def scrape(self, search_term, romPath, rom):
         return True
 
@@ -709,14 +688,12 @@ class NullScraper(Scraper):
 
     def _load_metadata(self, candidate, romPath, rom):        
         pass
-    
+
     def _load_assets(self, candidate, romPath, rom):
         pass
 
 class CleanTitleScraper(Scraper):
-
     def __init__(self, settings, launcher):
-        
         scraper_settings = ScraperSettings.create_from_settings(settings)
         scraper_settings.metadata_scraping_mode = 1
         scraper_settings.ignore_scraped_title = False
@@ -741,11 +718,9 @@ class CleanTitleScraper(Scraper):
 
     def _load_assets(self, candidate, romPath, rom):
         pass
-    
+
 class NfoScraper(Scraper):
-    
     def __init__(self, settings, launcher, fallbackScraper = None):
-                
         scraper_settings = ScraperSettings.create_from_settings(settings)
         scraper_settings.metadata_scraping_mode = 1
 
@@ -755,7 +730,6 @@ class NfoScraper(Scraper):
         return 'NFO scraper'
 
     def _getCandidates(self, search_term, romPath, rom):
-
         NFO_file = romPath.switchExtension('nfo')
         games = []
 
@@ -768,7 +742,6 @@ class NfoScraper(Scraper):
         return games
 
     def _load_metadata(self, candidate, romPath, rom):        
-        
         log_debug('Reading NFO file')
         # NOTE <platform> is chosen by AEL, never read from NFO files. Indeed, platform
         #      is a Launcher property, not a ROM property.
@@ -776,31 +749,28 @@ class NfoScraper(Scraper):
 
     def _load_assets(self, candidate, romPath, rom):
         pass
-    
+
 # -------------------------------------------------- #
 # Needs to be divided into separate classes for each actual scraper.
 # Could only inherit OnlineScraper and implement _getCandidates()
 # and _getCandidate()
 # -------------------------------------------------- #
 class OnlineMetadataScraper(Scraper):
-    
     def __init__(self, scraper_implementation, settings, launcher, fallbackScraper = None): 
-        
         self.scraper_implementation = scraper_implementation 
         scraper_settings = ScraperSettings.create_from_settings(settings)
 
         super(OnlineMetadataScraper, self).__init__(scraper_settings, launcher, True, [], fallbackScraper)
-        
+
     def getName(self):
         return 'Online Metadata scraper using {0}'.format(self.scraper_implementation.name)
 
     def _getCandidates(self, search_term, romPath, rom):
-        
         platform = self.launcher.get_platform()
         results = self.scraper_implementation.get_search(search_term, romPath.getBase_noext(), platform)
 
         return results
-    
+
     def _load_metadata(self, candidate, romPath, rom):
         self.gamedata = self.scraper_implementation.get_metadata(candidate)
 
@@ -808,9 +778,7 @@ class OnlineMetadataScraper(Scraper):
         pass
 
 class LocalAssetScraper(Scraper):
-    
     def __init__(self, asset_kind, asset_info, settings, launcher, fallbackScraper = None): 
-                
         # --- Create a cache of assets ---
         # >> misc_add_file_cache() creates a set with all files in a given directory.
         # >> That set is stored in a function internal cache associated with the path.
@@ -864,11 +832,9 @@ class LocalAssetScraper(Scraper):
         self.gamedata['assets'].append(asset_data)
 
 class OnlineAssetScraper(Scraper):
-    
     scrap_asset_cached_dic = None
 
     def __init__(self, scraper_implementation, asset_kind, asset_info, settings, launcher, fallbackScraper = None): 
-
         self.scraper_implementation = scraper_implementation
 
         # >> id(object)
@@ -880,8 +846,7 @@ class OnlineAssetScraper(Scraper):
         self.asset_info = asset_info
 
         self.asset_directory = launcher.get_asset_path(asset_info)
-        
-        
+
         # --- Initialise cache used in OnlineAssetScraper() as a static variable ---
         # >> This cache is used to store the selected game from the get_search() returned list.
         # >> The idea is that get_search() is used only once for each asset.
@@ -890,7 +855,7 @@ class OnlineAssetScraper(Scraper):
         
         scraper_settings = ScraperSettings.create_from_settings(settings)
         super(OnlineAssetScraper, self).__init__(scraper_settings, launcher, False, [asset_info], fallbackScraper)
-    
+
     def getName(self):
         return 'Online assets scraper for \'{0}\' ({1})'.format(self.asset_info.name, self.scraper_implementation.name)
 
@@ -920,8 +885,7 @@ class OnlineAssetScraper(Scraper):
         return search_results
 
     def _loadCandidate(self, candidate, romPath):
-        
-         # --- Cache selected game from get_search() ---
+        # --- Cache selected game from get_search() ---
         OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id] = {
             'ROM_base_noext' : romPath.getBase_noext(),
             'platform' : self.launcher.get_platform(),
@@ -930,14 +894,13 @@ class OnlineAssetScraper(Scraper):
 
         log_error('_loadCandidate() Caching selected game "{0}"'.format(candidate['display_name']))
         log_error('_loadCandidate() Scraper object ID {0} (name {1})'.format(self.scraper_id, self.scraper_implementation.name))
-        
+
         self.selected_game = OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['game_dic']
-        
+
     def _load_metadata(self, candidate, romPath, rom):
         pass
 
     def _load_assets(self, candidate, romPath, rom):
-        
         asset_file = candidate['file']
         asset_data = self._new_assetdata_dic()
         asset_data['name'] = asset_file.getBase()
