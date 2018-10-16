@@ -20,7 +20,6 @@ import os
 
 # --- AEL packages ---
 from utils import *
-from utils_kodi import *
 
 # --- Define "constants" ---
 ASSET_ICON       = 100

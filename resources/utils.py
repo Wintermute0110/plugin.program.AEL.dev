@@ -44,11 +44,10 @@ import re
 import string
 import fnmatch
 import HTMLParser
+from abc import ABCMeta, abstractmethod 
 
 # --- AEL modules ---
 from constants import *
-from filename import *
-from utils_kodi import *
 
 # #################################################################################################
 # #################################################################################################
@@ -785,7 +784,6 @@ class AESCipher(object):
 # Can either create a FileName base on xmbcvfs or just normal os operations.
 # -------------------------------------------------------------------------------------------------
 class FileNameFactory():
-
     @staticmethod
     def create(pathString, no_xbmcvfs = False):
 
@@ -1552,9 +1550,9 @@ def kodi_refresh_container():
     xbmc.executebuiltin('Container.Refresh')
 
 def kodi_toogle_fullscreen():
-    json_str = '{"jsonrpc" : "2.0", "id" : "1",'
-               ' "method" : "Input.ExecuteAction",'
-               ' "params" : {"action" : "togglefullscreen"}}'
+    json_str = ('{"jsonrpc" : "2.0", "id" : "1",'
+                '"method" : "Input.ExecuteAction",'
+                '"params" : {"action" : "togglefullscreen"}}')
 
     xbmc.executeJSONRPC(json_str)
 
@@ -1840,7 +1838,7 @@ class KodiProgressDialogStrategy(object):
 # If runnining with Kodi Python interpreter use Kodi proper functions.
 # If running with the standard Python interpreter use replacement functions.
 # -------------------------------------------------------------------------------------------------
-if KODI_RUNTIME_AVAILABLE_UTILS_KODI:
+if UTILS_KODI_RUNTIME_AVAILABLE:
     log_debug   = log_debug_KR
     log_verb    = log_verb_KR
     log_info    = log_info_KR

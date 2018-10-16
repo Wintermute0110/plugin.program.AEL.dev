@@ -3,7 +3,7 @@
 # Advanced Emulator Launcher platform constants
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 
 # -------------------------------------------------------------------------------------------------
 # A universal AEL error reporting exception
@@ -26,7 +27,7 @@ from __future__ import unicode_literals
 # >> Top-level GUI code looks like this
 # try:
 #     autoconfig_export_category(category, export_FN)
-# except AEL_Error as E:
+# except Addon_Error as E:
 #     kodi_notify_warn('{0}'.format(E))
 # else:
 #     kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
@@ -40,7 +41,7 @@ from __future__ import unicode_literals
 #         # >> Message to be printed in the GUI
 #         raise AEL_Error('Error writing file (OSError)')
 #
-class AEL_Error(Exception):
+class Addon_Error(Exception):
     def __init__(self, err_str):
         self.err_str = err_str
 

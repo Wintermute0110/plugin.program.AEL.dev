@@ -3,7 +3,7 @@
 # Advanced Emulator Launcher network IO module
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,13 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, random, urllib2, json, httplib, ssl
+from __future__ import division
+import sys
+import random
+import urllib2
+import json
+import httplib
+import ssl
 import xml.etree.ElementTree as ET
 
 # --- AEL packages ---

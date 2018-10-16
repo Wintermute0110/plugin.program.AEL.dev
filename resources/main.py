@@ -49,28 +49,19 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- Modules/packages in this addon ---
 # Addon module dependencies:
-#                        scrap_*     
+#                        scrap_*
 #                        net_IO      platforms     constants
 #   main <-- objects <-- disk_IO <-- assets    <-- utils
 #
 from constants import *
 from utils import *
-
 from assets import *
+from audit import *
 from autoconfig import *
 from disk_IO import *
-from scrap import *
-from rom_audit import *
 from net_IO import *
-from rom_audit import *
-from scrap import *
-
 from objects import *
-
-from launchers import *
-from executors import *
-
-from scrapers import *
+from scrap import *
 
 # --- Addon object (used to access settings) ---
 __addon__         = xbmcaddon.Addon()
