@@ -44,6 +44,7 @@ import re
 import string
 import fnmatch
 import HTMLParser
+import json
 # NOTE binascii must not be used! See https://docs.python.org/2/library/binascii.html
 import binascii
 import base64
@@ -52,6 +53,7 @@ import base64
 from abc import ABCMeta
 from abc import abstractmethod
 import xml.etree.ElementTree as ET
+
 
 # NOTE OpenSSL library will be included in Kodi M****
 #      Search documentation about this in Garbear's github repo.

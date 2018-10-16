@@ -1099,13 +1099,13 @@ def m_command_add_new_launcher(categoryID):
 
     # >> If this point is reached then changes to metadata/images were made.
     # >> Save categories and update container contents so user sees those changes inmediately.
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
 
     kodi_refresh_container()
 
 def m_command_edit_launcher(categoryID, launcherID):
 
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     if launcher is None:
         return
     
@@ -1150,7 +1150,7 @@ def m_command_edit_rom(categoryID, launcherID, romID):
         return
 
     category = self.category_repository.find(categoryID)
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
 
     # --- Load ROMs ---
     rom = launcher.select_rom(romID)
@@ -1207,7 +1207,7 @@ def m_subcommand_edit_launcher_category(self, launcher):
     log_debug('_command_edit_launcher() new     category name "{0}"'.format(categories_name[selected_cat]))
 
     # >> Save cateogries/launchers
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
 
     # >> Display new category where launcher has moved
     # For some reason ReplaceWindow() does not work, bu Container.Update() does.
@@ -1475,7 +1475,7 @@ def m_subcommand_export_category(category):
 def m_subcommand_delete_category(self, category):
     categoryID      = category.get_id()
     category_name   = category.get_name()
-    launchers       = self.launcher_repository.find_by_category(categoryID)
+    launchers       = g_launcherRepository.find_by_category(categoryID)
 
     if len(launchers) > 0:
         ret = kodi_dialog_yesno('Category "{0}" contains {1} launchers. '.format(category_name, len(launchers)) +
@@ -1489,7 +1489,7 @@ def m_subcommand_delete_category(self, category):
             if launcher.supports_launching_roms():
                 launcher.clear_roms()
 
-            self.launcher_repository.delete(launcher)
+            g_launcherRepository.delete(launcher)
 
         # >> Delete category from database.
         self.category_repository.delete(category)
@@ -1538,7 +1538,7 @@ def m_subcommand_edit_launcher_assets(self, launcher):
     # >> If this function returns False no changes were made. No need to save categories
     # >> XML and update container.
     if self._gui_edit_asset(KIND_LAUNCHER, selected_asset_kind.kind, launcher.get_data()): 
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
     return self._subcommand_edit_launcher_assets(launcher)
 
@@ -1599,7 +1599,7 @@ def m_subcommand_set_launcher_default_assets(self, launcher):
     new_selected_kind = assets.keys()[new_selected_kind_index]            
     launcher.set_default_asset(selected_kind, new_selected_kind)
         
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Launcher {0} mapped to {1}'.format(selected_kind.name, new_selected_kind.name))
     
     return self._subcommand_set_launcher_default_assets(launcher)
@@ -1607,7 +1607,7 @@ def m_subcommand_set_launcher_default_assets(self, launcher):
 # --- Launcher status (finished [bool]) ---
 def m_subcommand_change_launcher_status(launcher):
     launcher.change_finished_status()
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_refresh_container()
     kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(launcher.get_name(), launcher.get_state()))
     return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
@@ -1637,21 +1637,21 @@ def m_subcommand_edit_launcher_metadata(launcher):
 def m_subcommand_edit_launcher_platform(launcher):
     changed = self._list_edit_launcher_metadata('Platform', AEL_platform_list, 'Unknown', launcher.get_platform, launcher.update_platform)
     if changed:
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
 # --- Edition of the launcher release date (year) ---
 def m_subcommand_edit_launcher_releaseyear(launcher):
     if self._text_edit_launcher_metadata('release year', launcher.get_releaseyear, launcher.update_releaseyear):
-        self.launcher_repository.save(launcher)   
+        g_launcherRepository.save(launcher)   
 
 # --- Edition of the launcher genre ---
 def m_subcommand_edit_launcher_genre(launcher):
     if self._text_edit_launcher_metadata('genre', launcher.get_genre, launcher.update_genre):
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
 def m_subcommand_edit_launcher_developer(launcher):
     if self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer):
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
 def m_subcommand_edit_launcher_rating(self, launcher):
     options =  {}
@@ -1669,12 +1669,12 @@ def m_subcommand_edit_launcher_rating(self, launcher):
     options[10] = 'Rating 10'
 
     if self._list_edit_launcher_metadata('Rating', options, -1, launcher.get_rating, launcher.update_rating):
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
 # --- Edit launcher description (plot) ---
 def m_subcommand_edit_launcher_plot(launcher):
     if self._text_edit_launcher_metadata('Plot', launcher.get_plot, launcher.update_plot):
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
 # --- Import launcher metadata from NFO file (default location) ---
 def m_subcommand_import_launcher_nfo_file(launcher):
@@ -1683,7 +1683,7 @@ def m_subcommand_import_launcher_nfo_file(launcher):
     # >> Returns True if changes were made
     NFO_file = fs_get_launcher_NFO_name(g_settings, launcher.get_data())
     if launcher.import_nfo_file(NFO_file):
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
         kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
 
 # --- Browse for NFO file ---
@@ -1700,7 +1700,7 @@ def m_subcommand_browse_import_launcher_nfo_file(launcher):
     # >> Launcher is edited using Python passing by assigment
     # >> Returns True if changes were made
     if launcher.import_nfo_file(NFO_FileName):
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
         kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
     return
@@ -1725,7 +1725,7 @@ def m_subcommand_scrape_launcher(launcher, selected_option):
     
     # >> If this returns False there were no changes so no need to save categories.xml
     if self._gui_scrap_launcher_metadata(launcher.get_id(), scraper_obj): 
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
     return
 
@@ -1785,7 +1785,7 @@ def m_subcommand_change_display_mode(launcher):
         kodi_dialog_OK('No-Intro DAT not configured or cannot be found. PClone or 1G1R view mode cannot be set.')
         return
             
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Launcher view mode set to {0}'.format(selected_mode))
     return
 
@@ -1813,7 +1813,7 @@ def m_subcommand_delete_no_intro(launcher):
     launcher.update_rom_set(roms)
 
     launcher.set_number_of_roms(len(roms))
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Removed No-Intro/Redump XML DAT file')
     return
 
@@ -1847,7 +1847,7 @@ def m_subcommand_add_no_intro(launcher):
         kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
         
     launcher.set_number_of_roms(len(roms))
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     return
 
 # --- Create Parent/Clone DAT based on ROM filenames ---
@@ -1887,7 +1887,7 @@ def m_subcommand_change_display_roms(launcher):
         return
 
     launcher.change_nointro_display_mode(selected_mode)
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Display ROMs changed to "{0}"'.format(selected_mode))       
     return
 
@@ -1918,7 +1918,7 @@ def m_subcommand_update_rom_audit(launcher):
         return
        
     launcher.set_number_of_roms(len(roms))
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     return
 
 # --- Launcher Advanced Modifications menu option ---
@@ -1946,7 +1946,7 @@ def m_subcommand_advanced_modifications(launcher):
 def m_subcommand_change_launcher_application(launcher):
 
     if launcher.change_application():
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
         kodi_notify('Changed launcher application')
         
     return
@@ -1963,7 +1963,7 @@ def m_subcommand_modify_launcher_arguments(launcher):
         
     launcher.change_arguments(altered_args)
 
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Changed launcher arguments')
 
 # --- Launcher Additional arguments. Command: ADDITIONAL_ARGS ---
@@ -1987,7 +1987,7 @@ def m_subcommand_change_launcher_additional_arguments(launcher):
         new_argument = keyboard.getText().decode('utf-8')
         launcher.add_additional_argument(new_argument)
             
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
         kodi_notify('Added additional arguments to launcher {0}'.format(launcher.get_name()))
         return
         
@@ -2008,7 +2008,7 @@ def m_subcommand_change_launcher_additional_arguments(launcher):
         altered_arg = keyboard.getText().decode('utf-8')
         launcher.set_additional_argument(selected_arg_idx, altered_arg)
             
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
         kodi_notify('Changed extra arguments in launcher {0}'.format(launcher.get_name()))
 
     elif edit_action == 1:
@@ -2016,7 +2016,7 @@ def m_subcommand_change_launcher_additional_arguments(launcher):
         if not ret: return
         launcher.remove_additional_argument(selected_arg_idx)
             
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
         kodi_notify('Removed argument from extra arguments in launcher {0}'.format(launcher.get_name()))
 
     return
@@ -2034,7 +2034,7 @@ def m_subcommand_change_launcher_rompath(launcher):
         return                
         
     launcher.change_rom_path(rom_path)
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
 
     kodi_notify('Changed ROM path')
     return
@@ -2054,7 +2054,7 @@ def m_subcommand_change_launcher_rom_extensions(launcher):
 
     launcher.change_rom_extensions(keyboard.getText().decode('utf-8'))
 
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Changed ROM extensions')
 
 # --- Minimise Kodi window flag. Command: TOGGLE_WINDOWED ---
@@ -2068,7 +2068,7 @@ def m_subcommand_toggle_windowed(launcher):
     is_windowed = launcher.set_windowed_mode(type3 > 0)
     minimise_str = 'ON' if is_windowed else 'OFF'
         
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Toggle Kodi into windowed mode {0}'.format(minimise_str))
 
 # --- Non-blocking launcher flag. Command: TOGGLE_NONBLOCKING ---_
@@ -2082,7 +2082,7 @@ def m_subcommand_toggle_nonblocking(launcher):
     is_non_blocking = launcher.set_non_blocking(type3 > 0)
     non_blocking_str = 'ON' if is_non_blocking else 'OFF'
 
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Launcher Non-blocking is now {0}'.format(non_blocking_str))
 
 # --- Multidisc ROM support (Only ROM launchers) Command: TOGGLE_MULTIDISC ---
@@ -2099,7 +2099,7 @@ def m_subcommand_toggle_multidisc(launcher):
     supports_multidisc = launcher.set_multidisc_support(type3 > 0)
     multidisc_str = 'ON' if supports_multidisc else 'OFF'
         
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_notify('Launcher Multidisc support is now {0}'.format(multidisc_str))
 
     return
@@ -2134,7 +2134,7 @@ def m_subcommand_change_launcher_category(launcher):
     log_debug('_command_edit_launcher() new     category name "{0}"'.format(categories_name[selected_cat]))
 
     # >> Save cateogries/launchers
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
 
     # >> Display new category where launcher has moved
     # For some reason ReplaceWindow() does not work, bu Container.Update() does.
@@ -2178,7 +2178,7 @@ def m_subcommand_change_launcher_name(launcher):
 
         launcher.update_roms_base(new_roms_base_noext)
 
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
     kodi_refresh_container()
     kodi_notify('Launcher Title is now {0}'.format(launcher.get_name()))
 
@@ -2207,7 +2207,7 @@ def m_subcommand_delete_launcher(launcher):
     if launcher.supports_launching_roms():
         launcher.delete_rom_set()
 
-    self.launcher_repository.delete(launcher)
+    g_launcherRepository.delete(launcher)
 
     kodi_refresh_container()
     kodi_notify('Deleted Launcher {0}'.format(launcher.get_name()))
@@ -2839,7 +2839,7 @@ def m_subcommand_set_roms_default_artwork(launcher):
         return
                     
     launcher.set_default_rom_asset(selected_asset, selected_mappable_asset)
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
 
     kodi_notify('ROMs {0} mapped to {1}'.format(selected_asset.name, selected_mappable_asset.name))
       
@@ -2877,7 +2877,7 @@ def m_subcommand_set_rom_asset_dirs(launcher):
         return
             
     launcher.set_asset_path(selected_asset, dir_path)
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
             
     # >> Check for duplicate paths and warn user.
     duplicated_name_list = launcher.get_duplicated_asset_dirs()
@@ -3192,7 +3192,7 @@ def m_subcommand_manage_favourite_rom(launcher, rom):
     # --- Choose another parent ROM ---
     if type2 == 0 or type2 == 1:
         # --- STEP 1: select new launcher ---
-        rom_launchers = self.launcher_repository.find_by_launcher_type(LAUNCHER_ROM)
+        rom_launchers = g_launcherRepository.find_by_launcher_type(LAUNCHER_ROM)
         # todo: should we support other rom launchers too?
 
         # >> Order alphabetically both lists
@@ -3272,7 +3272,7 @@ def m_subcommand_manage_favourite_rom(launcher, rom):
         # >> Check Favourite ROM is linked (parent ROM exists)
         fav_rom         = roms[romID]
         fav_launcher_id = fav_rom['launcherID']
-        fav_launcher = self.launcher_repository.find(fav_launcher_id)
+        fav_launcher = g_launcherRepository.find(fav_launcher_id)
 
         if fav_launcher is None:
             kodi_dialog_OK('Parent Launcher not found. '
@@ -3955,17 +3955,17 @@ def m_gui_render_category_most_played_row():
 # Virtual categories [Browse by ...]
 # ---------------------------------------------------------------------------------------------
 def m_gui_render_vcategories_root():
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-    self._misc_clear_AEL_Launcher_Content()
-    self._gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
-    self._gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
-    self._gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
-    self._gui_render_virtual_category_row(VCATEGORY_DEVELOPER_ID)
-    self._gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
-    self._gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
-    self._gui_render_virtual_category_row(VCATEGORY_RATING_ID)
-    self._gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+    m_misc_clear_AEL_Launcher_Content()
+    m_gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
+    m_gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
+    m_gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
+    m_gui_render_virtual_category_row(VCATEGORY_DEVELOPER_ID)
+    m_gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
+    m_gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
+    m_gui_render_virtual_category_row(VCATEGORY_RATING_ID)
+    m_gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 def m_gui_render_virtual_category_row(virtual_category_kind):
@@ -4049,12 +4049,12 @@ def m_gui_render_virtual_category_row(virtual_category_kind):
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_AEL_scraper_launchers():
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-    self._misc_clear_AEL_Launcher_Content()
+    m_misc_set_default_sorting_method()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+    m_misc_clear_AEL_Launcher_Content()
 
     # >> Open info dictionary
-    gamedb_info_dic = fs_load_JSON_file(GAMEDB_INFO_DIR, GAMEDB_JSON_BASE_NOEXT)
+    gamedb_info_dic = fs_load_JSON_file(g_PATHS.GAMEDB_INFO_DIR, g_PATHS.GAMEDB_JSON_BASE_NOEXT)
 
     # >> Loop the list of platforms and render a virtual launcher for each platform that
     # >> has a valid XML database.
@@ -4067,7 +4067,7 @@ def m_gui_render_AEL_scraper_launchers():
             continue
 
         db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-        self._gui_render_AEL_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
+        m_gui_render_AEL_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 def m_gui_render_AEL_scraper_launchers_row(platform, platform_info, db_suffix):
@@ -4098,12 +4098,12 @@ def m_gui_render_AEL_scraper_launchers_row(platform, platform_info, db_suffix):
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_LB_scraper_launchers():
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-    self._misc_clear_AEL_Launcher_Content()
+    m_misc_set_default_sorting_method()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+    m_misc_clear_AEL_Launcher_Content()
 
     # >> Open info dictionary
-    gamedb_info_dic = fs_load_JSON_file(LAUNCHBOX_INFO_DIR, LAUNCHBOX_JSON_BASE_NOEXT)
+    gamedb_info_dic = fs_load_JSON_file(g_PATHS.LAUNCHBOX_INFO_DIR, g_PATHS.LAUNCHBOX_JSON_BASE_NOEXT)
 
     # >> Loop the list of platforms and render a virtual launcher for each platform that
     # >> has a valid XML database.
@@ -4116,7 +4116,7 @@ def m_gui_render_LB_scraper_launchers():
             continue
 
         db_suffix = platform_AEL_to_LB_XML[platform]
-        self._gui_render_LB_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
+        m_gui_render_LB_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 def m_gui_render_LB_scraper_launchers_row(platform, platform_info, db_suffix):
@@ -4130,13 +4130,13 @@ def m_gui_render_LB_scraper_launchers_row(platform, platform_info, db_suffix):
     vlauncher_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_icon.png').getPath()
     vlauncher_fanart = g_PATHS.FANART_FILE_PATH.getPath()
     vlauncher_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_poster.png').getPath()
-    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     listitem = xbmcgui.ListItem(title_str)
     listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
     listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
     # >> Set platform property to render platform icon on skins.
     listitem.setProperty('platform', platform)
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     commands = []
     commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
@@ -4154,12 +4154,12 @@ def m_gui_render_LB_scraper_launchers_row(platform, platform_info, db_suffix):
 #
 def m_command_render_launchers(categoryID):
     # >> Set content type
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-    self._misc_clear_AEL_Launcher_Content()
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+    m_misc_clear_AEL_Launcher_Content()
 
     category = self.category_repository.find(categoryID)
-    launchers = self.launcher_repository.find_by_category(categoryID)
+    launchers = g_launcherRepository.find_by_category(categoryID)
 
     # --- If the category has no launchers then render nothing ---
     if not launchers or len(launchers) == 0:
@@ -4196,7 +4196,7 @@ def m_command_render_launchers(categoryID):
 # This function is called by skins to create shortcuts.
 #
 def m_command_render_all_launchers():
-    launchers = self.launcher_repository.find_all()
+    launchers = g_launcherRepository.find_all()
 
     # >> If no launchers render nothing
     if not launchers or len(launchers) == 0:
@@ -4348,10 +4348,10 @@ def m_gui_render_launcher_row(launcher):
 #
 def m_command_render_clone_roms(categoryID, launcherID, romID):
     # --- Set content type and sorting methods ---
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-    self._misc_clear_AEL_Launcher_Content()
-    selectedLauncher = self.launcher_repository.find(launcherID)
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_clear_AEL_Launcher_Content()
+    selectedLauncher = g_launcherRepository.find(launcherID)
 
     # --- Check for errors ---
     if selectedLauncher is None:
@@ -4422,7 +4422,7 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
 
     # --- Render ROMs ---
     view_mode       = selectedLauncher.get_display_mode()
-    fav_launcher    = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher    = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
     roms_fav_set    = set(fav_launcher.get_rom_ids())
 
     for rom in sorted(roms, key = lambda r : r.get_name()):
@@ -4433,7 +4433,7 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
 # Renders the ROMs listbox for a given standard launcher or the Parent ROMs of a PClone launcher.
 #
 def m_command_render_roms(categoryID, launcherID):
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     
     # --- Check for errors ---
     if launcher is None:
@@ -4447,8 +4447,8 @@ def m_command_render_roms(categoryID, launcherID):
         return
 
     # --- Set content type and sorting methods ---
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
     self._misc_set_AEL_Launcher_Content(selectedLauncher)
 
     # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
@@ -4477,7 +4477,7 @@ def m_command_render_roms(categoryID, launcherID):
     # --- Load favourites ---
     # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
     #    when checking if an element exists.
-    fav_launcher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
     fav_roms = fav_launcher.get_roms()
     fav_rom_ids = set(f.get_id() for f in fav_roms)
 
@@ -4621,7 +4621,7 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
     # --- Standard launcher ---
     else:
         # >> If ROM has no fanart then use launcher fanart
-        launcher = self.launcher_repository.find(launcherID)
+        launcher = g_launcherRepository.find(launcherID)
         launcher_data  = launcher.get_data()
 
         kodi_def_icon = launcher_data['s_icon'] if launcher_data['s_icon'] else 'DefaultProgram.png'
@@ -4844,12 +4844,12 @@ def m_gui_render_LB_scraper_rom_row(platform, game):
 #
 def m_command_render_favourites():
     # >> Content type and sorting method
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-    self._misc_clear_AEL_Launcher_Content()
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_clear_AEL_Launcher_Content()
 
     # --- Load Favourite ROMs ---
-    favourites_launcher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+    favourites_launcher = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
     roms = favourites_launcher.get_roms()
     #roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
     if not roms or len(roms) == 0:
@@ -4874,33 +4874,33 @@ def m_command_render_virtual_category(virtual_categoryID):
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_SIZE)
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-    self._misc_clear_AEL_Launcher_Content()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+    m_misc_clear_AEL_Launcher_Content()
 
     # --- Load virtual launchers in this category ---
     if virtual_categoryID == VCATEGORY_TITLE_ID:
-        vcategory_db_filename = VCAT_TITLE_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_TITLE_FILE_PATH
         vcategory_name        = 'Browse by Title'
     elif virtual_categoryID == VCATEGORY_YEARS_ID:
-        vcategory_db_filename = VCAT_YEARS_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_YEARS_FILE_PATH
         vcategory_name        = 'Browse by Year'
     elif virtual_categoryID == VCATEGORY_GENRE_ID:
-        vcategory_db_filename = VCAT_GENRE_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_GENRE_FILE_PATH
         vcategory_name        = 'Browse by Genre'
     elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
-        vcategory_db_filename = VCAT_DEVELOPER_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_DEVELOPER_FILE_PATH
         vcategory_name        = 'Browse by Developer'
     elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
-        vcategory_db_filename = VCAT_NPLAYERS_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_NPLAYERS_FILE_PATH
         vcategory_name        = 'Browse by Number of Players'
     elif virtual_categoryID == VCATEGORY_ESRB_ID:
-        vcategory_db_filename = VCAT_ESRB_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_ESRB_FILE_PATH
         vcategory_name        = 'Browse by ESRB Rating'
     elif virtual_categoryID == VCATEGORY_RATING_ID:
-        vcategory_db_filename = VCAT_RATING_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_RATING_FILE_PATH
         vcategory_name        = 'Browse by User Rating'
     elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
-        vcategory_db_filename = VCAT_CATEGORY_FILE_PATH
+        vcategory_db_filename = g_PATHS.VCAT_CATEGORY_FILE_PATH
         vcategory_name        = 'Browse by Category'
     else:
         log_error('_command_render_virtual_category() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
@@ -4953,11 +4953,11 @@ def m_command_render_virtual_category(virtual_categoryID):
 def m_command_render_virtual_launcher_roms(virtual_categoryID, virtual_launcherID):
     log_error('_command_render_virtual_launcher_roms() Starting ...')
     # >> Content type and sorting method
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # --- Load virtual launchers in this category ---
-    vlauncher - self.launcher_repository.find(virtual_launcherID)
+    vlauncher - g_launcherRepository.find(virtual_launcherID)
     roms = vlauncher.get_roms()
 
     if not roms:
@@ -4967,7 +4967,7 @@ def m_command_render_virtual_launcher_roms(virtual_categoryID, virtual_launcherI
     # --- Load favourites ---
     # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
     #    when checking if an element exists.
-    favlauncher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+    favlauncher = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
     roms_fav = favlauncher.get_roms()
     roms_fav_set = set(favrom.get_id() for favrom in roms_fav)
 
@@ -4982,8 +4982,8 @@ def m_command_render_virtual_launcher_roms(virtual_categoryID, virtual_launcherI
 def m_command_render_AEL_scraper_roms(platform):
     log_debug('_command_render_AEL_scraper_roms() platform = "{0}"'.format(platform))
     # >> Content type and sorting method
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # >> If XML DB not available tell user and leave
     xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
@@ -5017,8 +5017,8 @@ def m_command_render_AEL_scraper_roms(platform):
 def m_command_render_LB_scraper_roms(platform):
     log_debug('_command_render_LB_scraper_roms() platform = "{0}"'.format(platform))
     # >> Content type and sorting method
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_set_all_sorting_methods()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # >> If XML DB not available tell user and leave
     xml_file = platform_AEL_to_LB_XML[platform]
@@ -5051,11 +5051,11 @@ def m_command_render_LB_scraper_roms(platform):
 #
 def m_command_render_recently_played():
     # >> Content type and sorting method
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_set_default_sorting_method()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-    recent_launcher = self.launcher_repository.find(VLAUNCHER_RECENT_ID)
+    recent_launcher = g_launcherRepository.find(VLAUNCHER_RECENT_ID)
     recent_roms = recent_launcher.get_roms()
     
     if not recent_roms or len(recent_roms) == 0:
@@ -5070,11 +5070,11 @@ def m_command_render_recently_played():
 
 def m_command_render_most_played():
     # >> Content type and sorting method
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_set_default_sorting_method()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # --- Load Most Played favourite ROMs ---
-    most_played_launcher = self.launcher_repository.find(VLAUNCHER_MOST_PLAYED_ID)
+    most_played_launcher = g_launcherRepository.find(VLAUNCHER_MOST_PLAYED_ID)
     roms = most_played_launcher.get_roms()
 
     if not roms or len(roms) == 0:
@@ -5097,7 +5097,7 @@ def m_command_render_all_ROMs():
     log_debug('_command_render_all_ROMs() Creating list of all ROMs in all Launchers')
     all_roms = {}
 
-    launchers = self.launcher_repository.find_all()
+    launchers = g_launcherRepository.find_all()
     for launcher in launchers:
 
         # If launcher is standalone skip
@@ -5115,12 +5115,12 @@ def m_command_render_all_ROMs():
         all_roms.update(temp_roms)
 
     # --- Load favourites ---
-    fav_launcher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
     roms_fav = fav_launcher.get_roms()
     roms_fav_set = set(rom_fav.get_id() for rom_fav in roms_fav)
 
     # --- Set content type and sorting methods ---
-    self._misc_set_default_sorting_method()
+    m_misc_set_default_sorting_method()
 
     # --- Render ROMs ---
     for rom_id in sorted(all_roms, key = lambda x : all_roms[x]['m_name']):
@@ -5132,9 +5132,8 @@ def m_command_render_all_ROMs():
 # Adds ROM to favourites
 #
 def m_command_add_to_favourites(categoryID, launcherID, romID):
-    
     # >> ROMs in standard launcher
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     rom = launcher.select_rom(romID)
 
     # >> Sanity check
@@ -5144,10 +5143,10 @@ def m_command_add_to_favourites(categoryID, launcherID, romID):
 
     if launcher.get_launcher_type() == LAUNCHER_VIRTUAL:
         actual_launcher_id = rom.get_launcher_id()
-        launcher = self.launcher_repository.find(actual_launcher_id)
+        launcher = g_launcherRepository.find(actual_launcher_id)
 
     # --- Load favourites ---
-    favlauncher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+    favlauncher = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
     roms_fav = favlauncher.get_roms()
 
     # --- DEBUG info ---
@@ -5187,7 +5186,7 @@ def m_command_manage_favourites(categoryID, launcherID, romID):
     # --- Load ROMs ---
     if categoryID == VCATEGORY_FAVOURITES_ID:
         log_debug('_command_manage_favourites() Managing Favourite ROMs')
-        fav_launcher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+        fav_launcher = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
         roms_fav = fav_launcher.get_roms()
     elif categoryID == VCATEGORY_COLLECTIONS_ID:
         log_debug('_command_manage_favourites() Managing Collection ROMs')
@@ -5287,7 +5286,7 @@ def m_command_manage_favourites(categoryID, launcherID, romID):
             filename_found  = False
             parent_rom      = None
 
-            launchers = self.launcher_repository.find_all()
+            launchers = g_launcherRepository.find_all()
             for launcher in launchers:
                 # >> Load launcher ROMs
                 roms = launcher.get_roms()
@@ -5314,7 +5313,7 @@ def m_command_manage_favourites(categoryID, launcherID, romID):
 
             # >> Add ROM to the list of ROMs to be repaired.
             if filename_found:
-                parent_launcher = self.launcher_repository.find(new_fav_rom_laun_ID)
+                parent_launcher = g_launcherRepository.find(new_fav_rom_laun_ID)
 
                 rom_repair = {}
                 rom_repair['old_fav_rom_ID']      = rom_fav_ID
@@ -5405,7 +5404,7 @@ def m_command_manage_favourites(categoryID, launcherID, romID):
 
             # >> Get ROMs of launcher
             launcher_id   = rom_fav['launcherID']
-            launcher      = self.launcher_repository.find(launcher_id)
+            launcher      = g_launcherRepository.find(launcher_id)
             launcher_roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
 
             # >> Is there a ROM with same basename (including extension) as the Favourite ROM?
@@ -5496,7 +5495,7 @@ def m_fav_check_favourites(roms_fav):
     # >> Important to avoid multithread execution of the plugin and race conditions
     pDialog = xbmcgui.DialogProgress()
     
-    all_launcher_ids = self.launcher_repository.find_all_ids()
+    all_launcher_ids = g_launcherRepository.find_all_ids()
 
     # STEP 1: Find Favourites with missing launchers
     log_debug('_fav_check_favourites() STEP 1: Search unlinked Launchers')
@@ -5534,7 +5533,7 @@ def m_fav_check_favourites(roms_fav):
            continue
 
         # >> Load launcher ROMs
-        launcher = self.launcher_repository.find(launcher_id)
+        launcher = g_launcherRepository.find(launcher_id)
         roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
 
         # Traverse all favourites and check them if belong to this launcher.
@@ -5573,10 +5572,10 @@ def m_command_render_collections():
     # >> Kodi sorting method
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
     # --- Load collection index ---
-    (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+    (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
 
     # --- If the virtual category has no launchers then render nothing ---
     if not collections:
@@ -5645,8 +5644,8 @@ def m_command_render_collections():
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 def m_command_render_collection_ROMs(categoryID, launcherID):
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
+    m_misc_set_default_sorting_method()
+    m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # --- Load Collection index and ROMs ---
     (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -6260,13 +6259,13 @@ def m_command_export_collection(categoryID, launcherID):
 
 def m_command_add_ROM_to_collection(categoryID, launcherID, romID):
     # >> ROMs in standard launcher
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     rom = launcher.select_rom(romID)
 
     if rom.is_virtual_rom():
         # >> ROM in Virtual Launcher
         actual_launcher_id = rom.get_launcher_id()
-        launcher = self.launcher_repository.find(actual_launcher_id)
+        launcher = g_launcherRepository.find(actual_launcher_id)
 
     # --- Load Collection index ---
     collections = self.collection_repository.find_all()
@@ -6326,7 +6325,7 @@ def m_command_search_launcher(categoryID, launcherID):
     log_debug('_command_search_launcher() categoryID {0}'.format(categoryID))
     log_debug('_command_search_launcher() launcherID {0}'.format(launcherID))
     
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     
     # --- Load ROMs ---
     roms = launcher.get_roms()
@@ -6437,7 +6436,7 @@ def m_command_execute_search_launcher(categoryID, launcherID, search_type, searc
     elif search_type == 'SEARCH_RATING' : rom_search_field = 'm_rating'
     else: return
 
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
 
     # --- Load Launcher ROMs ---
     roms = launcher.get_roms()
@@ -6465,7 +6464,7 @@ def m_command_execute_search_launcher(categoryID, launcherID, search_type, searc
                 rl[rom.get_id()] = rom
 
     # --- Render ROMs ---
-    self._misc_set_all_sorting_methods()
+    m_misc_set_all_sorting_methods()
     if not rl:
         kodi_dialog_OK('Search returned no results')
     for key in sorted(rl.iterkeys()):
@@ -6534,7 +6533,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
    
     if view_type == VIEW_ROM_LAUNCHER:
         
-        launcher = self.launcher_repository.find(launcherID)
+        launcher = g_launcherRepository.find(launcherID)
         launcher_report_FN = REPORTS_DIR.pjoin(launcher.get_roms_base() + '_report.txt')
         if launcher_report_FN.exists():
             stat_stdout = launcher_report_FN.stat()
@@ -6666,7 +6665,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
             info_text  = '[COLOR orange]Category information[/COLOR]\n'
             info_text += self._misc_print_string_Category(category.get_data())
         elif view_type == VIEW_LAUNCHER:
-            launcher = self.launcher_repository.find(launcherID)
+            launcher = g_launcherRepository.find(launcherID)
             category = self.category_repository.find(categoryID) if categoryID != VCATEGORY_ADDONROOT_ID else None
             window_title = 'Launcher data'
             info_text  = '[COLOR orange]Launcher information[/COLOR]\n'
@@ -6689,7 +6688,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
                 return
 
             # >> Check launcher is OK
-            launcher = self.launcher_repository.find(launcherID)
+            launcher = g_launcherRepository.find(launcherID)
             if launcher is None:
                 kodi_dialog_OK('launcherID not found in launchers')
                 return
@@ -6767,7 +6766,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
         category = self.category_repository.find(categoryID)
         category_name = category.get_name()
         
-        launcher = self.launcher_repository.find(launcherID)
+        launcher = g_launcherRepository.find(launcherID)
 
         if not launcher.supports_launching_roms():
             kodi_notify_warn('Cannot create report for standalone launcher')
@@ -6879,7 +6878,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
                            'Sorry.')
             return
         else:
-            launcher = self.launcher_repository.find(launcherID)
+            launcher = g_launcherRepository.find(launcherID)
             rom = launcher.select_rom(romID)
 
         # >> Show map image
@@ -7171,7 +7170,7 @@ def m_command_view_offline_scraper_rom(scraper, platform, game_name):
 #
 def m_command_update_virtual_category_db_all():
     # --- Sanity checks ---
-    launchers = self.launcher_repository.find_all()
+    launchers = g_launcherRepository.find_all()
     if len(launchers) == 0:
         kodi_dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
         return
@@ -7292,7 +7291,7 @@ def m_command_update_virtual_category_db(virtual_categoryID, all_roms_external =
         return
 
     # --- Sanity checks ---
-    if self.launcher_repository.count() == 0:
+    if g_launcherRepository.count() == 0:
         kodi_dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
         return
 
@@ -7327,7 +7326,7 @@ def m_command_update_virtual_category_db(virtual_categoryID, all_roms_external =
         log_verb('_command_update_virtual_category_db() Creating list of all ROMs in all Launchers')
         all_roms = {}
 
-        launchers = self.launcher_repository.find_all()
+        launchers = g_launcherRepository.find_all()
         num_launchers = len(launchers)
         i = 0
         pDialog.create('Advanced Emulator Launcher', 'Making ROM list ...')
@@ -7429,7 +7428,7 @@ def m_command_update_virtual_category_db(virtual_categoryID, all_roms_external =
 def m_command_run_standalone_launcher(categoryID, launcherID):
     
     log_info('_command_run_standalone_launcher() Launching Standalone Launcher ...')
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
 
     # --- Check launcher is OK ---
     if launcher is None:
@@ -7921,7 +7920,7 @@ def m_run_before_execution(rom_title, toggle_screen_flag):
 
     log_info('_command_run_rom() Launching ROM in Launcher ...')
 
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
 
     # --- Check launcher is OK ---
     if launcher is None:
@@ -7940,7 +7939,7 @@ def m_run_before_execution(rom_title, toggle_screen_flag):
 #
 def m_roms_regenerate_launcher_reports(categoryID, launcherID, roms):
     category = self.category_repository.find(categoryID)
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
 
     # --- Get report filename ---
     roms_base_noext  = fs_get_ROMs_basename(category.get_name(), launcher.get_name(), launcherID)
@@ -7959,7 +7958,7 @@ def m_roms_regenerate_launcher_reports(categoryID, launcherID, roms):
         # >> Save Categories/Launchers
         # >> DO NOT update the timestamp of categories/launchers of report will always be obsolete!!!
         # >> Keep same timestamp as before
-        self.launcher_repository.save(launcher, False)
+        g_launcherRepository.save(launcher, False)
 
     # --- If report timestamp is older than launchers last modification, recreate it ---
     if launcher.get_report_timestamp() <= launcher.get_timestamp():
@@ -7967,7 +7966,7 @@ def m_roms_regenerate_launcher_reports(categoryID, launcherID, roms):
         self._roms_create_launcher_reports(category, launcher, roms)
         
         launcher.update_report_timestamp()
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
 #
 # Creates a Launcher report having:
@@ -8204,7 +8203,7 @@ def m_aux_get_info(asset_FN, path_asset_P, romfile_getBase_noext):
 def m_roms_add_new_rom(launcherID):
     
     # --- Grab launcher information ---
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     
     if not launcher.supports_launching_roms():
         kodi_notify_warn('Cannot add new roms if launcher does not support roms.')
@@ -8289,7 +8288,7 @@ def m_roms_add_new_rom(launcherID):
     self.launcher.save_rom(rom)
 
     launcher.set_number_of_roms()
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
 
     kodi_refresh_container()
     kodi_notify('Added ROM. Launcher has now {0} ROMs'.format(self.launcher.get_number_of_roms()))
@@ -8603,7 +8602,7 @@ def m_roms_import_roms(launcherID):
             continue
 
     log_debug('========== _roms_import_roms() BEGIN ==================================================')
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     
     scrapers   = self.scraperFactory.create(launcher)
     romScanner = self.romscannerFactory.create(launcher, scrapers)
@@ -8631,7 +8630,7 @@ def m_roms_import_roms(launcherID):
     pDialog.update(80)
     
     launcher.set_number_of_roms()
-    self.launcher_repository.save(launcher)
+    g_launcherRepository.save(launcher)
 
     pDialog.update(100)
     pDialog.close()
@@ -8755,7 +8754,7 @@ def m_gui_scrap_rom_metadata(launcher, rom, scraper_obj):
 #   False  Changes not made. No need to save ROMs XML/Update container
 #
 def m_gui_scrap_launcher_metadata(launcherID, scraper_obj):
-    launcher = self.launcher_repository.find(launcherID)
+    launcher = g_launcherRepository.find(launcherID)
     launcher_name = launcher.get_name()
     platform = launcher.get_platform()
 
@@ -8886,7 +8885,7 @@ def m_gui_edit_asset(object_kind, asset_kind, object_dic, categoryID = '', launc
             asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
         else:
             log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
-            launcher         = self.launcher_repository.find(launcherID)
+            launcher         = g_launcherRepository.find(launcherID)
             asset_directory  = launcher.get_asset_path(AInfo)
             platform         = launcher.get_platform()
             asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile)
@@ -9185,7 +9184,7 @@ def m_command_import_launchers():
         
         # >> This function edits self.categories, self.launchers dictionaries
         categories = self.category_repository.find_all()
-        launchers = self.launcher_repository.find_all()
+        launchers = g_launcherRepository.find_all()
 
         category_datas = {}
         launcher_datas = {}
@@ -9208,7 +9207,7 @@ def m_command_import_launchers():
         altered_launchers.append(launcher)
 
     self.category_repository.save_multiple(altered_categories)
-    self.launcher_repository.save_multiple(altered_launchers)
+    g_launcherRepository.save_multiple(altered_launchers)
 
     kodi_refresh_container()
     kodi_notify('Finished importing Categories/Launchers')
@@ -9233,7 +9232,7 @@ def m_command_export_launchers():
             return
 
     categories = self.category_repository.find_all()
-    launchers = self.launcher_repository.find_all()
+    launchers = g_launcherRepository.find_all()
     
     category_datas = {}
     launcher_datas = {}
@@ -9286,7 +9285,7 @@ def m_command_check_database():
     self.category_repository.save_multiple(categories)
     pDialog.update(50)
 
-    launchers = self.launcher_repository.find_all()
+    launchers = g_launcherRepository.find_all()
     # >> Traverse and fix Launchers.
     for launcher in launchers:
         launcher_data = launcher.get_data()
@@ -9308,7 +9307,7 @@ def m_command_check_database():
         if launcher_data['default_controller'] == 's_flyer': launcher_data['default_controller'] = 's_poster'
         
     # >> Save categories.xml
-    self.launcher_repository.save_multiple(launchers)
+    g_launcherRepository.save_multiple(launchers)
     pDialog.update(100)
 
     # >> Traverse all launchers. Load ROMs and check every ROMs.
@@ -9334,7 +9333,7 @@ def m_command_check_database():
             launcher.update_parent_rom_set(parent_roms)
 
         # >> This updates timestamps and forces regeneration of Virtual Launchers.
-        self.launcher_repository.save(launcher)
+        g_launcherRepository.save(launcher)
 
         # >> Update dialog
         processed_launchers += 1
@@ -9346,7 +9345,7 @@ def m_command_check_database():
 
     # >> Load Favourite ROMs and update JSON
     pDialog.update(0, 'Checking Favourite ROMs ...')
-    fav_launcher = self.launcher_repository.find(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher = g_launcherRepository.find(VLAUNCHER_FAVOURITES_ID)
     roms_fav = fav_launcher.get_roms()
     num_fav_roms = len(roms_fav)
     processed_fav_roms = 0
@@ -9410,7 +9409,7 @@ def m_command_check_database():
 
     # >> Load Most Played ROMs and check/update.
     pDialog.update(0, 'Checking Most Played ROMs ...')                    
-    most_played_launcher = self.launcher_repository.find(VLAUNCHER_MOST_PLAYED_ID)
+    most_played_launcher = g_launcherRepository.find(VLAUNCHER_MOST_PLAYED_ID)
     most_played_roms = most_played_launcher.get_roms()
     for rom in most_played_roms:
         self._misc_fix_Favourite_rom_object(rom)
@@ -9420,7 +9419,7 @@ def m_command_check_database():
 
     # >> Load Recently Played ROMs and check/update.
     pDialog.update(0, 'Checking Recently Played ROMs ...')
-    recent_played_launcher = self.launcher_repository.find(VLAUNCHER_RECENT_ID)
+    recent_played_launcher = g_launcherRepository.find(VLAUNCHER_RECENT_ID)
     recent_roms_list = recent_played_launcher.get_roms()
 
     if recent_roms_list is None:
@@ -9473,7 +9472,7 @@ def m_misc_fix_Favourite_rom_object(rom):
 def m_command_check_launchers():
     log_info('_command_check_launchers() Checking all Launchers configuration ...')
 
-    launchers = self.launcher_repository.find_all()
+    launchers = g_launcherRepository.find_all()
 
     main_str_list = []
     main_str_list.append('Number of launchers: {0}\n\n'.format(len(launchers)))
@@ -9855,7 +9854,7 @@ def m_command_import_legacy_AL():
 
     # >> Save AEL categories.xml
     self.category_repository.save_multiple(list(categories.values))
-    self.launcher_repository.save_multiple(launchers)
+    g_launcherRepository.save_multiple(launchers)
 
     # --- Show some information to user ---
     kodi_dialog_OK('Imported {0} Category/s, {1} Launcher/s '.format(num_categories, num_launchers) +
@@ -9985,7 +9984,7 @@ def m_command_buildMenu():
             selectedMenuItems.append(listitem)
 
     if typeOfContent == 1:
-        launchers = self.launcher_repository.find_all()
+        launchers = g_launcherRepository.find_all()
         for launcher in sorted(launchers, key = lambda l : l.get_name()):
             
             name = launcher.get_name()
