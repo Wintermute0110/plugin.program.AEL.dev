@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher main script file
+# Advanced Emulator Launcher main script file.
 #
 
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
@@ -14,6 +14,12 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+
+# Location of functions within code:
+# 1. Functions in main.py have m_ prefix.
+# 2. Functions in assets.py have asset_ prefix.
+#
+# n. General objects are in objects.py.
 
 # --- Python standard library ---
 from __future__ import unicode_literals
@@ -141,6 +147,12 @@ g_time_str = unicode(datetime.datetime.now())
 
 # --- Global objects ---
 g_assetFactory = None
+g_romscannerFactory = None
+g_scraperFactory = None
+g_launcherFactory = None
+g_categoryRepository = None
+g_launcherRepository = None
+g_collectionRepository = None
 
 # -------------------------------------------------------------------------------------------------
 # Make AEL to run only 1 single instance
@@ -348,19 +360,28 @@ def run_plugin(addon_argv):
 # Bootstrap factory instances
 #
 def m_bootstrap_instances():
+    # >> Grant write access to global variables
+    global g_assetFactory
+    global g_romscannerFactory
+    global g_scraperFactory
+    global g_launcherFactory
+    global g_categoryRepository
+    global g_launcherRepository
+    global g_collectionRepository
+
     # --- Utility objects ---
-    g_assetFactory          = AssetInfoFactory.create()
-    self.romscannerFactory  = RomScannersFactory(g_settings, REPORTS_DIR, CURRENT_ADDON_DIR)
-    self.scraperFactory     = ScraperFactory(g_settings, CURRENT_ADDON_DIR)
-    executorFactory         = ExecutorFactory(g_settings, LAUNCH_LOG_FILE_PATH)
-    self.launcher_factory   = LauncherFactory(g_settings, executorFactory, ADDON_DATA_DIR)
+    g_assetFactory      = AssetInfoFactory.create()
+    g_romscannerFactory = RomScannersFactory(g_settings, REPORTS_DIR, CURRENT_ADDON_DIR)
+    g_scraperFactory    = ScraperFactory(g_settings, CURRENT_ADDON_DIR)
+    executorFactory     = ExecutorFactory(g_settings, LAUNCH_LOG_FILE_PATH)
+    g_launcherFactory   = LauncherFactory(g_settings, executorFactory, ADDON_DATA_DIR)
 
     # --- Load categories/launchers/collections databases ---
-    data_context                = XmlDataContext(ADDON_DATA_DIR.pjoin('categories.xml'))
-    self.category_repository    = CategoryRepository(data_context)
-    self.launcher_repository    = LauncherRepository(data_context, self.launcher_factory)
-    data_context                = XmlDataContext(ADDON_DATA_DIR.pjoin('collections.xml'))
-    self.collection_repository  = CollectionRepository(data_context)
+    data_context           = XmlDataContext(ADDON_DATA_DIR.pjoin('categories.xml'))
+    g_categoryRepository   = CategoryRepository(data_context)
+    g_launcherRepository   = LauncherRepository(data_context, self.launcher_factory)
+    data_context           = XmlDataContext(ADDON_DATA_DIR.pjoin('collections.xml'))
+    g_collectionRepository = CollectionRepository(data_context)
 
 #
 # This function may run concurrently
