@@ -54,24 +54,23 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 #   main <-- objects <-- disk_IO <-- assets    <-- utils
 #
 from constants import *
-from filename import *
 from utils import *
-from utils_kodi import *
-from scrap import *
+
 from assets import *
-from rom_audit import *
-from disk_IO import *
-from net_IO import *
-from assets import *
-from rom_audit import *
-from scrap import *
 from autoconfig import *
+from disk_IO import *
+from scrap import *
+from rom_audit import *
+from net_IO import *
+from rom_audit import *
+from scrap import *
+
+from objects import *
 
 from launchers import *
 from executors import *
-from romscanners import *
+
 from scrapers import *
-from rom_datfile_scanner import *
 
 # --- Addon object (used to access settings) ---
 __addon__         = xbmcaddon.Addon()
