@@ -23,7 +23,7 @@ from scrap import *
 from scrap_common import *
 from utils import *
 from disk_IO import *
-import rom_audit
+import audit
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing

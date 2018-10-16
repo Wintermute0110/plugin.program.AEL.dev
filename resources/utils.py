@@ -30,7 +30,7 @@
 # 4. Functions starting with _ are internal module functions not to be called externally.
 #
 
-# --- Python compiler flags ---
+# --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
 import sys
@@ -44,7 +44,50 @@ import re
 import string
 import fnmatch
 import HTMLParser
-from abc import ABCMeta, abstractmethod 
+# NOTE binascii must not be used! See https://docs.python.org/2/library/binascii.html
+import binascii
+import base64
+# from base64 import b64decode
+# from base64 import b64encode
+from abc import ABCMeta
+from abc import abstractmethod
+import xml.etree.ElementTree as ET
+
+# NOTE OpenSSL library will be included in Kodi M****
+#      Search documentation about this in Garbear's github repo.
+try:
+    from OpenSSL import crypto, SSL
+    UTILS_OPENSSL_AVAILABLE = True
+except:
+    UTILS_OPENSSL_AVAILABLE = False
+
+try:
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+    UTILS_CRYPTOGRAPHY_AVAILABLE = True
+except:
+    UTILS_CRYPTOGRAPHY_AVAILABLE = False
+
+try:
+    from Crypto.PublicKey import RSA
+    from Crypto.Signature import PKCS1_v1_5
+    from Crypto.Hash import SHA256
+    from Crypto.Cipher import AES
+    from Crypto.Random import get_random_bytes
+    UTILS_PYCRYPTO_AVAILABLE = True
+except:
+    UTILS_PYCRYPTO_AVAILABLE = False
+
+# --- Kodi modules ---
+try:
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    import xbmcaddon
+    import xbmcvfs
+    UTILS_KODI_RUNTIME_AVAILABLE = True
+except:
+    UTILS_KODI_RUNTIME_AVAILABLE = False
 
 # --- AEL modules ---
 from constants import *
@@ -606,38 +649,6 @@ def print_game_image_list(scraperObj, results, asset_kind):
 # Cryptographic utilities
 # #################################################################################################
 # #################################################################################################
-
-# NOTE OpenSSL library will be included in Kodi M****
-
-# --- Python standard library ---
-# NOTE binascii must not be used! See https://docs.python.org/2/library/binascii.html
-import binascii
-from base64 import b64decode
-from base64 import b64encode
-from datetime import datetime, timedelta
-
-try:
-    from OpenSSL import crypto, SSL
-    UTILS_OPENSSL_AVAILABLE = True
-except:
-    UTILS_OPENSSL_AVAILABLE = False
-
-try:
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives import serialization
-    UTILS_CRYPTOGRAPHY_AVAILABLE = True
-except:
-    UTILS_CRYPTOGRAPHY_AVAILABLE = False
-
-try:
-    from Crypto.PublicKey import RSA
-    from Crypto.Signature import PKCS1_v1_5
-    from Crypto.Hash import SHA256
-    from Crypto.Cipher import AES
-    from Crypto.Random import get_random_bytes
-    UTILS_PYCRYPTO_AVAILABLE = True
-except:
-    UTILS_PYCRYPTO_AVAILABLE = False
 
 #
 # Creates a new self signed certificate base on OpenSSL PEM format.
@@ -1414,13 +1425,6 @@ class StandardFileName(FileName):
 # Kodi utilities
 # #################################################################################################
 # #################################################################################################
-
-# --- Kodi modules ---
-try:
-    import xbmc, xbmcgui
-    UTILS_KODI_RUNTIME_AVAILABLE = True
-except:
-    UTILS_KODI_RUNTIME_AVAILABLE = False
 
 # --- Constants -----------------------------------------------------------------------------------
 LOG_ERROR   = 0

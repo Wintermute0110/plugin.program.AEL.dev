@@ -27,10 +27,7 @@ import ssl
 import xml.etree.ElementTree as ET
 
 # --- AEL packages ---
-try:
-    from utils_kodi import *
-except:
-    from utils_kodi_standalone import *
+from utils import *
 
 # --- GLOBALS -----------------------------------------------------------------
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31';

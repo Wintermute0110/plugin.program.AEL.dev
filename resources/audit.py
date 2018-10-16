@@ -21,7 +21,6 @@ import xml.etree.ElementTree as ET
 # --- Modules/packages in this plugin ---
 from constants import *
 from utils import *
-from utils_kodi import *
 
 # -------------------------------------------------------------------------------------------------
 # Data structures

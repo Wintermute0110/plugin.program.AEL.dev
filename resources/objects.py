@@ -17,17 +17,19 @@
 from __future__ import unicode_literals
 from __future__ import division
 
+# --- AEL packages ---
+from utils import *
+
 # #################################################################################################
 # #################################################################################################
 # ROM scanners
 # #################################################################################################
 # #################################################################################################
-
 class RomScannersFactory():
-    def __init__(self, settings, reports_dir, addon_dir):
+    def __init__(self, settings, PATHS):
         self.settings = settings
-        self.reports_dir = reports_dir
-        self.addon_dir = addon_dir
+        self.reports_dir = PATHS.REPORTS_DIR
+        self.addon_dir = PATHS.ADDON_DATA_DIR
 
     def create(self, launcher, scrapers):
         launcherType = launcher.get_launcher_type()
@@ -44,10 +46,9 @@ class RomScannersFactory():
                 
         return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
 
-
-class ScannerStrategy(ProgressDialogStrategy):
+class ScannerStrategy(KodiProgressDialogStrategy):
     __metaclass__ = ABCMeta
-    
+
     def __init__(self, launcher, settings):
         self.launcher = launcher
         self.settings = settings
@@ -70,7 +71,6 @@ class ScannerStrategy(ProgressDialogStrategy):
         return {}
 
 class NullScanner(ScannerStrategy):
-    
     def scan(self):
         return {}
 
@@ -79,7 +79,7 @@ class NullScanner(ScannerStrategy):
 
 class RomScannerStrategy(ScannerStrategy):
     __metaclass__ = ABCMeta
-      
+
     def __init__(self, reports_dir, addon_dir, launcher, settings, scrapers):
         
         self.reports_dir = reports_dir
@@ -151,7 +151,6 @@ class RomScannerStrategy(ScannerStrategy):
         return roms
 
     def cleanup(self):
-        
         launcher_report = LogReporter(self.launcher.get_data())
         launcher_report.open('RomScanner() Starting Dead ROM cleaning')
         log_debug('RomScanner() Starting Dead ROM cleaning')
@@ -181,7 +180,7 @@ class RomScannerStrategy(ScannerStrategy):
 
         launcher_report.close()
         return roms
-            
+
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @abstractmethod
     def _getCandidates(self, launcher_report):
@@ -198,12 +197,9 @@ class RomScannerStrategy(ScannerStrategy):
         return []
 
 class RomFolderScanner(RomScannerStrategy):
-       
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report):
-        
         kodi_busydialog_ON()
-        
         files = []
         launcher_path = self.launcher.get_rom_path()
         launcher_report.write('Scanning files in {0}'.format(launcher_path.getOriginalPath()))
@@ -219,12 +215,11 @@ class RomFolderScanner(RomScannerStrategy):
 
         num_files = len(files)
         launcher_report.write('  File scanner found {0} files'.format(num_files))
-        
+
         return files
-    
+
     # --- Remove dead entries -----------------------------------------------------------------
     def _removeDeadRoms(self, candidates, roms):
-
         num_roms = len(roms)
         num_removed_roms = 0
         if num_roms == 0:
@@ -681,7 +676,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
 # #################################################################################################
 # #################################################################################################
 
-class RomDatFileScanner(ProgressDialogStrategy):
+class RomDatFileScanner(KodiProgressDialogStrategy):
     def __init__(self, settings):
         self.settings = settings
         super(RomDatFileScanner, self).__init__()
@@ -1705,20 +1700,17 @@ class RomSetRepository(object):
         if rom_set_path.exists():
             log_info('delete_by_launcher() Deleting {0}'.format(rom_set_path.getPath()))
             rom_set_path.unlink()
-        
+
         return
+
 # -------------------------------------------------------------------------------------------------
 # Factory class for creating the specific/derived launchers based upon the given type and 
 # dictionary with launcher data.
 # -------------------------------------------------------------------------------------------------
-
-
 class LauncherFactory(object):
-    
-    def __init__(self, settings, executorFactory, plugin_data_dir):
-
+    def __init__(self, settings, g_PATHS, executorFactory):
         self.settings = settings
-        self.plugin_data_dir = plugin_data_dir
+        self.plugin_data_dir = g_PATHS.ADDON_DATA_DIR
         self.executorFactory = executorFactory
 
         self._initialize_folders()
@@ -1727,7 +1719,6 @@ class LauncherFactory(object):
         self._initialize_virtual_launchers()
 
     def _initialize_folders(self):
-
         self.ROMS_DIR                   = self.plugin_data_dir.pjoin('db_ROMs')
         self.COLLECTIONS_FILE_PATH      = self.plugin_data_dir.pjoin('collections.xml')
         self.COLLECTIONS_DIR            = self.plugin_data_dir.pjoin('db_Collections')
@@ -1750,12 +1741,10 @@ class LauncherFactory(object):
         if not self.VIRTUAL_CAT_ESRB_DIR.exists():      self.VIRTUAL_CAT_ESRB_DIR.makedirs()
         if not self.VIRTUAL_CAT_RATING_DIR.exists():    self.VIRTUAL_CAT_RATING_DIR.makedirs()
         if not self.COLLECTIONS_DIR.exists():           self.COLLECTIONS_DIR.makedirs()
-   
-        
+
     def _initialize_virtual_launchers(self):
-        
         log_info('LauncherFactory() Preinitializing virtual launchers.')
-        
+
         # create default data
         recently_played_roms_dic = {'id': VLAUNCHER_RECENT_ID, 'm_name': 'Recently played', 'roms_base_noext': 'history' }
         most_played_roms_dic     = {'id': VLAUNCHER_MOST_PLAYED_ID, 'm_name': 'Most played', 'roms_base_noext': 'most_played' }
@@ -1767,7 +1756,6 @@ class LauncherFactory(object):
         self.virtual_launchers[VLAUNCHER_FAVOURITES_ID]  = VirtualLauncher(favourites_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
 
     def _load(self, launcher_type, launcher_data):
-        
         if launcher_type in self.virtual_launchers:
             return self.virtual_launchers[launcher_type]
 
@@ -1783,7 +1771,7 @@ class LauncherFactory(object):
         
         statsStrategy       = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID], self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
         romset_repository   = RomSetRepository(self.ROMS_DIR)
-        
+
         if launcher_type == LAUNCHER_RETROPLAYER:
             return RetroplayerLauncher(launcher_data, self.settings, None, romset_repository, None, self.settings['escape_romfile'])
 
@@ -1792,7 +1780,7 @@ class LauncherFactory(object):
 
         if launcher_type == LAUNCHER_ROM:
             return StandardRomLauncher(launcher_data, self.settings, self.executorFactory, romset_repository, statsStrategy, self.settings['escape_romfile'])
-        
+
         if launcher_type == LAUNCHER_LNK:
             return LnkLauncher(launcher_data, self.settings, self.executorFactory, romset_repository ,statsStrategy, self.settings['escape_romfile'])
 
@@ -1803,10 +1791,10 @@ class LauncherFactory(object):
             return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory, romset_repository, statsStrategy)
 
         log_warning('Unsupported launcher requested. Type "{}"'.format(launcher_type))
+
         return None
 
     def get_supported_types(self):
-        
         typeOptions = OrderedDict()
         typeOptions[LAUNCHER_STANDALONE]   = 'Standalone launcher (Game/Application)'
         typeOptions[LAUNCHER_FAVOURITES]   = 'Kodi favourite launcher'
@@ -1814,7 +1802,7 @@ class LauncherFactory(object):
         typeOptions[LAUNCHER_RETROPLAYER]  = 'ROM launcher (Kodi Retroplayer)'
         typeOptions[LAUNCHER_RETROARCH]    = 'ROM launcher (Retroarch)'
         typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
-        
+
         if not is_android():
             typeOptions[LAUNCHER_STEAM] = 'Steam launcher'
         if is_windows():
@@ -1829,7 +1817,7 @@ class LauncherFactory(object):
 
     def create_new(self, launcher_type):
         return self._load(launcher_type, None)
-    
+
 # -------------------------------------------------------------------------------------------------
 # Strategy class for updating the rom play statistics.
 # Updates the amount of times a rom is played and which rom recently has been played.
@@ -4706,11 +4694,10 @@ class NvidiaGameStreamLauncher(RomLauncher):
 # Executors
 # #################################################################################################
 # #################################################################################################
-
 class ExecutorFactory():
-    def __init__(self, settings, logFile):
+    def __init__(self, settings, g_PATHS):
         self.settings = settings
-        self.logFile = logFile
+        self.logFile = g_PATHS.LAUNCHER_REPORT_FILE_PATH
 
     def create_from_pathstring(self, application_string):
         app = FileNameFactory.create(application_string)

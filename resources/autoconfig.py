@@ -33,11 +33,10 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- AEL packages ---
 from constants import *
+from platforms import *
 from utils import *
-from utils_kodi import *
 from disk_IO import *
 from assets import *
-from platforms import *
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.

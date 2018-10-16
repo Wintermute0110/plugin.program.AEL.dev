@@ -8,10 +8,8 @@ resources_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.append(resources_dir)
 from .. import *
 
-from utils import *
-from utils_kodi import *
-from filename import *
 from constants import *
+from utils import *
 from disk_IO import *
 
 MIGRATION_CLASS_NAME = 'Migration_0_9_9'
@@ -23,10 +21,8 @@ MIGRATION_CLASS_NAME = 'Migration_0_9_9'
 #   - todo
 #
 class Migration_0_9_9(Migration):
-        
     def execute(self, addon_path, addon_data_path):
         log_info('[Migration][0.9.9] Starting migration')
-        
         categories_file = addon_data_path.pjoin('categories.xml')
 
         categories = {}
@@ -45,7 +41,6 @@ class Migration_0_9_9(Migration):
         log_info('[Migration][0.9.9] Finished migration')
 
     def _set_launchertype(self, launcher):
-
         application = KodiFileName(launcher['application'])
         name = launcher['m_name']
 

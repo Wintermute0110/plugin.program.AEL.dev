@@ -17,6 +17,9 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 
+# --- AEL packages ---
+from utils import *
+
 # -------------------------------------------------------------------------------------------------
 # We support online an offline scrapers.
 # Note that this module does not depend on Kodi stuff at all, and can be
@@ -272,10 +275,10 @@ def getMameScraper(asset_kind, settings):
     # >> Trailer (not supported yet, use a null scraper)
     return NULL_obj
 
-class ScraperFactory(ProgressDialogStrategy):
-    def __init__(self, settings, addon_dir):
+class ScraperFactory(KodiProgressDialogStrategy):
+    def __init__(self, settings, PATHS):
         self.settings = settings
-        self.addon_dir = addon_dir
+        self.addon_dir = PATHS.ADDON_DATA_DIR
 
         super(ScraperFactory, self).__init__()
 
