@@ -294,7 +294,7 @@ def run_plugin(addon_argv):
 
     # --- Get addon command ---
     command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
-    log_debug('command = "{0}"'.format(command))
+    log_debug('run_plugin() Processing command = "{0}"'.format(command))
 
     # --- Commands that do not modify the databases are allowed to run concurrently ---
     if command == 'SHOW_ADDON_ROOT' or \
@@ -427,14 +427,14 @@ def m_run_concurrent(command, args):
 # This function is guaranteed to run with no concurrency.
 #
 def m_run_protected(command, args):
-    log_debug('Advanced Emulator Launcher run_protected() BEGIN')
+    log_debug('Advanced Emulator Launcher m_run_protected() BEGIN')
 
     # --- Category management ---
     if command == 'ADD_CATEGORY':
         m_command_add_new_category()
     elif command == 'EDIT_CATEGORY':
         m_command_edit_category(args['catID'][0])
-        
+
     # --- Launcher management ---
     elif command == 'ADD_LAUNCHER':
         m_command_add_new_launcher(args['catID'][0])
@@ -1006,25 +1006,22 @@ def m_misc_clear_AEL_Launcher_Content():
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, '')
 
 def m_command_add_new_category():
-    dialog = xbmcgui.Dialog()
+    log_debug('m_command_add_new_category() BEGIN')
     keyboard = xbmc.Keyboard('', 'New Category Name')
     keyboard.doModal()
     if not keyboard.isConfirmed(): return
-    
+
     category = Category()
     category.set_name(keyboard.getText().decode('utf-8'))
-
-    self.category_repository.save(category)
-    
+    g_categoryRepository.save(category)
     kodi_notify('Category {0} created'.format(category.get_name()))
     kodi_refresh_container()
 
 def m_command_edit_category(categoryID):
-    
-    category      = self.category_repository.find(categoryID)
+    category      = g_categoryRepository.find(categoryID)
     options       = category.get_edit_options()
     category_data = category.get_data()
-    
+
     # --- Shows a select box with the options to edit ---
     dialog = DictionaryDialog()
     selected_option = dialog.select('Select action for Category {0}'.format(category.get_name()), options)
@@ -1038,10 +1035,9 @@ def m_command_edit_category(categoryID):
     return
 
 def m_command_add_new_launcher(categoryID):
-    
     # >> If categoryID not found user is creating a new launcher using the context menu
     # >> of a launcher in addon root.
-    category = self.category_repository.find(categoryID)
+    category = g_categoryRepository.find(categoryID)
     if category is None:
         log_info('Category ID not found. Creating laucher in addon root.')
         category = Category.create_root_category()
@@ -3707,7 +3703,7 @@ def m_command_render_categories():
 # This function is called by skins to build shortcuts menu.
 #
 def m_command_render_all_categories():
-    categories = self.category_repository.find_all()
+    categories = g_categoryRepository.find_all()
 
     # >> If no categories render nothing
     if not categories:
@@ -3717,39 +3713,37 @@ def m_command_render_all_categories():
     # >> For every category, add it to the listbox. Order alphabetically by name
     for category in sorted(categories, key = lambda c : c.get_name()):
         self._gui_render_category_row(category)
-
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
+#
+# category is a Category object.
+#
 def m_gui_render_category_row(category):
     # --- Do not render row if category finished ---
     if category.get_state() and g_settings['display_hide_finished']: return
 
     # --- Create listitem row ---
-    ICON_OVERLAY = 5 if category_dic['finished'] else 4
-    listitem = xbmcgui.ListItem(category_dic['m_name'])
-    if category_dic['m_year']:
-        listitem.setInfo('video', {'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
-                                   'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
-                                   'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
-                                   'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
-    else:
-        listitem.setInfo('video', {'title'   : category_dic['m_name'],
-                                   'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
-                                   'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
-                                   'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
-    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
-
     ICON_OVERLAY = 5 if category.is_finished() else 4
     listitem = xbmcgui.ListItem(category.get_name())
-    listitem.setInfo('video', {'title'   : category.get_name(),    'year'    : category.get_releaseyear(),
-                               'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
-                               'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
-                               'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY })
-
-    category_dic = category.get_data()
+    if category.get_releaseyear():
+        listitem.setInfo('video', {
+                             'title'   : category.get_name(),    'year'    : category.get_releaseyear(),
+                             'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
+                             'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
+                             'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY
+                             })
+    else:
+        listitem.setInfo('video', {
+                             'title'   : category.get_name(),
+                             'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
+                             'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
+                             'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY
+                             })
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     # --- Set Category artwork ---
-    # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
+    category_dic = category.get_data_dic()
+    # NOTE Integrate this functions into the Category class.
     icon_path      = asset_get_default_asset_Category(category_dic, 'default_icon', 'DefaultFolder.png')
     fanart_path    = asset_get_default_asset_Category(category_dic, 'default_fanart')
     banner_path    = asset_get_default_asset_Category(category_dic, 'default_banner')
@@ -3760,20 +3754,22 @@ def m_gui_render_category_row(category):
 
     # --- Create context menu ---
     # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
+    # Window FileManager has ID = 10003
+    # In Krypton "Add to favourites" appears always in the last position of context menu and cannot
+    # be removed.
     commands = []
     categoryID = category.get_id()
     commands.append(('View Category data',  m_misc_url_RunPlugin('VIEW', categoryID)))
     commands.append(('Edit Category',       m_misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
     commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-    # In Krypton "Add to favourites" appears always in the last position of context menu.
+    commands.append(('Add New Launcher',    m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
+    commands.append(('Kodi File Manager',   'ActivateWindow(filemanager)'))
+    commands.append(('AEL addon settings',  'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
     # --- Add row ---
     url_str = m_misc_url('SHOW_LAUNCHERS', categoryID)
-    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url=url_str, listitem=listitem, isFolder=True)
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder=True)
 
 def m_gui_render_category_favourites_row():
     # fav_icon   = 'DefaultFolder.png'

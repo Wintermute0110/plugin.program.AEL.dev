@@ -1835,7 +1835,7 @@ class MetaDataItem(object):
 
     def get_releaseyear(self):
         return self.entity_data['m_year'] if 'm_year' in self.entity_data else ''
-        
+
     def get_genre(self):
         return self.entity_data['m_genre'] if 'm_genre' in self.entity_data else ''
     
@@ -1847,7 +1847,7 @@ class MetaDataItem(object):
 
     def get_plot(self):
         return self.entity_data['m_plot'] if 'm_plot' in self.entity_data else ''
-    
+
     def is_finished(self):
         return 'finished' in self.entity_data and self.entity_data['finished']
     
@@ -1856,7 +1856,7 @@ class MetaDataItem(object):
         finished_display = 'Finished' if finished == True else 'Unfinished'
         return finished_display
 
-    def get_data(self):
+    def get_data_dic(self):
         return self.entity_data
 
     def copy_of_data(self):
@@ -1866,8 +1866,7 @@ class MetaDataItem(object):
         return self.entity_data[key] if key in self.entity_data else default_value
 
     def has_asset(self, asset_info):
-        if not asset_info.key in self.entity_data: 
-            return False
+        if not asset_info.key in self.entity_data: return False
 
         return self.entity_data[asset_info.key] != None and self.entity_data[asset_info.key] != ''
 
@@ -1876,8 +1875,7 @@ class MetaDataItem(object):
 
     def get_asset_file(self, asset_info):
         asset = self.get_asset(asset_info)
-        if asset is None:
-            return None
+        if asset is None: return None
 
         return FileNameFactory.create(asset)
 
@@ -1919,7 +1917,6 @@ class MetaDataItem(object):
     def import_data(self, data):
         for key in data:
             self.entity_data[key] = data[key]
-        pass
 
     def set_custom_attribute(self, key, value):
         self.entity_data[key] = value
@@ -1971,9 +1968,8 @@ class Category(MetaDataItem):
 
         asset_factory = AssetInfoFactory.create()
         asset_kinds = asset_factory.get_assets_by(asset_keys)
-        
         for asset_kind in asset_kinds:
-            asset = self.entity_data[asset_kind.key] if self.entity_data[asset_kind.key] else ''            
+            asset = self.entity_data[asset_kind.key] if self.entity_data[asset_kind.key] else ''
             assets[asset_kind] = asset
 
         return assets
