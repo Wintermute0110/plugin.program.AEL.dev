@@ -33,27 +33,27 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
-import sys
-import os
-import shutil
-import time
-import random
-import hashlib
-import urlparse
-import re
-import string
-import fnmatch
-import HTMLParser
-import json
+from abc import ABCMeta
+from abc import abstractmethod
 # NOTE binascii must not be used! See https://docs.python.org/2/library/binascii.html
 import binascii
 import base64
 # from base64 import b64decode
 # from base64 import b64encode
-from abc import ABCMeta
-from abc import abstractmethod
+import fnmatch
+import hashlib
+import HTMLParser
+import json
+import os
+import pprint
+import random
+import re
+import shutil
+import string
+import sys
+import time
+import urlparse
 import xml.etree.ElementTree as ET
-
 
 # NOTE OpenSSL library will be included in Kodi M****
 #      Search documentation about this in Garbear's github repo.
@@ -1561,6 +1561,47 @@ def kodi_toogle_fullscreen():
                 '"params" : {"action" : "togglefullscreen"}}')
 
     xbmc.executeJSONRPC(json_str)
+
+#
+# Access Kodi JSON-RPC interface in an easy way.
+# Returns a dictionary with the parsed response 'result' field.
+#
+# Query input:
+#
+# {
+#     "id" : 1,
+#     "jsonrpc" : "2.0",
+#     "method" : "Application.GetProperties",
+#     "params" : { "properties" : ["name", "version"] }
+# }
+#
+# Query response:
+#
+# {
+#     "id" : 1,
+#     "jsonrpc" : "2.0",
+#     "result" : {
+#         "name" : "Kodi",
+#         "version" : {"major":17,"minor":6,"revision":"20171114-a9a7a20","tag":"stable"}
+#     }
+# }
+#
+def kodi_jsonrpc_query(method, params):
+    # log_debug('kodi_jsonrpc_query() method "{0}"'.format(method))
+    # log_debug('kodi_jsonrpc_query() params "{0}"'.format(params))
+
+    # >> Do query
+    query_str = '{{ "id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {{ {1} }}}}'.format(method, params)
+    # # log_debug('kodi_jsonrpc_query() query_str "{0}"'.format(query_str))
+    response_json_str = xbmc.executeJSONRPC(query_str)
+    # log_debug('kodi_jsonrpc_query() response "{0}"'.format(response_json_str))
+
+    # >> Parse JSON response
+    response_dic = json.loads(response_json_str)
+    result_dic = response_dic['result']
+    # log_debug('kodi_jsonrpc_query() result_dic = \n{0}'.format(pprint.pformat(result_dic)))
+
+    return result_dic
 
 # -------------------------------------------------------------------------------------------------
 # Kodi Wizards (by Chrisism)

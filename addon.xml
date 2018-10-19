@@ -17,7 +17,7 @@
         Kodi must be restarted if this setting is changed.
         See https://github.com/xbmc/xbmc/pull/13814
     -->
-    <!-- <reuselanguageinvoker>false</reuselanguageinvoker> -->
+    <reuselanguageinvoker>false</reuselanguageinvoker>
     <summary lang="en_GB">Launch any emulators/apps from Kodi.</summary>
     <description lang="en_GB">Multi-emulator front-end and general application launcher for Kodi. Includes offline scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files. Launching of games and standalone applications is also available.</description>
     <platform>android freebsd ios linux osx windows</platform>

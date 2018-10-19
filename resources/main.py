@@ -202,7 +202,7 @@ def run_plugin(addon_argv):
     set_log_level(g_settings['log_level'])
 
     # --- Some debug stuff for development ---
-    log_debug('---------- Called AEL run_plugin() ----------')
+    log_debug('------------ Called Advanced Emulator Launcher run_plugin(addon_argv) ------------')
     log_debug('sys.platform   "{0}"'.format(sys.platform))
     # log_debug('WindowId       "{0}"'.format(xbmcgui.getCurrentWindowId()))
     # log_debug('WindowName     "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
@@ -221,49 +221,21 @@ def run_plugin(addon_argv):
 
     # --- Get DEBUG information for the log --
     if g_settings['log_level'] == LOG_DEBUG:
+        # >> JSON-RPC queries <<
         json_rpc_start = time.time()
-
-        # >> Properties: Kodi name and version <<
-        c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
-                 ' "method" : "Application.GetProperties",'
-                 ' "params" : {"properties" : ["name", "version"]}'
-                 '}')
-        response_props = xbmc.executeJSONRPC(c_str)
-        # log_debug('JSON      ''{0}'''.format(c_str))
-        # log_debug('Response  ''{0}'''.format(response_props))
-
-        # >> Skin in use <<
-        c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
-                 ' "method" : "Settings.GetSettingValue",'
-                 ' "params" : {"setting" : "lookandfeel.skin"}'
-                 '}')
-        response_skin = xbmc.executeJSONRPC(c_str)
-        # log_debug('JSON      ''{0}'''.format(c_str))
-        # log_debug('Response  ''{0}'''.format(response_skin))
-
-        # >> Print time consumed by JSON RPC calls <<
+        getprops_dic = kodi_jsonrpc_query('Application.GetProperties', '"properties" : ["name", "version"]')
+        getskin_dic  = kodi_jsonrpc_query('Settings.GetSettingValue',  '"setting" : "lookandfeel.skin"')
         json_rpc_end = time.time()
-        # log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
+        log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
 
         # >> Parse returned JSON and nice print <<
-        properties_dic = json.loads(response_props)
-        r_name     = properties_dic['result']['name']
-        r_major    = properties_dic['result']['version']['major']
-        r_minor    = properties_dic['result']['version']['minor']
-        r_revision = properties_dic['result']['version']['revision']
-        r_tag      = properties_dic['result']['version']['tag']
-        properties_dic = json.loads(response_skin)
-        r_skin = properties_dic['result']['value']
-        log_debug('JSON version "{0}" "{1}" "{2}" "{3}" "{4}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
-        log_debug('JSON skin    "{0}"'.format(r_skin))
-
-        # --- Save all Kodi settings into a file for DEBUG ---
-        # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
-        #          ' "method" : "Settings.GetSettings",'
-        #          ' "params" : {"level":"expert"}}')
-        # response = xbmc.executeJSONRPC(c_str)
-        # log_debug('JSON      ''{0}'''.format(c_str))
-        # log_debug('Response  ''{0}'''.format(response.decode('utf-8')))
+        r_name     = getprops_dic['name']
+        r_major    = getprops_dic['version']['major']
+        r_minor    = getprops_dic['version']['minor']
+        r_revision = getprops_dic['version']['revision']
+        r_tag      = getprops_dic['version']['tag']
+        log_debug('Kodi version "{0}" "{1}" "{2}" "{3}" "{4}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
+        log_debug('Kodi skin    "{0}"'.format(getskin_dic['value']))
 
     # --- Addon data paths creation ---
     if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
@@ -327,14 +299,21 @@ def run_plugin(addon_argv):
     # --- Commands that do not modify the databases are allowed to run concurrently ---
     if command == 'SHOW_ADDON_ROOT' or \
        command == 'SHOW_VCATEGORIES_ROOT' or \
-       command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT' or command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT' or \
-       command == 'SHOW_FAVOURITES' or command == 'SHOW_VIRTUAL_CATEGORY' or \
-       command == 'SHOW_RECENTLY_PLAYED' or command == 'SHOW_MOST_PLAYED' or \
-       command == 'SHOW_COLLECTIONS' or command == 'SHOW_COLLECTION_ROMS' or \
-       command == 'SHOW_LAUNCHERS' or command == 'SHOW_ROMS' or \
+       command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT' or \
+       command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT' or \
+       command == 'SHOW_FAVOURITES' or \
+       command == 'SHOW_VIRTUAL_CATEGORY' or \
+       command == 'SHOW_RECENTLY_PLAYED' or \
+       command == 'SHOW_MOST_PLAYED' or \
+       command == 'SHOW_COLLECTIONS' or \
+       command == 'SHOW_COLLECTION_ROMS' or \
+       command == 'SHOW_LAUNCHERS' or \
+       command == 'SHOW_ROMS' or \
        command == 'SHOW_VLAUNCHER_ROMS' or \
-       command == 'SHOW_AEL_SCRAPER_ROMS' or command == 'SHOW_LB_SCRAPER_ROMS' or \
-       command == 'EXEC_SHOW_CLONE_ROMS' or command == 'SHOW_CLONE_ROMS' or \
+       command == 'SHOW_AEL_SCRAPER_ROMS' or \
+       command == 'SHOW_LB_SCRAPER_ROMS' or \
+       command == 'EXEC_SHOW_CLONE_ROMS' or \
+       command == 'SHOW_CLONE_ROMS' or \
        command == 'SHOW_ALL_CATEGORIES' or \
        command == 'SHOW_ALL_LAUNCHERS' or \
        command == 'SHOW_ALL_ROMS' or \
