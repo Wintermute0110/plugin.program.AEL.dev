@@ -61,6 +61,7 @@ from autoconfig import *
 from disk_IO import *
 from net_IO import *
 from objects import *
+from report import *
 from scrap import *
 
 # --- Addon object (used to access settings) ---
@@ -98,6 +99,7 @@ class AEL_Paths:
         self.VCAT_ESRB_FILE_PATH       = self.ADDON_DATA_DIR.pjoin('vcat_esrb.xml')
         self.VCAT_RATING_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('vcat_rating.xml')
         self.VCAT_CATEGORY_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('vcat_category.xml')
+        # Launcher app stdout/stderr file
         self.LAUNCH_LOG_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('launcher.log')
         self.RECENT_PLAYED_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('history.json')
         self.MOST_PLAYED_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('most_played.json')
@@ -364,7 +366,7 @@ def m_run_concurrent(command, args):
 
     # --- Name says it all ---
     if command == 'SHOW_ADDON_ROOT':
-        m_command_render_categories()
+        m_command_render_root()
 
     # --- Render launchers stuff ---
     elif command == 'SHOW_VCATEGORIES_ROOT':
@@ -3655,7 +3657,7 @@ def m_list_edit_rom_metadata(metadata_name, options, default_value, get_method, 
 #
 # Renders the addon Root window. Categories, categoryless launchers, Favourites, etc.
 #
-def m_command_render_categories():
+def m_command_render_root():
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
@@ -3668,33 +3670,32 @@ def m_command_render_categories():
 
     # --- Render categoryless launchers. Order alphabetically by name ---
     catless_launchers = g_launcherRepository.find_by_category(VCATEGORY_ADDONROOT_ID)
-
     for launcher in sorted(catless_launchers, key = lambda l : l.get_name()):
         m_gui_render_launcher_row(launcher)
 
-    # --- AEL Favourites special category ---
+    # --- AEL Favourites virtual launcher ---
     if not g_settings['display_hide_favs']:
-        m_gui_render_category_favourites_row()
+        m_gui_render_vlauncher_favourites_row()
 
-    # --- AEL Collections special category ---
+    # --- AEL Collections virtual category ---
     if not g_settings['display_hide_collections']:
-        m_gui_render_category_collections_row()
+        m_gui_render_vcategory_collections_row()
+
+    # --- Recently played and most played ROMs virtual launchers ---
+    if not g_settings['display_hide_recent']:
+        m_gui_render_vlauncher_recently_played_row()
+    if not g_settings['display_hide_mostplayed']:
+        m_gui_render_vlauncher_most_played_row()
 
     # --- AEL Virtual Categories ---
     if not g_settings['display_hide_vlaunchers']:
-        m_gui_render_virtual_category_root_row()
+        m_gui_render_virtual_category_Browse_by_row()
 
     # --- Browse Offline Scraper database ---
     if not g_settings['display_hide_AEL_scraper']:
-        m_gui_render_category_AEL_offline_scraper_row()
+        m_gui_render_vcategory_AEL_offline_scraper_row()
     if not g_settings['display_hide_LB_scraper']:
-        m_gui_render_category_LB_offline_scraper_row()
-
-    # --- Recently played and most played ROMs ---
-    if not g_settings['display_hide_recent']:
-        m_gui_render_category_recently_played_row()
-    if not g_settings['display_hide_mostplayed']:
-        m_gui_render_category_most_played_row()
+        m_gui_render_vcategory_LB_offline_scraper_row()
 
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -3702,7 +3703,7 @@ def m_command_render_categories():
 # Renders all categories without Favourites, Collections, virtual categories, etc.
 # This function is called by skins to build shortcuts menu.
 #
-def m_command_render_all_categories():
+def m_command_render_root_skins():
     categories = g_categoryRepository.find_all()
 
     # >> If no categories render nothing
@@ -3771,7 +3772,7 @@ def m_gui_render_category_row(category):
     url_str = m_misc_url('SHOW_LAUNCHERS', categoryID)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder=True)
 
-def m_gui_render_category_favourites_row():
+def m_gui_render_vlauncher_favourites_row():
     # fav_icon   = 'DefaultFolder.png'
 
     # --- Create listitem row ---
@@ -3797,7 +3798,7 @@ def m_gui_render_category_favourites_row():
     url_str = m_misc_url('SHOW_FAVOURITES')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_category_collections_row():
+def m_gui_render_vcategory_collections_row():
     vcategory_name   = '{ROM Collections}'
     vcategory_plot   = 'Browse the user defined ROM Collections'
     vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/ROM_Collections_icon.png').getPath()
@@ -3820,7 +3821,7 @@ def m_gui_render_category_collections_row():
     url_str = m_misc_url('SHOW_COLLECTIONS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_virtual_category_root_row():
+def m_gui_render_virtual_category_Browse_by_row():
     vcategory_name   = '[Browse by ... ]'
     vcategory_label  = 'Browse by ...'
     vcategory_plot   = 'Browse AEL Virtual Launchers'
@@ -3844,7 +3845,7 @@ def m_gui_render_virtual_category_root_row():
     url_str = m_misc_url('SHOW_VCATEGORIES_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_category_AEL_offline_scraper_row():
+def m_gui_render_vcategory_AEL_offline_scraper_row():
     vcategory_name   = '[Browse AEL Offline Scraper]'
     # vcategory_label  = 'Browse Offline Scraper'
     vcategory_plot   = 'Allows you to browse the ROMs in the AEL Offline Scraper database'
@@ -3866,7 +3867,7 @@ def m_gui_render_category_AEL_offline_scraper_row():
     url_str = m_misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_category_LB_offline_scraper_row():
+def m_gui_render_vcategory_LB_offline_scraper_row():
     vcategory_name   = '[Browse LaunchBox Offline Scraper]'
     vcategory_label  = 'Browse Offline Scraper'
     vcategory_plot   = 'Allows you to browse the ROMs in the LaunchBox Offline Scraper database'
@@ -3888,7 +3889,7 @@ def m_gui_render_category_LB_offline_scraper_row():
     url_str = m_misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_category_recently_played_row():
+def m_gui_render_vlauncher_recently_played_row():
     vcategory_name   = '[Recently played ROMs]'
     vcategory_plot   = 'Browse the ROMs you played recently'
     vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
@@ -3909,7 +3910,7 @@ def m_gui_render_category_recently_played_row():
     url_str = m_misc_url('SHOW_RECENTLY_PLAYED')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_category_most_played_row():
+def m_gui_render_vlauncher_most_played_row():
     vcategory_name   = '[Most played ROMs]'
     vcategory_plot   = 'Browse the ROMs you play most'
     vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
@@ -3933,7 +3934,7 @@ def m_gui_render_category_most_played_row():
 # ---------------------------------------------------------------------------------------------
 # Virtual categories [Browse by ...]
 # ---------------------------------------------------------------------------------------------
-def m_gui_render_vcategories_root():
+def m_gui_render_Browse_by_root():
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
@@ -6500,8 +6501,8 @@ def m_command_view_menu(categoryID, launcherID, romID):
     log_debug('_command_view_menu() view_type = {0}'.format(view_type))
 
     # --- Build menu base on view_type ---
-    if LAUNCH_LOG_FILE_PATH.exists():
-        stat_stdout = LAUNCH_LOG_FILE_PATH.stat()
+    if g_PATHS.LAUNCH_LOG_FILE_PATH.exists():
+        stat_stdout = g_PATHS.LAUNCH_LOG_FILE_PATH.stat()
         size_stdout = stat_stdout.st_size()
         STD_status = '{0} bytes'.format(size_stdout)
     else:
@@ -6638,26 +6639,28 @@ def m_command_view_menu(categoryID, launcherID, romID):
     # --- Execute action ---
     if action == ACTION_VIEW_CATEGORY or action == ACTION_VIEW_LAUNCHER or \
        action == ACTION_VIEW_COLLECTION or action == ACTION_VIEW_ROM:
+        slist = []
         if view_type == VIEW_CATEGORY:
-            category = self.category_repository.find(categoryID)
             window_title = 'Category data'
-            info_text  = '[COLOR orange]Category information[/COLOR]\n'
-            info_text += self._misc_print_string_Category(category.get_data())
+            category = g_categoryRepository.find(categoryID)
+            slist.append('[COLOR orange]Category information[/COLOR]')
+            report_print_Category(slist, category.get_data_dic())
         elif view_type == VIEW_LAUNCHER:
+            window_title = 'Launcher data'
             launcher = g_launcherRepository.find(launcherID)
             category = self.category_repository.find(categoryID) if categoryID != VCATEGORY_ADDONROOT_ID else None
-            window_title = 'Launcher data'
-            info_text  = '[COLOR orange]Launcher information[/COLOR]\n'
-            info_text += self._misc_print_string_Launcher(launcher.get_data())
+            slist.append('[COLOR orange]Launcher information[/COLOR]')
+            report_print_Launcher(slist, launcher.get_data_dic())
             if category:
-                info_text += '\n[COLOR orange]Category information[/COLOR]\n'
-                info_text += self._misc_print_string_Category(category.get_data())
+                slist.append('')
+                slist.append('[COLOR orange]Category information[/COLOR]')
+                report_print_Category(slist, category.get_data_dic())
         elif view_type == VIEW_COLLECTION:
             window_title = 'ROM Collection data'
             (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            info_text = '[COLOR orange]ROM Collection information[/COLOR]\n'
-            info_text += self._misc_print_string_Collection(collection)
+            slist.append('[COLOR orange]ROM Collection information[/COLOR]')
+            report_print_Collection(slist, collection)
         else:
             # --- Read ROMs ---
             log_info('_command_view_menu() Viewing ROM in {} ...'.format(launcher.get_launcher_type_name()))
@@ -6677,7 +6680,6 @@ def m_command_view_menu(categoryID, launcherID, romID):
 
             rom = launcher.select_rom(romID)
             window_title = '{} ROM data'.format(launcher.get_launcher_type_name())
-            
             regular_launcher = True
             if launcher.get_launcher_type() == LAUNCHER_VIRTUAL or launcher.get_launcher_type() == LAUNCHER_COLLECTION:
                 regular_launcher = False
@@ -6694,7 +6696,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
                 window_title = 'Recently played ROM data'
                 regular_launcher = False
                 vlauncher_label = 'Recently played ROM'
-            
+
             # --- ROM in Collection ---
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_command_view_menu() Viewing ROM in Collection ...')
@@ -6729,12 +6731,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
                 info_text += self._misc_print_string_ROM_additional(rom)
 
         # --- Show information window ---
-        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-        dialog = xbmcgui.Dialog()
-        dialog.textviewer(window_title, info_text)
-        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+        kodi_display_text_window_mono(window_title, '\n'.join(slist))
 
     # --- Launcher statistical reports ---
     elif action == ACTION_VIEW_LAUNCHER_STATS or \
@@ -6789,12 +6786,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
         info_text = info_text.replace('<Asset statistics>', '[COLOR orange]<Asset statistics>[/COLOR]')
 
         # --- Show information window ---
-        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-        dialog = xbmcgui.Dialog()
-        dialog.textviewer(window_title, info_text)
-        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+        kodi_display_text_window_mono(window_title, info_text)
 
     # --- Launcher ROM scanner report ---
     elif action == ACTION_VIEW_LAUNCHER_SCANNER:
@@ -6808,12 +6800,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
 
         # --- Show information window ---
         window_title = 'ROM scanner report'
-        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-        dialog = xbmcgui.Dialog()
-        dialog.textviewer(window_title, info_text)
-        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+        kodi_display_text_window_mono(window_title, info_text)
 
     # --- View ROM Manual ---
     # >> Use Ghostscript like HyperLauncher?
@@ -6877,23 +6864,19 @@ def m_command_view_menu(categoryID, launcherID, romID):
         log_debug('_command_view_menu() Executing action == ACTION_VIEW_EXEC_OUTPUT')
 
         # --- Ckeck for errors and read file ---
-        if not LAUNCH_LOG_FILE_PATH.exists():
+        if not g_PATHS.LAUNCH_LOG_FILE_PATH.exists():
             kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
             return
         # >> Kodi BUG: if the log file size is 0 (it is empty) then Kodi displays in the
         # >> text window the last displayed text.
         info_text = ''
-        with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
+        with open(g_PATHSLAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
             log_debug('_command_view_menu() Reading launcher.log ...')
             info_text = myfile.read()
 
         # --- Show information window ---
         window_title = 'Launcher last execution stdout'
-        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-        xbmcgui.Dialog().textviewer(window_title, info_text)
-        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+        kodi_display_text_window_mono(window_title, info_text)
 
     else:
         kodi_dialog_OK('Wrong action == {0}. This is a bug, please report it.'.format(action))

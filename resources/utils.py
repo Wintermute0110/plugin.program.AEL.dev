@@ -1603,6 +1603,22 @@ def kodi_jsonrpc_query(method, params):
 
     return result_dic
 
+#
+# Displays a text window and requests a monospaced font.
+#
+def kodi_display_text_window_mono(window_title, info_text):
+    log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+    xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+    xbmcgui.Dialog().textviewer(window_title, info_text)
+    log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+    xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+#
+# Displays a text window with a proportional font (default).
+#
+def kodi_display_text_window(window_title, info_text):
+    xbmcgui.Dialog().textviewer(window_title, info_text)
+
 # -------------------------------------------------------------------------------------------------
 # Kodi Wizards (by Chrisism)
 # -------------------------------------------------------------------------------------------------
