@@ -21,9 +21,11 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+import collections
 
 # --- AEL packages ---
 from utils import *
+from disk_IO import *
 
 # #################################################################################################
 # #################################################################################################
@@ -1756,7 +1758,7 @@ class LauncherFactory(object):
         return None
 
     def get_supported_types(self):
-        typeOptions = OrderedDict()
+        typeOptions = collections.OrderedDict()
         typeOptions[LAUNCHER_STANDALONE]   = 'Standalone launcher (Game/Application)'
         typeOptions[LAUNCHER_FAVOURITES]   = 'Kodi favourite launcher'
         typeOptions[LAUNCHER_ROM]          = 'ROM launcher (Emulator)'
@@ -1933,12 +1935,15 @@ class MetaDataItem(object):
 
 # -------------------------------------------------------------------------------------------------
 # Class representing the categories in AEL.
+# Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItem):
     def __init__(self, category_data = None):
         super(Category, self).__init__(category_data)
 
         if self.entity_data is None:
+            # NOTE place all new databse dictionary generation code in diso_IO.py to have it
+            #      centralised in one place. Easier that have this code disperse over several objects.
             self.entity_data = {
              'id' : misc_generate_random_SID(),
              'm_name' : '',
@@ -1998,7 +2003,7 @@ class Category(MetaDataItem):
         return self.entity_data['s_trailer']
 
     def get_edit_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
@@ -2007,13 +2012,13 @@ class Category(MetaDataItem):
         options['DELETE_CATEGORY']    = 'Delete Category'
         return options
 
-    def get_metadata_edit_options(self):
+    def get_metadata_edit_options(self, settings_dic):
         # >> Metadata edit dialog
-        NFO_FileName = fs_get_category_NFO_name(self.settings, self.entity_data)
+        NFO_FileName = fs_get_category_NFO_name(settings_dic, self.entity_data)
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
         plot_str = text_limit_string(self.get_plot(), PLOT_STR_MAXSIZE)
-        
-        options = OrderedDict()
+
+        options = collections.OrderedDict()
         options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
         options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.get_releaseyear())
         options['EDIT_GENRE']             = "Edit Genre: '{0}'".format(self.get_genre())
@@ -2186,7 +2191,7 @@ class Rom(MetaDataItem):
         if category_id == VCATEGORY_COLLECTIONS_ID:
             delete_rom_txt = 'Delete Collection ROM'
 
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['EDIT_METADATA']    = 'Edit Metadata ...'
         options['EDIT_ASSETS']      = 'Edit Assets/Artwork ...'
         options['ROM_STATUS']       = 'Status: {0}'.format(self.get_state()).encode('utf-8')
@@ -2213,7 +2218,7 @@ class Rom(MetaDataItem):
         if rating == -1:
             rating = 'not rated'
 
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['EDIT_TITLE']             = u"Edit Title: '{0}'".format(self.get_name()).encode('utf-8')
         options['EDIT_RELEASEYEAR']       = u"Edit Release Year: '{0}'".format(self.get_releaseyear()).encode('utf-8')
         options['EDIT_GENRE']             = u"Edit Genre: '{0}'".format(self.get_genre()).encode('utf-8')
@@ -2233,7 +2238,7 @@ class Rom(MetaDataItem):
     # with which you can do advanced modifications on this specific rom.
     #
     def get_advanced_modification_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['CHANGE_ROM_FILE']          = "Change ROM file: '{0}'".format(self.get_filename())
         options['CHANGE_ALT_APPLICATION']   = "Alternative application: '{0}'".format(self.get_alternative_application())
         options['CHANGE_ALT_ARGUMENTS']     = "Alternative arguments: '{0}'".format(self.get_alternative_arguments())
@@ -2665,7 +2670,7 @@ class Launcher(MetaDataItem):
     #
     @abstractmethod
     def get_advanced_modification_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         return options
 
     #
@@ -2682,7 +2687,7 @@ class Launcher(MetaDataItem):
         if rating == -1:
             rating = 'not rated'
 
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
         options['EDIT_PLATFORM']          = "Edit Platform: {0}".format(self.entity_data['platform'])
         options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.entity_data['m_year'])
@@ -3117,7 +3122,7 @@ class RomLauncher(Launcher):
     def get_edit_options(self):
         finished_str = 'Finished' if self.entity_data['finished'] == True else 'Unfinished'   
 
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['EDIT_METADATA']        = 'Edit Metadata ...'
         options['EDIT_ASSETS']          = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS']   = 'Choose default Assets/Artwork ...'
@@ -3133,7 +3138,7 @@ class RomLauncher(Launcher):
 
     # Returns the dialog options to choose from when managing the roms.
     def get_manage_roms_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['SET_ROMS_DEFAULT_ARTWORK'] = 'Choose ROMs default artwork ...'
         options['SET_ROMS_ASSET_DIRS']      = 'Manage ROMs asset directories ...'
         options['SCAN_LOCAL_ARTWORK']       = 'Scan ROMs local artwork'
@@ -3150,7 +3155,7 @@ class RomLauncher(Launcher):
         display_mode_str        = self.entity_data['launcher_display_mode']
         no_intro_display_mode  = self.entity_data['nointro_display_mode']
 
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['CHANGE_DISPLAY_MODE']      = 'Change launcher display mode (now {0}) ...'.format(display_mode_str)
 
         if self.has_nointro_xml():
@@ -3430,7 +3435,7 @@ class ApplicationLauncher(Launcher):
         
     def get_edit_options(self):
 
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
@@ -3509,7 +3514,7 @@ class KodiLauncher(Launcher):
 
     def get_edit_options(self):
 
-        options = OrderedDict()
+        options = collections.OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
@@ -3615,15 +3620,15 @@ class CollectionLauncher(RomLauncher):
         return False
     
     def get_edit_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         return options
 
     def get_advanced_modification_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         return options
 
     def _get_builder_wizard(self, wizard):
-        return wizard    
+        return wizard
 
 # -------------------------------------------------------------------------------------------------
 # Virtual Launcher
@@ -3660,11 +3665,11 @@ class VirtualLauncher(RomLauncher):
         return False
     
     def get_edit_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         return options
 
     def get_advanced_modification_options(self):
-        options = OrderedDict()
+        options = collections.OrderedDict()
         return options
 
     def _get_builder_wizard(self, wizard):
@@ -4151,7 +4156,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
     def _get_available_retroarch_configurations(self, item_key, launcher):
     
-        configs = OrderedDict()
+        configs = collections.OrderedDict()
         configs['BROWSE'] = 'Browse for configuration'
 
         retroarch_folders = []
@@ -4181,7 +4186,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
     def _get_available_retroarch_cores(self, item_key, launcher):
     
-        cores = OrderedDict()
+        cores = collections.OrderedDict()
         cores['BROWSE'] = 'Manual enter path to core'
         cores_ext = '*.*'
 
@@ -4729,7 +4734,7 @@ class WindowsBatchFileExecutor(Executor):
     def execute(self, application, arguments, non_blocking):
         import subprocess
         import shlex
-                
+
         arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
         apppath = application.getDir()
@@ -4844,7 +4849,6 @@ class WebBrowserExecutor(Executor):
 
 class GameStreamServer(object):
     def __init__(self, host, certificates_path):
-
         self.host = host
         self.unique_id = random.getrandbits(16)
 
@@ -4864,7 +4868,6 @@ class GameStreamServer(object):
         self.key_cert_data = None
 
     def _perform_server_request(self, end_point,  useHttps=True, parameters = None):
-        
         if useHttps:
             url = "https://{0}:47984/{1}?uniqueid={2}&uuid={3}".format(self.host, end_point, self.unique_id, uuid.uuid4().hex)
         else:
@@ -5514,7 +5517,7 @@ class RecentlyPlayedRomSet(RomSet):
         log_info('RecentlyPlayedRomSet() Loading ROMs in Recently Played ROMs ...')
         romsList = self.loadRomsAsList()
 
-        roms = OrderedDict()
+        roms = collections.OrderedDict()
         for rom in romsList:
             roms[rom['id']] = rom
             
@@ -5579,7 +5582,7 @@ class CollectionRomSet(RomSet):
 
         romsList = self.loadRomsAsList()
         
-        roms = OrderedDict()
+        roms = collections.OrderedDict()
         for rom in romsList:
             roms[rom['id']] = rom
             

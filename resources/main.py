@@ -24,28 +24,31 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
-import sys
-import os
-import shutil
-import fnmatch
-import string
-import time
+from abc import ABCMeta, abstractmethod
+import collections
 import datetime
-import traceback
+from distutils.version import LooseVersion
+import exceptions
+import fnmatch
+import hashlib
 import importlib
+import os
 import re
+import shutil
+import socket
+import string
+import sys
+import time
+import traceback
 import urllib
 import urllib2
 import urlparse
-import socket
-import exceptions
-import hashlib
-from collections import OrderedDict
-from distutils.version import LooseVersion
-from abc import ABCMeta, abstractmethod
 
 # --- Kodi stuff ---
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon
+import xbmc
+import xbmcgui
+import xbmcplugin
+import xbmcaddon
 
 # --- Modules/packages in this addon ---
 # Addon module dependencies:
@@ -520,53 +523,46 @@ def m_run_protected(command, args):
 #
 # Runs submenu commands
 #
-def m_run_sub_command(self, command, category = None, launcher = None, rom = None):
-    log_debug('Advanced Emulator Launcher run_sub_command() - COMMAND: {}'.format(command))
+# NOTE instead of testing for category/launcher/rom/etc. we can check the type of the object, it
+#      is more elegant and pythonic.
+#
+def m_run_sub_command(command, category = None, launcher = None, rom = None):
+    log_debug('Advanced Emulator Launcher m_run_sub_command() COMMAND {0}'.format(command))
     has_category = category is not None
     has_launcher = launcher is not None
     has_rom = rom is not None
 
     if command is None:
-       log_warning('run_sub_command(): No command supplied')
-       return
+       log_warning('run_sub_command() No command supplied')
 
-    if command == 'EDIT_METADATA':
+    elif command == 'EDIT_METADATA':
         if has_category:
-            self._subcommand_edit_category_metadata(category)
-            return
-        if has_rom:
-            self._subcommand_edit_rom_metadata(launcher, rom)
-            return
-        if has_launcher:
-            self._subcommand_edit_launcher_metadata(launcher)
-            return
+            m_subcommand_edit_category_metadata(category)
+        elif has_rom:
+            m_subcommand_edit_rom_metadata(launcher, rom)
+        elif has_launcher:
+            m_subcommand_edit_launcher_metadata(launcher)
 
-    if command == 'EDIT_TITLE': 
+    elif command == 'EDIT_TITLE': 
         if has_rom:
             self._subcommand_edit_rom_title(launcher, rom)
-            return 
-        if has_launcher:
+        elif has_launcher:
             self._subcommand_change_launcher_name(launcher)
-            return
-        
-        self._subcommand_edit_category_title(category)
-        return
+        elif has_category:
+            self._subcommand_edit_category_title(category)
 
-    if command == 'EDIT_PLATFORM': 
+    elif command == 'EDIT_PLATFORM': 
         self._subcommand_edit_launcher_platform(launcher)
-        return
 
-    if command == 'EDIT_RELEASEYEAR': 
+    elif command == 'EDIT_RELEASEYEAR': 
         if has_rom:
             self._subcommand_edit_rom_release_year(launcher, rom)
-            return
-        if has_launcher:
+        elif has_launcher:
             self._subcommand_edit_launcher_releaseyear(launcher)
-            return
-        self._subcommand_edit_category_releaseyear(category)
-        return
+        elif has_category:
+            self._subcommand_edit_category_releaseyear(category)
 
-    if command == 'EDIT_GENRE': 
+    elif command == 'EDIT_GENRE': 
         if has_rom:
             self._subcommand_edit_rom_genre(launcher, rom)
             return
@@ -576,7 +572,7 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
         self._subcommand_edit_category_genre(category)
         return
 
-    if command == 'EDIT_DEVELOPER': 
+    elif command == 'EDIT_DEVELOPER': 
         if has_rom:
             self._subcommand_edit_rom_developer(launcher, rom)
             return
@@ -586,7 +582,7 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
         self._subcommand_edit_category_developer(category)
         return
 
-    if command == 'EDIT_RATING': 
+    elif command == 'EDIT_RATING': 
         if has_rom:
             self._subcommand_edit_rom_rating(launcher, rom)
             return
@@ -595,8 +591,8 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
             return
         self._subcommand_edit_category_rating(category)
         return
-    
-    if command == 'EDIT_PLOT': 
+
+    elif command == 'EDIT_PLOT': 
         if has_rom:
             self._subcommand_edit_rom_description(launcher, rom)
             return
@@ -605,27 +601,27 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
             return
         self._subcommand_edit_category_plot(category)
         return
-    
-    if command == 'LOAD_PLOT':
+
+    elif command == 'LOAD_PLOT':
         self._subcommand_import_rom_plot_from_txt(launcher, rom)
         return
 
-    if command == 'EDIT_NPLAYERS':
+    elif command == 'EDIT_NPLAYERS':
         self._subcommand_edit_rom_number_of_players(launcher, rom)
         return
 
-    if command == 'EDIT_ESRB':
+    elif command == 'EDIT_ESRB':
         self._subcommand_edit_rom_esrb_rating(launcher, rom)
         return
 
-    if command == 'IMPORT_NFO_FILE':
+    elif command == 'IMPORT_NFO_FILE':
         if has_rom:
             self._subcommand_import_rom_metadata(launcher, rom)
             return
         self._subcommand_import_launcher_nfo_file(launcher)
         return
 
-    if command == 'IMPORT_NFO_FILE_BROWSE': 
+    elif command == 'IMPORT_NFO_FILE_BROWSE': 
         if has_launcher:
             self._subcommand_browse_import_launcher_nfo_file(launcher)
             return
@@ -633,7 +629,7 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
         self._subcommand_browse_import_category_nfo_file(category)
         return
 
-    if command == 'SAVE_NFO_FILE': 
+    elif command == 'SAVE_NFO_FILE': 
         if has_rom:
             self._subcommand_export_rom_metadata(launcher, rom)
             return
@@ -644,7 +640,7 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
         self._subcommand_save_category_nfo_file(category)
         return
 
-    if command == 'EDIT_ASSETS':
+    elif command == 'EDIT_ASSETS':
         if has_category:
             self._subcommand_edit_category_assets(category)
             return
@@ -655,63 +651,51 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
             self._subcommand_edit_launcher_assets(launcher)
             return
 
-    if command == 'SET_DEFAULT_ASSETS':
+    elif command == 'SET_DEFAULT_ASSETS':
         if has_category:
             self._subcommand_set_category_default_assets(category)
             return
         if has_launcher:
             self._subcommand_set_launcher_default_assets(launcher)
             return
-    
-    if command == 'CATEGORY_STATUS':
+
+    elif command == 'CATEGORY_STATUS':
         self._subcommand_change_category_status(category)
-        return
-    
-    if command == 'LAUNCHER_STATUS':
+
+    elif command == 'LAUNCHER_STATUS':
         self._subcommand_change_launcher_status(launcher)
-        return        
-    
-    if command == 'ROM_STATUS':
+
+    elif command == 'ROM_STATUS':
         self._subcommand_change_rom_status(launcher, rom)
-        return
 
-    if command == 'EXPORT_CATEGORY':
+    elif command == 'EXPORT_CATEGORY':
         self._subcommand_export_category(category)
-        return
-        
-    if command == 'EXPORT_LAUNCHER':
+
+    elif command == 'EXPORT_LAUNCHER':
         self._subcommand_export_launcher(launcher)
-        return
-    
-    if command == 'EXPORT_ROMS': 
+
+    elif command == 'EXPORT_ROMS': 
         self._subcommand_export_roms(launcher)
-        return
 
-    if command == 'IMPORT_ROMS': 
+    elif command == 'IMPORT_ROMS': 
         self._subcommand_import_roms(launcher)
-        return  
 
-    if command == 'DELETE_CATEGORY':
+    elif command == 'DELETE_CATEGORY':
         self._subcommand_delete_category(category)
-        return
 
-    if command == 'DELETE_LAUNCHER':
+    elif command == 'DELETE_LAUNCHER':
         self._subcommand_delete_launcher(launcher)
-        return
 
-    if command == 'DELETE_ROM':
+    elif command == 'DELETE_ROM':
         self._subcommand_delete_rom(launcher, rom)
-        return
-    
-    if command == 'DELETE_ROMS_NFO': 
+
+    elif command == 'DELETE_ROMS_NFO': 
         self._subcommand_delete_roms_nfo(launcher)
-        return
 
-    if command == 'CLEAR_ROMS': 
+    elif command == 'CLEAR_ROMS': 
         self._subcommand_clear_roms(launcher)
-        return
 
-    if command == 'ADVANCED_MODS':
+    elif command == 'ADVANCED_MODS':
         if has_rom:
             self._subcommand_advanced_rom_modifications(launcher, rom)
             return
@@ -719,124 +703,98 @@ def m_run_sub_command(self, command, category = None, launcher = None, rom = Non
             self._subcommand_advanced_modifications(launcher)
             return
 
-    if command == 'CHANGE_APPLICATION': 
+    elif command == 'CHANGE_APPLICATION': 
         self._subcommand_change_launcher_application(launcher)
-        return
 
-    if command == 'MODIFY_ARGS':
+    elif command == 'MODIFY_ARGS':
         self._subcommand_modify_launcher_arguments(launcher)
-        return
 
-    if command == 'ADDITIONAL_ARGS': 
+    elif command == 'ADDITIONAL_ARGS': 
         self._subcommand_change_launcher_additional_arguments(launcher)
-        return
 
-    if command == 'TOGGLE_WINDOWED': 
+    elif command == 'TOGGLE_WINDOWED': 
         self._subcommand_toggle_windowed(launcher)
-        return
 
-    if command == 'TOGGLE_NONBLOCKING': 
+    elif command == 'TOGGLE_NONBLOCKING': 
         self._subcommand_toggle_nonblocking(launcher)
-        return
 
-    if command == 'TOGGLE_MULTIDISC': 
+    elif command == 'TOGGLE_MULTIDISC': 
         self._subcommand_toggle_multidisc(launcher)
-        return
 
-    if command == 'CHANGE_ROMPATH': 
+    elif command == 'CHANGE_ROMPATH': 
         self._subcommand_change_launcher_rompath(launcher)
-        return
 
-    if command == 'CHANGE_ROMEXT': 
+    elif command == 'CHANGE_ROMEXT': 
         self._subcommand_change_launcher_rom_extensions(launcher)
-        return
 
-    if command.startswith("SCRAPE_") and not command == 'SCRAPE_LOCAL_ARTWORK':
-        if has_rom:
-            self._subcommand_scrape_rom_metadata(launcher, rom, command)
-            return
-        self._subcommand_scrape_launcher(launcher, command)
-        return
+    # elif command.startswith('SCRAPE_') and not command == 'SCRAPE_LOCAL_ARTWORK':
+    #     if has_rom:
+    #         self._subcommand_scrape_rom_metadata(launcher, rom, command)
+    #         return
+    #     self._subcommand_scrape_launcher(launcher, command)
 
-    if command == 'CHANGE_CATEGORY':
+    elif command == 'CHANGE_CATEGORY':
         self._subcommand_change_launcher_category(launcher)
-        return
 
-    if command == 'MANAGE_ROMS':            
+    elif command == 'MANAGE_ROMS':
         self._subcommand_manage_roms(launcher)
-        return
-    
-    if command == 'AUDIT_ROMS':
+
+    elif command == 'AUDIT_ROMS':
         self._subcommand_audit_roms(launcher)
-        return
-    
-    if command == 'CHANGE_DISPLAY_MODE':
+
+    elif command == 'CHANGE_DISPLAY_MODE':
         self._subcommand_change_display_mode(launcher)
-        return
 
-    if command == 'ADD_NO_INTRO':
+    elif command == 'ADD_NO_INTRO':
         self._subcommand_add_no_intro(launcher)
-        return
 
-    if command == 'DELETE_NO_INTRO':
+    elif command == 'DELETE_NO_INTRO':
         self._subcommand_delete_no_intro(launcher)
-        return
-    
-    if command == 'CREATE_PARENTCLONE_DAT': 
+
+    elif command == 'CREATE_PARENTCLONE_DAT': 
         self.__subcommand_create_parentclone_dat(launcher)
-        return
 
-    if command == 'CHANGE_DISPLAY_ROMS': 
+    elif command == 'CHANGE_DISPLAY_ROMS': 
         self._subcommand_change_display_roms(launcher)
-        return
 
-    if command == 'UPDATE_ROM_AUDIT': 
+    elif command == 'UPDATE_ROM_AUDIT': 
         self.__subcommand_update_rom_audit(launcher)
-        return
 
-    if command == 'CHANGE_ROM_FILE':
+    elif command == 'CHANGE_ROM_FILE':
         self._subcommand_change_rom_file(launcher, rom)
-        return
 
-    if command == 'CHANGE_ALT_APPLICATION':
+    elif command == 'CHANGE_ALT_APPLICATION':
         self._subcommand_edit_rom_alternative_application(launcher, rom)
-        return
 
-    if command == 'CHANGE_ALT_ARGUMENTS':
+    elif command == 'CHANGE_ALT_ARGUMENTS':
         self._subcommand_edit_rom_alternative_arguments(launcher, rom)
-        return
 
-    if command == 'MANAGE_FAV_ROM':
+    elif command == 'MANAGE_FAV_ROM':
         self._subcommand_manage_favourite_rom(launcher, rom)
-        return
 
-    if command == 'MANAGE_COL_ROM': return
+    elif command == 'MANAGE_COL_ROM':
+        raise AttributeError
 
-    if command == 'MANAGE_COL_ROM_POS':
+    elif command == 'MANAGE_COL_ROM_POS':
         self._subcommand_manage_collection_rom_position(launcher, rom)
-        return
 
-    if command == 'SET_ROMS_DEFAULT_ARTWORK':
+    elif command == 'SET_ROMS_DEFAULT_ARTWORK':
         self._subcommand_set_roms_default_artwork(launcher)
-        return
 
-    if command == 'SET_ROMS_ASSET_DIRS': 
+    elif command == 'SET_ROMS_ASSET_DIRS': 
         self._subcommand_set_rom_asset_dirs(launcher)
-        return
 
-    if command == 'SCAN_LOCAL_ARTWORK': 
+    elif command == 'SCAN_LOCAL_ARTWORK': 
         self._subcommand_scan_local_artwork(launcher)
-        return
 
-    if command == 'SCRAPE_LOCAL_ARTWORK': 
+    elif command == 'SCRAPE_LOCAL_ARTWORK': 
         self._subcommand_scrape_local_artwork(launcher)
-        return
 
-    if command == 'REMOVE_DEAD_ROMS': 
+    elif command == 'REMOVE_DEAD_ROMS': 
         self._subcommand_remove_dead_roms(launcher)
-        return
 
-    log_warning('run_sub_command(): Unsupported command "{}"'.format(command))
+    else:
+        log_warning('run_sub_command() Unsupported command "{}"'.format(command))
 
 #
 # Get Addon Settings
@@ -1022,19 +980,16 @@ def m_command_add_new_category():
 def m_command_edit_category(categoryID):
     category      = g_categoryRepository.find(categoryID)
     options       = category.get_edit_options()
-    category_data = category.get_data()
+    category_data = category.get_data_dic()
 
     # --- Shows a select box with the options to edit ---
-    dialog = DictionaryDialog()
-    selected_option = dialog.select('Select action for Category {0}'.format(category.get_name()), options)
-     
+    s = 'Select action for Category {0}'.format(category.get_name())
+    selected_option = KodiDictionaryDialog().select(s, options)
     if selected_option is None:
         log_debug('_command_edit_category(): Selected option = NONE')
         return
-            
     log_debug('_command_edit_category(): Selected option = {0}'.format(selected_option))
-    self.run_sub_command(selected_option, category)
-    return
+    m_run_sub_command(selected_option, category)
 
 def m_command_add_new_launcher(categoryID):
     # >> If categoryID not found user is creating a new launcher using the context menu
@@ -1085,11 +1040,10 @@ def m_command_add_new_launcher(categoryID):
     kodi_refresh_container()
 
 def m_command_edit_launcher(categoryID, launcherID):
-
     launcher = g_launcherRepository.find(launcherID)
     if launcher is None:
         return
-    
+
     # --- Shows a select box with the options to edit ---
     dialog = DictionaryDialog()
     launcher_options = launcher.get_edit_options()
@@ -1106,13 +1060,11 @@ def m_command_edit_launcher(categoryID, launcherID):
         log_debug('_command_edit_launcher(): Selected option = {0}'.format(selected_option))
 
     self.run_sub_command(selected_option, None, launcher)
-    return
 
 #
 # Add ROMS to launcher
 #
 def m_command_add_roms(launcherID):
-
     dialog = xbmcgui.Dialog()
     type = dialog.select('Add/Update ROMs to Launcher', ['Scan for New ROMs', 'Manually Add ROM'])
     if type == 0:
@@ -1125,7 +1077,6 @@ def m_command_add_roms(launcherID):
 # a ROM in Favourites.
 #
 def m_command_edit_rom(categoryID, launcherID, romID):
-    
     if romID == UNKNOWN_ROMS_PARENT_ID:
         kodi_dialog_OK('You cannot edit this ROM!')
         return
@@ -1138,7 +1089,6 @@ def m_command_edit_rom(categoryID, launcherID, romID):
 
     # --- Show a dialog with ROM editing options ---
     rom_options = rom.get_edit_options(categoryID)
-    
     dialog = DictionaryDialog()
     selected_option = dialog.select('Edit ROM {0}'.format(rom.get_name()), rom_options)
     
@@ -1146,20 +1096,33 @@ def m_command_edit_rom(categoryID, launcherID, romID):
         log_debug('_command_edit_rom(): No selected option')
         kodi_refresh_container()
         return
-    
+
     log_debug('_command_edit_rom(): Selected option = {0}'.format(selected_option))
     if type(selected_option) is tuple:
         selected_option = selected_option[0]
         log_debug('_command_edit_rom(): Selected option = {0}'.format(selected_option))
 
     self.run_sub_command(selected_option, None, launcher, rom)
-    return
 
 # ---------------------------------------------------------------------------------------------
-# Sub commands
+# Category context menu subcommands
 # ---------------------------------------------------------------------------------------------
+# --- Edit category metadata ---
+def m_subcommand_edit_category_metadata(category):
+    category_options = category.get_metadata_edit_options(g_settings)
+
+    dialog = KodiDictionaryDialog()
+    selected_option = dialog.select('Edit Category Metadata', category_options)
+
+    if selected_option is None:
+        log_debug('_subcommand_edit_category_metadata(): Selected option = NONE')
+        m_command_edit_category(category.get_id())
+
+    log_debug('_subcommand_edit_category_metadata(): Selected option = {0}'.format(selected_option))
+    m_run_sub_command(selected_option, category)
+    m_subcommand_edit_category_metadata(category)
+
 def m_subcommand_edit_launcher_category(self, launcher):
-
     current_category_ID = launcher.get_category_id()
 
     # >> If no Categories there is nothing to change
@@ -1203,24 +1166,6 @@ def m_subcommand_edit_launcher_category(self, launcher):
     xbmc.executebuiltin(exec_str)
     kodi_notify('Launcher new Category is {0}'.format(categories_name[selected_cat]))
     kodi_refresh_container()
-    return
-
-# --- Edit category metadata ---
-def m_subcommand_edit_category_metadata(category):
-            
-    category_options = category.get_metadata_edit_options()
-
-    dialog = DictionaryDialog()
-    selected_option = dialog.select('Edit Category Metadata', category_options)
-     
-    if selected_option is None:
-        log_debug('_subcommand_edit_category_metadata(): Selected option = NONE')
-        return self._command_edit_category(category.get_id())
-            
-    log_debug('_subcommand_edit_category_metadata(): Selected option = {0}'.format(selected_option))
-    self.run_sub_command(selected_option, category)
-    self._subcommand_edit_category_metadata(category)
-    return
 
 # --- Edition of the category name ---
 def m_subcommand_edit_category_title(category):
