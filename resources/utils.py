@@ -1591,7 +1591,7 @@ def kodi_jsonrpc_query(method, params):
     # log_debug('kodi_jsonrpc_query() params "{0}"'.format(params))
 
     # >> Do query
-    query_str = '{{ "id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {{ {1} }}}}'.format(method, params)
+    query_str = '{{"id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {{ {1} }}}}'.format(method, params)
     # # log_debug('kodi_jsonrpc_query() query_str "{0}"'.format(query_str))
     response_json_str = xbmc.executeJSONRPC(query_str)
     # log_debug('kodi_jsonrpc_query() response "{0}"'.format(response_json_str))

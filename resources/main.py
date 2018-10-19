@@ -226,7 +226,7 @@ def run_plugin(addon_argv):
         getprops_dic = kodi_jsonrpc_query('Application.GetProperties', '"properties" : ["name", "version"]')
         getskin_dic  = kodi_jsonrpc_query('Settings.GetSettingValue',  '"setting" : "lookandfeel.skin"')
         json_rpc_end = time.time()
-        log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
+        # log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
 
         # >> Parse returned JSON and nice print <<
         r_name     = getprops_dic['name']
@@ -328,7 +328,7 @@ def run_plugin(addon_argv):
     log_debug('Advanced Emulator Launcher run_plugin() exit')
 
 #
-# Bootstrap factory instances
+# Bootstrap factory object instances.
 #
 def m_bootstrap_instances():
     # >> Grant write access to global variables
@@ -347,10 +347,12 @@ def m_bootstrap_instances():
     executorFactory     = ExecutorFactory(g_settings, g_PATHS)
     g_launcherFactory   = LauncherFactory(g_settings, g_PATHS, executorFactory)
 
-    # --- Load categories/launchers/collections databases ---
+    # --- Load categories/launchers databases ---
     data_context           = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('categories.xml'))
     g_categoryRepository   = CategoryRepository(data_context)
     g_launcherRepository   = LauncherRepository(data_context, g_launcherFactory)
+
+    # --- Load collections databases ---
     data_context           = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('collections.xml'))
     g_collectionRepository = CollectionRepository(data_context)
 
