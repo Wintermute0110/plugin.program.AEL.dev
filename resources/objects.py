@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+#
 # Advanced Emulator Launcher miscellaneous set of objects
 #
+
+# 1. Always use new style classes in Python 2 to ease the transition to Python 3.
+#    All classes in Python 2 must have object as base class.
+#    See https://stackoverflow.com/questions/4015417/python-class-inherits-object
 
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
@@ -1002,12 +1007,12 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
 # This class holds the actual XML data and reads/writes that data.
 # -------------------------------------------------------------------------------------------------
 class XmlDataContext(object):
-
     def __init__(self, xml_file_path):
+        log_debug('XmlDataContext::__init__() "{0}"'.format(xml_file_path.getPath()))
         self._xml_root = None
         self.repository_file_path = xml_file_path
 
-    # lazy loading of xml data through property
+    # Lazy loading of xml data through property
     @property
     def xml_data(self):
         if self._xml_root is None:
@@ -1015,36 +1020,35 @@ class XmlDataContext(object):
 
         return self._xml_root
 
-    def _load_xml(self):  
+    def _load_xml(self):
         # --- Parse using cElementTree ---
-        # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
-        log_verb('XmlDataContext._load_xml() Loading {0}'.format(self.repository_file_path.getOriginalPath()))
+        # >> If there are issues in the XML file (for example, invalid XML chars)
+        # >> ET.parse() will fail.
+        log_verb('XmlDataContext::_load_xml() Loading {0}'.format(self.repository_file_path.getOriginalPath()))
         try:
             self._xml_root = self.repository_file_path.readXml()
         except IOError as e:
-            log_debug('XmlDataContext._load_xml() (IOError) errno = {0}'.format(e.errno))
+            log_debug('XmlDataContext::_load_xml() (IOError) errno = {0}'.format(e.errno))
             # log_debug(unicode(errno.errorcode))
             # >> No such file or directory
             if e.errno == errno.ENOENT:
-                log_error('XmlDataContext._load_xml() (IOError) No such file or directory.')
+                log_error('XmlDataContext::_load_xml() (IOError) No such file or directory.')
             else:
-                log_error('CategoryRepository._load_xml() (IOError) Unhandled errno value.')
-            
-            log_error('XmlDataContext._load_xml() (IOError) Return empty categories and launchers dictionaries.')
-            return
+                log_error('CategoryRepository::_load_xml() (IOError) Unhandled errno value.')
+            log_error('XmlDataContext::_load_xml() (IOError) Return empty categories and launchers dictionaries.')
         except ET.ParseError as e:
-            log_error('XmlDataContext._load_xml() (ParseError) Exception parsing XML categories.xml')
-            log_error('XmlDataContext._load_xml() (ParseError) {0}'.format(str(e)))
+            log_error('XmlDataContext::_load_xml() (ParseError) Exception parsing XML categories.xml')
+            log_error('XmlDataContext::_load_xml() (ParseError) {0}'.format(str(e)))
             kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                            'Maybe XML file is corrupt or contains invalid characters.')
 
-    def get_nodes(self, tag):   
-        log_debug('XmlDataContext.get_nodes(): xpath query "{}"'.format(tag))
+    def get_nodes(self, tag):
+        log_debug('XmlDataContext::get_nodes(): xpath query "{}"'.format(tag))
         return self.xml_data.findall(tag)
 
     def get_node(self, tag, id):
         query = "{}[id='{}']".format(tag, id)
-        log_debug('XmlDataContext.get_node(): xpath query "{}"'.format(query))
+        log_debug('XmlDataContext::get_node(): xpath query "{}"'.format(query))
         return self.xml_data.find(query)
 
     def get_nodes_by(self, tag, field, value):
@@ -1086,7 +1090,7 @@ class XmlDataContext(object):
     def commit(self):
         log_info('Committing changes to XML file. File: {}'.format(self.repository_file_path.getOriginalPath()))
         self.repository_file_path.writeXml(self._xml_root)
-        
+
 # -------------------------------------------------------------------------------------------------
 # Repository class for Category objects.
 # Arranges retrieving and storing of the categories from and into the xml data file.
@@ -1132,7 +1136,7 @@ class CategoryRepository(object):
         category_element = self.data_context.get_node('category', category_id)
 
         if category_element is None:
-            log_debug('Cannot find category with id {}'.format(category_id))
+            log_debug('Cannot find category with id {0}'.format(category_id))
             return None
 
         category_dict = self._parse_xml_to_dictionary(category_element)
@@ -1142,8 +1146,8 @@ class CategoryRepository(object):
     def find_all(self):
         categories = []
         category_elements = self.data_context.get_nodes('category')
-        log_debug('{} categories found'.format(len(category_elements)))
-        
+        log_debug('{0} categories found'.format(len(category_elements)))
+
         for category_element in category_elements:
             category_data = self._parse_xml_to_dictionary(category_element)
             
@@ -1191,9 +1195,9 @@ class CategoryRepository(object):
 # -------------------------------------------------------------------------------------------------
 class LauncherRepository(object):
     def __init__(self, data_context, launcher_factory):
-        self.data_context = data_context        
+        self.data_context = data_context
         self.launcher_factory = launcher_factory
-    
+
     def _new_launcher_dataset(self):
         l = {'id' : '',
              'm_name' : '',
@@ -1264,9 +1268,9 @@ class LauncherRepository(object):
         __debug_xml_parser = False
         # Default values
         launcher = self._new_launcher_dataset()
-        
+
         if __debug_xml_parser: 
-            log_debug('Element has {} child elements'.format(len(launcher_element)))
+            log_debug('Element has {0} child elements'.format(len(launcher_element)))
 
         # Parse child tags of launcher element
         for element_child in launcher_element:
@@ -1283,11 +1287,11 @@ class LauncherRepository(object):
                 launcher[xml_tag].append(xml_text)
             # >> Transform Bool datatype
             elif xml_tag == 'finished' or xml_tag == 'toggle_window' or xml_tag == 'non_blocking' or \
-                    xml_tag == 'multidisc':
+                 xml_tag == 'multidisc':
                 launcher[xml_tag] = True if xml_text == 'True' else False
             # >> Transform Int datatype
             elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
-                    xml_tag == 'num_have' or xml_tag == 'num_miss' or xml_tag == 'num_unknown':
+                 xml_tag == 'num_have' or xml_tag == 'num_miss' or xml_tag == 'num_unknown':
                 launcher[xml_tag] = int(xml_text)
             # >> Transform Float datatype
             elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
@@ -1338,7 +1342,6 @@ class LauncherRepository(object):
         for launcher_element in launcher_elements:
             launcher_data = self._parse_xml_to_dictionary(launcher_element)
             launcher = launcher_factory.create(launcher_data)
-
             launchers.append(launcher)
 
         return launchers
@@ -1701,7 +1704,7 @@ class LauncherFactory(object):
         if not self.COLLECTIONS_DIR.exists():           self.COLLECTIONS_DIR.makedirs()
 
     def _initialize_virtual_launchers(self):
-        log_info('LauncherFactory() Preinitializing virtual launchers.')
+        log_info('LauncherFactory::_initialize_virtual_launchers() Preinitializing virtual launchers.')
 
         # create default data
         recently_played_roms_dic = {'id': VLAUNCHER_RECENT_ID, 'm_name': 'Recently played', 'roms_base_noext': 'history' }
