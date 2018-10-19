@@ -14,6 +14,12 @@
 [Kodi_wiki_artwork]: http://kodi.wiki/view/InfoLabels#Images_Available_in_Kodi
 
 
+## TODO
+
+ * Describe the ListItem properties that define a **Category**, **Launcher** or **ROM**.
+
+ * Describe the global properties `Window(10000)`.
+
 ## Categories
 
 ### List of Virtual Categories ###
