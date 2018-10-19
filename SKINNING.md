@@ -1,4 +1,4 @@
-# Advanced Emulator Launcher metadata and artwork data model #
+## Advanced Emulator Launcher metadata and artwork data model
 
  * Look in [Pydocs_setInfo] for valid setInfo() infoLabels.
 
@@ -14,6 +14,8 @@
 [Kodi_wiki_artwork]: http://kodi.wiki/view/InfoLabels#Images_Available_in_Kodi
 
 
+## Categories
+
 ### List of Virtual Categories ###
 
  * **{ROM Collections}**
@@ -26,21 +28,7 @@
 
  * Inside **[Browse by ...]**, **Browse ROMs by Title**, **Browse ROMs by Year**, ...
 
-### List of Virtual Launchers ###
-
- * **<Favourites>**
-
- * **[Recently played ROMs]**
-
- * **[Most played ROMs]**
-
- * Inside **{ROM Collections}**, every collection is a Virtual Launcher.
-
- * Inside **[Browse AEL Offline Scraper]**, every platform name is a Virtual Launcher.
-
- * Inside **[Browse LaunchBox Offline Scraper]**, every platform name is a Virtual Launcher.
-
-## Category metadata labels ##
+### Category metadata labels ###
 
  * Properties set by AEL when a **Category** or **Virtual Category** is selected.
 
@@ -53,7 +41,7 @@
 | Plot          | m_plot    | plot        |                | `$INFO[ListItem.Plot]`  | string               |
 | Rating        | m_rating  | rating      |                |                         | string from 0 to 10  |
 
-## Categories asset labels ##
+### Categories asset labels ###
 
  * Properties set by AEL when a **Category** or **Virtual Category** is selected.
 
@@ -72,7 +60,23 @@
 | Extrafanart | extrafanart | extrafanart1 |               | `Not implemented yet`            |
 | Extrafanart | extrafanart | extrafanart2 |               | `Not implemented yet`            |
 
-## Launcher metadata labels ##
+## Launchers
+
+### List of Virtual Launchers ###
+
+ * **[Favourites]**
+
+ * **[Recently played ROMs]**
+
+ * **[Most played ROMs]**
+
+ * Inside **{ROM Collections}**, every collection is a Virtual Launcher.
+
+ * Inside **[Browse AEL Offline Scraper]**, every platform name is a Virtual Launcher.
+
+ * Inside **[Browse LaunchBox Offline Scraper]**, every platform name is a Virtual Launcher.
+
+### Launcher metadata labels ###
 
  * Properties set by AEL when a **Launcher** or **Virtual Launcher** is selected.
 
@@ -86,30 +90,30 @@
    If Year and Rating are not set they are the empty strings, which is different from integer 0. 
    Kodi seems to handle this behaviour well.
 
- Metadata name | AEL name  | setInfo | setProperty | Type                 |
----------------|-----------|---------|-------------|----------------------|
- Title         | m_name    | title   |             | string               |
- Year          | m_year    | year    |             | string               |
- Genre         | m_genre   | genre   |             | string               |
- Plot          | m_plot    | plot    |             | string               |
- Studio        | m_studio  | studio  |             | string               |
- Rating        | m_rating  | rating  |             | string range 0 to 10 |
- Trailer       | s_trailer | trailer |             | string               |
- Platform      | platform  |         | platform    | string               |
-               |           | overlay |             | int range 0 to 8     |
+| Metadata name | AEL name  | setInfo | setProperty | Type                 |
+|---------------|-----------|---------|-------------|----------------------|
+| Title         | m_name    | title   |             | string               |
+| Year          | m_year    | year    |             | string               |
+| Genre         | m_genre   | genre   |             | string               |
+| Plot          | m_plot    | plot    |             | string               |
+| Studio        | m_studio  | studio  |             | string               |
+| Rating        | m_rating  | rating  |             | string range 0 to 10 |
+| Trailer       | s_trailer | trailer |             | string               |
+| Platform      | platform  |         | platform    | string               |
+|               |           | overlay |             | int range 0 to 8     |
 
 
-## Launchers asset labels ##
- 
- Asset name  | AEL name    | setArt label | setInfo label |
--------------|-------------|--------------|---------------|
- Thumb       | s_thumb     | thumb        |               |
- Fanart      | s_fanart    | fanart       |               |
- Banner      | s_banner    | banner       |               |
- Flyer       | s_flyer     | poster       |               |
- Trailer     | s_trailer   |              | trailer       |
- Extrafanart | extrafanart | extrafanart1 |               |
- Extrafanart | extrafanart | extrafanart2 |               |
+### Launchers asset labels ###
+
+| Asset name  | AEL name    | setArt label | setInfo label |
+|-------------|-------------|--------------|---------------|
+| Thumb       | s_thumb     | thumb        |               |
+| Fanart      | s_fanart    | fanart       |               |
+| Banner      | s_banner    | banner       |               |
+| Flyer       | s_flyer     | poster       |               |
+| Trailer     | s_trailer   |              | trailer       |
+| Extrafanart | extrafanart | extrafanart1 |               |
+| Extrafanart | extrafanart | extrafanart2 |               |
 
  * `thumb` label is set to `DefaultProgram.png` or `DefaultFolder.png`.
 
@@ -117,19 +121,21 @@
 
  * `extrafanart` is a Python list.
 
-## ROMs metadata labels ##
+## ROMs
 
- Metadata name | AEL name  | setInfo | setProperty | Type                 |
----------------|-----------|---------|-------------|----------------------|
- Title         | m_name    | title   |             | string               |
- Year          | m_year    | year    |             | string               |
- Genre         | m_genre   | genre   |             | string               |
- Plot          | m_plot    | plot    |             | string               |
- Studio        | m_studio  | studio  |             | string               |
- Rating        | m_rating  | rating  |             | string range 0 to 10 |
- Trailer       | s_trailer | trailer |             | string               |
- Platform      | platform  |         | platform    | string               |
-               |           | overlay |             | int range 0 to 8     |
+### ROMs metadata labels ###
+
+| Metadata name | AEL name  | setInfo | setProperty | Type                 |
+|---------------|-----------|---------|-------------|----------------------|
+| Title         | m_name    | title   |             | string               |
+| Year          | m_year    | year    |             | string               |
+| Genre         | m_genre   | genre   |             | string               |
+| Plot          | m_plot    | plot    |             | string               |
+| Studio        | m_studio  | studio  |             | string               |
+| Rating        | m_rating  | rating  |             | string range 0 to 10 |
+| Trailer       | s_trailer | trailer |             | string               |
+| Platform      | platform  |         | platform    | string               |
+|               |           | overlay |             | int range 0 to 8     |
 
  * setInfo first argument is `video`. 
 
@@ -141,25 +147,25 @@
    Kodi seems to handle this behaviour well.
 
 
-## ROMs asset labels ##
- 
- Asset name  | AEL name    | setArt label | setInfo label | MAME mapping for MAME views |
--------------|-------------|--------------|---------------|-----------------------------|
- Title       | s_title     | title/thumb  |               | title                       |
- Snap        | s_snap      | snap         |               | snap                        |
- Fanart      | s_fanart    | fanart       |               | fanart                      |
- Banner      | s_banner    | banner       |               | marquee                     |
- Clearlogo   | s_clearlogo | clearlogo    |               | clearlogo                   |
- Boxfront    | s_boxfront  | boxfront     |               | cabinet                     |
- Boxback     | s_boxback   | boxback      |               | cpanel                      |
- Cartridge   | s_cartridge | cartridge    |               | pcb                         |
- Flyer       | s_flyer     | poster       |               | flyer                       |
- Map         | s_map       | map          |               |                             |
- Manual      | s_manual    |              |               | manual                      |
- Trailer     | s_trailer   |              | trailer       | trailer                     |
- Extrafanart | extrafanart | extrafanart1 |               | extrafanart                 |
- Extrafanart | extrafanart | extrafanart2 |               | extrafanart                 |
- 
+### ROMs asset labels ###
+
+| Asset name  | AEL name    | setArt label | setInfo label | MAME mapping for MAME views |
+|-------------|-------------|--------------|---------------|-----------------------------|
+| Title       | s_title     | title/thumb  |               | title                       |
+| Snap        | s_snap      | snap         |               | snap                        |
+| Fanart      | s_fanart    | fanart       |               | fanart                      |
+| Banner      | s_banner    | banner       |               | marquee                     |
+| Clearlogo   | s_clearlogo | clearlogo    |               | clearlogo                   |
+| Boxfront    | s_boxfront  | boxfront     |               | cabinet                     |
+| Boxback     | s_boxback   | boxback      |               | cpanel                      |
+| Cartridge   | s_cartridge | cartridge    |               | pcb                         |
+| Flyer       | s_flyer     | poster       |               | flyer                       |
+| Map         | s_map       | map          |               |                             |
+| Manual      | s_manual    |              |               | manual                      |
+| Trailer     | s_trailer   |              | trailer       | trailer                     |
+| Extrafanart | extrafanart | extrafanart1 |               | extrafanart                 |
+| Extrafanart | extrafanart | extrafanart2 |               | extrafanart                 |
+
  * `thumb` label is set to `DefaultProgram.png`.
 
  * For Confluence/Estuary, user will be able to configure what artwork will be set as `thumb`
@@ -171,26 +177,26 @@
 
 ## Launchers/Categories artwork supported by plugins ##
 
- Plugin | Thumb | Fanart | Banner | Poster | Trailer |
---------|-------|--------|--------|--------|---------|
-AL      |  YES  |  YES   |  NO    |  NO    | NO      |
-AEL     |  YES  |  YES   |  YES   |  YES   | YES     |
-HL      |  YES  |  YES   |  YES   |  YES   | ???     |
-IARL    |  ???  |  ???   |  ???   |  ???   | ???     |
+| Plugin | Thumb | Fanart | Banner | Poster | Trailer |
+|--------|-------|--------|--------|--------|---------|
+| AL     |  YES  |  YES   |  NO    |  NO    | NO      |
+| AEL    |  YES  |  YES   |  YES   |  YES   | YES     |
+| HL     |  YES  |  YES   |  YES   |  YES   | ???     |
+| IARL   |  ???  |  ???   |  ???   |  ???   | ???     |
 
 
 ## Console ROMs asset availability ##
 
-  Artwork site    | Title | Snap | Fanart | Banner | Boxfront | Boxback | Cartridge | Flyer | Map | Manual | Trailer |
-------------------|-------|------|--------|--------|----------|---------|-----------|-------|-----|--------|---------|
-[EmuMovies]       |  YES  | YES  |  NO    |   NO   |   YES    |   YES   |    YES    |  YES  | YES |  YES   |   YES   |
-[HyperSpin Media] |  NO   | NO   |  <1>   |   YES  |   YES    |   NO    |    YES    |  <1>  | <1> |  NO    |   NO    |
-[No-Intro]        |  YES  | NO   |  NO    |   NO   |   YES    |   YES   |    YES    |  NO   | NO  |  YES   |   NO    |
-[Retroarch]       |  YES  | YES  |  NO    |   NO   |   YES    |   NO    |    NO     |  NO   | NO  |  NO    |   NO    |
-[TheGamesDB]      |  <2>  | <2>  |  YES   |   YES  |   YES    |   YES   |    NO     |  NO   | NO  |  NO    | YouTube |
-[GameFAQs]        |  <2>  | <2>  |  NO    |   NO   |   YES    |   YES   |    NO     |  NO   | NO  |  NO    |   NO    |
-[MobyGames]       |  <2>  | <2>  |  NO    |   NO   |   YES    |   YES   |    YES    |  NO   | NO  |  NO    |   NO    |
-[GiantBomb]       |  <3>  | <3>  |  <3>   |   <3>  |   YES    |   <3>   |    <3>    |  NO   | NO  |  NO    | YouTube |
+| Artwork site      | Title | Snap | Fanart | Banner | Boxfront | Boxback | Cartridge | Flyer | Map | Manual | Trailer |
+|-------------------|-------|------|--------|--------|----------|---------|-----------|-------|-----|--------|---------|
+| [EmuMovies]       |  YES  | YES  |  NO    |   NO   |   YES    |   YES   |    YES    |  YES  | YES |  YES   |   YES   |
+| [HyperSpin Media] |  NO   | NO   |  <1>   |   YES  |   YES    |   NO    |    YES    |  <1>  | <1> |  NO    |   NO    |
+| [No-Intro]        |  YES  | NO   |  NO    |   NO   |   YES    |   YES   |    YES    |  NO   | NO  |  YES   |   NO    |
+| [Retroarch]       |  YES  | YES  |  NO    |   NO   |   YES    |   NO    |    NO     |  NO   | NO  |  NO    |   NO    |
+| [TheGamesDB]      |  <2>  | <2>  |  YES   |   YES  |   YES    |   YES   |    NO     |  NO   | NO  |  NO    | YouTube |
+| [GameFAQs]        |  <2>  | <2>  |  NO    |   NO   |   YES    |   YES   |    NO     |  NO   | NO  |  NO    |   NO    |
+| [MobyGames]       |  <2>  | <2>  |  NO    |   NO   |   YES    |   YES   |    YES    |  NO   | NO  |  NO    |   NO    |
+| [GiantBomb]       |  <3>  | <3>  |  <3>   |   <3>  |   YES    |   <3>   |    <3>    |  NO   | NO  |  NO    | YouTube |
 
   * `Banner` is a horizontal image with name of ROM/system. It is called `Wheel` in Hyperspin and `Logo` in HL.
      
