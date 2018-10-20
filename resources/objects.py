@@ -1095,10 +1095,11 @@ class XmlDataContext(object):
 
 # -------------------------------------------------------------------------------------------------
 # Repository class for Category objects.
-# Arranges retrieving and storing of the categories from and into the xml data file.
+# Arranges retrieving and storing of the categories from and into the XML data file.
 # -------------------------------------------------------------------------------------------------
 class CategoryRepository(object):
     def __init__(self, data_context):
+        log_debug('CategoryRepository::__init__()')
         self.data_context = data_context
 
     # -------------------------------------------------------------------------------------------------
@@ -1136,27 +1137,22 @@ class CategoryRepository(object):
             return Category.create_root_category()
 
         category_element = self.data_context.get_node('category', category_id)
-
         if category_element is None:
             log_debug('Cannot find category with id {0}'.format(category_id))
             return None
+        category_dic = self._parse_xml_to_dictionary(category_element)
+        category = Category(category_dic)
 
-        category_dict = self._parse_xml_to_dictionary(category_element)
-        category = Category(category_dict)
         return category
 
     def find_all(self):
         categories = []
         category_elements = self.data_context.get_nodes('category')
-        log_debug('{0} categories found'.format(len(category_elements)))
-
+        log_debug('Found {0} categories'.format(len(category_elements)))
         for category_element in category_elements:
-            category_data = self._parse_xml_to_dictionary(category_element)
-            
-            log_debug('Creating category instance for category#{}'.format(category_data['id']))
-            category = Category(category_data)
-
-            # --- Add category to categories dictionary ---
+            category_dic = self._parse_xml_to_dictionary(category_element)
+            log_debug('Creating category instance for category {0}'.format(category_dic['id']))
+            category = Category(category_dic)
             categories.append(category)
 
         return categories
@@ -1308,11 +1304,9 @@ class LauncherRepository(object):
             return launcher
 
         launcher_element = self.data_context.get_node('launcher', launcher_id)
-
         if launcher_element is None:
             log_debug('Launcher #{} not found'.format(launcher_id))
             return None
-
         launcher_data = self._parse_xml_to_dictionary(launcher_element)
         launcher = self.launcher_factory.create(launcher_data)
 
@@ -1332,7 +1326,6 @@ class LauncherRepository(object):
         for launcher_element in launcher_elements:
             launcher_data = self._parse_xml_to_dictionary(launcher_element)
             launcher = launcher_factory.create(launcher_data)
-
             launchers.append(launcher)
 
         return launchers
@@ -1358,7 +1351,6 @@ class LauncherRepository(object):
         for launcher_element in launcher_elements:
             launcher_data = self._parse_xml_to_dictionary(launcher_element)
             launcher = self.launcher_factory.create(launcher_data)
-
             launchers.append(launcher)
 
         return launchers
@@ -1372,7 +1364,6 @@ class LauncherRepository(object):
 
         launcher_id = launcher.get_id()
         launcher_data = launcher.get_data()
-        
         self.data_context.save_node('launcher', launcher_id, launcher_data)        
         self.data_context.commit()
 
@@ -1395,10 +1386,11 @@ class LauncherRepository(object):
 
 # -------------------------------------------------------------------------------------------------
 # Repository class for Collection objects.
-# Arranges retrieving and storing of the collection launchers from and into the xml data file.
+# Arranges retrieving and storing of the Collection launchers from and into the xml data file.
 # -------------------------------------------------------------------------------------------------
 class CollectionRepository(object):
     def __init__(self, data_context):
+        log_debug('CollectionRepository::__init__()')
         self.data_context = data_context
 
     def _parse_xml_to_dictionary(self, collection_element):
@@ -1411,7 +1403,7 @@ class CollectionRepository(object):
             xml_text = text_unescape_XML(xml_text)
             xml_tag  = collection_child.tag
             if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text.encode('utf-8')))
-            
+
             # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
             collection[xml_tag] = xml_text
 
@@ -1422,8 +1414,7 @@ class CollectionRepository(object):
         if collection_element is None:
             log_debug('Cannot find collection with id {}'.format(collection_id))
             return None
-
-        collection_data = self._parse_xml_to_dictionary(collection_element)
+        collection_dic = self._parse_xml_to_dictionary(collection_element)
         collection = self.launcher_factory.create(collection_data)
 
         return collection
@@ -1431,10 +1422,10 @@ class CollectionRepository(object):
     def find_all(self):
         collections = []
         collection_elements = self.data_context.get_nodes('Collection')
+        log_debug('Found {0} collections'.format(len(collection_element)))
         for collection_element in collection_elements:
-            collection_data = self._parse_xml_to_dictionary(collection_element)
+            collection_dic = self._parse_xml_to_dictionary(collection_element)
             collection = self.launcher_factory.create(collection_data)
-
             collections.append(collection)
 
         return collections
@@ -1442,30 +1433,25 @@ class CollectionRepository(object):
     def save(self, collection, update_launcher_timestamp = True):
         if update_launcher_timestamp:
             collection.update_timestamp()
-
         collection_id   = collection.get_id()
         collection_data = collection.get_data()
-        
-        self.data_context.save_node('Collection', collection_id, collection_data)        
+        self.data_context.save_node('Collection', collection_id, collection_data)
         self.data_context.commit()
 
     def save_multiple(self, collections, update_launcher_timestamp = True):
         for collection in collections:
             if update_launcher_timestamp:
                 collection.update_timestamp()
-                
             collection_id   = collection.get_id()
             collection_data = collection.get_data()
-            
-            self.data_context.save_node('Collection', collection_id, collection_data)       
-
+            self.data_context.save_node('Collection', collection_id, collection_data)
         self.data_context.commit()
 
     def delete(self, collection):
         collection_id = collection.get_id()
         self.data_context.remove_node('Collection', collection_id)
         self.data_context.commit()
-        
+
 # -------------------------------------------------------------------------------------------------
 # Rom sets constants
 # -------------------------------------------------------------------------------------------------
@@ -1480,7 +1466,7 @@ ROMSET_DAT      = '_DAT'
 #
 # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
 #      a dictionary. Convert the Collection list into an ordered dictionary and then
-#      converted back the ordered dictionary into a list before saving the collection.            
+#      converted back the ordered dictionary into a list before saving the collection.
 # -------------------------------------------------------------------------------------------------
 class RomSetRepository(object):
     def __init__(self, roms_dir, store_as_dictionary = True):
@@ -1730,10 +1716,9 @@ class LauncherFactory(object):
         if launcher_type == LAUNCHER_COLLECTION:
             collection_romset_repository = RomSetRepository(self.COLLECTIONS_DIR, False)
             return CollectionLauncher(launcher_data, settings, collection_romset_repository)
-        
-        statsStrategy       = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID], self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-        romset_repository   = RomSetRepository(self.ROMS_DIR)
 
+        statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID], self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+        romset_repository = RomSetRepository(self.ROMS_DIR)
         if launcher_type == LAUNCHER_RETROPLAYER:
             return RetroplayerLauncher(launcher_data, self.settings, None, romset_repository, None, self.settings['escape_romfile'])
 
@@ -1752,7 +1737,7 @@ class LauncherFactory(object):
         if launcher_type == LAUNCHER_NVGAMESTREAM:
             return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory, romset_repository, statsStrategy)
 
-        log_warning('Unsupported launcher requested. Type "{}"'.format(launcher_type))
+        log_warning('Unsupported launcher requested. Type "{0}"'.format(launcher_type))
 
         return None
 
@@ -3590,9 +3575,7 @@ class KodiLauncher(Launcher):
 # Collection Launcher
 # ------------------------------------------------------------------------------------------------- 
 class CollectionLauncher(RomLauncher):
-      
     def __init__(self, launcher_data, settings, romset_repository):
-    
         super(CollectionLauncher, self).__init__(launcher_data, settings, None, romset_repository, None, False)
 
     def launch(self):
@@ -3600,25 +3583,25 @@ class CollectionLauncher(RomLauncher):
 
     def supports_launching_roms(self):
         return True
-    
+
     def get_launcher_type(self):
         return LAUNCHER_COLLECTION
-    
-    def get_launcher_type_name(self):        
-        return "Collection launcher"    
-    
+
+    def get_launcher_type_name(self):
+        return "Collection launcher"
+
     def has_nointro_xml(self):
-        return False    
+        return False
 
     def _selectApplicationToUse(self):
         return False
-    
+
     def _selectArgumentsToUse(self):
         return False
 
     def _selectRomFileToUse(self):
         return False
-    
+
     def get_edit_options(self):
         options = collections.OrderedDict()
         return options
@@ -3635,9 +3618,7 @@ class CollectionLauncher(RomLauncher):
 # Virtual launchers are rom launchers which contain multiple roms from different launchers.
 # ------------------------------------------------------------------------------------------------- 
 class VirtualLauncher(RomLauncher):
-      
     def __init__(self, launcher_data, settings, romset_repository):
-    
         super(VirtualLauncher, self).__init__(launcher_data, settings, None, romset_repository, None, False)
 
     def launch(self):
@@ -3645,53 +3626,53 @@ class VirtualLauncher(RomLauncher):
 
     def supports_launching_roms(self):
         return True
-    
+
     def get_launcher_type(self):
         return LAUNCHER_VIRTUAL
-    
-    def get_launcher_type_name(self):        
+
+    def get_launcher_type_name(self):
         return "Virtual launcher"
-        
+
     def has_nointro_xml(self):
-        return False    
+        return False
 
     def _selectApplicationToUse(self):
         return False
-    
+
     def _selectArgumentsToUse(self):
         return False
 
     def _selectRomFileToUse(self):
         return False
-    
+
     def get_edit_options(self):
         options = collections.OrderedDict()
+
         return options
 
     def get_advanced_modification_options(self):
         options = collections.OrderedDict()
+
         return options
 
     def _get_builder_wizard(self, wizard):
         return wizard
-    
+
 # -------------------------------------------------------------------------------------------------
 # Standard rom launcher where user can fully customize all settings.
 # The standard rom launcher also supports pclone/parent roms.
 # -------------------------------------------------------------------------------------------------
 class StandardRomLauncher(RomLauncher):
-       
     def get_launcher_type(self):
         return LAUNCHER_ROM
-    
-    def get_launcher_type_name(self):        
-        return "ROM launcher"   
-    
+
+    def get_launcher_type_name(self):
+        return "ROM launcher"
+
     def supports_parent_clone_roms(self):
         return True
-    
+
     def get_roms_filtered(self):
-        
         if not self.has_roms():
             self.load_roms()
 
@@ -3699,15 +3680,15 @@ class StandardRomLauncher(RomLauncher):
         view_mode     = self.get_display_mode()
         dp_mode       = self.get_nointro_display_mode()
         pclone_index  = self.get_pclone_indices()
-        
+
         dp_modes_for_have    = [NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_HAVE_MISS]
         dp_modes_for_miss    = [NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK]
         dp_modes_for_unknown = [NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK]
-        
+
         for rom_id in self.roms:
             rom = self.roms[rom_id]
             nointro_status = rom.get_nointro_status()
-            
+
             # >> Filter ROM
             # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
             # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
@@ -3730,7 +3711,6 @@ class StandardRomLauncher(RomLauncher):
         return filtered_roms
 
     def change_application(self):
-
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
                                                       self._get_appbrowser_filter('application', self.entity_data), 
@@ -3744,10 +3724,10 @@ class StandardRomLauncher(RomLauncher):
 
     def change_arguments(self, args):
         self.entity_data['args'] = args
-        
+
     def get_args(self):
         return self.entity_data['args']
-    
+
     def get_additional_argument(self, index):
         args = self.get_all_additional_arguments()
         return args[index]
@@ -3762,7 +3742,7 @@ class StandardRomLauncher(RomLauncher):
 
         self.entity_data['args_extra'].append(arg)
         log_debug('launcher.add_additional_argument() Appending extra_args to launcher {0}'.format(self.get_id()))
-        
+
     def set_additional_argument(self, index, arg):
         if not self.entity_data['args_extra']:
             self.entity_data['args_extra'] = []
@@ -3786,18 +3766,17 @@ class StandardRomLauncher(RomLauncher):
 
     def change_rom_extensions(self, ext):
         self.entity_data['romext'] = ext
-    
+
     def get_parent_roms(self):
         return self.romset_repository.find_by_launcher(self, LAUNCHER_DMODE_PCLONE)
-    
+
     def get_pclone_indices(self):
         return self.romset_repository.find_index_file_by_launcher(self, ROMSET_PCLONE)
-    
+
     def get_parent_indices(self):
         return self.romset_repository.find_index_file_by_launcher(self, ROMSET_CPARENT)
 
     def update_parent_rom_set(self, roms):
-        
         if not isinstance(roms,dict):
             roms = dict((rom.get_id(), rom) for rom in roms)
 
@@ -3805,11 +3784,10 @@ class StandardRomLauncher(RomLauncher):
         roms = roms
 
     def get_advanced_modification_options(self):
-        
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
-        
+
         options = super(StandardRomLauncher, self).get_advanced_modification_options()
         options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.entity_data['application'])
         options['MODIFY_ARGS'] = "Modify Arguments: '{0}'".format(self.entity_data['args'])
@@ -3819,11 +3797,10 @@ class StandardRomLauncher(RomLauncher):
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
-        
+
         return options
 
     def _selectApplicationToUse(self):
-
         if self.rom.has_alternative_application():
             log_info('StandardRomLauncher() Using ROM altapp')
             self.application = FileNameFactory.create(self.rom.get_alternative_application())
@@ -3839,7 +3816,6 @@ class StandardRomLauncher(RomLauncher):
         return True
 
     def _selectArgumentsToUse(self):
-
         if self.rom.has_alternative_arguments():
             log_info('StandardRomLauncher() Using ROM altarg')
             self.arguments = self.rom.get_alternative_arguments()
@@ -3862,11 +3838,10 @@ class StandardRomLauncher(RomLauncher):
         return True
 
     def _selectRomFileToUse(self):
-        
         if not self.rom.has_multiple_disks():
             self.selected_rom_file = self.rom.get_file()
             return True
-                
+
         disks = self.rom.get_disks()
         log_info('StandardRomLauncher._selectRomFileToUse() Multidisc ROM set detected')
         dialog = xbmcgui.Dialog()
@@ -3896,7 +3871,6 @@ class StandardRomLauncher(RomLauncher):
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        
         wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard) 
         wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
         wizard = DummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
@@ -3908,43 +3882,39 @@ class StandardRomLauncher(RomLauncher):
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
         wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
-            
+
         return wizard
 
 # -------------------------------------------------------------------------------------------------
 # Launcher for .lnk files (windows)
 # -------------------------------------------------------------------------------------------------
 class LnkLauncher(StandardRomLauncher):
-    
     def get_launcher_type(self):
         return LAUNCHER_LNK
-    
-    def get_launcher_type_name(self):        
-        return "LNK launcher"
-     
-    def get_edit_options(self):
 
+    def get_launcher_type_name(self):
+        return "LNK launcher"
+
+    def get_edit_options(self):
         options = super(LnkLauncher, self).get_edit_options()
         del options['AUDIT_ROMS']
 
         return options
-    
+
     def get_advanced_modification_options(self):
-        
         options = super(LnkLauncher, self).get_advanced_modification_options()
         del options['CHANGE_APPLICATION']
         del options['MODIFY_ARGS']
         del options['ADDITIONAL_ARGS']
         del options['CHANGE_ROMEXT']
         del options['TOGGLE_MULTIDISC']
-        
+
         return options
 
     #
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        
         wizard = FileBrowseWizardDialog('rompath', 'Select the LNKs path', 0, '', wizard)
         wizard = DummyWizardDialog('romext', 'lnk', wizard)
         wizard = DummyWizardDialog('args', '%rom%', wizard)
@@ -3953,7 +3923,7 @@ class LnkLauncher(StandardRomLauncher):
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
         wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
-            
+
         return wizard
 
 # --- Execute Kodi Retroplayer if launcher configured to do so ---
@@ -3961,15 +3931,13 @@ class LnkLauncher(StandardRomLauncher):
 # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
 # -------------------------------------------------------------------------------------------------
 class RetroplayerLauncher(StandardRomLauncher):
-
     def launch(self):
         log_info('RetroplayerLauncher() Executing ROM with Kodi Retroplayer ...')
-                
         self.title = self.rom.get_name()
         self._selectApplicationToUse()
 
         ROMFileName = self._selectRomFileToUse()
-                
+
         # >> Create listitem object
         label_str = ROMFileName.getBase()
         listitem = xbmcgui.ListItem(label = label_str, label2 = label_str)
