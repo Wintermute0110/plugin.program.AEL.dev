@@ -146,6 +146,7 @@ g_time_str = unicode(datetime.datetime.now())
 g_assetFactory = None
 g_scraperFactory = None
 g_romscannerFactory = None
+g_executorFactory = None
 g_launcherFactory = None
 
 # --- Database objects ---
@@ -342,6 +343,7 @@ def m_bootstrap_instances():
     global g_assetFactory
     global g_scraperFactory
     global g_romscannerFactory
+    global g_executorFactory
     global g_launcherFactory
     global g_categoryRepository
     global g_launcherRepository
@@ -351,17 +353,16 @@ def m_bootstrap_instances():
     g_assetFactory      = AssetInfoFactory.create()
     g_scraperFactory    = ScraperFactory(g_settings, g_PATHS)
     g_romscannerFactory = RomScannersFactory(g_settings, g_PATHS)
-    executorFactory     = ExecutorFactory(g_settings, g_PATHS)
-    g_launcherFactory   = LauncherFactory(g_settings, g_PATHS, executorFactory)
+    g_executorFactory   = ExecutorFactory(g_settings, g_PATHS)
+    g_launcherFactory   = LauncherFactory(g_settings, g_PATHS, g_executorFactory)
 
     # --- Load categories/launchers databases ---
-    data_context           = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('categories.xml'))
-    g_categoryRepository   = CategoryRepository(data_context)
-    g_launcherRepository   = LauncherRepository(data_context, g_launcherFactory)
+    main_data_context        = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('categories.xml'))
+    collections_data_context = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('collections.xml'))
 
-    # --- Load collections databases ---
-    data_context           = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('collections.xml'))
-    g_collectionRepository = CollectionRepository(data_context)
+    g_categoryRepository   = CategoryRepository(main_data_context)
+    g_launcherRepository   = LauncherRepository(main_data_context, g_launcherFactory)
+    g_collectionRepository = CollectionRepository(collections_data_context)
 
 #
 # This function may run concurrently
@@ -1162,39 +1163,23 @@ def m_command_add_collection():
     if not keyboard.isConfirmed(): return
 
     # --- Save Collection ---
-    collection = Collection()
+    collection = g_launcherFactory.create_new(LAUNCHER_COLLECTION)
     collection.set_name(keyboard.getText().decode('utf-8'))
     g_collectionRepository.save(collection)
-    kodi_notify('ROM Collection {0} created'.format(collection.get_name()))
+    kodi_notify('Created ROM Collection {0}'.format(collection.get_name()))
     kodi_refresh_container()
-    return
-
-    # --- REMOVE OLD CODE Load collection index ---
-    (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-
-    # --- REMOVE OLD CODE Add new collection to database ---
-    collection           = fs_new_collection()
-    collection_name      = keyboard.getText().decode('utf-8')
-    collection_id_md5    = hashlib.md5(collection_name.encode('utf-8'))
-    collection_UUID      = collection_id_md5.hexdigest()
-    collection_base_name = fs_get_collection_ROMs_basename(collection_name, collection_UUID)
-    collection['id']              = collection_UUID
-    collection['m_name']          = collection_name
-    collection['roms_base_noext'] = collection_base_name
-    collections[collection_UUID]  = collection
-    log_debug('_command_add_collection() id              "{0}"'.format(collection['id']))
-    log_debug('_command_add_collection() m_name          "{0}"'.format(collection['m_name']))
-    log_debug('_command_add_collection() roms_base_noext "{0}"'.format(collection['roms_base_noext']))
-
-    # --- REMOVE OLD CODE Save collections XML database ---
-    fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
-    kodi_refresh_container()
-    kodi_notify('Created ROM Collection "{0}"'.format(collection_name))
 
 #
 # Edits a Collection
+# categoryID is always "vcategory_collections"
+# NOTE transform to new code style.
 #
 def m_command_edit_collection(categoryID, launcherID):
+    # NEW CODE STYLE
+    collection = g_collectionRepository.find(launcherID)
+    m_run_collection_sub_command('EDIT_COLLECTION', collection)
+
+    # OLD CODE STYLE, MUST BE DELETED
     # --- Load collection index ---
     (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
     collection = collections[launcherID]
@@ -1202,7 +1187,8 @@ def m_command_edit_collection(categoryID, launcherID):
     # --- Shows a select box with the options to edit ---
     dialog = xbmcgui.Dialog()
     type = dialog.select('Select action for ROM Collection {0}'.format(collection['m_name']),
-                        ['Edit Metadata ...', 'Edit Assets/Artwork ...',
+                        ['Edit Metadata ...',
+                         'Edit Assets/Artwork ...',
                          'Choose default Assets/Artwork ...'])
     # >> User cancelled select dialog
     if type < 0: return
@@ -1443,9 +1429,7 @@ def m_command_add_new_launcher(categoryID):
         options = {}
         options[categoryID]             = 'Create Launcher in "{0}" category'.format(category.get_name())
         options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in addon root'
-
-        dialog = DictionaryDialog()
-        selected_id = dialog.select('Choose Launcher category', options)
+        selected_id = KodiDictionaryDialog().select('Choose Launcher category', options)
 
         if selected_id is None:
             return
@@ -1453,19 +1437,16 @@ def m_command_add_new_launcher(categoryID):
         if selected_id is VCATEGORY_ADDONROOT_ID:
             category = Category.create_root_category()
 
-    options = self.launcher_factory.get_supported_types()
-
     # --- Show "Create New Launcher" dialog ---
-    dialog = DictionaryDialog()
-    launcher_type = dialog.select('Create New Launcher', options)
-    if launcher_type is None: 
-        return None
+    options = g_launcherFactory.get_supported_types()
+    launcher_type = KodiDictionaryDialog().select('Create New Launcher', options)
+    if launcher_type is None: return None
 
     log_info('_command_add_new_launcher() New launcher (launcher_type = {0})'.format(launcher_type))
-    launcher = self.launcher_factory.create_new(launcher_type)
-    if launcher is None:
-        return
+    launcher = g_launcherFactory.create_new(launcher_type)
+    if launcher is None: return
 
+    # ????
     if not launcher.build(category):
         return
 
@@ -5954,13 +5935,14 @@ def m_command_render_collections():
         # --- Create context menu ---
         commands = []
         commands.append(('View ROM Collection data', m_misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
-        commands.append(('Export Collection',        m_misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
         commands.append(('Edit Collection',          m_misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
-        commands.append(('Delete Collection',        m_misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
+        # Include Export and Delete into Edit Collection context menu.
+        commands.append(('Export Collection',        m_misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
+        commands.append(('Delete Collection',        m_misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
         commands.append(('Create New Collection',    m_misc_url_RunPlugin('ADD_COLLECTION')))
         commands.append(('Import Collection',        m_misc_url_RunPlugin('IMPORT_COLLECTION')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('Kodi File Manager',        'ActivateWindow(filemanager)'))
+        commands.append(('AEL addon settings',       'Addon.OpenSettings({0})'.format(__addon_id__)))
         listitem.addContextMenuItems(commands)
 
         # >> Use ROMs renderer to display collection ROMs
@@ -5982,7 +5964,7 @@ def m_command_render_collection_ROMs(categoryID, launcherID):
         xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
         return
 
-    # --- Display Collection ---
+    # --- Display Collection ROMs ---
     for rom in collection_rom_list:
         self._gui_render_rom_row(categoryID, launcherID, rom)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
