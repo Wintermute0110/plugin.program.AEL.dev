@@ -33,8 +33,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
-from abc import ABCMeta
-from abc import abstractmethod
+import abc
 # NOTE binascii must not be used! See https://docs.python.org/2/library/binascii.html
 import binascii
 import base64
@@ -53,6 +52,8 @@ import string
 import sys
 import time
 import urlparse
+
+# --- Python standard library named imports ---
 import xml.etree.ElementTree as ET
 
 # NOTE OpenSSL library will be included in Kodi M****
@@ -83,9 +84,9 @@ except:
 # --- Kodi modules ---
 try:
     import xbmc
+    import xbmcaddon
     import xbmcgui
     import xbmcplugin
-    import xbmcaddon
     import xbmcvfs
     UTILS_KODI_RUNTIME_AVAILABLE = True
 except:
@@ -94,19 +95,45 @@ except:
 # --- AEL modules ---
 from constants import *
 
+# -------------------------------------------------------------------------------------------------
+# A universal AEL error reporting exception
+# This exception is raised to report errors in the GUI.
+# Unhandled exceptions must not raise AEL_Error() so the addon crashes and the traceback is printed
+# in the Kodi log file.
+# -------------------------------------------------------------------------------------------------
+# >> Top-level GUI code looks like this
+# try:
+#     autoconfig_export_category(category, export_FN)
+# except Addon_Error as E:
+#     kodi_notify_warn('{0}'.format(E))
+# else:
+#     kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
+#
+# >> Low-level code looks like this
+# def autoconfig_export_category(category, export_FN):
+#     try:
+#         do_something_that_may_fail()
+#     except OSError:
+#         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+#         # >> Message to be printed in the GUI
+#         raise AEL_Error('Error writing file (OSError)')
+#
+class Addon_Error(Exception):
+    def __init__(self, err_str):
+        self.err_str = err_str
+
+    def __str__(self):
+        return self.err_str
+
 # #################################################################################################
 # #################################################################################################
 # Standard Python utilities
 # #################################################################################################
 # #################################################################################################
 
-# -------------------------------------------------------------------------------------------------
-# OS utils
-# -------------------------------------------------------------------------------------------------
-# Determine interpreter running platform
+# --- Determine interpreter running platform ---
+# Cache all possible platform values in global variables for maximum speed.
 # See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-
-# --- Determine the platform and cache all possible values for maximum speed ---
 cached_sys_platform = sys.platform
 def _aux_is_android():
     if not cached_sys_platform.startswith('linux'): return False
@@ -818,7 +845,7 @@ class FileNameFactory():
 #
 # -------------------------------------------------------------------------------------------------
 class FileName():
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     # pathString must be a Unicode string object
     def __init__(self, pathString):
@@ -837,7 +864,7 @@ class FileName():
 
     # abstract protected method, to be implemented in child classes.
     # Will return a new instance of the desired child implementation.
-    @abstractmethod
+    @abc.abstractmethod
     def __create__(self, pathString):
         return FileName(pathString)
 
@@ -958,19 +985,19 @@ class FileName():
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
-    @abstractmethod
+    @abc.abstractmethod
     def scanFilesInPath(self, mask = '*.*'):
         return []
 
-    @abstractmethod
+    @abc.abstractmethod
     def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         return []
     
-    @abstractmethod
+    @abc.abstractmethod
     def recursiveScanFilesInPath(self, mask = '*.*'):
         return []
 
-    @abstractmethod
+    @abc.abstractmethod
     def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         return []
 
@@ -986,67 +1013,66 @@ class FileName():
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
     # ---------------------------------------------------------------------------------------------
-    @abstractmethod
+    @abc.abstractmethod
     def stat(self):
         return None
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def exists(self):
         return None
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def isdir(self):
         return False
-        
-    @abstractmethod
+
+    @abc.abstractmethod
     def isfile(self):
         return False
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def makedirs(self):
         pass
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def unlink(self):
         pass
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def rename(self, to):
         pass
-    
-    @abstractmethod
-    def copy(self, to):        
+
+    @abc.abstractmethod
+    def copy(self, to):
         pass
-                    
+
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
-    
-    @abstractmethod
+    @abc.abstractmethod
     def readline(self):
         return None
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def readAll(self):
         return None
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def readAllUnicode(self, encoding='utf-8'):
         return None
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def writeAll(self, bytes, flags='w'):
         pass
-    
-    @abstractmethod
+
+    @abc.abstractmethod
     def write(self, bytes):
         pass
-       
-    @abstractmethod
+
+    @abc.abstractmethod
     def open(self, flags):
         pass
-      
-    @abstractmethod
+
+    @abc.abstractmethod
     def close(self):
         pass
 
@@ -1064,7 +1090,7 @@ class FileName():
     # Opens INI file and reads it
     def readIniFile(self):
         import ConfigParser
-    
+
         config = ConfigParser.ConfigParser()
         config.readfp(self.open('r'))
 
@@ -1074,7 +1100,7 @@ class FileName():
     # Reads a given properties file with each line of the format key=value.  Returns a dictionary containing the pairs.
     def readPropertyFile(self):
         import csv
-        
+
         file_contents = self.readAll()
         file_lines = file_contents.splitlines()
 
@@ -1123,7 +1149,6 @@ class FileName():
 #
 # -------------------------------------------------------------------------------------------------
 class KodiFileName(FileName):
-    
     def __create__(self, pathString):
         return KodiFileName(pathString)
 
@@ -1141,7 +1166,6 @@ class KodiFileName(FileName):
 
     def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
-        
         subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
         for filename in fnmatch.filter(filenames, mask):
             filePath = self.pjoin(self._decodeName(filename))
@@ -1151,7 +1175,6 @@ class KodiFileName(FileName):
 
     def recursiveScanFilesInPath(self, mask = '*.*'):
         files = []
-        
         subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
         for filename in fnmatch.filter(filenames, mask):
             filePath = self.pjoin(self._decodeName(filename))
@@ -1163,10 +1186,9 @@ class KodiFileName(FileName):
             files.extend(subPathFiles)
 
         return files
-    
+
     def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
-        
         subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
         for filename in fnmatch.filter(filenames, mask):
             filePath = self.pjoin(self._decodeName(filename))
@@ -1640,7 +1662,7 @@ def kodi_display_text_window(window_title, info_text):
 # executing this dialog which will indicate if this dialog may be shown (True return value).
 #
 class KodiWizardDialog():
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, property_key, title, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.title = title
@@ -1682,7 +1704,7 @@ class KodiWizardDialog():
 
         return True
 
-    @abstractmethod
+    @abc.abstractmethod
     def show(self, properties):
         return True
 
