@@ -17,8 +17,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
-from abc import ABCMeta
-from abc import abstractmethod
+import abc
 
 # --- AEL modules ---
 from utils import *
@@ -193,22 +192,22 @@ def report_print_Collection(slist, collection):
     slist.append("[COLOR violet]s_trailer[/COLOR]: '{0}'".format(collection['s_trailer']))
 
 class Reporter(object):
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, launcher_data, decoratorReporter = None):
 
         self.launcher_data = launcher_data
         self.decoratorReporter = decoratorReporter
 
-    @abstractmethod
+    @abc.abstractmethod
     def open(self):
         pass
     
-    @abstractmethod
+    @abc.abstractmethod
     def close(self):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def _write_message(self, message):
         pass
 
@@ -220,7 +219,6 @@ class Reporter(object):
             self.decoratorReporter.write(message)
 
 class LogReporter(Reporter):
-       
     def open(self, report_title):
         return super(LogReporter, self).close()
 
@@ -231,16 +229,12 @@ class LogReporter(Reporter):
         log_info(message)
 
 class FileReporter(Reporter):
-    
     def __init__(self, reports_dir, launcher_data, decoratorReporter = None):
-        
         self.report_file = reports_dir.pjoin(launcher_data['roms_base_noext'] + '_report.txt')
         super(FileReporter, self).__init__(launcher_data, decoratorReporter)
 
     def open(self, report_title):
-
         log_info('Report file OP "{0}"'.format(self.report_file.getOriginalPath()))
-
         self.report_file.open('w')
 
         # --- Get information from launcher ---
@@ -254,7 +248,7 @@ class FileReporter(Reporter):
         self.write('  ROM ext       "{0}"'.format(self.launcher_data['romext']))
         self.write('  Platform      "{0}"'.format(self.launcher_data['platform']))
         self.write(  'Multidisc     "{0}"'.format(self.launcher_data['multidisc']))
-    
+
     def close(self):
         self.report_file.close()
 

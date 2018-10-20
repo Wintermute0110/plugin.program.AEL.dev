@@ -21,6 +21,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+import abc
 import collections
 
 # --- AEL packages ---
@@ -54,18 +55,17 @@ class RomScannersFactory():
         return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
 
 class ScannerStrategy(KodiProgressDialogStrategy):
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, launcher, settings):
         self.launcher = launcher
         self.settings = settings
-
         super(ScannerStrategy, self).__init__()
 
     #
     # Scans for new roms based on the type of launcher.
     #
-    @abstractmethod
+    @abc.abstractmethod
     def scan(self):
         return {}
 
@@ -73,7 +73,7 @@ class ScannerStrategy(KodiProgressDialogStrategy):
     # Cleans up ROM collection.
     # Remove Remove dead/missing ROMs ROMs
     #
-    @abstractmethod
+    @abc.abstractmethod
     def cleanup(self):
         return {}
 
@@ -85,7 +85,7 @@ class NullScanner(ScannerStrategy):
         return {}
 
 class RomScannerStrategy(ScannerStrategy):
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, reports_dir, addon_dir, launcher, settings, scrapers):
         
@@ -189,17 +189,17 @@ class RomScannerStrategy(ScannerStrategy):
         return roms
 
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @abstractmethod
+    @abc.abstractmethod
     def _getCandidates(self, launcher_report):
         return []
 
     # --- Remove dead entries -----------------------------------------------------------------
-    @abstractmethod
+    @abc.abstractmethod
     def _removeDeadRoms(self, candidates, roms):
         return 0
 
     # ~~~ Now go processing item by item ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @abstractmethod
+    @abc.abstractmethod
     def _processFoundItems(self, items, roms, launcher_report):
         return []
 
@@ -1144,7 +1144,7 @@ class CategoryRepository(object):
         category_dict = self._parse_xml_to_dictionary(category_element)
         category = Category(category_dict)
         return category
-    
+
     def find_all(self):
         categories = []
         category_elements = self.data_context.get_nodes('category')
@@ -1176,14 +1176,13 @@ class CategoryRepository(object):
 
     def save(self, category):
         category_id = category.get_id()
-        self.data_context.save_node('category', category_id, category.get_data())        
+        self.data_context.save_node('category', category_id, category.get_data_dic())
         self.data_context.commit()
 
     def save_multiple(self, categories):
         for category in categories:
             category_id = category.get_id()
-            self.data_context.save_node('category', category_id, category.get_data())        
-
+            self.data_context.save_node('category', category_id, category.get_data_dic())
         self.data_context.commit()
 
     def delete(self, category):
@@ -1821,7 +1820,7 @@ class RomStatisticsStrategy(object):
 # Abstract base class for business objects which support the generic metadata properties
 # -------------------------------------------------------------------------------------------------
 class MetaDataItem(object):
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, entity_data):
         self.entity_data = entity_data
@@ -2004,12 +2003,13 @@ class Category(MetaDataItem):
 
     def get_edit_options(self):
         options = collections.OrderedDict()
-        options['EDIT_METADATA']      = 'Edit Metadata ...'
-        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
-        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CATEGORY_STATUS']    = 'Category status: {0}'.format(self.get_state())
-        options['EXPORT_CATEGORY']    = 'Export Category XML configuration ...'
-        options['DELETE_CATEGORY']    = 'Delete Category'
+        options['EDIT_METADATA']       = 'Edit Metadata ...'
+        options['EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS']  = 'Choose default Assets/Artwork ...'
+        options['CATEGORY_STATUS']     = 'Category status: {0}'.format(self.get_state())
+        options['EXPORT_CATEGORY_XML'] = 'Export Category XML configuration ...'
+        options['DELETE_CATEGORY']     = 'Delete Category'
+
         return options
 
     def get_metadata_edit_options(self, settings_dic):
@@ -2304,7 +2304,7 @@ class Rom(MetaDataItem):
 # Implement classes that inherit this base class to support new ways of launching.
 # -------------------------------------------------------------------------------------------------
 class Launcher(MetaDataItem):
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, launcher_data, settings, executorFactory):
         super(Launcher, self).__init__(launcher_data)
@@ -2424,7 +2424,7 @@ class Launcher(MetaDataItem):
     # Launchs a ROM launcher or standalone launcher
     # For standalone launchers romext is the extension of the application (only used in Windoze)
     #
-    @abstractmethod
+    @abc.abstractmethod
     def launch(self):
         executor = self.executorFactory.create(self.application) if self.executorFactory is not None else None
         if executor is None:
@@ -2573,15 +2573,15 @@ class Launcher(MetaDataItem):
             xbmc.Player().play()
         log_debug('postExecution() function ENDS')
 
-    @abstractmethod
+    @abc.abstractmethod
     def supports_launching_roms(self):
         return False
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_launcher_type(self):
         return LAUNCHER_STANDALONE
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_launcher_type_name(self):
         return "Standalone launcher"
 
@@ -2660,7 +2660,7 @@ class Launcher(MetaDataItem):
     # Returns a dictionary of options to choose from
     # with which you can edit or manage this specific launcher.
     #
-    @abstractmethod
+    @abc.abstractmethod
     def get_edit_options(self):
         return {}
 
@@ -2668,7 +2668,7 @@ class Launcher(MetaDataItem):
     # Returns a dictionary of options to choose from
     # with which you can do advanced modifications on this specific launcher.
     #
-    @abstractmethod
+    @abc.abstractmethod
     def get_advanced_modification_options(self):
         options = collections.OrderedDict()
         return options
@@ -2838,7 +2838,7 @@ class Launcher(MetaDataItem):
     #
     # Creates a new launcher using a wizard of dialogs.
     #
-    @abstractmethod
+    @abc.abstractmethod
     def _get_builder_wizard(self, wizard):
         return wizard
 
@@ -2877,7 +2877,7 @@ class Launcher(MetaDataItem):
 # Inherit from this base class to implement your own specific rom launcher.
 # -------------------------------------------------------------------------------------------------
 class RomLauncher(Launcher):
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy, escape_romfile):
         self.roms = {}
@@ -2888,15 +2888,15 @@ class RomLauncher(Launcher):
 
         super(RomLauncher, self).__init__(launcher_data, settings, executorFactory)
 
-    @abstractmethod
+    @abc.abstractmethod
     def _selectApplicationToUse(self):
         return True
 
-    @abstractmethod
+    @abc.abstractmethod
     def _selectArgumentsToUse(self):
         return True
 
-    @abstractmethod
+    @abc.abstractmethod
     def _selectRomFileToUse(self):
         return True
 
@@ -4630,12 +4630,12 @@ class ExecutorFactory():
         return None
 
 class Executor():
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, logFile):
         self.logFile = logFile
 
-    @abstractmethod
+    @abc.abstractmethod
     def execute(self, application, arguments, non_blocking):
         pass
 
@@ -5363,7 +5363,7 @@ class RomSetDescription():
         self.isRegularLauncher = isRegularLauncher
 
 class RomSet():
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, romsDir, launcher, description):
         self.romsDir = romsDir
@@ -5371,27 +5371,27 @@ class RomSet():
         
         self.description = description
 
-    @abstractmethod
+    @abc.abstractmethod
     def romSetFileExists(self):
         return False
 
-    @abstractmethod
+    @abc.abstractmethod
     def loadRoms(self):
         return {}
     
-    @abstractmethod
+    @abc.abstractmethod
     def loadRomsAsList(self):
         return []
 
-    @abstractmethod
+    @abc.abstractmethod
     def loadRom(self, romId):
         return None
 
-    @abstractmethod
+    @abc.abstractmethod
     def saveRoms(self, roms):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def clear(self):
         pass
 

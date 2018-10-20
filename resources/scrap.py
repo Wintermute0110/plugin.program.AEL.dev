@@ -16,6 +16,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+import abc
 
 # --- AEL packages ---
 from utils import *
@@ -453,7 +454,7 @@ class ScrapeResult(object):
     assets_scraped  = []
 
 class Scraper():
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
         self.cache = {}
@@ -506,13 +507,13 @@ class Scraper():
         
         return scraper_applied
 
-    @abstractmethod
+    @abc.abstractmethod
     def getName(self):
         return ''
 
     # search for candidates and return list with following item data:
     # { 'id' : <unique id>, 'display_name' : <name to be displayed>, 'order': <number to sort by/relevance> }
-    @abstractmethod
+    @abc.abstractmethod
     def _getCandidates(self, search_term, romPath, rom):
         return []
 
@@ -523,12 +524,12 @@ class Scraper():
         if self.assets_to_scrape is not None and len(self.assets_to_scrape) > 0:
             self._load_assets(candidate, romPath, rom)
 
-    @abstractmethod
-    def _load_metadata(self, candidate, romPath, rom):        
+    @abc.abstractmethod
+    def _load_metadata(self, candidate, romPath, rom):
         pass
-    
-    @abstractmethod
-    def _load_assets(self, candidate, romPath, rom):        
+
+    @abc.abstractmethod
+    def _load_assets(self, candidate, romPath, rom):
         pass
 
     def _applyCandidate(self, romPath, rom):
@@ -795,12 +796,11 @@ class LocalAssetScraper(Scraper):
         scraper_settings = ScraperSettings.create_from_settings(settings)
 
         super(LocalAssetScraper, self).__init__(scraper_settings, launcher, False, [asset_info], fallbackScraper)
-        
+
     def getName(self):
         return 'Local assets scraper'
 
     def _getCandidates(self, search_term, romPath, rom):
-
         # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         rom_basename_noext = romPath.getBase_noext()
         asset_path = self.launcher.get_asset_path(self.asset_info)
