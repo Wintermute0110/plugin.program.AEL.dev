@@ -290,12 +290,10 @@ def run_plugin(addon_argv):
     # log_debug('content_type = {0}'.format(g_content_type))
 
     # --- Addon first-time initialisation ---
-    # >> When the addon is installed and the file categories.xml does not exist, just
-    #    create an empty one with a default launcher.
-    # >> NOTE Not needed anymore. Skins using shortcuts and/or widgets will call AEL concurrently
-    #         and AEL should return an empty list with no GUI warnings or dialogs.
-
-    # todo: why update timestamp?
+    # When the addon is installed and the file categories.xml does not exist, just
+    # create an empty one with a default launcher.
+    # NOTE Not needed anymore. Skins using shortcuts and/or widgets will call AEL concurrently
+    #      and AEL should return an empty list with no GUI warnings or dialogs.
 
     # --- Bootstrap object instances --- 
     m_bootstrap_instances()
@@ -390,9 +388,7 @@ def m_run_concurrent(command, args):
     elif command == 'SHOW_MOST_PLAYED':
         m_command_render_most_played()
     elif command == 'SHOW_COLLECTIONS':
-        m_command_render_collections()
-    elif command == 'SHOW_COLLECTION_ROMS':
-        m_command_render_collection_ROMs(args['catID'][0], args['launID'][0])
+        m_command_render_Collections()
     elif command == 'SHOW_LAUNCHERS':
         m_command_render_launchers(args['catID'][0])
 
@@ -401,11 +397,13 @@ def m_run_concurrent(command, args):
         m_command_render_roms(args['catID'][0], args['launID'][0])
     elif command == 'SHOW_VLAUNCHER_ROMS':
         m_command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
+    elif command == 'SHOW_COLLECTION_ROMS':
+        m_command_render_Collection_roms(args['catID'][0], args['launID'][0])
     elif command == 'SHOW_AEL_SCRAPER_ROMS':
         m_command_render_AEL_scraper_roms(args['catID'][0])
     elif command == 'SHOW_LB_SCRAPER_ROMS':
         m_command_render_LB_scraper_roms(args['catID'][0])
-    # >> Auxiliar command to render clone ROM list from context menu in 1G1R mode
+    # >> Auxiliar command to render clone ROM list from context menu in 1G1R mode.
     elif command == 'EXEC_SHOW_CLONE_ROMS':
         url = m_misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
         xbmc.executebuiltin('Container.Update({0})'.format(url))
@@ -1052,10 +1050,7 @@ def m_command_add_new_launcher(categoryID):
         options[categoryID]             = 'Create Launcher in "{0}" category'.format(category.get_name())
         options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in addon root'
         selected_id = KodiDictionaryDialog().select('Choose Launcher category', options)
-
-        if selected_id is None:
-            return
-
+        if selected_id is None: return
         if selected_id is VCATEGORY_ADDONROOT_ID:
             category = Category.create_root_category()
 
@@ -1063,7 +1058,6 @@ def m_command_add_new_launcher(categoryID):
     options = g_launcherFactory.get_supported_types()
     launcher_type = KodiDictionaryDialog().select('Create New Launcher', options)
     if launcher_type is None: return None
-
     log_info('_command_add_new_launcher() New launcher (launcher_type = {0})'.format(launcher_type))
     launcher = g_launcherFactory.create_new(launcher_type)
     if launcher is None: return
@@ -1078,7 +1072,6 @@ def m_command_add_new_launcher(categoryID):
     # >> If this point is reached then changes to metadata/images were made.
     # >> Save categories and update container contents so user sees those changes inmediately.
     g_launcherRepository.save(launcher)
-
     kodi_refresh_container()
 
 def m_command_edit_launcher(categoryID, launcherID):
@@ -4364,7 +4357,7 @@ def m_command_render_root():
 
     # --- AEL Virtual Categories ---
     if not g_settings['display_hide_vlaunchers']:
-        m_gui_render_virtual_category_Browse_by_row()
+        m_gui_render_vcategory_Browse_by_row()
 
     # --- Browse Offline Scraper database ---
     if not g_settings['display_hide_AEL_scraper']:
@@ -4496,7 +4489,49 @@ def m_gui_render_vcategory_collections_row():
     url_str = m_misc_url('SHOW_COLLECTIONS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_virtual_category_Browse_by_row():
+def m_gui_render_vlauncher_recently_played_row():
+    vcategory_name   = '[Recently played ROMs]'
+    vcategory_plot   = 'Browse the ROMs you played recently'
+    vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
+    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+
+    commands = []
+    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+    listitem.addContextMenuItems(commands)
+
+    url_str = m_misc_url('SHOW_RECENTLY_PLAYED')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+def m_gui_render_vlauncher_most_played_row():
+    vcategory_name   = '[Most played ROMs]'
+    vcategory_plot   = 'Browse the ROMs you play most'
+    vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
+    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+
+    commands = []
+    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+    listitem.addContextMenuItems(commands)
+
+    url_str = m_misc_url('SHOW_MOST_PLAYED')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+def m_gui_render_vcategory_Browse_by_row():
     vcategory_name   = '[Browse by ... ]'
     vcategory_label  = 'Browse by ...'
     vcategory_plot   = 'Browse AEL Virtual Launchers'
@@ -4564,66 +4599,24 @@ def m_gui_render_vcategory_LB_offline_scraper_row():
     url_str = m_misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
-def m_gui_render_vlauncher_recently_played_row():
-    vcategory_name   = '[Recently played ROMs]'
-    vcategory_plot   = 'Browse the ROMs you played recently'
-    vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
-    vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
-    listitem = xbmcgui.ListItem(vcategory_name)
-    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
-    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-
-    commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
-
-    url_str = m_misc_url('SHOW_RECENTLY_PLAYED')
-    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
-
-def m_gui_render_vlauncher_most_played_row():
-    vcategory_name   = '[Most played ROMs]'
-    vcategory_plot   = 'Browse the ROMs you play most'
-    vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
-    vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
-    listitem = xbmcgui.ListItem(vcategory_name)
-    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
-    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-
-    commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
-
-    url_str = m_misc_url('SHOW_MOST_PLAYED')
-    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
-
 # ---------------------------------------------------------------------------------------------
 # Virtual categories [Browse by ...]
 # ---------------------------------------------------------------------------------------------
-def m_gui_render_Browse_by_root():
+def m_gui_render_Browse_by_vlaunchers():
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
-    m_gui_render_virtual_category_row(VCATEGORY_TITLE_ID)
-    m_gui_render_virtual_category_row(VCATEGORY_YEARS_ID)
-    m_gui_render_virtual_category_row(VCATEGORY_GENRE_ID)
-    m_gui_render_virtual_category_row(VCATEGORY_DEVELOPER_ID)
-    m_gui_render_virtual_category_row(VCATEGORY_NPLAYERS_ID)
-    m_gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
-    m_gui_render_virtual_category_row(VCATEGORY_RATING_ID)
-    m_gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_TITLE_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_YEARS_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_GENRE_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_DEVELOPER_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_NPLAYERS_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_ESRB_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_RATING_ID)
+    m_gui_render_Browse_by_vlaunchers_row(VCATEGORY_CATEGORY_ID)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
-def m_gui_render_virtual_category_row(virtual_category_kind):
+def m_gui_render_Browse_by_vlaunchers_row(virtual_category_kind):
     if virtual_category_kind == VCATEGORY_TITLE_ID:
         vcategory_name   = 'Browse ROMs by Title'
         vcategory_label  = 'Title'
@@ -4805,7 +4798,7 @@ def m_gui_render_LB_scraper_launchers_row(platform, platform_info, db_suffix):
 # Launcher LisItem rendering
 # ---------------------------------------------------------------------------------------------
 #
-# Renders the launchers for a given category
+# Renders Launchers inside a Category.
 #
 def m_command_render_launchers(categoryID):
     # >> Set content type
@@ -5087,7 +5080,7 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
 #
 def m_command_render_roms(categoryID, launcherID):
     launcher = g_launcherRepository.find(launcherID)
-    
+
     # --- Check for errors ---
     if launcher is None:
         log_error('_command_render_roms() Launcher ID not found in launchers repository')
@@ -5478,7 +5471,7 @@ def m_gui_render_LB_scraper_rom_row(platform, game):
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
 #
-# Renders the special category favourites, which is actually very similar to a ROM launcher
+# Renders the special Launcher Favourites ROMs, which is actually very similar to a ROM launcher.
 # Note that only ROMs in a launcher can be added to favourites. Thus, no standalone launchers.
 # If user deletes launcher or favourite ROMs the ROM in favourites remain.
 # Favourites ROM information includes the application launcher and arguments to launch the ROM.
@@ -5495,7 +5488,7 @@ def m_gui_render_LB_scraper_rom_row(platform, game):
 # IMPROVEMENT Maybe it could be interesting to be able to export the list of favourites
 #             to HTML or something like that.
 #
-def m_command_render_favourites():
+def m_command_render_favourite_roms():
     # >> Content type and sorting method
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
@@ -5519,10 +5512,11 @@ def m_command_render_favourites():
 # Virtual Launcher LisItem rendering
 # ---------------------------------------------------------------------------------------------
 #
-# Render virtual launchers inside a virtual category: Title, year, Genre, Studio, Category
+# Render virtual launchers inside a virtual category "Browse by":
+#   Title, Year, Genre, Studio, Category, ...
 #
-def m_command_render_virtual_category(virtual_categoryID):
-    log_error('_command_render_virtual_category() Starting ...')
+def m_command_render_Browse_by_roms(virtual_categoryID):
+    log_error('m_command_render_Browse_by_roms() Starting ...')
     # >> Kodi sorting methods
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_SIZE)
@@ -5556,7 +5550,7 @@ def m_command_render_virtual_category(virtual_categoryID):
         vcategory_db_filename = g_PATHS.VCAT_CATEGORY_FILE_PATH
         vcategory_name        = 'Browse by Category'
     else:
-        log_error('_command_render_virtual_category() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
+        log_error('m_command_render_Browse_by_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
         kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
         return
 
@@ -5603,7 +5597,7 @@ def m_command_render_virtual_category(virtual_categoryID):
 #
 # Renders ROMs in a virtual launcher.
 #
-def m_command_render_virtual_launcher_roms(virtual_categoryID, virtual_launcherID):
+def m_command_render_vlauncher_roms(virtual_categoryID, virtual_launcherID):
     log_error('_command_render_virtual_launcher_roms() Starting ...')
     # >> Content type and sorting method
     m_misc_set_all_sorting_methods()
@@ -5702,7 +5696,7 @@ def m_command_render_LB_scraper_roms(platform):
 #
 # Render the Recently played and Most Played virtual launchers.
 #
-def m_command_render_recently_played():
+def m_command_render_recently_played_roms():
     # >> Content type and sorting method
     m_misc_set_default_sorting_method()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
@@ -5721,7 +5715,7 @@ def m_command_render_recently_played():
         self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom.get_data())
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
-def m_command_render_most_played():
+def m_command_render_most_played_roms():
     # >> Content type and sorting method
     m_misc_set_default_sorting_method()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
@@ -5742,10 +5736,10 @@ def m_command_render_most_played():
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 #
-# Render all ROMs
+# Renders all ROMs in all launchers.
 # This command is called by skins. Not advisable to use it if there are many ROMs...
 #
-def m_command_render_all_ROMs():
+def m_command_render_all_roms():
     # --- Make a dictionary having all ROMs in all Launchers ---
     log_debug('_command_render_all_ROMs() Creating list of all ROMs in all Launchers')
     all_roms = {}
@@ -5872,9 +5866,10 @@ def m_fav_check_favourites(roms_fav):
     pDialog.close()
 
 #
-# Renders a listview with all collections
+# Renders a listview with all Collections.
+# Each Collection is similar to a launcher.
 #
-def m_command_render_collections():
+def m_command_render_Collections():
     # >> Kodi sorting method
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(handle = g_addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
@@ -5935,7 +5930,7 @@ def m_command_render_collections():
         # --- Create context menu ---
         commands = []
         commands.append(('View ROM Collection data', m_misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
-        commands.append(('Edit Collection',          m_misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
+        commands.append(('Edit/Export Collection',   m_misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
         # Include Export and Delete into Edit Collection context menu.
         commands.append(('Export Collection',        m_misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
         commands.append(('Delete Collection',        m_misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
@@ -5950,7 +5945,7 @@ def m_command_render_collections():
         xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
-def m_command_render_collection_ROMs(categoryID, launcherID):
+def m_command_render_Collection_roms(categoryID, launcherID):
     m_misc_set_default_sorting_method()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
