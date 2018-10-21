@@ -83,19 +83,18 @@
     <setting label="Launcher Asset directory" type="folder" id="launchers_asset_dir" default="" source="" />
     <setting label="Favourites Asset directory" type="folder" id="favourites_asset_dir" default="" source="" />
     <setting label="Collections Asset directory" type="folder" id="collections_asset_dir" default="" source="" />
+
+    <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
+    <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
 </category>
 <category label="I/O">
     <setting id="separator" type="lsep" label="Import/export configuration"/>
-    <setting label="Import category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
-    <setting label="Export category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
+    <setting label="Import category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXECUTE_IMPORT_LAUNCHERS)"/>
+    <setting label="Export category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXECUTE_EXPORT_LAUNCHERS)"/>
 
     <setting id="separator" type="lsep" label="Utilities"/>
-    <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
-    <setting label="Check Launchers ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
-    <setting label="Check Retroarch BIOSes ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
-    <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
-    <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
-    <setting label="Import AL launchers.xml ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
+    <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXECUTE_CHECK_DATABASES)"/>
+    <setting label="Import AL launchers.xml ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXECUTE_IMPORT_AL_LAUNCHERS)"/>
 </category>
 <category label="Advanced">
     <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />
@@ -110,6 +109,6 @@
     <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true"/>
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
-    <setting label="Migrated version" type="text" id="migrated_version" default="0.0.0"  visible="true"/>
+    <setting label="Migrated version" type="text" id="migrated_version" default="0.0.0" visible="true"/>
 </category>
 </settings>
