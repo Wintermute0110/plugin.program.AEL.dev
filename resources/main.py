@@ -376,13 +376,11 @@ def m_run_concurrent(command, args):
 
     # --- Render launchers stuff ---
     elif command == 'SHOW_VCATEGORIES_ROOT':
-        m_gui_render_vcategories_root()
+        m_gui_render_Browse_by_vlaunchers()
     elif command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT':
-        m_gui_render_AEL_scraper_launchers()
+        m_gui_render_AEL_scraper_vlaunchers()
     elif command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT':
-        m_gui_render_LB_scraper_launchers()
-    elif command == 'SHOW_FAVOURITES':
-        m_command_render_favourites()
+        m_gui_render_LB_scraper_vlaunchers()
     elif command == 'SHOW_VIRTUAL_CATEGORY':
         m_command_render_virtual_category(args['catID'][0])
     elif command == 'SHOW_RECENTLY_PLAYED':
@@ -390,10 +388,8 @@ def m_run_concurrent(command, args):
     elif command == 'SHOW_MOST_PLAYED':
         m_command_render_most_played()
 
-    elif command == 'SHOW_UTILITIES_VLAUNCHERS':
-        m_gui_render_Utilities_vlaunchers()
-    elif command == 'SHOW_GLOBALREPORTS_VLAUNCHERS':
-        m_gui_render_GlobalReports_vlaunchers()
+    elif command == 'SHOW_UTILITIES_VLAUNCHERS':     m_gui_render_Utilities_vlaunchers()
+    elif command == 'SHOW_GLOBALREPORTS_VLAUNCHERS': m_gui_render_GlobalReports_vlaunchers()
 
     elif command == 'SHOW_COLLECTIONS':
         m_command_render_Collections()
@@ -403,14 +399,6 @@ def m_run_concurrent(command, args):
     # --- Show ROMs in launcher/virtual launcher ---
     elif command == 'SHOW_ROMS':
         m_command_render_roms(args['catID'][0], args['launID'][0])
-    elif command == 'SHOW_VLAUNCHER_ROMS':
-        m_command_render_virtual_launcher_roms(args['catID'][0], args['launID'][0])
-    elif command == 'SHOW_COLLECTION_ROMS':
-        m_command_render_Collection_roms(args['catID'][0], args['launID'][0])
-    elif command == 'SHOW_AEL_SCRAPER_ROMS':
-        m_command_render_AEL_scraper_roms(args['catID'][0])
-    elif command == 'SHOW_LB_SCRAPER_ROMS':
-        m_command_render_LB_scraper_roms(args['catID'][0])
     # >> Auxiliar command to render clone ROM list from context menu in 1G1R mode.
     elif command == 'EXEC_SHOW_CLONE_ROMS':
         url = m_misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
@@ -418,19 +406,27 @@ def m_run_concurrent(command, args):
     elif command == 'SHOW_CLONE_ROMS':
         m_command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
 
+    elif command == 'SHOW_FAVOURITES':
+        m_command_render_favourite_roms()
+
+    elif command == 'SHOW_VLAUNCHER_ROMS':
+        m_command_render_Browse_by_roms(args['catID'][0], args['launID'][0])
+    elif command == 'SHOW_COLLECTION_ROMS':
+        m_command_render_Collection_roms(args['catID'][0], args['launID'][0])
+    elif command == 'SHOW_AEL_SCRAPER_ROMS':
+        m_command_render_AEL_scraper_roms(args['catID'][0])
+    elif command == 'SHOW_LB_SCRAPER_ROMS':
+        m_command_render_LB_scraper_roms(args['catID'][0])
+
     # --- Skin commands ---
     # >> This commands render Categories/Launcher/ROMs and are used by skins to build shortcuts.
     # >> Do not render virtual launchers.
-    elif command == 'SHOW_ALL_CATEGORIES':
-        m_command_render_all_categories()
-    elif command == 'SHOW_ALL_LAUNCHERS':
-        m_command_render_all_launchers()
-    elif command == 'SHOW_ALL_ROMS':
-        m_command_render_all_ROMs()
+    elif command == 'SHOW_ALL_CATEGORIES': m_command_render_all_categories()
+    elif command == 'SHOW_ALL_LAUNCHERS':  m_command_render_all_launchers()
+    elif command == 'SHOW_ALL_ROMS':       m_command_render_all_ROMs()
 
     # >> Command to build/fill the menu with categories or launcher using skinshortcuts
-    elif command == 'BUILD_GAMES_MENU':
-        m_command_buildMenu()
+    elif command == 'BUILD_GAMES_MENU': m_command_buildMenu()
 
     # >> Unknown command
     else:
