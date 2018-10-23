@@ -1343,9 +1343,15 @@ def m_run_category_sub_command(command, category):
     elif command == 'EDIT_ASSETS':
         m_subcommand_edit_category_assets(category)
 
+        # New generic function to edit assets of objects.
+        # m_gui_edit_object_assets(object_kind, category)
+
     # --- Submenu command ---
     elif command == 'EDIT_DEFAULT_ASSETS':
         m_subcommand_edit_category_default_assets(category)
+
+        # New generic function to edit default assets
+        # m_gui_edit_object_default_assets(object_kind, category)
 
     # --- Atomic commands ---
     elif command == 'CATEGORY_STATUS':
@@ -1763,6 +1769,7 @@ def m_subcommand_save_category_nfo_file(category):
 # NOTE Code a generic function to edit the assets of an object.
 def m_subcommand_edit_category_assets(category):
     # --- Build Dialog.select list ---
+    # --- Use Krypton useDetails to display label2 on select dialog ---
     assets = category.get_assets()
     list_items = []
     for asset_kind in assets:
@@ -1771,7 +1778,6 @@ def m_subcommand_edit_category_assets(category):
         label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
         list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
 
-        # >> Set artwork with setArt()
         item_img = 'DefaultAddonNone.png'
         if assets[asset_kind] != '':
             item_path = FileNameFactory.create(assets[asset_kind])
@@ -1779,22 +1785,21 @@ def m_subcommand_edit_category_assets(category):
                 item_img = 'DefaultAddonVideo.png'
             else:
                 item_img = assets[asset_kind]
-
         list_item.setArt({'icon' : item_img})
         list_items.append(list_item)
 
-    # --- Execute select dialog ---
+    # --- Execute select dialog menu logic ---
     selected_option = xbmcgui.Dialog().select('Edit Category Assets/Artwork', list = list_items, useDetails = True)
     if selected_option < 0:
-        # >> Return to parent menu
-        m_run_category_sub_command('EDIT_CATEGORY', category)
+        # >> Return recursively to parent menu.
+        log_debug('m_subcommand_edit_category_assets() Selected NONE')
     else:
-        # >> Execute category edit asset atomic subcommand.
+        # >> Execute category edit asset menu subcommand.
         # >> Then, execute recursively this submenu again.
         # >> The parent menu dialog is instantiated again so it reflects the changes just edited.
+        # >> If m_gui_edit_asset() returns True changes were made.
         selected_asset_kind = assets.keys()[selected_option]
         if m_gui_edit_asset(KIND_CATEGORY, selected_asset_kind.kind, category.get_data_dic()): 
-            # >> If returns True changes were made.
             g_categoryRepository.save(category)
         m_subcommand_edit_category_assets(category)
 
@@ -1988,7 +1993,7 @@ def m_subcommand_edit_launcher_assets(launcher):
         label1_text = 'Edit {} ...'.format(asset_kind.name)
         label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
         list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
-            
+
         # >> Set artwork with setArt()
         item_img = 'DefaultAddonNone.png'
         if assets[asset_kind] != '':
@@ -1997,24 +2002,20 @@ def m_subcommand_edit_launcher_assets(launcher):
                 item_img = 'DefaultAddonVideo.png'
             else:
                 item_img = assets[asset_kind]
-
         list_item.setArt({'icon' : item_img})
         list_items.append(list_item)
 
-    # >> Execute select dialog
+    # --- Execute select dialog ---
     selected_option = xbmcgui.Dialog().select('Edit Launcher Assets/Artwork', list = list_items, useDetails = True)
     if selected_option < 0: 
-        return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-
-    selected_asset_kind = assets.keys()[selected_option]
-
-    # --- Edit Assets ---
-    # >> If this function returns False no changes were made. No need to save categories
-    # >> XML and update container.
-    if self._gui_edit_asset(KIND_LAUNCHER, selected_asset_kind.kind, launcher.get_data()): 
-        g_launcherRepository.save(launcher)
-
-    return self._subcommand_edit_launcher_assets(launcher)
+        _command_edit_launcher(launcher.get_category_id(), launcher.get_id())
+    else:
+        selected_asset_kind = assets.keys()[selected_option]
+        # >> If this function returns False no changes were made. No need to save categories
+        # >> XML and update container.
+        if _gui_edit_asset(KIND_LAUNCHER, selected_asset_kind.kind, launcher.get_data()): 
+            g_launcherRepository.save(launcher)
+        _subcommand_edit_launcher_assets(launcher)
 
 # --- Choose Launcher default icon/fanart/banner/poster/clearlogo ---
 def m_subcommand_edit_launcher_default_assets(launcher):
@@ -4066,6 +4067,46 @@ def m_gui_edit_rating(object_name, get_method, set_method):
 
     return True
 
+def m_gui_edit_object_assets(obj_kind, obj_instance):
+    # --- Customize function for each object type ---
+    
+
+    # --- Build Dialog.select list ---
+    # --- Use Krypton useDetails to display label2 on select dialog ---
+    assets = category.get_assets()
+    list_items = []
+    for asset_kind in assets:
+        # >> Create ListItems and label2
+        label1_text = 'Edit {0} ...'.format(asset_kind.name)
+        label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
+        list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
+
+        item_img = 'DefaultAddonNone.png'
+        if assets[asset_kind] != '':
+            item_path = FileNameFactory.create(assets[asset_kind])
+            if item_path.is_video_file():
+                item_img = 'DefaultAddonVideo.png'
+            else:
+                item_img = assets[asset_kind]
+        list_item.setArt({'icon' : item_img})
+        list_items.append(list_item)
+
+    # --- Execute select dialog menu logic ---
+    selected_option = xbmcgui.Dialog().select('Edit Category Assets/Artwork', list = list_items, useDetails = True)
+    if selected_option < 0:
+        # >> Return recursively to parent menu.
+        log_debug('m_subcommand_edit_category_assets() Selected NONE')
+    else:
+        # >> Execute category edit asset menu subcommand.
+        # >> Then, execute recursively this submenu again.
+        # >> The parent menu dialog is instantiated again so it reflects the changes just edited.
+        # >> If m_gui_edit_asset() returns True changes were made.
+        selected_asset_kind = assets.keys()[selected_option]
+        if m_gui_edit_asset(KIND_CATEGORY, selected_asset_kind.kind, category.get_data_dic()): 
+            g_categoryRepository.save(category)
+        m_subcommand_edit_category_assets(category)
+
+# Next three functions are obsolete and will be deleted soon.
 def m_list_edit_category_metadata(metadata_name, options, default_value, get_method, set_method):
     if not isinstance(options, dict): 
         options = {item: item for (item) in options}
