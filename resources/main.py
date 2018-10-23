@@ -362,7 +362,7 @@ def m_bootstrap_instances():
 
     g_categoryRepository   = CategoryRepository(main_data_context)
     g_launcherRepository   = LauncherRepository(main_data_context, g_launcherFactory)
-    g_collectionRepository = CollectionRepository(collections_data_context)
+    g_collectionRepository = CollectionRepository(collections_data_context, g_launcherFactory)
 
 #
 # This function may run concurrently
@@ -723,6 +723,7 @@ def m_command_add_new_category():
 def m_command_edit_category(categoryID):
     category = g_categoryRepository.find(categoryID)
     m_run_category_sub_command('EDIT_CATEGORY', category)
+    kodi_refresh_container()
 
 def m_command_add_rom_to_collection(categoryID, launcherID, romID):
     # >> ROMs in standard launcher
@@ -817,6 +818,8 @@ def m_command_edit_collection(categoryID, launcherID):
     # NEW CODE STYLE
     collection = g_collectionRepository.find(launcherID)
     m_run_collection_sub_command('EDIT_COLLECTION', collection)
+    kodi_refresh_container()
+    return
 
     # OLD CODE STYLE, MUST BE DELETED
     # --- Load collection index ---
@@ -1531,13 +1534,12 @@ def m_run_category_sub_command(command, category):
 
     # --- Submenu command ---
     elif command == 'EDIT_METADATA':
-        category_options = category.get_metadata_edit_options(g_settings)
+        options = category.get_metadata_edit_options(g_settings)
         s = 'Edit Category "{0}" metadata'.format(category.get_name())
-        selected_option = KodiDictionaryDialog().select(s, category_options)
+        selected_option = KodiDictionaryDialog().select(s, options)
         if selected_option is None:
-            # >> Return to parent menu.
+            # >> Return recursively to parent menu.
             log_debug('m_run_category_sub_command(EDIT_METADATA) Selected NONE')
-            m_run_category_sub_command('EDIT_CATEGORY', category)
         else:
             # >> Execute category edit metadata atomic subcommand.
             # >> Then, execute recursively this submenu again.
@@ -1547,22 +1549,23 @@ def m_run_category_sub_command(command, category):
             m_run_category_sub_command('EDIT_METADATA', category)
 
     # --- Atomic commands ---
-    elif command == 'EDIT_TITLE':
+    # NOTE integrate subcommands using generic editing functions.
+    elif command == 'EDIT_METADATA_TITLE':
         m_subcommand_edit_category_title(category)
 
-    elif command == 'EDIT_RELEASEYEAR':
+    elif command == 'EDIT_METADATA_RELEASEYEAR':
         m_subcommand_edit_category_releaseyear(category)
 
-    elif command == 'EDIT_GENRE':
+    elif command == 'EDIT_METADATA_GENRE':
         m_subcommand_edit_category_genre(category)
 
-    elif command == 'EDIT_DEVELOPER':
+    elif command == 'EDIT_METADATA_DEVELOPER':
         m_subcommand_edit_category_developer(category)
 
-    elif command == 'EDIT_RATING':
+    elif command == 'EDIT_METADATA_RATING':
         m_subcommand_edit_category_rating(category)
 
-    elif command == 'EDIT_PLOT':
+    elif command == 'EDIT_METADATA_PLOT':
         m_subcommand_edit_category_plot(category)
 
     elif command == 'IMPORT_NFO_FILE_DEFAULT':
@@ -1599,11 +1602,87 @@ def m_run_category_sub_command(command, category):
     log_debug('m_run_category_sub_command({0}) ENDS'.format(command))
     # kodi_refresh_container()
 
+#
+# NOTE when returning from a submenu preselect the menu item in the parent menu that was used.
+#      Use the Krypton feature to preselect menus.
+#    
+def m_run_collection_sub_command(command, collection):
+    log_debug('m_run_collection_sub_command({0}) BEGIN'.format(command))
+
+    # --- Main menu command ---
+    if command == 'EDIT_COLLECTION':
+        options = collection.get_edit_options()
+        s = 'Select action for ROM Collection "{0}"'.format(collection.get_name())
+        selected_option = KodiDictionaryDialog().select(s, options)
+        if selected_option is None:
+            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected None. Exiting context menu.')
+        else:
+            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected {0}'.format(selected_option))
+            m_run_collection_sub_command(selected_option, collection)
+            m_run_collection_sub_command('EDIT_COLLECTION', collection)
+
+    # --- Submenu command ---
+    elif command == 'EDIT_METADATA':
+        options = collection.get_metadata_edit_options()
+        s = 'Edit ROM Collection "{0}" metadata'.format(collection.get_name())
+        selected_option = KodiDictionaryDialog().select(s, options)
+        if selected_option is None:
+            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected None. Executing EDIT_COLLECTION')
+        else:
+            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected {0}'.format(selected_option))
+            m_run_collection_sub_command(selected_option, collection)
+            m_run_collection_sub_command('EDIT_METADATA', collection)
+
+    # --- Atomic commands ---
+    elif command == 'EDIT_METADATA_TITLE':
+        if m_gui_edit_metadata_str('ROM Collection', 'Title', collection.get_name, collection.set_name):
+            g_collectionRepository.save(collection)
+
+    elif command == 'EDIT_METADATA_GENRE':
+        if m_gui_edit_metadata_str('ROM Collection', 'Genre', collection.get_genre, collection.set_genre):
+            g_collectionRepository.save(collection)
+
+    elif command == 'EDIT_METADATA_RATING':
+        if m_gui_edit_rating('ROM Collection', 'Rating', collection.get_rating, collection.set_rating):
+            g_collectionRepository.save(collection)
+
+    elif command == 'EDIT_METADATA_PLOT':
+        if m_gui_edit_metadata_str('ROM Collection', 'Plot', collection.get_plot, collection.set_plot):
+            g_collectionRepository.save(collection)
+
+    # Add these commands IMPORT_NFO_FILE_DEFAULT, IMPORT_NFO_FILE_BROWSE, SAVE_NFO_FILE_DEFAULT.
+
+    # --- Submenu command ---
+    # ROM Collection assets are the same as Categories.
+    elif command == 'EDIT_ASSETS':
+        m_subcommand_edit_category_assets(collection)
+
+    # --- Submenu command ---
+    elif command == 'EDIT_DEFAULT_ASSETS':
+        m_subcommand_edit_category_default_assets(collection)
+
+    # --- Atomic commands ---
+    elif command == 'EXPORT_COLLECTION_XML':
+        m_subcommand_export_collection_xml(collection)
+
+    elif command == 'DELETE_COLLECTION':
+        m_subcommand_delete_collection(collection)
+
+    else:
+        log_warning('m_run_collection_sub_command() Unsupported command "{0}"'.format(command))
+        kodi_dialog_OK('m_run_collection_sub_command() Unknown command {0}. '.format(command) +
+                       'Please report this bug.')
+    log_debug('m_run_collection_sub_command({0}) ENDS'.format(command))
+
 def m_run_launcher_sub_command(command, launcher):
-    pass
+    log_debug('m_run_launcher_sub_command({0}) BEGIN'.format(command))
+    
+    log_debug('m_run_launcher_sub_command({0}) ENDS'.format(command))
 
 def m_run_rom_sub_command(command, rom):
-    pass
+    log_debug('m_run_rom_sub_command({0}) BEGIN'.format(command))
+    
+    log_debug('m_run_rom_sub_command({0}) ENDS'.format(command))
 
 #
 # Runs submenu commands
@@ -1890,22 +1969,23 @@ def m_run_sub_command(command, category = None, launcher = None, rom = None):
 # -------------------------------------------------------------------------------------------------
 def m_subcommand_edit_category_title(category):
     log_debug('m_subcommand_edit_category_title() BEGIN')
-    if m_text_edit_category_metadata('Title', category.get_name, category.set_name):
+    if m_gui_edit_metadata_str('Category', 'Title', category.get_name, category.set_name):
         g_categoryRepository.save(category)
     log_debug('m_subcommand_edit_category_title() ENDS')
 
 def m_subcommand_edit_category_releaseyear(category):
-    if m_text_edit_category_metadata('Release Rear', category.get_releaseyear, category.update_releaseyear):
+    if m_gui_edit_metadata_str('Category', 'Release Rear', category.get_releaseyear, category.update_releaseyear):
         g_categoryRepository.save(category)
 
 def m_subcommand_edit_category_genre(category):
-    if m_text_edit_category_metadata('Genre', category.get_genre, category.update_genre):
+    if m_gui_edit_metadata_str('Category', 'Genre', category.get_genre, category.update_genre):
         g_categoryRepository.save(category)
 
 def m_subcommand_edit_category_developer(category):
-    if m_text_edit_category_metadata('Developer', category.get_developer, category.update_developer):
+    if m_gui_edit_metadata_str('Category', 'Developer', category.get_developer, category.update_developer):
         g_categoryRepository.save(category)
 
+# NOTE create generic function to edit the rating of an object. Will save some lines of code.
 def m_subcommand_edit_category_rating(category):
     options =  {}
     options[-1] = 'Not set'
@@ -1925,9 +2005,11 @@ def m_subcommand_edit_category_rating(category):
         g_categoryRepository.save(category)
 
 def m_subcommand_edit_category_plot(category):
-    if m_text_edit_category_metadata('Plot', category.get_plot, category.update_plot):
+    if m_gui_edit_metadata_str('Category', 'Plot', category.get_plot, category.update_plot):
         g_categoryRepository.save(category)
 
+# NOTE Create new generic functions to save/load NFO files.
+#      NFO save/load functionality must be in the edited-object methods.
 def m_subcommand_import_category_nfo_file(category):
     # >> Returns True if changes were made
     NFO_file = fs_get_category_NFO_name(g_settings, category.get_data())
@@ -2055,7 +2137,7 @@ def m_subcommand_edit_category_default_assets(category):
 # --- Category Status (Finished or unfinished) ---
 def m_subcommand_edit_category_status(category):
     category.change_finished_status()
-    kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_state()))
+    kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_finished_str()))
     g_categoryRepository.save(category)
 
 # --- Export Category XML configuration ---
@@ -3570,9 +3652,8 @@ def m_subcommand_change_rom_status(launcher, rom):
 
 # --- Edit ROM metadata ---
 def m_subcommand_edit_rom_metadata(launcher, rom):
-    
     options = rom.get_metadata_edit_options()
-    
+
     # >> Make a list of available metadata scrapers
     # todo: make a separate menu item 'Scrape' with after that a list to select instead of merging it now with other options.
     for scrap_obj in scrapers_metadata:
@@ -4207,56 +4288,26 @@ def m_subcommand_manage_collection_rom_position(launcher, rom):
 #
 # Returns True if category was chaged.
 # Returns False if cateogry was not changed.
+# Example call:
+#   m_gui_edit_metadata_str('ROM Collection', 'Title', collection.get_title, collection.set_title)
 #
-def m_text_edit_category_metadata(metadata_name, get_method, set_method):
+def m_gui_edit_metadata_str(object_name, metadata_name, get_method, set_method):
     old_value = get_method()
-    s = 'Edit Category "{0}" {1}'.format(old_value, metadata_name)
+    s = 'Edit {0} "{1}" {2}'.format(object_name, old_value, metadata_name)
     keyboard = xbmc.Keyboard(old_value, s)
     keyboard.doModal()
     if not keyboard.isConfirmed(): return False
 
     new_value = keyboard.getText().decode('utf-8')
     if old_value == new_value:
-        kodi_notify('Category {0} not changed'.format(metadata_name))
+        kodi_notify('{0} {1} not changed'.format(object_name, metadata_name))
         return False
 
     set_method(new_value)
-    kodi_notify('Category {0} is now {1}'.format(metadata_name, new_value))
+    kodi_notify('{0} {1} is now {2}'.format(object_name, metadata_name, new_value))
     return True
 
-def m_text_edit_launcher_metadata(metadata_name, get_method, set_method):
-    old_value = get_method()
-    keyboard = xbmc.Keyboard(old_value, 'Edit Launcher {}'.format(metadata_name))
-    keyboard.doModal()
-        
-    if not keyboard.isConfirmed(): 
-        return False
 
-    new_value = keyboard.getText().decode('utf-8')
-    if old_value == new_value:
-        kodi_notify('Launcher {} not changed'.format(metadata_name))
-        return False
-
-    set_method(new_value)
-    kodi_notify('Launcher {} is now {}'.format(metadata_name, new_value))
-    return True
-
-def m_text_edit_rom_metadata(metadata_name, get_method, set_method):
-    old_value = get_method()
-    keyboard = xbmc.Keyboard(old_value, 'Edit ROM {}'.format(metadata_name))
-    keyboard.doModal()
-        
-    if not keyboard.isConfirmed(): 
-        return False
-
-    new_value = keyboard.getText().decode('utf-8')
-    if old_value == new_value:
-        kodi_notify('ROM {} not changed'.format(metadata_name))
-        return False
-
-    set_method(new_value)
-    kodi_notify('ROM {} is now {}'.format(metadata_name, new_value))
-    return True
 
 def m_list_edit_category_metadata(metadata_name, options, default_value, get_method, set_method):
     if not isinstance(options, dict): 
@@ -4411,7 +4462,7 @@ def m_command_render_root_skins():
 #
 def m_gui_render_category_row(category):
     # --- Do not render row if category finished ---
-    if category.get_state() and g_settings['display_hide_finished']: return
+    if category.is_finished() and g_settings['display_hide_finished']: return
 
     # --- Create listitem row ---
     ICON_OVERLAY = 5 if category.is_finished() else 4
@@ -6133,7 +6184,7 @@ def m_command_render_Collections():
 
         # --- Create context menu ---
         commands = []
-        commands.append(('View ROM Collection data', m_misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
+        commands.append(('View Collection data', m_misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
         commands.append(('Edit/Export Collection',   m_misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
         commands.append(('Create New Collection',    m_misc_url_RunPlugin('ADD_COLLECTION')))
         commands.append(('Import Collection',        m_misc_url_RunPlugin('IMPORT_COLLECTION')))

@@ -1305,10 +1305,10 @@ class LauncherRepository(object):
 
         launcher_element = self.data_context.get_node('launcher', launcher_id)
         if launcher_element is None:
-            log_debug('Launcher #{} not found'.format(launcher_id))
+            log_debug('Launcher ID {} not found'.format(launcher_id))
             return None
-        launcher_data = self._parse_xml_to_dictionary(launcher_element)
-        launcher = self.launcher_factory.create(launcher_data)
+        launcher_dic = self._parse_xml_to_dictionary(launcher_element)
+        launcher = self.launcher_factory.create(launcher_dic)
 
         return launcher
 
@@ -1324,8 +1324,8 @@ class LauncherRepository(object):
         launchers = []
         launcher_elements = self.data_context.get_nodes('launcher')
         for launcher_element in launcher_elements:
-            launcher_data = self._parse_xml_to_dictionary(launcher_element)
-            launcher = launcher_factory.create(launcher_data)
+            launcher_dic = self._parse_xml_to_dictionary(launcher_element)
+            launcher = launcher_factory.create(launcher_dic)
             launchers.append(launcher)
 
         return launchers
@@ -1334,8 +1334,8 @@ class LauncherRepository(object):
         launchers = []
         launcher_elements = self.data_context.get_nodes_by('launcher', 'type', launcher_type )
         for launcher_element in launcher_elements:
-            launcher_data = self._parse_xml_to_dictionary(launcher_element)
-            launcher = launcher_factory.create(launcher_data)
+            launcher_dic = self._parse_xml_to_dictionary(launcher_element)
+            launcher = launcher_factory.create(launcher_dic)
             launchers.append(launcher)
 
         return launchers
@@ -1349,8 +1349,8 @@ class LauncherRepository(object):
 
         log_debug('{} launchers found in category #{}'.format(len(launcher_elements), category_id))
         for launcher_element in launcher_elements:
-            launcher_data = self._parse_xml_to_dictionary(launcher_element)
-            launcher = self.launcher_factory.create(launcher_data)
+            launcher_dic = self._parse_xml_to_dictionary(launcher_element)
+            launcher = self.launcher_factory.create(launcher_dic)
             launchers.append(launcher)
 
         return launchers
@@ -1389,9 +1389,10 @@ class LauncherRepository(object):
 # Arranges retrieving and storing of the Collection launchers from and into the xml data file.
 # -------------------------------------------------------------------------------------------------
 class CollectionRepository(object):
-    def __init__(self, data_context):
+    def __init__(self, data_context, launcher_factory):
         log_debug('CollectionRepository::__init__()')
         self.data_context = data_context
+        self.launcher_factory = launcher_factory
 
     def _parse_xml_to_dictionary(self, collection_element):
         __debug_xml_parser = False
@@ -1415,7 +1416,7 @@ class CollectionRepository(object):
             log_debug('Cannot find collection with id {}'.format(collection_id))
             return None
         collection_dic = self._parse_xml_to_dictionary(collection_element)
-        collection = self.launcher_factory.create(collection_data)
+        collection = self.launcher_factory.create(collection_dic)
 
         return collection
 
@@ -1425,7 +1426,7 @@ class CollectionRepository(object):
         log_debug('Found {0} collections'.format(len(collection_element)))
         for collection_element in collection_elements:
             collection_dic = self._parse_xml_to_dictionary(collection_element)
-            collection = self.launcher_factory.create(collection_data)
+            collection = self.launcher_factory.create(collection_dic)
             collections.append(collection)
 
         return collections
@@ -1434,8 +1435,8 @@ class CollectionRepository(object):
         if update_launcher_timestamp:
             collection.update_timestamp()
         collection_id   = collection.get_id()
-        collection_data = collection.get_data_dic()
-        self.data_context.save_node('Collection', collection_id, collection_data)
+        collection_dic = collection.get_data_dic()
+        self.data_context.save_node('Collection', collection_id, collection_dic)
         self.data_context.commit()
 
     def save_multiple(self, collections, update_launcher_timestamp = True):
@@ -1443,8 +1444,8 @@ class CollectionRepository(object):
             if update_launcher_timestamp:
                 collection.update_timestamp()
             collection_id   = collection.get_id()
-            collection_data = collection.get_data()
-            self.data_context.save_node('Collection', collection_id, collection_data)
+            collection_dic = collection.get_data_dic()
+            self.data_context.save_node('Collection', collection_id, collection_dic)
         self.data_context.commit()
 
     def delete(self, collection):
@@ -1688,7 +1689,7 @@ class RomStatisticsStrategy(object):
         self.most_played_launcher.update_rom_set(most_played_roms)
 
 # -------------------------------------------------------------------------------------------------
-# Abstract base class for business objects which support the generic metadata properties
+# Abstract base class for business objects which support the generic metadata fields and assets.
 # -------------------------------------------------------------------------------------------------
 class MetaDataItem(object):
     __metaclass__ = abc.ABCMeta
@@ -1696,47 +1697,95 @@ class MetaDataItem(object):
     def __init__(self, entity_data):
         self.entity_data = entity_data
 
+    # --- Database ID and utilities ---------------------------------------------------------------
+    def set_id(self, id):
+        self.entity_data['id'] = id
+
     def get_id(self):
         return self.entity_data['id']
-
-    def get_name(self):
-        if 'm_name' in self.entity_data:
-           return self.entity_data['m_name']
-        else:
-           return 'Unknown'
-
-    def get_releaseyear(self):
-        return self.entity_data['m_year'] if 'm_year' in self.entity_data else ''
-
-    def get_genre(self):
-        return self.entity_data['m_genre'] if 'm_genre' in self.entity_data else ''
-    
-    def get_developer(self):
-        return self.entity_data['m_developer'] if 'm_developer' in self.entity_data else ''
-
-    def get_rating(self):
-        return int(self.entity_data['m_rating']) if self.entity_data['m_rating'] else -1
-
-    def get_plot(self):
-        return self.entity_data['m_plot'] if 'm_plot' in self.entity_data else ''
-
-    def is_finished(self):
-        return 'finished' in self.entity_data and self.entity_data['finished']
-    
-    def get_state(self):
-        finished = self.entity_data['finished']
-        finished_display = 'Finished' if finished == True else 'Unfinished'
-        return finished_display
 
     def get_data_dic(self):
         return self.entity_data
 
-    def copy_of_data(self):
+    def copy_of_data_dic(self):
         return self.entity_data.copy()
+
+    def set_custom_attribute(self, key, value):
+        self.entity_data[key] = value
 
     def get_custom_attribute(self, key, default_value = None):
         return self.entity_data[key] if key in self.entity_data else default_value
 
+    def import_data_dic(self, data):
+        for key in data:
+            self.entity_data[key] = data[key]
+
+    # NOTE Rename to get_filename_from_field()
+    def _get_value_as_filename(self, field):
+        if not field in self.entity_data: return None
+        path = self.entity_data[field]
+        if path == '': return None
+
+        return FileNameFactory.create(path)
+
+    # --- Metadata --------------------------------------------------------------------------------
+    def get_name(self):
+        return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'
+
+    def set_name(self, name):
+        self.entity_data['m_name'] = name
+
+    def get_releaseyear(self):
+        return self.entity_data['m_year'] if 'm_year' in self.entity_data else ''
+
+    def set_releaseyear(self, releaseyear):
+        self.entity_data['m_year'] = releaseyear
+
+    def get_genre(self):
+        return self.entity_data['m_genre'] if 'm_genre' in self.entity_data else ''
+
+    def set_genre(self, genre):
+        self.entity_data['m_genre'] = genre
+
+    def get_developer(self):
+        return self.entity_data['m_developer'] if 'm_developer' in self.entity_data else ''
+
+    def set_developer(self, developer):
+        self.entity_data['m_developer'] = developer
+
+    # Check in AEL 0.9.7 if rating was stored as string or int internally, and how was stored
+    # in the JSON file.
+    def get_rating(self):
+        return int(self.entity_data['m_rating']) if self.entity_data['m_rating'] else -1
+
+    def set_rating(self, rating):
+        try:
+            self.entity_data['m_rating'] = int(rating)
+        except:
+            self.entity_data['m_rating'] = ''
+
+    def get_plot(self):
+        return self.entity_data['m_plot'] if 'm_plot' in self.entity_data else ''
+
+    def set_plot(self, plot):
+        self.entity_data['m_plot'] = plot
+
+    # --- Finished status stuff -------------------------------------------------------------------
+    def is_finished(self):
+        return 'finished' in self.entity_data and self.entity_data['finished']
+
+    def get_finished_str(self):
+        finished = self.entity_data['finished']
+        finished_display = 'Finished' if finished == True else 'Unfinished'
+
+        return finished_display
+
+    def change_finished_status(self):
+        finished = self.entity_data['finished']
+        finished = False if finished else True
+        self.entity_data['finished'] = finished
+
+    # --- Assets/artwork --------------------------------------------------------------------------
     def has_asset(self, asset_info):
         if not asset_info.key in self.entity_data: return False
 
@@ -1751,57 +1800,11 @@ class MetaDataItem(object):
 
         return FileNameFactory.create(asset)
 
-    def set_id(self, id):
-        self.entity_data['id'] = id
-
-    def set_name(self, name):
-        self.entity_data['m_name'] = name
-
-    def update_releaseyear(self, releaseyear):
-        self.entity_data['m_year'] = releaseyear
-
-    def update_genre(self, genre):
-        self.entity_data['m_genre'] = genre
-
-    def update_developer(self, developer):
-        self.entity_data['m_developer'] = developer
-
-    def update_rating(self, rating):
-        try:
-            self.entity_data['m_rating'] = int(rating)
-        except:
-            self.entity_data['m_rating'] = ''
-
-    def update_plot(self, plot):
-        self.entity_data['m_plot'] = plot
-
-    def change_finished_status(self):
-        finished = self.entity_data['finished']
-        finished = False if finished else True
-        self.entity_data['finished'] = finished
-
     def set_asset(self, asset_info, path):
         self.entity_data[asset_info.key] = path.getOriginalPath()
 
     def clear_asset(self, asset_info):
         self.entity_data[asset_info.key] = ''
-
-    def import_data(self, data):
-        for key in data:
-            self.entity_data[key] = data[key]
-
-    def set_custom_attribute(self, key, value):
-        self.entity_data[key] = value
-
-    def _get_value_as_filename(self, field):
-        if not field in self.entity_data:
-            return None
-
-        path = self.entity_data[field]
-        if path == '':
-            return None
-
-        return FileNameFactory.create(path)
 
 # -------------------------------------------------------------------------------------------------
 # Class representing the categories in AEL.
@@ -1877,28 +1880,29 @@ class Category(MetaDataItem):
         options['EDIT_METADATA']       = 'Edit Metadata ...'
         options['EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS']  = 'Choose default Assets/Artwork ...'
-        options['CATEGORY_STATUS']     = 'Category status: {0}'.format(self.get_state())
+        options['CATEGORY_STATUS']     = 'Category status: {0}'.format(self.get_finished_str())
         options['EXPORT_CATEGORY_XML'] = 'Export Category XML configuration ...'
         options['DELETE_CATEGORY']     = 'Delete Category'
 
         return options
 
     def get_metadata_edit_options(self, settings_dic):
-        # >> Metadata edit dialog
+        # NOTE The Category NFO file logic must be moved to this class. Settings not need to
+        #      be used as a parameter here.
         NFO_FileName = fs_get_category_NFO_name(settings_dic, self.entity_data)
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
         plot_str = text_limit_string(self.get_plot(), PLOT_STR_MAXSIZE)
 
         options = collections.OrderedDict()
-        options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
-        options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.get_releaseyear())
-        options['EDIT_GENRE']             = "Edit Genre: '{0}'".format(self.get_genre())
-        options['EDIT_DEVELOPER']         = "Edit Developer: '{0}'".format(self.get_developer())
-        options['EDIT_RATING']            = "Edit Rating: '{0}'".format(self.get_rating())
-        options['EDIT_PLOT']              = "Edit Plot: '{0}'".format(plot_str)
-        options['IMPORT_NFO_FILE']        = 'Import NFO file (default, {0})'.format(NFO_found_str)
-        options['IMPORT_NFO_FILE_BROWSE'] = 'Import NFO file (browse NFO file) ...'
-        options['SAVE_NFO_FILE']          = 'Save NFO file (default location)'
+        options['EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(self.get_name())
+        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{0}'".format(self.get_releaseyear())
+        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(self.get_genre())
+        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{0}'".format(self.get_developer())
+        options['EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(self.get_rating())
+        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{0}'".format(plot_str)
+        options['IMPORT_NFO_FILE']           = 'Import NFO file (default, {0})'.format(NFO_found_str)
+        options['IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
+        options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
 
         return options
 
@@ -2284,13 +2288,20 @@ class LauncherFactory(object):
 
         return typeOptions
 
-    def create(self, launcher_data):
-        launcher_type = launcher_data['type'] if 'type' in launcher_data else None
+    #
+    # Creates a Launcher derived object when the data dictionary is available.
+    #
+    def create(self, launcher_dic):
+        launcher_type = launcher_dic['type'] if 'type' in launcher_dic else None
         s = 'Creating launcher instance for launcher {0} with type {1}'
-        log_debug(s.format(launcher_data['id'], launcher_type))
+        log_debug(s.format(launcher_dic['id'], launcher_type))
 
-        return self._load(launcher_type, launcher_data)
+        return self._load(launcher_type, launcher_dic)
 
+    #
+    # Creates an empty Launcher derived object with default values when only the launcher type
+    # is available, for example, when creating a new launcher in the context menu.
+    #
     def create_new(self, launcher_type):
         log_debug('Creating empty launcher instance with type {0}'.format(launcher_type))
         return self._load(launcher_type, None)
@@ -2652,49 +2663,46 @@ class Launcher(MetaDataItem):
         self.entity_data[asset_kind.default_key] = mapped_to_kind.key
 
     #
-    # Returns a dictionary of options to choose from
-    # with which you can edit or manage this specific launcher.
+    # Returns a dictionary of options to choose from with which you can edit or manage this
+    # specific launcher.
+    # No need to define this method here, it's an abstract method that must be implemented
+    # in a derived class.
     #
     @abc.abstractmethod
     def get_edit_options(self):
-        return {}
+        pass
 
     #
-    # Returns a dictionary of options to choose from
-    # with which you can do advanced modifications on this specific launcher.
-    #
-    @abc.abstractmethod
-    def get_advanced_modification_options(self):
-        options = collections.OrderedDict()
-        return options
-
-    #
-    # Returns a dictionary of options to choose from
-    # with which you can edit the metadata of this specific launcher.
+    # Returns a dictionary of options to choose from with which you can edit the metadata
+    # of a launcher.
     #
     def get_metadata_edit_options(self):
-        # >> Metadata edit dialog
+        plot_str = text_limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
+        rating = self.get_rating() if self.get_rating() != -1 else 'not rated'
         NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.entity_data)
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text_limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
-
-        rating = self.get_rating()
-        if rating == -1:
-            rating = 'not rated'
 
         options = collections.OrderedDict()
-        options['EDIT_TITLE']             = "Edit Title: '{0}'".format(self.get_name())
-        options['EDIT_PLATFORM']          = "Edit Platform: {0}".format(self.entity_data['platform'])
-        options['EDIT_RELEASEYEAR']       = "Edit Release Year: '{0}'".format(self.entity_data['m_year'])
-        options['EDIT_GENRE']             = "Edit Genre: '{0}'".format(self.entity_data['m_genre'])
-        options['EDIT_DEVELOPER']         = "Edit Developer: '{0}'".format(self.entity_data['m_developer'])
-        options['EDIT_RATING']            = "Edit Rating: '{0}'".format(rating)
-        options['EDIT_PLOT']              = "Edit Plot: '{0}'".format(plot_str)
-        options['IMPORT_NFO_FILE']        = 'Import NFO file (default, {0})'.format(NFO_found_str)
-        options['IMPORT_NFO_FILE_BROWSE'] = 'Import NFO file (browse NFO file) ...'
-        options['SAVE_NFO_FILE']          = 'Save NFO file (default location)'
+        options['EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(self.get_name())
+        options['EDIT_METADATA_PLATFORM']    = "Edit Platform: {0}".format(self.entity_data['platform'])
+        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{0}'".format(self.entity_data['m_year'])
+        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(self.entity_data['m_genre'])
+        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{0}'".format(self.entity_data['m_developer'])
+        options['EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(rating)
+        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{0}'".format(plot_str)
+        options['IMPORT_NFO_FILE']           = 'Import NFO file (default {0})'.format(NFO_found_str)
+        options['IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
+        options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
 
         return options
+
+    #
+    # Returns a dictionary of options to choose from with which you can do advanced modifications
+    # on this specific launcher.
+    #
+    # @abc.abstractmethod
+    # def get_advanced_modification_options(self):
+    #     pass
 
     def get_timestamp(self):
         timestamp = self.entity_data['timestamp_launcher']
@@ -2864,12 +2872,15 @@ class Launcher(MetaDataItem):
     #
     def _user_selected_custom_browsing(self, item_key, launcher):
         return launcher[item_key] == 'BROWSE'
-     
+
 # -------------------------------------------------------------------------------------------------
-# Abstract base class for launching anything roms or item based.
+# Abstract base class for launching anything ROMs or item based.
+# Wintermute0110 Is it abstract? If RomLauncher objects can be instantiated then it's not abstract. 
+#                Confirm this point.
+#
 # This base class has methods to support launching applications with variable input
-# arguments or items like roms.
-# Inherit from this base class to implement your own specific rom launcher.
+# arguments or items like ROMs. Inherit from this base class to implement your own
+# specific ROM launcher.
 # -------------------------------------------------------------------------------------------------
 class RomLauncher(Launcher):
     __metaclass__ = abc.ABCMeta
@@ -2877,9 +2888,8 @@ class RomLauncher(Launcher):
     def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy, escape_romfile):
         self.roms = {}
         self.romset_repository = romset_repository
-
-        self.escape_romfile = escape_romfile
         self.statsStrategy = statsStrategy
+        self.escape_romfile = escape_romfile
 
         super(RomLauncher, self).__init__(launcher_data, settings, executorFactory)
 
@@ -3131,6 +3141,9 @@ class RomLauncher(Launcher):
 
         return options
 
+    # get_metadata_edit_options() has a general implementation in Launcher class for 
+    # Standard ROM Launchers. ROM Collection metadata is different from a Standard ROM Launcher
+
     # Returns the dialog options to choose from when managing the roms.
     def get_manage_roms_options(self):
         options = collections.OrderedDict()
@@ -3167,7 +3180,6 @@ class RomLauncher(Launcher):
 
     def get_rom_assets(self):
         assets = {}
-
         assets[ASSET_BANNER]     = self.entity_data['s_banner']      if self.entity_data['s_banner']     else ''
         assets[ASSET_ICON]       = self.entity_data['s_icon']        if self.entity_data['s_icon']       else ''
         assets[ASSET_FANART]     = self.entity_data['s_fanart']      if self.entity_data['s_fanart']     else ''
@@ -3474,30 +3486,25 @@ class ApplicationLauncher(Launcher):
 # Kodi favorites launcher
 # -------------------------------------------------------------------------------------------------
 class KodiLauncher(Launcher):
-            
     def launch(self):
+        self.title       = self.entity_data['m_name']
+        self.application = FileNameFactory.create('xbmc.exe')
+        self.arguments   = self.entity_data['application']       
 
-        self.title              = self.entity_data['m_name']
-        self.application        = FileNameFactory.create('xbmc.exe')
-        self.arguments          = self.entity_data['application']       
-        
         super(KodiLauncher, self).launch()
-        pass
-    
+
     def supports_launching_roms(self):
         return False
-    
+
     def get_launcher_type(self):
         return LAUNCHER_FAVOURITES
-    
-    def get_launcher_type_name(self):        
-        return "Kodi favourite launcher"
-    
-    def change_application(self):
 
+    def get_launcher_type_name(self):
+        return "Kodi favourite launcher"
+
+    def change_application(self):
         current_application = self.entity_data['application']
-        
-        dialog = DictionaryDialog()
+        dialog = KodiDictionaryDialog()
         selected_application = dialog.select('Select the favourite', self._get_kodi_favourites(), current_application)
 
         if selected_application is None or selected_application == current_application:
@@ -3508,7 +3515,6 @@ class KodiLauncher(Launcher):
         return True
 
     def get_edit_options(self):
-
         options = collections.OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
@@ -3520,9 +3526,8 @@ class KodiLauncher(Launcher):
         options['DELETE_LAUNCHER']    = 'Delete Launcher'
 
         return options
-    
+
     def get_advanced_modification_options(self):
-        
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
 
@@ -3534,23 +3539,21 @@ class KodiLauncher(Launcher):
         options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
 
         return options
-    
+
     #
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        
         wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', self._get_kodi_favourites(), wizard)
         wizard = DummyWizardDialog('s_icon', '', wizard, self._get_icon_from_selected_favourite)
         wizard = DummyWizardDialog('original_favname', '', wizard, self._get_title_from_selected_favourite)
         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_selected_favourite)
         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            
-        return wizard
-    
-    def _get_kodi_favourites(self):
 
+        return wizard
+
+    def _get_kodi_favourites(self):
         favourites = kodi_read_favourites()
         fav_options = {}
 
@@ -3560,7 +3563,6 @@ class KodiLauncher(Launcher):
         return fav_options
 
     def _get_icon_from_selected_favourite(self, input, item_key, launcher):
-
         fav_action = launcher['application']
         favourites = kodi_read_favourites()
 
@@ -3571,7 +3573,6 @@ class KodiLauncher(Launcher):
         return 'DefaultProgram.png'
 
     def _get_title_from_selected_favourite(self, input, item_key, launcher):
-    
         fav_action = launcher['application']
         favourites = kodi_read_favourites()
 
@@ -3580,9 +3581,10 @@ class KodiLauncher(Launcher):
                 return favourites[key][0]
 
         return _get_title_from_app_path(input, launcher)
-   
+
 # -------------------------------------------------------------------------------------------------
 # Collection Launcher
+# Class hierarchy: CollectionLauncher <-- RomLauncher <-- Launcher <-- MetaDataItem <-- object
 # ------------------------------------------------------------------------------------------------- 
 class CollectionLauncher(RomLauncher):
     def __init__(self, launcher_data, settings, romset_repository):
@@ -3612,13 +3614,41 @@ class CollectionLauncher(RomLauncher):
     def _selectRomFileToUse(self):
         return False
 
+    # get_edit_options() is implemented in RomLauncher but Categories editing options
+    # are different.
     def get_edit_options(self):
         options = collections.OrderedDict()
+        options['EDIT_METADATA']       = 'Edit Metadata ...'
+        options['EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['EXPORT_COLLECTION']   = 'Export Collection XML'
+        options['DELETE_COLLECTION']   = 'Delete Collection'
+
         return options
 
-    def get_advanced_modification_options(self):
+    # get_metadata_edit_options() has a general implementation in Launcher class for 
+    # Standard ROM Launchers. ROM Collections metadata is different from a Standard ROM Launcher
+    # so reimplement the method here.
+    def get_metadata_edit_options(self):
+        plot_str = text_limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
+        rating = self.get_rating() if self.get_rating() != -1 else 'not rated'
+        NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.entity_data)
+        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+
         options = collections.OrderedDict()
+        options['EDIT_METADATA_TITLE']     = "Edit Title: '{0}'".format(self.get_name())
+        options['EDIT_METADATA_GENRE']     = "Edit Genre: '{0}'".format(self.entity_data['m_genre'])
+        options['EDIT_METADATA_RATING']    = "Edit Rating: '{0}'".format(rating)
+        options['EDIT_METADATA_PLOT']      = "Edit Plot: '{0}'".format(plot_str)
+        options['IMPORT_NFO_FILE_DEFAULT'] = 'Import NFO file (default {0})'.format(NFO_found_str)
+        options['IMPORT_NFO_FILE_BROWSE']  = 'Import NFO file (browse NFO file) ...'
+        options['SAVE_NFO_FILE_DEFAULT']   = 'Save NFO file (default location)'
+
         return options
+
+    # def get_advanced_modification_options(self):
+    #     options = collections.OrderedDict()
+    #     return options
 
     def _get_builder_wizard(self, wizard):
         return wizard
@@ -4915,6 +4945,7 @@ class GameStreamServer(object):
         return pairStatus.text == '1'
 
     def pairServer(self, pincode):
+        # WARNING import * only allowed at module level!!!
         from utils_cryptography import *
 
         if not self.is_connected():
@@ -4926,19 +4957,17 @@ class GameStreamServer(object):
 
         majorVersion = version.getMajor()
         if majorVersion >= 7:
-			# Gen 7+ uses SHA-256 hashing
+            # Gen 7+ uses SHA-256 hashing
             hashAlgorithm = HashAlgorithm(256)
         else:
             # Prior to Gen 7, SHA-1 is used
             hashAlgorithm = HashAlgorithm(1)
-
         log_debug('Pin {0}'.format(pincode))
-        
+
         # Generate a salt for hashing the PIN
         salt = randomBytes(16)
         # Combine the salt and pin
         saltAndPin = salt + bytearray(pincode, 'utf-8')
-
         # Create an AES key from them
         aes_cypher = AESCipher(saltAndPin, hashAlgorithm)
 
@@ -4947,7 +4976,7 @@ class GameStreamServer(object):
         client_certificate      = self.getCertificateBytes()
         client_key_certificate  = self.getCertificateKeyBytes()
         certificate_signature   = getCertificateSignature(client_certificate)
-        
+
         # Start pairing with server
         log_debug('Start pairing with server')
         pairing_result = self._perform_server_request('pair', False, {
@@ -5024,13 +5053,13 @@ class GameStreamServer(object):
             log_error('Failed to pair with server. Server returned failed state.')
             self._perform_server_request('unpair', False)
             return False
-        
+
         # Get the server's signed secret
         log_debug('Verifiying server signature')
         server_secret_response  = bytearray.fromhex(pairing_secret_response.find('pairingsecret').text)
         server_secret           = server_secret_response[:16]
         server_signature        = server_secret_response[16:272]
-        
+
         server_cert = server_cert_data.decode('hex')
         is_verified = verify_signature(str(server_secret), server_signature, server_cert)
 
@@ -5045,7 +5074,7 @@ class GameStreamServer(object):
         server_cert_signature       = getCertificateSignature(server_cert)
         server_secret_combination   = challenge + server_cert_signature + server_secret
         server_secret_hashed        = hashAlgorithm.hash(server_secret_combination)
-        
+
         if server_secret_hashed != server_challenge_firstbytes:
             # Probably got the wrong PIN
             log_error("Wrong PIN entered")
@@ -5069,14 +5098,14 @@ class GameStreamServer(object):
             log_error('Failed to pair with server. Server returned failed state.')
             self._perform_server_request('unpair', False)
             return False
-        
+
         # Do the initial challenge over https
         log_debug('Initial challenge again')
         pair_challenge_response = self._perform_server_request('pair', True, {
             'devicename': 'ael', 
             'updateState': 1, 
             'phrase':  'pairchallenge'})
-        
+
         isPaired = pair_challenge_response.find('paired').text
         if isPaired != '1':
             log_error('Failed to pair with server. Server returned failed state.')
@@ -5086,13 +5115,10 @@ class GameStreamServer(object):
         return True
 
     def getApps(self):
-        
         apps_response = self._perform_server_request('applist', True)
         appnodes = apps_response.findall('App')
-        
         apps = []
         for appnode in appnodes:
-            
             app = {}
             for appnode_attr in appnode:
                 if len(list(appnode_attr)) > 1:
@@ -5103,15 +5129,15 @@ class GameStreamServer(object):
                 xml_tag  = appnode_attr.tag
            
                 app[xml_tag] = xml_text
-
             apps.append(app)
 
         return apps
 
 
     def getCertificateBytes(self):
+        # WARNING import * only allowed at module level
         from utils_cryptography import *
-        
+
         if self.pem_cert_data:
             return self.pem_cert_data
 
@@ -5123,24 +5149,23 @@ class GameStreamServer(object):
         self.pem_cert_data = self.certificate_file_path.readAll()
 
         return self.pem_cert_data
-    
+
     def getCertificateKeyBytes(self):
+        # WARNING import * only allowed at module level
         from utils_cryptography import *
-        
+
         if self.key_cert_data:
             return self.key_cert_data
 
         if not self.certificate_key_file_path.exists():
             log_info('Client certificate file does not exist. Creating')
             create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
-        
         log_info('Loading client certificate data from {0}'.format(self.certificate_key_file_path.getOriginalPath()))
         self.key_cert_data = self.certificate_key_file_path.readAll()
-        
+
         return self.key_cert_data
-    
+
     def validate_certificates(self):
-        
         if self.certificate_file_path.exists() and self.certificate_key_file_path.exists():
             log_debug('validate_certificates(): Certificate files exist. Done')
             return True
@@ -5168,7 +5193,6 @@ class GameStreamServer(object):
 
     @staticmethod
     def try_to_resolve_path_to_nvidia_certificates():
-
         home = expanduser("~")
         homePath = FileNameFactory.create(home)
 
