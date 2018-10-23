@@ -1551,22 +1551,28 @@ def m_run_category_sub_command(command, category):
     # --- Atomic commands ---
     # NOTE integrate subcommands using generic editing functions.
     elif command == 'EDIT_METADATA_TITLE':
-        m_subcommand_edit_category_title(category)
+        if m_gui_edit_metadata_str('Category', 'Title', category.get_name, category.set_name):
+            g_categoryRepository.save(category)
 
     elif command == 'EDIT_METADATA_RELEASEYEAR':
-        m_subcommand_edit_category_releaseyear(category)
+        if m_gui_edit_metadata_str('Category', 'Release Rear', category.get_releaseyear, category.set_releaseyear):
+            g_categoryRepository.save(category)
 
     elif command == 'EDIT_METADATA_GENRE':
-        m_subcommand_edit_category_genre(category)
+        if m_gui_edit_metadata_str('Category', 'Genre', category.get_genre, category.set_genre):
+            g_categoryRepository.save(category)
 
     elif command == 'EDIT_METADATA_DEVELOPER':
-        m_subcommand_edit_category_developer(category)
+        if m_gui_edit_metadata_str('Category', 'Developer', category.get_developer, category.set_developer):
+            g_categoryRepository.save(category)
 
     elif command == 'EDIT_METADATA_RATING':
-        m_subcommand_edit_category_rating(category)
+        if m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating):
+            g_collectionRepository.save(collection)
 
     elif command == 'EDIT_METADATA_PLOT':
-        m_subcommand_edit_category_plot(category)
+        if m_gui_edit_metadata_str('Category', 'Plot', category.get_plot, category.set_plot):
+            g_categoryRepository.save(category)
 
     elif command == 'IMPORT_NFO_FILE_DEFAULT':
         m_subcommand_edit_category_nfo_import_default(category)
@@ -1587,7 +1593,9 @@ def m_run_category_sub_command(command, category):
 
     # --- Atomic commands ---
     elif command == 'CATEGORY_STATUS':
-        m_subcommand_edit_category_status(category)
+        category.change_finished_status()
+        kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_finished_str()))
+        g_categoryRepository.save(category)
 
     elif command == 'EXPORT_CATEGORY_XML':
         m_subcommand_export_category_xml(category)
@@ -1600,7 +1608,6 @@ def m_run_category_sub_command(command, category):
         kodi_dialog_OK('m_run_category_sub_command() Unknown command {0}. '.format(command) +
                        'Please report this bug.')
     log_debug('m_run_category_sub_command({0}) ENDS'.format(command))
-    # kodi_refresh_container()
 
 #
 # NOTE when returning from a submenu preselect the menu item in the parent menu that was used.
@@ -1967,47 +1974,6 @@ def m_run_sub_command(command, category = None, launcher = None, rom = None):
 # Only Category context menu functions have debug statemets. This debug messages are to
 # debug the context menu recursive logic.
 # -------------------------------------------------------------------------------------------------
-def m_subcommand_edit_category_title(category):
-    log_debug('m_subcommand_edit_category_title() BEGIN')
-    if m_gui_edit_metadata_str('Category', 'Title', category.get_name, category.set_name):
-        g_categoryRepository.save(category)
-    log_debug('m_subcommand_edit_category_title() ENDS')
-
-def m_subcommand_edit_category_releaseyear(category):
-    if m_gui_edit_metadata_str('Category', 'Release Rear', category.get_releaseyear, category.update_releaseyear):
-        g_categoryRepository.save(category)
-
-def m_subcommand_edit_category_genre(category):
-    if m_gui_edit_metadata_str('Category', 'Genre', category.get_genre, category.update_genre):
-        g_categoryRepository.save(category)
-
-def m_subcommand_edit_category_developer(category):
-    if m_gui_edit_metadata_str('Category', 'Developer', category.get_developer, category.update_developer):
-        g_categoryRepository.save(category)
-
-# NOTE create generic function to edit the rating of an object. Will save some lines of code.
-def m_subcommand_edit_category_rating(category):
-    options =  {}
-    options[-1] = 'Not set'
-    options[0] = 'Rating 0'
-    options[1] = 'Rating 1'
-    options[2] = 'Rating 2'
-    options[3] = 'Rating 3'
-    options[4] = 'Rating 4'
-    options[5] = 'Rating 5'
-    options[6] = 'Rating 6'
-    options[7] = 'Rating 7'
-    options[8] = 'Rating 8'
-    options[9] = 'Rating 9'
-    options[10] = 'Rating 10'
-
-    if m_list_edit_category_metadata('Rating', options, -1, category.get_rating, category.update_rating):
-        g_categoryRepository.save(category)
-
-def m_subcommand_edit_category_plot(category):
-    if m_gui_edit_metadata_str('Category', 'Plot', category.get_plot, category.update_plot):
-        g_categoryRepository.save(category)
-
 # NOTE Create new generic functions to save/load NFO files.
 #      NFO save/load functionality must be in the edited-object methods.
 def m_subcommand_import_category_nfo_file(category):
@@ -2037,14 +2003,14 @@ def m_subcommand_save_category_nfo_file(category):
     kodi_notify('Exported Category NFO file {0}'.format(NFO_FileName.getPath()))
 
 # --- Edit Category Assets submenu ---
-# New in Kodi Krypton: use new xbmcgui.Dialog().select(useDetails = True) dialog.
+# NOTE Code a generic function to edit the assets of an object.
 def m_subcommand_edit_category_assets(category):
     # --- Build Dialog.select list ---
     assets = category.get_assets()
     list_items = []
     for asset_kind in assets:
         # >> Create ListItems and label2
-        label1_text = 'Edit {} ...'.format(asset_kind.name)
+        label1_text = 'Edit {0} ...'.format(asset_kind.name)
         label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
         list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
 
@@ -2134,12 +2100,6 @@ def m_subcommand_edit_category_default_assets(category):
 
     return self._subcommand_set_category_default_assets(category)
 
-# --- Category Status (Finished or unfinished) ---
-def m_subcommand_edit_category_status(category):
-    category.change_finished_status()
-    kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_finished_str()))
-    g_categoryRepository.save(category)
-
 # --- Export Category XML configuration ---
 def m_subcommand_export_category_xml(category):
     category_data = category.get_data_dic()
@@ -2203,6 +2163,11 @@ def m_subcommand_delete_category(category):
         log_info('Category has no launchers, so no launchers to delete.')
         g_categoryRepository.delete(category)
     kodi_notify('Deleted category {0}'.format(category_name))
+
+# -------------------------------------------------------------------------------------------------
+# ROM Collections context menu atomic comands.
+# -------------------------------------------------------------------------------------------------
+
 
 
 # -------------------------------------------------------------------------------------------------

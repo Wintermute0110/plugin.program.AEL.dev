@@ -1755,6 +1755,7 @@ class MetaDataItem(object):
 
     # Check in AEL 0.9.7 if rating was stored as string or int internally, and how was stored
     # in the JSON file.
+    # In AEL 0.9.7 m_rating is stored as a string.
     def get_rating(self):
         return int(self.entity_data['m_rating']) if self.entity_data['m_rating'] else -1
 
