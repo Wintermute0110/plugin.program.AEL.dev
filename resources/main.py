@@ -1643,7 +1643,7 @@ def m_run_collection_sub_command(command, collection):
             g_collectionRepository.save(collection)
 
     elif command == 'EDIT_METADATA_RATING':
-        if m_gui_edit_rating('ROM Collection', 'Rating', collection.get_rating, collection.set_rating):
+        if m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating):
             g_collectionRepository.save(collection)
 
     elif command == 'EDIT_METADATA_PLOT':
@@ -4307,7 +4307,44 @@ def m_gui_edit_metadata_str(object_name, metadata_name, get_method, set_method):
     kodi_notify('{0} {1} is now {2}'.format(object_name, metadata_name, new_value))
     return True
 
+#
+# Rating 'Not set' is stored as an empty string.
+# Rating from 0 to 10 is stored as a string, '0', '1', ..., '10'
+# Returns True if the rating value was changed.
+# Returns Flase if the rating value was NOT changed.
+# Example call:
+#   m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating)
+#
+def m_gui_edit_rating(object_name, get_method, set_method):
+    options_dic =  {
+        'Not set',
+        'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4', 'Rating 5',
+        'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'
+    }
+    current_rating_str = get_method()
+    if not current_rating_str:
+        preselected_value = 0
+    else:
+        preselected_value = int(current_rating_str) + 1
 
+    sel_value = KodiDictionaryDialog().select('Select the {0} Rating'.format(object_name),
+                                              options_dic, preselect = preselected_value)
+    if sel_value is None: return False
+    if sel_value == preselected_value:
+        kodi_notify('{0} Rating not changed'.format(object_name))
+        return False
+
+    if sel_value == 0:
+        current_rating_str = ''
+    elif sel_value >= 1 and sel_value <= 11:
+        current_rating_str = '{0}'.format(sel_value - 1)
+    elif sel_value < 0:
+        kodi_notify('{0} Rating not changed'.format(object_name))
+        return False
+    set_method(current_rating_str)
+    kodi_notify('Category {0} is now {1}'.format(metadata_name, current_rating_str))
+
+    return True
 
 def m_list_edit_category_metadata(metadata_name, options, default_value, get_method, set_method):
     if not isinstance(options, dict): 
