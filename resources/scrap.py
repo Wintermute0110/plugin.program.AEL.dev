@@ -34,7 +34,7 @@ DEBUG_SCRAPERS = 1
 #--------------------------------------------------------------------------------------------------
 # Base class for all scrapers
 #--------------------------------------------------------------------------------------------------
-class Scraper:
+class LegacyScraper:
     # Short name to refer to object in code
     name = ''
 
@@ -58,7 +58,7 @@ class Scraper:
 # Metadata scrapers base class
 # All scrapers (offline or online) must implement the abstract methods.
 # -------------------------------------------------------------------------------------------------
-class Scraper_Metadata(Scraper):
+class Scraper_Metadata(LegacyScraper):
     def new_gamedata_dic(self):
         gamedata = {
             'title'     : '',
@@ -89,7 +89,7 @@ class Scraper_Metadata(Scraper):
 # --- Asset scrapers ------------------------------------------------------------------------------
 # All asset scrapers are online scrapers.
 # -------------------------------------------------------------------------------------------------
-class Scraper_Asset(Scraper):
+class Scraper_Asset(LegacyScraper):
     # If scraper needs additional configuration then call this function.
     def set_options(self, region, imgsize):
         raise NotImplementedError('Subclass must implement set_options() abstract method')
