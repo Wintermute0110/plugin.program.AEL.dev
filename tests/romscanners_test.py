@@ -2,10 +2,10 @@ import unittest, mock, os, sys
 from mock import *
 from fakes import *
 
-from resources.romscanners import *
-from resources.romsets import *
+from resources.main import *
+from resources.objects import *
 from resources.constants import *
-from resources.utils_kodi import *
+from resources.utils import *
 
 class Test_romscannerstests(unittest.TestCase):
     
@@ -15,7 +15,6 @@ class Test_romscannerstests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -39,7 +38,7 @@ class Test_romscannerstests(unittest.TestCase):
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('nintendo')
 
-        target = RomScannersFactory(settings, '', '')
+        target = RomScannersFactory(settings, AEL_Paths())
 
         # act
         actual = target.create(launcher, None)
@@ -57,7 +56,7 @@ class Test_romscannerstests(unittest.TestCase):
 
         expected = "NullScanner"
 
-        target = RomScannersFactory(settings, '', '')
+        target = RomScannersFactory(settings, AEL_Paths())
 
         # act
         scanner = target.create(launcher, None)
@@ -76,7 +75,7 @@ class Test_romscannerstests(unittest.TestCase):
 
         expected = "RomFolderScanner"
 
-        target = RomScannersFactory(settings, '', '')
+        target = RomScannersFactory(settings, AEL_Paths())
 
         # act
         scanner = target.create(launcher, None)
@@ -132,8 +131,8 @@ class Test_romscannerstests(unittest.TestCase):
 
         return launcher
 
-    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.filename.FileName.recursiveScanFilesInPath')
+    @patch('resources.utils.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.utils.FileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_it_will_go_without_exceptions(self, recursive_scan_mock, progress_canceled_mock):
         
         # arrange
@@ -172,9 +171,9 @@ class Test_romscannerstests(unittest.TestCase):
         print report_dir.getFakeContent()
         pass
     
-    @patch('resources.filename.KodiFileName.exists', autospec=True)
-    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
+    @patch('resources.utils.KodiFileName.exists', autospec=True)
+    @patch('resources.utils.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.utils.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_dead_roms_will_be_removed(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -221,9 +220,9 @@ class Test_romscannerstests(unittest.TestCase):
         self.assertEqual(expectedRomCount, actualRomCount)
         print report_dir.getFakeContent()
            
-    @patch('resources.filename.KodiFileName.exists', autospec=True)
-    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
+    @patch('resources.utils.KodiFileName.exists', autospec=True)
+    @patch('resources.utils.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.utils.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_multidiscs_will_be_put_together(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -273,9 +272,9 @@ class Test_romscannerstests(unittest.TestCase):
 
         self.assertEqual(expectedRomCount, actualRomCount)
     
-    @patch('resources.filename.KodiFileName.exists', autospec=True)
-    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
+    @patch('resources.utils.KodiFileName.exists', autospec=True)
+    @patch('resources.utils.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.utils.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_existing_items_wont_end_up_double(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -325,9 +324,9 @@ class Test_romscannerstests(unittest.TestCase):
 
         self.assertEqual(expectedRomCount, actualRomCount)
         
-    @patch('resources.filename.KodiFileName.exists', autospec=True)
-    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.filename.KodiFileName.recursiveScanFilesInPath')
+    @patch('resources.utils.KodiFileName.exists', autospec=True)
+    @patch('resources.utils.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.utils.KodiFileName.recursiveScanFilesInPath')
     def test_when_scanning_with_a_normal_rom_scanner_and_bios_roms_must_be_skipped_they_wont_be_added(self, recursive_scan_mock, progress_canceled_mock, file_exists_mock):
         
         # arrange
@@ -373,8 +372,8 @@ class Test_romscannerstests(unittest.TestCase):
 
         self.assertEqual(expectedRomCount, actualRomCount)
         
-    @patch('resources.utils_kodi.xbmcgui.DialogProgress.iscanceled')
-    @patch('resources.romscanners.net_get_URL_original')
+    @patch('resources.utils.xbmcgui.DialogProgress.iscanceled')
+    @patch('resources.objects.net_get_URL_original')
     def test_when_scanning_your_steam_account_not_existing_dead_roms_will_be_correctly_removed(self, mock_urlopen, progress_canceled_mock):
 
         # arrange

@@ -1735,7 +1735,7 @@ class KodiKeyboardWizardDialog(KodiWizardDialog):
 class KodiSelectionWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.options = options
-        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiSelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
@@ -1757,7 +1757,7 @@ class KodiSelectionWizardDialog(KodiWizardDialog):
 class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.options = options
-        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiDictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
@@ -1780,7 +1780,7 @@ class KodiFileBrowseWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.browseType = browseType
         self.filter = filter
-        super(FileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiFileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))

@@ -1,10 +1,10 @@
 import unittest, mock, os, sys 
 from mock import *
 
+from resources.main import *
 from resources.utils import *
 from resources.disk_IO import *
-from resources.executors import *
-from resources.utils_kodi import *
+from resources.objects import *
 
 class Test_executortests(unittest.TestCase):
     
@@ -14,7 +14,6 @@ class Test_executortests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -26,8 +25,8 @@ class Test_executortests(unittest.TestCase):
         print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
         print '---------------------------------------------------------------------------'
         
-    @patch('resources.executors.is_windows')
-    @patch('resources.executors.is_linux')            
+    @patch('resources.objects.is_windows')
+    @patch('resources.objects.is_linux')            
     def test_if_on_linux_factory_loads_with_correct_executor(self, is_linux_mock, is_windows_mock):
         
         # arrange
@@ -40,7 +39,7 @@ class Test_executortests(unittest.TestCase):
         settings['lirc_state'] = True
 
         # act
-        factory = ExecutorFactory(settings, None)
+        factory = ExecutorFactory(settings, AEL_Paths())
         executor = factory.create(launcherPath)
         
         # assert
@@ -48,9 +47,9 @@ class Test_executortests(unittest.TestCase):
         expected = 'LinuxExecutor'
         self.assertEqual(actual, expected)
                 
-    @patch('resources.executors.is_windows')
-    @patch('resources.executors.is_osx')
-    @patch('resources.executors.is_linux')                   
+    @patch('resources.objects.is_windows')
+    @patch('resources.objects.is_osx')
+    @patch('resources.objects.is_linux')                   
     def test_if_on_windows_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
         
         # arrange
@@ -65,7 +64,7 @@ class Test_executortests(unittest.TestCase):
         settings['windows_close_fds'] = ''
 
         # act
-        factory = ExecutorFactory(settings, None)
+        factory = ExecutorFactory(settings, AEL_Paths())
         executor = factory.create(launcherPath)
         
         # assert
@@ -73,9 +72,9 @@ class Test_executortests(unittest.TestCase):
         expected = 'WindowsExecutor'
         self.assertEqual(actual, expected)  
         
-    @patch('resources.executors.is_windows')
-    @patch('resources.executors.is_osx')
-    @patch('resources.executors.is_linux')               
+    @patch('resources.objects.is_windows')
+    @patch('resources.objects.is_osx')
+    @patch('resources.objects.is_linux')               
     def test_if_on_windows_with_bat_files_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
 
         # arrange
@@ -89,7 +88,7 @@ class Test_executortests(unittest.TestCase):
         settings['show_batch_window'] = False
 
         # act
-        factory = ExecutorFactory(settings, None)
+        factory = ExecutorFactory(settings, AEL_Paths())
         executor = factory.create(launcherPath)
         
         # assert
@@ -97,9 +96,9 @@ class Test_executortests(unittest.TestCase):
         expected = 'WindowsBatchFileExecutor'
         self.assertEqual(actual, expected)  
         
-    @patch('resources.executors.is_windows')
-    @patch('resources.executors.is_osx')
-    @patch('resources.executors.is_linux')       
+    @patch('resources.objects.is_windows')
+    @patch('resources.objects.is_osx')
+    @patch('resources.objects.is_linux')       
     def test_if_on_windows_with_lnk_files_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
 
         # arrange
@@ -112,7 +111,7 @@ class Test_executortests(unittest.TestCase):
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, None)
+        factory = ExecutorFactory(settings, AEL_Paths())
         executor = factory.create(launcherPath)
 
         # assert
@@ -124,14 +123,13 @@ class Test_executortests(unittest.TestCase):
          
         # arrange
         set_log_level(LOG_VERB)
-        set_use_print(True)
         
         launcherPath = FileNameFactory.create('c:\\boop\\xbmc.exe')
 
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, None)
+        factory = ExecutorFactory(settings, AEL_Paths())
         executor = factory.create(launcherPath)
 
         # assert
@@ -139,9 +137,9 @@ class Test_executortests(unittest.TestCase):
         expected = 'XbmcExecutor'
         self.assertEqual(actual, expected)
         
-    @patch('resources.executors.is_windows')
-    @patch('resources.executors.is_osx')
-    @patch('resources.executors.is_linux')            
+    @patch('resources.objects.is_windows')
+    @patch('resources.objects.is_osx')
+    @patch('resources.objects.is_linux')            
     def test_if_on_osx_factory_loads_with_correct_executor(self, is_linux_mock, is_osx_mock, is_windows_mock):
 
         # arrange
@@ -154,7 +152,7 @@ class Test_executortests(unittest.TestCase):
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, None)
+        factory = ExecutorFactory(settings, AEL_Paths())
         executor = factory.create(launcherPath)
 
         # assert
@@ -170,7 +168,7 @@ class Test_executortests(unittest.TestCase):
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, None)
+        factory = ExecutorFactory(settings, AEL_Paths())
         executor = factory.create(FileNameFactory.create('steam://rungameid/'))
 
         # assert

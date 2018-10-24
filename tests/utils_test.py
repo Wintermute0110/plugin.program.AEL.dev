@@ -3,8 +3,7 @@ from mock import *
 
 import xbmcaddon, xbmc
 
-import resources.utils as utils
-from resources.utils_kodi import *
+from resources.utils import *
 
 class Test_utilstests(unittest.TestCase):
     
@@ -14,7 +13,6 @@ class Test_utilstests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +31,7 @@ class Test_utilstests(unittest.TestCase):
         expected = '.jpg'
 
         # act
-        actual = utils.text_get_URL_extension(url)
+        actual = text_get_URL_extension(url)
 
         # assert
         self.assertEqual(expected, actual)
@@ -46,7 +44,7 @@ class Test_utilstests(unittest.TestCase):
         expected = ''
 
         # act
-        actual = utils.text_get_URL_extension(url)
+        actual = text_get_URL_extension(url)
 
         # assert
         self.assertEqual(expected, actual)
@@ -58,7 +56,7 @@ class Test_utilstests(unittest.TestCase):
         expected = '.png'
 
         # act
-        actual = utils.text_get_image_URL_extension(url)
+        actual = text_get_image_URL_extension(url)
 
         # assert
         self.assertEqual(expected, actual)
@@ -70,7 +68,7 @@ class Test_utilstests(unittest.TestCase):
         expected = '.jpg'
 
         # act
-        actual = utils.text_get_image_URL_extension(url)
+        actual = text_get_image_URL_extension(url)
 
         # assert
         self.assertEqual(expected, actual)

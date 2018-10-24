@@ -1,10 +1,9 @@
 import unittest, mock, os, sys
 from mock import *
 
+from resources.objects import *
 from resources.utils import *
 from resources.disk_IO import *
-from resources.romsets import *
-from resources.utils_kodi import *
 from resources.constants import *
 
 class Test_romsettest(unittest.TestCase):
@@ -15,7 +14,6 @@ class Test_romsettest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))

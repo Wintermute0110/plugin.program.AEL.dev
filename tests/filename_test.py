@@ -5,7 +5,7 @@ from fakes import *
 
 import os
 
-from resources.filename import *
+from resources.utils import *
 
 class Test_filename_test(unittest.TestCase):
      
@@ -15,7 +15,6 @@ class Test_filename_test(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +26,7 @@ class Test_filename_test(unittest.TestCase):
         print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
         print '---------------------------------------------------------------------------'
 
-    @patch('resources.filename.xbmcvfs.File')
+    @patch('resources.utils.xbmcvfs.File')
     def test_reading_line_for_line(self, file_mock):
 
         # arrange
@@ -48,7 +47,7 @@ class Test_filename_test(unittest.TestCase):
         self.assertEquals(expected, actual)
 
         
-    @patch('resources.filename.xbmcvfs.File')
+    @patch('resources.utils.xbmcvfs.File')
     def test_reading_line_for_line_after_file_is_done(self, file_mock):
 
         # arrange
@@ -71,7 +70,7 @@ class Test_filename_test(unittest.TestCase):
         # assert
         self.assertEquals('', actual)
 
-    @patch('resources.filename.xbmcvfs.File')
+    @patch('resources.utils.xbmcvfs.File')
     def test_reading_property_file_successfull(self, file_mock):
         import ConfigParser
 

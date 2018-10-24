@@ -460,7 +460,7 @@ class ScrapeResult(object):
     metada_scraped  = False
     assets_scraped  = []
 
-class Scraper():
+class Scraper(object):
     __metaclass__ = abc.ABCMeta
     
     def __init__(self, scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
@@ -561,12 +561,12 @@ class Scraper():
                 rom.set_name(rom_name)
                 log_debug("User wants scrapped name. Setting name to '{0}'".format(rom_name))
 
-            rom.update_releaseyear(self.gamedata['year'])        # <year>
-            rom.update_genre(self.gamedata['genre'])             # <genre>
-            rom.update_developer(self.gamedata['developer'])     # <developer>
+            rom.set_releaseyear(self.gamedata['year'])           # <year>
+            rom.set_genre(self.gamedata['genre'])                # <genre>
+            rom.set_developer(self.gamedata['developer'])        # <developer>
             rom.set_number_of_players(self.gamedata['nplayers']) # <nplayers>
             rom.set_esrb_rating(self.gamedata['esrb'])           # <esrb>
-            rom.update_plot(self.gamedata['plot'])               # <plot>
+            rom.set_plot(self.gamedata['plot'])                  # <plot>
         
         if self.assets_to_scrape is not None and len(self.assets_to_scrape) > 0:
             image_list = self.gamedata['assets']    
@@ -647,10 +647,6 @@ class Scraper():
                     log_debug('{0} scraper: user chose local image "{1}"'.format(self.asset_info.name, selected_image['url']))
                     image_path = FileNameFactory.create(selected_image['url'])
 
-                # ~~~ Update Kodi cache with downloaded image ~~~
-                # Recache only if local image is in the Kodi cache, this function takes care of that.
-                kodi_update_image_cache(image_path)
-        
                 rom.set_asset(asset_info, image_path)        
         
         return True
@@ -1199,7 +1195,6 @@ class TheGamesDbScraper(Scraper):
             developer_names.append(self.developers[developer_id])
 
         return ' / '.join(developer_names)
-
     
 class MobyGamesScraper(Scraper): 
         
@@ -1223,7 +1218,7 @@ class MobyGamesScraper(Scraper):
         log_debug('MobyGamesScraper::_get_candidates() search_term         "{0}"'.format(search_term))
         log_debug('MobyGamesScraper::_get_candidates() rom_base_noext      "{0}"'.format(self.launcher.get_roms_base()))
         log_debug('MobyGamesScraper::_get_candidates() AEL platform        "{0}"'.format(platform))
-        log_debug('MobyGamesScraper::_get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
+        log_debug('MobyGamesScraper::_get_candidates() MobyGames platform  "{0}"'.format(scraper_platform))
         
         # >> Check if search term page data is in cache. If so it's a cache hit.
         game_id_from_cache = self._get_from_cache(search_term)
@@ -1404,3 +1399,126 @@ class MobyGamesScraper(Scraper):
         if (now-self.last_http_call).total_seconds() < 1:
             time.sleep(1)
         
+
+class GamesFaqScraper(Scraper):
+         
+    def __init__(self, settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
+
+        scraper_settings = ScraperSettings.create_from_settings(settings)
+
+        super(GamesFaqScraper, self).__init__(scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper)
+        
+    def getName(self):
+        return 'GamesFaq'
+
+    def _get_candidates(self, search_term, romPath, rom):
+        
+        # Example: 'street fighter', 'Nintendo SNES'
+        # http://www.gamefaqs.com/search?platform=63&game=street+fighter
+        search_string = search_string.replace(' ', '+')
+        url = 'http://www.gamefaqs.com/search/index.html?' + \
+              'platform={0}'.format(scraper_platform) + \
+              '&game={0}'.format(urllib.quote_plus(search_string.encode('utf8')))
+        if self.check_cache(search_string, rom_base_noext, platform):
+            page_data = self.get_cached_pagedata()
+        else:
+            page_data = net_get_URL_oneline(url)
+            # >> If nothing is returned maybe a timeout happened. In this case, reset the cache.
+            if page_data: self.update_cache(search_string, rom_base_noext, platform, page_data)
+            else:         self.reset_cache()
+
+        # --- Old Parse list of games ---
+        gets = re.findall('<td class="rtitle">(.*?)<a href="(.*?)"(.*?)class="sevent_(.*?)">(.*?)</a></td>', page_data)
+        game_list = []
+        for get in gets:
+            game = {}
+            game_name = text_unescape_HTML(get[4])
+            gamesystem = get[1].split('/')
+            game['id']           = get[1]
+            game['display_name'] = game_name + ' / ' + gamesystem[1].capitalize()
+            game['game_name']    = game_name # Additional GameFAQs scraper field
+            game['order']        = 1         # Additional GameFAQs scraper field
+
+            # Increase search score based on our own search
+            # In the future use an scoring algortihm based on Levenshtein Distance
+            title = text_unescape_HTML(get[4])
+            if title.lower() == search_string.lower():          game['order'] += 1
+            if title.lower().find(search_string.lower()) != -1: game['order'] += 1
+            game_list.append(game)
+        game_list.sort(key = lambda result: result['order'], reverse = True)
+
+        return game_list
+        
+        
+        platform = self.launcher.get_platform()
+        scraper_platform = AEL_platform_to_GameFAQs(platform)
+        
+        log_debug('GamesFaqScraper::_get_candidates() search_term         "{0}"'.format(search_term))
+        log_debug('GamesFaqScraper::_get_candidates() rom_base_noext      "{0}"'.format(self.launcher.get_roms_base()))
+        log_debug('GamesFaqScraper::_get_candidates() AEL platform        "{0}"'.format(platform))
+        log_debug('GamesFaqScraper::_get_candidates() GameFAQs platform   "{0}"'.format(scraper_platform))
+        
+        # >> Check if search term page data is in cache. If so it's a cache hit.
+        game_id_from_cache = self._get_from_cache(search_term)
+        
+        if game_id_from_cache is not None and game_id_from_cache > 0:
+            return [{ 'id' : game_id_from_cache, 'display_name' : 'cached', 'order': 1 }]
+
+        game_list = []            
+        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        url = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}&platform={}'.format(self.api_key, search_string_encoded, scraper_platform)
+            
+        game_list = self._read_games_from_url(url, search_term, scraper_platform)
+        
+        # >> Order list based on score
+        game_list.sort(key = lambda result: result['order'], reverse = True)
+
+        return game_list
+
+    def _get_candidates_from_page(self, search_term, platform, page=0, token=None):
+
+        if page == 0 or token is None:
+            return
+
+        pass
+
+    
+    def _load_metadata(self, candidate, romPath, rom):
+
+        url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(candidate['id'], self.api_key)
+                
+        self._do_toomanyrequests_check()
+        
+        log_debug('Get metadata from {}'.format(url))
+        online_data = net_get_URL_as_json(url)
+
+        self.last_http_call = datetime.datetime.now()
+        
+        platform = self.launcher.get_platform()
+        scraper_platform = AEL_platform_to_MobyGames(platform)
+        
+        # --- Parse game page data ---
+        self.gamedata['title']      = online_data['title'] if 'title' in online_data else '' 
+        self.gamedata['plot']       = online_data['description'] if 'description' in online_data else '' 
+        self.gamedata['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
+        self.gamedata['year']       = self._get_year_by_platform(online_data['platforms'], scraper_platform)
+
+        
+    def _load_assets(self, candidate, romPath, rom):
+        
+        platform = self.launcher.get_platform()
+        scraper_platform = AEL_platform_to_MobyGames(platform)
+                
+        #only snaps and covers are supported as assets
+        snap_assets = self._load_snap_assets(candidate, scraper_platform)
+        cover_assets = self._load_cover_assets(candidate, scraper_platform)
+        assets_list = snap_assets + cover_assets
+
+        for asset in assets_list:
+            
+            allowed_asset = next((allowed_asset for allowed_asset in self.assets_to_scrape if allowed_asset.kind == asset['type']), None)
+            if allowed_asset is not None:
+                asset['type'] = allowed_asset
+                self.gamedata['assets'].append(asset)
+
+        log_debug('After filtering {} assets left for candidate #{}'.format(len(self.gamedata['assets']), candidate['id']))

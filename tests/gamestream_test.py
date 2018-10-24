@@ -5,8 +5,9 @@ from fakes import *
 
 import os, binascii
 
-from resources.gamestream import *
+from resources.objects import *
 from resources.utils import *
+from resources.net_IO import *
 
 class Test_gamestream(unittest.TestCase):
 
@@ -16,7 +17,6 @@ class Test_gamestream(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +32,7 @@ class Test_gamestream(unittest.TestCase):
         with open(path, 'r') as f:
             return f.read()
         
-    @patch('resources.gamestream.net_get_URL_using_handler')
+    @patch('resources.objects.net_get_URL_using_handler')
     def test_connecting_to_a_gamestream_server(self, http_mock):
         
         # arrange
@@ -45,7 +45,7 @@ class Test_gamestream(unittest.TestCase):
         # assert
         self.assertTrue(actual)
 
-    @patch('resources.gamestream.net_get_URL_using_handler')
+    @patch('resources.objects.net_get_URL_using_handler')
     def test_get_the_version_of_the_gamestream_server(self, http_mock):
          
         # arrange
@@ -62,7 +62,7 @@ class Test_gamestream(unittest.TestCase):
         self.assertEquals(expected, actual.getFullString())
         self.assertEquals(expectedMajor, actual.getMajor()) 
       
-    @patch('resources.gamestream.net_get_URL_using_handler')
+    @patch('resources.objects.net_get_URL_using_handler')
     def test_getting_apps_from_gamestream_server_gives_correct_amount(self, http_mock):
 
         # arrange        
@@ -83,9 +83,9 @@ class Test_gamestream(unittest.TestCase):
         self.assertEquals(expected, len(actual))
         
     @unittest.skip('only testable with actual server for now')
-    @patch('resources.gamestream.GameStreamServer.getCertificateBytes')
-    @patch('resources.gamestream.GameStreamServer.getCertificateKeyBytes')
-    @patch('resources.gamestream.randomBytes')
+    @patch('resources.objects.GameStreamServer.getCertificateBytes')
+    @patch('resources.objects.GameStreamServer.getCertificateKeyBytes')
+    @patch('resources.objects.randomBytes')
     def test_pair_with_gamestream_server(self, random_mock, certificateKeyBytesMock, certificateBytesMock):
         
         # arrange
