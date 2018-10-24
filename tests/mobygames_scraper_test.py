@@ -8,7 +8,6 @@ import xml.etree.ElementTree as ET
 from resources.utils import *
 from resources.utils_kodi import *
 from resources.net_IO import *
-from resources.scrapers import *
 from resources.scrap import *
 from resources.scrap_metadata import *
 from resources.assets import *
