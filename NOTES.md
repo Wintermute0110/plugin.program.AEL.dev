@@ -1,4 +1,15 @@
-# TODO #
+#### Table of Contents
+
+[TODO](./NOTES.md#todo)  
+[Multidisc support](./NOTES.md#multidisc-support)  
+[TOSEC/Trurip/Redump image formats](./NOTES.md#tosectruripredump-image-formats)  
+[AL subprocess module hack](./NOTES.md#al-subprocess-module-hack)  
+[listitem.setInfo() overlay values and effects](./NOTES.md#listitemsetinfo-overlay-values-and-effects)  
+[Development environment](./NOTES.md#development-environment)  
+[Installing the addon from Github](./NOTES.md#installing-the-addon-from-github)  
+
+
+## TODO
 
  * GameFAQs: detect when web server is blocked.
  
@@ -9,11 +20,11 @@
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2403674#pid2403674
 
 
-# Multidisc support #
+## Multidisc support
 
-## ROM scanner implementation ##
+### ROM scanner implementation
 
- 1) If the ROM scanner finds a multidisc image belonging to a set, for example
+ 1. If the ROM scanner finds a multidisc image belonging to a set, for example
     `Final Fantasy VII (USA) (Disc 3).cue`.
  
     * The filename corresponds to the basename of the set.
@@ -22,13 +33,13 @@
 
     * Asset names will have the basename of the set `Final Fantasy VII (USA)`.
 
-```
+    ```
     filename = '/home/kodi/ROMs/Final Fantasy VII (USA)'
     disks = ['Final Fantasy VII (USA) (Disc 3).cue']
-```
+    ```
 
- 2) If the ROM scanner finds another image of the set then:
- 
+ 2. If the ROM scanner finds another image of the set then:
+
     * The basename is added to the `disks` list.
     
     * `disks` list is reordered so ROMs have consecutive order.
@@ -37,47 +48,45 @@
     
     * Metadata/Asset scraping is only done for the first ROM of the set.
 
-```
+    ```
     filename = '/home/kodi/ROMs/Final Fantasy VII (USA)'
     disks = ['Final Fantasy VII (USA) (Disc 1).cue', 'Final Fantasy VII (USA) (Disc 3).cue']
-```
+    ```
 
- 3) ROMs not in a set have an empty `disks` list.
+ 3. ROMs not in a set have an empty `disks` list.
 
- 4) This implementation is safe if there are missing ROMs in the set.
- 
- 5) Al launching time, users selects from a select dialog of the basenames of the roms of the
+ 4. This implementation is safe if there are missing ROMs in the set.
+
+ 5. At launching time, users selects from a select dialog of the basenames of the roms of the
     set which one to launch.
 
-## Naming conventions ##
+### Naming conventions
 
-[TOSEC Naming Convention]
+[TOSEC Naming Convention](http://www.tosecdev.org/tosec-naming-convention)
 
-[TOSEC Naming Convention]: http://www.tosecdev.org/tosec-naming-convention
-
- Organisation | Name example                                                |
---------------|-------------------------------------------------------------|
- TOSEC        | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 1 of 2).cue |
-              | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 2 of 2).cue |
- Trurip       | Final Fantasy VII (EU) - (Disc 1 of 3).cue                  |
-              | Final Fantasy VII (EU) - (Disc 2 of 3).cue                  |
-              | Final Fantasy VII (EU) - (Disc 3 of 3).cue                  |
- Redump       | Final Fantasy VII (USA) (Disc 1).cue                        |
-              | Final Fantasy VII (USA) (Disc 2).cue                        |
-              | Final Fantasy VII (USA) (Disc 3).cue                        |
+| Organisation | Name example                                                |
+|--------------|-------------------------------------------------------------|
+| TOSEC        | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 1 of 2).cue |
+|              | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 2 of 2).cue |
+| Trurip       | Final Fantasy VII (EU) - (Disc 1 of 3).cue                  |
+|              | Final Fantasy VII (EU) - (Disc 2 of 3).cue                  |
+|              | Final Fantasy VII (EU) - (Disc 3 of 3).cue                  |
+| Redump       | Final Fantasy VII (USA) (Disc 1).cue                        |
+|              | Final Fantasy VII (USA) (Disc 2).cue                        |
+|              | Final Fantasy VII (USA) (Disc 3).cue                        |
 
 
-# TOSEC/Trurip/Redump image formats #
+## TOSEC/Trurip/Redump image formats
 
- TOSEC       | Redump  | Trurip          |
--------------|---------|-----------------|
- cue,iso,wav | cue,bin | cue,img,ccd,sub |
-
-
-# AL subprocess module hack #
+| TOSEC       | Redump  | Trurip          |
+|-------------|---------|-----------------|
+| cue,iso,wav | cue,bin | cue,img,ccd,sub |
 
 
-# listitem.setInfo() overlay values and effects #
+## AL subprocess module hack
+
+
+## listitem.setInfo() overlay values and effects
 
 `listitem.setInfo('video', {'overlay'  : 4})`
 
@@ -98,7 +107,7 @@ enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
 [GUIListItem]: https://github.com/cisco-open-source/kodi/blob/master/xbmc/guilib/GUIListItem.h
 
 
-# Development environment #
+## Development environment
 
   1. Installed the packages `kodi` and `kodi-visualization-spectrum` in Debian.
 
@@ -112,16 +121,18 @@ enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
      `~/.kodi/addons/plugin.addon.name`.
 
 
-# Installing the addon from github #
+## Installing the addon from Github
 
 It is very important that the addon files are inside the correct directory
-`~/.kodi/addons/plugin.program.advanced.emulator.launcher`.
+`~/.kodi/addons/plugin.program.AEL`.
 
 To install the plugin from Github, click on `Clone or download` -- `Download ZIP`.
 This will download the repository contents to a ZIP file named
-`plugin.program.advanced.emulator.launcher-master.zip`. Also, addon is
-packed inside directory `plugin.program.advanced.emulator.launcher-master`.
+`plugin.program.AEL-master.zip`. Also, addon is
+packed inside directory `plugin.program.AEL-master`.
 
-This ZIP file should be decompressed, the directory renamed to
-`plugin.program.advanced.emulator.launcher`, and packed into a ZIP file again.
-Then, install the ZIP file.
+This ZIP file should be decompressed, the directory renamed to `plugin.program.AEL`, and
+packed into a ZIP file again. Then, install the ZIP file.
+
+Addons can be copied into Kodi addons directory. Kodi must be restarted. By default, addons
+installed this way are disable and must be enabled before they can be used.

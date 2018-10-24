@@ -9,7 +9,6 @@ sys.path.append(resources_dir)
 from .. import *
 
 from utils import *
-from utils_kodi import *
 
 MIGRATION_CLASS_NAME = 'Migration_0_9_8'
 

@@ -15,6 +15,7 @@
 
 # --- Python compiler flags ---
 from __future__ import unicode_literals
+from __future__ import division
 
 # --- Python standard library ---
 import os
@@ -32,11 +33,10 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- AEL packages ---
 from constants import *
+from platforms import *
 from utils import *
-from utils_kodi import *
 from disk_IO import *
 from assets import *
-from platforms import *
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.
@@ -47,19 +47,19 @@ from platforms import *
 #
 def autoconfig_export_category_str_list(category, str_list):
     str_list.append('<category>\n')
-    str_list.append(XML_text('name', category['m_name']))
-    str_list.append(XML_text('year', category['m_year']))
-    str_list.append(XML_text('genre', category['m_genre']))
-    str_list.append(XML_text('developer', category['m_developer']))
-    str_list.append(XML_text('rating', category['m_rating']))
-    str_list.append(XML_text('plot', category['m_plot']))
-    str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
-    str_list.append(XML_text('s_icon', category['s_icon']))
-    str_list.append(XML_text('s_fanart', category['s_fanart']))
-    str_list.append(XML_text('s_banner', category['s_banner']))
-    str_list.append(XML_text('s_poster', category['s_poster']))
-    str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
-    str_list.append(XML_text('s_trailer', category['s_trailer']))
+    str_list.append(text_XML_line('name', category['m_name']))
+    str_list.append(text_XML_line('year', category['m_year']))
+    str_list.append(text_XML_line('genre', category['m_genre']))
+    str_list.append(text_XML_line('developer', category['m_developer']))
+    str_list.append(text_XML_line('rating', category['m_rating']))
+    str_list.append(text_XML_line('plot', category['m_plot']))
+    str_list.append(text_XML_line('Asset_Prefix', category['Asset_Prefix']))
+    str_list.append(text_XML_line('s_icon', category['s_icon']))
+    str_list.append(text_XML_line('s_fanart', category['s_fanart']))
+    str_list.append(text_XML_line('s_banner', category['s_banner']))
+    str_list.append(text_XML_line('s_poster', category['s_poster']))
+    str_list.append(text_XML_line('s_clearlogo', category['s_clearlogo']))
+    str_list.append(text_XML_line('s_trailer', category['s_trailer']))
     str_list.append('</category>\n')
 
 #
@@ -78,50 +78,50 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
 
     # >> Export Launcher
     str_list.append('<launcher>\n')
-    str_list.append(XML_text('name', launcher['m_name']))
-    str_list.append(XML_text('category', category_name))
-    str_list.append(XML_text('type', launcher['type']))
-    str_list.append(XML_text('year', launcher['m_year']))
-    str_list.append(XML_text('genre', launcher['m_genre']))
-    str_list.append(XML_text('developer', launcher['m_developer']))
-    str_list.append(XML_text('rating', launcher['m_rating']))
-    str_list.append(XML_text('plot', launcher['m_plot']))
-    str_list.append(XML_text('platform', launcher['platform']))
-    str_list.append(XML_text('application', launcher['application']))
+    str_list.append(text_XML_line('name', launcher['m_name']))
+    str_list.append(text_XML_line('category', category_name))
+    str_list.append(text_XML_line('type', launcher['type']))
+    str_list.append(text_XML_line('year', launcher['m_year']))
+    str_list.append(text_XML_line('genre', launcher['m_genre']))
+    str_list.append(text_XML_line('developer', launcher['m_developer']))
+    str_list.append(text_XML_line('rating', launcher['m_rating']))
+    str_list.append(text_XML_line('plot', launcher['m_plot']))
+    str_list.append(text_XML_line('platform', launcher['platform']))
+    str_list.append(text_XML_line('application', launcher['application']))
 
     if 'steamid' in launcher:
-        str_list.append(XML_text('steamid', launcher['steamid']))
+        str_list.append(text_XML_line('steamid', launcher['steamid']))
 
-    str_list.append(XML_text('args', launcher['args']))
+    str_list.append(text_XML_line('args', launcher['args']))
     if launcher['args_extra']:
-        for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
+        for extra_arg in launcher['args_extra']: str_list.append(text_XML_line('args_extra', extra_arg))
     else:
-        str_list.append(XML_text('args_extra', ''))
-    str_list.append(XML_text('ROM_path', launcher['rompath']))
-    str_list.append(XML_text('ROM_ext', launcher['romext']))
+        str_list.append(text_XML_line('args_extra', ''))
+    str_list.append(text_XML_line('ROM_path', launcher['rompath']))
+    str_list.append(text_XML_line('ROM_ext', launcher['romext']))
     if ROM_asset_path:
-        str_list.append(XML_text('ROM_asset_path', ROM_asset_path))
+        str_list.append(text_XML_line('ROM_asset_path', ROM_asset_path))
     else:
-        str_list.append(XML_text('path_title', launcher['path_title']))
-        str_list.append(XML_text('path_snap', launcher['path_snap']))
-        str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
-        str_list.append(XML_text('path_boxback', launcher['path_boxback']))
-        str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
-        str_list.append(XML_text('path_fanart', launcher['path_fanart']))
-        str_list.append(XML_text('path_banner', launcher['path_banner']))
-        str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
-        str_list.append(XML_text('path_flyer', launcher['path_flyer']))
-        str_list.append(XML_text('path_map', launcher['path_map']))
-        str_list.append(XML_text('path_manual', launcher['path_manual']))
-        str_list.append(XML_text('path_trailer', launcher['path_trailer']))
-    str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
-    str_list.append(XML_text('s_icon', launcher['s_icon']))
-    str_list.append(XML_text('s_fanart', launcher['s_fanart']))
-    str_list.append(XML_text('s_banner', launcher['s_banner']))
-    str_list.append(XML_text('s_poster', launcher['s_poster']))
-    str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
-    str_list.append(XML_text('s_controller', launcher['s_controller']))
-    str_list.append(XML_text('s_trailer', launcher['s_trailer']))
+        str_list.append(text_XML_line('path_title', launcher['path_title']))
+        str_list.append(text_XML_line('path_snap', launcher['path_snap']))
+        str_list.append(text_XML_line('path_boxfront', launcher['path_boxfront']))
+        str_list.append(text_XML_line('path_boxback', launcher['path_boxback']))
+        str_list.append(text_XML_line('path_cartridge', launcher['path_cartridge']))
+        str_list.append(text_XML_line('path_fanart', launcher['path_fanart']))
+        str_list.append(text_XML_line('path_banner', launcher['path_banner']))
+        str_list.append(text_XML_line('path_clearlogo', launcher['path_clearlogo']))
+        str_list.append(text_XML_line('path_flyer', launcher['path_flyer']))
+        str_list.append(text_XML_line('path_map', launcher['path_map']))
+        str_list.append(text_XML_line('path_manual', launcher['path_manual']))
+        str_list.append(text_XML_line('path_trailer', launcher['path_trailer']))
+    str_list.append(text_XML_line('Asset_Prefix', launcher['Asset_Prefix']))
+    str_list.append(text_XML_line('s_icon', launcher['s_icon']))
+    str_list.append(text_XML_line('s_fanart', launcher['s_fanart']))
+    str_list.append(text_XML_line('s_banner', launcher['s_banner']))
+    str_list.append(text_XML_line('s_poster', launcher['s_poster']))
+    str_list.append(text_XML_line('s_clearlogo', launcher['s_clearlogo']))
+    str_list.append(text_XML_line('s_controller', launcher['s_controller']))
+    str_list.append(text_XML_line('s_trailer', launcher['s_trailer']))
     str_list.append('</launcher>\n')
 
 #
@@ -341,11 +341,11 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
             category_temp = autoconfig_get_default_import_category()
             for root_child in root_element:
                 # >> By default read strings
-                xml_text = root_child.text if root_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
+                text_XML_line = root_child.text if root_child.text is not None else ''
+                text_XML_line = text_unescape_XML(text_XML_line)
                 xml_tag  = root_child.tag
-                if __debug_xml_parser: log_debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, xml_text))
-                category_temp[xml_tag] = xml_text
+                if __debug_xml_parser: log_debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
+                category_temp[xml_tag] = text_XML_line
             # --- Add category to categories dictionary ---
             log_debug('Adding category "{0}" to import list'.format(category_temp['name']))
             imported_categories_list.append(category_temp)
@@ -353,14 +353,14 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
             launcher_temp = autoconfig_get_default_import_launcher()
             for root_child in root_element:
                 # >> By default read strings
-                xml_text = root_child.text if root_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
+                text_XML_line = root_child.text if root_child.text is not None else ''
+                text_XML_line = text_unescape_XML(text_XML_line)
                 xml_tag  = root_child.tag
-                if __debug_xml_parser: log_debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
 
                 # >> Transform list datatype. Only add to the list if string is non empty.
-                if xml_tag == 'args_extra' and xml_text: launcher_temp[xml_tag].append(xml_text)
-                else:                                    launcher_temp[xml_tag] = xml_text
+                if xml_tag == 'args_extra' and text_XML_line: launcher_temp[xml_tag].append(text_XML_line)
+                else:                                    launcher_temp[xml_tag] = text_XML_line
             # --- Add launcher to categories dictionary ---
             log_debug('Adding launcher "{0}" to import list'.format(launcher_temp['name']))
             imported_launchers_list.append(launcher_temp)

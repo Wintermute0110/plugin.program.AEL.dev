@@ -3,7 +3,7 @@
 # Advanced Emulator Launcher platform and emulator information
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 
 # -------------------------------------------------------------------------------------------------
 # New platform engine

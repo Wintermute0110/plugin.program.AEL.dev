@@ -4,6 +4,7 @@
 #
 
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2018 Chrisism
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 
 # --- Modules/packages in this plugin ---
 import resources.main
@@ -26,7 +28,7 @@ import resources.main
 # -------------------------------------------------------------------------------------------------
 # --- Test SHOW_ALL_CATEGORIES / SHOW_ALL_LAUNCHERS / SHOW_ALL_ROMS command ---
 # sys.argv[2] = '?com=SHOW_ALL_ROMS'
-# main.Main().run_plugin()
+# resources.main.run_plugin(sys.argv)
 
 # -------------------------------------------------------------------------------------------------
 # main()

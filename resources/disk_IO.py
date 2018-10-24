@@ -2,7 +2,7 @@
 # Advanced Emulator Launcher filesystem I/O functions
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,6 +16,7 @@
 
 # --- Pyhton standard library
 from __future__ import unicode_literals
+from __future__ import division
 import json
 import io
 import codecs
@@ -37,7 +38,6 @@ import xml.etree.ElementTree as ET
 # --- AEL packages ---
 from constants import *
 from utils import *
-from utils_kodi import *
 from assets import *
 
 # --- AEL ROM storage version format ---
@@ -404,35 +404,35 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         # >> Write a timestamp when file is created. This enables the Virtual Launchers to know if
         # >> it's time for an update.
         str_list.append('<control>\n')
-        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append(text_XML_line('update_timestamp', unicode(_t)))
         str_list.append('</control>\n')
 
         # --- Create Categories XML list ---
         for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
             category = categories[categoryID]
             # Data which is not string must be converted to string
-            # XML_text() returns Unicode strings that will be encoded to UTF-8 later.
+            # text_XML_line() returns Unicode strings that will be encoded to UTF-8 later.
             str_list.append('<category>\n')
-            str_list.append(XML_text('id', categoryID))
-            str_list.append(XML_text('m_name', category['m_name']))
-            str_list.append(XML_text('m_year', category['m_year']))
-            str_list.append(XML_text('m_genre', category['m_genre']))
-            str_list.append(XML_text('m_developer', category['m_developer']))
-            str_list.append(XML_text('m_rating', category['m_rating']))
-            str_list.append(XML_text('m_plot', category['m_plot']))
-            str_list.append(XML_text('finished', unicode(category['finished'])))
-            str_list.append(XML_text('default_icon', category['default_icon']))
-            str_list.append(XML_text('default_fanart', category['default_fanart']))
-            str_list.append(XML_text('default_banner', category['default_banner']))
-            str_list.append(XML_text('default_poster', category['default_poster']))
-            str_list.append(XML_text('default_clearlogo', category['default_clearlogo']))
-            str_list.append(XML_text('Asset_Prefix', category['Asset_Prefix']))
-            str_list.append(XML_text('s_icon', category['s_icon']))
-            str_list.append(XML_text('s_fanart', category['s_fanart']))
-            str_list.append(XML_text('s_banner', category['s_banner']))
-            str_list.append(XML_text('s_poster', category['s_poster']))
-            str_list.append(XML_text('s_clearlogo', category['s_clearlogo']))
-            str_list.append(XML_text('s_trailer', category['s_trailer']))
+            str_list.append(text_XML_line('id', categoryID))
+            str_list.append(text_XML_line('m_name', category['m_name']))
+            str_list.append(text_XML_line('m_year', category['m_year']))
+            str_list.append(text_XML_line('m_genre', category['m_genre']))
+            str_list.append(text_XML_line('m_developer', category['m_developer']))
+            str_list.append(text_XML_line('m_rating', category['m_rating']))
+            str_list.append(text_XML_line('m_plot', category['m_plot']))
+            str_list.append(text_XML_line('finished', unicode(category['finished'])))
+            str_list.append(text_XML_line('default_icon', category['default_icon']))
+            str_list.append(text_XML_line('default_fanart', category['default_fanart']))
+            str_list.append(text_XML_line('default_banner', category['default_banner']))
+            str_list.append(text_XML_line('default_poster', category['default_poster']))
+            str_list.append(text_XML_line('default_clearlogo', category['default_clearlogo']))
+            str_list.append(text_XML_line('Asset_Prefix', category['Asset_Prefix']))
+            str_list.append(text_XML_line('s_icon', category['s_icon']))
+            str_list.append(text_XML_line('s_fanart', category['s_fanart']))
+            str_list.append(text_XML_line('s_banner', category['s_banner']))
+            str_list.append(text_XML_line('s_poster', category['s_poster']))
+            str_list.append(text_XML_line('s_clearlogo', category['s_clearlogo']))
+            str_list.append(text_XML_line('s_trailer', category['s_trailer']))
             str_list.append('</category>\n')
 
         # --- Write launchers ---
@@ -441,7 +441,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             launcher = launchers[launcherID]
             str_list.append('<launcher>\n')
 
-            str_list.append(XML_text('id', launcherID))
+            str_list.append(text_XML_line('id', launcherID))
             for key in sorted(launcher):
 
                 if key == 'id':
@@ -449,75 +449,75 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
                 
                 ## >> To simulate a list with XML allow multiple XML tags.
                 if key == 'args_extra':
-                    for extra_arg in launcher[key]: str_list.append(XML_text(key, extra_arg))
+                    for extra_arg in launcher[key]: str_list.append(text_XML_line(key, extra_arg))
                 else:
-                    str_list.append(XML_text(key, unicode(launcher[key])))
+                    str_list.append(text_XML_line(key, unicode(launcher[key])))
 
-            #str_list.append(XML_text('id', launcherID))
-            #str_list.append(XML_text('m_name', launcher['m_name']))
-            #str_list.append(XML_text('m_year', launcher['m_year']))
-            #str_list.append(XML_text('m_genre', launcher['m_genre']))
-            #str_list.append(XML_text('m_developer', launcher['m_developer']))
-            #str_list.append(XML_text('m_rating', launcher['m_rating']))
-            #str_list.append(XML_text('m_plot', launcher['m_plot']))
-            #str_list.append(XML_text('platform', launcher['platform']))
-            #str_list.append(XML_text('categoryID', launcher['categoryID']))
-            #str_list.append(XML_text('application', launcher['application']))
-            #str_list.append(XML_text('args', launcher['args']))
+            #str_list.append(text_XML_line('id', launcherID))
+            #str_list.append(text_XML_line('m_name', launcher['m_name']))
+            #str_list.append(text_XML_line('m_year', launcher['m_year']))
+            #str_list.append(text_XML_line('m_genre', launcher['m_genre']))
+            #str_list.append(text_XML_line('m_developer', launcher['m_developer']))
+            #str_list.append(text_XML_line('m_rating', launcher['m_rating']))
+            #str_list.append(text_XML_line('m_plot', launcher['m_plot']))
+            #str_list.append(text_XML_line('platform', launcher['platform']))
+            #str_list.append(text_XML_line('categoryID', launcher['categoryID']))
+            #str_list.append(text_XML_line('application', launcher['application']))
+            #str_list.append(text_XML_line('args', launcher['args']))
             ## >> To simulate a list with XML allow multiple XML tags.
             #if 'args_extra' in launcher:
-            #    for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
-            #str_list.append(XML_text('rompath', launcher['rompath']))
-            #str_list.append(XML_text('romext', launcher['romext']))
-            #str_list.append(XML_text('finished', unicode(launcher['finished'])))
-            #str_list.append(XML_text('minimize', unicode(launcher['minimize'])))
-            #str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))
-            #str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
-            #str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
-            #str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
-            #str_list.append(XML_text('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
-            #str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
-            #str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
-            #str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))
-            #str_list.append(XML_text('num_have', unicode(launcher['num_have'])))
-            #str_list.append(XML_text('num_miss', unicode(launcher['num_miss'])))
-            #str_list.append(XML_text('num_unknown', unicode(launcher['num_unknown'])))
-            #str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
-            #str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
+            #    for extra_arg in launcher['args_extra']: str_list.append(text_XML_line('args_extra', extra_arg))
+            #str_list.append(text_XML_line('rompath', launcher['rompath']))
+            #str_list.append(text_XML_line('romext', launcher['romext']))
+            #str_list.append(text_XML_line('finished', unicode(launcher['finished'])))
+            #str_list.append(text_XML_line('minimize', unicode(launcher['minimize'])))
+            #str_list.append(text_XML_line('non_blocking', unicode(launcher['non_blocking'])))
+            #str_list.append(text_XML_line('roms_base_noext', launcher['roms_base_noext']))
+            #str_list.append(text_XML_line('nointro_xml_file', launcher['nointro_xml_file']))
+            #str_list.append(text_XML_line('nointro_display_mode', launcher['nointro_display_mode']))
+            #str_list.append(text_XML_line('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
+            #str_list.append(text_XML_line('num_roms', unicode(launcher['num_roms'])))
+            #str_list.append(text_XML_line('num_parents', unicode(launcher['num_parents'])))
+            #str_list.append(text_XML_line('num_clones', unicode(launcher['num_clones'])))
+            #str_list.append(text_XML_line('num_have', unicode(launcher['num_have'])))
+            #str_list.append(text_XML_line('num_miss', unicode(launcher['num_miss'])))
+            #str_list.append(text_XML_line('num_unknown', unicode(launcher['num_unknown'])))
+            #str_list.append(text_XML_line('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
+            #str_list.append(text_XML_line('timestamp_report', unicode(launcher['timestamp_report'])))
             ## >> Launcher artwork
-            #str_list.append(XML_text('default_icon', launcher['default_icon']))
-            #str_list.append(XML_text('default_fanart', launcher['default_fanart']))
-            #str_list.append(XML_text('default_banner', launcher['default_banner']))
-            #str_list.append(XML_text('default_poster', launcher['default_poster']))
-            #str_list.append(XML_text('default_clearlogo', launcher['default_clearlogo']))
-            #str_list.append(XML_text('default_controller', launcher['default_controller']))
-            #str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
-            #str_list.append(XML_text('s_icon', launcher['s_icon']))
-            #str_list.append(XML_text('s_fanart', launcher['s_fanart']))
-            #str_list.append(XML_text('s_banner', launcher['s_banner']))
-            #str_list.append(XML_text('s_poster', launcher['s_poster']))
-            #str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
-            #str_list.append(XML_text('s_controller', launcher['s_controller']))
-            #str_list.append(XML_text('s_trailer', launcher['s_trailer']))
+            #str_list.append(text_XML_line('default_icon', launcher['default_icon']))
+            #str_list.append(text_XML_line('default_fanart', launcher['default_fanart']))
+            #str_list.append(text_XML_line('default_banner', launcher['default_banner']))
+            #str_list.append(text_XML_line('default_poster', launcher['default_poster']))
+            #str_list.append(text_XML_line('default_clearlogo', launcher['default_clearlogo']))
+            #str_list.append(text_XML_line('default_controller', launcher['default_controller']))
+            #str_list.append(text_XML_line('Asset_Prefix', launcher['Asset_Prefix']))
+            #str_list.append(text_XML_line('s_icon', launcher['s_icon']))
+            #str_list.append(text_XML_line('s_fanart', launcher['s_fanart']))
+            #str_list.append(text_XML_line('s_banner', launcher['s_banner']))
+            #str_list.append(text_XML_line('s_poster', launcher['s_poster']))
+            #str_list.append(text_XML_line('s_clearlogo', launcher['s_clearlogo']))
+            #str_list.append(text_XML_line('s_controller', launcher['s_controller']))
+            #str_list.append(text_XML_line('s_trailer', launcher['s_trailer']))
             ## >> ROMs artwork
-            #str_list.append(XML_text('roms_default_icon', launcher['roms_default_icon']))
-            #str_list.append(XML_text('roms_default_fanart', launcher['roms_default_fanart']))
-            #str_list.append(XML_text('roms_default_banner', launcher['roms_default_banner']))
-            #str_list.append(XML_text('roms_default_poster', launcher['roms_default_poster']))
-            #str_list.append(XML_text('roms_default_clearlogo', launcher['roms_default_clearlogo']))
-            #str_list.append(XML_text('ROM_asset_path', launcher['ROM_asset_path']))
-            #str_list.append(XML_text('path_title', launcher['path_title']))
-            #str_list.append(XML_text('path_snap', launcher['path_snap']))
-            #str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
-            #str_list.append(XML_text('path_boxback', launcher['path_boxback']))
-            #str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
-            #str_list.append(XML_text('path_fanart', launcher['path_fanart']))
-            #str_list.append(XML_text('path_banner', launcher['path_banner']))
-            #str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
-            #str_list.append(XML_text('path_flyer', launcher['path_flyer']))
-            #str_list.append(XML_text('path_map', launcher['path_map']))
-            #str_list.append(XML_text('path_manual', launcher['path_manual']))
-            #str_list.append(XML_text('path_trailer', launcher['path_trailer']))
+            #str_list.append(text_XML_line('roms_default_icon', launcher['roms_default_icon']))
+            #str_list.append(text_XML_line('roms_default_fanart', launcher['roms_default_fanart']))
+            #str_list.append(text_XML_line('roms_default_banner', launcher['roms_default_banner']))
+            #str_list.append(text_XML_line('roms_default_poster', launcher['roms_default_poster']))
+            #str_list.append(text_XML_line('roms_default_clearlogo', launcher['roms_default_clearlogo']))
+            #str_list.append(text_XML_line('ROM_asset_path', launcher['ROM_asset_path']))
+            #str_list.append(text_XML_line('path_title', launcher['path_title']))
+            #str_list.append(text_XML_line('path_snap', launcher['path_snap']))
+            #str_list.append(text_XML_line('path_boxfront', launcher['path_boxfront']))
+            #str_list.append(text_XML_line('path_boxback', launcher['path_boxback']))
+            #str_list.append(text_XML_line('path_cartridge', launcher['path_cartridge']))
+            #str_list.append(text_XML_line('path_fanart', launcher['path_fanart']))
+            #str_list.append(text_XML_line('path_banner', launcher['path_banner']))
+            #str_list.append(text_XML_line('path_clearlogo', launcher['path_clearlogo']))
+            #str_list.append(text_XML_line('path_flyer', launcher['path_flyer']))
+            #str_list.append(text_XML_line('path_map', launcher['path_map']))
+            #str_list.append(text_XML_line('path_manual', launcher['path_manual']))
+            #str_list.append(text_XML_line('path_trailer', launcher['path_trailer']))
             str_list.append('</launcher>\n')
         # End of file
         str_list.append('</advanced_emulator_launcher>\n')
@@ -577,17 +577,17 @@ def fs_load_catfile(categories_file, categories, launchers):
             # Parse child tags of category
             for category_child in category_element:
                 # By default read strings
-                xml_text = category_child.text if category_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
+                text_XML_line = category_child.text if category_child.text is not None else ''
+                text_XML_line = text_unescape_XML(text_XML_line)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, text_XML_line))
 
                 # Now transform data depending on tag name
                 if xml_tag == 'finished':
-                    category[xml_tag] = True if xml_text == 'True' else False
+                    category[xml_tag] = True if text_XML_line == 'True' else False
                 else:
                     # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
-                    category[xml_tag] = xml_text
+                    category[xml_tag] = text_XML_line
             # --- Add category to categories dictionary ---
             categories[category['id']] = category
 
@@ -598,27 +598,27 @@ def fs_load_catfile(categories_file, categories, launchers):
             # Parse child tags of category
             for category_child in category_element:
                 # >> By default read strings
-                xml_text = category_child.text if category_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
+                text_XML_line = category_child.text if category_child.text is not None else ''
+                text_XML_line = text_unescape_XML(text_XML_line)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, text_XML_line))
 
                 # >> Transform list() datatype
                 if xml_tag == 'args_extra':
-                    launcher[xml_tag].append(xml_text)
+                    launcher[xml_tag].append(text_XML_line)
                 # >> Transform Bool datatype
                 elif xml_tag == 'finished' or xml_tag == 'toggle_window' or xml_tag == 'non_blocking' or \
                      xml_tag == 'multidisc':
-                    launcher[xml_tag] = True if xml_text == 'True' else False
+                    launcher[xml_tag] = True if text_XML_line == 'True' else False
                 # >> Transform Int datatype
                 elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
                      xml_tag == 'num_have' or xml_tag == 'num_miss'    or xml_tag == 'num_unknown':
-                    launcher[xml_tag] = int(xml_text)
+                    launcher[xml_tag] = int(text_XML_line)
                 # >> Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
-                    launcher[xml_tag] = float(xml_text)
+                    launcher[xml_tag] = float(text_XML_line)
                 else:
-                    launcher[xml_tag] = xml_text
+                    launcher[xml_tag] = text_XML_line
             # --- Add launcher to categories dictionary ---
             launchers[launcher['id']] = launcher
     # log_verb('fs_load_catfile() Loaded {0} categories'.format(len(categories)))
@@ -808,12 +808,12 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
         # Print some information in the XML so the user can now which launcher created it.
         # Note that this is ignored when reading the file.
         str_list.append('<launcher>\n')
-        str_list.append(XML_text('id', launcher['id']))
-        str_list.append(XML_text('m_name', launcher['m_name']))
-        str_list.append(XML_text('categoryID', launcher['categoryID']))
-        str_list.append(XML_text('platform', launcher['platform']))
-        str_list.append(XML_text('rompath', launcher['rompath']))
-        str_list.append(XML_text('romext', launcher['romext']))
+        str_list.append(text_XML_line('id', launcher['id']))
+        str_list.append(text_XML_line('m_name', launcher['m_name']))
+        str_list.append(text_XML_line('categoryID', launcher['categoryID']))
+        str_list.append(text_XML_line('platform', launcher['platform']))
+        str_list.append(text_XML_line('rompath', launcher['rompath']))
+        str_list.append(text_XML_line('romext', launcher['romext']))
         str_list.append('</launcher>\n')
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
@@ -939,30 +939,30 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         # --- Control information ---
         _t = time.time()
         str_list.append('<control>\n')
-        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append(text_XML_line('update_timestamp', unicode(_t)))
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
         for collection_id in sorted(collections, key = lambda x : collections[x]['m_name']):
             collection = collections[collection_id]
             str_list.append('<Collection>\n')
-            str_list.append(XML_text('id', collection['id']))
-            str_list.append(XML_text('m_name', collection['m_name']))
-            str_list.append(XML_text('m_genre', collection['m_genre']))
-            str_list.append(XML_text('m_rating', collection['m_rating']))
-            str_list.append(XML_text('m_plot', collection['m_plot']))
-            str_list.append(XML_text('roms_base_noext', collection['roms_base_noext']))
-            str_list.append(XML_text('default_icon', collection['default_icon']))
-            str_list.append(XML_text('default_fanart', collection['default_fanart']))
-            str_list.append(XML_text('default_banner', collection['default_banner']))
-            str_list.append(XML_text('default_poster', collection['default_poster']))
-            str_list.append(XML_text('default_clearlogo', collection['default_clearlogo']))
-            str_list.append(XML_text('s_icon', collection['s_icon']))
-            str_list.append(XML_text('s_fanart', collection['s_fanart']))
-            str_list.append(XML_text('s_banner', collection['s_banner']))
-            str_list.append(XML_text('s_poster', collection['s_poster']))
-            str_list.append(XML_text('s_clearlogo', collection['s_clearlogo']))
-            str_list.append(XML_text('s_trailer', collection['s_trailer']))
+            str_list.append(text_XML_line('id', collection['id']))
+            str_list.append(text_XML_line('m_name', collection['m_name']))
+            str_list.append(text_XML_line('m_genre', collection['m_genre']))
+            str_list.append(text_XML_line('m_rating', collection['m_rating']))
+            str_list.append(text_XML_line('m_plot', collection['m_plot']))
+            str_list.append(text_XML_line('roms_base_noext', collection['roms_base_noext']))
+            str_list.append(text_XML_line('default_icon', collection['default_icon']))
+            str_list.append(text_XML_line('default_fanart', collection['default_fanart']))
+            str_list.append(text_XML_line('default_banner', collection['default_banner']))
+            str_list.append(text_XML_line('default_poster', collection['default_poster']))
+            str_list.append(text_XML_line('default_clearlogo', collection['default_clearlogo']))
+            str_list.append(text_XML_line('s_icon', collection['s_icon']))
+            str_list.append(text_XML_line('s_fanart', collection['s_fanart']))
+            str_list.append(text_XML_line('s_banner', collection['s_banner']))
+            str_list.append(text_XML_line('s_poster', collection['s_poster']))
+            str_list.append(text_XML_line('s_clearlogo', collection['s_clearlogo']))
+            str_list.append(text_XML_line('s_trailer', collection['s_trailer']))
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
         full_string = ''.join(str_list).encode('utf-8')
@@ -1001,11 +1001,11 @@ def fs_load_Collection_index_XML(collections_xml_file):
             collection = fs_new_collection()
             for rom_child in root_element:
                 # >> By default read strings
-                xml_text = rom_child.text if rom_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
+                text_XML_line = rom_child.text if rom_child.text is not None else ''
+                text_XML_line = text_unescape_XML(text_XML_line)
                 xml_tag  = rom_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
-                collection[xml_tag] = xml_text
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, text_XML_line))
+                collection[xml_tag] = text_XML_line
             collections[collection['id']] = collection
 
     return (collections, update_timestamp)
@@ -1264,17 +1264,17 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
         # --- Control information ---
         _t = time.time()
         str_list.append('<control>\n')
-        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append(text_XML_line('update_timestamp', unicode(_t)))
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
         for romID in sorted(roms, key = lambda x : roms[x]['name']):
             rom = roms[romID]
             str_list.append('<VLauncher>\n')
-            str_list.append(XML_text('id', romID))
-            str_list.append(XML_text('name', rom['name']))
-            str_list.append(XML_text('rom_count', rom['rom_count']))
-            str_list.append(XML_text('roms_base_noext', rom['roms_base_noext']))
+            str_list.append(text_XML_line('id', romID))
+            str_list.append(text_XML_line('name', rom['name']))
+            str_list.append(text_XML_line('rom_count', rom['rom_count']))
+            str_list.append(text_XML_line('roms_base_noext', rom['roms_base_noext']))
             str_list.append('</VLauncher>\n')
         str_list.append('</advanced_emulator_launcher_Virtual_Category_index>\n')
         full_string = ''.join(str_list).encode('utf-8')
@@ -1319,11 +1319,11 @@ def fs_load_VCategory_XML(roms_xml_file):
             VLauncher = {'id' : '', 'name' : '', 'rom_count' : '', 'roms_base_noext' : ''}
             for rom_child in root_element:
                 # By default read strings
-                xml_text = rom_child.text if rom_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
+                text_XML_line = rom_child.text if rom_child.text is not None else ''
+                text_XML_line = text_unescape_XML(text_XML_line)
                 xml_tag  = rom_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
-                VLauncher[xml_tag] = xml_text
+                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, text_XML_line))
+                VLauncher[xml_tag] = text_XML_line
             VLaunchers[VLauncher['id']] = VLauncher
 
     return (update_timestamp, VLaunchers)
@@ -1549,14 +1549,14 @@ def fs_export_ROM_NFO(rom, verbose = True):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<game>\n')
-    nfo_content.append(XML_text('title',     rom['m_name']))
-    nfo_content.append(XML_text('year',      rom['m_year']))
-    nfo_content.append(XML_text('genre',     rom['m_genre']))
-    nfo_content.append(XML_text('developer', rom['m_developer']))
-    nfo_content.append(XML_text('nplayers',  rom['m_nplayers']))
-    nfo_content.append(XML_text('esrb',      rom['m_esrb']))
-    nfo_content.append(XML_text('rating',    rom['m_rating']))
-    nfo_content.append(XML_text('plot',      rom['m_plot']))
+    nfo_content.append(text_XML_line('title',     rom['m_name']))
+    nfo_content.append(text_XML_line('year',      rom['m_year']))
+    nfo_content.append(text_XML_line('genre',     rom['m_genre']))
+    nfo_content.append(text_XML_line('developer', rom['m_developer']))
+    nfo_content.append(text_XML_line('nplayers',  rom['m_nplayers']))
+    nfo_content.append(text_XML_line('esrb',      rom['m_esrb']))
+    nfo_content.append(text_XML_line('rating',    rom['m_rating']))
+    nfo_content.append(text_XML_line('plot',      rom['m_plot']))
     nfo_content.append('</game>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
@@ -1690,11 +1690,11 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<launcher>\n')
-    nfo_content.append(XML_text('year',      launcher['m_year']))
-    nfo_content.append(XML_text('genre',     launcher['m_genre']))
-    nfo_content.append(XML_text('developer', launcher['m_developer']))
-    nfo_content.append(XML_text('rating',    launcher['m_rating']))
-    nfo_content.append(XML_text('plot',      launcher['m_plot']))
+    nfo_content.append(text_XML_line('year',      launcher['m_year']))
+    nfo_content.append(text_XML_line('genre',     launcher['m_genre']))
+    nfo_content.append(text_XML_line('developer', launcher['m_developer']))
+    nfo_content.append(text_XML_line('rating',    launcher['m_rating']))
+    nfo_content.append(text_XML_line('plot',      launcher['m_plot']))
     nfo_content.append('</launcher>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
@@ -1821,11 +1821,11 @@ def fs_export_category_NFO(nfo_FileName, category):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<category>\n')
-    nfo_content.append(XML_text('year',      category['m_year']))
-    nfo_content.append(XML_text('genre',     category['m_genre'])) 
-    nfo_content.append(XML_text('developer', category['m_developer']))
-    nfo_content.append(XML_text('rating',    category['m_rating']))
-    nfo_content.append(XML_text('plot',      category['m_plot']))
+    nfo_content.append(text_XML_line('year',      category['m_year']))
+    nfo_content.append(text_XML_line('genre',     category['m_genre'])) 
+    nfo_content.append(text_XML_line('developer', category['m_developer']))
+    nfo_content.append(text_XML_line('rating',    category['m_rating']))
+    nfo_content.append(text_XML_line('plot',      category['m_plot']))
     nfo_content.append('</category>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:
@@ -1896,9 +1896,9 @@ def fs_export_collection_NFO(nfo_FileName, collection):
     nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<collection>\n')
-    nfo_content.append(XML_text('genre',  collection['m_genre']))
-    nfo_content.append(XML_text('rating', collection['m_rating']))
-    nfo_content.append(XML_text('plot',   collection['m_plot']))
+    nfo_content.append(text_XML_line('genre',  collection['m_genre']))
+    nfo_content.append(text_XML_line('rating', collection['m_rating']))
+    nfo_content.append(text_XML_line('plot',   collection['m_plot']))
     nfo_content.append('</collection>\n')
     full_string = ''.join(nfo_content).encode('utf-8')
     try:

@@ -3,7 +3,7 @@
 # Advanced Emulator Launcher scraping engine
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ from scrap import *
 from scrap_common import *
 from utils import *
 from disk_IO import *
-import rom_audit
+import audit
 
 # -----------------------------------------------------------------------------
 # NULL scraper, does nothing

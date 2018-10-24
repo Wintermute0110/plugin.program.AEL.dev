@@ -1,8 +1,10 @@
 # --- Python compiler flags ---
 from __future__ import unicode_literals
+from __future__ import division
 
 # --- Python standard library ---
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
 
 #
 # Migration scripts are scripts that will be run only once when

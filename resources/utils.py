@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher
+# Advanced Emulator Launcher utilities and misc functions.
+#
+
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
@@ -13,68 +15,146 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# -------------------------------------------------------------------------------------------------
-# Utility functions which does not depend on Kodi modules (except log_* functions)
-# -------------------------------------------------------------------------------------------------
-# --- Python compiler flags ---
-from __future__ import unicode_literals
+# --- Module documentation ---
+# 1. This function contains utilities that do not depend on Kodi modules and utilities that
+#    depend on Kodi modules. Appropiate replacements are provided when the Kodi modules are
+#    not available, for example when running this file with the standard Python interpreter and
+#    not Kodi Python interpreter.
+#
+# 2. Filesystem access utilities are located in this file. Filesystem can use the Python
+#    standard library or Kodi Virtual FileSystem library if available.
+#
+# 3. utils.py must not depend on any other AEL module to avoid circular dependencies, with the
+#    exception of constants.py
+#
+# 4. Functions starting with _ are internal module functions not to be called externally.
+#
 
 # --- Python standard library ---
-import sys
-import os
-import shutil
-import time
-import random
-import hashlib
-import urlparse
-import re
-import string
+from __future__ import unicode_literals
+from __future__ import division
+import abc
+# NOTE binascii must not be used! See https://docs.python.org/2/library/binascii.html
+import binascii
+import base64
+# from base64 import b64decode
+# from base64 import b64encode
 import fnmatch
+import hashlib
 import HTMLParser
+import json
+import os
+import pprint
+import random
+import re
+import shutil
+import string
+import sys
+import time
+import urlparse
 
-from constants import *
-from filename import *
-from utils_kodi import *
+# --- Python standard library named imports ---
+import xml.etree.ElementTree as ET
 
-# OS utils
-# >> Determine platform
-# >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-def is_windows():    
-    return sys.platform == 'win32' or sys.platform == 'win64' or sys.platform == 'cygwin'
+# NOTE OpenSSL library will be included in Kodi M****
+#      Search documentation about this in Garbear's github repo.
+try:
+    from OpenSSL import crypto, SSL
+    UTILS_OPENSSL_AVAILABLE = True
+except:
+    UTILS_OPENSSL_AVAILABLE = False
 
-def is_osx():
-    return sys.platform.startswith('darwin')
+try:
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+    UTILS_CRYPTOGRAPHY_AVAILABLE = True
+except:
+    UTILS_CRYPTOGRAPHY_AVAILABLE = False
 
-def is_linux():
-     return sys.platform.startswith('linux') and not is_android()
+try:
+    from Crypto.PublicKey import RSA
+    from Crypto.Signature import PKCS1_v1_5
+    from Crypto.Hash import SHA256
+    from Crypto.Cipher import AES
+    from Crypto.Random import get_random_bytes
+    UTILS_PYCRYPTO_AVAILABLE = True
+except:
+    UTILS_PYCRYPTO_AVAILABLE = False
 
-def is_android():
-    if not sys.platform.startswith('linux'):
-        return False
-    
-    return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
+# --- Kodi modules ---
+try:
+    import xbmc
+    import xbmcaddon
+    import xbmcgui
+    import xbmcplugin
+    import xbmcvfs
+    UTILS_KODI_RUNTIME_AVAILABLE = True
+except:
+    UTILS_KODI_RUNTIME_AVAILABLE = False
 
 # --- AEL modules ---
-# >> utils.py must not depend on any other AEL module to avoid circular dependencies.
+from constants import *
 
+# -------------------------------------------------------------------------------------------------
+# A universal AEL error reporting exception
+# This exception is raised to report errors in the GUI.
+# Unhandled exceptions must not raise AEL_Error() so the addon crashes and the traceback is printed
+# in the Kodi log file.
+# -------------------------------------------------------------------------------------------------
+# >> Top-level GUI code looks like this
+# try:
+#     autoconfig_export_category(category, export_FN)
+# except Addon_Error as E:
+#     kodi_notify_warn('{0}'.format(E))
+# else:
+#     kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
+#
+# >> Low-level code looks like this
+# def autoconfig_export_category(category, export_FN):
+#     try:
+#         do_something_that_may_fail()
+#     except OSError:
+#         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+#         # >> Message to be printed in the GUI
+#         raise AEL_Error('Error writing file (OSError)')
+#
+class Addon_Error(Exception):
+    def __init__(self, err_str):
+        self.err_str = err_str
 
-# OS utils
-# >> Determine platform
-# >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-def is_windows():    
-    return sys.platform == 'win32' or sys.platform == 'win64' or sys.platform == 'cygwin'
+    def __str__(self):
+        return self.err_str
+
+# #################################################################################################
+# #################################################################################################
+# Standard Python utilities
+# #################################################################################################
+# #################################################################################################
+
+# --- Determine interpreter running platform ---
+# Cache all possible platform values in global variables for maximum speed.
+# See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+cached_sys_platform = sys.platform
+def _aux_is_android():
+    if not cached_sys_platform.startswith('linux'): return False
+    return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
+
+is_windows_bool = cached_sys_platform == 'win32' or cached_sys_platform == 'win64' or cached_sys_platform == 'cygwin'
+is_osx_bool     = cached_sys_platform.startswith('darwin')
+is_android_bool = _aux_is_android()
+is_linux_bool   = cached_sys_platform.startswith('linux') and not is_android_bool
+
+def is_windows():
+    return is_windows_bool
 
 def is_osx():
-    return sys.platform.startswith('darwin')
-
-def is_linux():
-     return sys.platform.startswith('linux') and not is_android()
+    return is_osx_bool
 
 def is_android():
-    if not sys.platform.startswith('linux'):
-        return False
-    
-    return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
+    return is_linux_bool
+
+def is_linux():
+    return is_android_bool
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text
@@ -83,10 +163,10 @@ def is_android():
 # If max_length == -1 do nothing (no length limit).
 #
 def text_limit_string(string, max_length):
-  if max_length > 5 and len(string) > max_length:
-    string = string[0:max_length-3] + '...'
+    if max_length > 5 and len(string) > max_length:
+        string = string[0:max_length-3] + '...'
 
-  return string
+    return string
 
 #
 # Given a Category/Launcher name clean it so the cleaned srt can be used as a filename.
@@ -104,7 +184,7 @@ def text_title_to_filename_str(title_str):
 # Both tag_name and tag_text must be Unicode strings.
 # Returns an Unicode string.
 #
-def XML_text(tag_name, tag_text, num_spaces = 2):
+def text_XML_line(tag_name, tag_text, num_spaces = 2):
     if tag_text:
         tag_text = text_escape_XML(tag_text)
         line = '{0}<{1}>{2}</{3}>\n'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
@@ -592,3 +672,1266 @@ def print_game_image_list(scraperObj, results, asset_kind):
             url           = text_limit_string(image['URL'], URL_LENGTH)
             print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH), url.ljust(URL_LENGTH)))
         print('\n')
+
+# #################################################################################################
+# #################################################################################################
+# Cryptographic utilities
+# #################################################################################################
+# #################################################################################################
+
+#
+# Creates a new self signed certificate base on OpenSSL PEM format.
+# cert_name: the CN value of the certificate
+# cert_file_path: the path to the .crt file of this certificate
+# key_file_paht: the path to the .key file of this certificate
+#
+def create_self_signed_cert(cert_name, cert_file_path, key_file_path):
+    # create a key pair
+    k = crypto.PKey()
+    k.generate_key(crypto.TYPE_RSA, 2048)
+
+    now    = datetime.now()
+    expire = now + timedelta(days=365)
+
+    # create a self-signed cert
+    cert = crypto.X509()
+    cert.get_subject().C = "GL"
+    cert.get_subject().ST = "GL"
+    cert.get_subject().L = "Kodi"
+    cert.get_subject().O = "ael"
+    cert.get_subject().OU = "ael"
+    cert.get_subject().CN = cert_name
+    cert.set_serial_number(1000)
+    cert.set_notBefore(now.strftime("%Y%m%d%H%M%SZ").encode())
+    cert.set_notAfter(expire.strftime("%Y%m%d%H%M%SZ").encode())
+    cert.set_issuer(cert.get_subject())
+    cert.set_pubkey(k)
+    cert.sign(k, 'sha1')
+
+    log_debug('Creating certificate file {0}'.format(cert_file_path.getOriginalPath()))
+    data = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
+    cert_file_path.writeAll(data, 'wt')
+
+    log_debug('Creating certificate key file {0}'.format(key_file_path.getOriginalPath()))
+    data = crypto.dump_privatekey(crypto.FILETYPE_PEM, k)
+    key_file_path.writeAll(data, 'wt')
+
+def getCertificatePublicKeyBytes(certificate_data):
+    pk_data = getCertificatePublicKey(certificate_data)
+    return bytearray(pk_data)
+
+def getCertificatePublicKey(certificate_data):
+    cert = crypto.x509.load_pem_x509_certificate(certificate_data, default_backend())
+    pk = cert.public_key()
+    pk_data = pk.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+    return pk_data
+
+def getCertificateSignature(certificate_data):
+    cert = crypto.x509.load_pem_x509_certificate(certificate_data, default_backend())
+    return cert.signature
+
+def verify_signature(data, signature, certificate_data):
+    pk_data = getCertificatePublicKey(certificate_data)
+    rsakey = RSA.importKey(pk_data) 
+    signer = PKCS1_v1_5.new(rsakey) 
+
+    digest = SHA256.new() 
+    digest.update(data)
+
+    if signer.verify(digest, signature):
+        return True
+
+    return False
+
+def sign_data(data, key_certificate):
+    rsakey = RSA.importKey(key_certificate) 
+    signer = PKCS1_v1_5.new(rsakey) 
+    digest = SHA256.new() 
+        
+    digest.update(data) 
+    sign = signer.sign(digest) 
+
+    return sign
+
+def randomBytes(size):
+    return get_random_bytes(size)
+
+class HashAlgorithm(object):
+    def __init__(self, shaVersion):
+        self.shaVersion = shaVersion
+        if self.shaVersion == 256:
+            self.hashLength = 32
+        else:
+            self.hashLength = 20
+       
+    def _algorithm(self):
+
+        if self.shaVersion == 256:
+            return hashlib.sha256()
+        else:
+            return hashlib.sha1()
+
+    def hash(self, value):
+        algorithm = self._algorithm()
+        algorithm.update(value)
+        hashedValue = algorithm.digest()
+        return hashedValue
+
+    def hashToHex(self, value):
+        hashedValue = self.hash(value)
+        return binascii.hexlify(hashedValue)
+
+    def digest_size(self):
+        return self.hashLength
+
+# Block size in bytes.
+BLOCK_SIZE = 16
+
+class AESCipher(object):
+
+    def __init__(self, key, hashAlgorithm):
+        
+        keyHashed = hashAlgorithm.hash(key)
+        truncatedKeyHashed = keyHashed[:16]
+
+        self.key = truncatedKeyHashed
+
+    def encrypt(self, raw):
+        cipher = AES.new(self.key, AES.MODE_ECB)
+        encrypted = cipher.encrypt(raw)
+        return encrypted
+
+    def encryptToHex(self, raw):
+        encrypted = self.encrypt(raw)
+        return binascii.hexlify(encrypted)
+
+    def decrypt(self, enc):
+        cipher = AES.new(self.key, AES.MODE_ECB)
+        decrypted = cipher.decrypt(str(enc))
+        return decrypted
+
+# #################################################################################################
+# #################################################################################################
+# Filesystem utilities
+# #################################################################################################
+# #################################################################################################
+
+# -------------------------------------------------------------------------------------------------
+# Factory for creating new FileName instances.
+# Can either create a FileName base on xmbcvfs or just normal os operations.
+# -------------------------------------------------------------------------------------------------
+class FileNameFactory():
+    @staticmethod
+    def create(pathString, no_xbmcvfs = False):
+
+        if no_xbmcvfs:
+            return StandardFileName(pathString)
+        
+        return KodiFileName(pathString)
+
+# -------------------------------------------------------------------------------------------------
+# Filesystem abstract base class
+# This class and classes that inherit this one always take and return Unicode string paths.
+# Decoding Unicode to UTF-8 or whatever must be done in the caller code.
+#
+# IMPROVE THE DOCUMENTATION OF THIS CLASS AND HOW IT HANDLES EXCEPTIONS AND ERROR REPORTING!!!
+#
+# A) Transform paths like smb://server/directory/ into \\server\directory\
+# B) Use xbmc.translatePath() for paths starting with special://
+# C) Uses xbmcvfs wherever possible
+#
+# -------------------------------------------------------------------------------------------------
+class FileName():
+    __metaclass__ = abc.ABCMeta
+
+    # pathString must be a Unicode string object
+    def __init__(self, pathString):
+        self.originalPath = pathString
+        self.path         = pathString
+        
+        # --- Path transformation ---
+        if self.originalPath.lower().startswith('smb:'):
+            self.path = self.path.replace('smb:', '')
+            self.path = self.path.replace('SMB:', '')
+            self.path = self.path.replace('//', '\\\\')
+            self.path = self.path.replace('/', '\\')
+
+        elif self.originalPath.lower().startswith('special:'):
+            self.path = xbmc.translatePath(self.path)
+
+    # abstract protected method, to be implemented in child classes.
+    # Will return a new instance of the desired child implementation.
+    @abc.abstractmethod
+    def __create__(self, pathString):
+        return FileName(pathString)
+
+    def _join_raw(self, arg):
+        self.path         = os.path.join(self.path, arg)
+        self.originalPath = os.path.join(self.originalPath, arg)
+
+        return self
+
+    # Appends a string to path. Returns self FileName object
+    def append(self, arg):
+        self.path         = self.path + arg
+        self.originalPath = self.originalPath + arg
+
+        return self
+
+    # >> Joins paths. Returns a new FileName object
+    def pjoin(self, *args):
+        child = self.__create__(self.originalPath)
+        for arg in args:
+            child._join_raw(arg)
+
+        return child
+
+    # Behaves like os.path.join()
+    #
+    # See http://blog.teamtreehouse.com/operator-overloading-python
+    # other is a FileName object. other originalPath is expected to be a subdirectory (path
+    # transformation not required)
+    def __add__(self, other):
+        current_path = self.originalPath
+        if type(other) is FileName:  other_path = other.originalPath
+        elif type(other) is unicode: other_path = other
+        elif type(other) is str:     other_path = other.decode('utf-8')
+        else: raise NameError('Unknown type for overloaded + in FileName object')
+        new_path = os.path.join(current_path, other_path)
+        child    = self.__create__(new_path)
+
+        return child
+        
+    def escapeQuotes(self):
+        self.path = self.path.replace("'", "\\'")
+        self.path = self.path.replace('"', '\\"')
+
+    def path_separator(self):
+        count_backslash = self.originalPath.count('\\')
+        count_forwardslash = self.originalPath.count('/')
+
+        if count_backslash > count_forwardslash:
+            return '\\'
+        
+        return '/'
+
+    # ---------------------------------------------------------------------------------------------
+    # Decomposes a file name path or directory into its constituents
+    #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
+    #   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
+    #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
+    #   FileName.getBase()          File name with no path                        Sonic.zip
+    #   FileName.getBase_noext()    File name with no path and no extension       Sonic
+    #   FileName.getExt()           File extension                                .zip
+    # ---------------------------------------------------------------------------------------------
+    def getOriginalPath(self):
+        return self.originalPath
+
+    def getPath(self):
+        return self.path
+
+    def getPath_noext(self):
+        root, ext = os.path.splitext(self.path)
+
+        return root
+
+    def getDir(self):
+        return os.path.dirname(self.path)
+
+    def getDirAsFileName(self):
+        return self.__create__(self.getDir())
+
+    def getBase(self):
+        return os.path.basename(self.path)
+
+    def getBase_noext(self):
+        basename  = os.path.basename(self.path)
+        root, ext = os.path.splitext(basename)
+        
+        return root
+
+    def getExt(self):
+        root, ext = os.path.splitext(self.path)
+        return ext
+
+    def switchExtension(self, targetExt):
+        
+        ext = self.getExt()
+        copiedPath = self.originalPath
+        
+        if not targetExt.startswith('.'):
+            targetExt = '.{0}'.format(targetExt)
+
+        new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        return new_path
+    
+    # Checks the extension to determine the type of the file
+    def is_image_file(self):
+        ext = self.getExt()
+        return ext.lower() in ['png', 'jpg', 'gif', 'bmp']
+
+    def is_video_file(self):
+        ext = self.getExt()
+        return ext.lower() in ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
+    
+    def is_document(self):
+        ext = self.getExt()
+        return ext.lower() in ['txt', 'pdf', 'doc']
+    
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def scanFilesInPath(self, mask = '*.*'):
+        return []
+
+    @abc.abstractmethod
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
+    
+    @abc.abstractmethod
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        return []
+
+    @abc.abstractmethod
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
+
+    def _decodeName(self, name):
+        if type(name) == str:
+            try:
+                name = name.decode('utf8')
+            except:
+                name = name.decode('windows-1252')
+        
+        return name
+    
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions
+    # ---------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def stat(self):
+        return None
+
+    @abc.abstractmethod
+    def exists(self):
+        return None
+
+    @abc.abstractmethod
+    def isdir(self):
+        return False
+
+    @abc.abstractmethod
+    def isfile(self):
+        return False
+
+    @abc.abstractmethod
+    def makedirs(self):
+        pass
+
+    @abc.abstractmethod
+    def unlink(self):
+        pass
+
+    @abc.abstractmethod
+    def rename(self, to):
+        pass
+
+    @abc.abstractmethod
+    def copy(self, to):
+        pass
+
+    # ---------------------------------------------------------------------------------------------
+    # File IO functions
+    # ---------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def readline(self):
+        return None
+
+    @abc.abstractmethod
+    def readAll(self):
+        return None
+
+    @abc.abstractmethod
+    def readAllUnicode(self, encoding='utf-8'):
+        return None
+
+    @abc.abstractmethod
+    def writeAll(self, bytes, flags='w'):
+        pass
+
+    @abc.abstractmethod
+    def write(self, bytes):
+        pass
+
+    @abc.abstractmethod
+    def open(self, flags):
+        pass
+
+    @abc.abstractmethod
+    def close(self):
+        pass
+
+    # Opens file and reads xml. Returns the root of the XML!
+    def readXml(self):
+        data = self.readAll()
+        root = ET.fromstring(data)
+        return root
+
+    # Opens JSON file and reads it
+    def readJson(self):
+        contents = self.readAllUnicode()
+        return json.loads(contents)
+
+    # Opens INI file and reads it
+    def readIniFile(self):
+        import ConfigParser
+
+        config = ConfigParser.ConfigParser()
+        config.readfp(self.open('r'))
+
+        return config
+
+    # Opens a propery file and reads it
+    # Reads a given properties file with each line of the format key=value.  Returns a dictionary containing the pairs.
+    def readPropertyFile(self):
+        import csv
+
+        file_contents = self.readAll()
+        file_lines = file_contents.splitlines()
+
+        result={ }
+        reader = csv.reader(file_lines, delimiter=str('='), quoting=csv.QUOTE_NONE)
+        for row in reader:
+            if len(row) != 2:
+                raise csv.Error("Too many fields on row with contents: "+str(row))
+            result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
+        
+        return result
+
+    # --- Configure JSON writer ---
+    # >> json_unicode is either str or unicode
+    # >> See https://docs.python.org/2.7/library/json.html#json.dumps
+    # unicode(json_data) auto-decodes data to unicode if str
+    # NOTE More compact JSON files (less blanks) load faster because size is smaller.
+    def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        self.writeAll(unicode(json_data).encode('utf-8'))
+
+    # Opens file and writes xml. Give xml root element.
+    def writeXml(self, xml_root):
+        data = ET.tostring(xml_root)
+        self.writeAll(data)
+
+    def __str__(self):
+        """Overrides the default implementation"""
+        return self.getOriginalPath()
+
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, FileName):
+            return self.getOriginalPath().lower() == other.getOriginalPath().lower()
+        
+        return False
+
+    def __ne__(self, other):
+        """Overrides the default implementation (unnecessary in Python 3)"""
+        return not self.__eq__(other)
+
+# -------------------------------------------------------------------------------------------------
+# Kodi Virtual Filesystem helper class.
+# Implementation of the FileName helper class which supports the xbmcvfs libraries.
+#
+# -------------------------------------------------------------------------------------------------
+class KodiFileName(FileName):
+    def __create__(self, pathString):
+        return KodiFileName(pathString)
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask = '*.*'):
+        files = []
+
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
+
+        return files
+
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__create__(filePath.getOriginalPath()))
+
+        return files
+
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        files = []
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(filePath.getOriginalPath())
+
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPath(mask)
+            files.extend(subPathFiles)
+
+        return files
+
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__create__(filePath.getOriginalPath()))
+
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPathAsFileNameObjects(mask)
+            files.extend(subPathFiles)
+
+        return files
+
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions
+    # ---------------------------------------------------------------------------------------------
+    def stat(self):
+        return xbmcvfs.Stat(self.originalPath)
+
+    def exists(self):
+        return xbmcvfs.exists(self.originalPath)
+
+    # Warning: not suitable for xbmcvfs paths yet
+    def isdir(self):
+        
+        if not self.exists():
+            return False
+
+        try:
+            self.open('r')
+            self.close()
+        except:
+            return True
+        
+        return False
+        #return os.path.isdir(self.path)
+        
+    # Warning: not suitable for xbmcvfs paths yet
+    def isfile(self):
+
+        if not self.exists():
+            return False
+
+        return not self.isdir()
+        #return os.path.isfile(self.path)
+
+    def makedirs(self):
+        
+        if not self.exists():
+            xbmcvfs.mkdirs(self.originalPath)
+
+    def unlink(self):
+
+        if self.isfile():
+            xbmcvfs.delete(self.originalPath)
+
+            # hard delete if it doesnt succeed
+            #log_debug('xbmcvfs.delete() failed, applying hard delete')
+            if self.exists():
+                os.remove(self.path)
+        else:
+            xbmcvfs.rmdir(self.originalPath)
+
+    def rename(self, to):
+
+        if self.isfile():
+            xbmcvfs.rename(self.originalPath, to.getOriginalPath())
+        else:
+            os.rename(self.path, to.getPath())
+
+    def copy(self, to):        
+        xbmcvfs.copy(self.getOriginalPath(), to.getOriginalPath())
+                    
+    # ---------------------------------------------------------------------------------------------
+    # File IO functions
+    # ---------------------------------------------------------------------------------------------
+    
+    def readline(self, encoding='utf-8'):
+        if self.fileHandle is None:
+            raise OSError('file not opened')
+
+        line = u''
+        char = self.fileHandle.read(1)
+        if char is '':
+            return ''
+
+        while char and char != u'\n':
+            line += unicode(char, encoding)
+            char = self.fileHandle.read(1)
+
+        return line
+
+    def readAll(self):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        contents = file.read()
+        file.close()
+
+        return contents
+    
+    def readAllUnicode(self, encoding='utf-8'):
+        contents = None
+        file = xbmcvfs.File(self.originalPath)
+        contents = file.read()
+        file.close()
+
+        return unicode(contents, encoding)
+    
+    def writeAll(self, bytes, flags='w'):
+        file = xbmcvfs.File(self.originalPath, flags)
+        file.write(bytes)
+        file.close()
+
+    def write(self, bytes):
+       if self.fileHandle is None:
+           raise OSError('file not opened')
+
+       self.fileHandle.write(bytes)
+
+    def open(self, flags):
+        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
+        return self
+        
+    def close(self):
+        if self.fileHandle is None:
+           raise OSError('file not opened')
+
+        self.fileHandle.close()
+        self.fileHandle = None
+        
+# -------------------------------------------------------------------------------------------------
+# Standard Filesystem helper class.
+# Implementation of the FileName helper class which just uses standard os operations.
+#
+# -------------------------------------------------------------------------------------------------
+class StandardFileName(FileName):
+    
+    def __create__(self, pathString):
+        return StandardFileName(pathString)
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask = '*.*'):
+        files = []
+
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
+            files.append(os.path.join(self.path, self._decodeName(filename)))
+
+        return files
+
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__create__(filePath.getPath()))
+
+        return files
+
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        files = []
+
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                filePath = self.pjoin(self._decodeName(filename))
+                files.append(filePath.getPath())
+
+        return files
+        
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                filePath = self.__create__(fileName)
+                files.append(filePath)
+
+        return files
+
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions
+    # ---------------------------------------------------------------------------------------------
+    def stat(self):
+        return os.stat(self.path)
+
+    def exists(self):
+        return os.path.exists(self.path)
+
+    def isdir(self):
+        return os.path.isdir(self.path)
+        
+    def isfile(self):
+        return os.path.isfile(self.path)
+
+    def makedirs(self):
+        if not os.path.exists(self.path): 
+            os.makedirs(self.path)
+
+    # os.remove() and os.unlink() are exactly the same.
+    def unlink(self):
+        os.unlink(self.path)
+
+    def rename(self, to):
+        os.rename(self.path, to.getPath())
+
+    def copy(self, to):        
+        shutil.copy2(self.getPath(), to.getPath())
+     
+    # ---------------------------------------------------------------------------------------------
+    # File IO functions
+    # ---------------------------------------------------------------------------------------------
+    
+    def readline(self):
+        if self.fileHandle is None:
+            raise OSError('file not opened')
+
+        return self.fileHandle.readline()
+
+    def readAll(self):
+        contents = None
+        with open(self.path, 'r') as f:
+            contents = f.read()
+        
+        return contents
+    
+    def readAllUnicode(self, encoding='utf-8'):
+        contents = None        
+        with open(self.path, 'r') as f:
+            contents = f.read()
+        
+        return unicode(contents, encoding)
+    
+    def writeAll(self, bytes, flags='w'):
+        with open(self.path, flags) as file:
+            file.write(bytes)
+
+    def write(self, bytes):
+       if self.fileHandle is None:
+           raise OSError('file not opened')
+
+       self.fileHandle.write(bytes)
+
+    def open(self, flags):
+        self.fileHandle = os.open(self.path, flags)
+        return self
+        
+    def close(self):
+        if self.fileHandle is None:
+           raise OSError('file not opened')
+
+        self.fileHandle.close()
+        self.fileHandle = None
+
+# #################################################################################################
+# #################################################################################################
+# Kodi utilities
+# #################################################################################################
+# #################################################################################################
+
+# --- Constants -----------------------------------------------------------------------------------
+LOG_ERROR   = 0
+LOG_WARNING = 1
+LOG_INFO    = 2
+LOG_VERB    = 3
+LOG_DEBUG   = 4
+
+# --- Internal globals ----------------------------------------------------------------------------
+current_log_level = LOG_INFO
+
+# -------------------------------------------------------------------------------------------------
+# Logging functions
+# -------------------------------------------------------------------------------------------------
+def set_log_level(level):
+    global current_log_level
+    current_log_level = level
+
+#
+# For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
+#
+def log_debug_KR(str_text):
+    if current_log_level >= LOG_DEBUG:
+        # If str_text is str we assume it's "utf-8" encoded.
+        # will fail if called with other encodings (latin, etc).
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+
+        # At this point we are sure str_text is a unicode string.
+        log_text = u'AML DEBUG: ' + str_text
+        xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
+
+def log_verb_KR(str_text):
+    if current_log_level >= LOG_VERB:
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AML VERB : ' + str_text
+        xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
+
+def log_info_KR(str_text):
+    if current_log_level >= LOG_INFO:
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AML INFO : ' + str_text
+        xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
+
+def log_warning_KR(str_text):
+    if current_log_level >= LOG_WARNING:
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AML WARN : ' + str_text
+        xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGWARNING)
+
+def log_error_KR(str_text):
+    if current_log_level >= LOG_ERROR:
+        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+        log_text = u'AML ERROR: ' + str_text
+        xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
+
+#
+# Replacement functions when running outside Kodi with the standard Python interpreter.
+#
+def log_debug_Python(str):
+    print(str)
+
+def log_verb_Python(str):
+    print(str)
+
+def log_info_Python(str):
+    print(str)
+
+def log_warning_Python(str):
+    print(str)
+
+def log_error_Python(str):
+    print(str)
+
+# -------------------------------------------------------------------------------------------------
+# Kodi notifications and dialogs
+# -------------------------------------------------------------------------------------------------
+#
+# Displays a modal dialog with an OK button. Dialog can have up to 3 rows of text, however first
+# row is multiline.
+# Call examples:
+#  1) ret = kodi_dialog_OK('Launch ROM?')
+#  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AEL - Launcher')
+#
+def kodi_dialog_OK(row1, row2 = '', row3 = '', title = 'Advanced Emulator Launcher'):
+    return xbmcgui.Dialog().ok(title, row1, row2, row3)
+
+#
+# Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
+#
+def kodi_dialog_yesno(row1, row2 = '', row3 = '', title = 'Advanced Emulator Launcher'):
+    ret = xbmcgui.Dialog().yesno(title, row1, row2, row3)
+
+    return ret
+
+#
+# Displays a small box in the low right corner
+#
+def kodi_notify(text, title = 'Advanced Emulator Launcher', time = 5000):
+    # --- Old way ---
+    # xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
+
+    # --- New way ---
+    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
+
+def kodi_notify_warn(text, title = 'Advanced Emulator Launcher warning', time = 7000):
+    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
+
+#
+# Do not use this function much because it is the same icon as when Python fails, and that may confuse the user.
+#
+def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7000):
+    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
+
+#
+# NOTE I think Krypton introduced new API functions to activate the busy dialog window. Check that
+#      out!
+# NOTE Deprecated in Leia! Do not use busydialogs anymore!!!!!
+#
+def kodi_busydialog_ON():
+    xbmc.executebuiltin('ActivateWindow(busydialog)')
+
+def kodi_busydialog_OFF():
+    xbmc.executebuiltin('Dialog.Close(busydialog)')
+
+def kodi_refresh_container():
+    log_debug('kodi_refresh_container()')
+    xbmc.executebuiltin('Container.Refresh')
+
+def kodi_toogle_fullscreen():
+    json_str = ('{"jsonrpc" : "2.0", "id" : "1",'
+                '"method" : "Input.ExecuteAction",'
+                '"params" : {"action" : "togglefullscreen"}}')
+
+    xbmc.executeJSONRPC(json_str)
+
+#
+# Access Kodi JSON-RPC interface in an easy way.
+# Returns a dictionary with the parsed response 'result' field.
+#
+# Query input:
+#
+# {
+#     "id" : 1,
+#     "jsonrpc" : "2.0",
+#     "method" : "Application.GetProperties",
+#     "params" : { "properties" : ["name", "version"] }
+# }
+#
+# Query response:
+#
+# {
+#     "id" : 1,
+#     "jsonrpc" : "2.0",
+#     "result" : {
+#         "name" : "Kodi",
+#         "version" : {"major":17,"minor":6,"revision":"20171114-a9a7a20","tag":"stable"}
+#     }
+# }
+#
+def kodi_jsonrpc_query(method, params):
+    # log_debug('kodi_jsonrpc_query() method "{0}"'.format(method))
+    # log_debug('kodi_jsonrpc_query() params "{0}"'.format(params))
+
+    # >> Do query
+    query_str = '{{"id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {{ {1} }}}}'.format(method, params)
+    # # log_debug('kodi_jsonrpc_query() query_str "{0}"'.format(query_str))
+    response_json_str = xbmc.executeJSONRPC(query_str)
+    # log_debug('kodi_jsonrpc_query() response "{0}"'.format(response_json_str))
+
+    # >> Parse JSON response
+    response_dic = json.loads(response_json_str)
+    result_dic = response_dic['result']
+    # log_debug('kodi_jsonrpc_query() result_dic = \n{0}'.format(pprint.pformat(result_dic)))
+
+    return result_dic
+
+#
+# Displays a text window and requests a monospaced font.
+#
+def kodi_display_text_window_mono(window_title, info_text):
+    log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+    xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+    xbmcgui.Dialog().textviewer(window_title, info_text)
+    log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+    xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+
+#
+# Displays a text window with a proportional font (default).
+#
+def kodi_display_text_window(window_title, info_text):
+    xbmcgui.Dialog().textviewer(window_title, info_text)
+
+# -------------------------------------------------------------------------------------------------
+# Kodi Wizards (by Chrisism)
+# -------------------------------------------------------------------------------------------------
+#
+# The wizarddialog implementations can be used to chain a collection of
+# different kodi dialogs and use them to fill a dictionary with user input.
+#
+# Each wizarddialog accepts a key which will correspond with the key/value combination
+# in the dictionary. It will also accept a customFunction (delegate or lambda) which
+# will be called after the dialog has been shown. Depending on the type of dialog some
+# other arguments might be needed.
+#
+# The chaining is implemented by applying the decorator pattern and injecting
+# the previous wizarddialog in each new one.
+# You can then call the method 'runWizard()' on the last created instance.
+#
+# Each wizard has a customFunction which will can be called after executing this 
+# specific dialog. It also has a conditionalFunction which can be called before
+# executing this dialog which will indicate if this dialog may be shown (True return value).
+#
+class KodiWizardDialog():
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, property_key, title, decoratorDialog, customFunction = None, conditionalFunction = None):
+        self.title = title
+        self.property_key = property_key
+        self.decoratorDialog = decoratorDialog
+        self.customFunction = customFunction
+        self.conditionalFunction = conditionalFunction
+        self.cancelled = False
+
+    def runWizard(self, properties):
+        if not self.executeDialog(properties):
+            log_warning('User stopped wizard')
+            return None
+        
+        return properties
+
+    def executeDialog(self, properties):
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.executeDialog(properties):
+                return False
+
+        if self.conditionalFunction is not None:
+            mayShow = self.conditionalFunction(self.property_key, properties)
+            if not mayShow:
+                log_debug('Skipping dialog for key: {0}'.format(self.property_key))
+                return True
+
+        output = self.show(properties)
+        
+        if self.cancelled:
+            return False
+
+        if self.customFunction is not None:
+            output = self.customFunction(output, self.property_key, properties)
+
+        if self.property_key:
+            properties[self.property_key] = output
+            log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+
+        return True
+
+    @abc.abstractmethod
+    def show(self, properties):
+        return True
+
+    def _cancel(self):
+        self.cancelled = True
+
+#
+# Wizard dialog which accepts a keyboard user input.
+# 
+class KodiKeyboardWizardDialog(KodiWizardDialog):
+    def show(self, properties):
+        log_debug('Executing keyboard wizard dialog for key: {0}'.format(self.property_key))
+        originalText = properties[self.property_key] if self.property_key in properties else ''
+
+        textInput = xbmc.Keyboard(originalText, self.title)
+        textInput.doModal()
+
+        if not textInput.isConfirmed(): 
+            self._cancel()
+            return None
+
+        output = textInput.getText().decode('utf-8')
+        return output
+
+#
+# Wizard dialog which shows a list of options to select from.
+# 
+class KodiSelectionWizardDialog(KodiWizardDialog):
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+        self.options = options
+        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
+        dialog = xbmcgui.Dialog()
+        selection = dialog.select(self.title, self.options)
+
+        if selection < 0:
+            self._cancel()
+            return None
+
+        output = self.options[selection]
+        return output
+
+#
+# Wizard dialog which shows a list of options to select from.
+# In comparison with the normal SelectionWizardDialog, this version allows a dictionary or key/value
+# list as the selectable options. The selected key will be used.
+# 
+class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
+    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+        self.options = options
+        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
+        dialog = DictionaryDialog()
+        if callable(self.options):
+            self.options = self.options(self.property_key, properties)
+
+        output = dialog.select(self.title, self.options)
+
+        if output is None:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which shows a filebrowser.
+#
+class KodiFileBrowseWizardDialog(KodiWizardDialog):
+    def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None, conditionalFunction = None):
+        self.browseType = browseType
+        self.filter = filter
+        super(FileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
+        originalPath = properties[self.property_key] if self.property_key in properties else ''
+
+        if callable(self.filter):
+            self.filter = self.filter(self.property_key, properties)
+        output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath).decode('utf-8')
+
+        if not output:
+            self._cancel()
+            return None
+       
+        return output
+
+#
+# Wizard dialog which shows an input for one of the following types:
+#    - xbmcgui.INPUT_ALPHANUM (standard keyboard)
+#    - xbmcgui.INPUT_NUMERIC (format: #)
+#    - xbmcgui.INPUT_DATE (format: DD/MM/YYYY)
+#    - xbmcgui.INPUT_TIME (format: HH:MM)
+#    - xbmcgui.INPUT_IPADDRESS (format: #.#.#.#)
+#    - xbmcgui.INPUT_PASSWORD (return md5 hash of input, input is masked)
+#
+class KodiInputWizardDialog(KodiWizardDialog):
+    def __init__(self, property_key, title, inputType, decoratorDialog, customFunction = None, conditionalFunction = None):
+        self.inputType = inputType
+        super(InputWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        log_debug('Executing {0} input wizard dialog for key: {1}'.format(self.inputType, self.property_key))
+        originalValue = properties[self.property_key] if self.property_key in properties else ''
+
+        output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
+
+        if not output:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which shows you a message formatted with a value from the dictionary.
+#
+# Example:
+#   dictionary item {'token':'roms'}
+#   inputtext: 'I like {} a lot'
+#   result message on screen: 'I like roms a lot'
+#
+# Formatting is optional
+#
+class KodiFormattedMessageWizardDialog(KodiWizardDialog):
+    def __init__(self, property_key, title, text, decoratorDialog, customFunction = None, conditionalFunction = None):
+        self.text = text
+        super(FormattedMessageWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        log_debug('Executing message wizard dialog for key: {0}'.format(self.property_key))
+        format_values = properties[self.property_key] if self.property_key in properties else ''
+        full_text = self.text.format(format_values)
+        output = xbmcgui.Dialog().ok(self.title, full_text)
+
+        if not output:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which does nothing or shows anything.
+# It only sets a certain property with the predefined value.
+#
+class KodiDummyWizardDialog(KodiWizardDialog):
+    def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None, conditionalFunction = None):
+        self.predefinedValue = predefinedValue
+        super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        
+        log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
+        return self.predefinedValue
+
+#
+# Kodi dialog with select box based on a dictionary
+#
+class KodiDictionaryDialog(object):
+    def __init__(self):
+        self.dialog = xbmcgui.Dialog()
+
+    def select(self, title, dictOptions, preselect = None):
+        preselected_index = -1
+        if preselect is not None:
+            preselected_value = dictOptions[preselect]
+            preselected_index = dictOptions.values().index(preselected_value)
+
+        selection = self.dialog.select(title, dictOptions.values(), preselect = preselected_index)
+
+        if selection < 0:
+            return None
+        
+        key = list(dictOptions.keys())[selection]
+        return key
+
+class KodiProgressDialogStrategy(object):
+    def __init__(self):
+        self.progress = 0
+        self.progressDialog = xbmcgui.DialogProgress()
+        self.verbose = True
+
+    def _startProgressPhase(self, title, message):        
+        self.progressDialog.create(title, message)
+
+    def _updateProgress(self, progress, message1 = None, message2 = None):
+        
+        self.progress = progress
+
+        if not self.verbose:
+            self.progressDialog.update(progress)
+        else:
+            self.progressDialog.update(progress, message1, message2)
+
+    def _updateProgressMessage(self, message1, message2 = None):
+
+        if not self.verbose:
+            return
+
+        self.progressDialog.update(self.progress, message1, message2)
+
+    def _isProgressCanceled(self):
+        return self.progressDialog.iscanceled()
+
+    def _endProgressPhase(self, canceled=False):
+        
+        if not canceled:
+            self.progressDialog.update(100)
+
+        self.progressDialog.close()
+
+# -------------------------------------------------------------------------------------------------
+# If runnining with Kodi Python interpreter use Kodi proper functions.
+# If running with the standard Python interpreter use replacement functions.
+# -------------------------------------------------------------------------------------------------
+if UTILS_KODI_RUNTIME_AVAILABLE:
+    log_debug   = log_debug_KR
+    log_verb    = log_verb_KR
+    log_info    = log_info_KR
+    log_warning = log_warning_KR
+    log_error   = log_error_KR
+else:
+    log_debug   = log_debug_Python
+    log_verb    = log_verb_Python
+    log_info    = log_info_Python
+    log_warning = log_warning_Python
+    log_error   = log_error_Python
