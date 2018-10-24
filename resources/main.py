@@ -8783,9 +8783,6 @@ def m_gui_edit_asset(object_kind, asset_kind, object_dic, categoryID = '', launc
         kodi_notify('{0} {1} has been updated'.format(object_name, AInfo.name))
         log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, AInfo.name, image_file_path.getOriginalPath()))
 
-        # --- Update Kodi image cache ---
-        kodi_update_image_cache(image_file_path)
-
     # --- Import an image ---
     # >> Copy and rename a local image into asset directory
     elif type2 == 1:
@@ -8828,9 +8825,6 @@ def m_gui_edit_asset(object_kind, asset_kind, object_dic, categoryID = '', launc
         log_info('_gui_edit_asset() Copied file  "{0}"'.format(image_FileName.getOriginalPath()))
         log_info('_gui_edit_asset() Into         "{0}"'.format(dest_path_FileName.getOriginalPath()))
         log_info('_gui_edit_asset() Selected {0} {1} "{2}"'.format(object_name, AInfo.name, dest_path_FileName.getOriginalPath()))
-
-        # --- Update Kodi image cache ---
-        kodi_update_image_cache(dest_path_FileName)
 
     # --- Unset asset ---
     elif type2 == 2:
@@ -8954,10 +8948,6 @@ def m_gui_edit_asset(object_kind, asset_kind, object_dic, categoryID = '', launc
             except socket.timeout:
                 kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
             kodi_busydialog_OFF()
-
-            # ~~~ Update Kodi cache with downloaded image ~~~
-            # Recache only if local image is in the Kodi cache, this function takes care of that.
-            kodi_update_image_cache(image_local_path)
 
             # --- Notify user ---
             kodi_notify('Downloaded {0} with {1} scraper'.format(AInfo.name, scraper_obj.name))

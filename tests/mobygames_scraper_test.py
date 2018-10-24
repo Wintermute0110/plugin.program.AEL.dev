@@ -76,7 +76,6 @@ class Test_mobygames_scraper(unittest.TestCase):
     # add actual mobygames apikey above and comment out patch attributes to do live tests
     @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
     @patch('resources.scrap.net_download_img')
-    #@patch('resources.scrap.kodi_update_image_cache')
     def test_scraping_for_game(self, mock_img_downloader, mock_json_downloader):
 
         # arrange
