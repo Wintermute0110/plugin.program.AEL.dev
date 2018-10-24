@@ -1,0 +1,217 @@
+{
+  "cover_groups": [
+    {
+      "comments": null, 
+      "countries": [
+        "United States"
+      ], 
+      "covers": [
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 900, 
+          "image": "http://www.mobygames.com/images/covers/l/17943-castlevania-nes-media.jpg", 
+          "scan_of": "Media", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/17943-castlevania-nes-media.jpg", 
+          "width": 800
+        },
+        {
+            "comments": null,
+            "description": null,
+            "height": 768,
+            "image": "http://www.mobygames.com/images/covers/l/19570-castlevania-nes-back-cover.jpg",
+            "scan_of": "Back Cover",
+            "thumbnail_image": "http://www.mobygames.com/images/covers/s/19570-castlevania-nes-back-cover.jpg",
+            "width": 554
+        }, 
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 703, 
+          "image": "http://www.mobygames.com/images/covers/l/41554-castlevania-nes-front-cover.jpg", 
+          "scan_of": "Front Cover", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/41554-castlevania-nes-front-cover.jpg", 
+          "width": 485
+        }
+      ], 
+      "packaging": {
+        "packaging_id": 225, 
+        "packaging_name": "Box"
+      }
+    }, 
+    {
+      "comments": "Famicom cart release", 
+      "countries": [
+        "Japan"
+      ], 
+      "covers": [
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 649, 
+          "image": "http://www.mobygames.com/images/covers/l/42759-castlevania-nes-front-cover.jpg", 
+          "scan_of": "Front Cover", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/42759-castlevania-nes-front-cover.jpg", 
+          "width": 449
+        }, 
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 640, 
+          "image": "http://www.mobygames.com/images/covers/l/42760-castlevania-nes-back-cover.jpg", 
+          "scan_of": "Back Cover", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/42760-castlevania-nes-back-cover.jpg", 
+          "width": 444
+        }, 
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 337, 
+          "image": "http://www.mobygames.com/images/covers/l/42761-castlevania-nes-media.jpg", 
+          "scan_of": "Media", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/42761-castlevania-nes-media.jpg", 
+          "width": 508
+        }
+      ], 
+      "packaging": {
+        "packaging_id": 225, 
+        "packaging_name": "Box"
+      }
+    }, 
+    {
+      "comments": "Famicom Disk System release", 
+      "countries": [
+        "Japan"
+      ], 
+      "covers": [
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 495, 
+          "image": "http://www.mobygames.com/images/covers/l/59711-castlevania-nes-front-cover.jpg", 
+          "scan_of": "Front Cover", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/59711-castlevania-nes-front-cover.jpg", 
+          "width": 490
+        }, 
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 560, 
+          "image": "http://www.mobygames.com/images/covers/l/299920-castlevania-nes-back-cover.jpg", 
+          "scan_of": "Back Cover", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/299920-castlevania-nes-back-cover.jpg", 
+          "width": 800
+        }, 
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 940, 
+          "image": "http://www.mobygames.com/images/covers/l/299921-castlevania-nes-media.jpg", 
+          "scan_of": "Media", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/299921-castlevania-nes-media.jpg", 
+          "width": 800
+        }
+      ], 
+      "packaging": {
+        "packaging_id": 225, 
+        "packaging_name": "Box"
+      }
+    }, 
+    {
+      "comments": null, 
+      "countries": [
+        "Germany"
+      ], 
+      "covers": [
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 895, 
+          "image": "http://www.mobygames.com/images/covers/l/222323-castlevania-nes-media.jpg", 
+          "scan_of": "Media", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/222323-castlevania-nes-media.jpg", 
+          "width": 800
+        }
+      ], 
+      "packaging": {
+        "packaging_id": 225, 
+        "packaging_name": "Box"
+      }
+    }, 
+    {
+      "comments": null, 
+      "countries": [
+        "France"
+      ], 
+      "covers": [
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 1135, 
+          "image": "http://www.mobygames.com/images/covers/l/277342-castlevania-nes-front-cover.jpg", 
+          "scan_of": "Front Cover", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/277342-castlevania-nes-front-cover.jpg", 
+          "width": 800
+        }, 
+        {
+          "comments": null, 
+          "description": null, 
+          "height": 1128, 
+          "image": "http://www.mobygames.com/images/covers/l/277343-castlevania-nes-back-cover.jpg", 
+          "scan_of": "Back Cover", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/277343-castlevania-nes-back-cover.jpg", 
+          "width": 800
+        }, 
+        {
+          "comments": "Front", 
+          "description": null, 
+          "height": 620, 
+          "image": "http://www.mobygames.com/images/covers/l/334821-castlevania-nes-manual.jpg", 
+          "scan_of": "Manual", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/334821-castlevania-nes-manual.jpg", 
+          "width": 800
+        }, 
+        {
+          "comments": "Back", 
+          "description": null, 
+          "height": 618, 
+          "image": "http://www.mobygames.com/images/covers/l/334822-castlevania-nes-manual.jpg", 
+          "scan_of": "Manual", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/334822-castlevania-nes-manual.jpg", 
+          "width": 800
+        }, 
+        {
+          "comments": "Left", 
+          "description": null, 
+          "height": 1600, 
+          "image": "http://www.mobygames.com/images/covers/l/334823-castlevania-nes-spine-sides.jpg", 
+          "scan_of": "Spine/Sides", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/334823-castlevania-nes-spine-sides.jpg", 
+          "width": 205
+        }, 
+        {
+          "comments": "Front", 
+          "description": null, 
+          "height": 897, 
+          "image": "http://www.mobygames.com/images/covers/l/459652-castlevania-nes-media.jpg", 
+          "scan_of": "Media", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/459652-castlevania-nes-media.jpg", 
+          "width": 800
+        }, 
+        {
+          "comments": "Back", 
+          "description": null, 
+          "height": 890, 
+          "image": "http://www.mobygames.com/images/covers/l/459653-castlevania-nes-media.jpg", 
+          "scan_of": "Media", 
+          "thumbnail_image": "http://www.mobygames.com/images/covers/s/459653-castlevania-nes-media.jpg", 
+          "width": 800
+        }
+      ], 
+      "packaging": {
+        "packaging_id": 225, 
+        "packaging_name": "Box"
+      }
+    }
+  ]
+}

@@ -147,6 +147,7 @@ def net_get_URL_original(url):
     if encoding == 'text/html': encoding = 'utf-8'
     if encoding == 'text/plain' and 'UTF-8' in page_bytes: encoding = 'utf-8'
     if encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
+    if encoding == 'application/json': encoding = 'utf-8'
     
     log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
     if encoding != 'utf-16':
