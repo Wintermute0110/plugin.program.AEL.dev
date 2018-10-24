@@ -1,4 +1,4 @@
-import unittest, mock, os, sys
+import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
@@ -21,7 +21,7 @@ def read_file_as_json(path):
     file_data = read_file(path)
     return json.loads(file_data, encoding = 'utf-8')
 
-class Test_gamesdb_scraper(unittest.TestCase):
+class Test_mobygames_scraper(unittest.TestCase):
     
     ROOT_DIR = ''
     TEST_DIR = ''
@@ -45,29 +45,18 @@ class Test_gamesdb_scraper(unittest.TestCase):
 
         mocked_json_file = '';
 
-        if '/Developers' in url:
-            mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_developers.json"
-
-        if '/Genres' in url:
-            mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_genres.json"
-
-        
-        if '/Publishers' in url:
-            mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_publishers.json"
-
-        if '/Games/ByGameName' in url:
-            mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_castlevania_list.json"
+        if 'format=brief&title=' in url:
+            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_list.json"
+    
+        if 'screenshots' in url:
+            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_screenshots.json"
+    
+        if 'covers' in url:
+            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_covers.json"
+                            
+        if re.search('/games/(\d*)\?', url):
+            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania.json"
             
-        if '/Games/ByGameID' in url:
-            mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_castlevania.json"
-            
-        if '/Games/Images' in url:
-            print 'reading fake image file'
-            mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_images.json"
-
-        if 'cdn.thegamesdb.net/' in url:
-            return read_file(Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\test.jpg")
-
         if mocked_json_file == '':
             return net_get_URL_as_json(url)
 
@@ -83,11 +72,11 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
-        settings['thegamesdb_apikey'] = 'abc123'
+        settings['mobygames_apikey'] = 'abc123'
 
         return settings
 
-    # add actual gamesdb apikey above and comment out patch attributes to do live tests
+    # add actual mobygames apikey above and comment out patch attributes to do live tests
     @patch('resources.scrapers.net_get_URL_as_json', side_effect = mocked_gamesdb)
     @patch('resources.scrapers.net_download_img')
     @patch('resources.scrapers.kodi_update_image_cache')
@@ -97,22 +86,26 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings = self.get_test_settings()
         asset_factory = AssetInfoFactory.create()
 
-        assets_to_scrape = [asset_factory.get_asset_info(ASSET_BANNER), asset_factory.get_asset_info(ASSET_FANART)]
+        assets_to_scrape = [
+            asset_factory.get_asset_info(ASSET_BOXFRONT), 
+            asset_factory.get_asset_info(ASSET_BOXBACK), 
+            asset_factory.get_asset_info(ASSET_SNAP)]
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Nintendo NES')
-        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_BANNER),'/my/nice/assets/banners/')
-        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_FANART),'/my/nice/assets/fans/')
+        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_BOXFRONT),'/my/nice/assets/front/')
+        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_BOXBACK),'/my/nice/assets/back/')
+        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_SNAP),'/my/nice/assets/snaps/')
         
         rom = Rom({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
 
-        target = TheGamesDbScraper(settings, launcher, True, assets_to_scrape)
+        target = MobyGamesScraper(settings, launcher, True, assets_to_scrape)
 
         # act
         actual = target.scrape('castlevania', fakeRomPath, rom)
                 
         # assert
         self.assertTrue(actual)
-        self.assertEqual(u'Castlevania - The Lecarde Chronicles', rom.get_name())
+        self.assertEqual(u'Castlevania', rom.get_name())
         print rom

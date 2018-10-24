@@ -77,7 +77,7 @@ class FakeScraper(Scraper):
     def getName(self):
         return 'FakeScraper'
 
-    def _getCandidates(self, searchTerm, romPath, rom):
+    def _get_candidates(self, searchTerm, romPath, rom):
         return ['fake']
 
     def _load_metadata(self, candidate, romPath, rom):
