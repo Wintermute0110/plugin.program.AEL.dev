@@ -38,7 +38,6 @@ import xml.etree.ElementTree as ET
 # --- AEL packages ---
 from constants import *
 from utils import *
-from assets import *
 
 # --- AEL ROM storage version format ---
 # >> An integer number incremented whenever there is a change in the ROM storage format.

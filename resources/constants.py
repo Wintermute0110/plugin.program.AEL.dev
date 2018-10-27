@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher platform constants
+# Advanced Emulator Launcher platform constants.
 #
+
+# This file has contants that define the addon behaviour. 
 
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
@@ -22,13 +24,15 @@ from __future__ import division
 # Addon constants
 # -------------------------------------------------------------------------------------------------
 # --- Misc "constants" ---
-KIND_CATEGORY    = 1
-KIND_COLLECTION  = 2
-KIND_LAUNCHER    = 3
-KIND_ROM         = 4
 PLOT_STR_MAXSIZE = 40
 RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
 LNK_LAUNCHER_APP_NAME         = 'lnk_launcher_app'
+
+# --- Kind of assets (for edit context menus and scrapers) ---
+KIND_ASSET_CATEGORY   = 1
+KIND_ASSET_COLLECTION = 2
+KIND_ASSET_LAUNCHER   = 3
+KIND_ASSET_ROM        = 4
 
 # --- Special Cateogry/Launcher IDs ---
 VCATEGORY_ADDONROOT_ID   = 'root_category'
@@ -51,7 +55,7 @@ VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
 
 VCATEGORY_PCLONES_ID     = 'vcat_pclone'
 
-# LAUNCHER TYPES
+# --- LAUNCHER TYPES ---
 LAUNCHER_VIRTUAL        = 'VIRTUAL'
 LAUNCHER_COLLECTION     = 'COLLECTION'
 LAUNCHER_STANDALONE     = 'STANDALONE'
@@ -166,4 +170,58 @@ NP_6P_ALT = '6P alt'
 NP_8P_SIM = '8P sim'
 NP_8P_ALT = '8P alt'
 NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, NP_4P_ALT, 
-                        NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
+                 NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
+
+# --- Assets --------------------------------------------------------------------------------------
+# --- Define asset "constants" ---
+# ROMs have FLYER, Categories/Launchers/Collections have POSTER
+ASSET_ICON_ID       = 100
+ASSET_FANART_ID     = 200
+ASSET_BANNER_ID     = 300
+ASSET_POSTER_ID     = 400
+ASSET_CLEARLOGO_ID  = 500
+ASSET_CONTROLLER_ID = 600
+ASSET_TRAILER_ID    = 700
+ASSET_TITLE_ID      = 800
+ASSET_SNAP_ID       = 900
+ASSET_BOXFRONT_ID   = 1000
+ASSET_BOXBACK_ID    = 1100
+ASSET_CARTRIDGE_ID  = 1200
+ASSET_FLYER_ID      = 1300
+ASSET_MAP_ID        = 1400
+ASSET_MANUAL_ID     = 1500
+
+#
+# The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
+#
+CATEGORY_ASSET_ID_LIST = [
+    ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID,
+    ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID
+]
+
+LAUNCHER_ASSET_ID_LIST = [
+    ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID,
+    ASSET_CLEARLOGO_ID, ASSET_CONTROLLER_ID, ASSET_TRAILER_ID
+]
+
+ROM_ASSET_ID_LIST = [
+    ASSET_TITLE_ID,     ASSET_SNAP_ID,   ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
+    ASSET_CARTRIDGE_ID, ASSET_FANART_ID, ASSET_BANNER_ID,   ASSET_CLEARLOGO_ID,
+    ASSET_FLYER_ID,     ASSET_MAP_ID,    ASSET_MANUAL_ID,   ASSET_TRAILER_ID
+]
+
+DEFAULTABLE_ROM_ASSET_ID_LIST = [
+    ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID, ASSET_CLEARLOGO_ID
+]
+
+MAPPABLE_ROM_ASSET_ID_LIST = [
+    ASSET_TITLE_ID,     ASSET_SNAP_ID,   ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
+    ASSET_CARTRIDGE_ID, ASSET_FANART_ID, ASSET_BANNER_ID,   ASSET_CLEARLOGO_ID,
+    ASSET_FLYER_ID,     ASSET_MAP_ID
+]
+
+# --- Addon will search these file extensions for assets ---
+# >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
+IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'gif', 'bmp']
+MANUAL_EXTENSION_LIST  = ['pdf', 'cbz', 'cbr']
+TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']

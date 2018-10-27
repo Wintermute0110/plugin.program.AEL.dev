@@ -36,7 +36,6 @@ from constants import *
 from platforms import *
 from utils import *
 from disk_IO import *
-from assets import *
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.

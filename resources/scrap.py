@@ -16,8 +16,10 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 import abc
-import datetime, time
+import datetime
+import time
 
 # --- AEL packages ---
 from utils import *
@@ -1118,18 +1120,16 @@ class TheGamesDbScraper(Scraper):
 
         return assets_list
 
-
     asset_name_mapping = {
-        'fanart' : ASSET_FANART,
-        'clearlogo': ASSET_CLEARLOGO,
-        'banner': ASSET_BANNER,
-        'boxartfront': ASSET_BOXFRONT,
-        'boxartback': ASSET_BOXBACK,
-        'screenshot': ASSET_SNAP
+        'fanart' : ASSET_FANART_ID,
+        'clearlogo': ASSET_CLEARLOGO_ID,
+        'banner': ASSET_BANNER_ID,
+        'boxartfront': ASSET_BOXFRONT_ID,
+        'boxartback': ASSET_BOXBACK_ID,
+        'screenshot': ASSET_SNAP_ID
     }
-    
-    def _convert_to_asset_kind(self, type, side):
 
+    def _convert_to_asset_kind(self, type, side):
         if side is not None:
             type = type + side
 
@@ -1389,12 +1389,12 @@ class MobyGamesScraper(Scraper):
 
         log_debug('Found {} cover assets for candidate #{}'.format(len(assets_list), candidate['id']))    
         return assets_list
-        
+
     asset_name_mapping = {
-        'media' : ASSET_CARTRIDGE,
-        'manual': ASSET_MANUAL,
-        'front cover': ASSET_BOXFRONT,
-        'back cover': ASSET_BOXBACK,
+        'media' : ASSET_CARTRIDGE_ID,
+        'manual': ASSET_MANUAL_ID,
+        'front cover': ASSET_BOXFRONT_ID,
+        'back cover': ASSET_BOXBACK_ID,
         'spine/sides': 0 # not supported by AEL?
     }
 
@@ -1403,4 +1403,3 @@ class MobyGamesScraper(Scraper):
         now = datetime.datetime.now()
         if (now-self.last_http_call).total_seconds() < 1:
             time.sleep(1)
-        

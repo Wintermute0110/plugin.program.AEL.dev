@@ -591,7 +591,6 @@ def misc_generate_random_SID():
 # Version helper class
 #
 class VersionNumber(object):
-
     def __init__(self, versionString):
         self.versionNumber = versionString.split('.')
 
@@ -606,6 +605,11 @@ class VersionNumber(object):
 
     def getBuild(self):
         return int(self.versionNumber[2])
+
+def dump_object_to_log(obj_name_str, obj):
+    log_debug('Dumping variable named "{0}"'.format(obj_name_str))
+    log_debug('obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
+    log_debug(pprint.pformat(obj))
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
@@ -821,15 +825,14 @@ class AESCipher(object):
 
 # -------------------------------------------------------------------------------------------------
 # Factory for creating new FileName instances.
-# Can either create a FileName base on xmbcvfs or just normal os operations.
+# Can either create a FileName base on Kodi xmbcvfs or Python standard library.
 # -------------------------------------------------------------------------------------------------
 class FileNameFactory():
     @staticmethod
     def create(pathString, no_xbmcvfs = False):
-
         if no_xbmcvfs:
             return StandardFileName(pathString)
-        
+
         return KodiFileName(pathString)
 
 # -------------------------------------------------------------------------------------------------
@@ -1207,12 +1210,12 @@ class KodiFileName(FileName):
     def stat(self):
         return xbmcvfs.Stat(self.originalPath)
 
+    # NOTE In xbmcvfs.exists() requires folders to end with slash or backslash. 
     def exists(self):
         return xbmcvfs.exists(self.originalPath)
 
     # Warning: not suitable for xbmcvfs paths yet
     def isdir(self):
-        
         if not self.exists():
             return False
 
@@ -1221,13 +1224,12 @@ class KodiFileName(FileName):
             self.close()
         except:
             return True
-        
+
         return False
         #return os.path.isdir(self.path)
-        
+
     # Warning: not suitable for xbmcvfs paths yet
     def isfile(self):
-
         if not self.exists():
             return False
 
@@ -1235,12 +1237,10 @@ class KodiFileName(FileName):
         #return os.path.isfile(self.path)
 
     def makedirs(self):
-        
         if not self.exists():
             xbmcvfs.mkdirs(self.originalPath)
 
     def unlink(self):
-
         if self.isfile():
             xbmcvfs.delete(self.originalPath)
 
@@ -1252,19 +1252,17 @@ class KodiFileName(FileName):
             xbmcvfs.rmdir(self.originalPath)
 
     def rename(self, to):
-
         if self.isfile():
             xbmcvfs.rename(self.originalPath, to.getOriginalPath())
         else:
             os.rename(self.path, to.getPath())
 
-    def copy(self, to):        
+    def copy(self, to):
         xbmcvfs.copy(self.getOriginalPath(), to.getOriginalPath())
-                    
+
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
-    
     def readline(self, encoding='utf-8'):
         if self.fileHandle is None:
             raise OSError('file not opened')
@@ -1287,7 +1285,7 @@ class KodiFileName(FileName):
         file.close()
 
         return contents
-    
+
     def readAllUnicode(self, encoding='utf-8'):
         contents = None
         file = xbmcvfs.File(self.originalPath)
@@ -1295,7 +1293,7 @@ class KodiFileName(FileName):
         file.close()
 
         return unicode(contents, encoding)
-    
+
     def writeAll(self, bytes, flags='w'):
         file = xbmcvfs.File(self.originalPath, flags)
         file.write(bytes)
@@ -1310,14 +1308,14 @@ class KodiFileName(FileName):
     def open(self, flags):
         self.fileHandle = xbmcvfs.File(self.originalPath, flags)
         return self
-        
+
     def close(self):
         if self.fileHandle is None:
            raise OSError('file not opened')
 
         self.fileHandle.close()
         self.fileHandle = None
-        
+
 # -------------------------------------------------------------------------------------------------
 # Standard Filesystem helper class.
 # Implementation of the FileName helper class which just uses standard os operations.
@@ -1890,20 +1888,17 @@ class KodiProgressDialogStrategy(object):
         self.progressDialog = xbmcgui.DialogProgress()
         self.verbose = True
 
-    def _startProgressPhase(self, title, message):        
+    def _startProgressPhase(self, title, message):
         self.progressDialog.create(title, message)
 
     def _updateProgress(self, progress, message1 = None, message2 = None):
-        
         self.progress = progress
-
         if not self.verbose:
             self.progressDialog.update(progress)
         else:
             self.progressDialog.update(progress, message1, message2)
 
     def _updateProgressMessage(self, message1, message2 = None):
-
         if not self.verbose:
             return
 
@@ -1912,11 +1907,9 @@ class KodiProgressDialogStrategy(object):
     def _isProgressCanceled(self):
         return self.progressDialog.iscanceled()
 
-    def _endProgressPhase(self, canceled=False):
-        
+    def _endProgressPhase(self, canceled = False):
         if not canceled:
             self.progressDialog.update(100)
-
         self.progressDialog.close()
 
 # -------------------------------------------------------------------------------------------------

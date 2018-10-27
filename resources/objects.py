@@ -30,980 +30,731 @@ from disk_IO import *
 
 # #################################################################################################
 # #################################################################################################
-# ROM scanners
+# Assets/Artwork
 # #################################################################################################
 # #################################################################################################
-class RomScannersFactory():
-    def __init__(self, settings, PATHS):
-        self.settings = settings
-        self.reports_dir = PATHS.REPORTS_DIR
-        self.addon_dir = PATHS.ADDON_DATA_DIR
 
-    def create(self, launcher, scrapers):
-        launcherType = launcher.get_launcher_type()
-        log_info('RomScannersFactory: Creating romscanner for {}'.format(launcherType))
+# todo: default assets should use the constant values instead
+# of the string names.
+ASSET_KEYS_TO_IDS = {
+    's_title' : ASSET_TITLE_ID,
+    's_snap' : ASSET_SNAP_ID,
+    's_boxfront' : ASSET_BOXFRONT_ID,
+    's_boxback' : ASSET_BOXBACK_ID,
+    's_cartridge' : ASSET_CARTRIDGE_ID,
+    's_fanart' : ASSET_FANART_ID,
+    's_banner' : ASSET_BANNER_ID,
+    's_clearlogo' : ASSET_CLEARLOGO_ID,
+    's_flyer' : ASSET_FLYER_ID,
+    's_map' : ASSET_MAP_ID,
+    's_manual' : ASSET_MANUAL_ID,
+    's_trailer' : ASSET_TRAILER_ID,
+    's_icon' : ASSET_ICON_ID,
+    's_poster' : ASSET_POSTER_ID,
+    's_controller' : ASSET_CONTROLLER_ID
+}
 
-        if not launcher.supports_launching_roms():
-            return NullScanner(launcher, self.settings)
-        
-        if launcherType == LAUNCHER_STEAM:
-            return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
+ASSET_SETTING_KEYS = {
+    ASSET_ICON_ID : '',
+    ASSET_FANART_ID : 'scraper_fanart',
+    ASSET_BANNER_ID : 'scraper_banner',
+    ASSET_POSTER_ID : '',
+    ASSET_CLEARLOGO_ID : 'scraper_clearlogo',
+    ASSET_CONTROLLER_ID : '',
+    ASSET_TRAILER_ID : '',
+    ASSET_TITLE_ID : 'scraper_title',
+    ASSET_SNAP_ID : 'scraper_snap',
+    ASSET_BOXFRONT_ID : 'scraper_boxfront',
+    ASSET_BOXBACK_ID : 'scraper_boxback',
+    ASSET_CARTRIDGE_ID : 'scraper_cart',
+    ASSET_FLYER_ID : '',
+    ASSET_MAP_ID : '',
+    ASSET_MANUAL_ID : ''
+}
 
-        if launcherType == LAUNCHER_NVGAMESTREAM:
-            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
-                
-        return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
+MAME_ASSET_SETTING_KEYS = {
+    ASSET_ICON_ID : '',
+    ASSET_FANART_ID : 'scraper_fanart_MAME',
+    ASSET_BANNER_ID : 'scraper_marquee_MAME',
+    ASSET_POSTER_ID : '',
+    ASSET_CLEARLOGO_ID : 'scraper_clearlogo_MAME',
+    ASSET_CONTROLLER_ID : '',
+    ASSET_TRAILER_ID : '',
+    ASSET_TITLE_ID : 'scraper_title_MAME',
+    ASSET_SNAP_ID : 'scraper_snap_MAME',
+    ASSET_BOXFRONT_ID : 'scraper_cabinet_MAME',
+    ASSET_BOXBACK_ID : 'scraper_cpanel_MAME',
+    ASSET_CARTRIDGE_ID : 'scraper_pcb_MAME',
+    ASSET_FLYER_ID : 'scraper_flyer_MAME',
+    ASSET_MAP_ID : '',
+    ASSET_MANUAL_ID : ''
+}
 
-class ScannerStrategy(KodiProgressDialogStrategy):
-    __metaclass__ = abc.ABCMeta
+#
+# Get extensions to search for files
+# Input : ['png', 'jpg']
+# Output: ['png', 'jpg', 'PNG', 'JPG']
+#
+def asset_get_filesearch_extension_list(exts):
+    ext_list = list(exts)
+    for ext in exts:
+        ext_list.append(ext.upper())
 
-    def __init__(self, launcher, settings):
-        self.launcher = launcher
-        self.settings = settings
-        super(ScannerStrategy, self).__init__()
+    return ext_list
 
-    #
-    # Scans for new roms based on the type of launcher.
-    #
-    @abc.abstractmethod
-    def scan(self):
-        return {}
+#
+# Gets extensions to be used in Kodi file dialog.
+# Input : ['png', 'jpg']
+# Output: '.png|.jpg'
+#
+def asset_get_dialog_extension_list(exts):
+    ext_string = ''
+    for ext in exts:
+        ext_string += '.' + ext + '|'
+    # >> Remove trailing '|' character
+    ext_string = ext_string[:-1]
 
-    #
-    # Cleans up ROM collection.
-    # Remove Remove dead/missing ROMs ROMs
-    #
-    @abc.abstractmethod
-    def cleanup(self):
-        return {}
+    return ext_string
 
-class NullScanner(ScannerStrategy):
-    def scan(self):
-        return {}
+#
+# Gets extensions to be used in regular expressions.
+# Input : ['png', 'jpg']
+# Output: '(png|jpg)'
+#
+def asset_get_regexp_extension_list(exts):
+    ext_string = ''
+    for ext in exts:
+        ext_string += ext + '|'
+    # >> Remove trailing '|' character
+    ext_string = ext_string[:-1]
 
-    def cleanup(self):
-        return {}
+    return '(' + ext_string + ')'
 
-class RomScannerStrategy(ScannerStrategy):
-    __metaclass__ = abc.ABCMeta
+# -------------------------------------------------------------------------------------------------
+# Asset functions
+# -------------------------------------------------------------------------------------------------
+# Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
+# struct.
+# 
+def assets_init_asset_dir(assets_path_FName, launcher):
+    log_verb('assets_init_asset_dir() asset_path "{0}"'.format(assets_path_FName.getPath()))
 
-    def __init__(self, reports_dir, addon_dir, launcher, settings, scrapers):
-        
-        self.reports_dir = reports_dir
-        self.addon_dir = addon_dir
-                
-        self.scrapers = scrapers
+    # --- Fill in launcher fields and create asset directories ---
+    if launcher['platform'] == 'MAME':
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'cabinets')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'cpanels')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'PCBs')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
+    else:
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'boxfronts')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'boxbacks')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'cartridges')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
 
-        super(RomScannerStrategy, self).__init__(launcher, settings)
+#
+# Create asset path and assign it to Launcher dictionary.
+#
+def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
+    separator     = assets_path_FName.path_separator()
+    subPath       = assets_path_FName.pjoin(pathName + separator)
+    launcher[key] = subPath.getOriginalPath()
+    log_debug('assets_parse_asset_dir() Creating dir "{0}"'.format(subPath.getPath()))
+    subPath.makedirs()
 
-    def scan(self):
-        
-        # --- Open ROM scanner report file ---
-        launcher_report = FileReporter(self.reports_dir, self.launcher.get_data(), LogReporter(self.launcher.get_data()))
-        launcher_report.open('RomScanner() Starting ROM scanner')
+#
+# Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
+#
+def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
+    conf_asset_key = object_dic[object_key]
+    asset_path     = object_dic[conf_asset_key] if conf_asset_key in object_dic and object_dic[conf_asset_key] else default_asset
 
-        # >> Check if there is an XML for this launcher. If so, load it.
-        # >> If file does not exist or is empty then return an empty dictionary.
-        launcher_report.write('Loading launcher ROMs ...')
-        roms = self.launcher.get_roms()
+    return asset_path
 
-        if roms is None:
-            roms = []
-        
-        num_roms = len(roms)
-        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
-        
-        launcher_report.write('Collecting candidates ...')
-        candidates = self._getCandidates(launcher_report)
-        num_candidates = len(candidates)
-        log_info('{0} candidates found'.format(num_candidates))
+#
+# Same for ROMs
+#
+def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
 
-        launcher_report.write('Removing dead ROMs ...')
-        num_removed_roms = self._removeDeadRoms(candidates, roms)        
+    if object_key not in launcher:
+        return default_asset
 
-        if num_removed_roms > 0:
-            kodi_notify('{0} dead ROMs removed successfully'.format(num_removed_roms))
-            log_info('{0} dead ROMs removed successfully'.format(num_removed_roms))
-        else:
-            log_info('No dead ROMs found')
+    conf_asset_key = launcher[object_key]
+    asset_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
 
-        new_roms = self._processFoundItems(candidates, roms, launcher_report)
-        
-        if not new_roms:
-            return None
+    return asset_path
 
-        num_new_roms = len(new_roms)
-        roms = roms + new_roms
+#
+# Gets a human readable name string for the asset field name.
+#
+def assets_get_asset_name_str(default_asset):
+    asset_name_str = ''
 
-        launcher_report.write('******************** ROM scanner finished. Report ********************')
-        launcher_report.write('Removed dead ROMs {0:6d}'.format(num_removed_roms))
-        launcher_report.write('Files checked     {0:6d}'.format(num_candidates))
-        launcher_report.write('New added ROMs    {0:6d}'.format(num_new_roms))
-        
-        if len(roms) == 0:
-            launcher_report.write('WARNING Launcher has no ROMs!')
-            launcher_report.close()
-            kodi_dialog_OK('No ROMs found! Make sure launcher directory and file extensions are correct.')
-            return None
-        
-        if num_new_roms == 0:
-            kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
-        else:
-            kodi_notify('Added {0} new ROMs'.format(num_new_roms))
-
-        # --- Close ROM scanner report file ---
-        launcher_report.write('*** END of the ROM scanner report ***')
-        launcher_report.close()
-
-        return roms
-
-    def cleanup(self):
-        launcher_report = LogReporter(self.launcher.get_data())
-        launcher_report.open('RomScanner() Starting Dead ROM cleaning')
-        log_debug('RomScanner() Starting Dead ROM cleaning')
-
-        roms = self.launcher.get_roms()
-        if roms is None:
-            launcher_report.close()
-            log_info('RomScanner() No roms available to cleanup')
-            return {}
-        
-        num_roms = len(roms)
-        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
-        
-        launcher_report.write('Collecting candidates ...')
-        candidates = self._getCandidates(launcher_report)
-        num_candidates = len(candidates)
-        log_info('{0} candidates found'.format(num_candidates))
-
-        launcher_report.write('Removing dead ROMs ...')
-        num_removed_roms = self._removeDeadRoms(candidates, roms)        
-
-        if num_removed_roms > 0:
-            kodi_notify('{0} dead ROMs removed successfully'.format(num_removed_roms))
-            log_info('{0} dead ROMs removed successfully'.format(num_removed_roms))
-        else:
-            log_info('No dead ROMs found')
-
-        launcher_report.close()
-        return roms
-
-    # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @abc.abstractmethod
-    def _getCandidates(self, launcher_report):
-        return []
-
-    # --- Remove dead entries -----------------------------------------------------------------
-    @abc.abstractmethod
-    def _removeDeadRoms(self, candidates, roms):
-        return 0
-
-    # ~~~ Now go processing item by item ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @abc.abstractmethod
-    def _processFoundItems(self, items, roms, launcher_report):
-        return []
-
-class RomFolderScanner(RomScannerStrategy):
-    # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
-        kodi_busydialog_ON()
-        files = []
-        launcher_path = self.launcher.get_rom_path()
-        launcher_report.write('Scanning files in {0}'.format(launcher_path.getOriginalPath()))
-
-        if self.settings['scan_recursive']:
-            log_info('Recursive scan activated')
-            files = launcher_path.recursiveScanFilesInPath('*.*')
-        else:
-            log_info('Recursive scan not activated')
-            files = launcher_path.scanFilesInPath('*.*')
-
-        kodi_busydialog_OFF()
-
-        num_files = len(files)
-        launcher_report.write('  File scanner found {0} files'.format(num_files))
-
-        return files
-
-    # --- Remove dead entries -----------------------------------------------------------------
-    def _removeDeadRoms(self, candidates, roms):
-        num_roms = len(roms)
-        num_removed_roms = 0
-        if num_roms == 0:
-            log_info('Launcher is empty. No dead ROM check.')
-            return num_removed_roms
-        
-        log_debug('Starting dead items scan')
-        i = 0
-            
-        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
-            
-        for rom in reversed(roms):
-            fileName = rom.get_file()
-            log_debug('Searching {0}'.format(fileName.getOriginalPath()))
-            self._updateProgress(i * 100 / num_roms)
-            
-            if not fileName.exists():
-                log_debug('Not found')
-                log_debug('Deleting from DB {0}'.format(fileName.getOriginalPath()))
-                roms.remove(rom)
-                num_removed_roms += 1
-            i += 1
-            
-        self._endProgressPhase()
-
-        return num_removed_roms
-
-    # ~~~ Now go processing item by item ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _processFoundItems(self, items, roms, launcher_report):
-
-        num_items = len(items)    
-        new_roms = []
-
-        self._startProgressPhase('Advanced Emulator Launcher', 'Scanning found items')
-        log_debug('============================== Processing ROMs ==============================')
-        launcher_report.write('Processing files ...')
-        num_items_checked = 0
-        
-        allowedExtensions = self.launcher.get_rom_extensions()
-        launcher_multidisc = self.launcher.supports_multidisc()
-
-        for item in sorted(items):
-            self._updateProgress(num_items_checked * 100 / num_items)
-            
-            # --- Get all file name combinations ---
-            ROM = FileNameFactory.create(item)
-            launcher_report.write('>>> {0}'.format(ROM.getOriginalPath()).encode('utf-8'))
-
-            # ~~~ Update progress dialog ~~~
-            file_text = 'ROM {0}'.format(ROM.getBase())
-            self._updateProgressMessage(file_text, 'Checking if has ROM extension ...')
-                        
-            # --- Check if filename matchs ROM extensions ---
-            # The recursive scan has scanned all files. Check if this file matches some of 
-            # the ROM extensions. If this file isn't a ROM skip it and go for next one in the list.
-            processROM = False
-
-            for ext in allowedExtensions:
-                if ROM.getExt() == '.' + ext:
-                    launcher_report.write("  Expected '{0}' extension detected".format(ext))
-                    processROM = True
-                    break
-
-            if not processROM: 
-                launcher_report.write('  File has not an expected extension. Skipping file.')
-                continue
-                        
-            # --- Check if ROM belongs to a multidisc set ---
-            self._updateProgressMessage(file_text, 'Checking if ROM belongs to multidisc set..')
-                       
-            MultiDiscInROMs = False
-            MDSet = text_get_multidisc_info(ROM)
-            if MDSet.isMultiDisc and launcher_multidisc:
-                log_info('ROM belongs to a multidisc set.')
-                log_info('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
-                log_info('setName     "{0}"'.format(MDSet.setName))
-                log_info('discName    "{0}"'.format(MDSet.discName))
-                log_info('extension   "{0}"'.format(MDSet.extension))
-                log_info('order       "{0}"'.format(MDSet.order))
-                launcher_report.write('  ROM belongs to a multidisc set.')
-                
-                # >> Check if the set is already in launcher ROMs.
-                MultiDisc_rom_id = None
-                for new_rom in new_roms:
-                    temp_FN = new_rom.get_file()
-                    if temp_FN.getBase() == MDSet.setName:
-                        MultiDiscInROMs  = True
-                        MultiDisc_rom    = new_rom
-                        break
-
-                log_info('MultiDiscInROMs is {0}'.format(MultiDiscInROMs))
-
-                # >> If the set is not in the ROMs then this ROM is the first of the set.
-                # >> Add the set
-                if not MultiDiscInROMs:
-                    log_info('First ROM in the set. Adding to ROMs ...')
-                    # >> Manipulate ROM so filename is the name of the set
-                    ROM_dir = FileNameFactory.create(ROM.getDir())
-                    ROM_temp = ROM_dir.pjoin(MDSet.setName)
-                    log_info('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
-                    log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
-                    ROM = ROM_temp
-                # >> If set already in ROMs, just add this disk into the set disks field.
-                else:
-                    log_info('Adding additional disk "{0}"'.format(MDSet.discName))
-                    MultiDisc_rom.add_disk(MDSet.discName)
-                    # >> Reorder disks like Disk 1, Disk 2, ...
-                    
-                    # >> Process next file
-                    log_info('Processing next file ...')
-                    continue
-            elif MDSet.isMultiDisc and not launcher_multidisc:
-                launcher_report.write('  ROM belongs to a multidisc set but Multidisc support is disabled.')
-            else:
-                launcher_report.write('  ROM does not belong to a multidisc set.')
- 
-            # --- Check that ROM is not already in the list of ROMs ---
-            # >> If file already in ROM list skip it
-            self._updateProgressMessage(file_text, 'Checking if ROM is not already in collection...')
-            repeatedROM = False
-            for rom in roms:
-                rpath = rom.get_filename() 
-                if rpath == item: 
-                    repeatedROM = True
-        
-            if repeatedROM:
-                launcher_report.write('  File already into launcher ROM list. Skipping file.')
-                continue
-            else:
-                launcher_report.write('  File not in launcher ROM list. Processing it ...')
-
-            # --- Ignore BIOS ROMs ---
-            # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
-            if self.settings['scan_ignore_bios']:
-                BIOS_re = re.findall('\[BIOS\]', ROM.getBase())
-                if len(BIOS_re) > 0:
-                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM.path))
-                    continue
-
-            # ~~~~~ Process new ROM and add to the list ~~~~~
-            # --- Create new rom dictionary ---
-            # >> Database always stores the original (non transformed/manipulated) path
-            new_rom = Rom()
-            new_rom.set_file(ROM)
-
-            searchTerm = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-
-            if self.scrapers:
-                for scraper in self.scrapers:
-                    self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
-                    scraper.scrape(searchTerm, ROM, new_rom)
-            
-            romdata = new_rom.get_data()
-            log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-            log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-            log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-            log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-            log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-            log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-            log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-            log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-            log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-            log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-            log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-            log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-            
-            # --- This was the first ROM in a multidisc set ---
-            if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
-                log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
-                new_rom.add_disk(MDSet.discName)
-            
-            new_roms.append(new_rom)
-            
-            # ~~~ Check if user pressed the cancel button ~~~
-            if self._isProgressCanceled():
-                self._endProgressPhase()
-                kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-                log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
-                return None
-            
-            num_items_checked += 1
-           
-        self._endProgressPhase()
-        return new_roms
-
-class SteamScanner(RomScannerStrategy):
+    # >> ROMs
+    if   default_asset == 's_title':     asset_name_str = 'Title'
+    elif default_asset == 's_snap':      asset_name_str = 'Snap'
+    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
+    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
+    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
+    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
+    elif default_asset == 's_banner':    asset_name_str = 'Banner'
+    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
+    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
+    elif default_asset == 's_map':       asset_name_str = 'Map'
+    elif default_asset == 's_manual':    asset_name_str = 'Manual'
+    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
+    # >> Categories/Launchers
+    elif default_asset == 's_icon':       asset_name_str = 'Icon'
+    elif default_asset == 's_poster':     asset_name_str = 'Poster'
+    elif default_asset == 's_controller': asset_name_str = 'Controller'
+    else:
+        kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
+        log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
     
-    # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
-               
-        log_debug('Reading Steam account')
-        self._startProgressPhase('Advanced Emulator Launcher', 'Reading Steam account...')
+    return asset_name_str
 
-        apikey = self.settings['steam-api-key']
-        steamid = self.launcher.get_steam_id()
-        url = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={}&steamid={}&include_appinfo=1'.format(apikey, steamid)
-        
-        self._updateProgress(70)
-        body = net_get_URL_original(url)
-        self._updateProgress(80)
-        
-        steamJson = json.loads(body)
-        games = steamJson['response']['games']
-        
-        self._endProgressPhase()
-        return games
+#
+# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
+#
+def assets_choose_Category_mapped_artwork(dict_object, key, index):
+    if   index == 0: dict_object[key] = 's_icon'
+    elif index == 1: dict_object[key] = 's_fanart'
+    elif index == 2: dict_object[key] = 's_banner'
+    elif index == 3: dict_object[key] = 's_poster'
+    elif index == 4: dict_object[key] = 's_clearlogo'
 
-    # --- Remove dead entries -----------------------------------------------------------------
-    def _removeDeadRoms(self, candidates, roms):
-    
-        if roms is None or len(roms) == 0:
-            log_info('Launcher is empty. No dead ROM check.')
-            return 0
+#
+# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
+#
+def assets_get_Category_mapped_asset_idx(dict_object, key):
+    if   dict_object[key] == 's_icon':       index = 0
+    elif dict_object[key] == 's_fanart':     index = 1
+    elif dict_object[key] == 's_banner':     index = 2
+    elif dict_object[key] == 's_poster':     index = 3
+    elif dict_object[key] == 's_clearlogo':  index = 4
+    else:                                    index = 0
 
-        log_debug('Starting dead items scan')
-        num_roms = len(roms)
-        num_removed_roms = 0
-        i = 0
-            
-        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
-        
-        steamGameIds = set(steamGame['appid'] for steamGame in candidates)
+    return index
 
-        for rom in reversed(roms):
-            romSteamId = rom.get_custom_attribute('steamid')
-            
-            log_debug('Searching {0}'.format(romSteamId))
-            self._updateProgress(i * 100 / num_roms)
-            i += 1
+#
+# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
+#
+def assets_choose_Launcher_mapped_artwork(dict_object, key, index):
+    if   index == 0: dict_object[key] = 's_icon'
+    elif index == 1: dict_object[key] = 's_fanart'
+    elif index == 2: dict_object[key] = 's_banner'
+    elif index == 3: dict_object[key] = 's_poster'
+    elif index == 4: dict_object[key] = 's_clearlogo'
+    elif index == 5: dict_object[key] = 's_controller'
 
-            if romSteamId not in steamGameIds:
-                log_debug('Not found. Deleting from DB {0}'.format(rom.get_name()))
-                roms.remove(rom)
-                num_removed_roms += 1
-            
-        self._endProgressPhase()
+#
+# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
+#
+def assets_get_Launcher_mapped_asset_idx(dict_object, key):
+    if   dict_object[key] == 's_icon':       index = 0
+    elif dict_object[key] == 's_fanart':     index = 1
+    elif dict_object[key] == 's_banner':     index = 2
+    elif dict_object[key] == 's_poster':     index = 3
+    elif dict_object[key] == 's_clearlogo':  index = 4
+    elif dict_object[key] == 's_controller': index = 5
+    else:                                    index = 0
 
-        return num_removed_roms
+    return index
 
-    def _processFoundItems(self, items, roms, launcher_report):
-        
-        if items is None or len(items) == 0:
-            log_info('No steam games available.')
-            return []
+#
+# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
+#
+def assets_choose_ROM_mapped_artwork(dict_object, key, index):
+    if   index == 0: dict_object[key] = 's_title'
+    elif index == 1: dict_object[key] = 's_snap'
+    elif index == 2: dict_object[key] = 's_boxfront'
+    elif index == 3: dict_object[key] = 's_boxback'
+    elif index == 4: dict_object[key] = 's_cartridge'
+    elif index == 5: dict_object[key] = 's_fanart'
+    elif index == 6: dict_object[key] = 's_banner'
+    elif index == 7: dict_object[key] = 's_clearlogo'
+    elif index == 8: dict_object[key] = 's_flyer'
+    elif index == 9: dict_object[key] = 's_map'
 
-        new_roms = []
+#
+# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
+#
+def assets_get_ROM_mapped_asset_idx(dict_object, key):
+    if   dict_object[key] == 's_title':     index = 0
+    elif dict_object[key] == 's_snap':      index = 1
+    elif dict_object[key] == 's_boxfront':  index = 2
+    elif dict_object[key] == 's_boxback':   index = 3
+    elif dict_object[key] == 's_cartridge': index = 4
+    elif dict_object[key] == 's_fanart':    index = 5
+    elif dict_object[key] == 's_banner':    index = 6
+    elif dict_object[key] == 's_clearlogo': index = 7
+    elif dict_object[key] == 's_flyer':     index = 8
+    elif dict_object[key] == 's_map':       index = 9
+    else:                                   index = 0
 
-        num_games = len(items)
-        num_items_checked = 0
-            
-        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for new ROMs ...')
-        steamIdsAlreadyInCollection = set(rom.get_custom_attribute('steamid') for rom in roms)
-        
-        for steamGame in items:
-            
-            steamId = steamGame['appid']
-            log_debug('Searching {} with #{}'.format(steamGame['name'], steamId))
+    return index
 
-            self._updateProgress(num_items_checked * 100 / num_games, steamGame['name'])
-            
-            if steamId not in steamIdsAlreadyInCollection:
-                
-                log_debug('========== Processing Steam game ==========')
-                launcher_report.write('>>> title: {0}'.format(steamGame['name']))
-                launcher_report.write('>>> ID: {0}'.format(steamGame['appid']))
-        
-                log_debug('Not found. Item {0} is new'.format(steamGame['name']))
+# -------------------------------------------------------------------------------------------------
+# Gets all required information about an asset: path, name, etc.
+# Returns an object with all the information
+# -------------------------------------------------------------------------------------------------
+class AssetInfo:
+    id              = 0
+    key             = ''
+    default_key     = ''
+    rom_default_key = ''
+    name            = ''
+    description     = name
+    plural          = ''
+    fname_infix     = '' # Used only when searching assets when importing XML
+    kind_str        = ''
+    exts            = []
+    exts_dialog     = []
+    path_key        = ''
 
-                launcher_path = self.launcher.get_rom_path()
-                romPath = launcher_path.pjoin('{0}.rom'.format(steamGame['appid']))
+    def get_description(self):
+        if self.description == '': return self.name
 
-                # ~~~~~ Process new ROM and add to the list ~~~~~
-                # --- Create new rom dictionary ---
-                # >> Database always stores the original (non transformed/manipulated) path
-                new_rom  = Rom()
-                new_rom.set_file(romPath)
+        return self.description
 
-                new_rom.set_custom_attribute('steamid', steamGame['appid'])
-                new_rom.set_custom_attribute('steam_name', steamGame['name'])  # so that we always have the original name
-                new_rom.set_name(steamGame['name'])
+    def __eq__(self, other):
+        return isinstance(other, AssetInfo) and self.id == other.id
 
-                searchTerm = steamGame['name']
-                
-                if self.scrapers:
-                    for scraper in self.scrapers:
-                        self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(scraper.getName()))
-                        scraper.scrape(searchTerm, romPath, new_rom)
-                
-                romdata = new_rom.get_data()
-                log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-                log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-                log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-                log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-                log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-                log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-                log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-                log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-                log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-                log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-                log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-                log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-            
-                new_roms.append(new_rom)
-                            
-                # ~~~ Check if user pressed the cancel button ~~~
-                if self._isProgressCanceled():
-                    self._endProgressPhase()
-                    kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-                    log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
-                    return None
-            
-                num_items_checked += 1
+    def __hash__(self):
+        return self.id.__hash__()
 
-        self._endProgressPhase()    
-        return new_roms
+# --- Static list of asset information objects ----------------------------------------------------
+# >> These are used very frequently so I think it is better to have a cached statis list.
+a_icon = AssetInfo()
+a_icon.id             = ASSET_ICON_ID
+a_icon.key              = 's_icon'
+a_icon.default_key      = 'default_icon'
+a_icon.rom_default_key  = 'roms_default_icon'
+a_icon.name             = 'Icon'
+a_icon.plural           = 'Icons'
+a_icon.fname_infix      = 'icon'
+a_icon.kind_str         = 'image'
+a_icon.exts             = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_icon.exts_dialog      = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_icon.path_key         = 'path_icon'
 
-class NvidiaStreamScanner(RomScannerStrategy):
+a_fanart = AssetInfo()
+a_fanart.id              = ASSET_FANART_ID
+a_fanart.key             = 's_fanart'
+a_fanart.default_key     = 'default_fanart'
+a_fanart.rom_default_key = 'roms_default_fanart'
+a_fanart.name            = 'Fanart'
+a_fanart.plural          = 'Fanarts'
+a_fanart.fname_infix     = 'fanart'
+a_fanart.kind_str        = 'image'
+a_fanart.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_fanart.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_fanart.path_key        = 'path_fanart'
 
-    # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
-        from gamestream import GameStreamServer
+a_banner = AssetInfo()
+a_banner.id                = ASSET_BANNER_ID
+a_banner.key               = 's_banner'
+a_banner.default_key       = 'default_banner'
+a_banner.rom_default_key   = 'roms_default_banner'
+a_banner.name              = 'Banner'
+a_banner.description       = 'Banner / Marquee'
+a_banner.plural            = 'Banners'
+a_banner.fname_infix       = 'banner'
+a_banner.kind_str          = 'image'
+a_banner.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_banner.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_banner.path_key          = 'path_banner'
 
-        log_debug('Reading Nvidia GameStream server')
-        self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
+a_poster = AssetInfo()        
+a_poster.id                = ASSET_POSTER_ID
+a_poster.key               = 's_poster'
+a_poster.default_key       = 'default_poster'
+a_poster.rom_default_key   = 'roms_default_poster'
+a_poster.name              = 'Poster'
+a_poster.plural            = 'Posters'
+a_poster.fname_infix       = 'poster'
+a_poster.kind_str          = 'image'
+a_poster.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_poster.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_poster.path_key          = 'path_poster'
 
-        server_host = self.launcher.get_server()
-        certificates_path = self.launcher.get_certificates_path()
+a_clearlogo = AssetInfo()
+a_clearlogo.id              = ASSET_CLEARLOGO_ID
+a_clearlogo.key             = 's_clearlogo'
+a_clearlogo.default_key     = 'default_clearlogo'
+a_clearlogo.rom_default_key = 'roms_default_clearlogo'
+a_clearlogo.name            = 'Clearlogo'
+a_clearlogo.plural          = 'Clearlogos'
+a_clearlogo.fname_infix     = 'clearlogo'
+a_clearlogo.kind_str        = 'image'
+a_clearlogo.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_clearlogo.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_clearlogo.path_key        = 'path_clearlogo'
 
-        streamServer = GameStreamServer(server_host, certificates_path)
-        connected = streamServer.connect()
+a_controller = AssetInfo()
+a_controller.id             = ASSET_CONTROLLER_ID
+a_controller.key            = 's_controller'
+a_controller.name           = 'Controller'
+a_controller.plural         = 'Controllers'
+a_controller.fname_infix    = 'controller'
+a_controller.kind_str       = 'image'
+a_controller.exts           = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_controller.exts_dialog    = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_controller.path_key       = 'path_controller'
 
-        if not connected:
-            kodi_notify_error('Unable to connect to gamestream server')
-            return None
+a_trailer = AssetInfo()
+a_trailer.id                = ASSET_TRAILER_ID
+a_trailer.key               = 's_trailer'
+a_trailer.name              = 'Trailer'
+a_trailer.plural            = 'Trailers'
+a_trailer.fname_infix       = 'trailer'
+a_trailer.kind_str          = 'video'
+a_trailer.exts              = asset_get_filesearch_extension_list(TRAILER_EXTENSION_LIST)
+a_trailer.exts_dialog       = asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
+a_trailer.path_key          = 'path_trailer'
 
-        self._updateProgress(50)
-        games = streamServer.getApps()
-                
-        self._endProgressPhase()
-        return games
+a_title = AssetInfo()
+a_title.id                  = ASSET_TITLE_ID
+a_title.key                 = 's_title'
+a_title.name                = 'Title'
+a_title.plural              = 'Titles'
+a_title.fname_infix         = 'title'
+a_title.kind_str            = 'image'
+a_title.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_title.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_title.path_key            = 'path_title'
 
-    # --- Remove dead entries -----------------------------------------------------------------
-    def _removeDeadRoms(self, candidates, roms):
-    
-        if roms is None or len(roms) == 0:
-            log_info('Launcher is empty. No dead ROM check.')
-            return 0
+a_snap = AssetInfo()
+a_snap.id                   = ASSET_SNAP_ID
+a_snap.key                  = 's_snap'
+a_snap.name                 = 'Snap'
+a_snap.plural               = 'Snaps'
+a_snap.fname_infix          = 'snap'
+a_snap.kind_str             = 'image'
+a_snap.exts                 = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_snap.exts_dialog          = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_snap.path_key             = 'path_snap'
 
-        log_debug('Starting dead items scan')
-        num_roms = len(roms)
-        num_removed_roms = 0
-        i = 0
-            
-        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
-        
-        streamIds = set(streamableGame['ID'] for streamableGame in candidates)
+a_boxfront = AssetInfo()
+a_boxfront.id               = ASSET_BOXFRONT_ID
+a_boxfront.key              = 's_boxfront'
+a_boxfront.name             = 'Boxfront'
+a_boxfront.description      = 'Boxfront / Cabinet'
+a_boxfront.plural           = 'Boxfronts'
+a_boxfront.fname_infix      = 'boxfront'
+a_boxfront.kind_str         = 'image'
+a_boxfront.exts             = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_boxfront.exts_dialog      = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_boxfront.path_key         = 'path_boxfront'
 
-        for rom in reversed(roms):
-            romStreamId = rom.get_custom_attribute('streamid')
-            
-            log_debug('Searching {0}'.format(romStreamId))
-            self._updateProgress(i * 100 / num_roms)
-            i += 1
+a_boxback = AssetInfo()
+a_boxback.id                = ASSET_BOXBACK_ID
+a_boxback.key               = 's_boxback'
+a_boxback.name              = 'Boxback'
+a_boxback.description       = 'Boxback / CPanel'
+a_boxback.plural            = 'Boxbacks'
+a_boxback.fname_infix       = 'boxback'
+a_boxback.kind_str          = 'image'
+a_boxback.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_boxback.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_boxback.path_key          = 'path_boxback'
 
-            if romStreamId not in streamIds:
-                log_debug('Not found. Deleting from DB {0}'.format(rom.get_name()))
-                roms.remove(rom)
-                num_removed_roms += 1
-            
-        self._endProgressPhase()
+a_cartridge = AssetInfo()
+a_cartridge.id              = ASSET_CARTRIDGE_ID
+a_cartridge.key             = 's_cartridge'
+a_cartridge.name            = 'Cartridge'
+a_cartridge.description     = 'Cartridge / PCB'
+a_cartridge.plural          = 'Cartridges'
+a_cartridge.fname_infix     = 'cartridge'
+a_cartridge.kind_str        = 'image'
+a_cartridge.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_cartridge.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_cartridge.path_key        = 'path_cartridge'
 
-        return num_removed_roms
+a_flyer = AssetInfo()
+a_flyer.id                  = ASSET_FLYER_ID
+a_flyer.key                 = 's_flyer'
+a_flyer.name                = 'Flyer'
+a_flyer.plural              = 'Flyers'
+a_flyer.fname_infix         = 'flyer'
+a_flyer.kind_str            = 'image'
+a_flyer.fname_infix         = 'poster'
+a_flyer.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_flyer.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_flyer.path_key            = 'path_flyer'
 
-    def _processFoundItems(self, items, roms, launcher_report):
-        
-        if items is None or len(items) == 0:
-            log_info('No Nvidia Gamestream games available.')
-            return []
+a_map = AssetInfo()
+a_map.id                    = ASSET_MAP_ID
+a_map.key                   = 's_map'
+a_map.name                  = 'Map'
+a_map.plural                = 'Maps'
+a_map.fname_infix           = 'map'
+a_map.kind_str              = 'image'
+a_map.exts                  = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_map.exts_dialog           = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_map.path_key              = 'path_map'
 
-        new_roms = []
+a_manual = AssetInfo()
+a_manual.id                 = ASSET_MANUAL_ID
+a_manual.key                = 's_manual'
+a_manual.name               = 'Manual'
+a_manual.plural             = 'Manuals'
+a_manual.fname_infix        = 'manual'
+a_manual.kind_str           = 'manual'
+a_manual.exts               = asset_get_filesearch_extension_list(MANUAL_EXTENSION_LIST)
+a_manual.exts_dialog        = asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
+a_manual.path_key           = 'path_manual'
 
-        num_games = len(items)
-        num_items_checked = 0
-            
-        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for new ROMs ...')
-        streamIdsAlreadyInCollection = set(rom.get_custom_attribute('streamid') for rom in roms)
-        
-        for streamableGame in items:
-            
-            streamId = streamableGame['ID']
-            log_debug('Searching {} with #{}'.format(streamableGame['AppTitle'], streamId))
+asset_infos = {
+    ASSET_ICON_ID       : a_icon,
+    ASSET_FANART_ID     : a_fanart,
+    ASSET_BANNER_ID     : a_banner,
+    ASSET_POSTER_ID     : a_poster,
+    ASSET_CLEARLOGO_ID  : a_clearlogo,
+    ASSET_CONTROLLER_ID : a_controller,
+    ASSET_TRAILER_ID    : a_trailer,
+    ASSET_TITLE_ID      : a_title,
+    ASSET_SNAP_ID       : a_snap,
+    ASSET_BOXFRONT_ID   : a_boxfront,
+    ASSET_BOXBACK_ID    : a_boxback,
+    ASSET_CARTRIDGE_ID  : a_cartridge,
+    ASSET_FLYER_ID      : a_flyer,
+    ASSET_MAP_ID        : a_map,
+    ASSET_MANUAL_ID     : a_manual,
+}
 
-            self._updateProgress(num_items_checked * 100 / num_games, streamableGame['AppTitle'])
-            
-            if streamId not in streamIdsAlreadyInCollection:
-                
-                log_debug('========== Processing Nvidia Gamestream game ==========')
-                launcher_report.write('>>> title: {0}'.format(streamableGame['AppTitle']))
-                launcher_report.write('>>> ID: {0}'.format(streamableGame['ID']))
-        
-                log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
+#
+# Class to interact with the asset engine.
+# This class uses the asset_infos, dictionary of AssetInfo indexed by asset_ID
+#
+class AssetInfoFactory(object):
+    def get_all(self):
+        return list(asset_infos.values())
 
-                launcher_path = launcher.get_rom_path()
-                romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
+    def get_asset_kinds_for_roms(self):
+        rom_asset_kinds = []
+        for rom_asset_kind in ROM_ASSET_LIST:
+            rom_asset_kinds.append(asset_infos[rom_asset_kind])
 
-                # ~~~~~ Process new ROM and add to the list ~~~~~
-                # --- Create new rom dictionary ---
-                # >> Database always stores the original (non transformed/manipulated) path
-                new_rom  = Rom()
-                new_rom.set_file(romPath)
+        return rom_asset_kinds
 
-                new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
-                new_rom.set_custom_attribute('gamestream_name', streamableGame['AppTitle'])  # so that we always have the original name
-                new_rom.set_name(streamableGame['AppTitle'])
-                
-                searchTerm = streamableGame['AppTitle']
-                
-                if self.scrapers:
-                    for scraper in self.scrapers:
-                        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
-                        scraper.scrape(searchTerm, romPath, new_rom)
-            
-                romdata = new_rom.get_data()
-                log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-                log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-                log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-                log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-                log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-                log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-                log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-                log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-                log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-                log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-                log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-                log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-            
-                new_roms.append(new_rom)
-                            
-                # ~~~ Check if user pressed the cancel button ~~~
-                if self._isProgressCanceled():
-                    self._endProgressPhase()
-                    kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-                    log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
-                    return None
-            
-                num_items_checked += 1
+    # IDs is a list (or an iterable that returns an asset ID
+    # Returns a list of AssetInfo objects.
+    def get_asset_list_by_IDs(self, IDs):
+        asset_info_list = []
+        for asset_ID in IDs: asset_info_list.append(asset_infos[asset_ID])
 
-        self._endProgressPhase()    
-        return new_roms
+        return asset_info_list
 
-# #################################################################################################
-# #################################################################################################
-# DAT files and ROM audit
-# #################################################################################################
-# #################################################################################################
+    def get_asset_info(self, asset_kind):
+        asset_info = asset_infos.get(asset_kind, None)
 
-class RomDatFileScanner(KodiProgressDialogStrategy):
-    def __init__(self, settings):
-        self.settings = settings
-        super(RomDatFileScanner, self).__init__()
+        if asset_info is None:
+            log_error('get_asset_info() Wrong asset_kind = {0}'.format(asset_kind))
+            return AssetInfo()
 
-    #
-    # Helper function to update ROMs No-Intro status if user configured a No-Intro DAT file.
-    # Dictionaries are mutable, so roms can be changed because passed by assigment.
-    # This function also creates the Parent/Clone indices:
-    #   1) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_index.json
-    #   2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_parents.json
-    #
-    # A) If there are Unkown ROMs, a fake rom with name [Unknown ROMs] and id UNKNOWN_ROMS_PARENT_ID
-    #    is created. This fake ROM is the parent of all Unknown ROMs.
-    #    This fake ROM is added to roms_base_noext_parents.json database.
-    #    This fake ROM is not present in the main JSON ROM database.
-    # 
-    # Returns:
-    #   True  -> ROM audit was OK
-    #   False -> There was a problem with the audit.
-    #
-    #def _roms_update_NoIntro_status(self, roms, nointro_xml_file_FileName):
-    def update_roms_NoIntro_status(self, launcher, roms):
-                
-        __debug_progress_dialogs = False
-        __debug_time_step = 0.0005
-        
-        # --- Reset the No-Intro status and removed No-Intro missing ROMs ---
-        audit_have = audit_miss = audit_unknown = 0
-        self._startProgressPhase('Advanced Emulator Launcher', 'Deleting Missing/Dead ROMs and clearing flags ...')
-        self.roms_reset_NoIntro_status(launcher, roms)
-        self._updateProgress(100)
-        if __debug_progress_dialogs: time.sleep(0.5)
+        return asset_info
 
-        # --- Check if DAT file exists ---
-        nointro_xml_file_FileName = launcher.get_nointro_xml_filepath()
-        if not nointro_xml_file_FileName.exists():
-            log_warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_FileName.getOriginalPath()))
-            return False
-        
-        self._updateProgress(0, 'Loading No-Intro/Redump XML DAT file ...')
-        roms_nointro = audit_load_NoIntro_XML_file(nointro_xml_file_FileName)
-        self._updateProgress(100)
+    # todo: use 1 type of identifier not number constants and name strings ('s_icon')
+    def get_asset_info_by_namekey(self, name_key):
+        if name_key == '': return None
+        kind = ASSET_KEYS_TO_CONSTANTS[name_key]
 
-        if __debug_progress_dialogs: time.sleep(0.5)
-        if not roms_nointro:
-            log_warning('_roms_update_NoIntro_status() Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
-            return False
+        return self.get_asset_info(kind)
 
-        # --- Remove BIOSes from No-Intro ROMs ---
-        if self.settings['scan_ignore_bios']:
-            log_info('_roms_update_NoIntro_status() Removing BIOSes from No-Intro ROMs ...')
-            self._updateProgress(0, 'Removing BIOSes from No-Intro ROMs ...')
-            num_items = len(roms_nointro)
-            item_counter = 0
-            filtered_roms_nointro = {}
-            for rom_id in roms_nointro:
-                rom_data = roms_nointro[rom_id]
-                BIOS_str_list = re.findall('\[BIOS\]', rom_data['name'])
-                if not BIOS_str_list:
-                    filtered_roms_nointro[rom_id] = rom_data
-                else:
-                    log_debug('_roms_update_NoIntro_status() Removed BIOS "{0}"'.format(rom_data['name']))
-                item_counter += 1
-                self._updateProgress((item_counter*100)/num_items)
-                if __debug_progress_dialogs: time.sleep(__debug_time_step)
-            roms_nointro = filtered_roms_nointro
-            self._updateProgress(100)
+# --- Global object to get asset info ---
+g_assetFactory = AssetInfoFactory()
+
+#
+# Scheme DIR uses different directories for artwork and no sufixes.
+#
+# Assets    -> Assets info object
+# AssetPath -> FileName object
+# ROM       -> ROM name FileName object
+#
+# Returns a FileName object
+#
+def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
+    return AssetPath + ROM.getBase_noext()
+
+#
+# Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
+# Name example: "Sonic The Hedgehog (Europe)_a3e_title"
+# First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
+# Favourites special category there could be ROMs with the same name for different systems.
+#
+# Assets    -> Assets info object
+# AssetPath -> FileName object
+# asset_base_noext -> Unicode string
+# objectID -> Object MD5 ID fingerprint (Unicode string)
+#
+# Returns a FileName object
+#
+def assets_get_path_noext_SUFIX(asset_ID, AssetPath, asset_base_noext, objectID = '000'):
+    # >> Returns asset/artwork path_noext
+    asset_path_noext_FN = FileNameFactory.create('')
+    objectID_str = '_' + objectID[0:3]
+
+    if   asset_ID == ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
+    elif asset_ID == ASSET_FANART_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
+    elif asset_ID == ASSET_BANNER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
+    elif asset_ID == ASSET_POSTER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
+    elif asset_ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
+    elif asset_ID == ASSET_CONTROLLER_ID: asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
+    elif asset_ID == ASSET_TRAILER_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
+    elif asset_ID == ASSET_TITLE_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
+    elif asset_ID == ASSET_SNAP_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
+    elif asset_ID == ASSET_BOXFRONT_ID:   asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
+    elif asset_ID == ASSET_BOXBACK_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
+    elif asset_ID == ASSET_CARTRIDGE_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
+    elif asset_ID == ASSET_FLYER_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
+    elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
+    elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
+    else:
+        log_error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
+
+    return asset_path_noext_FN
+
+#
+# Get a list of enabled assets.
+#
+# Returns tuple:
+# configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_LIST
+# unconfigured_name_list  List of disabled asset names
+#
+def asset_get_configured_dir_list(launcher):
+    configured_bool_list   = [False] * len(ROM_ASSET_LIST)
+    unconfigured_name_list = []
+
+    # >> Check if asset paths are configured or not
+    for i, asset in enumerate(ROM_ASSET_LIST):
+        A = assets_get_info_scheme(asset)
+        configured_bool_list[i] = True if launcher[A.path_key] else False
+        if not configured_bool_list[i]: 
+            unconfigured_name_list.append(A.name)
+            log_verb('asset_get_enabled_asset_list() {0:<9} path unconfigured'.format(A.name))
         else:
-            log_info('_roms_update_NoIntro_status() User wants to include BIOSes.')
+            log_debug('asset_get_enabled_asset_list() {0:<9} path configured'.format(A.name))
 
-        # --- Put No-Intro ROM names in a set ---
-        # >> Set is the fastest Python container for searching elements (implements hashed search).
-        # >> No-Intro names include tags
-        self._updateProgress(0, 'Creating No-Intro and ROM sets ...')
-        roms_nointro_set = set(roms_nointro.keys())
-        roms_set = set()
-        for rom in roms:
-            # >> Use the ROM basename.
-            ROMFileName = rom.get_file()
-            roms_set.add(ROMFileName.getBase_noext())
-        self._updateProgress(100)
-        if __debug_progress_dialogs: time.sleep(0.5)
+    return (configured_bool_list, unconfigured_name_list)
 
-        # --- Traverse Launcher ROMs and check if they are in the No-Intro ROMs list ---
-        self._updateProgress(0, 'Audit Step 1/4: Checking Have and Unknown ROMs ...')
-        num_items = len(roms)
-        item_counter = 0
-        for rom in roms:
-            ROMFileName = rom.get_file()
-            if ROMFileName.getBase_noext() in roms_nointro_set:
-                rom.set_nointro_status(NOINTRO_STATUS_HAVE)
-                audit_have += 1
-                log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBase_noext()))
-            else:
-                rom.set_nointro_status(NOINTRO_STATUS_UNKNOWN)
-                audit_unknown += 1
-                log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBase_noext()))
-            item_counter += 1
-            self._updateProgress((item_counter*100)/num_items)
-            if __debug_progress_dialogs: time.sleep(__debug_time_step)
-        self._updateProgress(100)
+#
+# Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
+#
+def asset_get_duplicated_dir_list(launcher):
+    duplicated_bool_list   = [False] * len(ROM_ASSET_LIST)
+    duplicated_name_list   = []
 
-        # --- Mark Launcher dead ROMs as missing ---
-        self._updateProgress(0, 'Audit Step 2/4: Checking Missing ROMs ...')
-        num_items = len(roms)
-        item_counter = 0
-        for rom in roms:
-            ROMFileName = rom.get_file()
-            if not ROMFileName.exists():
-                rom.set_nointro_status(NOINTRO_STATUS_MISS)
-                audit_miss += 1
-                log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBase_noext()))
-            item_counter += 1
-            self._updateProgress((item_counter*100)/num_items)
-            if __debug_progress_dialogs: time.sleep(__debug_time_step)
-        self._updateProgress(100)
+    # >> Check for duplicated asset paths
+    for i, asset_i in enumerate(ROM_ASSET_LIST[:-1]):
+        A_i = assets_get_info_scheme(asset_i)
+        for j, asset_j in enumerate(ROM_ASSET_LIST[i+1:]):
+            A_j = assets_get_info_scheme(asset_j)
+            # >> Exclude unconfigured assets (empty strings).
+            if not launcher[A_i.path_key] or not launcher[A_j.path_key]: continue
+            # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
+            if launcher[A_i.path_key] == launcher[A_j.path_key]:
+                duplicated_bool_list[i] = True
+                duplicated_name_list.append('{0} and {1}'.format(A_i.name, A_j.name))
+                log_info('asset_get_duplicated_asset_list() DUPLICATED {0} and {1}'.format(A_i.name, A_j.name))
 
-        # --- Now add missing ROMs to Launcher ---
-        # >> Traverse the No-Intro set and add the No-Intro ROM if it's not in the Launcher
-        # >> Added/Missing ROMs have their own romID.
-        self._updateProgress(0, 'Audit Step 3/4: Adding Missing ROMs ...')
-        num_items = len(roms_nointro_set)
-        item_counter = 0
-        ROMPath = launcher.get_rom_path()
-        for nointro_rom in sorted(roms_nointro_set):
-            # log_debug('_roms_update_NoIntro_status() Checking "{0}"'.format(nointro_rom))
-            if nointro_rom not in roms_set:
-                # Add new "fake" missing ROM. This ROM cannot be launched!
-                # Added ROMs have special extension .nointro
-                rom = Rom()
-                rom.set_file(ROMPath.pjoin(nointro_rom + '.nointro'))
-                rom.set_name(nointro_rom)
-                rom.set_nointro_status(NOINTRO_STATUS_MISS)
-                roms.append(rom)
-                audit_miss += 1
-                log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom.get_name()))
-                # log_debug('_roms_update_NoIntro_status()    OP   "{0}"'.format(rom['filename']))
-            item_counter += 1
-            self._updateProgress((item_counter*100)/num_items)
-            if __debug_progress_dialogs: time.sleep(__debug_time_step)
-        self._updateProgress(100)
+    return duplicated_name_list
 
-        # --- Detect if the DAT file has PClone information or not ---
-        dat_pclone_dic = audit_make_NoIntro_PClone_dic(roms_nointro)
-        num_dat_clones = 0
-        for parent_name in dat_pclone_dic: num_dat_clones += len(dat_pclone_dic[parent_name])
-        log_verb('No-Intro/Redump DAT has {0} clone ROMs'.format(num_dat_clones))
+#
+# Search for local assets and place found files into a list.
+# Returned list all has assets as defined in ROM_ASSET_LIST.
+# This function is used in the ROM Scanner.
+#
+# launcher               -> launcher dictionary
+# ROMFile                -> FileName object
+# enabled_ROM_asset_list -> list of booleans
+#
+# todo: !!!! Orphaned method?
+def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
+    log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
+    local_asset_list = [''] * len(ROM_ASSET_LIST)
+    rom_basename_noext = ROMFile.getBase_noext()
+    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+        AInfo = assets_get_info_scheme(asset_kind)
+        if not enabled_ROM_asset_list[i]:
+            log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
+            continue
+        local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
 
-        # --- Generate main pclone dictionary ---
-        # >> audit_unknown_roms is an int of list = ['Parents', 'Clones']
-        # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
-        unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
-        log_debug('unknown_ROMs_are_parents = {0}'.format(unknown_ROMs_are_parents))
-        # if num_dat_clones == 0 and self.settings['audit_create_pclone_groups']:
-        #     # --- If DAT has no PClone information and user want then generate filename-based PClone groups ---
-        #     # >> This feature is taken from NARS (NARS Advanced ROM Sorting)
-        #     log_verb('Generating filename-based Parent/Clone groups')
-        #     pDialog(0, 'Building filename-based Parent/Clone index ...')
-        #     roms_pclone_index = audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
-        #     pDialog(100)
-        #     if __debug_progress_dialogs: time.sleep(0.5)
-        # else:
-        #     # --- Make a DAT-based Parent/Clone index ---
-        #     # >> Here we build a roms_pclone_index with info from the DAT file. 2 issues:
-        #     # >> A) Redump DATs do not have cloneof information.
-        #     # >> B) Also, it is at this point where a region custom parent may be chosen instead of
-        #     # >>    the default one.
-        #     log_verb('Generating DAT-based Parent/Clone groups')
-        #     pDialog(0, 'Building DAT-based Parent/Clone index ...')
-        #     roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
-        #     pDialog(100)
-        #     if __debug_progress_dialogs: time.sleep(0.5)
-
-        # --- Make a DAT-based Parent/Clone index ---
-        # >> For 0.9.7 only use the DAT to make the PClone groups. In 0.9.8 decouple the audit
-        # >> code from the PClone generation code.
-        log_verb('Generating DAT-based Parent/Clone groups')
-        self._updateProgress(0, 'Building DAT-based Parent/Clone index ...')
-        roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
-        self._updateProgress(100)
-        if __debug_progress_dialogs: time.sleep(0.5)
-
-        # --- Make a Clone/Parent index ---
-        # >> This is made exclusively from the Parent/Clone index
-        self._updateProgress(0, 'Building Clone/Parent index ...')
-        clone_parent_dic = {}
-        for parent_id in roms_pclone_index:
-            for clone_id in roms_pclone_index[parent_id]:
-                clone_parent_dic[clone_id] = parent_id
-        self._updateProgress(100)
-        if __debug_progress_dialogs: time.sleep(0.5)
-
-        # --- Set ROMs pclone_status flag and update launcher statistics ---
-        self._updateProgress(0, 'Audit Step 4/4: Setting Parent/Clone status and cloneof fields...')
-        num_items = len(roms)
-        item_counter = 0
-        audit_parents = audit_clones = 0
-        for rom in roms:
-            rom_id = rom.get_id()
-            if rom_id in roms_pclone_index:
-                rom.set_pclone_status(PCLONE_STATUS_PARENT)
-                audit_parents += 1
-            else:
-                rom.set_clone(clone_parent_dic[rom_id])
-                rom.set_pclone_status(PCLONE_STATUS_CLONE)
-                audit_clones += 1
-            item_counter += 1
-            self._updateProgress((item_counter*100)/num_items)
-            if __debug_progress_dialogs: time.sleep(__debug_time_step)
-        self._updateProgress(100)
-
-        launcher.set_audit_stats(len(roms), audit_parents, audit_clones, audit_have, audit_miss, audit_unknown)
-
-        # --- Make a Parent only ROM list and save JSON ---
-        # >> This is to speed up rendering of launchers in 1G1R display mode
-        self._updateProgress(0, 'Building Parent/Clone index and Parent dictionary ...')
-        parent_roms = audit_generate_parent_ROMs_dic(roms, roms_pclone_index)
-        self._updateProgress(100)
-        if __debug_progress_dialogs: time.sleep(0.5)
-
-        # --- Save JSON databases ---
-        self._updateProgress(0, 'Saving NO-Intro/Redump JSON databases ...')
-        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone', roms_pclone_index)
-        self._updateProgress(30)
-        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent', clone_parent_dic)
-        self._updateProgress(60)
-        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_parents', parent_roms)
-        self._updateProgress(100)
-        self._endProgressPhase()
-
-        # --- Update launcher number of ROMs ---
-        self.audit_have    = audit_have
-        self.audit_miss    = audit_miss
-        self.audit_unknown = audit_unknown
-        self.audit_total   = len(roms)
-        self.audit_parents = audit_parents
-        self.audit_clones  = audit_clones
-
-        # --- Report ---
-        log_info('********** No-Intro/Redump audit finished. Report ***********')
-        log_info('Have ROMs    {0:6d}'.format(self.audit_have))
-        log_info('Miss ROMs    {0:6d}'.format(self.audit_miss))
-        log_info('Unknown ROMs {0:6d}'.format(self.audit_unknown))
-        log_info('Total ROMs   {0:6d}'.format(self.audit_total))
-        log_info('Parent ROMs  {0:6d}'.format(self.audit_parents))
-        log_info('Clone ROMs   {0:6d}'.format(self.audit_clones))
-
-        return True
-    
-    #
-    # Resets the No-Intro status
-    # 1) Remove all ROMs which does not exist.
-    # 2) Set status of remaining ROMs to nointro_status = NOINTRO_STATUS_NONE
-    #
-    def roms_reset_NoIntro_status_roms_reset_NoIntro_status(self, launcher, roms):
-        log_info('roms_reset_NoIntro_status() Launcher has {0} ROMs'.format(len(roms)))
-        if len(roms) < 1: return
-
-        # >> Step 1) Delete missing/dead ROMs
-        num_removed_roms = self._roms_delete_missing_ROMs(roms)
-        log_info('roms_reset_NoIntro_status() Removed {0} dead/missing ROMs'.format(num_removed_roms))
-
-        # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE and
-        #            set PClone status to PCLONE_STATUS_NONE
-        log_info('roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
-        for rom in roms: 
-            rom.set_nointro_status(NOINTRO_STATUS_NONE)
-            rom.set_pclone_status(PCLONE_STATUS_NONE)
-
-        log_info('roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
-
-        # >> Step 3) Delete PClone index and Parent ROM list.
-        launcher.reset_parent_and_clone_roms()
-
-    # Deletes missing ROMs
-    #
-    def _roms_delete_missing_ROMs(self, roms):
-
-        num_removed_roms = 0
-        num_roms = len(roms)
-        log_info('_roms_delete_missing_ROMs() Launcher has {0} ROMs'.format(num_roms))
-        if num_roms > 0:
-            log_verb('_roms_delete_missing_ROMs() Starting dead items scan')
-
-            for rom in reversed(roms):
-            
-                ROMFileName = rom.get_file()
-                if not rom_file:
-                    log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(rom.get_name()))
-                    continue
-
-                log_debug('_roms_delete_missing_ROMs() Test "{0}"'.format(ROMFileName.getBase()))
-                # --- Remove missing ROMs ---
-                if not ROMFileName.exists():
-                    log_debug('_roms_delete_missing_ROMs() RM   "{0}"'.format(ROMFileName.getBase()))
-                    roms.remove(rom)
-                    num_removed_roms += 1
-
-            if num_removed_roms > 0:
-                log_info('_roms_delete_missing_ROMs() {0} dead ROMs removed successfully'.format(num_removed_roms))
-            else:
-                log_info('_roms_delete_missing_ROMs() No dead ROMs found.')
+        if local_asset:
+            local_asset_list[i] = local_asset.getOriginalPath()
+            log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
         else:
-            log_info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
+            local_asset_list[i] = ''
+            log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
 
-        return num_removed_roms
-
-# #################################################################################################
-# #################################################################################################
-# DAT files and ROM audit objects.
-# #################################################################################################
-# #################################################################################################
+    return local_asset_list
 
 
-# #################################################################################################
-# #################################################################################################
-# Launcher objects.
-# #################################################################################################
-# #################################################################################################
+#
+# Search for local assets and put found files into a list.
+# This function is used in _roms_add_new_rom() where there is no need for a file cache.
+#
+def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
+    log_verb('assets_search_local_assets() Searching for ROM local assets...')
+    local_asset_list = [''] * len(ROM_ASSET_LIST)
+    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+        AInfo = assets_get_info_scheme(asset_kind)
+        if not enabled_ROM_asset_list[i]:
+            log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
+            continue
+        asset_path = FileNameFactory.create(launcher[AInfo.path_key])
+        local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
 
+        if local_asset:
+            local_asset_list[i] = local_asset.getOriginalPath()
+            log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+        else:
+            local_asset_list[i] = ''
+            log_verb('assets_search_local_assets() Missing  {0:<9}'.format(AInfo.name))
+
+    return local_asset_list
+
+#
+# A) This function checks if all path_* share a common root directory. If so
+#    this function returns that common directory as an Unicode string.
+# B) If path_* do not share a common root directory this function returns ''.
+#
+def assets_get_ROM_asset_path(launcher):
+    ROM_asset_path = ''
+    duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
+    AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
+    path_first_asset_FN = FileNameFactory.create(launcher[AInfo_first.path_key])
+    log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
+    log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
+    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+        AInfo = assets_get_info_scheme(asset_kind)
+        current_path_FN = FileNameFactory.create(launcher[AInfo.path_key])
+        if current_path_FN.getDir() == path_first_asset_FN.getDir():
+            duplicated_bool_list[i] = True
+
+    return path_first_asset_FN.getDir() if all(duplicated_bool_list) else ''
+
+# #################################################################################################
+# #################################################################################################
+# Data storage objects.
+# #################################################################################################
+# #################################################################################################
 # -------------------------------------------------------------------------------------------------
 # XmlDataContext should be a singleton and only used by the repository classes.
 # This class holds the actual XML data and reads/writes that data.
@@ -1690,6 +1441,40 @@ class RomStatisticsStrategy(object):
 
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic metadata fields and assets.
+#
+# --- Class hierarchy ---
+# MetaDataItem(object) (abstract class)
+# |
+# |----- Category
+# |      |
+# |      |----- VirtualCategory
+# |
+# |----- Rom
+# |
+# |----- Launcher (abstract class)
+#        |
+#        |----- RomLauncher (abstract class)
+#        |      |
+#        |      |----- CollectionLauncher (ROM Collection launcher)
+#        |      |
+#        |      |----- VirtualLauncher (Browse by ... launcher)
+#        |      |
+#        |      |----- StandardRomLauncher (Standard launcher)
+#        |      |      |
+#        |      |      |----- LnkLauncher
+#        |      |      |
+#        |      |      |----- RetroplayerLauncher
+#        |      |      |
+#        |      |      |----- RetroarchLauncher
+#        |      |
+#        |      |----- SteamLauncher
+#        |      |
+#        |      |----- NvidiaGameStreamLauncher
+#        |
+#        |----- ApplicationLauncher (Standalone launcher)
+#        |
+#        |----- KodiLauncher (Kodi favs launcher)
+#
 # -------------------------------------------------------------------------------------------------
 class MetaDataItem(object):
     __metaclass__ = abc.ABCMeta
@@ -1813,10 +1598,12 @@ class MetaDataItem(object):
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItem):
     def __init__(self, category_data = None):
-        super(Category, self).__init__(category_data)
+        self.asset_kind = KIND_ASSET_CATEGORY
+        self.obj_name = 'Category'
 
+        super(Category, self).__init__(category_data)
         if self.entity_data is None:
-            # NOTE place all new databse dictionary generation code in diso_IO.py to have it
+            # NOTE place all new databse dictionary generation code in disc_IO.py to have it
             #      centralised in one place. Easier that have this code disperse over several objects.
             self.entity_data = {
              'id' : misc_generate_random_SID(),
@@ -1841,17 +1628,19 @@ class Category(MetaDataItem):
              's_trailer' : ''
              }
 
-    def get_assets(self):
-        assets = {}
-        asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER]
+    #
+    # Returns an ordered dictionary. Keys are AssetInfo objects. Values are the current
+    # file for the asset as Unicode string or '' if the asset is not set.
+    #
+    def get_assets_odict(self):
+        asset_info_list = g_assetFactory.get_asset_list_by_IDs(CATEGORY_ASSET_ID_LIST)
 
-        asset_factory = AssetInfoFactory.create()
-        asset_kinds = asset_factory.get_assets_by(asset_keys)
-        for asset_kind in asset_kinds:
-            asset = self.entity_data[asset_kind.key] if self.entity_data[asset_kind.key] else ''
-            assets[asset_kind] = asset
+        asset_odict = collections.OrderedDict()
+        for asset_info in asset_info_list:
+            asset_fname_str = self.entity_data[asset_info.key] if self.entity_data[asset_info.key] else ''
+            asset_odict[asset_info] = asset_fname_str
 
-        return assets
+        return asset_odict
 
     def is_virtual(self):
         return False
@@ -1859,12 +1648,11 @@ class Category(MetaDataItem):
     def get_asset_defaults(self):
         default_assets = {}
         default_asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO]
-        asset_factory = AssetInfoFactory.create()
-        default_asset_kinds = asset_factory.get_assets_by(default_asset_keys)
+        default_asset_kinds = g_assetFactory.get_assets_by(default_asset_keys)
 
         for asset_kind in default_asset_kinds:
             mapped_asset_key = self.entity_data[asset_kind.default_key] if self.entity_data[asset_kind.default_key] else ''
-            mapped_asset_kind = asset_factory.get_asset_info_by_namekey(mapped_asset_key)
+            mapped_asset_kind = g_assetFactory.get_asset_info_by_namekey(mapped_asset_key)
             
             default_assets[asset_kind] = mapped_asset_kind
 
@@ -2641,7 +2429,7 @@ class Launcher(MetaDataItem):
         asset_kinds = asset_factory.get_assets_by(asset_keys)
         
         for asset_kind in asset_kinds:
-            asset = self.entity_data[asset_kind.key] if self.entity_data[asset_kind.key] else ''            
+            asset = self.entity_data[asset_kind.key] if self.entity_data[asset_kind.key] else ''
             assets[asset_kind] = asset
 
         return assets
@@ -5617,3 +5405,962 @@ class CollectionRomSet(RomSet):
 
     def clear(self):
         pass
+
+# #################################################################################################
+# #################################################################################################
+# ROM scanners
+# #################################################################################################
+# #################################################################################################
+class RomScannersFactory():
+    def __init__(self, settings, PATHS):
+        self.settings = settings
+        self.reports_dir = PATHS.REPORTS_DIR
+        self.addon_dir = PATHS.ADDON_DATA_DIR
+
+    def create(self, launcher, scrapers):
+        launcherType = launcher.get_launcher_type()
+        log_info('RomScannersFactory: Creating romscanner for {}'.format(launcherType))
+
+        if not launcher.supports_launching_roms():
+            return NullScanner(launcher, self.settings)
+        
+        if launcherType == LAUNCHER_STEAM:
+            return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
+
+        if launcherType == LAUNCHER_NVGAMESTREAM:
+            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
+                
+        return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
+
+class ScannerStrategy(KodiProgressDialogStrategy):
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, launcher, settings):
+        self.launcher = launcher
+        self.settings = settings
+        super(ScannerStrategy, self).__init__()
+
+    #
+    # Scans for new roms based on the type of launcher.
+    #
+    @abc.abstractmethod
+    def scan(self):
+        return {}
+
+    #
+    # Cleans up ROM collection.
+    # Remove Remove dead/missing ROMs ROMs
+    #
+    @abc.abstractmethod
+    def cleanup(self):
+        return {}
+
+class NullScanner(ScannerStrategy):
+    def scan(self):
+        return {}
+
+    def cleanup(self):
+        return {}
+
+class RomScannerStrategy(ScannerStrategy):
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, reports_dir, addon_dir, launcher, settings, scrapers):
+        
+        self.reports_dir = reports_dir
+        self.addon_dir = addon_dir
+                
+        self.scrapers = scrapers
+
+        super(RomScannerStrategy, self).__init__(launcher, settings)
+
+    def scan(self):
+        
+        # --- Open ROM scanner report file ---
+        launcher_report = FileReporter(self.reports_dir, self.launcher.get_data(), LogReporter(self.launcher.get_data()))
+        launcher_report.open('RomScanner() Starting ROM scanner')
+
+        # >> Check if there is an XML for this launcher. If so, load it.
+        # >> If file does not exist or is empty then return an empty dictionary.
+        launcher_report.write('Loading launcher ROMs ...')
+        roms = self.launcher.get_roms()
+
+        if roms is None:
+            roms = []
+        
+        num_roms = len(roms)
+        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
+        
+        launcher_report.write('Collecting candidates ...')
+        candidates = self._getCandidates(launcher_report)
+        num_candidates = len(candidates)
+        log_info('{0} candidates found'.format(num_candidates))
+
+        launcher_report.write('Removing dead ROMs ...')
+        num_removed_roms = self._removeDeadRoms(candidates, roms)        
+
+        if num_removed_roms > 0:
+            kodi_notify('{0} dead ROMs removed successfully'.format(num_removed_roms))
+            log_info('{0} dead ROMs removed successfully'.format(num_removed_roms))
+        else:
+            log_info('No dead ROMs found')
+
+        new_roms = self._processFoundItems(candidates, roms, launcher_report)
+        
+        if not new_roms:
+            return None
+
+        num_new_roms = len(new_roms)
+        roms = roms + new_roms
+
+        launcher_report.write('******************** ROM scanner finished. Report ********************')
+        launcher_report.write('Removed dead ROMs {0:6d}'.format(num_removed_roms))
+        launcher_report.write('Files checked     {0:6d}'.format(num_candidates))
+        launcher_report.write('New added ROMs    {0:6d}'.format(num_new_roms))
+        
+        if len(roms) == 0:
+            launcher_report.write('WARNING Launcher has no ROMs!')
+            launcher_report.close()
+            kodi_dialog_OK('No ROMs found! Make sure launcher directory and file extensions are correct.')
+            return None
+        
+        if num_new_roms == 0:
+            kodi_notify('Added no new ROMs. Launcher has {0} ROMs'.format(len(roms)))
+        else:
+            kodi_notify('Added {0} new ROMs'.format(num_new_roms))
+
+        # --- Close ROM scanner report file ---
+        launcher_report.write('*** END of the ROM scanner report ***')
+        launcher_report.close()
+
+        return roms
+
+    def cleanup(self):
+        launcher_report = LogReporter(self.launcher.get_data())
+        launcher_report.open('RomScanner() Starting Dead ROM cleaning')
+        log_debug('RomScanner() Starting Dead ROM cleaning')
+
+        roms = self.launcher.get_roms()
+        if roms is None:
+            launcher_report.close()
+            log_info('RomScanner() No roms available to cleanup')
+            return {}
+        
+        num_roms = len(roms)
+        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
+        
+        launcher_report.write('Collecting candidates ...')
+        candidates = self._getCandidates(launcher_report)
+        num_candidates = len(candidates)
+        log_info('{0} candidates found'.format(num_candidates))
+
+        launcher_report.write('Removing dead ROMs ...')
+        num_removed_roms = self._removeDeadRoms(candidates, roms)        
+
+        if num_removed_roms > 0:
+            kodi_notify('{0} dead ROMs removed successfully'.format(num_removed_roms))
+            log_info('{0} dead ROMs removed successfully'.format(num_removed_roms))
+        else:
+            log_info('No dead ROMs found')
+
+        launcher_report.close()
+        return roms
+
+    # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @abc.abstractmethod
+    def _getCandidates(self, launcher_report):
+        return []
+
+    # --- Remove dead entries -----------------------------------------------------------------
+    @abc.abstractmethod
+    def _removeDeadRoms(self, candidates, roms):
+        return 0
+
+    # ~~~ Now go processing item by item ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @abc.abstractmethod
+    def _processFoundItems(self, items, roms, launcher_report):
+        return []
+
+class RomFolderScanner(RomScannerStrategy):
+    # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _getCandidates(self, launcher_report):
+        kodi_busydialog_ON()
+        files = []
+        launcher_path = self.launcher.get_rom_path()
+        launcher_report.write('Scanning files in {0}'.format(launcher_path.getOriginalPath()))
+
+        if self.settings['scan_recursive']:
+            log_info('Recursive scan activated')
+            files = launcher_path.recursiveScanFilesInPath('*.*')
+        else:
+            log_info('Recursive scan not activated')
+            files = launcher_path.scanFilesInPath('*.*')
+
+        kodi_busydialog_OFF()
+
+        num_files = len(files)
+        launcher_report.write('  File scanner found {0} files'.format(num_files))
+
+        return files
+
+    # --- Remove dead entries -----------------------------------------------------------------
+    def _removeDeadRoms(self, candidates, roms):
+        num_roms = len(roms)
+        num_removed_roms = 0
+        if num_roms == 0:
+            log_info('Launcher is empty. No dead ROM check.')
+            return num_removed_roms
+        
+        log_debug('Starting dead items scan')
+        i = 0
+            
+        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
+            
+        for rom in reversed(roms):
+            fileName = rom.get_file()
+            log_debug('Searching {0}'.format(fileName.getOriginalPath()))
+            self._updateProgress(i * 100 / num_roms)
+            
+            if not fileName.exists():
+                log_debug('Not found')
+                log_debug('Deleting from DB {0}'.format(fileName.getOriginalPath()))
+                roms.remove(rom)
+                num_removed_roms += 1
+            i += 1
+            
+        self._endProgressPhase()
+
+        return num_removed_roms
+
+    # ~~~ Now go processing item by item ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _processFoundItems(self, items, roms, launcher_report):
+
+        num_items = len(items)    
+        new_roms = []
+
+        self._startProgressPhase('Advanced Emulator Launcher', 'Scanning found items')
+        log_debug('============================== Processing ROMs ==============================')
+        launcher_report.write('Processing files ...')
+        num_items_checked = 0
+        
+        allowedExtensions = self.launcher.get_rom_extensions()
+        launcher_multidisc = self.launcher.supports_multidisc()
+
+        for item in sorted(items):
+            self._updateProgress(num_items_checked * 100 / num_items)
+            
+            # --- Get all file name combinations ---
+            ROM = FileNameFactory.create(item)
+            launcher_report.write('>>> {0}'.format(ROM.getOriginalPath()).encode('utf-8'))
+
+            # ~~~ Update progress dialog ~~~
+            file_text = 'ROM {0}'.format(ROM.getBase())
+            self._updateProgressMessage(file_text, 'Checking if has ROM extension ...')
+                        
+            # --- Check if filename matchs ROM extensions ---
+            # The recursive scan has scanned all files. Check if this file matches some of 
+            # the ROM extensions. If this file isn't a ROM skip it and go for next one in the list.
+            processROM = False
+
+            for ext in allowedExtensions:
+                if ROM.getExt() == '.' + ext:
+                    launcher_report.write("  Expected '{0}' extension detected".format(ext))
+                    processROM = True
+                    break
+
+            if not processROM: 
+                launcher_report.write('  File has not an expected extension. Skipping file.')
+                continue
+                        
+            # --- Check if ROM belongs to a multidisc set ---
+            self._updateProgressMessage(file_text, 'Checking if ROM belongs to multidisc set..')
+                       
+            MultiDiscInROMs = False
+            MDSet = text_get_multidisc_info(ROM)
+            if MDSet.isMultiDisc and launcher_multidisc:
+                log_info('ROM belongs to a multidisc set.')
+                log_info('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
+                log_info('setName     "{0}"'.format(MDSet.setName))
+                log_info('discName    "{0}"'.format(MDSet.discName))
+                log_info('extension   "{0}"'.format(MDSet.extension))
+                log_info('order       "{0}"'.format(MDSet.order))
+                launcher_report.write('  ROM belongs to a multidisc set.')
+                
+                # >> Check if the set is already in launcher ROMs.
+                MultiDisc_rom_id = None
+                for new_rom in new_roms:
+                    temp_FN = new_rom.get_file()
+                    if temp_FN.getBase() == MDSet.setName:
+                        MultiDiscInROMs  = True
+                        MultiDisc_rom    = new_rom
+                        break
+
+                log_info('MultiDiscInROMs is {0}'.format(MultiDiscInROMs))
+
+                # >> If the set is not in the ROMs then this ROM is the first of the set.
+                # >> Add the set
+                if not MultiDiscInROMs:
+                    log_info('First ROM in the set. Adding to ROMs ...')
+                    # >> Manipulate ROM so filename is the name of the set
+                    ROM_dir = FileNameFactory.create(ROM.getDir())
+                    ROM_temp = ROM_dir.pjoin(MDSet.setName)
+                    log_info('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
+                    log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
+                    ROM = ROM_temp
+                # >> If set already in ROMs, just add this disk into the set disks field.
+                else:
+                    log_info('Adding additional disk "{0}"'.format(MDSet.discName))
+                    MultiDisc_rom.add_disk(MDSet.discName)
+                    # >> Reorder disks like Disk 1, Disk 2, ...
+                    
+                    # >> Process next file
+                    log_info('Processing next file ...')
+                    continue
+            elif MDSet.isMultiDisc and not launcher_multidisc:
+                launcher_report.write('  ROM belongs to a multidisc set but Multidisc support is disabled.')
+            else:
+                launcher_report.write('  ROM does not belong to a multidisc set.')
+ 
+            # --- Check that ROM is not already in the list of ROMs ---
+            # >> If file already in ROM list skip it
+            self._updateProgressMessage(file_text, 'Checking if ROM is not already in collection...')
+            repeatedROM = False
+            for rom in roms:
+                rpath = rom.get_filename() 
+                if rpath == item: 
+                    repeatedROM = True
+        
+            if repeatedROM:
+                launcher_report.write('  File already into launcher ROM list. Skipping file.')
+                continue
+            else:
+                launcher_report.write('  File not in launcher ROM list. Processing it ...')
+
+            # --- Ignore BIOS ROMs ---
+            # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
+            if self.settings['scan_ignore_bios']:
+                BIOS_re = re.findall('\[BIOS\]', ROM.getBase())
+                if len(BIOS_re) > 0:
+                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM.path))
+                    continue
+
+            # ~~~~~ Process new ROM and add to the list ~~~~~
+            # --- Create new rom dictionary ---
+            # >> Database always stores the original (non transformed/manipulated) path
+            new_rom = Rom()
+            new_rom.set_file(ROM)
+
+            searchTerm = text_format_ROM_name_for_scraping(ROM.getBase_noext())
+
+            if self.scrapers:
+                for scraper in self.scrapers:
+                    self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
+                    scraper.scrape(searchTerm, ROM, new_rom)
+            
+            romdata = new_rom.get_data()
+            log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+            log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+            log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+            log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+            log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+            log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+            log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+            log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+            log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+            log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+            log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+            log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+            
+            # --- This was the first ROM in a multidisc set ---
+            if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
+                log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
+                new_rom.add_disk(MDSet.discName)
+            
+            new_roms.append(new_rom)
+            
+            # ~~~ Check if user pressed the cancel button ~~~
+            if self._isProgressCanceled():
+                self._endProgressPhase()
+                kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
+                log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+                return None
+            
+            num_items_checked += 1
+           
+        self._endProgressPhase()
+        return new_roms
+
+class SteamScanner(RomScannerStrategy):
+    
+    # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _getCandidates(self, launcher_report):
+               
+        log_debug('Reading Steam account')
+        self._startProgressPhase('Advanced Emulator Launcher', 'Reading Steam account...')
+
+        apikey = self.settings['steam-api-key']
+        steamid = self.launcher.get_steam_id()
+        url = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={}&steamid={}&include_appinfo=1'.format(apikey, steamid)
+        
+        self._updateProgress(70)
+        body = net_get_URL_original(url)
+        self._updateProgress(80)
+        
+        steamJson = json.loads(body)
+        games = steamJson['response']['games']
+        
+        self._endProgressPhase()
+        return games
+
+    # --- Remove dead entries -----------------------------------------------------------------
+    def _removeDeadRoms(self, candidates, roms):
+    
+        if roms is None or len(roms) == 0:
+            log_info('Launcher is empty. No dead ROM check.')
+            return 0
+
+        log_debug('Starting dead items scan')
+        num_roms = len(roms)
+        num_removed_roms = 0
+        i = 0
+            
+        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
+        
+        steamGameIds = set(steamGame['appid'] for steamGame in candidates)
+
+        for rom in reversed(roms):
+            romSteamId = rom.get_custom_attribute('steamid')
+            
+            log_debug('Searching {0}'.format(romSteamId))
+            self._updateProgress(i * 100 / num_roms)
+            i += 1
+
+            if romSteamId not in steamGameIds:
+                log_debug('Not found. Deleting from DB {0}'.format(rom.get_name()))
+                roms.remove(rom)
+                num_removed_roms += 1
+            
+        self._endProgressPhase()
+
+        return num_removed_roms
+
+    def _processFoundItems(self, items, roms, launcher_report):
+        
+        if items is None or len(items) == 0:
+            log_info('No steam games available.')
+            return []
+
+        new_roms = []
+
+        num_games = len(items)
+        num_items_checked = 0
+            
+        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for new ROMs ...')
+        steamIdsAlreadyInCollection = set(rom.get_custom_attribute('steamid') for rom in roms)
+        
+        for steamGame in items:
+            
+            steamId = steamGame['appid']
+            log_debug('Searching {} with #{}'.format(steamGame['name'], steamId))
+
+            self._updateProgress(num_items_checked * 100 / num_games, steamGame['name'])
+            
+            if steamId not in steamIdsAlreadyInCollection:
+                
+                log_debug('========== Processing Steam game ==========')
+                launcher_report.write('>>> title: {0}'.format(steamGame['name']))
+                launcher_report.write('>>> ID: {0}'.format(steamGame['appid']))
+        
+                log_debug('Not found. Item {0} is new'.format(steamGame['name']))
+
+                launcher_path = self.launcher.get_rom_path()
+                romPath = launcher_path.pjoin('{0}.rom'.format(steamGame['appid']))
+
+                # ~~~~~ Process new ROM and add to the list ~~~~~
+                # --- Create new rom dictionary ---
+                # >> Database always stores the original (non transformed/manipulated) path
+                new_rom  = Rom()
+                new_rom.set_file(romPath)
+
+                new_rom.set_custom_attribute('steamid', steamGame['appid'])
+                new_rom.set_custom_attribute('steam_name', steamGame['name'])  # so that we always have the original name
+                new_rom.set_name(steamGame['name'])
+
+                searchTerm = steamGame['name']
+                
+                if self.scrapers:
+                    for scraper in self.scrapers:
+                        self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(scraper.getName()))
+                        scraper.scrape(searchTerm, romPath, new_rom)
+                
+                romdata = new_rom.get_data()
+                log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+                log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+                log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+                log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+                log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+                log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+                log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+                log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+                log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+                log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+                log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+                log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+            
+                new_roms.append(new_rom)
+                            
+                # ~~~ Check if user pressed the cancel button ~~~
+                if self._isProgressCanceled():
+                    self._endProgressPhase()
+                    kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
+                    log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+                    return None
+            
+                num_items_checked += 1
+
+        self._endProgressPhase()    
+        return new_roms
+
+class NvidiaStreamScanner(RomScannerStrategy):
+
+    # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _getCandidates(self, launcher_report):
+        from gamestream import GameStreamServer
+
+        log_debug('Reading Nvidia GameStream server')
+        self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
+
+        server_host = self.launcher.get_server()
+        certificates_path = self.launcher.get_certificates_path()
+
+        streamServer = GameStreamServer(server_host, certificates_path)
+        connected = streamServer.connect()
+
+        if not connected:
+            kodi_notify_error('Unable to connect to gamestream server')
+            return None
+
+        self._updateProgress(50)
+        games = streamServer.getApps()
+                
+        self._endProgressPhase()
+        return games
+
+    # --- Remove dead entries -----------------------------------------------------------------
+    def _removeDeadRoms(self, candidates, roms):
+    
+        if roms is None or len(roms) == 0:
+            log_info('Launcher is empty. No dead ROM check.')
+            return 0
+
+        log_debug('Starting dead items scan')
+        num_roms = len(roms)
+        num_removed_roms = 0
+        i = 0
+            
+        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for dead ROMs ...')
+        
+        streamIds = set(streamableGame['ID'] for streamableGame in candidates)
+
+        for rom in reversed(roms):
+            romStreamId = rom.get_custom_attribute('streamid')
+            
+            log_debug('Searching {0}'.format(romStreamId))
+            self._updateProgress(i * 100 / num_roms)
+            i += 1
+
+            if romStreamId not in streamIds:
+                log_debug('Not found. Deleting from DB {0}'.format(rom.get_name()))
+                roms.remove(rom)
+                num_removed_roms += 1
+            
+        self._endProgressPhase()
+
+        return num_removed_roms
+
+    def _processFoundItems(self, items, roms, launcher_report):
+        if items is None or len(items) == 0:
+            log_info('No Nvidia Gamestream games available.')
+            return []
+
+        new_roms = []
+
+        num_games = len(items)
+        num_items_checked = 0
+            
+        self._startProgressPhase('Advanced Emulator Launcher', 'Checking for new ROMs ...')
+        streamIdsAlreadyInCollection = set(rom.get_custom_attribute('streamid') for rom in roms)
+        
+        for streamableGame in items:
+            
+            streamId = streamableGame['ID']
+            log_debug('Searching {} with #{}'.format(streamableGame['AppTitle'], streamId))
+
+            self._updateProgress(num_items_checked * 100 / num_games, streamableGame['AppTitle'])
+            
+            if streamId not in streamIdsAlreadyInCollection:
+                
+                log_debug('========== Processing Nvidia Gamestream game ==========')
+                launcher_report.write('>>> title: {0}'.format(streamableGame['AppTitle']))
+                launcher_report.write('>>> ID: {0}'.format(streamableGame['ID']))
+        
+                log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
+
+                launcher_path = launcher.get_rom_path()
+                romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
+
+                # ~~~~~ Process new ROM and add to the list ~~~~~
+                # --- Create new rom dictionary ---
+                # >> Database always stores the original (non transformed/manipulated) path
+                new_rom  = Rom()
+                new_rom.set_file(romPath)
+
+                new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
+                new_rom.set_custom_attribute('gamestream_name', streamableGame['AppTitle'])  # so that we always have the original name
+                new_rom.set_name(streamableGame['AppTitle'])
+                
+                searchTerm = streamableGame['AppTitle']
+                
+                if self.scrapers:
+                    for scraper in self.scrapers:
+                        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
+                        scraper.scrape(searchTerm, romPath, new_rom)
+            
+                romdata = new_rom.get_data()
+                log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+                log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+                log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+                log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+                log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+                log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+                log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+                log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+                log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+                log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+                log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+                log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+            
+                new_roms.append(new_rom)
+                            
+                # ~~~ Check if user pressed the cancel button ~~~
+                if self._isProgressCanceled():
+                    self._endProgressPhase()
+                    kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
+                    log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+                    return None
+            
+                num_items_checked += 1
+
+        self._endProgressPhase()
+        return new_roms
+
+# #################################################################################################
+# #################################################################################################
+# DAT files and ROM audit
+# #################################################################################################
+# #################################################################################################
+class RomDatFileScanner(KodiProgressDialogStrategy):
+    def __init__(self, settings):
+        self.settings = settings
+        super(RomDatFileScanner, self).__init__()
+
+    #
+    # Helper function to update ROMs No-Intro status if user configured a No-Intro DAT file.
+    # Dictionaries are mutable, so roms can be changed because passed by assigment.
+    # This function also creates the Parent/Clone indices:
+    #   1) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_index.json
+    #   2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_parents.json
+    #
+    # A) If there are Unkown ROMs, a fake rom with name [Unknown ROMs] and id UNKNOWN_ROMS_PARENT_ID
+    #    is created. This fake ROM is the parent of all Unknown ROMs.
+    #    This fake ROM is added to roms_base_noext_parents.json database.
+    #    This fake ROM is not present in the main JSON ROM database.
+    # 
+    # Returns:
+    #   True  -> ROM audit was OK
+    #   False -> There was a problem with the audit.
+    #
+    #def _roms_update_NoIntro_status(self, roms, nointro_xml_file_FileName):
+    def update_roms_NoIntro_status(self, launcher, roms):
+        __debug_progress_dialogs = False
+        __debug_time_step = 0.0005
+
+        # --- Reset the No-Intro status and removed No-Intro missing ROMs ---
+        audit_have = audit_miss = audit_unknown = 0
+        self._startProgressPhase('Advanced Emulator Launcher', 'Deleting Missing/Dead ROMs and clearing flags ...')
+        self.roms_reset_NoIntro_status(launcher, roms)
+        self._updateProgress(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Check if DAT file exists ---
+        nointro_xml_file_FileName = launcher.get_nointro_xml_filepath()
+        if not nointro_xml_file_FileName.exists():
+            log_warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_FileName.getOriginalPath()))
+            return False
+        
+        self._updateProgress(0, 'Loading No-Intro/Redump XML DAT file ...')
+        roms_nointro = audit_load_NoIntro_XML_file(nointro_xml_file_FileName)
+        self._updateProgress(100)
+
+        if __debug_progress_dialogs: time.sleep(0.5)
+        if not roms_nointro:
+            log_warning('_roms_update_NoIntro_status() Error loading {0}'.format(nointro_xml_file_FileName.getPath()))
+            return False
+
+        # --- Remove BIOSes from No-Intro ROMs ---
+        if self.settings['scan_ignore_bios']:
+            log_info('_roms_update_NoIntro_status() Removing BIOSes from No-Intro ROMs ...')
+            self._updateProgress(0, 'Removing BIOSes from No-Intro ROMs ...')
+            num_items = len(roms_nointro)
+            item_counter = 0
+            filtered_roms_nointro = {}
+            for rom_id in roms_nointro:
+                rom_data = roms_nointro[rom_id]
+                BIOS_str_list = re.findall('\[BIOS\]', rom_data['name'])
+                if not BIOS_str_list:
+                    filtered_roms_nointro[rom_id] = rom_data
+                else:
+                    log_debug('_roms_update_NoIntro_status() Removed BIOS "{0}"'.format(rom_data['name']))
+                item_counter += 1
+                self._updateProgress((item_counter*100)/num_items)
+                if __debug_progress_dialogs: time.sleep(__debug_time_step)
+            roms_nointro = filtered_roms_nointro
+            self._updateProgress(100)
+        else:
+            log_info('_roms_update_NoIntro_status() User wants to include BIOSes.')
+
+        # --- Put No-Intro ROM names in a set ---
+        # >> Set is the fastest Python container for searching elements (implements hashed search).
+        # >> No-Intro names include tags
+        self._updateProgress(0, 'Creating No-Intro and ROM sets ...')
+        roms_nointro_set = set(roms_nointro.keys())
+        roms_set = set()
+        for rom in roms:
+            # >> Use the ROM basename.
+            ROMFileName = rom.get_file()
+            roms_set.add(ROMFileName.getBase_noext())
+        self._updateProgress(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Traverse Launcher ROMs and check if they are in the No-Intro ROMs list ---
+        self._updateProgress(0, 'Audit Step 1/4: Checking Have and Unknown ROMs ...')
+        num_items = len(roms)
+        item_counter = 0
+        for rom in roms:
+            ROMFileName = rom.get_file()
+            if ROMFileName.getBase_noext() in roms_nointro_set:
+                rom.set_nointro_status(NOINTRO_STATUS_HAVE)
+                audit_have += 1
+                log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBase_noext()))
+            else:
+                rom.set_nointro_status(NOINTRO_STATUS_UNKNOWN)
+                audit_unknown += 1
+                log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBase_noext()))
+            item_counter += 1
+            self._updateProgress((item_counter*100)/num_items)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
+        self._updateProgress(100)
+
+        # --- Mark Launcher dead ROMs as missing ---
+        self._updateProgress(0, 'Audit Step 2/4: Checking Missing ROMs ...')
+        num_items = len(roms)
+        item_counter = 0
+        for rom in roms:
+            ROMFileName = rom.get_file()
+            if not ROMFileName.exists():
+                rom.set_nointro_status(NOINTRO_STATUS_MISS)
+                audit_miss += 1
+                log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBase_noext()))
+            item_counter += 1
+            self._updateProgress((item_counter*100)/num_items)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
+        self._updateProgress(100)
+
+        # --- Now add missing ROMs to Launcher ---
+        # >> Traverse the No-Intro set and add the No-Intro ROM if it's not in the Launcher
+        # >> Added/Missing ROMs have their own romID.
+        self._updateProgress(0, 'Audit Step 3/4: Adding Missing ROMs ...')
+        num_items = len(roms_nointro_set)
+        item_counter = 0
+        ROMPath = launcher.get_rom_path()
+        for nointro_rom in sorted(roms_nointro_set):
+            # log_debug('_roms_update_NoIntro_status() Checking "{0}"'.format(nointro_rom))
+            if nointro_rom not in roms_set:
+                # Add new "fake" missing ROM. This ROM cannot be launched!
+                # Added ROMs have special extension .nointro
+                rom = Rom()
+                rom.set_file(ROMPath.pjoin(nointro_rom + '.nointro'))
+                rom.set_name(nointro_rom)
+                rom.set_nointro_status(NOINTRO_STATUS_MISS)
+                roms.append(rom)
+                audit_miss += 1
+                log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom.get_name()))
+                # log_debug('_roms_update_NoIntro_status()    OP   "{0}"'.format(rom['filename']))
+            item_counter += 1
+            self._updateProgress((item_counter*100)/num_items)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
+        self._updateProgress(100)
+
+        # --- Detect if the DAT file has PClone information or not ---
+        dat_pclone_dic = audit_make_NoIntro_PClone_dic(roms_nointro)
+        num_dat_clones = 0
+        for parent_name in dat_pclone_dic: num_dat_clones += len(dat_pclone_dic[parent_name])
+        log_verb('No-Intro/Redump DAT has {0} clone ROMs'.format(num_dat_clones))
+
+        # --- Generate main pclone dictionary ---
+        # >> audit_unknown_roms is an int of list = ['Parents', 'Clones']
+        # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
+        unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
+        log_debug('unknown_ROMs_are_parents = {0}'.format(unknown_ROMs_are_parents))
+        # if num_dat_clones == 0 and self.settings['audit_create_pclone_groups']:
+        #     # --- If DAT has no PClone information and user want then generate filename-based PClone groups ---
+        #     # >> This feature is taken from NARS (NARS Advanced ROM Sorting)
+        #     log_verb('Generating filename-based Parent/Clone groups')
+        #     pDialog(0, 'Building filename-based Parent/Clone index ...')
+        #     roms_pclone_index = audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+        #     pDialog(100)
+        #     if __debug_progress_dialogs: time.sleep(0.5)
+        # else:
+        #     # --- Make a DAT-based Parent/Clone index ---
+        #     # >> Here we build a roms_pclone_index with info from the DAT file. 2 issues:
+        #     # >> A) Redump DATs do not have cloneof information.
+        #     # >> B) Also, it is at this point where a region custom parent may be chosen instead of
+        #     # >>    the default one.
+        #     log_verb('Generating DAT-based Parent/Clone groups')
+        #     pDialog(0, 'Building DAT-based Parent/Clone index ...')
+        #     roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+        #     pDialog(100)
+        #     if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Make a DAT-based Parent/Clone index ---
+        # >> For 0.9.7 only use the DAT to make the PClone groups. In 0.9.8 decouple the audit
+        # >> code from the PClone generation code.
+        log_verb('Generating DAT-based Parent/Clone groups')
+        self._updateProgress(0, 'Building DAT-based Parent/Clone index ...')
+        roms_pclone_index = audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents)
+        self._updateProgress(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Make a Clone/Parent index ---
+        # >> This is made exclusively from the Parent/Clone index
+        self._updateProgress(0, 'Building Clone/Parent index ...')
+        clone_parent_dic = {}
+        for parent_id in roms_pclone_index:
+            for clone_id in roms_pclone_index[parent_id]:
+                clone_parent_dic[clone_id] = parent_id
+        self._updateProgress(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Set ROMs pclone_status flag and update launcher statistics ---
+        self._updateProgress(0, 'Audit Step 4/4: Setting Parent/Clone status and cloneof fields...')
+        num_items = len(roms)
+        item_counter = 0
+        audit_parents = audit_clones = 0
+        for rom in roms:
+            rom_id = rom.get_id()
+            if rom_id in roms_pclone_index:
+                rom.set_pclone_status(PCLONE_STATUS_PARENT)
+                audit_parents += 1
+            else:
+                rom.set_clone(clone_parent_dic[rom_id])
+                rom.set_pclone_status(PCLONE_STATUS_CLONE)
+                audit_clones += 1
+            item_counter += 1
+            self._updateProgress((item_counter*100)/num_items)
+            if __debug_progress_dialogs: time.sleep(__debug_time_step)
+        self._updateProgress(100)
+
+        launcher.set_audit_stats(len(roms), audit_parents, audit_clones, audit_have, audit_miss, audit_unknown)
+
+        # --- Make a Parent only ROM list and save JSON ---
+        # >> This is to speed up rendering of launchers in 1G1R display mode
+        self._updateProgress(0, 'Building Parent/Clone index and Parent dictionary ...')
+        parent_roms = audit_generate_parent_ROMs_dic(roms, roms_pclone_index)
+        self._updateProgress(100)
+        if __debug_progress_dialogs: time.sleep(0.5)
+
+        # --- Save JSON databases ---
+        self._updateProgress(0, 'Saving NO-Intro/Redump JSON databases ...')
+        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone', roms_pclone_index)
+        self._updateProgress(30)
+        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent', clone_parent_dic)
+        self._updateProgress(60)
+        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_parents', parent_roms)
+        self._updateProgress(100)
+        self._endProgressPhase()
+
+        # --- Update launcher number of ROMs ---
+        self.audit_have    = audit_have
+        self.audit_miss    = audit_miss
+        self.audit_unknown = audit_unknown
+        self.audit_total   = len(roms)
+        self.audit_parents = audit_parents
+        self.audit_clones  = audit_clones
+
+        # --- Report ---
+        log_info('********** No-Intro/Redump audit finished. Report ***********')
+        log_info('Have ROMs    {0:6d}'.format(self.audit_have))
+        log_info('Miss ROMs    {0:6d}'.format(self.audit_miss))
+        log_info('Unknown ROMs {0:6d}'.format(self.audit_unknown))
+        log_info('Total ROMs   {0:6d}'.format(self.audit_total))
+        log_info('Parent ROMs  {0:6d}'.format(self.audit_parents))
+        log_info('Clone ROMs   {0:6d}'.format(self.audit_clones))
+
+        return True
+
+    #
+    # Resets the No-Intro status
+    # 1) Remove all ROMs which does not exist.
+    # 2) Set status of remaining ROMs to nointro_status = NOINTRO_STATUS_NONE
+    #
+    def roms_reset_NoIntro_status_roms_reset_NoIntro_status(self, launcher, roms):
+        log_info('roms_reset_NoIntro_status() Launcher has {0} ROMs'.format(len(roms)))
+        if len(roms) < 1: return
+
+        # >> Step 1) Delete missing/dead ROMs
+        num_removed_roms = self._roms_delete_missing_ROMs(roms)
+        log_info('roms_reset_NoIntro_status() Removed {0} dead/missing ROMs'.format(num_removed_roms))
+
+        # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE and
+        #            set PClone status to PCLONE_STATUS_NONE
+        log_info('roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
+        for rom in roms: 
+            rom.set_nointro_status(NOINTRO_STATUS_NONE)
+            rom.set_pclone_status(PCLONE_STATUS_NONE)
+
+        log_info('roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
+
+        # >> Step 3) Delete PClone index and Parent ROM list.
+        launcher.reset_parent_and_clone_roms()
+
+    # Deletes missing ROMs
+    #
+    def _roms_delete_missing_ROMs(self, roms):
+        num_removed_roms = 0
+        num_roms = len(roms)
+        log_info('_roms_delete_missing_ROMs() Launcher has {0} ROMs'.format(num_roms))
+        if num_roms > 0:
+            log_verb('_roms_delete_missing_ROMs() Starting dead items scan')
+
+            for rom in reversed(roms):
+            
+                ROMFileName = rom.get_file()
+                if not rom_file:
+                    log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(rom.get_name()))
+                    continue
+
+                log_debug('_roms_delete_missing_ROMs() Test "{0}"'.format(ROMFileName.getBase()))
+                # --- Remove missing ROMs ---
+                if not ROMFileName.exists():
+                    log_debug('_roms_delete_missing_ROMs() RM   "{0}"'.format(ROMFileName.getBase()))
+                    roms.remove(rom)
+                    num_removed_roms += 1
+
+            if num_removed_roms > 0:
+                log_info('_roms_delete_missing_ROMs() {0} dead ROMs removed successfully'.format(num_removed_roms))
+            else:
+                log_info('_roms_delete_missing_ROMs() No dead ROMs found.')
+        else:
+            log_info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
+
+        return num_removed_roms

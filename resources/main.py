@@ -60,7 +60,6 @@ import xbmcplugin
 #
 from constants import *
 from utils import *
-from assets import *
 from audit import *
 from autoconfig import *
 from disk_IO import *
@@ -143,7 +142,6 @@ g_content_type = ''
 g_time_str = unicode(datetime.datetime.now())
 
 # --- Global objects ---
-g_assetFactory = None
 g_scraperFactory = None
 g_romscannerFactory = None
 g_executorFactory = None
@@ -340,7 +338,6 @@ def run_plugin(addon_argv):
 #
 def m_bootstrap_instances():
     # >> Grant write access to global variables
-    global g_assetFactory
     global g_scraperFactory
     global g_romscannerFactory
     global g_executorFactory
@@ -350,7 +347,6 @@ def m_bootstrap_instances():
     global g_collectionRepository
 
     # --- Utility objects ---
-    g_assetFactory      = AssetInfoFactory.create()
     g_scraperFactory    = ScraperFactory(g_settings, g_PATHS)
     g_romscannerFactory = RomScannersFactory(g_settings, g_PATHS)
     g_executorFactory   = ExecutorFactory(g_settings, g_PATHS)
@@ -1342,17 +1338,11 @@ def m_run_category_sub_command(command, category):
 
     # --- Submenu command ---
     elif command == 'EDIT_ASSETS':
-        m_subcommand_edit_category_assets(category)
-
-        # New generic function to edit assets of objects.
-        # m_gui_edit_object_assets(object_kind, category)
+        m_gui_edit_object_assets(category)
 
     # --- Submenu command ---
     elif command == 'EDIT_DEFAULT_ASSETS':
-        m_subcommand_edit_category_default_assets(category)
-
-        # New generic function to edit default assets
-        # m_gui_edit_object_default_assets(object_kind, category)
+        m_gui_edit_object_default_assets(category)
 
     # --- Atomic commands ---
     elif command == 'CATEGORY_STATUS':
@@ -1424,13 +1414,12 @@ def m_run_collection_sub_command(command, collection):
     # Create a generic function for import/export NFO files.
 
     # --- Submenu command ---
-    # ROM Collection assets are the same as Categories.
     elif command == 'EDIT_ASSETS':
-        m_subcommand_edit_collection_assets(collection)
+        m_gui_edit_object_assets(category)
 
     # --- Submenu command ---
     elif command == 'EDIT_DEFAULT_ASSETS':
-        m_subcommand_edit_collection_default_assets(collection)
+        m_gui_edit_object_default_assets(category)
 
     # --- Atomic commands ---
     elif command == 'EXPORT_COLLECTION_XML':
@@ -1766,103 +1755,6 @@ def m_subcommand_save_category_nfo_file(category):
     # >> No need to save categories/launchers
     kodi_notify('Exported Category NFO file {0}'.format(NFO_FileName.getPath()))
 
-# --- Edit Category Assets submenu ---
-# NOTE Code a generic function to edit the assets of an object.
-def m_subcommand_edit_category_assets(category):
-    # --- Build Dialog.select list ---
-    # --- Use Krypton useDetails to display label2 on select dialog ---
-    assets = category.get_assets()
-    list_items = []
-    for asset_kind in assets:
-        # >> Create ListItems and label2
-        label1_text = 'Edit {0} ...'.format(asset_kind.name)
-        label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
-        list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
-
-        item_img = 'DefaultAddonNone.png'
-        if assets[asset_kind] != '':
-            item_path = FileNameFactory.create(assets[asset_kind])
-            if item_path.is_video_file():
-                item_img = 'DefaultAddonVideo.png'
-            else:
-                item_img = assets[asset_kind]
-        list_item.setArt({'icon' : item_img})
-        list_items.append(list_item)
-
-    # --- Execute select dialog menu logic ---
-    selected_option = xbmcgui.Dialog().select('Edit Category Assets/Artwork', list = list_items, useDetails = True)
-    if selected_option < 0:
-        # >> Return recursively to parent menu.
-        log_debug('m_subcommand_edit_category_assets() Selected NONE')
-    else:
-        # >> Execute category edit asset menu subcommand.
-        # >> Then, execute recursively this submenu again.
-        # >> The parent menu dialog is instantiated again so it reflects the changes just edited.
-        # >> If m_gui_edit_asset() returns True changes were made.
-        selected_asset_kind = assets.keys()[selected_option]
-        if m_gui_edit_asset(KIND_CATEGORY, selected_asset_kind.kind, category.get_data_dic()): 
-            g_categoryRepository.save(category)
-        m_subcommand_edit_category_assets(category)
-
-# --- Choose Category default icon/fanart/banner/poster/clearlogo submenu ---
-def m_subcommand_edit_category_default_assets(category):
-    list_items = []
-    assets = category.get_assets()
-    asset_defaults = category.get_asset_defaults()
-
-    for asset_kind in asset_defaults:
-        mapped_asset_kind = asset_defaults[asset_kind]
-        mapped_asset_name = mapped_asset_kind.name if mapped_asset_kind else ''
-        mapped_asset = assets[mapped_asset_kind] if assets[mapped_asset_kind]  != '' else 'Not set'
-
-        # >> Create ListItems and label2
-        label1_text = 'Choose asset for {0} (currently {1})'.format(asset_kind.name, mapped_asset_name)
-        list_item = xbmcgui.ListItem(label = label1_text, label2 = mapped_asset)
-        # >> Set artwork with setArt()
-        item_img = 'DefaultAddonNone.png'
-        if assets[mapped_asset_kind] != '':
-            item_path = FileNameFactory.create(assets[mapped_asset_kind])
-            if item_path.is_video_file():
-                item_img = 'DefaultAddonVideo.png'
-            else:
-                item_img = assets[mapped_asset_kind]
-
-        list_item.setArt({'icon' : item_img})
-        list_items.append(list_item)
-
-    # >> Execute select dialog
-    selected_kind_index = xbmcgui.Dialog().select('Edit Category default Assets/Artwork', list = list_items, useDetails = True)
-    if selected_kind_index < 0: 
-        return self._command_edit_category(category.get_id())
-        
-    selected_kind = asset_defaults.keys()[selected_kind_index]
-        
-    # >> Build ListItem of assets that can be mapped.
-    mappable_asset_list_items = []
-    for mappable_asset_kind in assets:
-        if mappable_asset_kind.kind == ASSET_TRAILER:
-            continue
-
-        list_item = xbmcgui.ListItem(label = mappable_asset_kind.name,
-                                     label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
-        list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
-        mappable_asset_list_items.append(list_item)
-
-    # >> Krypton feature: User preselected item in select() dialog.
-    preselected_index = asset_defaults.keys().index(selected_kind)
-    new_selected_kind_index = xbmcgui.Dialog().select('Choose Category default asset for {}'.format(selected_kind.name), 
-                                list = mappable_asset_list_items, useDetails = True, preselect = preselected_index)
-
-    if new_selected_kind_index < 0: 
-        return self._command_edit_category(category_id())
-
-    new_selected_kind = assets.keys()[new_selected_kind_index]
-    category.set_default_asset(selected_kind, new_selected_kind)
-    g_categoryRepository.save(category)
-    kodi_notify('Category {0} mapped to {1}'.format(selected_kind.name, new_selected_kind.name))
-
-    return self._subcommand_set_category_default_assets(category)
-
 # --- Export Category XML configuration ---
 def m_subcommand_export_category_xml(category):
     category_data = category.get_data_dic()
@@ -1930,11 +1822,6 @@ def m_subcommand_delete_category(category):
 # -------------------------------------------------------------------------------------------------
 # ROM Collections context menu atomic comands.
 # -------------------------------------------------------------------------------------------------
-def m_subcommand_edit_collection_assets(collection):
-    pass
-
-def m_subcommand_edit_collection_default_assets(collection):
-    pass
 
 # -------------------------------------------------------------------------------------------------
 # Launcher context menu atomic comands.
@@ -4068,123 +3955,505 @@ def m_gui_edit_rating(object_name, get_method, set_method):
 
     return True
 
-def m_gui_edit_object_assets(obj_kind, obj_instance):
+def m_gui_edit_object_assets(obj_instance):
+    log_debug('m_gui_edit_object_assets() obj_instance  {0}'.format(obj_instance.__class__.__name__))
+
     # --- Customize function for each object type ---
-    
+    if obj_instance.asset_kind == KIND_ASSET_CATEGORY:
+        dialog_title_str = 'Edit Category Assets/Artwork'
+        repository_obj = g_categoryRepository
+    elif obj_instance.asset_kind == KIND_ASSET_COLLECTION:
+        dialog_title_str = 'Edit ROM Collection Assets/Artwork'
+        repository_obj = g_collectionRepository
+    elif obj_instance.asset_kind == KIND_ASSET_LAUNCHER:
+        dialog_title_str = 'Edit Launcher Assets/Artwork'
+        repository_obj = g_launcherRepository
+    else:
+        kodi_dialog_OK('m_gui_edit_object_assets() Unknown obj_instance.asset_kind = {0}'.format(obj_instance.asset_kind) +
+                       'This is a bug, please report it.')
+        return
 
     # --- Build Dialog.select list ---
-    # --- Use Krypton useDetails to display label2 on select dialog ---
-    assets = category.get_assets()
+    # >> Use Krypton Dialog().select(useDetails = True) to display label2 on dialog.
+    asset_odict = obj_instance.get_assets_odict()
+    # dump_object_to_log('asset_odict', asset_odict)
+    # List to easily pick the selected AssetInfo() object
+    asset_info_list = []
     list_items = []
-    for asset_kind in assets:
-        # >> Create ListItems and label2
-        label1_text = 'Edit {0} ...'.format(asset_kind.name)
-        label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
-        list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
+    for asset_info_obj, asset_fname_str in asset_odict.iteritems():
+        # >> Create ListItems
+        # >> Label1 is the asset name (Icon, Fanart, etc.)
+        # >> Label2 is the asset filename str as in the database or 'Not set'
+        # >> setArt('icon') is the asset picture.
+        label1_str = 'Edit {0} ...'.format(asset_info_obj.name)
+        label2_stt = asset_fname_str if asset_fname_str else 'Not set'
+        list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_stt)
 
-        item_img = 'DefaultAddonNone.png'
-        if assets[asset_kind] != '':
-            item_path = FileNameFactory.create(assets[asset_kind])
+        # --- Check if asset filename exists ---
+        if asset_fname_str:
+            item_path = FileNameFactory.create(asset_fname_str)
             if item_path.is_video_file():
                 item_img = 'DefaultAddonVideo.png'
             else:
-                item_img = assets[asset_kind]
+                item_img = asset_fname_str
+        else:
+            item_img = 'DefaultAddonNone.png'
+        list_item.setArt({'icon' : item_img})
+
+        # --- Append to list of ListItems ---
+        list_items.append(list_item)
+        asset_info_list.append(asset_info_obj)
+
+    # --- Execute select dialog menu logic ---
+    selected_option = xbmcgui.Dialog().select(dialog_title_str, list = list_items, useDetails = True)
+    if selected_option < 0:
+        # >> Return to parent menu.
+        log_debug('m_gui_edit_object_assets() Selected NONE. Returning to parent menu.')
+    else:
+        # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
+        # >> The menu dialog is instantiated again so it reflects the changes just edited.
+        # >> If m_gui_edit_asset() returns True changes were made.
+        if m_gui_edit_asset(obj_instance, asset_info_list[selected_option]):
+            repository_obj.save(obj_instance)
+        m_gui_edit_object_assets(object_kind, obj_instance)
+
+#
+# Edit category/collection/launcher/ROM asset.
+# asset_info is a AssetInfo() object instance.
+#
+# NOTE When editing ROMs optional parameter launcher_dic is required.
+# NOTE Caller is responsible for saving the Categories/Launchers/ROMs.
+# NOTE If image is changed container should be updated so the user sees new image instantly.
+# NOTE obj_instance is edited by assigment.
+#
+# Returns:
+#   True   Changes made. Categories/Launchers/ROMs must be saved and container updated
+#   False  No changes were made. No necessary to refresh container
+#
+def m_gui_edit_asset(obj_instance, asset_info):
+    # --- Get asset object information ---
+    # Select/Import require: object_name, A, asset_path_noext
+    # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext
+
+    # --- New style code ---
+    asset_directory = FileNameFactory.create(g_settings['categories_asset_dir'])
+    asset_path_noext = assets_get_path_noext_SUFIX(asset_info.id, asset_directory,
+                                                   obj_instance.get_name(), obj_instance.get_id())
+    log_info('m_gui_edit_asset() Editing Category "{0}"'.format(asset_info.name))
+    log_info('m_gui_edit_asset() ID {0}'.format(obj_instance.get_id()))
+    log_debug('m_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
+    log_debug('m_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
+    if not asset_directory.exists():
+        log_error('Directory not found "{0}"'.format(asset_directory.getPath()))
+        kodi_dialog_OK('Directory to store Category artwork not found. '
+                       'Configure it before you can edit artwork.')
+        return False
+
+    # if object_kind == KIND_ASSET_CATEGORY:
+        # # --- Grab asset information for editing ---
+        # object_name = 'Category'
+        # # AInfo = assets_get_info_scheme(asset_kind)
+        # asset_directory = FileNameFactory.create(g_settings['categories_asset_dir'])
+        # asset_path_noext = assets_get_path_noext_SUFIX(asset_info.id, asset_directory,
+                                                       # obj_instance.get_name(), obj_instance.get_id())
+        # log_info('m_gui_edit_asset() Editing Category "{0}"'.format(asset_info.name))
+        # log_info('m_gui_edit_asset() ID {0}'.format(obj_instance.get_id()))
+        # log_debug('m_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
+        # log_debug('m_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
+        # if not asset_directory.exists():
+            # log_error('Directory not found "{0}"'.format(asset_directory.getPath()))
+            # kodi_dialog_OK('Directory to store Category artwork not configured or not found. '
+                           # 'Configure it before you can edit artwork.')
+            # return False
+
+    # elif object_kind == KIND_ASSET_COLLECTION:
+        # # --- Grab asset information for editing ---
+        # object_name = 'ROM Collection'
+        # # AInfo = assets_get_info_scheme(asset_kind)
+        # asset_directory = FileNameFactory.create(g_settings['collections_asset_dir'])
+        # asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+        # log_info('m_gui_edit_asset() Editing Collection "{0}"'.format(AInfo.name))
+        # log_info('m_gui_edit_asset() ID {0}'.format(object_dic['id']))
+        # log_debug('m_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
+        # log_debug('m_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
+        # if not asset_directory.exists():
+            # kodi_dialog_OK('Directory to store Collection artwork not configured or not found. '
+                           # 'Configure it before you can edit artwork.')
+            # return False
+
+    # elif object_kind == KIND_ASSET_LAUNCHER:
+        # # --- Grab asset information for editing ---
+        # object_name = 'Launcher'
+        # AInfo = assets_get_info_scheme(asset_kind)
+        # asset_directory = FileNameFactory.create(g_settings['launchers_asset_dir'])
+        # asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+        # log_info('m_gui_edit_asset() Editing Launcher "{0}"'.format(AInfo.name))
+        # log_info('m_gui_edit_asset() ID {0}'.format(object_dic['id']))
+        # log_debug('m_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
+        # log_debug('m_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
+        # if not asset_directory.exists():
+            # kodi_dialog_OK('Directory to store Launcher artwork not configured or not found. '
+                           # 'Configure it before you can edit artwork.')
+            # return False
+
+    # elif object_kind == KIND_ASSET_ROM:
+        # # --- Grab asset information for editing ---
+        # object_name = 'ROM'
+        # ROMfile = FileNameFactory.create(object_dic['filename'])
+        # AInfo   = assets_get_info_scheme(asset_kind)
+        # if categoryID == VCATEGORY_FAVOURITES_ID:
+            # log_info('m_gui_edit_asset() ROM is in Favourites')
+            # asset_directory  = FileNameFactory.create(g_settings['favourites_asset_dir'])
+            # platform         = object_dic['platform']
+            # asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
+        # elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            # log_info('m_gui_edit_asset() ROM is in Collection')
+            # asset_directory  = FileNameFactory.create(g_settings['collections_asset_dir'])
+            # platform         = object_dic['platform']
+            # asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
+        # else:
+            # log_info('m_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
+            # launcher         = g_launcherRepository.find(launcherID)
+            # asset_directory  = launcher.get_asset_path(AInfo)
+            # platform         = launcher.get_platform()
+            # asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile)
+
+        # current_asset_path = FileNameFactory.create(object_dic[AInfo.key])
+        # log_info('m_gui_edit_asset() Editing ROM {0}'.format(AInfo.name))
+        # log_info('m_gui_edit_asset() ROM ID {0}'.format(object_dic['id']))
+        # log_debug('m_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory.getOriginalPath()))
+        # log_debug('m_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext.getOriginalPath()))
+        # log_debug('m_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path.getOriginalPath()))
+        # log_debug('m_gui_edit_asset() platform           "{0}"'.format(platform))
+
+        # # --- Do not edit asset if asset directory not configured ---
+        # if not asset_directory.exists():
+            # kodi_dialog_OK('Directory to store {0} not configured or not found. '.format(AInfo.name) + \
+                           # 'Configure it before you can edit artwork.')
+            # return False
+
+    # else:
+        # log_error('m_gui_edit_asset() Unknown object_kind = {0}'.format(object_kind))
+        # kodi_notify_warn("Unknown object_kind '{0}'".format(object_kind))
+        # return False
+
+    # # --- Only enable scraper if support the asset ---
+    # # >> Scrapers only loaded if editing a ROM.
+    # if object_kind == KIND_ASSET_ROM:
+        # scraper_obj_list  = []
+        # scraper_menu_list = []
+        # for scrap_obj in scrapers_asset:
+            # if scrap_obj.supports_asset(asset_kind):
+                # scraper_obj_list.append(scrap_obj)
+                # scraper_menu_list.append('Scrape {0} from {1}'.format(AInfo.name, scrap_obj.name))
+                # log_verb('Scraper {0} supports scraping {1}'.format(scrap_obj.name, AInfo.name))
+            # else:
+                # log_verb('Scraper {0} does not support scraping {1}'.format(scrap_obj.name, AInfo.name))
+                # log_verb('Scraper DISABLED')
+
+    # --- Show image editing options ---
+    # >> Scrape only supported for ROMs (for the moment)
+    dialog = xbmcgui.Dialog()
+    common_menu_list = ['Select local {0}'.format(AInfo.kind_str),
+                        'Import local {0} (copy and rename)'.format(AInfo.kind_str),
+                        'Unset artwork/asset',]
+    if object_kind == KIND_ROM:
+        type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
+                              common_menu_list + scraper_menu_list)
+    else:
+        type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str), common_menu_list)
+    # >> User canceled select box ---
+    if type2 < 0: return False
+
+    # --- Link to a local image ---
+    if type2 == 0:
+        image_dir = FileNameFactory.create(object_dic[AInfo.key]).getDir() if object_dic[AInfo.key] else ''
+
+        log_debug('m_gui_edit_asset() Initial path "{0}"'.format(image_dir))
+        # >> ShowAndGetFile dialog
+        dialog = xbmcgui.Dialog()
+        if asset_kind == ASSET_MANUAL or asset_kind == ASSET_TRAILER:
+            image_file = dialog.browse(1, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
+                                       AInfo.exts_dialog, True, False, image_dir)
+        # >> ShowAndGetImage dialog
+        else:
+            image_file = dialog.browse(2, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
+                                       AInfo.exts_dialog, True, False, image_dir)
+        if not image_file: return False
+        image_file_path = FileNameFactory.create(image_file)
+        if not image_file or not image_file_path.exists(): return False
+
+        # --- Update object by assigment. XML/JSON will be save by parent ---
+        log_debug('m_gui_edit_asset() AInfo.key "{0}"'.format(AInfo.key))
+        object_dic[AInfo.key] = image_file_path.getOriginalPath()
+        kodi_notify('{0} {1} has been updated'.format(object_name, AInfo.name))
+        log_info('m_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, AInfo.name, image_file_path.getOriginalPath()))
+
+        # --- Update Kodi image cache ---
+        kodi_update_image_cache(image_file_path)
+
+    # --- Import an image ---
+    # >> Copy and rename a local image into asset directory
+    elif type2 == 1:
+        # >> If assets exists start file dialog from current asset directory
+        image_dir = ''
+        if object_dic[AInfo.key]: image_dir = FileNameFactory.create(object_dic[AInfo.key]).getDir()
+        log_debug('m_gui_edit_asset() Initial path "{0}"'.format(image_dir))
+        image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(AInfo.name), 'files',
+                                             AInfo.exts_dialog, True, False, image_dir)
+        image_FileName = FileNameFactory.create(image_file)
+        if not image_FileName.exists(): return False
+
+        # >> Determine image extension and dest filename. Check for errors.
+        dest_path_FileName = asset_path_noext.append(image_FileName.getExt())
+        log_debug('m_gui_edit_asset() image_file   "{0}"'.format(image_FileName.getOriginalPath()))
+        log_debug('m_gui_edit_asset() img_ext      "{0}"'.format(image_FileName.getExt()))
+        log_debug('m_gui_edit_asset() dest_path    "{0}"'.format(dest_path_FileName.getOriginalPath()))
+        if image_FileName.getPath() == dest_path_FileName.getPath():
+            log_info('m_gui_edit_asset() image_FileName and dest_path_FileName are the same. Returning.')
+            kodi_notify_warn('image_FileName and dest_path_FileName are the same. Returning')
+            return False
+
+        # --- Copy image file ---
+        try:
+            fs_encoding = get_fs_encoding()
+            shutil.copy(image_FileName.getPath().decode(fs_encoding), dest_path_FileName.getPath().decode(fs_encoding))
+        except OSError:
+            log_error('m_gui_edit_asset() OSError exception copying image')
+            kodi_notify_warn('OSError exception copying image')
+            return False
+        except IOError:
+            log_error('m_gui_edit_asset() IOError exception copying image')
+            kodi_notify_warn('IOError exception copying image')
+            return False
+
+        # >> Update object by assigment. XML will be save by parent.
+        # >> Always store original/raw paths in database.
+        object_dic[AInfo.key] = dest_path_FileName.getOriginalPath()
+        kodi_notify('{0} {1} has been updated'.format(object_name, AInfo.name))
+        log_info('m_gui_edit_asset() Copied file  "{0}"'.format(image_FileName.getOriginalPath()))
+        log_info('m_gui_edit_asset() Into         "{0}"'.format(dest_path_FileName.getOriginalPath()))
+        log_info('m_gui_edit_asset() Selected {0} {1} "{2}"'.format(object_name, AInfo.name, dest_path_FileName.getOriginalPath()))
+
+        # --- Update Kodi image cache ---
+        kodi_update_image_cache(dest_path_FileName)
+
+    # --- Unset asset ---
+    elif type2 == 2:
+        object_dic[AInfo.key] = ''
+        kodi_notify('{0} {1} has been unset'.format(object_name, AInfo.name))
+        log_info('m_gui_edit_asset() Unset {0} {1}'.format(object_name, AInfo.name))
+
+    # --- Manual scrape and choose from a list of images ---
+    # >> Copy asset scrape code into here and remove function _gui_scrap_image_semiautomatic()
+    elif type2 >= 3:
+        # --- Use the scraper chosen by user ---
+        scraper_index = type2 - 3
+        scraper_obj   = scraper_obj_list[scraper_index]
+        log_debug('m_gui_edit_asset() Scraper index {0}'.format(scraper_index))
+        log_debug('m_gui_edit_asset() User chose scraper "{0}"'.format(scraper_obj.name))
+
+        # --- Initialise asset scraper ---
+        # region        = g_settings['scraper_region']
+        # thumb_imgsize = g_settings['scraper_thumb_size']
+        # scraper_obj.set_options(region, thumb_imgsize)
+        # >> Must be like this: scraper_obj.set_options(g_settings)
+        # log_debug('m_gui_edit_asset() Initialised scraper "{0}"'.format(scraper_obj.name))
+
+        # --- Ask user to edit the image search string ---
+        keyboard = xbmc.Keyboard(object_dic['m_name'], 'Enter the string to search for ...')
+        keyboard.doModal()
+        if not keyboard.isConfirmed(): return False
+        search_string = keyboard.getText().decode('utf-8')
+
+        # --- Call scraper and get a list of games ---
+        # IMPORTANT Setting Kodi busy notification prevents the user to control the UI when a dialog with handler -1
+        #           has been called and nothing is displayed.
+        #           THIS PREVENTS THE RACE CONDITIONS THAT CAUSE TROUBLE IN ADVANCED LAUNCHER!!!
+        kodi_busydialog_ON()
+        results = scraper_obj.get_search(search_string, ROMfile.getBase_noext(), platform)
+        kodi_busydialog_OFF()
+        log_debug('{0} scraper found {1} result/s'.format(AInfo.name, len(results)))
+        if not results:
+            kodi_dialog_OK('Scraper found no matching games.')
+            log_debug('{0} scraper did not found any game'.format(AInfo.name))
+            return False
+
+        # --- Choose game to download image ---
+        if len(results) == 1:
+            selectgame = 0
+        else:
+            # >> Display corresponding game list found so user choses
+            rom_name_list = []
+            for game in results:
+                rom_name_list.append(game['display_name'])
+            selectgame = xbmcgui.Dialog().select('Select game for "{0}"'.format(search_string), rom_name_list)
+            if selectgame < 0: return False
+
+        # --- Grab list of images for the selected game ---
+        # >> Prevent race conditions
+        kodi_busydialog_ON()
+        image_list = scraper_obj.get_images(results[selectgame], asset_kind)
+        kodi_busydialog_OFF()
+        log_verb('{0} scraper returned {1} images'.format(AInfo.name, len(image_list)))
+        if not image_list:
+            kodi_dialog_OK('Scraper found no {0} '.format(AInfo.name) + 
+                           'images for game "{0}".'.format(results[selectgame]['display_name']))
+            return False
+
+        # --- Always do semi-automatic scraping when editing images ---
+        # If there is a local image add it to the list and show it to the user
+        if current_asset_path.exists():
+            image_list.insert(0, {'name'       : 'Current local image', 
+                                  'id'         : current_asset_path.getPath(),
+                                  'URL'        : current_asset_path.getPath(),
+                                  'asset_kind' : asset_kind})
+
+        # >> Convert list returned by scraper into a list the select window uses
+        ListItem_list = []
+        for item in image_list:
+            listitem_obj = xbmcgui.ListItem(label = item['name'], label2 = item['URL'])
+            listitem_obj.setArt({'icon' : item['URL']})
+            ListItem_list.append(listitem_obj)
+        # >> If there are no items in the list is because there is no current asst and scraper
+        # >> found nothing. Return.
+        if len(ListItem_list) == 0:
+            log_debug('m_gui_edit_asset() ListItem_list is empty. Returning.')
+            return False
+        # >> If there is only one item in the list do not show select dialog
+        elif len(ListItem_list) == 1:
+            log_debug('m_gui_edit_asset() ListItem_list has one element. Do not show select dialog.')
+            image_selected_index = 0
+        else:
+            image_selected_index = xbmcgui.Dialog().select('Select image', list = ListItem_list, useDetails = True)
+            log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
+        # >> User cancelled dialog
+        if image_selected_index < 0:
+            log_debug('m_gui_edit_asset() User cancelled image select dialog. Returning.')
+            return False
+
+        # >> User choose local image
+        if image_list[image_selected_index]['URL'] == current_asset_path.getPath():
+           log_debug('m_gui_edit_asset() Selected current image "{0}"'.format(current_asset_path.getPath()))
+           return False
+        else:
+            log_debug('m_gui_edit_asset() Downloading selected image ...')
+            # >> Resolve asset URL
+            kodi_busydialog_ON()
+            image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
+            kodi_busydialog_OFF()
+            log_debug('Resolved {0} URL "{1}"'.format(AInfo.name, image_url))
+            log_debug('URL extension "{0}"'.format(image_ext))
+            if not image_url or not image_ext:
+                log_error('m_gui_edit_asset() image_url or image_ext empty/not set')
+                return False
+
+            # ~~~ Download image ~~~
+            image_local_path = asset_path_noext.append(image_ext)
+            log_verb('Downloading URL "{0}"'.format(image_url))
+            log_verb('Into local file "{0}"'.format(image_local_path.getPath()))
+
+            # >> Prevent race conditions
+            kodi_busydialog_ON()
+            try:
+                net_download_img(image_url, image_local_path)
+            except socket.timeout:
+                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
+            kodi_busydialog_OFF()
+
+            # ~~~ Update Kodi cache with downloaded image ~~~
+            # Recache only if local image is in the Kodi cache, this function takes care of that.
+            kodi_update_image_cache(image_local_path)
+
+            # --- Notify user ---
+            kodi_notify('Downloaded {0} with {1} scraper'.format(AInfo.name, scraper_obj.name))
+
+        # --- Edit using Python pass by assigment ---
+        # >> If we reach this point is because an image was downloaded
+        # >> Caller is responsible to save Categories/Launchers/ROMs
+        object_dic[AInfo.key] = image_local_path.getOriginalPath()
+
+    # >> If we reach this point, changes were made.
+    # >> Categories/Launchers/ROMs must be saved, container must be refreshed.
+    return True
+
+#
+# Generic function to edit the Object default assets for 
+# icon/fanart/banner/poster/clearlogo context submenu.
+#
+def m_gui_edit_object_default_assets(obj_instance):
+    log_debug('m_gui_edit_object_assets() obj_instance  {0}'.format(obj_instance.__class__.__name__))
+
+    # --- Customize function for each object type ---
+    if obj_instance.asset_kind == KIND_ASSET_CATEGORY:
+        dialog_title_str = 'Edit Category default Assets/Artwork'
+        repository_obj = g_categoryRepository
+    elif obj_instance.asset_kind == KIND_ASSET_COLLECTION:
+        dialog_title_str = 'Edit ROM Collection default Assets/Artwork'
+        repository_obj = g_collectionRepository
+    elif obj_instance.asset_kind == KIND_ASSET_LAUNCHER:
+        dialog_title_str = 'Edit Launcher default Assets/Artwork'
+        repository_obj = g_launcherRepository
+    else:
+        kodi_dialog_OK('m_gui_edit_object_default_assets() Unknown obj_instance.asset_kind = {0}'.format(obj_instance.asset_kind) +
+                       'This is a bug, please report it.')
+        return
+
+    # --- Build Dialog.select() list ---
+    list_items = []
+    assets = category.get_assets()
+    asset_defaults = category.get_asset_defaults()
+    for asset_kind in asset_defaults:
+        mapped_asset_kind = asset_defaults[asset_kind]
+        mapped_asset_name = mapped_asset_kind.name if mapped_asset_kind else ''
+        mapped_asset = assets[mapped_asset_kind] if assets[mapped_asset_kind]  != '' else 'Not set'
+
+        # >> Create ListItems and label2
+        label1_text = 'Choose asset for {0} (currently {1})'.format(asset_kind.name, mapped_asset_name)
+        list_item = xbmcgui.ListItem(label = label1_text, label2 = mapped_asset)
+        # >> Set artwork with setArt()
+        item_img = 'DefaultAddonNone.png'
+        if assets[mapped_asset_kind] != '':
+            item_path = FileNameFactory.create(assets[mapped_asset_kind])
+            if item_path.is_video_file():
+                item_img = 'DefaultAddonVideo.png'
+            else:
+                item_img = assets[mapped_asset_kind]
+
         list_item.setArt({'icon' : item_img})
         list_items.append(list_item)
 
     # --- Execute select dialog menu logic ---
-    selected_option = xbmcgui.Dialog().select('Edit Category Assets/Artwork', list = list_items, useDetails = True)
-    if selected_option < 0:
-        # >> Return recursively to parent menu.
-        log_debug('m_subcommand_edit_category_assets() Selected NONE')
+    selected_kind_index = xbmcgui.Dialog().select(dialog_title_str, list = list_items, useDetails = True)
+    if selected_kind_index < 0:
+        log_debug('m_gui_edit_object_default_assets() Selected NONE. Returning to parent menu.')
     else:
-        # >> Execute category edit asset menu subcommand.
-        # >> Then, execute recursively this submenu again.
-        # >> The parent menu dialog is instantiated again so it reflects the changes just edited.
-        # >> If m_gui_edit_asset() returns True changes were made.
-        selected_asset_kind = assets.keys()[selected_option]
-        if m_gui_edit_asset(KIND_CATEGORY, selected_asset_kind.kind, category.get_data_dic()): 
-            g_categoryRepository.save(category)
-        m_subcommand_edit_category_assets(category)
+        # --- Build ListItem of assets that can be mapped ---
+        selected_kind = asset_defaults.keys()[selected_kind_index]
+        mappable_asset_list_items = []
+        for mappable_asset_kind in assets:
+            if mappable_asset_kind.kind == ASSET_TRAILER:
+                continue
 
-# Next three functions are obsolete and will be deleted soon.
-def m_list_edit_category_metadata(metadata_name, options, default_value, get_method, set_method):
-    if not isinstance(options, dict): 
-        options = {item: item for (item) in options}
-    preselected_value = default_value
-    previous_value = get_method()
-    log_debug('Category currently has "{0}" set for {1}'.format(previous_value, metadata_name))
+            list_item = xbmcgui.ListItem(label = mappable_asset_kind.name,
+                                         label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
+            list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
+            mappable_asset_list_items.append(list_item)
 
-    if previous_value in options.keys():
-        preselected_value = previous_value
+        # >> Krypton feature: User preselected item in select() dialog.
+        preselected_index = asset_defaults.keys().index(selected_kind)
+        new_selected_kind_index = xbmcgui.Dialog().select('Choose Category default asset for {}'.format(selected_kind.name), 
+                                    list = mappable_asset_list_items, useDetails = True, preselect = preselected_index)
 
-    selected_option = KodiDictionaryDialog().select('Select the {0}'.format(metadata_name),
-                                                    options, preselect = preselected_value)
+        if new_selected_kind_index < 0:
+            return self._command_edit_category(category_id())
 
-    if selected_option is None:
-        return False
+        new_selected_kind = assets.keys()[new_selected_kind_index]
+        category.set_default_asset(selected_kind, new_selected_kind)
+        g_categoryRepository.save(category)
+        kodi_notify('Category {0} mapped to {1}'.format(selected_kind.name, new_selected_kind.name))
 
-    if selected_option == previous_value:
-        kodi_notify('Category {0} not changed'.format(metadata_name))
-        return False
-
-    set_method(selected_option)
-    textual_option = options[selected_option]
-    kodi_notify('Category {0} is now {1}'.format(metadata_name, textual_option))
-
-    return True
-
-def m_list_edit_launcher_metadata(metadata_name, options, default_value, get_method, set_method):
-    if not isinstance(options, dict): 
-        options = {item: item for (item) in options}
-    preselected_value = default_value
-    previous_value = get_method()
-
-    log_debug('Launcher currently has "{0}" set for {1}'.format(previous_value, metadata_name))
-
-    if previous_value in options.keys():
-        preselected_value = previous_value
-
-    dialog = DictionaryDialog()
-    selected_option = dialog.select('Select the {0}'.format(metadata_name), options, preselect = preselected_value)
-    
-    if selected_option is None:
-        return False
-    
-    if selected_option == previous_value:
-        kodi_notify('Launcher {0} not changed'.format(metadata_name))
-        return False
-
-    set_method(selected_option)
-    textual_option = options[selected_option]
-    kodi_notify('Launcher {0} is now {1}'.format(metadata_name, textual_option))
-    return True
-
-def m_list_edit_rom_metadata(metadata_name, options, default_value, get_method, set_method):
-    if not isinstance(options, dict): 
-        options = {item: item for (item) in options}
-    preselected_value = default_value
-    previous_value = get_method()
-
-    log_debug('ROM currently has "{0}" set for {1}'.format(previous_value, metadata_name))
-
-    if previous_value in options.keys():
-        preselected_value = previous_value
-
-    dialog = DictionaryDialog()
-    selected_option = dialog.select('Select the {0}'.format(metadata_name), options, preselect = preselected_value)
-    
-    if selected_option is None:
-        return False
-    
-    if selected_option == previous_value:
-        kodi_notify('ROM {0} not changed'.format(metadata_name))
-        return False
-
-    set_method(selected_option)
-    textual_option = options[selected_option]
-    kodi_notify('ROM {0} is now {1}'.format(metadata_name, textual_option))
-    return True
+        return self._subcommand_set_category_default_assets(category)
 
 # -------------------------------------------------------------------------------------------------
 # Render methods
@@ -8621,354 +8890,6 @@ def m_gui_scrap_launcher_metadata(launcherID, scraper_obj):
     launcher.update_plot(gamedata['plot'])
 
     # >> Changes were made
-    return True
-
-#
-# Edit category/launcher/rom asset.
-#
-# NOTE Scrapers are loaded by the _command_edit_* functions (caller of this function).
-# NOTE When editing ROMs optional parameter launcher_dic is required.
-# NOTE Caller is responsible for saving the Categories/Launchers/ROMs.
-# NOTE if image is changed container should be updated so the user sees new image instantly.
-# NOTE object_dic is edited by assigment.
-# NOTE A ROM in Favourites has categoryID = VCATEGORY_FAVOURITES_ID.
-#      a ROM in a collection categoryID = VCATEGORY_COLLECTIONS_ID.
-#
-# Returns:
-#   True   Changes made. Categories/Launchers/ROMs must be saved and container updated
-#   False  No changes were made. No necessary to refresh container
-#
-def m_gui_edit_asset(object_kind, asset_kind, object_dic, categoryID = '', launcherID = ''):
-    # --- Get asset object information ---
-    # Select/Import require: object_name, A, asset_path_noext
-    #
-    # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext
-    #
-    if object_kind == KIND_CATEGORY:
-        # --- Grab asset information for editing ---
-        object_name = 'Category'
-        AInfo = assets_get_info_scheme(asset_kind)
-        asset_directory = FileNameFactory.create(g_settings['categories_asset_dir'])
-        asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
-        log_info('_gui_edit_asset() Editing Category "{0}"'.format(AInfo.name))
-        log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
-        log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
-        log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
-       
-        if not asset_directory.exists():
-            kodi_dialog_OK('Directory to store Category artwork not configured or not found. '
-                           'Configure it before you can edit artwork.')
-            return False
-
-    elif object_kind == KIND_COLLECTION:
-        # --- Grab asset information for editing ---
-        object_name = 'Collection'
-        AInfo = assets_get_info_scheme(asset_kind)
-        asset_directory = FileNameFactory.create(g_settings['collections_asset_dir'])
-        asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
-        log_info('_gui_edit_asset() Editing Collection "{0}"'.format(AInfo.name))
-        log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
-        log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
-        log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
-        if not asset_directory.exists():
-            kodi_dialog_OK('Directory to store Collection artwork not configured or not found. '
-                           'Configure it before you can edit artwork.')
-            return False
-
-    elif object_kind == KIND_LAUNCHER:
-        # --- Grab asset information for editing ---
-        object_name = 'Launcher'
-        AInfo = assets_get_info_scheme(asset_kind)
-        asset_directory = FileNameFactory.create(g_settings['launchers_asset_dir'])
-        asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
-        log_info('_gui_edit_asset() Editing Launcher "{0}"'.format(AInfo.name))
-        log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
-        log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
-        log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
-        if not asset_directory.exists():
-            kodi_dialog_OK('Directory to store Launcher artwork not configured or not found. '
-                           'Configure it before you can edit artwork.')
-            return False
-
-    elif object_kind == KIND_ROM:
-        # --- Grab asset information for editing ---
-        object_name = 'ROM'
-        ROMfile = FileNameFactory.create(object_dic['filename'])
-        AInfo   = assets_get_info_scheme(asset_kind)
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            log_info('_gui_edit_asset() ROM is in Favourites')
-            asset_directory  = FileNameFactory.create(g_settings['favourites_asset_dir'])
-            platform         = object_dic['platform']
-            asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_info('_gui_edit_asset() ROM is in Collection')
-            asset_directory  = FileNameFactory.create(g_settings['collections_asset_dir'])
-            platform         = object_dic['platform']
-            asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
-        else:
-            log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
-            launcher         = g_launcherRepository.find(launcherID)
-            asset_directory  = launcher.get_asset_path(AInfo)
-            platform         = launcher.get_platform()
-            asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile)
-
-        current_asset_path = FileNameFactory.create(object_dic[AInfo.key])
-        log_info('_gui_edit_asset() Editing ROM {0}'.format(AInfo.name))
-        log_info('_gui_edit_asset() ROM ID {0}'.format(object_dic['id']))
-        log_debug('_gui_edit_asset() asset_directory    "{0}"'.format(asset_directory.getOriginalPath()))
-        log_debug('_gui_edit_asset() asset_path_noext   "{0}"'.format(asset_path_noext.getOriginalPath()))
-        log_debug('_gui_edit_asset() current_asset_path "{0}"'.format(current_asset_path.getOriginalPath()))
-        log_debug('_gui_edit_asset() platform           "{0}"'.format(platform))
-
-        # --- Do not edit asset if asset directory not configured ---
-        if not asset_directory.exists():
-            kodi_dialog_OK('Directory to store {0} not configured or not found. '.format(AInfo.name) + \
-                           'Configure it before you can edit artwork.')
-            return False
-
-    else:
-        log_error('_gui_edit_asset() Unknown object_kind = {0}'.format(object_kind))
-        kodi_notify_warn("Unknown object_kind '{0}'".format(object_kind))
-        return False
-
-    # --- Only enable scraper if support the asset ---
-    # >> Scrapers only loaded if editing a ROM
-    if object_kind == KIND_ROM:
-        scraper_obj_list  = []
-        scraper_menu_list = []
-        for scrap_obj in scrapers_asset:
-            if scrap_obj.supports_asset(asset_kind):
-                scraper_obj_list.append(scrap_obj)
-                scraper_menu_list.append('Scrape {0} from {1}'.format(AInfo.name, scrap_obj.name))
-                log_verb('Scraper {0} supports scraping {1}'.format(scrap_obj.name, AInfo.name))
-            else:
-                log_verb('Scraper {0} does not support scraping {1}'.format(scrap_obj.name, AInfo.name))
-                log_verb('Scraper DISABLED')
-
-    # --- Show image editing options ---
-    # >> Scrape only supported for ROMs (for the moment)
-    dialog = xbmcgui.Dialog()
-    common_menu_list = ['Select local {0}'.format(AInfo.kind_str),
-                        'Import local {0} (copy and rename)'.format(AInfo.kind_str),
-                        'Unset artwork/asset',]
-    if object_kind == KIND_ROM:
-        type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
-                              common_menu_list + scraper_menu_list)
-    else:
-        type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str), common_menu_list)
-    # >> User canceled select box ---
-    if type2 < 0: return False
-
-    # --- Link to a local image ---
-    if type2 == 0:
-        image_dir = FileNameFactory.create(object_dic[AInfo.key]).getDir() if object_dic[AInfo.key] else ''
-
-        log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
-        # >> ShowAndGetFile dialog
-        dialog = xbmcgui.Dialog()
-        if asset_kind == ASSET_MANUAL or asset_kind == ASSET_TRAILER:
-            image_file = dialog.browse(1, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
-                                       AInfo.exts_dialog, True, False, image_dir)
-        # >> ShowAndGetImage dialog
-        else:
-            image_file = dialog.browse(2, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
-                                       AInfo.exts_dialog, True, False, image_dir)
-        if not image_file: return False
-        image_file_path = FileNameFactory.create(image_file)
-        if not image_file or not image_file_path.exists(): return False
-
-        # --- Update object by assigment. XML/JSON will be save by parent ---
-        log_debug('_gui_edit_asset() AInfo.key "{0}"'.format(AInfo.key))
-        object_dic[AInfo.key] = image_file_path.getOriginalPath()
-        kodi_notify('{0} {1} has been updated'.format(object_name, AInfo.name))
-        log_info('_gui_edit_asset() Linked {0} {1} "{2}"'.format(object_name, AInfo.name, image_file_path.getOriginalPath()))
-
-        # --- Update Kodi image cache ---
-        kodi_update_image_cache(image_file_path)
-
-    # --- Import an image ---
-    # >> Copy and rename a local image into asset directory
-    elif type2 == 1:
-        # >> If assets exists start file dialog from current asset directory
-        image_dir = ''
-        if object_dic[AInfo.key]: image_dir = FileNameFactory.create(object_dic[AInfo.key]).getDir()
-        log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
-        image_file = xbmcgui.Dialog().browse(2, 'Select {0} image'.format(AInfo.name), 'files',
-                                             AInfo.exts_dialog, True, False, image_dir)
-        image_FileName = FileNameFactory.create(image_file)
-        if not image_FileName.exists(): return False
-
-        # >> Determine image extension and dest filename. Check for errors.
-        dest_path_FileName = asset_path_noext.append(image_FileName.getExt())
-        log_debug('_gui_edit_asset() image_file   "{0}"'.format(image_FileName.getOriginalPath()))
-        log_debug('_gui_edit_asset() img_ext      "{0}"'.format(image_FileName.getExt()))
-        log_debug('_gui_edit_asset() dest_path    "{0}"'.format(dest_path_FileName.getOriginalPath()))
-        if image_FileName.getPath() == dest_path_FileName.getPath():
-            log_info('_gui_edit_asset() image_FileName and dest_path_FileName are the same. Returning.')
-            kodi_notify_warn('image_FileName and dest_path_FileName are the same. Returning')
-            return False
-
-        # --- Copy image file ---
-        try:
-            fs_encoding = get_fs_encoding()
-            shutil.copy(image_FileName.getPath().decode(fs_encoding), dest_path_FileName.getPath().decode(fs_encoding))
-        except OSError:
-            log_error('_gui_edit_asset() OSError exception copying image')
-            kodi_notify_warn('OSError exception copying image')
-            return False
-        except IOError:
-            log_error('_gui_edit_asset() IOError exception copying image')
-            kodi_notify_warn('IOError exception copying image')
-            return False
-
-        # >> Update object by assigment. XML will be save by parent.
-        # >> Always store original/raw paths in database.
-        object_dic[AInfo.key] = dest_path_FileName.getOriginalPath()
-        kodi_notify('{0} {1} has been updated'.format(object_name, AInfo.name))
-        log_info('_gui_edit_asset() Copied file  "{0}"'.format(image_FileName.getOriginalPath()))
-        log_info('_gui_edit_asset() Into         "{0}"'.format(dest_path_FileName.getOriginalPath()))
-        log_info('_gui_edit_asset() Selected {0} {1} "{2}"'.format(object_name, AInfo.name, dest_path_FileName.getOriginalPath()))
-
-        # --- Update Kodi image cache ---
-        kodi_update_image_cache(dest_path_FileName)
-
-    # --- Unset asset ---
-    elif type2 == 2:
-        object_dic[AInfo.key] = ''
-        kodi_notify('{0} {1} has been unset'.format(object_name, AInfo.name))
-        log_info('_gui_edit_asset() Unset {0} {1}'.format(object_name, AInfo.name))
-
-    # --- Manual scrape and choose from a list of images ---
-    # >> Copy asset scrape code into here and remove function _gui_scrap_image_semiautomatic()
-    elif type2 >= 3:
-        # --- Use the scraper chosen by user ---
-        scraper_index = type2 - 3
-        scraper_obj   = scraper_obj_list[scraper_index]
-        log_debug('_gui_edit_asset() Scraper index {0}'.format(scraper_index))
-        log_debug('_gui_edit_asset() User chose scraper "{0}"'.format(scraper_obj.name))
-
-        # --- Initialise asset scraper ---
-        # region        = g_settings['scraper_region']
-        # thumb_imgsize = g_settings['scraper_thumb_size']
-        # scraper_obj.set_options(region, thumb_imgsize)
-        # >> Must be like this: scraper_obj.set_options(g_settings)
-        # log_debug('_gui_edit_asset() Initialised scraper "{0}"'.format(scraper_obj.name))
-
-        # --- Ask user to edit the image search string ---
-        keyboard = xbmc.Keyboard(object_dic['m_name'], 'Enter the string to search for ...')
-        keyboard.doModal()
-        if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText().decode('utf-8')
-
-        # --- Call scraper and get a list of games ---
-        # IMPORTANT Setting Kodi busy notification prevents the user to control the UI when a dialog with handler -1
-        #           has been called and nothing is displayed.
-        #           THIS PREVENTS THE RACE CONDITIONS THAT CAUSE TROUBLE IN ADVANCED LAUNCHER!!!
-        kodi_busydialog_ON()
-        results = scraper_obj.get_search(search_string, ROMfile.getBase_noext(), platform)
-        kodi_busydialog_OFF()
-        log_debug('{0} scraper found {1} result/s'.format(AInfo.name, len(results)))
-        if not results:
-            kodi_dialog_OK('Scraper found no matching games.')
-            log_debug('{0} scraper did not found any game'.format(AInfo.name))
-            return False
-
-        # --- Choose game to download image ---
-        if len(results) == 1:
-            selectgame = 0
-        else:
-            # >> Display corresponding game list found so user choses
-            rom_name_list = []
-            for game in results:
-                rom_name_list.append(game['display_name'])
-            selectgame = xbmcgui.Dialog().select('Select game for "{0}"'.format(search_string), rom_name_list)
-            if selectgame < 0: return False
-
-        # --- Grab list of images for the selected game ---
-        # >> Prevent race conditions
-        kodi_busydialog_ON()
-        image_list = scraper_obj.get_images(results[selectgame], asset_kind)
-        kodi_busydialog_OFF()
-        log_verb('{0} scraper returned {1} images'.format(AInfo.name, len(image_list)))
-        if not image_list:
-            kodi_dialog_OK('Scraper found no {0} '.format(AInfo.name) + 
-                           'images for game "{0}".'.format(results[selectgame]['display_name']))
-            return False
-
-        # --- Always do semi-automatic scraping when editing images ---
-        # If there is a local image add it to the list and show it to the user
-        if current_asset_path.exists():
-            image_list.insert(0, {'name'       : 'Current local image', 
-                                  'id'         : current_asset_path.getPath(),
-                                  'URL'        : current_asset_path.getPath(),
-                                  'asset_kind' : asset_kind})
-
-        # >> Convert list returned by scraper into a list the select window uses
-        ListItem_list = []
-        for item in image_list:
-            listitem_obj = xbmcgui.ListItem(label = item['name'], label2 = item['URL'])
-            listitem_obj.setArt({'icon' : item['URL']})
-            ListItem_list.append(listitem_obj)
-        # >> If there are no items in the list is because there is no current asst and scraper
-        # >> found nothing. Return.
-        if len(ListItem_list) == 0:
-            log_debug('_gui_edit_asset() ListItem_list is empty. Returning.')
-            return False
-        # >> If there is only one item in the list do not show select dialog
-        elif len(ListItem_list) == 1:
-            log_debug('_gui_edit_asset() ListItem_list has one element. Do not show select dialog.')
-            image_selected_index = 0
-        else:
-            image_selected_index = xbmcgui.Dialog().select('Select image', list = ListItem_list, useDetails = True)
-            log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
-        # >> User cancelled dialog
-        if image_selected_index < 0:
-            log_debug('_gui_edit_asset() User cancelled image select dialog. Returning.')
-            return False
-
-        # >> User choose local image
-        if image_list[image_selected_index]['URL'] == current_asset_path.getPath():
-           log_debug('_gui_edit_asset() Selected current image "{0}"'.format(current_asset_path.getPath()))
-           return False
-        else:
-            log_debug('_gui_edit_asset() Downloading selected image ...')
-            # >> Resolve asset URL
-            kodi_busydialog_ON()
-            image_url, image_ext = scraper_obj.resolve_image_URL(image_list[image_selected_index])
-            kodi_busydialog_OFF()
-            log_debug('Resolved {0} URL "{1}"'.format(AInfo.name, image_url))
-            log_debug('URL extension "{0}"'.format(image_ext))
-            if not image_url or not image_ext:
-                log_error('_gui_edit_asset() image_url or image_ext empty/not set')
-                return False
-
-            # ~~~ Download image ~~~
-            image_local_path = asset_path_noext.append(image_ext)
-            log_verb('Downloading URL "{0}"'.format(image_url))
-            log_verb('Into local file "{0}"'.format(image_local_path.getPath()))
-
-            # >> Prevent race conditions
-            kodi_busydialog_ON()
-            try:
-                net_download_img(image_url, image_local_path)
-            except socket.timeout:
-                kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
-            kodi_busydialog_OFF()
-
-            # ~~~ Update Kodi cache with downloaded image ~~~
-            # Recache only if local image is in the Kodi cache, this function takes care of that.
-            kodi_update_image_cache(image_local_path)
-
-            # --- Notify user ---
-            kodi_notify('Downloaded {0} with {1} scraper'.format(AInfo.name, scraper_obj.name))
-
-        # --- Edit using Python pass by assigment ---
-        # >> If we reach this point is because an image was downloaded
-        # >> Caller is responsible to save Categories/Launchers/ROMs
-        object_dic[AInfo.key] = image_local_path.getOriginalPath()
-
-    # >> If we reach this point, changes were made.
-    # >> Categories/Launchers/ROMs must be saved, container must be refreshed.
     return True
 
 #
