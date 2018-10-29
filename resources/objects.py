@@ -346,7 +346,7 @@ a_icon.key              = 's_icon'
 a_icon.default_key      = 'default_icon'
 a_icon.rom_default_key  = 'roms_default_icon'
 a_icon.name             = 'Icon'
-a_icon.plural           = 'Icons'
+a_icon.name_plural      = 'Icons'
 a_icon.fname_infix      = 'icon'
 a_icon.kind_str         = 'image'
 a_icon.exts             = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
@@ -598,16 +598,14 @@ def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
 # First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
 # Favourites special category there could be ROMs with the same name for different systems.
 #
-# Assets    -> Assets info object
-# AssetPath -> FileName object
+# asset_ID         -> Assets ID defined in constants.py
+# AssetPath        -> FileName object
 # asset_base_noext -> Unicode string
-# objectID -> Object MD5 ID fingerprint (Unicode string)
+# objectID         -> Object MD5 ID fingerprint (Unicode string)
 #
 # Returns a FileName object
 #
 def assets_get_path_noext_SUFIX(asset_ID, AssetPath, asset_base_noext, objectID = '000'):
-    # >> Returns asset/artwork path_noext
-    asset_path_noext_FN = FileNameFactory.create('')
     objectID_str = '_' + objectID[0:3]
 
     if   asset_ID == ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
@@ -626,6 +624,7 @@ def assets_get_path_noext_SUFIX(asset_ID, AssetPath, asset_base_noext, objectID 
     elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
     elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
     else:
+        asset_path_noext_FN = FileName('')
         log_error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
 
     return asset_path_noext_FN
@@ -1577,17 +1576,14 @@ class MetaDataItem(object):
 
         return self.entity_data[asset_info.key] != None and self.entity_data[asset_info.key] != ''
 
-    def get_asset(self, asset_info):
-        return self.entity_data[asset_info.key] if asset_info.key in self.entity_data else None
+    def get_asset_str(self, asset_info):
+        return self.entity_data[asset_info.key] if asset_info.key in self.entity_data else ''
 
-    def get_asset_file(self, asset_info):
-        asset = self.get_asset(asset_info)
-        if asset is None: return None
+    def get_asset_FN(self, asset_info):
+        return FileName(self.get_asset_str(asset_info))
 
-        return FileNameFactory.create(asset)
-
-    def set_asset(self, asset_info, path):
-        self.entity_data[asset_info.key] = path.getOriginalPath()
+    def set_asset(self, asset_info, path_FN):
+        self.entity_data[asset_info.key] = path_FN.getOriginalPath()
 
     def clear_asset(self, asset_info):
         self.entity_data[asset_info.key] = ''

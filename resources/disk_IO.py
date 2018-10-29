@@ -1877,7 +1877,7 @@ def fs_import_category_NFO(nfo_FileName, category_data):
 #
 def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
-    nfo_dir = FileNameFactory.create(settings['categories_asset_dir'])
+    nfo_dir = FileName(settings['categories_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(category_name + '.nfo')
     log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
 

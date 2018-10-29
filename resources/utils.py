@@ -956,8 +956,8 @@ class FileNameBase():
         return os.path.dirname(self.path)
 
     # Returns a new FileName object.
-    def getDirAsFileName(self):
-        return self.__init__(self.getDir())
+    # def getDirAsFileName(self):
+    #     return self.__init__(self.getDir())
 
     def getBase(self):
         return os.path.basename(self.path)
@@ -1575,25 +1575,28 @@ def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 #
-# NOTE I think Krypton introduced new API functions to activate the busy dialog window. Check that
-#      out!
-# NOTE Deprecated in Leia! Do not use busydialogs anymore!!!!!
+# Deprecated in Leia! Do not use busydialogs anymore!!!!!
+# See https://forum.kodi.tv/showthread.php?tid=303073&pid=2739256#pid2739256
+# See https://github.com/xbmc/xbmc/pull/13954
+# See https://github.com/xbmc/xbmc/pull/13958
 #
-def kodi_busydialog_ON():
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
+# def kodi_busydialog_ON():
+#     xbmc.executebuiltin('ActivateWindow(busydialog)')
 
-def kodi_busydialog_OFF():
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
+# def kodi_busydialog_OFF():
+#     xbmc.executebuiltin('Dialog.Close(busydialog)')
 
 def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
 def kodi_toogle_fullscreen():
-    json_str = ('{"jsonrpc" : "2.0", "id" : "1",'
-                '"method" : "Input.ExecuteAction",'
-                '"params" : {"action" : "togglefullscreen"}}')
-
+    json_str = ('{'
+        '"jsonrpc" : "2.0", "id" : "1", '
+        '"method" : "Input.ExecuteAction", '
+        '"params" : { "action" : "togglefullscreen" }'
+        '}'
+    )
     xbmc.executeJSONRPC(json_str)
 
 #
@@ -1652,6 +1655,39 @@ def kodi_display_text_window_mono(window_title, info_text):
 #
 def kodi_display_text_window(window_title, info_text):
     xbmcgui.Dialog().textviewer(window_title, info_text)
+
+#
+# Kodi dialog to select a file
+# Documentation in https://alwinesch.github.io/group__python___dialog.html
+#
+def kodi_dialog_GetDirectory(title_str, ext_list, current_dir):
+    new_dir = xbmcgui.Dialog().browse(0, title_str, 'files', ext_list, True, False, current_dir)
+
+    return new_dir.decode('utf-8')
+
+def kodi_dialog_GetFile(title_str, ext_list, current_dir):
+    new_file = xbmcgui.Dialog().browse(1, title_str, 'files', ext_list, True, False, current_dir)
+
+    return new_file.decode('utf-8')
+
+def kodi_dialog_GetImage(title_str, ext_list, current_dir):
+    new_image = xbmcgui.Dialog().browse(2, title_str, 'files', ext_list, True, False, current_dir)
+
+    return new_image.decode('utf-8')
+
+# -------------------------------------------------------------------------------------------------
+# Determine Kodi version and create some constants to allow version-dependent code.
+# This if useful to work around bugs in Kodi core.
+# -------------------------------------------------------------------------------------------------
+def kodi_get_Kodi_major_version():
+    rpc_dic = kodi_jsonrpc_query('Application.GetProperties', '"properties" : ["version"]')
+
+    return rpc_dic['version']['major']
+kodi_running_version = kodi_get_Kodi_major_version()
+
+# --- Version constants. Minimum required version is Kodi Krypton ---
+KODI_VERSION_KRYPTON = 17
+KODI_VERSION_LEIA    = 18
 
 # -------------------------------------------------------------------------------------------------
 # Kodi Wizards (by Chrisism)
@@ -1871,7 +1907,6 @@ class KodiDummyWizardDialog(KodiWizardDialog):
         super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
-        
         log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
         return self.predefinedValue
 
