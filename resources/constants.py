@@ -28,6 +28,13 @@ PLOT_STR_MAXSIZE = 40
 RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
 LNK_LAUNCHER_APP_NAME         = 'lnk_launcher_app'
 
+# --- Log level constants -------------------------------------------------------------------------
+LOG_ERROR   = 0
+LOG_WARNING = 1
+LOG_INFO    = 2
+LOG_VERB    = 3
+LOG_DEBUG   = 4
+
 # --- Kind of assets (for edit context menus and scrapers) ---
 KIND_ASSET_CATEGORY   = 1
 KIND_ASSET_COLLECTION = 2

@@ -82,10 +82,10 @@ __addon_type__    = __addon__.getAddonInfo('type').decode('utf-8')
 class AEL_Paths:
     def __init__(self):
         # --- Base paths ---
-        self.ADDONS_DATA_DIR  = FileNameFactory.create('special://profile/addon_data')
+        self.ADDONS_DATA_DIR  = FileName('special://profile/addon_data')
         self.ADDON_DATA_DIR   = self.ADDONS_DATA_DIR.pjoin(__addon_id__)
-        self.PROFILE_DIR      = FileNameFactory.create('special://profile')
-        self.HOME_DIR         = FileNameFactory.create('special://home')
+        self.PROFILE_DIR      = FileName('special://profile')
+        self.HOME_DIR         = FileName('special://home')
         self.ADDONS_DIR       = self.HOME_DIR.pjoin('addons')
         self.ADDON_CODE_DIR   = self.ADDONS_DIR.pjoin(__addon_id__)
         self.ICON_FILE_PATH   = self.ADDON_CODE_DIR.pjoin('media/icon.png')

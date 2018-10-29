@@ -822,23 +822,19 @@ class AESCipher(object):
 # Filesystem utilities
 # #################################################################################################
 # #################################################################################################
-
-# -------------------------------------------------------------------------------------------------
-# Factory for creating new FileName instances.
-# Can either create a FileName base on Kodi xmbcvfs or Python standard library.
-# -------------------------------------------------------------------------------------------------
-class FileNameFactory():
-    @staticmethod
-    def create(pathString, no_xbmcvfs = False):
-        if no_xbmcvfs:
-            return StandardFileName(pathString)
-
-        return KodiFileName(pathString)
-
 # -------------------------------------------------------------------------------------------------
 # Filesystem abstract base class
 # This class and classes that inherit this one always take and return Unicode string paths.
 # Decoding Unicode to UTF-8 or whatever must be done in the caller code.
+#
+# --- Function reference ---
+# FileName.getOriginalPath() Full path                                     /home/Wintermute/Sonic.zip
+# FileName.getPath()         Full path                                     /home/Wintermute/Sonic.zip
+# FileName.getPathNoExt()    Full path with no extension                   /home/Wintermute/Sonic
+# FileName.getDir()          Directory name of file. Does not end in '/'   /home/Wintermute/
+# FileName.getBase()         File name with no path                        Sonic.zip
+# FileName.getBaseNoExt()    File name with no path and no extension       Sonic
+# FileName.getExt()          File extension                                .zip
 #
 # IMPROVE THE DOCUMENTATION OF THIS CLASS AND HOW IT HANDLES EXCEPTIONS AND ERROR REPORTING!!!
 #
@@ -847,14 +843,17 @@ class FileNameFactory():
 # C) Uses xbmcvfs wherever possible
 #
 # -------------------------------------------------------------------------------------------------
-class FileName():
+class FileNameBase():
     __metaclass__ = abc.ABCMeta
 
+    # ---------------------------------------------------------------------------------------------
+    # Core functions.
+    # ---------------------------------------------------------------------------------------------
     # pathString must be a Unicode string object
     def __init__(self, pathString):
         self.originalPath = pathString
-        self.path         = pathString
-        
+        self.path = pathString
+
         # --- Path transformation ---
         if self.originalPath.lower().startswith('smb:'):
             self.path = self.path.replace('smb:', '')
@@ -865,38 +864,54 @@ class FileName():
         elif self.originalPath.lower().startswith('special:'):
             self.path = xbmc.translatePath(self.path)
 
-    # abstract protected method, to be implemented in child classes.
+    # Abstract protected method, to be implemented in child classes.
     # Will return a new instance of the desired child implementation.
-    @abc.abstractmethod
-    def __create__(self, pathString):
-        return FileName(pathString)
+    # NOTE No fancy stuff in this class. This class must be as efficient as possible, otherwise
+    # AEL will have a serious performance hit.
+    # @abc.abstractmethod
+    # def __create__(self, pathString):
+    #     return FileName(pathString)
 
-    def _join_raw(self, arg):
-        self.path         = os.path.join(self.path, arg)
-        self.originalPath = os.path.join(self.originalPath, arg)
+    def _decodeName(self, name):
+        if type(name) == str:
+            try:
+                name = name.decode('utf8')
+            except:
+                name = name.decode('windows-1252')
 
-        return self
+        return name
 
     # Appends a string to path. Returns self FileName object
     def append(self, arg):
-        self.path         = self.path + arg
+        self.path = self.path + arg
         self.originalPath = self.originalPath + arg
 
         return self
 
-    # >> Joins paths. Returns a new FileName object
+    # Joins paths and returns a new object.
+    @abc.abstractmethod
     def pjoin(self, *args):
-        child = self.__create__(self.originalPath)
-        for arg in args:
-            child._join_raw(arg)
+        return None
 
-        return child
+    def escapeQuotes(self):
+        self.path = self.path.replace("'", "\\'")
+        self.path = self.path.replace('"', '\\"')
 
-    # Behaves like os.path.join()
-    #
+    def path_separator(self):
+        count_backslash = self.originalPath.count('\\')
+        count_forwardslash = self.originalPath.count('/')
+        if count_backslash > count_forwardslash:
+            return '\\'
+
+        return '/'
+
+    # ---------------------------------------------------------------------------------------------
+    # Operator overloads
+    # ---------------------------------------------------------------------------------------------
+    # Overloaded operator + behaves like self pjoin()
     # See http://blog.teamtreehouse.com/operator-overloading-python
-    # other is a FileName object. other originalPath is expected to be a subdirectory (path
-    # transformation not required)
+    # Argument other is a FileName object. other originalPath is expected to be a
+    # subdirectory (path transformation not required)
     def __add__(self, other):
         current_path = self.originalPath
         if type(other) is FileName:  other_path = other.originalPath
@@ -907,29 +922,24 @@ class FileName():
         child    = self.__create__(new_path)
 
         return child
-        
-    def escapeQuotes(self):
-        self.path = self.path.replace("'", "\\'")
-        self.path = self.path.replace('"', '\\"')
 
-    def path_separator(self):
-        count_backslash = self.originalPath.count('\\')
-        count_forwardslash = self.originalPath.count('/')
+    def __str__(self):
+        """Overrides the default implementation"""
+        return self.getOriginalPath()
 
-        if count_backslash > count_forwardslash:
-            return '\\'
-        
-        return '/'
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, FileName):
+            return self.getOriginalPath().lower() == other.getOriginalPath().lower()
+
+        return False
+
+    def __ne__(self, other):
+        """Overrides the default implementation (unnecessary in Python 3)"""
+        return not self.__eq__(other)
 
     # ---------------------------------------------------------------------------------------------
-    # Decomposes a file name path or directory into its constituents
-    #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
-    #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
-    #   FileName.getBase()          File name with no path                        Sonic.zip
-    #   FileName.getBase_noext()    File name with no path and no extension       Sonic
-    #   FileName.getExt()           File extension                                .zip
+    # Path decomposing
     # ---------------------------------------------------------------------------------------------
     def getOriginalPath(self):
         return self.originalPath
@@ -937,7 +947,7 @@ class FileName():
     def getPath(self):
         return self.path
 
-    def getPath_noext(self):
+    def getPathNoExt(self):
         root, ext = os.path.splitext(self.path)
 
         return root
@@ -945,16 +955,17 @@ class FileName():
     def getDir(self):
         return os.path.dirname(self.path)
 
+    # Returns a new FileName object.
     def getDirAsFileName(self):
-        return self.__create__(self.getDir())
+        return self.__init__(self.getDir())
 
     def getBase(self):
         return os.path.basename(self.path)
 
-    def getBase_noext(self):
+    def getBaseNoExt(self):
         basename  = os.path.basename(self.path)
         root, ext = os.path.splitext(basename)
-        
+
         return root
 
     def getExt(self):
@@ -962,57 +973,23 @@ class FileName():
         return ext
 
     def switchExtension(self, targetExt):
-        
         ext = self.getExt()
         copiedPath = self.originalPath
-        
         if not targetExt.startswith('.'):
             targetExt = '.{0}'.format(targetExt)
-
         new_path = self.__create__(copiedPath.replace(ext, targetExt))
         return new_path
-    
-    # Checks the extension to determine the type of the file
+
+    # Checks the extension to determine the type of the file.
     def is_image_file(self):
-        ext = self.getExt()
-        return ext.lower() in ['png', 'jpg', 'gif', 'bmp']
+        return '.' + self.getExt().lower() in IMAGE_EXTENSION_LIST
+
+    def is_manual(self):
+        return '.' + self.getExt().lower() in MANUAL_EXTENSION_LIST
 
     def is_video_file(self):
-        ext = self.getExt()
-        return ext.lower() in ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
-    
-    def is_document(self):
-        ext = self.getExt()
-        return ext.lower() in ['txt', 'pdf', 'doc']
-    
-    # ---------------------------------------------------------------------------------------------
-    # Scanner functions
-    # ---------------------------------------------------------------------------------------------
-    @abc.abstractmethod
-    def scanFilesInPath(self, mask = '*.*'):
-        return []
+        return '.' + self.getExt().lower() in TRAILER_EXTENSION_LIST
 
-    @abc.abstractmethod
-    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        return []
-    
-    @abc.abstractmethod
-    def recursiveScanFilesInPath(self, mask = '*.*'):
-        return []
-
-    @abc.abstractmethod
-    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        return []
-
-    def _decodeName(self, name):
-        if type(name) == str:
-            try:
-                name = name.decode('utf8')
-            except:
-                name = name.decode('windows-1252')
-        
-        return name
-    
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
     # ---------------------------------------------------------------------------------------------
@@ -1049,8 +1026,24 @@ class FileName():
         pass
 
     # ---------------------------------------------------------------------------------------------
-    # File IO functions
+    # File I/O functions
     # ---------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def open(self, flags):
+        pass
+
+    @abc.abstractmethod
+    def close(self):
+        pass
+
+    @abc.abstractmethod
+    def read(self, bytes):
+        pass
+
+    @abc.abstractmethod
+    def write(self, bytes):
+        pass
+
     @abc.abstractmethod
     def readline(self):
         return None
@@ -1060,34 +1053,48 @@ class FileName():
         return None
 
     @abc.abstractmethod
-    def readAllUnicode(self, encoding='utf-8'):
+    def readAllUnicode(self, encoding = 'utf-8'):
         return None
 
     @abc.abstractmethod
-    def writeAll(self, bytes, flags='w'):
+    def writeAll(self, bytes, flags = 'w'):
         pass
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def scanFilesInPath(self, mask = '*.*'):
+        return []
 
     @abc.abstractmethod
-    def write(self, bytes):
-        pass
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
 
     @abc.abstractmethod
-    def open(self, flags):
-        pass
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        return []
 
     @abc.abstractmethod
-    def close(self):
-        pass
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
 
+    # ---------------------------------------------------------------------------------------------
+    # High-level file read functions (XML, JSON, etc.)
+    # ---------------------------------------------------------------------------------------------
+    # NOTE I think this high-level functions to read specific files must de in disk_IO.py
+    # and not here. FileName class must be simple to avoid performance hits.
     # Opens file and reads xml. Returns the root of the XML!
     def readXml(self):
         data = self.readAll()
         root = ET.fromstring(data)
+
         return root
 
     # Opens JSON file and reads it
     def readJson(self):
         contents = self.readAllUnicode()
+
         return json.loads(contents)
 
     # Opens INI file and reads it
@@ -1100,7 +1107,8 @@ class FileName():
         return config
 
     # Opens a propery file and reads it
-    # Reads a given properties file with each line of the format key=value.  Returns a dictionary containing the pairs.
+    # Reads a given properties file with each line of the format key=value.
+    # Returns a dictionary containing the pairs.
     def readPropertyFile(self):
         import csv
 
@@ -1113,7 +1121,7 @@ class FileName():
             if len(row) != 2:
                 raise csv.Error("Too many fields on row with contents: "+str(row))
             result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
-        
+
         return result
 
     # --- Configure JSON writer ---
@@ -1131,78 +1139,26 @@ class FileName():
         data = ET.tostring(xml_root)
         self.writeAll(data)
 
-    def __str__(self):
-        """Overrides the default implementation"""
-        return self.getOriginalPath()
-
-    def __eq__(self, other):
-        """Overrides the default implementation"""
-        if isinstance(other, FileName):
-            return self.getOriginalPath().lower() == other.getOriginalPath().lower()
-        
-        return False
-
-    def __ne__(self, other):
-        """Overrides the default implementation (unnecessary in Python 3)"""
-        return not self.__eq__(other)
-
 # -------------------------------------------------------------------------------------------------
 # Kodi Virtual Filesystem helper class.
 # Implementation of the FileName helper class which supports the xbmcvfs libraries.
 #
 # -------------------------------------------------------------------------------------------------
-class KodiFileName(FileName):
-    def __create__(self, pathString):
-        return KodiFileName(pathString)
-
+class KodiFileName(FileNameBase):
     # ---------------------------------------------------------------------------------------------
-    # Scanner functions
+    # Core functions.
     # ---------------------------------------------------------------------------------------------
-    def scanFilesInPath(self, mask = '*.*'):
-        files = []
+    def __init__(self, pathString):
+        super(KodiFileName, self).__init__(pathString)
 
-        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
-        for filename in fnmatch.filter(filenames, mask):
-            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
+    # Joins paths and returns a new object.
+    def pjoin(self, *args):
+        child = KodiFileName(self.originalPath)
+        for arg in args:
+            child.path = os.path.join(child.path, arg)
+            child.originalPath = os.path.join(child.originalPath, arg)
 
-        return files
-
-    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        files = []
-        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(self.__create__(filePath.getOriginalPath()))
-
-        return files
-
-    def recursiveScanFilesInPath(self, mask = '*.*'):
-        files = []
-        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(filePath.getOriginalPath())
-
-        for subdir in subdirectories:
-            subPath = self.pjoin(self._decodeName(subdir))
-            subPathFiles = subPath.recursiveScanFilesInPath(mask)
-            files.extend(subPathFiles)
-
-        return files
-
-    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        files = []
-        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(self.__create__(filePath.getOriginalPath()))
-
-        for subdir in subdirectories:
-            subPath = self.pjoin(self._decodeName(subdir))
-            subPathFiles = subPath.recursiveScanFilesInPathAsFileNameObjects(mask)
-            files.extend(subPathFiles)
-
-        return files
+        return child
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
@@ -1214,11 +1170,10 @@ class KodiFileName(FileName):
     def exists(self):
         return xbmcvfs.exists(self.originalPath)
 
-    # Warning: not suitable for xbmcvfs paths yet
+    # isdir() is not included in Kodi xbmcvfs module yet.
+    # See https://forum.kodi.tv/showthread.php?tid=337009
     def isdir(self):
-        if not self.exists():
-            return False
-
+        if not self.exists(): return False
         try:
             self.open('r')
             self.close()
@@ -1228,7 +1183,8 @@ class KodiFileName(FileName):
         return False
         #return os.path.isdir(self.path)
 
-    # Warning: not suitable for xbmcvfs paths yet
+    # isdir() is not included in Kodi xbmcvfs module yet.
+    # See https://forum.kodi.tv/showthread.php?tid=337009
     def isfile(self):
         if not self.exists():
             return False
@@ -1262,7 +1218,28 @@ class KodiFileName(FileName):
 
     # ---------------------------------------------------------------------------------------------
     # File IO functions
+    # Kodi VFS documentation in https://alwinesch.github.io/group__python__xbmcvfs.html
     # ---------------------------------------------------------------------------------------------
+    def open(self, flags):
+        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
+
+        return self
+
+    def close(self):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    def read(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+
+       self.fileHandle.read(bytes)
+
+    def write(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+
+       self.fileHandle.write(bytes)
+
     def readline(self, encoding='utf-8'):
         if self.fileHandle is None:
             raise OSError('file not opened')
@@ -1299,74 +1276,74 @@ class KodiFileName(FileName):
         file.write(bytes)
         file.close()
 
-    def write(self, bytes):
-       if self.fileHandle is None:
-           raise OSError('file not opened')
-
-       self.fileHandle.write(bytes)
-
-    def open(self, flags):
-        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
-        return self
-
-    def close(self):
-        if self.fileHandle is None:
-           raise OSError('file not opened')
-
-        self.fileHandle.close()
-        self.fileHandle = None
-
-# -------------------------------------------------------------------------------------------------
-# Standard Filesystem helper class.
-# Implementation of the FileName helper class which just uses standard os operations.
-#
-# -------------------------------------------------------------------------------------------------
-class StandardFileName(FileName):
-    
-    def __create__(self, pathString):
-        return StandardFileName(pathString)
-
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
     def scanFilesInPath(self, mask = '*.*'):
         files = []
 
-        entries = os.listdir(self.path)
-        for filename in fnmatch.filter(entries, mask):
-            files.append(os.path.join(self.path, self._decodeName(filename)))
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
 
         return files
 
     def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
-        
-        entries = os.listdir(self.path)
-        for filename in fnmatch.filter(entries, mask):
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
             filePath = self.pjoin(self._decodeName(filename))
-            files.append(self.__create__(filePath.getPath()))
+            files.append(self.__init__(filePath.getOriginalPath()))
 
         return files
 
     def recursiveScanFilesInPath(self, mask = '*.*'):
         files = []
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(filePath.getOriginalPath())
 
-        for root, dirs, foundfiles in os.walk(self.path):
-            for filename in fnmatch.filter(foundfiles, mask):
-                filePath = self.pjoin(self._decodeName(filename))
-                files.append(filePath.getPath())
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPath(mask)
+            files.extend(subPathFiles)
 
         return files
-        
+
     def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
-        
-        for root, dirs, foundfiles in os.walk(self.path):
-            for filename in fnmatch.filter(foundfiles, mask):
-                filePath = self.__create__(fileName)
-                files.append(filePath)
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__init__(filePath.getOriginalPath()))
+
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPathAsFileNameObjects(mask)
+            files.extend(subPathFiles)
 
         return files
+
+# -------------------------------------------------------------------------------------------------
+# PythonFileName is an implementation of FileNameBase that uses the Python standard library
+# for I/O functions.
+# -------------------------------------------------------------------------------------------------
+class PythonFileName(FileNameBase):
+    # ---------------------------------------------------------------------------------------------
+    # Core functions.
+    # ---------------------------------------------------------------------------------------------
+    def __init__(self, pathString):
+        super(PythonFileName, self).__init__(pathString)
+
+    # Joins paths and returns a new object.
+    def pjoin(self, *args):
+        child = PythonFileName(self.originalPath)
+        for arg in args:
+            child.path = os.path.join(child.path, arg)
+            child.originalPath = os.path.join(child.originalPath, arg)
+
+        return child
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
@@ -1394,13 +1371,29 @@ class StandardFileName(FileName):
     def rename(self, to):
         os.rename(self.path, to.getPath())
 
-    def copy(self, to):        
+    def copy(self, to):
         shutil.copy2(self.getPath(), to.getPath())
-     
+
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
-    
+    def open(self, flags):
+        self.fileHandle = os.open(self.path, flags)
+        return self
+
+    def close(self):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    def read(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+       self.fileHandle.read(bytes)
+
+    def write(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+       self.fileHandle.write(bytes)
+
     def readline(self):
         if self.fileHandle is None:
             raise OSError('file not opened')
@@ -1413,47 +1406,67 @@ class StandardFileName(FileName):
             contents = f.read()
         
         return contents
-    
-    def readAllUnicode(self, encoding='utf-8'):
-        contents = None        
+
+    def readAllUnicode(self, encoding = 'utf-8'):
+        contents = None
         with open(self.path, 'r') as f:
             contents = f.read()
-        
+
         return unicode(contents, encoding)
-    
-    def writeAll(self, bytes, flags='w'):
+
+    def writeAll(self, bytes, flags = 'w'):
         with open(self.path, flags) as file:
             file.write(bytes)
 
-    def write(self, bytes):
-       if self.fileHandle is None:
-           raise OSError('file not opened')
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask = '*.*'):
+        files = []
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
+            files.append(os.path.join(self.path, self._decodeName(filename)))
 
-       self.fileHandle.write(bytes)
+        return files
 
-    def open(self, flags):
-        self.fileHandle = os.open(self.path, flags)
-        return self
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__create__(filePath.getPath()))
+
+        return files
+
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        files = []
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                filePath = self.pjoin(self._decodeName(filename))
+                files.append(filePath.getPath())
+
+        return files
         
-    def close(self):
-        if self.fileHandle is None:
-           raise OSError('file not opened')
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                filePath = self.__create__(fileName)
+                files.append(filePath)
 
-        self.fileHandle.close()
-        self.fileHandle = None
+        return files
+
+# -------------------------------------------------------------------------------------------------
+# Use Python standard library for file IO operations or Kodi VFS library.
+# -------------------------------------------------------------------------------------------------
+FileName = PythonFileName
+# FileName = KodiFileName
 
 # #################################################################################################
 # #################################################################################################
 # Kodi utilities
 # #################################################################################################
 # #################################################################################################
-
-# --- Constants -----------------------------------------------------------------------------------
-LOG_ERROR   = 0
-LOG_WARNING = 1
-LOG_INFO    = 2
-LOG_VERB    = 3
-LOG_DEBUG   = 4
 
 # --- Internal globals ----------------------------------------------------------------------------
 current_log_level = LOG_INFO
@@ -1463,6 +1476,7 @@ current_log_level = LOG_INFO
 # -------------------------------------------------------------------------------------------------
 def set_log_level(level):
     global current_log_level
+
     current_log_level = level
 
 #
