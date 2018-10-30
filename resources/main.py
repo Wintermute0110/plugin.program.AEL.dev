@@ -229,8 +229,8 @@ def run_plugin(addon_argv):
     if g_settings['log_level'] == LOG_DEBUG:
         # >> JSON-RPC queries <<
         json_rpc_start = time.time()
-        getprops_dic = kodi_jsonrpc_query('Application.GetProperties', '"properties" : ["name", "version"]')
-        getskin_dic  = kodi_jsonrpc_query('Settings.GetSettingValue',  '"setting" : "lookandfeel.skin"')
+        getprops_dic = kodi_jsonrpc_query('Application.GetProperties', '{ "properties" : ["name", "version"] }')
+        getskin_dic  = kodi_jsonrpc_query('Settings.GetSettingValue',  '{ "setting" : "lookandfeel.skin" }')
         json_rpc_end = time.time()
         # log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
 
@@ -3959,6 +3959,13 @@ def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
     log_debug('m_gui_edit_object_assets() obj_instance   {0}'.format(obj_instance.__class__.__name__))
     log_debug('m_gui_edit_object_assets() pre_select_idx {0}'.format(pre_select_idx))
 
+    # --- DEBUG texture cache ---
+    icon_fname_str = obj_instance.get_asset_str(asset_infos[ASSET_ICON_ID])
+    icon_fname = FileName(icon_fname_str)
+    kodi_print_texture_info(icon_fname.getOriginalPath())
+    kodi_print_texture_info(icon_fname.getPath())
+    kodi_print_texture_info(obj_instance.get_asset_str(asset_infos[ASSET_FANART_ID]))
+
     # --- Customize function for each object type ---
     if obj_instance.asset_kind == KIND_ASSET_CATEGORY:
         dialog_title_str = 'Edit Category Assets/Artwork'
@@ -4202,7 +4209,7 @@ def m_gui_edit_asset(obj_instance, asset_info):
         # --- Update object ---
         obj_instance.set_asset(asset_info, new_asset_FN)
         log_debug('m_gui_edit_asset() Asset key "{0}"'.format(asset_info.key))
-        log_info('m_gui_edit_asset() Linked {0} {1} to "{2}"'.format(
+        log_debug('m_gui_edit_asset() Linked {0} {1} to "{2}"'.format(
             obj_instance.obj_name, asset_info.name, new_asset_FN.getOriginalPath())
         )
 
@@ -4220,12 +4227,12 @@ def m_gui_edit_asset(obj_instance, asset_info):
         # >> If assets exists start file dialog from current asset directory
         current_image_file = obj_instance.get_asset_FN(asset_info)
         current_image_dir = FileName(current_image_file.getDir())
-        log_debug('m_gui_edit_asset() current_image_dir  "{0}"'.format(current_image_dir.getPath()))
-        log_debug('m_gui_edit_asset() current_image_file "{0}"'.format(current_image_file.getPath()))
+        log_debug('m_gui_edit_asset() current_image_dir  "{0}"'.format(current_image_dir.getOriginalPath()))
+        log_debug('m_gui_edit_asset() current_image_file "{0}"'.format(current_image_file.getOriginalPath()))
         # >> DEBUG code
-        log_debug('current_image_file atime {0}'.format(time.ctime(os.path.getatime(current_image_file.getPath()))))
-        log_debug('current_image_file mtime {0}'.format(time.ctime(os.path.getmtime(current_image_file.getPath()))))
-        log_debug('current_image_file ctime {0}'.format(time.ctime(os.path.getctime(current_image_file.getPath()))))
+        # log_debug('current_image_file atime {0}'.format(time.ctime(os.path.getatime(current_image_file.getPath()))))
+        # log_debug('current_image_file mtime {0}'.format(time.ctime(os.path.getmtime(current_image_file.getPath()))))
+        # log_debug('current_image_file ctime {0}'.format(time.ctime(os.path.getctime(current_image_file.getPath()))))
 
         title_str = 'Select {0} {1}'.format(obj_instance.obj_name, asset_info.name)
         ext_list = asset_info.exts_dialog
@@ -4253,9 +4260,9 @@ def m_gui_edit_asset(obj_instance, asset_info):
         # one does not change the ctime.
         # Solution: if the destination images exists, delete it before copying the new one. the
         # ctime if the new image will be updated.
-        if dest_asset_file.exists():
-            log_debug('m_gui_edit_asset() Deleting image "{0}"'.format(dest_asset_file.getPath()))
-            dest_asset_file.unlink()
+        # if dest_asset_file.exists():
+        #     log_debug('m_gui_edit_asset() Deleting image "{0}"'.format(dest_asset_file.getOriginalPath()))
+        #     dest_asset_file.unlink()
 
         # --- Copy image file ---
         try:
@@ -4274,27 +4281,33 @@ def m_gui_edit_asset(obj_instance, asset_info):
         # >> Always store original/raw paths in database.
         obj_instance.set_asset(asset_info, dest_asset_file)
         log_debug('m_gui_edit_asset() Asset key "{0}"'.format(asset_info.key))
-        log_info('m_gui_edit_asset() Copied file  "{0}"'.format(new_asset_file.getOriginalPath()))
-        log_info('m_gui_edit_asset() Into         "{0}"'.format(dest_asset_file.getOriginalPath()))
-        log_info('m_gui_edit_asset() Linked {0} {1} to "{2}"'.format(
+        log_debug('m_gui_edit_asset() Copied file  "{0}"'.format(new_asset_file.getOriginalPath()))
+        log_debug('m_gui_edit_asset() Into         "{0}"'.format(dest_asset_file.getOriginalPath()))
+        log_debug('m_gui_edit_asset() Linked {0} {1} to "{2}"'.format(
             obj_instance.obj_name, asset_info.name, dest_asset_file.getOriginalPath())
         )
 
         # --- Update Kodi image cache ---
-        log_debug('new_asset_file  atime {0}'.format(time.ctime(os.path.getatime(new_asset_file.getPath()))))
-        log_debug('new_asset_file  mtime {0}'.format(time.ctime(os.path.getmtime(new_asset_file.getPath()))))
-        log_debug('new_asset_file  ctime {0}'.format(time.ctime(os.path.getctime(new_asset_file.getPath()))))
-        log_debug('dest_asset_file atime {0}'.format(time.ctime(os.path.getatime(dest_asset_file.getPath()))))
-        log_debug('dest_asset_file mtime {0}'.format(time.ctime(os.path.getmtime(dest_asset_file.getPath()))))
-        log_debug('dest_asset_file ctime {0}'.format(time.ctime(os.path.getctime(dest_asset_file.getPath()))))
+        # log_debug('new_asset_file  atime {0}'.format(time.ctime(os.path.getatime(new_asset_file.getPath()))))
+        # log_debug('new_asset_file  mtime {0}'.format(time.ctime(os.path.getmtime(new_asset_file.getPath()))))
+        # log_debug('new_asset_file  ctime {0}'.format(time.ctime(os.path.getctime(new_asset_file.getPath()))))
+        # log_debug('dest_asset_file atime {0}'.format(time.ctime(os.path.getatime(dest_asset_file.getPath()))))
+        # log_debug('dest_asset_file mtime {0}'.format(time.ctime(os.path.getmtime(dest_asset_file.getPath()))))
+        # log_debug('dest_asset_file ctime {0}'.format(time.ctime(os.path.getctime(dest_asset_file.getPath()))))
 
-        # >> Set the access and modified times of the file.
-        log_debug('m_gui_edit_asset() Updating destination file atime and mtime')
-        os.utime(dest_asset_file.getPath(), (time.time(), time.time()))
-        log_debug('dest_asset_file  atime {0}'.format(time.ctime(os.path.getatime(dest_asset_file.getPath()))))
-        log_debug('dest_asset_file  mtime {0}'.format(time.ctime(os.path.getmtime(dest_asset_file.getPath()))))
-        log_debug('dest_asset_file  ctime {0}'.format(time.ctime(os.path.getctime(dest_asset_file.getPath()))))
+        # >> Copying a file updates atime and mtime.
+        # log_debug('m_gui_edit_asset() Updating destination file atime and mtime')
+        # os.utime(dest_asset_file.getPath(), (time.time(), time.time()))
+        # log_debug('dest_asset_file  atime {0}'.format(time.ctime(os.path.getatime(dest_asset_file.getPath()))))
+        # log_debug('dest_asset_file  mtime {0}'.format(time.ctime(os.path.getmtime(dest_asset_file.getPath()))))
+        # log_debug('dest_asset_file  ctime {0}'.format(time.ctime(os.path.getctime(dest_asset_file.getPath()))))
 
+        # --- Delete cached image to force a cache update ---
+        # This
+        kodi_delete_cache_texture(dest_asset_file.getOriginalPath())
+        kodi_print_texture_info(dest_asset_file.getOriginalPath())
+
+        # --- Notify user ---
         kodi_notify('{0} {1} has been updated'.format(obj_instance.obj_name, asset_info.name))
 
     # --- Unset asset ---

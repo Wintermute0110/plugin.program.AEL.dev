@@ -332,6 +332,22 @@ def text_unescape_and_untag_HTML(s):
 
     return s
 
+# See https://www.freeformatter.com/json-escape.html
+# The following characters are reserved in JSON and must be properly escaped to be used in strings:
+#   Backspace is replaced with \b
+#   Form feed is replaced with \f
+#   Newline is replaced with \n
+#   Carriage return is replaced with \r
+#   Tab is replaced with \t
+#   Double quote is replaced with \"
+#   Backslash is replaced with \\
+#
+def text_escape_JSON(s):
+    s = s.replace('\\', '\\\\') # >> Must be done first
+    s = s.replace('"', '\\"')
+
+    return s
+
 def text_dump_str_to_file(filename, full_string):
     file_obj = open(filename, 'w')
     file_obj.write(full_string.encode('utf-8'))
@@ -1623,20 +1639,36 @@ def kodi_toogle_fullscreen():
 #     }
 # }
 #
-def kodi_jsonrpc_query(method, params):
-    # log_debug('kodi_jsonrpc_query() method "{0}"'.format(method))
-    # log_debug('kodi_jsonrpc_query() params "{0}"'.format(params))
+# Query response ERROR:
+# {
+#     "id" : null,
+#     "jsonrpc" : "2.0",
+#     "error" : { "code":-32700, "message" : "Parse error."}
+# }
+#
+def kodi_jsonrpc_query(method_str, params_str, verbose = False):
+    if verbose:
+        log_debug('kodi_jsonrpc_query() method_str "{0}"'.format(method_str))
+        log_debug('kodi_jsonrpc_query() params_str "{0}"'.format(params_str))
+        params_dic = json.loads(params_str)
+        log_debug('kodi_jsonrpc_query() params_dic = \n{0}'.format(pprint.pformat(params_dic)))
 
-    # >> Do query
-    query_str = '{{"id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {{ {1} }}}}'.format(method, params)
-    # # log_debug('kodi_jsonrpc_query() query_str "{0}"'.format(query_str))
+    # --- Do query ---
+    query_str = '{{"id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {1} }}'.format(method_str, params_str)
+    # if verbose: log_debug('kodi_jsonrpc_query() query_str "{0}"'.format(query_str))
     response_json_str = xbmc.executeJSONRPC(query_str)
-    # log_debug('kodi_jsonrpc_query() response "{0}"'.format(response_json_str))
+    # if verbose: log_debug('kodi_jsonrpc_query() response "{0}"'.format(response_json_str))
 
-    # >> Parse JSON response
+    # --- Parse JSON response ---
     response_dic = json.loads(response_json_str)
-    result_dic = response_dic['result']
-    # log_debug('kodi_jsonrpc_query() result_dic = \n{0}'.format(pprint.pformat(result_dic)))
+    # if verbose: log_debug('kodi_jsonrpc_query() response_dic = \n{0}'.format(pprint.pformat(response_dic)))
+    if 'error' in response_dic:
+        result_dic = response_dic['error']
+        log_warning('kodi_jsonrpc_query() JSONRPC ERROR {0}'.format(result_dic['message']))
+    else:
+        result_dic = response_dic['result']
+    if verbose:
+        log_debug('kodi_jsonrpc_query() result_dic = \n{0}'.format(pprint.pformat(result_dic)))
 
     return result_dic
 
@@ -1675,14 +1707,68 @@ def kodi_dialog_GetImage(title_str, ext_list, current_dir):
 
     return new_image.decode('utf-8')
 
+#
+# See https://kodi.wiki/view/JSON-RPC_API/v8#Textures
+# See https://forum.kodi.tv/showthread.php?tid=337014
+# See https://forum.kodi.tv/showthread.php?tid=236320
+#
+def kodi_delete_cache_texture(database_path_str):
+    log_debug('kodi_delete_cache_texture() Deleting texture "{0}:'.format(database_path_str))
+
+    # --- Query texture database ---
+    json_fname_str = text_escape_JSON(database_path_str)
+    prop_str = (
+        '{' +
+        '"properties" : [ "url", "cachedurl", "lasthashcheck", "imagehash", "sizes"], ' +
+        '"filter" : {{ "field" : "url", "operator" : "is", "value" : "{0}" }}'.format(json_fname_str) +
+        '}'
+    )
+    r_dic = kodi_jsonrpc_query('Textures.GetTextures', prop_str, verbose = False)
+
+    # --- Delete cached texture ---
+    num_textures = len(r_dic['textures'])
+    log_debug('kodi_delete_cache_texture() Returned list with {0} textures'.format(num_textures))
+    if num_textures == 1:
+        textureid = r_dic['textures'][0]['textureid']
+        log_debug('kodi_delete_cache_texture() Deleting texture with id {0}'.format(textureid))
+        prop_str = '{{ "textureid" : {0} }}'.format(textureid)
+        r_dic = kodi_jsonrpc_query('Textures.RemoveTexture', prop_str, verbose = False)
+    else:
+        log_warning('kodi_delete_cache_texture() Number of textures different from 1. No texture deleted from cache')
+
+def kodi_print_texture_info(database_path_str):
+    log_debug('kodi_print_texture_info() File "{0}'.format(database_path_str))
+
+    # --- Query texture database ---
+    json_fname_str = text_escape_JSON(database_path_str)
+    prop_str = (
+        '{' +
+        '"properties" : [ "url", "cachedurl", "lasthashcheck", "imagehash", "sizes"], ' +
+        '"filter" : {{ "field" : "url", "operator" : "is", "value" : "{0}" }}'.format(json_fname_str) +
+        '}'
+    )
+    r_dic = kodi_jsonrpc_query('Textures.GetTextures', prop_str, verbose = False)
+
+    # --- Delete cached texture ---
+    num_textures = len(r_dic['textures'])
+    log_debug('kodi_print_texture_info() Returned list with {0} textures'.format(num_textures))
+    if num_textures == 1:
+        log_debug('Cached URL  {0}'.format(r_dic['textures'][0]['cachedurl']))
+        log_debug('Hash        {0}'.format(r_dic['textures'][0]['imagehash']))
+        log_debug('Last check  {0}'.format(r_dic['textures'][0]['lasthashcheck']))
+        log_debug('Texture ID  {0}'.format(r_dic['textures'][0]['textureid']))
+        log_debug('Texture URL {0}'.format(r_dic['textures'][0]['url']))
+    else:
+        log_warning('kodi_delete_cache_texture() Number of textures different from 1. No texture deleted from cache')
+
 # -------------------------------------------------------------------------------------------------
 # Determine Kodi version and create some constants to allow version-dependent code.
 # This if useful to work around bugs in Kodi core.
 # -------------------------------------------------------------------------------------------------
 def kodi_get_Kodi_major_version():
-    rpc_dic = kodi_jsonrpc_query('Application.GetProperties', '"properties" : ["version"]')
+    rpc_dic = kodi_jsonrpc_query('Application.GetProperties', '{ "properties" : ["version"] }')
 
-    return rpc_dic['version']['major']
+    return int(rpc_dic['version']['major'])
 kodi_running_version = kodi_get_Kodi_major_version()
 
 # --- Version constants. Minimum required version is Kodi Krypton ---
