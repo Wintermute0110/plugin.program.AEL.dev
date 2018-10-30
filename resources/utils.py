@@ -1737,7 +1737,7 @@ def kodi_delete_cache_texture(database_path_str):
         log_warning('kodi_delete_cache_texture() Number of textures different from 1. No texture deleted from cache')
 
 def kodi_print_texture_info(database_path_str):
-    log_debug('kodi_print_texture_info() File "{0}'.format(database_path_str))
+    log_debug('kodi_print_texture_info() File "{0}"'.format(database_path_str))
 
     # --- Query texture database ---
     json_fname_str = text_escape_JSON(database_path_str)
@@ -1758,8 +1758,6 @@ def kodi_print_texture_info(database_path_str):
         log_debug('Last check  {0}'.format(r_dic['textures'][0]['lasthashcheck']))
         log_debug('Texture ID  {0}'.format(r_dic['textures'][0]['textureid']))
         log_debug('Texture URL {0}'.format(r_dic['textures'][0]['url']))
-    else:
-        log_warning('kodi_delete_cache_texture() Number of textures different from 1. No texture deleted from cache')
 
 # -------------------------------------------------------------------------------------------------
 # Determine Kodi version and create some constants to allow version-dependent code.

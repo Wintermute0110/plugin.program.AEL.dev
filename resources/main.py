@@ -3962,6 +3962,9 @@ def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
     # --- DEBUG texture cache ---
     icon_fname_str = obj_instance.get_asset_str(asset_infos[ASSET_ICON_ID])
     icon_fname = FileName(icon_fname_str)
+    log_debug('m_gui_edit_object_assets() icon_fname_str "{0}"'.format(icon_fname_str))
+    log_debug('m_gui_edit_object_assets() icon_fname OP  "{0}"'.format(icon_fname.getOriginalPath()))
+    log_debug('m_gui_edit_object_assets() icon_fname  P  "{0}"'.format(icon_fname.getPath()))
     kodi_print_texture_info(icon_fname.getOriginalPath())
     kodi_print_texture_info(icon_fname.getPath())
     kodi_print_texture_info(obj_instance.get_asset_str(asset_infos[ASSET_FANART_ID]))
