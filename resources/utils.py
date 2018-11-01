@@ -955,7 +955,7 @@ class FileNameBase():
         return not self.__eq__(other)
 
     # ---------------------------------------------------------------------------------------------
-    # Path decomposing
+    # Path manipulation.
     # ---------------------------------------------------------------------------------------------
     def getOriginalPath(self):
         return self.originalPath
@@ -1098,7 +1098,7 @@ class FileNameBase():
     # ---------------------------------------------------------------------------------------------
     # High-level file read functions (XML, JSON, etc.)
     # ---------------------------------------------------------------------------------------------
-    # NOTE I think this high-level functions to read specific files must de in disk_IO.py
+    # NOTE I think this high-level functions to read specific files must be in disk_IO.py
     # and not here. FileName class must be simple to avoid performance hits.
     # Opens file and reads xml. Returns the root of the XML!
     def readXml(self):
@@ -1473,10 +1473,147 @@ class PythonFileName(FileNameBase):
         return files
 
 # -------------------------------------------------------------------------------------------------
-# Use Python standard library for file IO operations or Kodi VFS library.
+# --- New Filesystem class ---
+#
+# 1. Automatically uses Python standard library for local files and Kodi VFS for remote files.
+#
+# 2. All paths on all platforms use the slash '/' to separate directories.
+#
+# 3. Directories always end in a '/' character.
+#
+# 3. Decoding Unicode to the filesystem encoding is done in this class.
+#
+# 4. Tested with the following remote protocols:
+#
+#     a) special://
+#
+#     b) smb://
+#
+# --- Function reference ---
+# FileName.getPath()         Full path                                     /home/Wintermute/Sonic.zip
+# FileName.getPathNoExt()    Full path with no extension                   /home/Wintermute/Sonic
+# FileName.getDir()          Directory name of file. Does not end in '/'   /home/Wintermute/
+# FileName.getBase()         File name with no path                        Sonic.zip
+# FileName.getBaseNoExt()    File name with no path and no extension       Sonic
+# FileName.getExt()          File extension                                .zip
+#
+#
+# A) Transform paths like smb://server/directory/ into \\server\directory\
+# B) Use xbmc.translatePath() for paths starting with special://
+# C) Uses xbmcvfs wherever possible
+#
 # -------------------------------------------------------------------------------------------------
-FileName = PythonFileName
+# Once everything is working like a charm comment all the debug code to speed up.
+DEBUG_NEWFILENAME_CLASS = True
+
+class NewFileName:
+    # ---------------------------------------------------------------------------------------------
+    # Constructor
+    # path_str is an Unicode string.
+    # ---------------------------------------------------------------------------------------------
+    def __init__(self, path_str, isdir = False):
+        self.path_str = path_str
+        self.isdir = isdir
+
+        # --- Check if path needs translation ---
+        # Note that internally path_tr is always used as the filename.
+        if self.path_str.lower().startswith('special://'):
+            self.is_translated = True
+            self.path_tr = xbmc.translatePath(self.path_str)
+            # Check translated path does not contain '\'
+            # NOTE We don't care if the translated paths has '\' characters or not. The translated
+            #      path is internal to the class and never used outside the class. In the JSON
+            #      databases and config files the original path path_str is used always.
+            # if self.path_tr.find('\\'):
+            #     log_error('(NewFileName) path_str "{0}"'.format(self.path_str))
+            #     log_error('(NewFileName) path_tr  "{0}"'.format(self.path_tr))
+            #     e_str = '(NewFileName) Translated path has \\ characters'
+            #     log_error(e_str)
+            #     raise Addon_Error(e_str)
+        else:
+            self.is_translated = False
+            self.path_tr = self.path_str
+
+        # --- Ensure directory separator is the '/' character for all OSes ---
+        self.path_str = self.path_str.replace('\\', '/')
+        self.path_tr = self.path_tr.replace('\\', '/')
+
+        if DEBUG_NEWFILENAME_CLASS:
+            log_debug('NewFileName() path_str "{0}"'.format(self.path_str))
+            log_debug('NewFileName() path_tr  "{0}"'.format(self.path_tr))
+
+        # --- If a directory, ensure path ends with '/' ---
+        if self.isdir:
+            if not self.path_str[:-1] == '/': self.path_str = self.path_str + '/'
+            if not self.path_tr[:-1] == '/': self.path_tr = self.path_tr + '/'
+
+        # --- Check if file is local or remote and needs translation ---
+        if self.path_str.lower().startswith('smb://'):
+            self.is_local = False
+        else:
+            self.is_local = True
+
+        # --- Assume that translated paths are always local ---
+        if self.is_translated and not self.is_local:
+                e_str = '(NewFileName) File is translated and remote.'
+                log_error(e_str)
+                raise Addon_Error(e_str)
+
+        # --- Use Pyhton for local paths and Kodi VFS for remote paths ---
+        if self.is_local:
+            self.exists = self.exists_python
+            self.makedirs = self.makedirs_python
+        else:
+            self.a = None
+
+    # ---------------------------------------------------------------------------------------------
+    # Core functions.
+    # ---------------------------------------------------------------------------------------------
+    def isdir(self):
+        return self.isdir
+
+    #
+    # Allow late setting of isdir() if using the constructor call is not available, for example
+    # when using FileName.pjoin().
+    #
+    def set_isdir(self, isdir):
+        self.__init__(self.path_str, isdir)
+
+    #
+    # Joins paths and returns a new filename object. By default the returned object if a file
+    # (isdir() is false) so use set_isdir(True) later if it's a directory.
+    #
+    def pjoin(self, *args):
+        joined_path = self.path_str
+        for arg in args:
+            joined_path = os.path.join(joined_path, arg)
+
+        return FileName(joined_path)
+
+    # ---------------------------------------------------------------------------------------------
+    # Path manipulation.
+    # ---------------------------------------------------------------------------------------------
+    def getPath(self):
+        return self.path_str
+
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions
+    # ---------------------------------------------------------------------------------------------
+    def exists_python(self):
+        return os.path.exists(self.path_tr)
+
+    def makedirs_python(self):
+        if not os.path.exists(self.path_tr): 
+            if DEBUG_NEWFILENAME_CLASS:
+                log_debug('NewFileName::makedirs_python() path_str "{0}"'.format(self.path_str))
+            os.makedirs(self.path_tr)
+
+# -------------------------------------------------------------------------------------------------
+# Decide which class to use for managing filenames.
+# -------------------------------------------------------------------------------------------------
+# FileName = PythonFileName
 # FileName = KodiFileName
+FileName = NewFileName
 
 # #################################################################################################
 # #################################################################################################

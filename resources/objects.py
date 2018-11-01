@@ -767,8 +767,7 @@ class XmlDataContext(object):
     # Lazy loading of xml data through property
     @property
     def xml_data(self):
-        if self._xml_root is None:
-            self._load_xml()
+        if self._xml_root is None: self._load_xml()
 
         return self._xml_root
 
@@ -776,7 +775,7 @@ class XmlDataContext(object):
         # --- Parse using cElementTree ---
         # >> If there are issues in the XML file (for example, invalid XML chars)
         # >> ET.parse() will fail.
-        log_verb('XmlDataContext::_load_xml() Loading {0}'.format(self.repository_file_path.getOriginalPath()))
+        log_verb('XmlDataContext::_load_xml() Loading {0}'.format(self.repository_file_path.getPath()))
         try:
             self._xml_root = self.repository_file_path.readXml()
         except IOError as e:

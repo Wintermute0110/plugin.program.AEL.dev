@@ -635,13 +635,13 @@ def m_get_settings():
     # >> Check if user changed default artwork paths for categories/launchers.
     # >> If not, set sensible defaults.
     if g_settings['categories_asset_dir']  == '':
-        g_settings['categories_asset_dir'] = g_PATHS.CATEGORIES_ASSET_DIR.getOriginalPath()
+        g_settings['categories_asset_dir'] = g_PATHS.CATEGORIES_ASSET_DIR.getPath()
     if g_settings['collections_asset_dir'] == '':
-        g_settings['collections_asset_dir'] = g_PATHS.COLLECTIONS_ASSET_DIR.getOriginalPath()
+        g_settings['collections_asset_dir'] = g_PATHS.COLLECTIONS_ASSET_DIR.getPath()
     if g_settings['launchers_asset_dir']   == '':
-        g_settings['launchers_asset_dir'] = g_PATHS.LAUNCHERS_ASSET_DIR.getOriginalPath()
+        g_settings['launchers_asset_dir'] = g_PATHS.LAUNCHERS_ASSET_DIR.getPath()
     if g_settings['favourites_asset_dir']  == '':
-        g_settings['favourites_asset_dir'] = g_PATHS.FAVOURITES_ASSET_DIR.getOriginalPath()
+        g_settings['favourites_asset_dir'] = g_PATHS.FAVOURITES_ASSET_DIR.getPath()
 
     # --- Dump settings for DEBUG ---
     # log_debug('Settings dump BEGIN')
