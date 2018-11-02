@@ -1394,7 +1394,7 @@ class PythonFileName(FileNameBase):
     # File IO functions
     # ---------------------------------------------------------------------------------------------
     def open(self, flags):
-        self.fileHandle = os.open(self.path, flags)
+        self.fileHandle = open(self.path, flags)
         return self
 
     def close(self):
@@ -1555,20 +1555,37 @@ class NewFileName:
 
         # --- Assume that translated paths are always local ---
         if self.is_translated and not self.is_local:
-                e_str = '(NewFileName) File is translated and remote.'
-                log_error(e_str)
-                raise Addon_Error(e_str)
+            e_str = '(NewFileName) File is translated and remote.'
+            log_error(e_str)
+            raise Addon_Error(e_str)
 
         # --- Use Pyhton for local paths and Kodi VFS for remote paths ---
         if self.is_local:
-            self.exists = self.exists_python
+            # --- Filesystem functions ---
+            self.exists   = self.exists_python
             self.makedirs = self.makedirs_python
+
+            # --- File low-level IO functions ---
+            self.open     = self.open_python
+            self.read     = self.read_python
+            self.write    = self.write_python
+            self.close    = self.close_python
         else:
-            self.a = None
+            self.exists   = self.exists_kodivfs
+            self.makedirs = self.makedirs_kodivfs
+
+            self.open     = self.open_kodivfs
+            self.read     = self.read_kodivfs
+            self.write    = self.write_kodivfs
+            self.close    = self.close_kodivfs
 
     # ---------------------------------------------------------------------------------------------
     # Core functions
     # ---------------------------------------------------------------------------------------------
+    #
+    # Wheter the path stored in the FileName class is a directory or a regular file is handled
+    # internally. This is to avoid a design flaw of the Kodi VFS library.
+    #
     def isdir(self):
         return self.isdir
 
@@ -1580,15 +1597,10 @@ class NewFileName:
         self.__init__(self.path_str, isdir)
 
     #
-    # Joins paths and returns a new filename object. By default the returned object if a file
-    # (isdir() is false) so use set_isdir(True) later if it's a directory.
+    # Joins paths and returns a new filename object.
     #
-    def pjoin(self, *args):
-        joined_path = self.path_str
-        for arg in args:
-            joined_path = os.path.join(joined_path, arg)
-
-        return FileName(joined_path)
+    def pjoin(self, path_str, isdir = False):
+        return FileName(os.path.join(self.path_str, path_str), isdir)
 
     # ---------------------------------------------------------------------------------------------
     # Path manipulation
@@ -1597,8 +1609,7 @@ class NewFileName:
         return self.path_str
 
     # ---------------------------------------------------------------------------------------------
-    # Filesystem functions
-    # Depend on either Python SL or Kodi VFS
+    # Filesystem functions. Python Standard Library implementation
     # ---------------------------------------------------------------------------------------------
     def exists_python(self):
         return os.path.exists(self.path_tr)
@@ -1606,21 +1617,55 @@ class NewFileName:
     def makedirs_python(self):
         if not os.path.exists(self.path_tr): 
             if DEBUG_NEWFILENAME_CLASS:
-                log_debug('NewFileName::makedirs_python() path_str "{0}"'.format(self.path_str))
+                log_debug('NewFileName::makedirs_python() path_tr "{0}"'.format(self.path_tr))
             os.makedirs(self.path_tr)
 
     # ---------------------------------------------------------------------------------------------
-    # File low-level IO functions
-    # Depend on either Python SL or Kodi VFS
+    # Filesystem functions. Kodi VFS implementation.
     # ---------------------------------------------------------------------------------------------
-    
+
+    # ---------------------------------------------------------------------------------------------
+    # File low-level IO functions. Python Standard Library implementation
+    # ---------------------------------------------------------------------------------------------
+    def open_python(self, flags):
+        log_debug('NewFileName::open_python() path_tr "{0}"'.format(self.path_tr))
+        log_debug('NewFileName::open_python() flags   "{0}"'.format(flags))
+
+        # open() is a built-in function.
+        # See https://docs.python.org/3/library/functions.html#open
+        self.fileHandle = open(self.path_tr, flags)
+
+        return self
+
+    def close_python(self):
+        if self.fileHandle is None:
+            raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    def read_python(self):
+       if self.fileHandle is None:
+           raise OSError('file not opened')
+
+       return self.fileHandle.read()
+
+    def write_python(self, bytes):
+       if self.fileHandle is None:
+           raise OSError('file not opened')
+       self.fileHandle.write(bytes)
+
+    # ---------------------------------------------------------------------------------------------
+    # File low-level IO functions. Kodi VFS implementation.
+    # ---------------------------------------------------------------------------------------------
 
     # ---------------------------------------------------------------------------------------------
     # File high-level IO functions
-    # These functions are independent of the Python SL/Kodi VFS
+    # These functions are independent of the filesystem implementation.
+    # For compatibility with Python 3, use the terms str for Unicode strings and bytes for
+    # encoded strings.
     # ---------------------------------------------------------------------------------------------
     #
-    # Loads a file into a string.
+    # Loads a file into a Unicode string.
     # By default all files are assumed to be encoded in UTF-8.
     # Returns a Unicode string.
     #
@@ -1628,11 +1673,14 @@ class NewFileName:
         if DEBUG_NEWFILENAME_CLASS:
             log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
             log_debug('NewFileName::loadFileToStr() Loading path_tr  "{0}"'.format(self.path_tr))
-        contents = None
+
+        # NOTE Exceptions should be catched, reported and re-raised in the low-level
+        # functions, not here!!!
+        file_bytes = None
         try:
-            file = open(self.path_tr, 'r')
-            contents = file.read()
-            file.close()
+            self.open('r')
+            file_bytes = self.read()
+            self.close()
         except OSError:
             log_error('(OSError) Exception in FileName::loadFileToStr()')
             log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
@@ -1645,10 +1693,11 @@ class NewFileName:
             log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
             raise AEL_Error('(IOError) Cannot write {0} file'.format(self.path_tr))
 
-        return contents.decode(encoding)
+        # Return a Unicode string.
+        return file_bytes.decode(encoding)
 
     #
-    # data_str is supposed to be encoded in Unicode. Encode it in UTF-8.
+    # data_str is a Unicode string. Encode it in UTF-8 for file writing.
     #
     def saveStrToFile(self, data_str, encoding = 'utf-8'):
         if DEBUG_NEWFILENAME_CLASS:
@@ -1657,9 +1706,9 @@ class NewFileName:
 
         # --- Catch exceptions in the FilaName class ---
         try:
-            file = open(self.path_tr, 'w')
-            file.write(data_str.encode(encoding))
-            file.close()
+            self.open('w')
+            self.write(data_str.encode(encoding))
+            self.close()
         except OSError:
             log_error('(OSError) Exception in saveStrToFile()')
             log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
