@@ -762,36 +762,29 @@ class XmlDataContext(object):
     def __init__(self, xml_file_path):
         log_debug('XmlDataContext::__init__() "{0}"'.format(xml_file_path.getPath()))
         self._xml_root = None
-        self.repository_file_path = xml_file_path
+        self.repo_fname = xml_file_path
 
     # Lazy loading of xml data through property
     @property
     def xml_data(self):
-        if self._xml_root is None: self._load_xml()
+        if self._xml_root is None:
+            self._load_xml()
 
         return self._xml_root
 
+    #
+    # If there is any problem with the filesystem then the functions display an error
+    # dialog and produce an Addon_Error exception.
+    #
     def _load_xml(self):
-        # --- Parse using cElementTree ---
-        # >> If there are issues in the XML file (for example, invalid XML chars)
-        # >> ET.parse() will fail.
-        log_verb('XmlDataContext::_load_xml() Loading {0}'.format(self.repository_file_path.getPath()))
-        try:
-            self._xml_root = self.repository_file_path.readXml()
-        except IOError as e:
-            log_debug('XmlDataContext::_load_xml() (IOError) errno = {0}'.format(e.errno))
-            # log_debug(unicode(errno.errorcode))
-            # >> No such file or directory
-            if e.errno == errno.ENOENT:
-                log_error('XmlDataContext::_load_xml() (IOError) No such file or directory.')
-            else:
-                log_error('CategoryRepository::_load_xml() (IOError) Unhandled errno value.')
-            log_error('XmlDataContext::_load_xml() (IOError) Return empty categories and launchers dictionaries.')
-        except ET.ParseError as e:
-            log_error('XmlDataContext::_load_xml() (ParseError) Exception parsing XML categories.xml')
-            log_error('XmlDataContext::_load_xml() (ParseError) {0}'.format(str(e)))
-            kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
-                           'Maybe XML file is corrupt or contains invalid characters.')
+        log_verb('XmlDataContext::_load_xml() Loading "{0}"'.format(self.repo_fname.getPath()))
+        xml_repo_str = self.repo_fname.loadFileToStr()
+        self._xml_root = fs_load_XML_root_from_str(xml_repo_str)
+
+    def commit(self):
+        log_info('XmlDataContext::commit() Saving "{0}"'.format(self.repo_fname.getPath()))
+        xml_repo_str = fs_save_XML_root_to_str(self._xml_root)
+        self.repo_fname.saveStrToFile(xml_repo_str)
 
     def get_nodes(self, tag):
         log_debug('XmlDataContext::get_nodes(): xpath query "{}"'.format(tag))
@@ -837,10 +830,6 @@ class XmlDataContext(object):
             return
 
         self.xml_data.remove(node_to_remove)
-
-    def commit(self):
-        log_info('Committing changes to XML file. File: {}'.format(self.repository_file_path.getOriginalPath()))
-        self.repository_file_path.writeXml(self._xml_root)
 
 # -------------------------------------------------------------------------------------------------
 # Repository class for Category objects.
@@ -1093,10 +1082,10 @@ class LauncherRepository(object):
         launchers = []
         launcher_elements = self.data_context.get_nodes_by('launcher', 'categoryID', category_id )
         if launcher_elements is None or len(launcher_elements) == 0:
-            log_debug('No launchers found in category #{}'.format(category_id))
+            log_debug('No launchers found in category {0}'.format(category_id))
             return launchers
 
-        log_debug('{} launchers found in category #{}'.format(len(launcher_elements), category_id))
+        log_debug('{0} launchers found in category {1}'.format(len(launcher_elements), category_id))
         for launcher_element in launcher_elements:
             launcher_dic = self._parse_xml_to_dictionary(launcher_element)
             launcher = self.launcher_factory.create(launcher_dic)
@@ -1113,7 +1102,7 @@ class LauncherRepository(object):
 
         launcher_id = launcher.get_id()
         launcher_data = launcher.get_data()
-        self.data_context.save_node('launcher', launcher_id, launcher_data)        
+        self.data_context.save_node('launcher', launcher_id, launcher_data)
         self.data_context.commit()
 
     def save_multiple(self, launchers, update_launcher_timestamp = True):

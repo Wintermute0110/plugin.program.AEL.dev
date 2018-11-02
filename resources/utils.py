@@ -1538,14 +1538,14 @@ class NewFileName:
         self.path_str = self.path_str.replace('\\', '/')
         self.path_tr = self.path_tr.replace('\\', '/')
 
-        if DEBUG_NEWFILENAME_CLASS:
-            log_debug('NewFileName() path_str "{0}"'.format(self.path_str))
-            log_debug('NewFileName() path_tr  "{0}"'.format(self.path_tr))
-
         # --- If a directory, ensure path ends with '/' ---
         if self.isdir:
             if not self.path_str[:-1] == '/': self.path_str = self.path_str + '/'
             if not self.path_tr[:-1] == '/': self.path_tr = self.path_tr + '/'
+
+        # if DEBUG_NEWFILENAME_CLASS:
+        #     log_debug('NewFileName() path_str "{0}"'.format(self.path_str))
+        #     log_debug('NewFileName() path_tr  "{0}"'.format(self.path_tr))
 
         # --- Check if file is local or remote and needs translation ---
         if self.path_str.lower().startswith('smb://'):
@@ -1567,7 +1567,7 @@ class NewFileName:
             self.a = None
 
     # ---------------------------------------------------------------------------------------------
-    # Core functions.
+    # Core functions
     # ---------------------------------------------------------------------------------------------
     def isdir(self):
         return self.isdir
@@ -1591,13 +1591,14 @@ class NewFileName:
         return FileName(joined_path)
 
     # ---------------------------------------------------------------------------------------------
-    # Path manipulation.
+    # Path manipulation
     # ---------------------------------------------------------------------------------------------
     def getPath(self):
         return self.path_str
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
+    # Depend on either Python SL or Kodi VFS
     # ---------------------------------------------------------------------------------------------
     def exists_python(self):
         return os.path.exists(self.path_tr)
@@ -1607,6 +1608,69 @@ class NewFileName:
             if DEBUG_NEWFILENAME_CLASS:
                 log_debug('NewFileName::makedirs_python() path_str "{0}"'.format(self.path_str))
             os.makedirs(self.path_tr)
+
+    # ---------------------------------------------------------------------------------------------
+    # File low-level IO functions
+    # Depend on either Python SL or Kodi VFS
+    # ---------------------------------------------------------------------------------------------
+    
+
+    # ---------------------------------------------------------------------------------------------
+    # File high-level IO functions
+    # These functions are independent of the Python SL/Kodi VFS
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Loads a file into a string.
+    # By default all files are assumed to be encoded in UTF-8.
+    # Returns a Unicode string.
+    #
+    def loadFileToStr(self, encoding = 'utf-8'):
+        if DEBUG_NEWFILENAME_CLASS:
+            log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
+            log_debug('NewFileName::loadFileToStr() Loading path_tr  "{0}"'.format(self.path_tr))
+        contents = None
+        try:
+            file = open(self.path_tr, 'r')
+            contents = file.read()
+            file.close()
+        except OSError:
+            log_error('(OSError) Exception in FileName::loadFileToStr()')
+            log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
+            raise AEL_Error('(OSError) Cannot write {0} file'.format(self.path_tr))
+        except IOError:
+            log_error('(IOError) Exception in FileName::loadFileToStr()')
+            log_error('(IOError) errno = {0}'.format(e.errno))
+            if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                       log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            raise AEL_Error('(IOError) Cannot write {0} file'.format(self.path_tr))
+
+        return contents.decode(encoding)
+
+    #
+    # data_str is supposed to be encoded in Unicode. Encode it in UTF-8.
+    #
+    def saveStrToFile(self, data_str, encoding = 'utf-8'):
+        if DEBUG_NEWFILENAME_CLASS:
+            log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
+            log_debug('NewFileName::loadFileToStr() Loading path_tr  "{0}"'.format(self.path_tr))
+
+        # --- Catch exceptions in the FilaName class ---
+        try:
+            file = open(self.path_tr, 'w')
+            file.write(data_str.encode(encoding))
+            file.close()
+        except OSError:
+            log_error('(OSError) Exception in saveStrToFile()')
+            log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
+            raise AEL_Error('(OSError) Cannot write {0} file'.format(self.path_tr))
+        except IOError:
+            log_error('(IOError) Exception in saveStrToFile()')
+            log_error('(IOError) errno = {0}'.format(e.errno))
+            if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                       log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            raise AEL_Error('(IOError) Cannot write {0} file'.format(self.path_tr))
 
 # -------------------------------------------------------------------------------------------------
 # Decide which class to use for managing filenames.

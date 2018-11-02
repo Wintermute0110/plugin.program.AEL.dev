@@ -560,6 +560,7 @@ def fs_load_catfile(categories_file, categories, launchers):
         kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                        'Maybe XML file is corrupt or contains invalid characters.')
         return update_timestamp
+
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))
 
@@ -645,6 +646,26 @@ def fs_write_str_list_to_file(str_list, export_FN):
         log_error('(IOError) exception in fs_write_str_list_to_file()')
         log_error('Cannot write {0} file'.format(export_FN.getBase()))
         raise AEL_Error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
+
+# -------------------------------------------------------------------------------------------------
+# Generic XML load/writer.
+# -------------------------------------------------------------------------------------------------
+def fs_load_XML_root_from_str(data_str):
+    root = None
+    try:
+        root = ET.fromstring(data_str)
+    except ET.ParseError as e:
+        log_error('fs_load_XML_root_from_str() (ParseError) Exception parsing XML categories.xml')
+        log_error('fs_load_XML_root_from_str() (ParseError) {0}'.format(str(e)))
+        kodi_dialog_OK('(XML ParseError) Exception reading categories.xml. '
+                       'Maybe XML file is corrupt or contains invalid characters.')
+
+    return root
+
+def fs_write_XML_root_from_str(xml_root):
+    data_str = ET.tostring(xml_root)
+
+    return data_str
 
 # -------------------------------------------------------------------------------------------------
 # Generic JSON loader/writer
