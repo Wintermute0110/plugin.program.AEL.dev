@@ -364,16 +364,6 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
     return roms_base_noext
 
 # -------------------------------------------------------------------------------------------------
-# Filesystem very low-level utilities
-# -------------------------------------------------------------------------------------------------
-#
-# See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
-# This function is not needed. It is deprecated and will be removed soon.
-#
-def get_fs_encoding():
-    return sys.getfilesystemencoding()
-
-# -------------------------------------------------------------------------------------------------
 # Categories/Launchers
 # -------------------------------------------------------------------------------------------------
 #
@@ -650,7 +640,7 @@ def fs_write_str_list_to_file(str_list, export_FN):
 # -------------------------------------------------------------------------------------------------
 # Generic XML load/writer.
 # -------------------------------------------------------------------------------------------------
-def fs_load_XML_root_from_str(data_str):
+def fs_get_XML_root_from_str(data_str):
     root = None
     try:
         root = ET.fromstring(data_str)
@@ -662,7 +652,7 @@ def fs_load_XML_root_from_str(data_str):
 
     return root
 
-def fs_write_XML_root_from_str(xml_root):
+def fs_get_str_from_XML_root(xml_root):
     data_str = ET.tostring(xml_root)
 
     return data_str
@@ -1858,10 +1848,9 @@ def fs_export_category_NFO(nfo_FileName, category):
 
     return True
 
-from stat import *
 def fs_import_category_NFO(nfo_FileName, category_data):
     # --- Get NFO file name ---
-    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
+    log_debug('fs_import_category_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # --- Import data ---
     if nfo_FileName.exists():
@@ -1870,11 +1859,11 @@ def fs_import_category_NFO(nfo_FileName, category_data):
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         except:
             kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getOriginalPath()))
-            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
+            log_error("fs_import_category_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
             return False
     else:
         kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
-        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
+        log_error("fs_import_category_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
         return False
 
     item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
@@ -1889,7 +1878,7 @@ def fs_import_category_NFO(nfo_FileName, category_data):
     if item_rating:    category_data['m_rating'] = text_unescape_XML(item_rating[0])
     if item_plot:      category_data['m_plot']   = text_unescape_XML(item_plot[0])
 
-    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getOriginalPath()))
+    log_verb("fs_import_category_NFO() Imported '{0}'".format(nfo_FileName.getPath()))
 
     return True
 
@@ -1900,7 +1889,7 @@ def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
     nfo_dir = FileName(settings['categories_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(category_name + '.nfo')
-    log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
+    log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getPath()))
 
     return nfo_file_path
 
@@ -1909,7 +1898,7 @@ def fs_get_category_NFO_name(settings, category):
 #
 def fs_export_collection_NFO(nfo_FileName, collection):
     # --- Get NFO file name ---
-    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
+    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = []
@@ -1925,7 +1914,7 @@ def fs_export_collection_NFO(nfo_FileName, collection):
         nfo_FileName.writeAll(full_string)
     except:
         kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_FileName.getName()))
-        log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_FileName.getOriginalPath()))
+        log_error("fs_export_collection_NFO() Exception writing'{0}'".format(nfo_FileName.getPath()))
         return False
     log_debug("fs_export_collection_NFO() Created '{0}'".format(nfo_FileName.getOriginalPath()))
 
@@ -1933,7 +1922,7 @@ def fs_export_collection_NFO(nfo_FileName, collection):
 
 def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
     # --- Get NFO file name ---
-    log_debug('fs_import_collection_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
+    log_debug('fs_import_collection_NFO() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
     # --- Import data ---
     if nfo_FileName.exists():
@@ -1942,11 +1931,11 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         except:
             kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getName()))
-            log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getOriginalPath()))
+            log_error("fs_import_collection_NFO() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
             return False
     else:
         kodi_notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
-        log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_FileName.getOriginalPath()))
+        log_error("fs_import_collection_NFO() NFO file not found '{0}'".format(nfo_FileName.getPath()))
         return False
 
     item_genre  = re.findall('<genre>(.*?)</genre>', item_nfo)
@@ -1965,6 +1954,6 @@ def fs_get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
     nfo_dir = FileNameFactory.create(settings['collections_asset_dir'])
     nfo_file_path = nfo_dir.pjoin(collection_name + '.nfo')
-    log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
+    log_debug("fs_get_collection_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getPath()))
 
     return nfo_file_path

@@ -118,7 +118,7 @@ from constants import *
 #         # >> Message to be printed in the GUI
 #         raise AEL_Error('Error writing file (OSError)')
 #
-class Addon_Error(Exception):
+class AddonException(Exception):
     def __init__(self, err_str):
         self.err_str = err_str
 
@@ -1597,16 +1597,70 @@ class NewFileName:
         self.__init__(self.path_str, isdir)
 
     #
+    # Appends a string to path
+    # Returns self FileName object
+    #
+    def append(self, arg):
+        self.path_str = self.path_str + arg
+        self.path_tr = self.path_tr + arg
+
+        return self
+
+    #
     # Joins paths and returns a new filename object.
     #
     def pjoin(self, path_str, isdir = False):
         return FileName(os.path.join(self.path_str, path_str), isdir)
 
     # ---------------------------------------------------------------------------------------------
-    # Path manipulation
+    # Path manipulation and file information
     # ---------------------------------------------------------------------------------------------
     def getPath(self):
         return self.path_str
+
+    def getPathNoExt(self):
+        root, ext = os.path.splitext(self.path_str)
+
+        return root
+
+    def getDir(self):
+        return os.path.dirname(self.path_str)
+
+    # Returns a new FileName object.
+    # def getDirAsFileName(self):
+    #     return self.__init__(self.getDir())
+
+    def getBase(self):
+        return os.path.basename(self.path_str)
+
+    def getBaseNoExt(self):
+        basename  = os.path.basename(self.path_str)
+        root, ext = os.path.splitext(basename)
+
+        return root
+
+    def getExt(self):
+        root, ext = os.path.splitext(self.path_str)
+        return ext
+
+    def changeExtension(self, targetExt):
+        raise AddonException('Implement me.')
+        ext = self.getExt()
+        copiedPath = self.originalPath
+        if not targetExt.startswith('.'):
+            targetExt = '.{0}'.format(targetExt)
+        new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        return new_path
+
+    # Checks the extension to determine the type of the file.
+    def isImageFile(self):
+        return '.' + self.getExt().lower() in IMAGE_EXTENSION_LIST
+
+    def isManual(self):
+        return '.' + self.getExt().lower() in MANUAL_EXTENSION_LIST
+
+    def isVideoFile(self):
+        return '.' + self.getExt().lower() in TRAILER_EXTENSION_LIST
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions. Python Standard Library implementation
@@ -1622,7 +1676,13 @@ class NewFileName:
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions. Kodi VFS implementation.
+    # Kodi VFS functions always work with path_str, not with the translated path.
     # ---------------------------------------------------------------------------------------------
+    def exists_kodivfs(self):
+        return xbmcvfs.exists(self.path_str)
+
+    def makedirs_kodivfs(self):
+        raise AddonException('Not implemented yet')
 
     # ---------------------------------------------------------------------------------------------
     # File low-level IO functions. Python Standard Library implementation
@@ -1657,6 +1717,17 @@ class NewFileName:
     # ---------------------------------------------------------------------------------------------
     # File low-level IO functions. Kodi VFS implementation.
     # ---------------------------------------------------------------------------------------------
+    def open_kodivfs(self, flags):
+        raise AddonException('Not implemented yet')
+
+    def read_kodivfs(self):
+        raise AddonException('Not implemented yet')
+
+    def write_kodivfs(self):
+        raise AddonException('Not implemented yet')
+
+    def close_kodivfs(self, bytes):
+        raise AddonException('Not implemented yet')
 
     # ---------------------------------------------------------------------------------------------
     # File high-level IO functions
@@ -1665,6 +1736,40 @@ class NewFileName:
     # encoded strings.
     # ---------------------------------------------------------------------------------------------
     #
+    # If both files are local use Python SL. Otherwise use Kodi VFS.
+    # shutil.copy2() preserves metadata, including atime and mtime. We do not want that.
+    #
+    # See https://docs.python.org/2/library/shutil.html#shutil.copy
+    # See https://docs.python.org/2/library/shutil.html#shutil.copy2
+    # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
+    #
+    def copy(self, to_FN):
+        if self.is_local and dest_FN.is_local:
+            fs_encoding = sys.getfilesystemencoding()
+            source_bytes = self.getPath().decode(fs_encoding)
+            dest_bytes = to_FN.getPath().decode(fs_encoding)
+            if DEBUG_NEWFILENAME_CLASS:
+                log_debug('NewFileName::copy() Using Python Standard Library')
+                log_debug('NewFileName::copy() fs encoding "{0}"'.format(fs_encoding))
+                log_debug('NewFileName::copy() Copy "{0}"'.format(source_bytes))
+                log_debug('NewFileName::copy() into "{0}"'.format(dest_bytes))
+            try:
+                shutil.copy(source_bytes, dest_bytes)
+            except OSError:
+                log_error('NewFileName::copy() OSError exception copying image')
+                raise AddonException('OSError exception copying image')
+            except IOError:
+                log_error('NewFileName::copy() IOError exception copying image')
+                raise AddonException('IOError exception copying image')
+        else:
+            if DEBUG_NEWFILENAME_CLASS:
+                log_debug('NewFileName::copy() Using Kodi VFS')
+                log_debug('NewFileName::copy() Copy "{0}"'.format(self.getPath()))
+                log_debug('NewFileName::copy() into "{0}"'.format(to_FN.getPath()))
+            # >> If xbmcvfs.copy() fails what exceptions raise???
+            xbmcvfs.copy(self.getPath(), to_FN.getPath())
+
+    #
     # Loads a file into a Unicode string.
     # By default all files are assumed to be encoded in UTF-8.
     # Returns a Unicode string.
@@ -1672,7 +1777,6 @@ class NewFileName:
     def loadFileToStr(self, encoding = 'utf-8'):
         if DEBUG_NEWFILENAME_CLASS:
             log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
-            log_debug('NewFileName::loadFileToStr() Loading path_tr  "{0}"'.format(self.path_tr))
 
         # NOTE Exceptions should be catched, reported and re-raised in the low-level
         # functions, not here!!!

@@ -779,11 +779,11 @@ class XmlDataContext(object):
     def _load_xml(self):
         log_verb('XmlDataContext::_load_xml() Loading "{0}"'.format(self.repo_fname.getPath()))
         xml_repo_str = self.repo_fname.loadFileToStr()
-        self._xml_root = fs_load_XML_root_from_str(xml_repo_str)
+        self._xml_root = fs_get_XML_root_from_str(xml_repo_str)
 
     def commit(self):
         log_info('XmlDataContext::commit() Saving "{0}"'.format(self.repo_fname.getPath()))
-        xml_repo_str = fs_save_XML_root_to_str(self._xml_root)
+        xml_repo_str = fs_get_str_from_XML_root(self._xml_root)
         self.repo_fname.saveStrToFile(xml_repo_str)
 
     def get_nodes(self, tag):
@@ -1571,7 +1571,7 @@ class MetaDataItem(object):
         return FileName(self.get_asset_str(asset_info))
 
     def set_asset(self, asset_info, path_FN):
-        self.entity_data[asset_info.key] = path_FN.getOriginalPath()
+        self.entity_data[asset_info.key] = path_FN.getPath()
 
     def clear_asset(self, asset_info):
         self.entity_data[asset_info.key] = ''
