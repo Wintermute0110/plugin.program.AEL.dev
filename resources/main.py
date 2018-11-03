@@ -1287,10 +1287,13 @@ def m_run_category_sub_command(command, category):
             log_debug('m_run_category_sub_command(EDIT_CATEGORY) Selected NONE')
         else:
             # >> Execute subcommand. May be atomic, maybe a submenu.
-            # >> Then execute this menu again.
+            # >> If submenu returns False is means the context menu must be closed now.
             log_debug('m_run_category_sub_command(EDIT_CATEGORY) Selected {0}'.format(selected_option))
-            m_run_category_sub_command(selected_option, category)
-            m_run_category_sub_command('EDIT_CATEGORY', category)
+            if m_run_category_sub_command(selected_option, category):
+                m_run_category_sub_command('EDIT_CATEGORY', category)
+            else:
+                log_debug('m_run_category_sub_command(EDIT_CATEGORY) m_run_category_sub_command returned False')
+                log_debug('m_run_category_sub_command(EDIT_CATEGORY) Closing context menu')
 
     # --- Submenu command ---
     elif command == 'EDIT_METADATA':
@@ -1360,14 +1363,21 @@ def m_run_category_sub_command(command, category):
     elif command == 'EXPORT_CATEGORY_XML':
         m_subcommand_export_category_xml(category)
 
+    # Deleting a category must exit the context menu!
+    # If the deletion was sucessful the category does not exit any more.
     elif command == 'DELETE_CATEGORY':
-        m_subcommand_delete_category(category)
+        if m_subcommand_delete_category(category):
+            return False
 
     else:
         log_warning('m_run_category_sub_command() Unsupported command "{0}"'.format(command))
         kodi_dialog_OK('m_run_category_sub_command() Unknown command {0}. '.format(command) +
                        'Please report this bug.')
+
+    # Returns True if the parent menu must be shown again.
+    # Return False if context menu must be closed.
     log_debug('m_run_category_sub_command({0}) ENDS'.format(command))
+    return True
 
 #
 # NOTE when returning from a submenu preselect the menu item in the parent menu that was used.
@@ -1795,7 +1805,11 @@ def m_subcommand_export_category_xml(category):
     else:
         kodi_notify('Exported Category "{0}" XML config'.format(category.get_name()))
 
-# --- Remove category. Also removes launchers in that category ---
+#
+# Remove category. Also removes launchers in that category
+# Returns True if the Category was deleted
+# Returns False if the Category was not deleted.
+#
 def m_subcommand_delete_category(category):
     categoryID    = category.get_id()
     category_name = category.get_name()
@@ -1805,26 +1819,25 @@ def m_subcommand_delete_category(category):
         ret = kodi_dialog_yesno('Category "{0}" has {1} launchers. '.format(category_name, len(launchers)) +
                                 'Deleting it will also delete related launchers. ' +
                                 'Are you sure you want to delete "{0}"?'.format(category_name))
-        if not ret: return
+        if not ret: return False
         log_info('Deleting category "{0}" id {1}'.format(category_name, category.get_id()))
-        # >> Delete launchers and ROM JSON/XML files associated with them
+        # --- Delete launchers and ROM JSON/XML files associated with them ---
         for launcher in launchers:
             log_info('Deleting linked launcher "{0}" id {1}'.format(launcher.get_name(), launcher.get_id()))
             if launcher.supports_launching_roms():
                 launcher.clear_roms()
-
             g_launcherRepository.delete(launcher)
-
-        # >> Delete category from database.
+        # --- Delete category from database ---
         g_categoryRepository.delete(category)
     else:
         ret = kodi_dialog_yesno('Category "{0}" has no launchers. '.format(category_name) +
                                 'Are you sure you want to delete "{0}"?'.format(category_name))
-        if not ret: return
+        if not ret: return False
         log_info('Deleting category "{0}" id {1}'.format(category_name, category.get_id()))
         log_info('Category has no launchers, so no launchers to delete.')
         g_categoryRepository.delete(category)
     kodi_notify('Deleted category {0}'.format(category_name))
+    return True
 
 # -------------------------------------------------------------------------------------------------
 # ROM Collections context menu atomic comands.
