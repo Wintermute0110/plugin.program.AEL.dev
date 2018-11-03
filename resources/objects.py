@@ -34,26 +34,6 @@ from disk_IO import *
 # #################################################################################################
 # #################################################################################################
 
-# todo: default assets should use the constant values instead
-# of the string names.
-ASSET_KEYS_TO_IDS = {
-    's_title' : ASSET_TITLE_ID,
-    's_snap' : ASSET_SNAP_ID,
-    's_boxfront' : ASSET_BOXFRONT_ID,
-    's_boxback' : ASSET_BOXBACK_ID,
-    's_cartridge' : ASSET_CARTRIDGE_ID,
-    's_fanart' : ASSET_FANART_ID,
-    's_banner' : ASSET_BANNER_ID,
-    's_clearlogo' : ASSET_CLEARLOGO_ID,
-    's_flyer' : ASSET_FLYER_ID,
-    's_map' : ASSET_MAP_ID,
-    's_manual' : ASSET_MANUAL_ID,
-    's_trailer' : ASSET_TRAILER_ID,
-    's_icon' : ASSET_ICON_ID,
-    's_poster' : ASSET_POSTER_ID,
-    's_controller' : ASSET_CONTROLLER_ID
-}
-
 ASSET_SETTING_KEYS = {
     ASSET_ICON_ID : '',
     ASSET_FANART_ID : 'scraper_fanart',
@@ -341,7 +321,7 @@ class AssetInfo:
 # --- Static list of asset information objects ----------------------------------------------------
 # >> These are used very frequently so I think it is better to have a cached statis list.
 a_icon = AssetInfo()
-a_icon.id             = ASSET_ICON_ID
+a_icon.id               = ASSET_ICON_ID
 a_icon.key              = 's_icon'
 a_icon.default_key      = 'default_icon'
 a_icon.rom_default_key  = 'roms_default_icon'
@@ -520,7 +500,10 @@ a_manual.exts               = asset_get_filesearch_extension_list(MANUAL_EXTENSI
 a_manual.exts_dialog        = asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
 a_manual.path_key           = 'path_manual'
 
-asset_infos = {
+#
+# Get AssetInfo object by asset ID.
+#
+ASSET_INFO_DICT = {
     ASSET_ICON_ID       : a_icon,
     ASSET_FANART_ID     : a_fanart,
     ASSET_BANNER_ID     : a_banner,
@@ -536,6 +519,27 @@ asset_infos = {
     ASSET_FLYER_ID      : a_flyer,
     ASSET_MAP_ID        : a_map,
     ASSET_MANUAL_ID     : a_manual,
+}
+
+#
+# Get AssetInfo object by database key.
+#
+ASSET_INFO_KEY_DICT = {
+    's_icon'       : a_icon,
+    's_fanart'     : a_fanart,
+    's_banner'     : a_banner,
+    's_poster'     : a_poster,
+    's_clearlogo'  : a_clearlogo,
+    's_controller' : a_controller,
+    's_trailer'    : a_trailer,
+    's_title'      : a_title,
+    's_snap'       : a_snap,
+    's_boxfront'   : a_boxfront,
+    's_boxback'    : a_boxback,
+    's_cartridge'  : a_cartridge,
+    's_flyer'      : a_flyer,
+    's_map'        : a_map,
+    's_manual'     : a_manual,
 }
 
 #
@@ -557,7 +561,7 @@ class AssetInfoFactory(object):
     # Returns a list of AssetInfo objects.
     def get_asset_list_by_IDs(self, IDs):
         asset_info_list = []
-        for asset_ID in IDs: asset_info_list.append(asset_infos[asset_ID])
+        for asset_ID in IDs: asset_info_list.append(ASSET_INFO_DICT[asset_ID])
 
         return asset_info_list
 
@@ -1543,6 +1547,15 @@ class MetaDataItem(object):
     def set_plot(self, plot):
         self.entity_data['m_plot'] = plot
 
+    #
+    # Used when rendering Categories/Launchers/ROMs
+    #
+    def get_trailer(self):
+        return self.entity_data['s_trailer'] if 's_trailer' in self.entity_data else ''
+
+    def set_trailer(self, trailer_str):
+        self.entity_data['s_trailer'] = trailer_str
+
     # --- Finished status stuff -------------------------------------------------------------------
     def is_finished(self):
         return 'finished' in self.entity_data and self.entity_data['finished']
@@ -1612,13 +1625,16 @@ class Category(MetaDataItem):
              's_trailer' : ''
              }
 
+    def is_virtual(self):
+        return False
+
     #
-    # Returns an ordered dictionary. Keys are AssetInfo objects. Values are the current
-    # file for the asset as Unicode string or '' if the asset is not set.
+    # Returns an ordered dictionary.
+    # Keys are AssetInfo objects.
+    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
     #
     def get_assets_odict(self):
         asset_info_list = g_assetFactory.get_asset_list_by_IDs(CATEGORY_ASSET_ID_LIST)
-
         asset_odict = collections.OrderedDict()
         for asset_info in asset_info_list:
             asset_fname_str = self.entity_data[asset_info.key] if self.entity_data[asset_info.key] else ''
@@ -1626,33 +1642,31 @@ class Category(MetaDataItem):
 
         return asset_odict
 
-    def is_virtual(self):
-        return False
+    #
+    # Get a list of the assets that can be mapped.
+    # Returns a list of AssetInfo objects.
+    #
+    def get_default_asset_list(self):
+        return g_assetFactory.get_asset_list_by_IDs(DEFAULTABLE_ASSET_ID_LIST)
 
-    def get_asset_defaults(self):
-        default_assets = {}
-        default_asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO]
-        default_asset_kinds = g_assetFactory.get_assets_by(default_asset_keys)
+    def get_mappable_asset_list(self):
+        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_CATEGORY_ASSET_ID_LIST)
 
-        for asset_kind in default_asset_kinds:
-            mapped_asset_key = self.entity_data[asset_kind.default_key] if self.entity_data[asset_kind.default_key] else ''
-            mapped_asset_kind = g_assetFactory.get_asset_info_by_namekey(mapped_asset_key)
-            
-            default_assets[asset_kind] = mapped_asset_kind
+    #
+    # Gets the database filename mapped for asset_info.
+    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
+    #
+    def get_mapped_asset_key(self, asset_info):
+        return self.entity_data[asset_info.default_key]
 
-        return default_assets
-
-    def set_default_asset(self, asset_kind, mapped_to_kind):
-        self.entity_data[asset_kind.default_key] = mapped_to_kind.key
-
-    def get_trailer(self):
-        return self.entity_data['s_trailer']
+    def set_mapped_asset_key(self, asset_info, mapped_to_info):
+        self.entity_data[asset_info.default_key] = mapped_to_info.key
 
     def get_edit_options(self):
         options = collections.OrderedDict()
         options['EDIT_METADATA']       = 'Edit Metadata ...'
         options['EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
-        options['SET_DEFAULT_ASSETS']  = 'Choose default Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
         options['CATEGORY_STATUS']     = 'Category status: {0}'.format(self.get_finished_str())
         options['EXPORT_CATEGORY_XML'] = 'Export Category XML configuration ...'
         options['DELETE_CATEGORY']     = 'Delete Category'
@@ -1682,6 +1696,7 @@ class Category(MetaDataItem):
     @staticmethod
     def create_root_category():
         c = {'id' : VCATEGORY_ADDONROOT_ID, 'm_name' : 'Root category' }
+
         return Category(c)
 
 # -------------------------------------------------------------------------------------------------

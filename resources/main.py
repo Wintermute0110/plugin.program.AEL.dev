@@ -1800,8 +1800,8 @@ def m_subcommand_export_category_xml(category):
     # >> printed. This is the standard way of handling error messages in AEL code.
     try:
         autoconfig_export_category(category_data, export_FN)
-    except Addon_Error as AE:
-        kodi_notify_warn('{0}'.format(AE))
+    except AddonError as E:
+        kodi_notify_warn('{0}'.format(E))
     else:
         kodi_notify('Exported Category "{0}" XML config'.format(category.get_name()))
 
@@ -4006,9 +4006,9 @@ def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
     # >> Use Krypton Dialog().select(useDetails = True) to display label2 on dialog.
     asset_odict = obj_instance.get_assets_odict()
     # dump_object_to_log('asset_odict', asset_odict)
-    # List to easily pick the selected AssetInfo() object
-    asset_info_list = []
     list_items = []
+    # >> List to easily pick the selected AssetInfo() object
+    asset_info_list = []
     for asset_info_obj, asset_fname_str in asset_odict.iteritems():
         # --- Create ListItems ---
         # >> Label1 is the asset name (Icon, Fanart, etc.)
@@ -4019,16 +4019,12 @@ def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
         list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_stt)
         if asset_fname_str:
             item_path = FileName(asset_fname_str)
-            if item_path.isVideoFile():
-                item_img = 'DefaultAddonVideo.png'
-            elif item_path.isManual():
-                item_img = 'DefaultAddonInfoProvider.png'
-            else:
-                item_img = asset_fname_str
+            if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
+            elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
+            else:                       item_img = asset_fname_str
         else:
             item_img = 'DefaultAddonNone.png'
         list_item.setArt({'icon' : item_img})
-
         # --- Append to list of ListItems ---
         list_items.append(list_item)
         asset_info_list.append(asset_info_obj)
@@ -4444,12 +4440,10 @@ def m_gui_edit_asset(obj_instance, asset_info):
             log_verb('Into local file "{0}"'.format(image_local_path.getPath()))
 
             # >> Prevent race conditions
-            kodi_busydialog_ON()
             try:
                 net_download_img(image_url, image_local_path)
             except socket.timeout:
                 kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
-            kodi_busydialog_OFF()
 
             # ~~~ Update Kodi cache with downloaded image ~~~
             # Recache only if local image is in the Kodi cache, this function takes care of that.
@@ -4470,80 +4464,133 @@ def m_gui_edit_asset(obj_instance, asset_info):
 #
 # Generic function to edit the Object default assets for 
 # icon/fanart/banner/poster/clearlogo context submenu.
+# Argument obj is an object instance of class Category, CollectionLauncher, etc.
 #
-def m_gui_edit_object_default_assets(obj_instance):
-    log_debug('m_gui_edit_object_assets() obj_instance  {0}'.format(obj_instance.__class__.__name__))
+def m_gui_edit_object_default_assets(obj, pre_select_idx = 0):
+    log_debug('m_gui_edit_object_default_assets() obj {0}'.format(obj.__class__.__name__))
+    log_debug('m_gui_edit_object_default_assets() pre_select_idx {0}'.format(pre_select_idx))
 
     # --- Customize function for each object type ---
-    if obj_instance.asset_kind == KIND_ASSET_CATEGORY:
-        dialog_title_str = 'Edit Category default Assets/Artwork'
+    if obj.asset_kind == KIND_ASSET_CATEGORY:
         repository_obj = g_categoryRepository
-    elif obj_instance.asset_kind == KIND_ASSET_COLLECTION:
-        dialog_title_str = 'Edit ROM Collection default Assets/Artwork'
+    elif obj.asset_kind == KIND_ASSET_COLLECTION:
         repository_obj = g_collectionRepository
-    elif obj_instance.asset_kind == KIND_ASSET_LAUNCHER:
-        dialog_title_str = 'Edit Launcher default Assets/Artwork'
+    elif obj.asset_kind == KIND_ASSET_LAUNCHER:
         repository_obj = g_launcherRepository
     else:
-        kodi_dialog_OK('m_gui_edit_object_default_assets() Unknown obj_instance.asset_kind = {0}'.format(obj_instance.asset_kind) +
+        kodi_dialog_OK('m_gui_edit_object_default_assets() Unknown obj.asset_kind = {0}'.format(obj.asset_kind) +
                        'This is a bug, please report it.')
         return
+    dialog_title_str = 'Edit {0} default Assets/Artwork'.format(obj.obj_name)
 
     # --- Build Dialog.select() list ---
+    assets_odict = obj.get_assets_odict()
+    default_assets_list = obj.get_default_asset_list()
     list_items = []
-    assets = category.get_assets()
-    asset_defaults = category.get_asset_defaults()
-    for asset_kind in asset_defaults:
-        mapped_asset_kind = asset_defaults[asset_kind]
-        mapped_asset_name = mapped_asset_kind.name if mapped_asset_kind else ''
-        mapped_asset = assets[mapped_asset_kind] if assets[mapped_asset_kind]  != '' else 'Not set'
-
-        # >> Create ListItems and label2
-        label1_text = 'Choose asset for {0} (currently {1})'.format(asset_kind.name, mapped_asset_name)
-        list_item = xbmcgui.ListItem(label = label1_text, label2 = mapped_asset)
-        # >> Set artwork with setArt()
-        item_img = 'DefaultAddonNone.png'
-        if assets[mapped_asset_kind] != '':
-            item_path = FileNameFactory.create(assets[mapped_asset_kind])
-            if item_path.is_video_file():
-                item_img = 'DefaultAddonVideo.png'
-            else:
-                item_img = assets[mapped_asset_kind]
-
+    # >> List to easily pick the selected AssetInfo() object
+    asset_info_list = []
+    for default_asset_info in default_assets_list:
+        # >> Label 1 is the string 'Choose asset for XXXX (currently YYYYY)'
+        # >> Label 2 is the fname string of the current mapped asset or 'Not set'
+        # >> icon is the fname string of the current mapped asset.
+        mapped_asset_key = obj.get_mapped_asset_key(default_asset_info)
+        mapped_asset_info = ASSET_INFO_KEY_DICT[mapped_asset_key]
+        mapped_asset_str = obj.get_asset_str(mapped_asset_info)
+        label1_str = 'Choose asset for {0} (currently {1})'.format(default_asset_info.name, mapped_asset_info.name)
+        label2_str = mapped_asset_str
+        list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_str)
+        if mapped_asset_str:
+            item_path = FileName(mapped_asset_str)
+            if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
+            elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
+            else:                       item_img = mapped_asset_str
+        else:
+            item_img = 'DefaultAddonNone.png'
         list_item.setArt({'icon' : item_img})
+        # --- Append to list of ListItems ---
         list_items.append(list_item)
+        asset_info_list.append(default_asset_info)
 
     # --- Execute select dialog menu logic ---
-    selected_kind_index = xbmcgui.Dialog().select(dialog_title_str, list = list_items, useDetails = True)
-    if selected_kind_index < 0:
-        log_debug('m_gui_edit_object_default_assets() Selected NONE. Returning to parent menu.')
+    # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel button
+    # is pressed. This bug has been solved in Leia.
+    # See https://forum.kodi.tv/showthread.php?tid=337011
+    if kodi_running_version >= KODI_VERSION_LEIA:
+        selected_option = xbmcgui.Dialog().select(
+            dialog_title_str, list = list_items, useDetails = True, preselect = pre_select_idx
+        )
     else:
-        # --- Build ListItem of assets that can be mapped ---
-        selected_kind = asset_defaults.keys()[selected_kind_index]
-        mappable_asset_list_items = []
-        for mappable_asset_kind in assets:
-            if mappable_asset_kind.kind == ASSET_TRAILER:
-                continue
+        log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+        selected_option = xbmcgui.Dialog().select(
+            dialog_title_str, list = list_items, useDetails = True
+        )
+    log_debug('m_gui_edit_object_default_assets() Main select() returned {0}'.format(selected_option))
+    if selected_option < 0:
+        # >> Return to parent menu.
+        log_debug('m_gui_edit_object_default_assets() Main selected NONE. Returning to parent menu.')
+    else:
+        # >> Execute edit default asset submenu. Then, execute recursively this submenu again.
+        # >> The menu dialog is instantiated again so it reflects the changes just edited.
+        log_debug('m_gui_edit_object_default_assets() Executing mappable asset select() dialog.')
+        selected_asset_info = asset_info_list[selected_option]
+        log_debug('m_gui_edit_object_default_assets() Mapable selected {0}.'.format(selected_asset_info.name))
+        mappable_asset_list = obj.get_mappable_asset_list()
+        list_items = []
+        asset_info_list = []
+        secondary_pre_select_idx = 0
+        counter = 0
+        for mappable_asset_info in mappable_asset_list:
+            # --- Create ListItems ---
+            # >> Label1 is the asset name (Icon, Fanart, etc.)
+            # >> Label2 is the asset filename str as in the database or 'Not set'
+            # >> setArt('icon') is the asset picture.
+            mapped_asset_str = obj.get_asset_str(mappable_asset_info)
+            label1_str = '{0}'.format(mappable_asset_info.name)
+            label2_stt = mapped_asset_str if mapped_asset_str else 'Not set'
+            list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_stt)
+            if mapped_asset_str:
+                item_path = FileName(mapped_asset_str)
+                if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
+                elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
+                else:                       item_img = mapped_asset_str
+            else:
+                item_img = 'DefaultAddonNone.png'
+            list_item.setArt({'icon' : item_img})
+            # --- Append to list of ListItems ---
+            list_items.append(list_item)
+            asset_info_list.append(mappable_asset_info)
+            if mappable_asset_info == selected_asset_info:
+                secondary_pre_select_idx = counter
+            counter += 1
 
-            list_item = xbmcgui.ListItem(label = mappable_asset_kind.name,
-                                         label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
-            list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
-            mappable_asset_list_items.append(list_item)
-
-        # >> Krypton feature: User preselected item in select() dialog.
-        preselected_index = asset_defaults.keys().index(selected_kind)
-        new_selected_kind_index = xbmcgui.Dialog().select('Choose Category default asset for {}'.format(selected_kind.name), 
-                                    list = mappable_asset_list_items, useDetails = True, preselect = preselected_index)
-
-        if new_selected_kind_index < 0:
-            return self._command_edit_category(category_id())
-
-        new_selected_kind = assets.keys()[new_selected_kind_index]
-        category.set_default_asset(selected_kind, new_selected_kind)
-        g_categoryRepository.save(category)
-        kodi_notify('Category {0} mapped to {1}'.format(selected_kind.name, new_selected_kind.name))
-
-        return self._subcommand_set_category_default_assets(category)
+        # --- Execute select dialog menu logic ---
+        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
+        # button is pressed. This bug has been solved in Leia.
+        # See https://forum.kodi.tv/showthread.php?tid=337011
+        dialog_title_str = 'Edit {0} {1} mapped asset'.format(obj.obj_name, selected_asset_info.name)
+        if kodi_running_version >= KODI_VERSION_LEIA:
+            secondary_selected_option = xbmcgui.Dialog().select(
+                dialog_title_str, list = list_items, useDetails = True, preselect = secondary_pre_select_idx
+            )
+        else:
+            log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+            secondary_selected_option = xbmcgui.Dialog().select(
+                dialog_title_str, list = list_items, useDetails = True
+            )
+        log_debug('m_gui_edit_object_default_assets() Mapable select() returned {0}'.format(secondary_selected_option))
+        if secondary_selected_option < 0:
+            # >> Return to parent menu.
+            log_debug('m_gui_edit_object_default_assets() Mapable selected NONE. Returning to parent menu.')
+        else:
+            new_selected_asset_info = asset_info_list[secondary_selected_option]
+            log_debug('m_gui_edit_object_default_assets() Mapable selected {0}.'.format(new_selected_asset_info.name))
+            obj.set_mapped_asset_key(selected_asset_info, new_selected_asset_info)
+            repository_obj.save(obj)
+            kodi_notify('{0} {1} mapped to {2}'.format(
+                obj.obj_name, selected_asset_info.name, new_selected_asset_info.name
+            ))
+        # --- Execute recursively wheter submenu was canceled or not ---
+        m_gui_edit_object_default_assets(obj, selected_option)
 
 # -------------------------------------------------------------------------------------------------
 # Render methods

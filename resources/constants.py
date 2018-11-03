@@ -180,7 +180,6 @@ NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, N
                  NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
 
 # --- Assets --------------------------------------------------------------------------------------
-# --- Define asset "constants" ---
 # ROMs have FLYER, Categories/Launchers/Collections have POSTER
 ASSET_ICON_ID       = 100
 ASSET_FANART_ID     = 200
@@ -217,11 +216,31 @@ ROM_ASSET_ID_LIST = [
     ASSET_FLYER_ID,     ASSET_MAP_ID,    ASSET_MANUAL_ID,   ASSET_TRAILER_ID
 ]
 
-DEFAULTABLE_ROM_ASSET_ID_LIST = [
+#
+# List of assets that can be mapped to other assets.
+#
+DEFAULTABLE_ASSET_ID_LIST = [
     ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID, ASSET_CLEARLOGO_ID
 ]
 
-MAPPABLE_ROM_ASSET_ID_LIST = [
+#
+# List of assets that can be mapped to a defaultable asset for Categories.
+#
+MAPPABLE_CATEGORY_ASSET_ID_LIST = [
+    ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID, ASSET_CLEARLOGO_ID
+]
+
+#
+# List of assets that can be mapped to a defaultable asset for Launchers.
+#
+MAPPABLE_LAUNCHER_ASSET_ID_LIST = [
+    ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_CONTROLLER_ID
+]
+
+#
+# List of assets that can be mapped to a defaultable asset for ROMs.
+#
+MAPPABLE_ROMS_ASSET_ID_LIST = [
     ASSET_TITLE_ID,     ASSET_SNAP_ID,   ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
     ASSET_CARTRIDGE_ID, ASSET_FANART_ID, ASSET_BANNER_ID,   ASSET_CLEARLOGO_ID,
     ASSET_FLYER_ID,     ASSET_MAP_ID
