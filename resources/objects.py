@@ -27,6 +27,7 @@ import collections
 # --- AEL packages ---
 from utils import *
 from disk_IO import *
+from platforms import *
 
 # #################################################################################################
 # #################################################################################################
@@ -1103,22 +1104,18 @@ class LauncherRepository(object):
     def save(self, launcher, update_launcher_timestamp = True):
         if update_launcher_timestamp:
             launcher.update_timestamp()
-
         launcher_id = launcher.get_id()
-        launcher_data = launcher.get_data()
-        self.data_context.save_node('launcher', launcher_id, launcher_data)
+        launcher_data_dic = launcher.get_data_dic()
+        self.data_context.save_node('launcher', launcher_id, launcher_data_dic)
         self.data_context.commit()
 
     def save_multiple(self, launchers, update_launcher_timestamp = True):
         for launcher in launchers:
             if update_launcher_timestamp:
                 launcher.update_timestamp()
-
             launcher_id = launcher.get_id()
-            launcher_data = launcher.get_data()
-            
-            self.data_context.save_node('launcher', launcher_id, launcher_data)       
-
+            launcher_data_dic = launcher.get_data_dic()
+            self.data_context.save_node('launcher', launcher_id, launcher_data_dic)
         self.data_context.commit()
 
     def delete(self, launcher):
@@ -2011,7 +2008,7 @@ class LauncherFactory(object):
 
         # --- Real launchers ---
         elif launcher_type == LAUNCHER_STANDALONE:
-            return ApplicationLauncher(launcher_data, self.settings, self.executorFactory)
+            return StandaloneLauncher(launcher_data, self.settings, self.executorFactory)
 
         elif launcher_type == LAUNCHER_FAVOURITES:
             return KodiLauncher(launcher_data, self.settings, self.executorFactory)
@@ -2061,7 +2058,8 @@ class LauncherFactory(object):
             romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
             return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory,
                                             romset_repository, statsStrategy)
-        log_warning('Unsupported launcher requested with type "{0}"'.format(launcher_type))
+        else:
+            log_error('Unsupported launcher requested with type "{0}"'.format(launcher_type))
 
         return None
 
@@ -2189,8 +2187,8 @@ class LauncherABC(MetaDataItemABC):
     # Leave category_id empty to add launcher to root folder.
     #
     def build(self, category):
-        wizard = DummyWizardDialog('categoryID', category.get_id(), None)
-        wizard = DummyWizardDialog('type', self.get_launcher_type(), wizard)
+        wizard = KodiDummyWizardDialog('categoryID', category.get_id(), None)
+        wizard = KodiDummyWizardDialog('type', self.get_launcher_type(), wizard)
         wizard = self._get_builder_wizard(wizard)
 
         # --- Create new launcher. categories.xml is save at the end of this function ---
@@ -2202,10 +2200,9 @@ class LauncherABC(MetaDataItemABC):
         if self.supports_launching_roms():
             # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
             # even launcher with the same name in the same category.
-
             roms_base_noext = fs_get_ROMs_basename(category.get_name(), self.entity_data['m_name'], self.get_id())
             self.entity_data['roms_base_noext'] = roms_base_noext
-            
+
             # --- Selected asset path ---
             # A) User chooses one and only one assets path
             # B) If this path is different from the ROM path then asset naming scheme 1 is used.
@@ -2615,13 +2612,14 @@ class LauncherABC(MetaDataItemABC):
 
         if not path_to_export: return
 
-        export_FN = FileNameFactory.create(path_to_export).pjoin(launcher_fn_str)
+        export_FN = FileName(path_to_export, isdir = True).pjoin(launcher_fn_str)
         if export_FN.exists():
             confirm = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
             if not confirm:
                 kodi_notify_warn('Export of Launcher XML cancelled')
         
         category_data = category.get_data() if category is not None else {}
+
         # --- Print error message is something goes wrong writing file ---
         try:
             autoconfig_export_launcher(self.entity_data, export_FN, category_data)
@@ -2639,14 +2637,11 @@ class LauncherABC(MetaDataItemABC):
         return wizard
 
     def _get_title_from_app_path(self, input, item_key, launcher):
-
         if input:
             return input
 
-        app = launcher['application']
-        appPath = FileNameFactory.create(app)
-
-        title = appPath.getBase_noext()
+        appPath = FileName(launcher['application'])
+        title = appPath.getBaseNoExt()
         title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
 
         return title_formatted
@@ -3161,16 +3156,16 @@ class ROMLauncherABC(LauncherABC):
 # -------------------------------------------------------------------------------------------------
 class StandaloneLauncher(LauncherABC):
     def launch(self):
-        self.title       = self.entity_data['m_name']
-        self.application = FileNameFactory.create(self.entity_data['application'])
-        self.arguments   = self.entity_data['args']
+        self.title = self.entity_data['m_name']
+        self.application = FileName(self.entity_data['application'])
+        self.arguments = self.entity_data['args']
 
         # --- Check for errors and abort if errors found ---
         if not self.application.exists():
             log_error('Launching app not found "{0}"'.format(self.application.getPath()))
             kodi_notify_warn('App {0} not found.'.format(self.application.getOriginalPath()))
             return
-        
+
         # ~~~ Argument substitution ~~~
         log_info('StandaloneLauncher() raw arguments   "{0}"'.format(self.arguments))
         self.arguments = self.arguments.replace('$apppath%' , self.application.getDir())
@@ -3188,7 +3183,6 @@ class StandaloneLauncher(LauncherABC):
         return "Standalone launcher"
 
     def change_application(self):
-
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
                                                       self._get_appbrowser_filter('application', self.entity_data), 
@@ -3214,13 +3208,12 @@ class StandaloneLauncher(LauncherABC):
         return self.entity_data['args_extra']
 
     def add_additional_argument(self, arg):
-
         if not self.entity_data['args_extra']:
             self.entity_data['args_extra'] = []
 
         self.entity_data['args_extra'].append(arg)
         log_debug('launcher.add_additional_argument() Appending extra_args to launcher {0}'.format(self.get_id()))
-        
+
     def set_additional_argument(self, index, arg):
         if not self.entity_data['args_extra']:
             self.entity_data['args_extra'] = []
@@ -3233,7 +3226,6 @@ class StandaloneLauncher(LauncherABC):
         log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
         
     def get_edit_options(self):
-
         options = collections.OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
@@ -3263,12 +3255,12 @@ class StandaloneLauncher(LauncherABC):
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard)
-        wizard = DummyWizardDialog('args', '', wizard)
-        wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
-        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
-        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
-        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = KodiFileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard)
+        wizard = KodiDummyWizardDialog('args', '', wizard)
+        wizard = KodiKeyboardWizardDialog('args', 'Application arguments', wizard)
+        wizard = KodiDummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KodiKeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = KodiSelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
 
         return wizard
 

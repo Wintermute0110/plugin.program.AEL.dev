@@ -2240,7 +2240,9 @@ class KodiKeyboardWizardDialog(KodiWizardDialog):
 class KodiSelectionWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.options = options
-        super(SelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiSelectionWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
@@ -2260,9 +2262,12 @@ class KodiSelectionWizardDialog(KodiWizardDialog):
 # list as the selectable options. The selected key will be used.
 # 
 class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, title, options, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.options = options
-        super(DictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiDictionarySelectionWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
@@ -2282,10 +2287,13 @@ class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
 # Wizard dialog which shows a filebrowser.
 #
 class KodiFileBrowseWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, title, browseType, filter, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.browseType = browseType
         self.filter = filter
-        super(FileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiFileBrowseWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
@@ -2311,9 +2319,12 @@ class KodiFileBrowseWizardDialog(KodiWizardDialog):
 #    - xbmcgui.INPUT_PASSWORD (return md5 hash of input, input is masked)
 #
 class KodiInputWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, inputType, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, title, inputType, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.inputType = inputType
-        super(InputWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiInputWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing {0} input wizard dialog for key: {1}'.format(self.inputType, self.property_key))
@@ -2340,7 +2351,9 @@ class KodiInputWizardDialog(KodiWizardDialog):
 class KodiFormattedMessageWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, title, text, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.text = text
-        super(FormattedMessageWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiFormattedMessageWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing message wizard dialog for key: {0}'.format(self.property_key))
@@ -2361,7 +2374,7 @@ class KodiFormattedMessageWizardDialog(KodiWizardDialog):
 class KodiDummyWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.predefinedValue = predefinedValue
-        super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiDummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))

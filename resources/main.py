@@ -813,23 +813,26 @@ def m_command_add_collection():
 # Edits a Collection
 # categoryID is always "vcategory_collections"
 #
-def m_command_edit_collection(categoryID, launcherID):
+def m_command_edit_collection(category_id, launcher_id):
     # NEW CODE STYLE
-    collection = g_collectionRepository.find(launcherID)
+    collection = g_collectionRepository.find(launcher_id)
     m_run_collection_sub_command('EDIT_COLLECTION', collection)
     kodi_refresh_container()
 
-def m_command_add_new_launcher(categoryID):
-    # >> If categoryID not found user is creating a new launcher using the context menu
+#
+# Creates a new Launcher.
+#
+def m_command_add_new_launcher(category_id):
+    # >> If category_id not found user is creating a new launcher using the context menu
     # >> of a launcher in addon root.
-    category = g_categoryRepository.find(categoryID)
+    category = g_categoryRepository.find(category_id)
     if category is None:
         log_info('Category ID not found. Creating laucher in addon root.')
         category = Category.create_root_category()
     else:
         # --- Ask user if launcher is created on selected category or on root menu ---
-        options = {}
-        options[categoryID]             = 'Create Launcher in "{0}" category'.format(category.get_name())
+        options = collections.OrderedDict()
+        options[category_id] = 'Create Launcher in "{0}" category'.format(category.get_name())
         options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in addon root'
         selected_id = KodiDictionaryDialog().select('Choose Launcher category', options)
         if selected_id is None: return
@@ -844,33 +847,32 @@ def m_command_add_new_launcher(categoryID):
     launcher = g_launcherFactory.create_new(launcher_type)
     if launcher is None: return
 
-    # ????
+    # Executes the "Add new Launcher" wizard dialog. The wizard fills in the launcher.entity_data
+    # dictionary with the required fields.
     if not launcher.build(category):
         return
 
-    # >> Notify user
+    # >> Notify user, save categories.xml and update container contents so user sees the new
+    # >> launcher inmmediately.
     kodi_notify('Created {0} {1}'.format(launcher.get_launcher_type_name(), launcher.get_name()))
-
-    # >> If this point is reached then changes to metadata/images were made.
-    # >> Save categories and update container contents so user sees those changes inmediately.
     g_launcherRepository.save(launcher)
     kodi_refresh_container()
 
-def m_command_edit_launcher(categoryID, launcherID):
-    launcher = g_launcherRepository.find(launcherID)
-    if launcher is None:
-        return
+# CHANGE THIS FUNCTION ACCORDING TO m_command_edit_category()
+def m_command_edit_launcher(category_id, launcher_id):
+    launcher = g_launcherRepository.find(launcher_id)
+    if launcher is None: return
 
     # --- Shows a select box with the options to edit ---
-    dialog = DictionaryDialog()
+    dialog = KodiDictionaryDialog()
     launcher_options = launcher.get_edit_options()
-    selected_option = dialog.select('Select action for Launcher {0}'.format(launcher.get_name()), launcher_options),
-    
+    selected_option = dialog.select('Select action for Launcher {0}'.format(launcher.get_name()), launcher_options))
+
     if selected_option is None:
         log_debug('_command_edit_launcher(): No selected option')
         kodi_refresh_container()
         return
-    
+
     log_debug('_command_edit_launcher(): Selected option = {0}'.format(selected_option))
     if type(selected_option) is tuple:
         selected_option = selected_option[0]
@@ -879,15 +881,20 @@ def m_command_edit_launcher(categoryID, launcherID):
     self.run_sub_command(selected_option, None, launcher)
 
 #
-# Add ROMS to launcher
+# Add ROMS to launcher.
 #
-def m_command_add_roms(launcherID):
-    dialog = xbmcgui.Dialog()
-    type = dialog.select('Add/Update ROMs to Launcher', ['Scan for New ROMs', 'Manually Add ROM'])
-    if type == 0:
-        self._roms_import_roms(launcherID)
-    elif type == 1:
-        self._roms_add_new_rom(launcherID)
+def m_command_add_roms(launcher_id):
+    # NOTE Addition of single ROMs is deprecated. Only use the ROM scanner.
+    # type = xbmcgui.Dialog().select(
+    #     'Add/Update ROMs to Launcher', ['Scan for New ROMs', 'Manually Add ROM']
+    # )
+    # if type == 0:
+    #     m_roms_import_roms(launcher_id)
+    # elif type == 1:
+    #     m_roms_add_new_rom(launcher_id)
+
+    # --- Call the ROM scanner ---
+    m_roms_import_roms(launcher_id)
 
 #
 # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID if we are editing
@@ -4690,18 +4697,18 @@ def m_gui_render_category_row(category):
     listitem = xbmcgui.ListItem(category.get_name())
     if category.get_releaseyear():
         listitem.setInfo('video', {
-                             'title'   : category.get_name(),    'year'    : category.get_releaseyear(),
-                             'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
-                             'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
-                             'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY
-                             })
+            'title'   : category.get_name(),    'year'    : category.get_releaseyear(),
+            'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
+            'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
+            'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY
+        })
     else:
         listitem.setInfo('video', {
-                             'title'   : category.get_name(),
-                             'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
-                             'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
-                             'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY
-                             })
+            'title'   : category.get_name(),
+            'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
+            'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
+            'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY
+        })
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     # --- Set Category artwork ---
@@ -4722,12 +4729,12 @@ def m_gui_render_category_row(category):
     # be removed.
     commands = []
     categoryID = category.get_id()
-    commands.append(('View Category data',   m_misc_url_RunPlugin('VIEW', categoryID)))
+    commands.append(('View', m_misc_url_RunPlugin('VIEW', categoryID)))
     commands.append(('Edit/Export Category', m_misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
-    commands.append(('Create New Category',  m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher',     m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
-    commands.append(('Kodi File Manager',    'ActivateWindow(filemanager)'))
-    commands.append(('AEL addon settings',   'Addon.OpenSettings({0})'.format(__addon_id__)))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
+    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
     # --- Add row ---
@@ -4750,9 +4757,9 @@ def m_gui_render_vlauncher_favourites_row():
 
     # --- Create context menu ---
     commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4772,11 +4779,11 @@ def m_gui_render_vcategory_collections_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Create New Collection', m_misc_url_RunPlugin('ADD_COLLECTION')))
-    commands.append(('Import Collection', m_misc_url_RunPlugin('IMPORT_COLLECTION')))
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new ROM Collection', m_misc_url_RunPlugin('ADD_COLLECTION')))
+    commands.append(('Import ROM Collection', m_misc_url_RunPlugin('IMPORT_COLLECTION')))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4795,9 +4802,9 @@ def m_gui_render_vlauncher_recently_played_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4816,9 +4823,9 @@ def m_gui_render_vlauncher_most_played_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4840,9 +4847,9 @@ def m_gui_render_vcategory_Browse_by_row():
     commands = []
     update_vcat_all_URL = m_misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
     commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL))
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4862,9 +4869,9 @@ def m_gui_render_vcategory_AEL_offline_scraper_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4884,9 +4891,9 @@ def m_gui_render_vcategory_LB_offline_scraper_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4905,9 +4912,9 @@ def m_gui_render_Utilities_root():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -4926,9 +4933,9 @@ def m_gui_render_GlobalReports_root():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -5023,9 +5030,9 @@ def m_gui_render_Browse_by_vlaunchers_row(virtual_category_kind):
     update_vcat_all_URL = m_misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
     commands.append(('Update {0} database'.format(vcategory_label), update_vcat_URL))
     commands.append(('Update all databases', update_vcat_all_URL))
-    commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-    commands.append(('Add New Launcher',    m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher',    m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     listitem.addContextMenuItems(commands)
 
@@ -5337,29 +5344,20 @@ def m_gui_render_launcher_row(launcher):
 
     # --- Launcher tags ---
     # >> Do not plot ROM count on standalone launchers!
-    # todo: add type in upgrade process
+    # TODO add type in upgrade process
     launcher_name = launcher_raw_name = launcher.get_name()
     launcher_type = launcher.get_launcher_type()
-    launcher_desc = '?'
+    if   launcher_type == LAUNCHER_STANDALONE:   launcher_desc = 'Std'
+    elif launcher_type == LAUNCHER_FAVOURITES:   launcher_desc = 'Fav'
+    elif launcher_type == LAUNCHER_RETROPLAYER:  launcher_desc = 'Rplay'
+    elif launcher_type == LAUNCHER_ROM:          launcher_desc = 'Roms'
+    elif launcher_type == LAUNCHER_RETROARCH:    launcher_desc = 'Retro'
+    elif launcher_type == LAUNCHER_STEAM:        launcher_desc = 'Steam'
+    elif launcher_type == LAUNCHER_NVGAMESTREAM: launcher_desc = 'Strm'
+    elif launcher_type == LAUNCHER_LNK:          launcher_desc = 'Lnks'
+    else:                                        launcher_desc = '???'
 
-    if launcher_type == LAUNCHER_STANDALONE:
-        launcher_desc = 'Std'
-    if launcher_type == LAUNCHER_FAVOURITES:
-        launcher_desc = 'Fav'
-    elif launcher_type == LAUNCHER_RETROPLAYER:
-        launcher_desc = 'Rplay'
-    elif launcher_type == LAUNCHER_ROM:
-        launcher_desc = 'Roms'
-    elif launcher_type == LAUNCHER_RETROARCH:
-        launcher_desc = 'Retro'
-    elif launcher_type == LAUNCHER_STEAM:
-        launcher_desc = 'Steam'
-    elif launcher_type == LAUNCHER_NVGAMESTREAM:
-        launcher_desc = 'Strm'
-    elif launcher_type == LAUNCHER_LNK:
-        launcher_desc = 'Lnks'
-
-    launcher_dic = launcher.get_data()
+    launcher_dic = launcher.get_data_dic()
     if launcher.supports_launching_roms() and g_settings['display_launcher_roms']:
         if launcher_dic['nointro_xml_file']:
             if launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_FLAT:
@@ -5390,7 +5388,7 @@ def m_gui_render_launcher_row(launcher):
         # >> ROM launcher with DAT file and ROM audit information.
     else:
         launcher_name = '{0} [COLOR chocolate]({1})[/COLOR]'.format(launcher_raw_name, launcher_desc)
-        
+
     # --- Create listitem row ---
     ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
     listitem = xbmcgui.ListItem(launcher_name)
@@ -5435,20 +5433,20 @@ def m_gui_render_launcher_row(launcher):
     launcherID = launcher_dic['id']
     categoryID = launcher_dic['categoryID']
     
-    commands.append(('View Launcher', m_misc_url_RunPlugin('VIEW', categoryID, launcherID) ))
-    commands.append(('Edit Launcher', m_misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
+    commands.append(('View', m_misc_url_RunPlugin('VIEW', categoryID, launcherID) ))
+    commands.append(('Edit/Export Launcher', m_misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
     # >> ONLY for ROM launchers
     #if launcher_dic['rompath']:
     if launcher.supports_launching_roms():
         commands.append(('Add ROMs', m_misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID) ))
         commands.append(('Search ROMs in Launcher', m_misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID) ))
     
-    commands.append(('Add New Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID) ))
+    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID) ))
     # >> Launchers in addon root should be able to create a new category
     if categoryID == VCATEGORY_ADDONROOT_ID:
-        commands.append(('Create New Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Create new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
 
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)' ))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)' ))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
     listitem.addContextMenuItems(commands)
 
