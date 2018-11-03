@@ -1613,6 +1613,25 @@ class NewFileName:
         return FileName(os.path.join(self.path_str, path_str), isdir)
 
     # ---------------------------------------------------------------------------------------------
+    # Operator overloads
+    # ---------------------------------------------------------------------------------------------
+    def __str__(self):
+        return self.path_str
+
+    # Overloaded operator + behaves like self pjoin()
+    # See http://blog.teamtreehouse.com/operator-overloading-python
+    # Argument other is a FileName object. other originalPath is expected to be a
+    # subdirectory (path transformation not required)
+    def __add__(self, path_str):
+        return self.pjoin(path_str)
+
+    def __eq__(self, other):
+        return self.path_str == other.path_str
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    # ---------------------------------------------------------------------------------------------
     # Path manipulation and file information
     # ---------------------------------------------------------------------------------------------
     def getPath(self):

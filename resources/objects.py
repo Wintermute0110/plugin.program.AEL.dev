@@ -1434,17 +1434,17 @@ class RomStatisticsStrategy(object):
 # Abstract base class for business objects which support the generic metadata fields and assets.
 #
 # --- Class hierarchy ---
-# MetaDataItem(object) (abstract class)
+# MetaDataItemABC(object) (abstract class)
 # |
 # |----- Category
 # |      |
 # |      |----- VirtualCategory
 # |
-# |----- Rom
+# |----- ROM
 # |
-# |----- Launcher (abstract class)
+# |----- LauncherABC (abstract class)
 #        |
-#        |----- RomLauncher (abstract class)
+#        |----- ROMLauncherABC (abstract class)
 #        |      |
 #        |      |----- CollectionLauncher (ROM Collection launcher)
 #        |      |
@@ -1462,12 +1462,12 @@ class RomStatisticsStrategy(object):
 #        |      |
 #        |      |----- NvidiaGameStreamLauncher
 #        |
-#        |----- ApplicationLauncher (Standalone launcher)
+#        |----- StandaloneLauncher (Standalone launcher)
 #        |
 #        |----- KodiLauncher (Kodi favs launcher)
 #
 # -------------------------------------------------------------------------------------------------
-class MetaDataItem(object):
+class MetaDataItemABC(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, entity_data):
@@ -1589,11 +1589,18 @@ class MetaDataItem(object):
     def clear_asset(self, asset_info):
         self.entity_data[asset_info.key] = ''
 
+    #
+    # Get a list of the assets that can be mapped.
+    # Returns a list of AssetInfo objects.
+    #
+    def get_default_asset_list(self):
+        return g_assetFactory.get_asset_list_by_IDs(DEFAULTABLE_ASSET_ID_LIST)
+
 # -------------------------------------------------------------------------------------------------
 # Class representing the categories in AEL.
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
-class Category(MetaDataItem):
+class Category(MetaDataItemABC):
     def __init__(self, category_data = None):
         self.asset_kind = KIND_ASSET_CATEGORY
         self.obj_name = 'Category'
@@ -1629,7 +1636,7 @@ class Category(MetaDataItem):
         return False
 
     #
-    # Returns an ordered dictionary.
+    # Returns an ordered dictionary with all the object assets, ready to be edited.
     # Keys are AssetInfo objects.
     # Values are the current file for the asset as Unicode string or '' if the asset is not set.
     #
@@ -1643,12 +1650,9 @@ class Category(MetaDataItem):
         return asset_odict
 
     #
-    # Get a list of the assets that can be mapped.
-    # Returns a list of AssetInfo objects.
+    # Get a list of the assets that can be mapped to a defaultable asset.
+    # They must be images, no videos, no documents.
     #
-    def get_default_asset_list(self):
-        return g_assetFactory.get_asset_list_by_IDs(DEFAULTABLE_ASSET_ID_LIST)
-
     def get_mappable_asset_list(self):
         return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_CATEGORY_ASSET_ID_LIST)
 
@@ -1709,7 +1713,7 @@ class VirtualCategory(Category):
 # -------------------------------------------------------------------------------------------------
 # Class representing a ROM file you can play through AEL.
 # -------------------------------------------------------------------------------------------------
-class Rom(MetaDataItem):
+class ROM(MetaDataItemABC):
     def __init__(self, rom_data = None):
         super(Rom, self).__init__(rom_data)
         if self.entity_data is None:
@@ -2098,11 +2102,11 @@ class LauncherFactory(object):
 # Abstract base class for launching anything that is supported.
 # Implement classes that inherit this base class to support new ways of launching.
 # -------------------------------------------------------------------------------------------------
-class Launcher(MetaDataItem):
+class LauncherABC(MetaDataItemABC):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, launcher_data, settings, executorFactory):
-        super(Launcher, self).__init__(launcher_data)
+        super(LauncherABC, self).__init__(launcher_data)
 
         if self.entity_data is None:
             self.entity_data = self._default_data()
@@ -2420,39 +2424,40 @@ class Launcher(MetaDataItem):
     def change_application(self):
         return False
 
-    def get_assets(self):
-        assets = {}
-        asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_CONTROLLER, ASSET_TRAILER]
+    #
+    # Returns an ordered dictionary with all the object assets, ready to be edited.
+    # Keys are AssetInfo objects.
+    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
+    #
+    def get_assets_odict(self):
+        asset_info_list = g_assetFactory.get_asset_list_by_IDs(LAUNCHER_ASSET_ID_LIST)
+        asset_odict = collections.OrderedDict()
+        for asset_info in asset_info_list:
+            asset_fname_str = self.entity_data[asset_info.key] if self.entity_data[asset_info.key] else ''
+            asset_odict[asset_info] = asset_fname_str
 
-        asset_factory = AssetInfoFactory.create()
-        asset_kinds = asset_factory.get_assets_by(asset_keys)
-        
-        for asset_kind in asset_kinds:
-            asset = self.entity_data[asset_kind.key] if self.entity_data[asset_kind.key] else ''
-            assets[asset_kind] = asset
+        return asset_odict
 
-        return assets
+    #
+    # Get a list of the assets that can be mapped to a defaultable asset.
+    # They must be images, no videos, no documents.
+    #
+    def get_mappable_asset_list(self):
+        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_LAUNCHER_ASSET_ID_LIST)
 
-    def get_asset_defaults(self):
-        default_assets = {}
-        default_asset_keys = [ASSET_BANNER, ASSET_ICON, ASSET_FANART, ASSET_POSTER, ASSET_CLEARLOGO]
-        asset_factory = AssetInfoFactory.create()
-        default_asset_kinds = asset_factory.get_assets_by(default_asset_keys)
+    #
+    # Gets the database filename mapped for asset_info.
+    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
+    #
+    def get_mapped_asset_key(self, asset_info):
+        return self.entity_data[asset_info.default_key]
 
-        for asset_kind in default_asset_kinds:
-            mapped_asset_key = self.entity_data[asset_kind.default_key] if self.entity_data[asset_kind.default_key] else ''
-            mapped_asset_kind = asset_factory.get_asset_info_by_namekey(mapped_asset_key)
-            
-            default_assets[asset_kind] = mapped_asset_kind
-
-        return default_assets
-
-    def set_default_asset(self, asset_kind, mapped_to_kind):
-        self.entity_data[asset_kind.default_key] = mapped_to_kind.key
+    def set_mapped_asset_key(self, asset_info, mapped_to_info):
+        self.entity_data[asset_info.default_key] = mapped_to_info.key
 
     #
     # Returns a dictionary of options to choose from with which you can edit or manage this
-    # specific launcher.
+    # specific launcher in the "Edit Launcher" context menu.
     # No need to define this method here, it's an abstract method that must be implemented
     # in a derived class.
     #
@@ -2462,7 +2467,7 @@ class Launcher(MetaDataItem):
 
     #
     # Returns a dictionary of options to choose from with which you can edit the metadata
-    # of a launcher.
+    # of a launcher. All launchers have the same metadata so method is defined here.
     #
     def get_metadata_edit_options(self):
         plot_str = text_limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
@@ -2670,7 +2675,7 @@ class Launcher(MetaDataItem):
 # arguments or items like ROMs. Inherit from this base class to implement your own
 # specific ROM launcher.
 # -------------------------------------------------------------------------------------------------
-class RomLauncher(Launcher):
+class ROMLauncherABC(LauncherABC):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy, escape_romfile):
@@ -2679,7 +2684,7 @@ class RomLauncher(Launcher):
         self.statsStrategy = statsStrategy
         self.escape_romfile = escape_romfile
 
-        super(RomLauncher, self).__init__(launcher_data, settings, executorFactory)
+        super(ROMLauncherABC, self).__init__(launcher_data, settings, executorFactory)
 
     @abc.abstractmethod
     def _selectApplicationToUse(self):
@@ -3154,11 +3159,11 @@ class RomLauncher(Launcher):
 # -------------------------------------------------------------------------------------------------
 # Standalone application launcher
 # -------------------------------------------------------------------------------------------------
-class ApplicationLauncher(Launcher):
+class StandaloneLauncher(LauncherABC):
     def launch(self):
-        self.title              = self.entity_data['m_name']
-        self.application        = FileNameFactory.create(self.entity_data['application'])
-        self.arguments          = self.entity_data['args']       
+        self.title       = self.entity_data['m_name']
+        self.application = FileNameFactory.create(self.entity_data['application'])
+        self.arguments   = self.entity_data['args']
 
         # --- Check for errors and abort if errors found ---
         if not self.application.exists():
@@ -3167,22 +3172,21 @@ class ApplicationLauncher(Launcher):
             return
         
         # ~~~ Argument substitution ~~~
-        log_info('ApplicationLauncher() raw arguments   "{0}"'.format(self.arguments))
+        log_info('StandaloneLauncher() raw arguments   "{0}"'.format(self.arguments))
         self.arguments = self.arguments.replace('$apppath%' , self.application.getDir())
-        log_info('ApplicationLauncher() final arguments "{0}"'.format(self.arguments))
+        log_info('StandaloneLauncher() final arguments "{0}"'.format(self.arguments))
 
-        super(ApplicationLauncher, self).launch()
-        pass
+        super(StandaloneLauncher, self).launch()
 
     def supports_launching_roms(self):
         return False
-    
+
     def get_launcher_type(self):
         return LAUNCHER_STANDALONE
-    
-    def get_launcher_type_name(self):        
+
+    def get_launcher_type_name(self):
         return "Standalone launcher"
-         
+
     def change_application(self):
 
         current_application = self.entity_data['application']
@@ -3198,10 +3202,10 @@ class ApplicationLauncher(Launcher):
 
     def change_arguments(self, args):
         self.entity_data['args'] = args
-        
+
     def get_args(self):
         return self.entity_data['args']
-    
+
     def get_additional_argument(self, index):
         args = self.get_all_additional_arguments()
         return args[index]
@@ -3243,7 +3247,6 @@ class ApplicationLauncher(Launcher):
         return options
 
     def get_advanced_modification_options(self):
-        
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
 
@@ -3260,20 +3263,19 @@ class ApplicationLauncher(Launcher):
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        
         wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard)
         wizard = DummyWizardDialog('args', '', wizard)
         wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-            
+
         return wizard
-    
+
 # -------------------------------------------------------------------------------------------------
 # Kodi favorites launcher
 # -------------------------------------------------------------------------------------------------
-class KodiLauncher(Launcher):
+class KodiLauncher(LauncherABC):
     def launch(self):
         self.title       = self.entity_data['m_name']
         self.application = FileNameFactory.create('xbmc.exe')
@@ -3372,10 +3374,13 @@ class KodiLauncher(Launcher):
 
 # -------------------------------------------------------------------------------------------------
 # Collection Launcher
-# Class hierarchy: CollectionLauncher <-- RomLauncher <-- Launcher <-- MetaDataItem <-- object
+# Class hierarchy: CollectionLauncher --> ROMLauncherABC --> LauncherABC --> MetaDataItemABC --> object
 # ------------------------------------------------------------------------------------------------- 
-class CollectionLauncher(RomLauncher):
+class CollectionLauncher(ROMLauncherABC):
     def __init__(self, launcher_data, settings, romset_repository):
+        self.asset_kind = KIND_ASSET_CATEGORY
+        self.obj_name = 'ROM Collection'
+
         super(CollectionLauncher, self).__init__(launcher_data, settings, None, romset_repository, None, False)
 
     def launch(self):
@@ -3443,9 +3448,9 @@ class CollectionLauncher(RomLauncher):
 
 # -------------------------------------------------------------------------------------------------
 # Virtual Launcher
-# Virtual launchers are rom launchers which contain multiple roms from different launchers.
+# Virtual launchers are ROM launchers which contain multiple roms from different launchers.
 # ------------------------------------------------------------------------------------------------- 
-class VirtualLauncher(RomLauncher):
+class VirtualLauncher(ROMLauncherABC):
     def __init__(self, launcher_data, settings, romset_repository):
         super(VirtualLauncher, self).__init__(launcher_data, settings, None, romset_repository, None, False)
 
@@ -3490,7 +3495,7 @@ class VirtualLauncher(RomLauncher):
 # Standard rom launcher where user can fully customize all settings.
 # The standard rom launcher also supports pclone/parent roms.
 # -------------------------------------------------------------------------------------------------
-class StandardRomLauncher(RomLauncher):
+class StandardRomLauncher(ROMLauncherABC):
     def get_launcher_type(self):
         return LAUNCHER_ROM
 
@@ -4111,8 +4116,7 @@ class RetroarchLauncher(StandardRomLauncher):
 # -------------------------------------------------------------------------------------------------
 # Launcher to use with a local Steam application and account.
 # -------------------------------------------------------------------------------------------------
-class SteamLauncher(RomLauncher):
-
+class SteamLauncher(ROMLauncherABC):
     def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy):
         super(SteamLauncher, self).__init__(launcher_data, settings, executorFactory, romset_repository, statsStrategy, False)
     
@@ -4196,16 +4200,14 @@ class SteamLauncher(RomLauncher):
 # -------------------------------------------------------------------------------------------------
 # Launcher to use with Nvidia Gamestream servers.
 # -------------------------------------------------------------------------------------------------
-class NvidiaGameStreamLauncher(RomLauncher):
-
+class NvidiaGameStreamLauncher(ROMLauncherABC):
     def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy):
-
         super(NvidiaGameStreamLauncher, self).__init__(launcher_data, settings, executorFactory, romset_repository, statsStrategy, False)
 
     def get_launcher_type(self):
         return LAUNCHER_NVGAMESTREAM
-    
-    def get_launcher_type_name(self):        
+
+    def get_launcher_type_name(self):
         return "Nvidia GameStream launcher"
 
     def get_server(self):
@@ -4305,13 +4307,11 @@ class NvidiaGameStreamLauncher(RomLauncher):
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         
         return options
-    
 
     #
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        
         info_txt = 'To pair with your Geforce Experience Computer we need to make use of valid certificates. '
         info_txt += 'Unfortunately at this moment we cannot create these certificates directly from within Kodi.\n'
         info_txt += 'Please read the wiki for details how to create them before you go further.'
@@ -4334,11 +4334,9 @@ class NvidiaGameStreamLauncher(RomLauncher):
         return wizard
 
     def _generatePairPinCode(self, input, item_key, launcher):
-    
         return gamestreamServer(None, None).generatePincode()
 
     def _check_if_selected_gamestream_client_exists(self, input, item_key, launcher):
-
         if input == 'NVIDIA':
             nvidiaDataFolder = FileNameFactory.create('/data/data/com.nvidia.tegrazone3/')
             nvidiaAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
@@ -4350,16 +4348,14 @@ class NvidiaGameStreamLauncher(RomLauncher):
             moonlightAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.limelight/')
             if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
                 kodi_notify_warn('Could not find Moonlight Gamestream client. Make sure it\'s installed.')
-        
+
         return input
 
     def _try_to_resolve_path_to_nvidia_certificates(self, input, item_key, launcher):
-    
         path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
         return path
 
     def _validate_nvidia_certificates(self, input, item_key, launcher):
-
         certificates_path = FileNameFactory.create(input)
         gs = GameStreamServer(input, certificates_path)
         if not gs.validate_certificates():
@@ -4368,7 +4364,6 @@ class NvidiaGameStreamLauncher(RomLauncher):
         return certificates_path.getOriginalPath()
 
     def _validate_gamestream_server_connection(self, input, item_key, launcher):
-
         gs = GameStreamServer(input, None)
         if not gs.connect():
             kodi_notify_warn('Could not connect to gamestream server')
@@ -4396,7 +4391,7 @@ class ExecutorFactory(object):
 
     def create(self, application):
         if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
-            or 'xbmc-fav-' in application.getOriginalPath() or 'xbmc-sea-' in application.getOriginalPath():
+            or 'xbmc-fav-' in application.getPath() or 'xbmc-sea-' in application.getPath():
             return XbmcExecutor(self.logFile)
 
         if re.search('.*://.*', application.getOriginalPath()):
@@ -4420,7 +4415,9 @@ class ExecutorFactory(object):
         elif is_osx():
             return OSXExecutor(self.logFile)
 
-        kodi_notify_warn('Cannot determine the running platform')
+        else:
+            kodi_notify_warn('Cannot determine the running platform')
+
         return None
 
 class Executor():
@@ -4437,7 +4434,6 @@ class XbmcExecutor(Executor):
     # --- Execute Kodi built-in function under certain conditions ---
     def execute(self, application, arguments, non_blocking):
         xbmc.executebuiltin('XBMC.{0}'.format(arguments))
-        pass
 
 # >> Linux
 # >> New in AEL 0.9.7: always close all file descriptions except 0, 1 and 2 on the child

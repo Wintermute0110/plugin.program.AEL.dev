@@ -1284,7 +1284,7 @@ def m_run_category_sub_command(command, category):
         selected_option = KodiDictionaryDialog().select(s, options)
         if selected_option is None:
             # >> Exits context menu
-            log_debug('m_run_category_sub_command(EDIT_CATEGORY) Selected NONE')
+            log_debug('m_run_category_sub_command(EDIT_CATEGORY) Selected None. Closing context menu')
         else:
             # >> Execute subcommand. May be atomic, maybe a submenu.
             # >> If submenu returns False is means the context menu must be closed now.
@@ -1363,8 +1363,8 @@ def m_run_category_sub_command(command, category):
     elif command == 'EXPORT_CATEGORY_XML':
         m_subcommand_export_category_xml(category)
 
-    # Deleting a category must exit the context menu!
-    # If the deletion was sucessful the category does not exit any more.
+    # Deleting a Category must exit the context menu!
+    # If the deletion was sucessful the Category does not exit any more.
     elif command == 'DELETE_CATEGORY':
         if m_subcommand_delete_category(category):
             return False
@@ -1380,8 +1380,7 @@ def m_run_category_sub_command(command, category):
     return True
 
 #
-# NOTE when returning from a submenu preselect the menu item in the parent menu that was used.
-#      Use the Krypton feature to preselect menus.
+# Look at m_run_category_sub_command() for a reference implementation.
 #
 def m_run_collection_sub_command(command, collection):
     log_debug('m_run_collection_sub_command({0}) BEGIN'.format(command))
@@ -1392,11 +1391,14 @@ def m_run_collection_sub_command(command, collection):
         s = 'Select action for ROM Collection "{0}"'.format(collection.get_name())
         selected_option = KodiDictionaryDialog().select(s, options)
         if selected_option is None:
-            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected None. Exiting context menu.')
+            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected None. Closing context menu.')
         else:
             log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected {0}'.format(selected_option))
-            m_run_collection_sub_command(selected_option, collection)
-            m_run_collection_sub_command('EDIT_COLLECTION', collection)
+            if m_run_collection_sub_command(selected_option, collection):
+                m_run_collection_sub_command('EDIT_COLLECTION', collection)
+            else:
+                log_debug('m_run_collection_sub_command(EDIT_COLLECTION) m_run_collection_sub_command returned False')
+                log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Closing context menu')
 
     # --- Submenu command ---
     elif command == 'EDIT_METADATA':
@@ -1404,7 +1406,7 @@ def m_run_collection_sub_command(command, collection):
         s = 'Edit ROM Collection "{0}" metadata'.format(collection.get_name())
         selected_option = KodiDictionaryDialog().select(s, options)
         if selected_option is None:
-            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected None. Executing EDIT_COLLECTION')
+            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected None')
         else:
             log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected {0}'.format(selected_option))
             m_run_collection_sub_command(selected_option, collection)
@@ -1432,34 +1434,47 @@ def m_run_collection_sub_command(command, collection):
 
     # --- Submenu command ---
     elif command == 'EDIT_ASSETS':
-        m_gui_edit_object_assets(category)
+        m_gui_edit_object_assets(collection)
 
     # --- Submenu command ---
     elif command == 'EDIT_DEFAULT_ASSETS':
-        m_gui_edit_object_default_assets(category)
+        m_gui_edit_object_default_assets(collection)
 
     # --- Atomic commands ---
     elif command == 'EXPORT_COLLECTION_XML':
         m_subcommand_export_collection_xml(collection)
 
+    # Deleting a ROM Collection must exit the context menu!
+    # If the deletion was sucessful the ROM Collection does not exit any more.
     elif command == 'DELETE_COLLECTION':
-        m_subcommand_delete_collection(collection)
+        if m_subcommand_delete_collection(collection):
+            return False
 
     else:
         log_warning('m_run_collection_sub_command() Unsupported command "{0}"'.format(command))
         kodi_dialog_OK('m_run_collection_sub_command() Unknown command {0}. '.format(command) +
                        'Please report this bug.')
+
+    # Returns True if the parent menu must be shown again.
+    # Return False if context menu must be closed.
     log_debug('m_run_collection_sub_command({0}) ENDS'.format(command))
+    return True
 
 def m_run_launcher_sub_command(command, launcher):
     log_debug('m_run_launcher_sub_command({0}) BEGIN'.format(command))
     
+    # Returns True if the parent menu must be shown again.
+    # Return False if context menu must be closed.
     log_debug('m_run_launcher_sub_command({0}) ENDS'.format(command))
+    return True
 
 def m_run_rom_sub_command(command, rom):
     log_debug('m_run_rom_sub_command({0}) BEGIN'.format(command))
     
+    # Returns True if the parent menu must be shown again.
+    # Return False if context menu must be closed.
     log_debug('m_run_rom_sub_command({0}) ENDS'.format(command))
+    return True
 
 #
 # Runs submenu commands
@@ -3975,36 +3990,36 @@ def m_gui_edit_rating(object_name, get_method, set_method):
 
     return True
 
-def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
-    log_debug('m_gui_edit_object_assets() obj_instance   {0}'.format(obj_instance.__class__.__name__))
+def m_gui_edit_object_assets(obj, pre_select_idx = 0):
+    log_debug('m_gui_edit_object_assets() obj {0}'.format(obj.__class__.__name__))
     log_debug('m_gui_edit_object_assets() pre_select_idx {0}'.format(pre_select_idx))
 
     # --- DEBUG texture cache ---
-    # icon_FN = FileName(obj_instance.get_asset_str(asset_infos[ASSET_ICON_ID]))
-    # fanart_FN = FileName(obj_instance.get_asset_str(asset_infos[ASSET_FANART_ID]))
+    # icon_FN = FileName(obj.get_asset_str(asset_infos[ASSET_ICON_ID]))
+    # fanart_FN = FileName(obj.get_asset_str(asset_infos[ASSET_FANART_ID]))
     # log_debug('m_gui_edit_object_assets() icon_FN   "{0}"'.format(icon_FN.getPath()))
     # log_debug('m_gui_edit_object_assets() fanart_FN "{0}"'.format(fanart_FN.getPath()))
     # kodi_print_texture_info(icon_FN.getPath())
     # kodi_print_texture_info(fanart_FN.getPath())
 
     # --- Customize function for each object type ---
-    if obj_instance.asset_kind == KIND_ASSET_CATEGORY:
+    if obj.asset_kind == KIND_ASSET_CATEGORY:
         dialog_title_str = 'Edit Category Assets/Artwork'
         repository_obj = g_categoryRepository
-    elif obj_instance.asset_kind == KIND_ASSET_COLLECTION:
+    elif obj.asset_kind == KIND_ASSET_COLLECTION:
         dialog_title_str = 'Edit ROM Collection Assets/Artwork'
         repository_obj = g_collectionRepository
-    elif obj_instance.asset_kind == KIND_ASSET_LAUNCHER:
+    elif obj.asset_kind == KIND_ASSET_LAUNCHER:
         dialog_title_str = 'Edit Launcher Assets/Artwork'
         repository_obj = g_launcherRepository
     else:
-        kodi_dialog_OK('m_gui_edit_object_assets() Unknown obj_instance.asset_kind = {0}'.format(obj_instance.asset_kind) +
+        kodi_dialog_OK('m_gui_edit_object_assets() Unknown obj.asset_kind = {0}'.format(obj.asset_kind) +
                        'This is a bug, please report it.')
         return
 
     # --- Build Dialog.select list ---
     # >> Use Krypton Dialog().select(useDetails = True) to display label2 on dialog.
-    asset_odict = obj_instance.get_assets_odict()
+    asset_odict = obj.get_assets_odict()
     # dump_object_to_log('asset_odict', asset_odict)
     list_items = []
     # >> List to easily pick the selected AssetInfo() object
@@ -4050,9 +4065,9 @@ def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
         # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
         # >> The menu dialog is instantiated again so it reflects the changes just edited.
         # >> If m_gui_edit_asset() returns True changes were made.
-        if m_gui_edit_asset(obj_instance, asset_info_list[selected_option]):
-            repository_obj.save(obj_instance)
-        m_gui_edit_object_assets(obj_instance, selected_option)
+        if m_gui_edit_asset(obj, asset_info_list[selected_option]):
+            repository_obj.save(obj)
+        m_gui_edit_object_assets(obj, selected_option)
 
 #
 # Edit category/collection/launcher/ROM asset.
@@ -4533,7 +4548,7 @@ def m_gui_edit_object_default_assets(obj, pre_select_idx = 0):
         # >> The menu dialog is instantiated again so it reflects the changes just edited.
         log_debug('m_gui_edit_object_default_assets() Executing mappable asset select() dialog.')
         selected_asset_info = asset_info_list[selected_option]
-        log_debug('m_gui_edit_object_default_assets() Mapable selected {0}.'.format(selected_asset_info.name))
+        log_debug('m_gui_edit_object_default_assets() Main selected {0}.'.format(selected_asset_info.name))
         mappable_asset_list = obj.get_mappable_asset_list()
         list_items = []
         asset_info_list = []
@@ -6363,29 +6378,31 @@ def m_command_render_Collections():
                          'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
         # --- Extrafanart ---
-        collections_asset_dir = FileNameFactory.create(g_settings['collections_asset_dir'])
-        extrafanart_dir = collections_asset_dir + collection['m_name']
-        log_debug('_command_render_collections() EF dir {0}'.format(extrafanart_dir.getPath()))
+        # NOTE This bunch of code is a complete workaround and slow.
+        collections_asset_dir = FileName(g_settings['collections_asset_dir'], isdir = True)
+        extrafanart_dir = collections_asset_dir.pjoin(collection['m_name'], isdir = True)
+        log_debug('m_command_render_Collections() COL dir {0}'.format(collections_asset_dir.getPath()))
+        log_debug('m_command_render_Collections() EF  dir {0}'.format(extrafanart_dir.getPath()))
         extrafanart_dic = {}
         for i in range(25):
             # --- PNG ---
             extrafanart_file = extrafanart_dir + 'fanart{0}.png'.format(i)
-            log_debug('_command_render_collections() test   {0}'.format(extrafanart_file.getPath()))
+            log_debug('m_command_render_Collections() test    {0}'.format(extrafanart_file.getPath()))
             if extrafanart_file.exists():
-                log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
+                log_debug('m_command_render_Collections() Adding extrafanart #{0}'.format(i))
                 extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
                 continue
             # --- JPG ---
             extrafanart_file = extrafanart_dir + 'fanart{0}.jpg'.format(i)
-            log_debug('_command_render_collections() test   {0}'.format(extrafanart_file.getPath()))
+            log_debug('m_command_render_Collections() test    {0}'.format(extrafanart_file.getPath()))
             if extrafanart_file.exists():
-                log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
+                log_debug('m_command_render_Collections() Adding extrafanart #{0}'.format(i))
                 extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
                 continue
             # >> No extrafanart found, exit loop.
             break
         if extrafanart_dic:
-            log_debug('_command_render_collections() Extrafanart setArt() "{0}"'.format(unicode(extrafanart_dic)))
+            log_debug('m_command_render_Collections() Extrafanart setArt() "{0}"'.format(unicode(extrafanart_dic)))
             listitem.setArt(extrafanart_dic)
 
         # --- Create context menu ---
