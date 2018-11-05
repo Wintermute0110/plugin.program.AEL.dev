@@ -106,6 +106,14 @@ FEATURE  [CORE] Rename the plugin from `plugin.program.advanced.emulator.launche
 
 FEATURE  [CORE] Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
 
+WIP      [CORE] Option in settings to display the launchers in flat mode. This is useful when
+         checking if all the artwork for launchers is correct.
+         For example, in the addon root:
+             Arcade - MAME (2567 ROMs)
+             SEGA - MegaDrive (3214 ROMs)
+             Retroarch (Std) --> Launchers in the addon root last
+             [Favourites] --> Special launchers at the end
+
 WIP      [CORE] Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          See Chrisism patch in Github. Copy remote ROMs for external launchers?
 
